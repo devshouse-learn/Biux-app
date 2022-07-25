@@ -22,9 +22,9 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
   }
 
   @override
-  Future<List<TrademarkBike>> getTrademarksBike() async {
+  Future<List<TrademarkBike>> getTrademarksBike(String trademark) async {
     try {
-      final result = await firestore.collection(collection).get();
+      final result = await firestore.collection(collection).where('trademark', isEqualTo: trademark).get();
       return result.docs
           .map(
             (e) => TrademarkBike.fromJsonMap(
