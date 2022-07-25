@@ -41,7 +41,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
         title: Row(
           children: <Widget>[
             Text(
-              widget._sites.name!,
+              widget._sites.name,
               style: Styles.paddingHintText,
             ),
           ],
@@ -65,8 +65,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                             width: 160.0,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image:
-                                    NetworkImage(widget._sites.profileCover!),
+                                image: NetworkImage(widget._sites.profileCover),
                                 fit: BoxFit.cover,
                               ),
                               borderRadius: BorderRadius.all(
@@ -96,7 +95,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                   Center(
                     child: Container(
                       child: Text(
-                        widget._sites.name!,
+                        widget._sites.name,
                         overflow: TextOverflow.fade,
                         style: Styles.alertDialogTitle,
                       ),
@@ -116,7 +115,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                   Container(
                     alignment: Alignment.center,
                     child: Text(
-                      widget._sites.category ?? "",
+                      widget._sites.category,
                       style: Styles.roadDescriptionText,
                     ),
                   ),
@@ -131,7 +130,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                               Container(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  widget._sites.description!,
+                                  widget._sites.description,
                                   style: Styles.roadDescriptionText,
                                 ),
                               ),
@@ -156,9 +155,9 @@ class _DetailBusinessState extends State<DetailBusiness> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          widget._sites.schedule! == AppStrings.missingOpening
+                          widget._sites.schedule == AppStrings.missingOpening
                               ? " "
-                              : widget._sites.schedule!,
+                              : widget._sites.schedule,
                           style: Styles.roadDescriptionText,
                         ),
                       ),
@@ -186,12 +185,16 @@ class _DetailBusinessState extends State<DetailBusiness> {
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  widget._sites.telephone!,
+                                  widget._sites.telephone,
                                   style: Styles.roadDescriptionText,
                                 ),
                               ),
                               onTap: () {
-                                launch(AppStrings.launchTel(whatsapp: widget._sites.whatsapp!));
+                                launch(
+                                  AppStrings.launchTel(
+                                    whatsapp: widget._sites.whatsapp,
+                                  ),
+                                );
                               },
                             ),
                           ],
@@ -215,7 +218,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          widget._sites.direction!,
+                          widget._sites.direction,
                           overflow: TextOverflow.ellipsis,
                           style: Styles.containerDirection,
                         ),
@@ -279,7 +282,9 @@ class _DetailBusinessState extends State<DetailBusiness> {
                               ),
                               onPressed: () {
                                 launch(
-                                  AppStrings.launchWhatsapp(whatsapp: widget._sites.whatsapp!)
+                                  AppStrings.launchWhatsapp(
+                                    whatsapp: widget._sites.whatsapp,
+                                  ),
                                 );
                               },
                             ),
@@ -320,38 +325,11 @@ class _DetailBusinessState extends State<DetailBusiness> {
                   Container(
                     height: 0,
                   ),
-                  /*Container(
-                  width: 200,
-                  height: 200,
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    onMapCreated: _onMapCreated,
-                    initialCameraPosition: DetallesNegocio._kGooglePlex,
-                    markers: _markers.values.toSet(),
-                  ),
-                ),*/
                   Container(
                     height: 80,
                   ),
                 ],
               ),
-              /* Row(
-                children: <Widget>[
-                  Flexible(
-                      flex: 15,
-                      child: Container(
-                        child: Buttomn(),
-                      )),
-                  Container(
-                    width: 2,
-                  ),
-                  /* Flexible(
-                      flex: 25,
-                      child: Container(
-                        child: Buttomn2(),
-                      ))*/
-                ],
-              ),*/
             ],
           ),
         ),
@@ -432,47 +410,3 @@ class Buttomn extends StatelessWidget {
     );
   }
 }
-
-/*class Buttomn2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          height: 50,
-          child: RaisedButton(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(0.0),
-            ),
-            color: Theme.of(context).primaryColor,
-            child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    width: 40,
-                  ),
-                  Expanded(
-                    child: Text("call",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.display4),
-                  ),
-                  Container(
-                    width: 40,
-                  )
-                ]),
-            onPressed: () {
-
-             /*  Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new Codeconduct(),
-                  ));*/
-            },
-          ),
-        ));
-  }
-}
-*/

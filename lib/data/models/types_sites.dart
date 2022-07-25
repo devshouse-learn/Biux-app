@@ -1,16 +1,16 @@
 class TypesSites {
-  int? id;
-  String? type;
+  String id;
+  String type;
 
   TypesSites({
-    this.id,
-    this.type,
+    required this.id,
+    this.type = '',
   });
 
-  TypesSites.fromJsonMap(Map json) {
-    this.id = json["id"];
-    this.type = json["type"];
-  }
+  factory TypesSites.fromJsonMap({required Map json}) => TypesSites(
+        id: json["id"],
+        type: json["type"],
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,

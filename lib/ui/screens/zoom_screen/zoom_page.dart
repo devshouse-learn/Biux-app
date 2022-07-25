@@ -204,7 +204,7 @@ class _ZoomPageState3 extends State<ZoomPage3> {
                     imageProvider: NetworkImage(
                       widget._sites.profileCover == null
                           ? AppStrings.urlBiuxApp
-                          : widget._sites.profileCover!,
+                          : widget._sites.profileCover,
                     ),
                     minScale: PhotoViewComputedScale.contained * 1.0,
                     maxScale: PhotoViewComputedScale.covered * 10,

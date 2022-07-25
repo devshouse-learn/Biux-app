@@ -101,7 +101,7 @@ class _ButtonCenterState extends State<ButtonCenter> {
                       Flexible(
                         child: Container(
                           child: Text(
-                            widget._sites.name ?? "",
+                            widget._sites.name,
                             overflow: TextOverflow.fade,
                             style: Styles.flexibleSites,
                           ),
@@ -122,7 +122,7 @@ class _ButtonCenterState extends State<ButtonCenter> {
                       Flexible(
                         child: Container(
                           child: Text(
-                            widget._sites.category ?? "",
+                            widget._sites.category,
                             overflow: TextOverflow.fade,
                             style: Styles.flexibleSitesCategory,
                           ),
@@ -167,7 +167,7 @@ class _ButtonCenterState extends State<ButtonCenter> {
                       width: 110,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(widget._sites.profileCover ?? ""),
+                          image: NetworkImage(widget._sites.profileCover),
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(12.0),
@@ -207,9 +207,12 @@ class _ButtonCenterState extends State<ButtonCenter> {
               child: SizedBox(
                 width: 120,
                 child: Container(
-                  margin: EdgeInsets.only(top: 130, left: 8),
+                  margin: EdgeInsets.only(
+                    top: 130,
+                    left: 8,
+                  ),
                   child: Text(
-                    widget._sites.name!.toUpperCase(),
+                    widget._sites.name.toUpperCase(),
                     overflow: TextOverflow.fade,
                     style: Styles.rowSizedBox,
                   ),
@@ -230,8 +233,8 @@ class _ButtonCenterState extends State<ButtonCenter> {
                       _getPolyline(
                         LatLng(4.43371775, -75.20472854),
                         LatLng(
-                          widget._sites.latitude!,
-                          widget._sites.longitude!,
+                          widget._sites.latitude,
+                          widget._sites.longitude,
                         ),
                       );
                     },

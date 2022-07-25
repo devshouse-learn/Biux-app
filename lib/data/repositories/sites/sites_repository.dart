@@ -14,7 +14,7 @@ class SitesRepository {
     Map responseData = json.decode(response.body);
     List sitesJson = responseData["data"];
     List<Sites> sites =
-        sitesJson.map((sites) => Sites.fromJson(sites)).toList();
+        sitesJson.map((sites) => Sites.fromJson(json: sites)).toList();
     return sites;
   }
 
@@ -24,7 +24,7 @@ class SitesRepository {
     Map responseData = json.decode(response.body);
     List sitesJson = responseData["data"];
     List<Sites> sites =
-        sitesJson.map((sites) => Sites.fromJson(sites)).toList();
+        sitesJson.map((sites) => Sites.fromJson(json: sites)).toList();
     return sites;
   }
 
@@ -38,7 +38,7 @@ class SitesRepository {
       headers: headers,
     );
     if (response.statusCode == 200) {
-      return TypesSites.fromJsonMap(json.decode(response.body));
+      return TypesSites.fromJsonMap(json: json.decode(response.body));
     } else {
       throw Exception('Fallo en actualizar grupo');
     }

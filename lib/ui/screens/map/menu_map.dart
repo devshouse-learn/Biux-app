@@ -58,18 +58,24 @@ class _MenuMapState extends State<MenuMap> {
     super.initState();
     setState(() {
       // adding a new marker to map
-      markerS.forEach((marker) => markers[marker.markerId] = marker);
+      markerS.forEach(
+        (marker) => markers[marker.markerId] = marker,
+      );
     });
     listSites = [];
     listBusiness = [];
-    typesSites = TypesSites();
+    typesSites = TypesSites(
+      id: '',
+    );
     _loadMarkers();
     setState(() {});
     Future.delayed(Duration.zero, loadPosition);
     setState(() {});
     Future.delayed(Duration.zero, _loadMarkers);
     setState(() {});
-    markerS.forEach((marker) => markers[marker.markerId] = marker);
+    markerS.forEach(
+      (marker) => markers[marker.markerId] = marker,
+    );
   }
 
   cargarTiposSitios() async {}
@@ -84,16 +90,19 @@ class _MenuMapState extends State<MenuMap> {
     //  _marcadores.clear();
     for (var i = 0; i < total; i++) {
       var business = listSites[i];
-      var markerIdVal = business.typesSites?.type ?? "";
+      var markerIdVal = business.typesSites.type;
       final BitmapDescriptor markerImage =
           await MapHelper.getMarkerImageFromUrl(
-        business.icon!,
+        business.icon,
         targetWidth: 100,
       );
       markerS.add(
         Marker(
           markerId: MarkerId('m${business.id}'),
-          position: LatLng(business.latitude!, business.longitude!),
+          position: LatLng(
+            business.latitude,
+            business.longitude,
+          ),
           infoWindow: InfoWindow(
             title: markerIdVal,
             snippet: business.name,
@@ -110,7 +119,9 @@ class _MenuMapState extends State<MenuMap> {
     var lat;
     var long;
     serviceEnabled = await location.requestService();
-    setState(() {});
+    setState(
+      () {},
+    );
     // serviceEnabled = await location.serviceEnabled();
 
     if (!serviceEnabled) {
@@ -187,7 +198,7 @@ class _MenuMapState extends State<MenuMap> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       body: Stack(
         children: <Widget>[
           serviceEnabled
@@ -312,7 +323,12 @@ class _MenuMapState extends State<MenuMap> {
         await loadPosition();
       }
 
-      _getPolyline(currentLocatioN, LatLng(sites.latitude!, sites.longitude!));
+      _getPolyline(
+          currentLocatioN,
+          LatLng(
+            sites.latitude,
+            sites.longitude,
+          ));
     }
   }
 }

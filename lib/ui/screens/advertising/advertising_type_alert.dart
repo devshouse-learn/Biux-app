@@ -23,7 +23,7 @@ class _AdvertisingTypeAlertState extends State<AdvertisingTypeAlert> {
       content: Column(
         children: [
           Container(
-            child: Text(widget.advertising.title!),
+            child: Text(widget.advertising.title),
           ),
           Container(
             height: 200,
@@ -33,7 +33,7 @@ class _AdvertisingTypeAlertState extends State<AdvertisingTypeAlert> {
               borderRadius: BorderRadius.circular(10.0),
               image: DecorationImage(
                 image: NetworkImage(
-                  widget.advertising.photoAd ?? "",
+                  widget.advertising.photoAd,
                   scale: 0.4,
                 ),
                 fit: BoxFit.fill,
@@ -52,7 +52,7 @@ class _AdvertisingTypeAlertState extends State<AdvertisingTypeAlert> {
                 ),
                 color: AppColors.green,
                 child: Text(
-                  widget.advertising.textButton ?? "",
+                  widget.advertising.textButton,
                   style: Styles.fontSize,
                 ),
                 onPressed: () {

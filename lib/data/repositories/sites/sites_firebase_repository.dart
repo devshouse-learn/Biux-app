@@ -1,4 +1,3 @@
-import 'package:biux/data/models/types_sites.dart';
 import 'package:biux/data/models/sites.dart';
 import 'package:biux/data/repositories/sites/sites_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +12,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
       return result.docs
           .map(
             (e) => Sites.fromJson(
-              e.data(),
+              json: e.data(),
             ),
           )
           .toList();
@@ -23,30 +22,21 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
   }
 
   @override
-  Future<List<Sites>> getSitesFilter() async {
+  Future<List<Sites>> getSitesFilterByTypeSites() async {
     try {
       final result = await firestore
           .collection(collection)
-          .where('typesSites.',
-              isEqualTo: TypesSites(
-                type: 'Negocio',
-              ))
+          .where('typesSites.type', isEqualTo: 'Negocio')
           .get();
       return result.docs
           .map(
             (e) => Sites.fromJson(
-              e.data(),
+              json: e.data(),
             ),
           )
           .toList();
     } catch (e) {
       return List.empty();
     }
-  }
-
-  @override
-  Future<TypesSites> getTypesSites() {
-    // TODO: implement getTypesSites
-    throw UnimplementedError();
   }
 }

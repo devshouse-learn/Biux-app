@@ -1,63 +1,63 @@
 import 'package:biux/data/models/types_sites.dart';
 
 class Sites {
-  int? id;
-  String? name;
-  String? icon;
-  String? telephone;
-  String? whatsapp;
-  String? facebook;
-  String? instagram;
-  String? category;
-  String? description;
-  String? email;
-  String? schedule;
-  String? city;
-  TypesSites? typesSites;
-  String? profileCover;
-  String? direction;
-  double? latitude;
-  double? longitude;
+  String id;
+  String name;
+  String icon;
+  String telephone;
+  String whatsapp;
+  String facebook;
+  String instagram;
+  String category;
+  String description;
+  String email;
+  String schedule;
+  String cityId;
+  TypesSites typesSites;
+  String profileCover;
+  String direction;
+  double latitude;
+  double longitude;
 
   Sites({
-    this.id,
-    this.name,
-    this.icon,
-    this.telephone,
-    this.whatsapp,
-    this.facebook,
-    this.instagram,
-    this.city,
-    this.category,
-    this.description,
-    this.email,
-    this.profileCover,
-    this.typesSites,
-    this.schedule,
-    this.direction,
-    this.latitude,
-    this.longitude,
+    required this.id,
+    this.name = '',
+    this.icon = '',
+    this.telephone = '',
+    this.whatsapp = '',
+    this.facebook = '',
+    this.instagram = '',
+    this.cityId = '',
+    this.category = '',
+    this.description = '',
+    this.email = '',
+    this.profileCover = '',
+    required this.typesSites,
+    this.schedule = '',
+    this.direction = '',
+    this.latitude = 0.0,
+    this.longitude = 0.0,
   });
 
-  Sites.fromJson(Map json) {
-    this.id = json["id"];
-    this.name = json["name"];
-    this.icon = json["icon"];
-    this.profileCover = json["profileCover"];
-    this.telephone = json["telephone"];
-    this.whatsapp = json["whatsapp"];
-    this.facebook = json["facebook"];
-    this.instagram = json["instagram"];
-    this.category = json["category"];
-    this.description = json["description"];
-    this.email = json["email"];
-    this.typesSites = json["typesSites"];
-    this.schedule = json["schedule"];
-    this.city = json["city"];
-    this.direction = json["direction"];
-    this.latitude = json["latitude"];
-    this.longitude = json["longitude"];
-  }
+  factory Sites.fromJson({required Map json}) => Sites(
+        id: json["id"],
+        typesSites: TypesSites.fromJsonMap(json: json["typesSites"]),
+        name: json["name"],
+        icon: json["icon"],
+        profileCover: json["profileCover"],
+        telephone: json["telephone"],
+        category: json["category"],
+        cityId: json["city"],
+        description: json["description"],
+        direction: json["direction"],
+        email: json["email"],
+        whatsapp: json["whatsapp"],
+        facebook: json["facebook"],
+        instagram: json["instagram"],
+        latitude: json["latitude"],
+        longitude: json["latitude"],
+        schedule: json["schedule"],
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -71,11 +71,11 @@ class Sites {
         "facebook": facebook,
         "instagram": instagram,
         "schedule": schedule,
-        "city": city,
+        "city": cityId,
         "direction": direction,
         "email": email,
         "latitude": latitude,
         "longitude": longitude,
-        "typesSites": typesSites,
+        "typesSites": typesSites.toJson(),
       };
 }
