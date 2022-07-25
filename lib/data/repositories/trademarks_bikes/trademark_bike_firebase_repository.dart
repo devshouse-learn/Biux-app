@@ -38,7 +38,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
   }
 
   @override
-  Future sendDatesTrademarkBike(TrademarkBike trademarkBike) async {
+  Future createTrademarkBike(TrademarkBike trademarkBike) async {
     try {
       final response = await firestore
           .collection(collection)
