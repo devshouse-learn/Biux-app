@@ -36,14 +36,4 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
       return List.empty();
     }
   }
-
-  @override
-  Future createDatesTypesBike(TypeBike typeBike) async {
-    try {
-      final response = await firestore
-          .collection(collection)
-          .doc(typeBike.id.toString())
-          .set(typeBike.toJson());
-    } catch (e) {}
-  }
 }
