@@ -488,7 +488,7 @@ class _StolenScreenState extends State<StolenScreen> {
                             ),
                             onPressed: () async {
                               var stoleBikes = StoleBikes(
-                                bike: widget.bike,
+                                //bike: widget.bike,
                                // bikeId: widget.bike.id,
                                 description: widget.bike.description,
                                 direction: directionCrontroller.text,
