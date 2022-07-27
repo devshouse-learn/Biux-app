@@ -1267,7 +1267,7 @@ class _BikeScreenState extends State<BikeScreen> {
                           );
 
                           var finalId = await BikeFirebaseRepository()
-                              .sendDatesBike(bike);
+                              .createDatesBike(bike);
                           // Navigator.pop(context, bike);
                           BikeFirebaseRepository().uploadBike(
                             'user.id',

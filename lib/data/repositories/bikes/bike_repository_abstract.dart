@@ -13,6 +13,6 @@ abstract class BikeRepositoryAbstract {
     File photoSerial,
     File photoOwnershipCard,
   );
-  Future sendDatesBike(Bike bike);
+  Future createDatesBike(Bike bike);
   Future<Bike> updateDatesBike(Bike bike);
 }

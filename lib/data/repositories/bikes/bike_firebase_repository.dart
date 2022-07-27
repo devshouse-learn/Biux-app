@@ -9,7 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../../../config/strings.dart';
 
 class BikeFirebaseRepository extends BikeRepositoryAbstract {
-  static final collection = 'advertising';
+  static final collection = 'bikes';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   Future getBike() {
@@ -39,7 +39,7 @@ class BikeFirebaseRepository extends BikeRepositoryAbstract {
   }
 
   @override
-  Future sendDatesBike(Bike bike) async {
+  Future createDatesBike(Bike bike) async {
     try {
       await firestore.collection(collection).add(bike.toJson()).then(
       (DocumentReference doc) {

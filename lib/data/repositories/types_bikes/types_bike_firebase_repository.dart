@@ -6,7 +6,7 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
   static final collection = 'typesBikes';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
-  Future<List<TypeBike>> getListTradeMarks() async {
+  Future<List<TypeBike>> getListTypesBike() async {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs
@@ -22,9 +22,9 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
   }
 
   @override
-  Future<List<TypeBike>> getTypesBike() async {
+  Future<List<TypeBike>> getTypesBike(String id) async {
     try {
-      final result = await firestore.collection(collection).get();
+      final result = await firestore.collection(collection).where('id',isEqualTo: id).get();
       return result.docs
           .map(
             (e) => TypeBike.fromJsonMap(
@@ -35,15 +35,5 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
     } catch (e) {
       return List.empty();
     }
-  }
-
-  @override
-  Future sendDatesTypesBike(TypeBike typeBike) async {
-    try {
-      final response = await firestore
-          .collection(collection)
-          .doc(typeBike.id.toString())
-          .set(typeBike.toJson());
-    } catch (e) {}
   }
 }
