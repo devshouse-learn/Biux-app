@@ -8,7 +8,7 @@ class StoleBikes {
   String? dateCreate;
   String? datetimeStole;
   String? id;
-  Bike? bike;
+ // Bike? bike;
 
   StoleBikes({
     this.bikeId,
@@ -17,26 +17,19 @@ class StoleBikes {
     this.dateCreate,
     this.datetimeStole,
     this.id,
-    this.bike,
+   // this.bike,
   });
 
   factory StoleBikes.fromjson(Map json) {
-    var bicicletaVacia = StoleBikes();
-    if (json != null) {
-      StoleBikes roboBicicletas = StoleBikes(
+    return StoleBikes(
         bikeId: json["bikeId"],
         description: json["description"],
         direction: json["direction"],
         dateCreate: json["dateCreate"],
         datetimeStole: json["datetimeStole"],
         id: json["id"],
-        bike: Bike.fromjson(json["bike"]),
+       // bike: Bike.fromjson(json["bike"]),
       );
-   
-      return roboBicicletas;
-    } else {
-      return bicicletaVacia;
-    }
   }
 
   Map<String, dynamic> toJson() => {
@@ -46,5 +39,6 @@ class StoleBikes {
         "dateCreate": dateCreate,
         "datetimeStole": datetimeStole,
         "id": id,
+       // "bike": bike!.toJson(),
       };
 }

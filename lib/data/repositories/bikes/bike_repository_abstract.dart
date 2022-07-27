@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:biux/data/models/bike.dart';
 
 abstract class BikeRepositoryAbstract {
-  Future<Bike> getBikeRoad(int id);
+  Future<Bike> getBikeRoad(String id);
   Future getBike();
   Future uploadBike(
     String id,

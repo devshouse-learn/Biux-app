@@ -2,6 +2,8 @@ import 'package:biux/data/models/stole_bikes.dart';
 import 'package:biux/data/repositories/stoles_bikes/stole_bikes_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../config/strings.dart';
+
 class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
   static final collection = 'stoleBikes';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -12,7 +14,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
   }
 
   @override
-  Future<StoleBikes> getStoleBikes(int id) async {
+  Future<StoleBikes> getStoleBikes(String id) async {
     try {
       final response = await firestore
           .collection(collection)
@@ -27,21 +29,28 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
   }
 
   @override
-  Future sendDatesStoleBikes(StoleBikes stoleBikes) async {
+  Future createDatesStoleBikes(StoleBikes stoleBikes) async { 
     try {
-      final response = await firestore
-          .collection(collection)
-          .doc(stoleBikes.id.toString())
-          .set(stoleBikes.toJson());
+      final response =
+          await firestore.collection(collection).add(stoleBikes.toJson()).then(
+        (DocumentReference doc) {
+          String docId = doc.id;
+          firestore.collection(collection).doc(docId).update(
+            {
+              AppStrings.idText: docId,
+            },
+          );
+        },
+      );
     } catch (e) {}
   }
 
   @override
   Future updateDatesStoleBikes(StoleBikes stoleBikes) async {
     try {
-      final response = await firestore
+      await firestore
           .collection(collection)
-          .doc(stoleBikes.id.toString())
+          .doc(stoleBikes.id)
           .update(stoleBikes.toJson());
     } catch (e) {}
   }

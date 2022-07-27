@@ -35,7 +35,7 @@ class _BikeScreenState extends State<BikeScreen> {
     Future.delayed(
       Duration.zero,
       () async {
-        Bike bike = await BikeFirebaseRepository().getBikeRoad(1);
+        Bike bike = await BikeFirebaseRepository().getBikeRoad('1');
         listBike = await TrademarkBikeRepository().getTrademarksBike();
         await trademarkBike(listBike);
         setState(() {});
