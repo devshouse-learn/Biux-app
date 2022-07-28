@@ -718,8 +718,7 @@ class _EditStolenScreenState extends State<EditStolenScreen> {
                               _direction = directionController.text;
                               _serial = serialController.text;
                               var stoleBike = StoleBikes(
-                                bike: widget.bike,
-                               // bikeId: widget.bike.id,
+                                bikeId: widget.bike.id,
                                 description: _description,
                                 direction: _direction,
                                 // fechaCreacion: DateTime.now().toString(),

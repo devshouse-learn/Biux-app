@@ -40,9 +40,7 @@ class Bike {
   });
 
   factory Bike.fromjson(Map json) {
-    var bicicletaVacia = Bike();
-    if (json != null) {
-      Bike bicicleta = Bike(
+    return Bike(
         measurement: json["measurement"],
         storeBuy: json["storeBuy"],
         description: json["description"],
@@ -58,12 +56,8 @@ class Bike {
         serial: json["serial"],
         userId: json["userId"],
         trademarkBike: TrademarkBike.fromJsonMap(json["trademarkBike"]),
-        typeBike: TypeBike.fromJsonMap(json["tipoBicicleta"]),
+        typeBike: TypeBike.fromJsonMap(json["typeBike"]),
       );
-      return bicicleta;
-    } else {
-      return bicicletaVacia;
-    }
   }
 
   Map<String, dynamic> toJson() => {

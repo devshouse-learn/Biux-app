@@ -18,7 +18,7 @@ class BikeFirebaseRepository extends BikeRepositoryAbstract {
   }
 
   @override
-  Future<Bike> getBikeRoad(int id) async {
+  Future<Bike> getBikeRoad(String id) async {
     late Bike bike;
     try {
       final result = await firestore
@@ -50,7 +50,7 @@ class BikeFirebaseRepository extends BikeRepositoryAbstract {
           },
         );
       },
-    );;
+    );
     } catch (e) {}
   }
 
