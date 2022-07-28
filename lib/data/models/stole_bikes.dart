@@ -8,7 +8,6 @@ class StoleBikes {
   String? dateCreate;
   String? datetimeStole;
   String? id;
- // Bike? bike;
 
   StoleBikes({
     this.bikeId,
@@ -17,7 +16,6 @@ class StoleBikes {
     this.dateCreate,
     this.datetimeStole,
     this.id,
-   // this.bike,
   });
 
   factory StoleBikes.fromjson(Map json) {
@@ -28,7 +26,6 @@ class StoleBikes {
         dateCreate: json["dateCreate"],
         datetimeStole: json["datetimeStole"],
         id: json["id"],
-       // bike: Bike.fromjson(json["bike"]),
       );
   }
 
@@ -39,6 +36,5 @@ class StoleBikes {
         "dateCreate": dateCreate,
         "datetimeStole": datetimeStole,
         "id": id,
-       // "bike": bike!.toJson(),
       };
 }
