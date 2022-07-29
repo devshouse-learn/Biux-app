@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
-import 'package:biux/data/models/story_item.dart';
 import 'package:biux/data/repositories/stories/stories_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
@@ -11,11 +10,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:share/share.dart';
 
+import '../../../../../data/models/story.dart';
+
 class ButtonStory extends StatefulWidget {
   // Historia _historia;
-  final StoryItem storyItem;
+  final Story story;
 
-  ButtonStory({required this.storyItem});
+  ButtonStory({required this.story});
 
   @override
   _ButtonStoryState createState() => _ButtonStoryState();
@@ -37,14 +38,14 @@ class _ButtonStoryState extends State<ButtonStory> {
   void initState() {
     setState(
       () {
-        if (widget.storyItem.story!.description!.length > 20) {
-          firstHalf = widget.storyItem.story!.description!.substring(0, 50);
-          secondHalf = widget.storyItem.story!.description!.substring(
+        if (widget.story.description!.length > 20) {
+          firstHalf = widget.story.description!.substring(0, 50);
+          secondHalf = widget.story.description!.substring(
             50,
-            widget.storyItem.story!.description!.length,
+            widget.story.description!.length,
           );
         } else {
-          firstHalf = widget.storyItem.story!.description!;
+          firstHalf = widget.story.description!;
           secondHalf = "";
         }
       },
@@ -78,7 +79,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                       children: <Widget>[
                         Container(
                           child: Text(
-                            AppStrings.storyItems(names: widget.storyItem.story!.user!.names!),
+                            AppStrings.storyItems(names: 'aqui va el nombre de usuario'),
                             style: Styles.advertisingTitle,
                           ),
                         ),
@@ -98,7 +99,7 @@ class _ButtonStoryState extends State<ButtonStory> {
 
                               // imgFile.writeAsBytesSync(response.bodyBytes);
                               var response2 = await get(
-                                Uri.parse(widget.storyItem.fileUrl2!),
+                                Uri.parse(widget.story.fileUrl2!),
                               );
 
                               final documentDirectory2 =
@@ -117,7 +118,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                                 [
                                   File(AppStrings.file(png: documentDirectory2)).path,
                                 ],
-                                text: AppStrings.shareStory(name: widget.storyItem.story!.user!.names!, descripcion: widget.storyItem.story!.description!)
+                                text: AppStrings.shareStory(name: 'aqui va el nombre de usuario', descripcion: widget.story.description!)
                               );
                             }
                           },
@@ -137,7 +138,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                         Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage(widget.storyItem.fileUrl1!),
+                              image: NetworkImage(widget.story.fileUrl1!),
                               fit: BoxFit.fitHeight,
                             ),
                             // border:
@@ -148,7 +149,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                         Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage(widget.storyItem.fileUrl2!),
+                              image: NetworkImage(widget.story.fileUrl2!),
                               fit: BoxFit.fitHeight,
                             ),
                             // border:
@@ -159,7 +160,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                         Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage(widget.storyItem.fileUrl3!),
+                              image: NetworkImage(widget.story.fileUrl3!),
                               fit: BoxFit.fitHeight,
                             ),
                             // border:
@@ -171,8 +172,8 @@ class _ButtonStoryState extends State<ButtonStory> {
                     ),
                     onTap: () async {
                       response = await StoriesRepository().reactionStory(
-                        widget.storyItem.story!.user!.id!,
-                        widget.storyItem.story!.id!,
+                        widget.story.userId!,
+                        widget.story.id!,
                       );
                       // .whenComplete(
                       //     () => {setState(() {})});
@@ -184,7 +185,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ReadMoreText(
-                      "${widget.storyItem.story!.user!.userName!.toUpperCase()} :   ${widget.storyItem.story!.description}",
+                      "aqui va el nombre de usuario :   ${widget.story.description}",
                       trimLines: 2,
                       colorClickableText: AppColors.gray,
                       trimMode: TrimMode.Line,
@@ -255,7 +256,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                               image: DecorationImage(
                                 fit: BoxFit.cover,
                                 image: NetworkImage(
-                                  widget.storyItem.fileUrl1!,
+                                  widget.story.fileUrl1!,
                                 ),
                               ),
                               borderRadius: BorderRadius.all(

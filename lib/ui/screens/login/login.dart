@@ -9,6 +9,7 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/models/response.dart';
+import 'package:biux/data/models/story.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:biux/data/shared_preferences/localstorage.dart';
@@ -32,6 +33,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import '../../../data/repositories/stories/stories_firebase_repository.dart';
 
 String gifl = Images.kGifBike;
 String logo = Images.kBiuxLogoBackgroundWhite;
@@ -119,6 +122,10 @@ class _LoginPageState extends State<LoginPage> {
 
   var _darkTheme = true;
 
+  get() async {
+    final example = await StoriesFirebaseRepository().deleteStory('2');
+  }
+
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -128,6 +135,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    get();
 
     cityData = City(
       name: "",

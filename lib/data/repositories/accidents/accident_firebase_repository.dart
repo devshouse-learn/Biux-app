@@ -36,7 +36,7 @@ class AccidentFirebaseRepository extends AccidentRepositoryAbstract {
   }
 
   @override
-  Future sendDatesAccident(
+  Future createDatesAccident(
       String id, SituationAccident situationAccident) async {
     try {
       await firestore.collection(collection).doc("$id").update({
@@ -52,7 +52,7 @@ class AccidentFirebaseRepository extends AccidentRepositoryAbstract {
   }
 
   @override
-  Future sendDatesEps(String eps) async {
+  Future createDatesEps(String eps) async {
     try {
       await firestore.collection(collection).add({'eps': eps});
     } catch (e) {}

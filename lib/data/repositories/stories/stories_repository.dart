@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:biux/data/models/story.dart';
-import 'package:biux/data/models/story_item.dart';
 import 'package:biux/data/shared_preferences/localstorage.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -22,21 +21,21 @@ class StoriesRepository {
     return stories;
   }
 
-  Future<List<StoryItem>> getStoryItem() async {
+  Future<List<Story>> getStoryItem() async {
     var url = 'https://biux-prod.ibacrea.com/api/v1/historias-item?export=true';
     var response = await http.get(Uri.parse(url));
     Map responseData = json.decode(response.body);
     List storyItemJson = responseData["data"];
-    List<StoryItem> storiesItem = storyItemJson
-        .map((storyItemJson) => StoryItem.fromJsonMap(storyItemJson))
+    List<Story> storiesItem = storyItemJson
+        .map((storyItemJson) => Story.fromJson(storyItemJson))
         .toList();
 
     return storiesItem;
   }
 
-  Future<StoryItem?> createStoryItem(StoryItem storyItem) async {
+  Future<Story?> createStoryItem(Story storyItem) async {
     try {
-      var storyVoid = StoryItem();
+      var storyVoid = Story();
       var uriResponse = await http.post(
           Uri.parse("https://biux-prod.ibacrea.com/api/v1/historias-item"),
           body: jsonEncode(storyItem.toJson()),

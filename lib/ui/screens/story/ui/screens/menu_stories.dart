@@ -1,7 +1,7 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
-import 'package:biux/data/models/story_item.dart';
+import 'package:biux/data/models/story.dart';
 import 'package:biux/data/repositories/stories/stories_repository.dart';
 import 'package:biux/ui/screens/story/ui/screens/create_story.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,7 @@ class MenuStories extends StatefulWidget {
 }
 
 class _MenuStoriesState extends State<MenuStories> {
-  late List<StoryItem> listStories;
+  late List<Story> listStories;
   ScrollController _scrollController = ScrollController();
   // int offset = 1;
   void reassemble() {
@@ -108,10 +108,10 @@ class _MenuStoriesState extends State<MenuStories> {
   }
 
   _listadoHistorias(
-    List<StoryItem> story,
+    List<Story> story,
   ) {
     List<Widget> listStories = [];
-    for (StoryItem story in story) {
+    for (Story story in story) {
       listStories.add(
         Container(
           margin: EdgeInsets.all(10),
@@ -124,7 +124,7 @@ class _MenuStoriesState extends State<MenuStories> {
             ), // set rounded corner radius
           ),
           child: ButtonStory(
-            storyItem: story,
+            story: story,
           ),
         ),
       );
