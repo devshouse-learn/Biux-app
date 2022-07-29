@@ -68,9 +68,9 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     try {
       final response = await firestore
           .collection(collection)
-          .doc('$storyId')
+          .doc(storyId)
           .collection(collectionReaction)
-          .doc('$userId')
+          .doc(userId)
           .set({
         'userId': userId,
         'storyId': storyId,
