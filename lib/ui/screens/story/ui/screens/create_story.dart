@@ -266,7 +266,7 @@ class _CreateStoryState extends State<CreateStory> {
                       _description = descriptionController.text;
                       createStory(
                         Story(
-                          userId: user.id,
+                          userId: user.id!,
                           description: _description,
                           //    imageUrl: _image.path,
                         ),

@@ -38,14 +38,14 @@ class _ButtonStoryState extends State<ButtonStory> {
   void initState() {
     setState(
       () {
-        if (widget.story.description!.length > 20) {
-          firstHalf = widget.story.description!.substring(0, 50);
-          secondHalf = widget.story.description!.substring(
+        if (widget.story.description.length > 20) {
+          firstHalf = widget.story.description.substring(0, 50);
+          secondHalf = widget.story.description.substring(
             50,
-            widget.story.description!.length,
+            widget.story.description.length,
           );
         } else {
-          firstHalf = widget.story.description!;
+          firstHalf = widget.story.description;
           secondHalf = "";
         }
       },
@@ -91,15 +91,15 @@ class _ButtonStoryState extends State<ButtonStory> {
                                 context.findRenderObject();
                             if (Platform.isAndroid) {
                               // var response = await get(
-                              //     Uri.parse(widget.historiaItem.fileUrl1!));
+                              //     Uri.parse(widget.historiaItem.fileUrl1));
                               // final documentDirectory =
-                              //     (await getExternalStorageDirectory())!.path;
+                              //     (await getExternalStorageDirectory()).path;
                               // File imgFile =
                               //      File('$documentDirectory/flutter.png');
 
                               // imgFile.writeAsBytesSync(response.bodyBytes);
                               var response2 = await get(
-                                Uri.parse(widget.story.fileUrl2!),
+                                Uri.parse(widget.story.fileUrl2),
                               );
 
                               final documentDirectory2 =
@@ -108,9 +108,9 @@ class _ButtonStoryState extends State<ButtonStory> {
                                   File(AppStrings.file(png: documentDirectory2));
                               imgFile2.writeAsBytesSync(response2.bodyBytes);
                               // var response3 = await get(
-                              //     Uri.parse(widget.historiaItem.fileUrl3!));
+                              //     Uri.parse(widget.historiaItem.fileUrl3));
                               // final documentDirectory3 =
-                              //     (await getExternalStorageDirectory())!.path;
+                              //     (await getExternalStorageDirectory()).path;
                               // File imgFile3 =
                               //      File('$documentDirectory3/flutter.png');
                               // imgFile3.writeAsBytesSync(response3.bodyBytes);
@@ -118,7 +118,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                                 [
                                   File(AppStrings.file(png: documentDirectory2)).path,
                                 ],
-                                text: AppStrings.shareStory(name: 'aqui va el nombre de usuario', descripcion: widget.story.description!)
+                                text: AppStrings.shareStory(name: 'aqui va el nombre de usuario', descripcion: widget.story.description)
                               );
                             }
                           },
@@ -138,7 +138,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                         Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage(widget.story.fileUrl1!),
+                              image: NetworkImage(widget.story.fileUrl1),
                               fit: BoxFit.fitHeight,
                             ),
                             // border:
@@ -149,7 +149,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                         Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage(widget.story.fileUrl2!),
+                              image: NetworkImage(widget.story.fileUrl2),
                               fit: BoxFit.fitHeight,
                             ),
                             // border:
@@ -160,7 +160,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                         Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: NetworkImage(widget.story.fileUrl3!),
+                              image: NetworkImage(widget.story.fileUrl3),
                               fit: BoxFit.fitHeight,
                             ),
                             // border:
@@ -172,8 +172,8 @@ class _ButtonStoryState extends State<ButtonStory> {
                     ),
                     onTap: () async {
                       response = await StoriesRepository().reactionStory(
-                        widget.story.userId!,
-                        widget.story.id!,
+                        widget.story.userId,
+                        widget.story.id,
                       );
                       // .whenComplete(
                       //     () => {setState(() {})});
@@ -256,7 +256,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                               image: DecorationImage(
                                 fit: BoxFit.cover,
                                 image: NetworkImage(
-                                  widget.story.fileUrl1!,
+                                  widget.story.fileUrl1,
                                 ),
                               ),
                               borderRadius: BorderRadius.all(
