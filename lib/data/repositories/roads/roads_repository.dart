@@ -27,7 +27,7 @@ class RoadsRepository {
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
     List<Road> roads =
-        roadsJson.map((roadJson) => Road.fromJson(roadJson)).toList();
+        roadsJson.map((roadJson) => Road.fromJson(json: roadJson)).toList();
 
     return roads;
   }
@@ -65,7 +65,7 @@ class RoadsRepository {
     );
 
     if (response.statusCode == 200) {
-      return Road.fromJson(json.decode(response.body));
+      return Road.fromJson(json: json.decode(response.body));
     } else {
       throw Exception('Fallo en actualizar grupo');
     }
@@ -87,7 +87,7 @@ class RoadsRepository {
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
     List<CompetitorRoad> listCompetitorRoad =
-        roadsJson.map((roadJson) => CompetitorRoad.fromJson(roadJson)).toList();
+        roadsJson.map((roadJson) => CompetitorRoad.fromJson(json: roadJson)).toList();
 
     return listCompetitorRoad;
   }
@@ -102,7 +102,7 @@ class RoadsRepository {
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
     List<Road> roadsGroup =
-        roadsJson.map((roadJson) => Road.fromJson(roadJson)).toList();
+        roadsJson.map((roadJson) => Road.fromJson(json: roadJson)).toList();
 
     return roadsGroup;
   }
@@ -167,7 +167,7 @@ class RoadsRepository {
 
     List participant = responseData["data"];
 
-    return CompetitorRoad.fromJson(participant.first);
+    return CompetitorRoad.fromJson(json: participant.first);
   }
 
   Future<CompetitorRoad> deleteCompetitorRoad(
@@ -180,12 +180,12 @@ class RoadsRepository {
 
     var body = jsonEncode(competitorRoad.toJson());
 
-    var url = '$URLParticipant/${competitorRoad.id}';
+    var url = '$URLParticipant/${competitorRoad.userId}';
     final http.Response response = await http.delete(
       Uri.parse(url),
       headers: headers,
     );
 
-    return CompetitorRoad.fromJson(json.decode(response.body));
+    return CompetitorRoad.fromJson(json: json.decode(response.body));
   }
 }

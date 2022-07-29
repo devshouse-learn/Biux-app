@@ -1,6 +1,7 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_slider/group_slider.dart';
 import 'package:biux/ui/screens/roads/ui/screens/detail_road.dart';
@@ -12,8 +13,9 @@ import '../../../../../../config/themes/theme.dart';
 
 class ButtonRoadsGroup extends StatefulWidget {
   final Road road;
+  final Group group;
   final Function? byEnd;
-  ButtonRoadsGroup(this.road, {this.byEnd});
+  ButtonRoadsGroup(this.road, this.group, {this.byEnd});
 
   @override
   _ButtonRoadsGroupState createState() => _ButtonRoadsGroupState();
@@ -30,7 +32,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
 
   todayDate() {
     DateFormat dateFormat = DateFormat(AppStrings.dateFormat);
-    DateTime dateTime = dateFormat.parse(widget.road.dateTime!);
+    DateTime dateTime = dateFormat.parse(widget.road.dateTime);
     var formatter = new DateFormat(AppStrings.dateFormat2);
     dates = DateFormat(AppStrings.dateFormat3).format(dateTime);
     String formattedDate = formatter.format(dateTime);
@@ -121,7 +123,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                         child: Container(
                           padding: EdgeInsets.only(right: 13.0),
                           child: Text(
-                            widget.road.pointmeeting!,
+                            widget.road.pointmeeting,
                             overflow: TextOverflow.fade,
                             style: Styles.flexibleBold,
                           ),
@@ -148,7 +150,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                           child: SimpleStarRating(
                             allowHalfRating: true,
                             starCount: 5,
-                            rating: widget.road.routeLevel!.toDouble(),
+                            rating: widget.road.routeLevel.toDouble(),
                             size: 10,
                             onRated: (rate) {},
                             spacing: 2,
@@ -230,9 +232,9 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage(
-                            widget.road.group!.logo! == null
+                            widget.group.logo! == null
                                 ? AppStrings.urlBiuxApp
-                                : widget.road.group!.logo!,
+                                : widget.group.logo!,
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -244,7 +246,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) => GroupSlider(
-                            widget.road.group,
+                            widget.group,
                             member: null,
                           ),
                         ),
@@ -278,6 +280,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                         builder: (context) => DetailRoad(
                           widget.road,
                           dates,
+                          widget.group,
                         ),
                       ),
                     );
@@ -299,7 +302,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                 child: Container(
                   margin: EdgeInsets.only(top: 140, left: 8),
                   child: Text(
-                    widget.road.group!.name!.toUpperCase(),
+                    widget.group.name!.toUpperCase(),
                     overflow: TextOverflow.fade,
                     style: Styles.gestureDetectorGroupName,
                   ),
@@ -310,7 +313,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                   context,
                   new MaterialPageRoute(
                     builder: (BuildContext context) => GroupSlider(
-                      widget.road.group,
+                      widget.group,
                       member: null,
                     ),
                   ),
@@ -346,7 +349,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
             child: ListView(
               children: [
                 ListParticipantsRoads(
-                  widget.road.id!,
+                  widget.road.id,
                 ),
               ],
             ),

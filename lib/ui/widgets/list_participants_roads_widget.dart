@@ -1,4 +1,6 @@
 import 'package:biux/data/models/competitor_road.dart';
+import 'package:biux/data/models/group.dart';
+import 'package:biux/data/models/user.dart';
 import 'package:biux/ui/screens/roads/ui/screens/button_competitor.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/data/repositories/roads/roads_repository.dart';
@@ -10,7 +12,6 @@ class ListParticipantsRoads extends StatefulWidget {
 }
 
 class _ListParticipantsRoadsState extends State<ListParticipantsRoads> {
-
   late List<CompetitorRoad> listRoads;
   ScrollController _scrollController = ScrollController();
   int offset = 1;
@@ -76,7 +77,11 @@ class _ListParticipantsRoadsState extends State<ListParticipantsRoads> {
               Radius.circular(30.0),
             ), // set rounded corner radius
           ),
-          child: ButtonCompetitorRoad(competitorRoad),
+          child: ButtonCompetitorRoad(
+            competitorRoad,
+            // posiblemente se tenga que llamar al usuario del participante de la rodada
+            BiuxUser(),
+          ),
         ),
       );
     }

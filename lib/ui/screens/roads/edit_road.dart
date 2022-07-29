@@ -73,12 +73,12 @@ class _EditRoadState extends State<EditRoad> {
     getUserProfile();
     focusToggle = [focusNodeButton1, focusNodeButton2, focusNodeButton3];
     dateController.text =
-        widget.road.dateTime!.replaceAll(AppStrings.amText, AppStrings.idInitialized).replaceAll(AppStrings.pmText, AppStrings.idInitialized);
-    pathnameController.text = widget.road.name!;
-    meetingController.text = widget.road.pointmeeting!;
-    rating = widget.road.routeLevel!.floorToDouble();
+        widget.road.dateTime.replaceAll(AppStrings.amText, AppStrings.idInitialized).replaceAll(AppStrings.pmText, AppStrings.idInitialized);
+    pathnameController.text = widget.road.name;
+    meetingController.text = widget.road.pointmeeting;
+    rating = widget.road.routeLevel.floorToDouble();
     distanceController.text = widget.road.distance.toString();
-    descriptionController.text = widget.road.description!.toString();
+    descriptionController.text = widget.road.description.toString();
   }
 
   getUserProfile() async {
@@ -173,7 +173,7 @@ class _EditRoadState extends State<EditRoad> {
                               image: NetworkImage(
                                 widget.road.image == null
                                     ? AppStrings.urlBiuxApp
-                                    : widget.road.image!,
+                                    : widget.road.image,
                               ),
                               fit: BoxFit.cover,
                             ),
@@ -530,16 +530,14 @@ class _EditRoadState extends State<EditRoad> {
                                 type: true,
                                 distance: _distance,
                                 groupId: widget.road.groupId,
-                                group: widget.road.group,
                                 numberParticipants:
                                     widget.road.numberParticipants,
-                                route: null,
                               );
                               response = await RoadsRepository().updateRoad(
                                 road,
                               );
                               await RoadsRepository().uploadProfileCoverRoad(
-                                widget.road.id!,
+                                widget.road.id,
                                 _image,
                               );
                               _showDialog();
@@ -656,7 +654,7 @@ class _EditRoadState extends State<EditRoad> {
                                                 image: NetworkImage(
                                                   widget.road.image == null
                                                       ? AppStrings.urlBiuxApp
-                                                      : widget.road.image!,
+                                                      : widget.road.image,
                                                 ),
                                               ),
                                               borderRadius: BorderRadius.all(

@@ -112,7 +112,11 @@ class _RoadsGroupState extends State<RoadsGroup> {
               Radius.circular(30.0),
             ), // set rounded corner radius
           ),
-          child: ButtonRoadsGroup(road),
+          child: ButtonRoadsGroup(
+            road,
+            // posiblemente se tenga que llamar al grupo de la rodada
+            Group(),
+          ),
         ),
       );
     }

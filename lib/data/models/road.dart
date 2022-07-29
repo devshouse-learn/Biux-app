@@ -1,72 +1,62 @@
-
-
-import 'package:biux/data/models/group.dart';
-
 class Road {
-  String? id;
-  int? numberParticipants;
-  String? name;
-  String? dateTime;
-  String? pointmeeting;
-  String? route;
-  List? modality = [];
-  String? image;
-  String? description;
-  int? routeLevel;
-  int? numberLikes;
-  Group? group;
-  double? distance;
-  String? groupId;
-  String? cityId;
-  bool? type;
-  bool? status;
+  String id;
+  int numberParticipants;
+  String name;
+  String dateTime;
+  String pointmeeting;
+  String route;
+  List modality;
+  String image;
+  String description;
+  int routeLevel;
+  int numberLikes;
+  double distance;
+  String groupId;
+  String cityId;
+  bool type;
+  bool status;
 
   Road({
-    this.id,
-    this.numberParticipants,
-    //  this.comentarios,
-    this.name,
-    this.dateTime,
-    this.pointmeeting,
-    this.route,
-    this.modality,
-    this.routeLevel,
-    this.image,
-    this.description,
-    //  this.numeroLikes,
-    this.distance,
-    this.groupId,
-    this.cityId,
-    this.group,
-    this.type,
-    this.status,
+    required this.id,
+    this.numberParticipants = 0,
+    this.name = '',
+    this.dateTime = '',
+    this.pointmeeting = '',
+    this.route = '',
+    this.modality = const [],
+    this.routeLevel = 0,
+    this.image = '',
+    this.description = '',
+    this.distance = 0.0,
+    this.groupId = '',
+    this.cityId = '',
+    this.type = false,
+    this.status = false,
+    this.numberLikes = 0,
   });
 
-  Road.fromJson(Map json) {
-    this.id = json["id"];
-    this.numberParticipants = json["numberParticipants"];
-    // this.comentarios = json["comentarios"];
-    this.name = json["name"];
-    this.dateTime = json["dateTime"];
-    this.pointmeeting = json["pointmeeting"];
-    this.route = json["route"] ?? '';
-    this.modality = json["modality"];
-    this.image = json["image"];
-    this.description = json["description"];
-    this.numberLikes = json["numberLikes"];
-    this.routeLevel = json["routeLevel"];
-    this.distance = json["distance"];
-    this.groupId = json["groupId"];
-    this.cityId = json["cityId"];
-    this.group = Group.fromJson(json["group"]);
-    this.type = json["type"];
-    this.status = json["status"];
-  }
+  factory Road.fromJson({required Map json}) => Road(
+        id: json["id"],
+        numberParticipants: json["numberParticipants"],
+        cityId: json["cityId"],
+        dateTime: json["dateTime"],
+        description: json["description"],
+        distance: json["distance"],
+        name: json["name"],
+        groupId: json["groupId"],
+        image: json["image"],
+        modality: json["modality"],
+        numberLikes: json["numberLikes"],
+        pointmeeting: json["pointmeeting"],
+        route: json["route"],
+        routeLevel: json["routeLevel"],
+        status: json["status"],
+        type: json["type"],
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "numberParticipants": numberParticipants,
-        //  "comentarios": comentarios,
         "name": name,
         "dateTime": dateTime,
         "pointmeeting": pointmeeting,

@@ -2,6 +2,7 @@ import 'package:autocomplete_textfield_ns/autocomplete_textfield_ns.dart';
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/state.dart';
@@ -316,6 +317,8 @@ class _MenuRoadsState extends State<MenuRoads> {
           child: ButtonRoad(
             road,
             _user,
+            // posiblemente se tengo que llamar al grupo de la rodada
+            Group()
           ),
         ),
       );

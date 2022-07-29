@@ -541,10 +541,11 @@ class _CreateRoadState extends State<CreateRoad> {
                                   descriptionController.text.length >= 20) {
                                 _createRoad(
                                   Road(
+                                    id: '',
                                     name: pathnameController.text,
                                     dateTime: dateController.text,
                                     groupId: groupId,
-                                    cityId: _group.city!.id,
+                                    cityId: _group.city!.id!,
                                     routeLevel: rating.toInt(),
                                     modality: [
                                       AppStrings.urbanoText.toUpperCase(),

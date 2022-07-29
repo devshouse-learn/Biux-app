@@ -1,15 +1,16 @@
-import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/data/models/competitor_road.dart';
+import 'package:biux/data/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ButtonCompetitorRoad extends StatelessWidget {
   final CompetitorRoad _road;
   final Function? byEnd;
+  final BiuxUser user;
 
-  ButtonCompetitorRoad(this._road, {this.byEnd});
+  ButtonCompetitorRoad(this._road, this.user, {this.byEnd});
   final ThemeData theme = darkTheme;
 
   @override
@@ -39,7 +40,7 @@ class ButtonCompetitorRoad extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          _road.user!.names!,
+                          user.names!,
                           overflow: TextOverflow.ellipsis,
                           style: Styles.containerNames,
                         ),
@@ -52,7 +53,7 @@ class ButtonCompetitorRoad extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          _road.user!.surnames!,
+                          user.surnames!,
                           style: Styles.containerNames,
                         ),
                       ),
@@ -73,9 +74,9 @@ class ButtonCompetitorRoad extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: new NetworkImage(
-                  _road.user!.photo == null
+                  user.photo == null
                       ? AppStrings.urlBiuxApp
-                      : _road.user!.photo!,
+                      : user.photo!,
                 ),
                 fit: BoxFit.cover,
               ),

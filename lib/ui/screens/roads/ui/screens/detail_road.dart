@@ -4,6 +4,7 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
+import 'package:biux/data/models/group.dart';
 import 'package:biux/data/shared_preferences/localstorage.dart';
 import 'package:biux/data/models/competitor_road.dart';
 import 'package:biux/data/models/user.dart';
@@ -26,9 +27,10 @@ import 'package:simple_star_rating/simple_star_rating.dart';
 
 class DetailRoad extends StatefulWidget {
   final Road road;
+  final Group group;
   var dates;
   final VoidCallback? onReassemble;
-  DetailRoad(this.road, this.dates, {this.onReassemble});
+  DetailRoad(this.road, this.dates, this.group, {this.onReassemble});
 
   @override
   _DetailRoadState createState() => _DetailRoadState();
@@ -78,11 +80,11 @@ class _DetailRoadState extends State<DetailRoad> {
         });
 
         final competitor = await RoadsRepository().getParticipantRoad(
-          widget.road.id!,
+          widget.road.id,
           userId!,
         );
 
-        if (competitor.id != null) {
+        if (competitor.userId != null) {
           setState(() {
             competitorRoad = competitor;
           });
@@ -106,9 +108,7 @@ class _DetailRoadState extends State<DetailRoad> {
     Future.delayed(
       Duration(seconds: 1),
       () {
-        validated == 1
-            ? showDialog4(context, widget.road.group!.name!)
-            : Container();
+        validated == 1 ? showDialog4(context, widget.group.name!) : Container();
       },
     );
     return Scaffold(
@@ -121,7 +121,7 @@ class _DetailRoadState extends State<DetailRoad> {
           },
         ),
         actions: [
-          int.parse(userId!) == widget.road.group!.adminId
+          int.parse(userId!) == widget.group.adminId
               ? Row(
                   children: [
                     IconButton(
@@ -171,13 +171,13 @@ class _DetailRoadState extends State<DetailRoad> {
                                         Analitycs.deleteRoad(
                                           user!.names!,
                                           user!.id!,
-                                          widget.road.name!,
-                                          widget.road.distance!,
-                                          widget.road.routeLevel!,
-                                          widget.road.group!.name!,
-                                          widget.road.group!.city!.name!,
-                                          widget.road.pointmeeting!,
-                                          widget.road.numberParticipants!,
+                                          widget.road.name,
+                                          widget.road.distance,
+                                          widget.road.routeLevel,
+                                          widget.group.name!,
+                                          widget.group.city!.name!,
+                                          widget.road.pointmeeting,
+                                          widget.road.numberParticipants,
                                         );
                                         Navigator.of(context)
                                             .pushAndRemoveUntil(
@@ -192,7 +192,7 @@ class _DetailRoadState extends State<DetailRoad> {
                                             );
                                         await RoadsRepository().deleteRoad(
                                           widget.road,
-                                          widget.road.group!,
+                                          widget.group,
                                         );
                                       },
                                       child: Text(AppStrings.deletedText),
@@ -214,21 +214,21 @@ class _DetailRoadState extends State<DetailRoad> {
               Analitycs.shareRoad(
                 user!.names!,
                 user!.id!,
-                widget.road.name!,
-                widget.road.distance!,
-                widget.road.routeLevel!,
-                widget.road.group!.name!,
-                widget.road.group!.city!.name!,
-                widget.road.pointmeeting!,
-                widget.road.numberParticipants!,
+                widget.road.name,
+                widget.road.distance,
+                widget.road.routeLevel,
+                widget.group.name!,
+                widget.group.city!.name!,
+                widget.road.pointmeeting,
+                widget.road.numberParticipants,
               );
               final RenderObject? box = context.findRenderObject();
               if (Platform.isAndroid) {
                 var response = await get(
                   Uri.parse(
                     widget.road.image == null
-                        ? widget.road.group!.logo!
-                        : widget.road.image!,
+                        ? widget.group.logo!
+                        : widget.road.image,
                   ),
                 );
                 final documentDirectory =
@@ -237,15 +237,17 @@ class _DetailRoadState extends State<DetailRoad> {
                     new File(AppStrings.file(png: documentDirectory));
                 imgFile.writeAsBytesSync(response.bodyBytes);
                 await Share.shareFiles(
-                    [File(AppStrings.file(png: documentDirectory)).path],
-                    text: AppStrings.messageFile(
-                        description: widget.road.description!,
-                        date: widget.dates!,
-                        roadName: widget.road.name!,
-                        distance: widget.road.distance!.toString(),
-                        groupName: widget.road.group!.name!,
-                        cellphone: widget.road.group!.admin!.cellphone!,
-                        pointmeeting: widget.road.pointmeeting!));
+                  [File(AppStrings.file(png: documentDirectory)).path],
+                  text: AppStrings.messageFile(
+                    description: widget.road.description,
+                    date: widget.dates!,
+                    roadName: widget.road.name,
+                    distance: widget.road.distance.toString(),
+                    groupName: widget.group.name!,
+                    cellphone: widget.group.admin!.cellphone!,
+                    pointmeeting: widget.road.pointmeeting,
+                  ),
+                );
               }
             },
           ),
@@ -255,9 +257,9 @@ class _DetailRoadState extends State<DetailRoad> {
             Expanded(
               child: Container(
                 child: Text(
-                  widget.road.group!.name == null
+                  widget.group.name == null
                       ? AppStrings.notFound
-                      : widget.road.group!.name!.toUpperCase(),
+                      : widget.group.name!.toUpperCase(),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -280,8 +282,8 @@ class _DetailRoadState extends State<DetailRoad> {
                         image: DecorationImage(
                           image: NetworkImage(
                             widget.road.image == null
-                                ? widget.road.group!.logo!
-                                : widget.road.image!,
+                                ? widget.group.logo!
+                                : widget.road.image,
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -345,7 +347,7 @@ class _DetailRoadState extends State<DetailRoad> {
                   Flexible(
                     child: Container(
                       child: Text(
-                        widget.road.name == null ? "" : widget.road.name!,
+                        widget.road.name == null ? "" : widget.road.name,
                         overflow: TextOverflow.fade,
                         style: Styles.textStyle,
                       ),
@@ -370,7 +372,7 @@ class _DetailRoadState extends State<DetailRoad> {
                   Expanded(
                     child: Container(
                       child: Text(
-                        widget.road.group!.name!,
+                        widget.group.name!,
                         overflow: TextOverflow.fade,
                       ),
                     ),
@@ -417,7 +419,7 @@ class _DetailRoadState extends State<DetailRoad> {
                     child: Container(
                       padding: EdgeInsets.only(left: 5, right: 8),
                       child: Text(
-                        widget.road.pointmeeting!,
+                        widget.road.pointmeeting,
                         overflow: TextOverflow.fade,
                       ),
                     ),
@@ -441,7 +443,7 @@ class _DetailRoadState extends State<DetailRoad> {
                       child: SimpleStarRating(
                         allowHalfRating: true,
                         starCount: 5,
-                        rating: widget.road.routeLevel!.toDouble(),
+                        rating: widget.road.routeLevel.toDouble(),
                         size: 15,
                         onRated: (rate) {},
                         spacing: 2,
@@ -502,7 +504,7 @@ class _DetailRoadState extends State<DetailRoad> {
               right: 20,
             ),
             child: Text(
-              widget.road.description!,
+              widget.road.description,
               style: Styles.roadDescriptionText,
             ),
           ),
@@ -690,7 +692,7 @@ class _DetailRoadState extends State<DetailRoad> {
                                           response = await RoadsRepository()
                                               .joinMeRoad(
                                             userId!,
-                                            widget.road.id!,
+                                            widget.road.id,
                                           );
                                           if (response ==
                                               AppStrings.validateGrupo) {
@@ -797,8 +799,7 @@ class _DetailRoadState extends State<DetailRoad> {
                                                                         .joinGroups(
                                                                       userId!,
                                                                       widget
-                                                                          .road
-                                                                          .group!
+                                                                          .group
                                                                           .id!,
                                                                     );
                                                                     setState(
@@ -844,7 +845,7 @@ class _DetailRoadState extends State<DetailRoad> {
               style: Styles.alertDialogTitle,
             ),
           ),
-          joinMe == 1 ? ListParticipantsRoads(widget.road.id!) : Container(),
+          joinMe == 1 ? ListParticipantsRoads(widget.road.id) : Container(),
         ],
       ),
     );
@@ -875,7 +876,7 @@ class _DetailRoadState extends State<DetailRoad> {
             child: ListView(
               children: [
                 ListParticipantsRoads(
-                  widget.road.id!,
+                  widget.road.id,
                 ),
               ],
             ),
@@ -958,7 +959,9 @@ class _DetailScreen6State extends State<DetailScreen6> {
             child: Container(
               child: PhotoView(
                 imageProvider: NetworkImage(
-                  widget.road.image ?? AppStrings.urlBiuxApp,
+                  widget.road.image == ''
+                      ? AppStrings.urlBiuxApp
+                      : widget.road.image,
                 ),
                 minScale: PhotoViewComputedScale.contained * 1.0,
                 maxScale: PhotoViewComputedScale.covered * 10,
