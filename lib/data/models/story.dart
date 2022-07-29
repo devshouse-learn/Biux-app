@@ -18,12 +18,12 @@ class Story {
   });
 
   factory Story.fromJson(Map json) => Story(
-        id: json["id"] ?? '',
-        fileUrl1: json["fileUrl1"] ?? '',
-        fileUrl2: json["fileUrl2"] ?? '',
-        fileUrl3: json["fileUrl3"] ?? '',
-        description: json["description"] ?? '',
-        userId: json["userId"] ?? '',
+        id: json["id"],
+        fileUrl1: json["fileUrl1"],
+        fileUrl2: json["fileUrl2"],
+        fileUrl3: json["fileUrl3"],
+        description: json["description"],
+        userId: json["userId"],
       );
 
   Map<String, dynamic> toJson() => {

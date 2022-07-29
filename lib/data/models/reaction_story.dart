@@ -11,8 +11,8 @@ class ReactionStory {
   });
 
  factory ReactionStory.fromJson(Map json) => ReactionStory(
-    id: json["id"] ?? '',
-    userId: json["userId"] ?? '',
+    id: json["id"],
+    userId: json["userId"],
   );
 
   Map<String, dynamic> toJson() => {
