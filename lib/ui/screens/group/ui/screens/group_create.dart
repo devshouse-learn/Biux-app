@@ -561,18 +561,17 @@ class _GroupScreenState extends State<GroupScreen> {
                                     );
                                     createGroup(
                                       Group(
+                                        id: '',
                                         cityAdmin: _user.cityId.toString(),
                                         name: nameGroupController.text,
                                         description: descriptionController.text,
-                                        logoADM: _user.photo,
-                                        profileCoverADM: _user.profileCover,
-                                        namesAdmin: _user.names,
+                                        logoADM: _user.photo!,
+                                        profileCoverADM: _user.profileCover!,
                                         active: true,
-                                        surnamesAdmin: _user.surnames,
                                         whatsapp: whatsappController.text,
                                         type: true,
-                                        cityId: _user.cityId,
-                                        adminId: _user.id,
+                                        cityId: _user.cityId!,
+                                        adminId: _user.id!,
                                         facebook: _facebook,
                                         instagram: _instagram,
                                         modality: [

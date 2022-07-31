@@ -232,9 +232,9 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage(
-                            widget.group.logo! == null
+                            widget.group.logo == null
                                 ? AppStrings.urlBiuxApp
-                                : widget.group.logo!,
+                                : widget.group.logo,
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -302,7 +302,7 @@ class _ButtonRoadsGroupState extends State<ButtonRoadsGroup> {
                 child: Container(
                   margin: EdgeInsets.only(top: 140, left: 8),
                   child: Text(
-                    widget.group.name!.toUpperCase(),
+                    widget.group.name.toUpperCase(),
                     overflow: TextOverflow.fade,
                     style: Styles.gestureDetectorGroupName,
                   ),

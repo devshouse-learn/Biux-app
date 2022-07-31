@@ -17,7 +17,9 @@ import 'package:uuid/uuid.dart';
 
 class EditGroups extends StatefulWidget {
   final Group _groups;
-  EditGroups(this._groups);
+  final BiuxUser admin;
+
+  EditGroups(this._groups, this.admin);
   _EditGroupsState createState() => _EditGroupsState();
 }
 
@@ -60,11 +62,11 @@ class _EditGroupsState extends State<EditGroups> {
 
   void initState() {
     super.initState();
-    nameController.text = widget._groups.name!;
-    whatsappController.text = widget._groups.whatsapp!;
-    facebookController.text = widget._groups.facebook!;
-    instagramController.text = widget._groups.instagram!;
-    descriptionController.text = widget._groups.description!;
+    nameController.text = widget._groups.name;
+    whatsappController.text = widget._groups.whatsapp;
+    facebookController.text = widget._groups.facebook;
+    instagramController.text = widget._groups.instagram;
+    descriptionController.text = widget._groups.description;
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -141,7 +143,7 @@ class _EditGroupsState extends State<EditGroups> {
                                     image: NetworkImage(
                                       widget._groups.profileCover == null
                                           ? AppStrings.urlBiuxApp
-                                          : widget._groups.profileCover!,
+                                          : widget._groups.profileCover,
                                     ),
                                     fit: BoxFit.cover,
                                   ),
@@ -443,19 +445,17 @@ class _EditGroupsState extends State<EditGroups> {
                                   });
                                   var group = Group(
                                     id: widget._groups.id,
-                                    cityAdmin: widget._groups.admin!.cityId!
+                                    cityAdmin: widget.admin.cityId!
                                         .toString(),
                                     name: nameController.text,
-                                    admin: widget._groups.admin,
                                     description: descriptionController.text,
                                     whatsapp: whatsappController.text,
                                     type: true,
-                                    cityId: widget._groups.admin!.cityId!,
-                                    adminId: widget._groups.admin!.id!,
+                                    cityId: widget.admin.cityId!,
+                                    adminId: widget.admin.id!,
                                     facebook: _facebook,
                                     instagram: _instagram,
                                     modality: modalityToList(isSelected),
-                                    city: widget._groups.city,
                                   );
                                   response =
                                       await GroupsRepository().updateGroup(
@@ -463,7 +463,7 @@ class _EditGroupsState extends State<EditGroups> {
                                   );
                                   if (_image != null) {
                                     await GroupsRepository().uploadLogoGroup(
-                                      widget._groups.id!,
+                                      widget._groups.id,
                                       _image,
                                     );
                                     uploadImage(_image).then(
@@ -471,7 +471,7 @@ class _EditGroupsState extends State<EditGroups> {
                                         postToFireStore(
                                           photo: data,
                                           userId: AppStrings.idGFirebase(
-                                              id: widget._groups.id!
+                                              id: widget._groups.id
                                                   .toString()),
                                         );
                                       },
@@ -481,7 +481,7 @@ class _EditGroupsState extends State<EditGroups> {
                                     if (_image2 != null) {
                                       GroupsRepository()
                                           .uploadGroupProfileCover(
-                                        widget._groups.id!,
+                                        widget._groups.id,
                                         _image2,
                                       );
                                     }
@@ -580,7 +580,7 @@ class _EditGroupsState extends State<EditGroups> {
                                               image: DecorationImage(
                                                 fit: BoxFit.cover,
                                                 image: NetworkImage(
-                                                  widget._groups.logo!,
+                                                  widget._groups.logo,
                                                 ),
                                               ),
                                               borderRadius:

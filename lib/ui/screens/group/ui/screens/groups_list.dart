@@ -67,7 +67,7 @@ class _GruposListaState extends State<GroupsList> {
       );
       this.setState(() {
         listGroups.sort(
-          (a, b) => a.numberMembers!.compareTo(b.numberMembers!),
+          (a, b) => a.numberMembers.compareTo(b.numberMembers),
         );
       });
       filteredList = await GroupsRepository().getGroups(
@@ -75,7 +75,7 @@ class _GruposListaState extends State<GroupsList> {
       );
       this.setState(() {
         filteredList.sort(
-          (a, b) => a.numberMembers!.compareTo(b.numberMembers!),
+          (a, b) => a.numberMembers.compareTo(b.numberMembers),
         );
       });
       listCities = await UserRepository().getCities();
@@ -101,7 +101,7 @@ class _GruposListaState extends State<GroupsList> {
     setState(() {
       filteredList = listGroups
           .where((string) =>
-              string.name!.toLowerCase().contains(value.toLowerCase()))
+              string.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
@@ -168,13 +168,13 @@ class _GruposListaState extends State<GroupsList> {
                             .getGroups(cityController.text);
                         this.setState(() {
                           listGroups.sort((a, b) =>
-                              a.numberMembers!.compareTo(b.numberMembers!));
+                              a.numberMembers.compareTo(b.numberMembers));
                         });
                         filteredList = await GroupsRepository()
                             .getGroups(cityController.text);
                         this.setState(() {
                           filteredList.sort((a, b) =>
-                              a.numberMembers!.compareTo(b.numberMembers!));
+                              a.numberMembers.compareTo(b.numberMembers));
                         });
                       });
                       if (text != "") {

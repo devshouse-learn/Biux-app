@@ -51,7 +51,7 @@ class GroupsScreen extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(left: 70, top: 20),
                       child: Text(
-                        _group.name!.toUpperCase(),
+                        _group.name.toUpperCase(),
                         style: Styles.cardGroupName,
                       ),
                     ),
@@ -160,7 +160,7 @@ class GroupsScreen extends StatelessWidget {
                   image: NetworkImage(
                     _group.logo == null
                         ? AppStrings.urlBiuxApp
-                        : _group.logo!,
+                        : _group.logo,
                   ),
                   fit: BoxFit.cover),
               borderRadius: BorderRadius.circular(12.0),

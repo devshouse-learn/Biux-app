@@ -106,7 +106,7 @@ class MembersRepository {
     Map<String, dynamic> responseData = json.decode(response.body);
     var memberVoid = Member(
       approved: false,
-      group: Group(),
+      group: Group(id: ''),
     );
     List groupJson = responseData["data"].toList();
     if (groupJson.length != 0) {

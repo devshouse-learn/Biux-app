@@ -25,7 +25,7 @@ class _RoadsGroupState extends State<RoadsGroup> {
     listRoads = [];
     Future.delayed(Duration.zero, () async {
       listRoads = (await RoadsRepository().getRoadsGroups(
-        widget.groups.id!,
+        widget.groups.id,
         limit,
         offset,
       ));
@@ -45,7 +45,7 @@ class _RoadsGroupState extends State<RoadsGroup> {
 
   _getMoreData() async {
     List<Road> nextRoad = await RoadsRepository().getRoadsGroups(
-      widget.groups.id!,
+      widget.groups.id,
       limit,
       offset,
     );
@@ -115,7 +115,9 @@ class _RoadsGroupState extends State<RoadsGroup> {
           child: ButtonRoadsGroup(
             road,
             // posiblemente se tenga que llamar al grupo de la rodada
-            Group(),
+            Group(
+              id: '',
+            ),
           ),
         ),
       );

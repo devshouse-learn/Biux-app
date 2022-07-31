@@ -36,6 +36,8 @@ class _Uploader extends State<Uploader> {
   bool uploading = false;
   int selected = 1;
   Member? member;
+  // se debe llenar con los datos del admin del grupo
+  BiuxUser? admin;
   var selectID;
   bool loading = false;
   @override
@@ -56,12 +58,6 @@ class _Uploader extends State<Uploader> {
       ),
       group: Group(
         id: '0',
-        admin: BiuxUser(
-          surnames: "",
-          gender: "",
-          names: "",
-          id: '0',
-        ),
       ),
     );
     Future.delayed(
@@ -269,7 +265,7 @@ class _Uploader extends State<Uploader> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceAround,
                                           children: <Widget>[
-                                            member!.group!.admin!.id! ==
+                                            admin!.id! ==
                                                     widget.user!.id!
                                                 ? Row(
                                                     children: [
@@ -330,7 +326,7 @@ class _Uploader extends State<Uploader> {
                                                             backgroundImage:
                                                                 NetworkImage(
                                                               member!
-                                                                  .group!.logo!,
+                                                                  .group!.logo,
                                                             ),
                                                           ),
                                                         ),
@@ -869,8 +865,8 @@ void postToFireStore({
   var reference = FirebaseFirestore.instance.collection(AppStrings.instaPosts);
   if (member != null && selected == 2) {
     Analitycs.postStory(
-      member.group!.name!,
-      member.group!.id!.toString(),
+      member.group!.name,
+      member.group!.id,
       AppStrings.group,
     );
     reference.add({
@@ -879,9 +875,9 @@ void postToFireStore({
       AppStrings.likes: {},
       AppStrings.photoText: photo,
       AppStrings.typeText: AppStrings.group,
-      AppStrings.idGroup: member.group!.id!.toString(),
+      AppStrings.idGroup: member.group!.id,
       AppStrings.description2: description,
-      AppStrings.ownerIdText: '${member.group!.id!.toString()}G',
+      AppStrings.ownerIdText: '${member.group!.id}G',
       AppStrings.timestamp: DateTime.now(),
       AppStrings.nameVal: nameVal,
       AppStrings.name: member.group!.name,

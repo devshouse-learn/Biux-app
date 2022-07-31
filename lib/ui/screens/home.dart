@@ -84,6 +84,8 @@ class _MyHomeState extends State<MyHome> {
   var bgColor;
   late int joinMe;
   late bool valRef = false;
+  // datos del admin del grupo
+  late BiuxUser admin;
 
   void initState() {
     super.initState();
@@ -114,7 +116,7 @@ class _MyHomeState extends State<MyHome> {
               user = useR;
               member = nMember;
               vip = user.premium!;
-              final nombreAdmin = nMember.group?.admin?.id ?? '';
+              final nombreAdmin = admin.id ?? '';
               if (nombreAdmin == user.id) {
                 joinMe = 1;
               }

@@ -98,6 +98,8 @@ class _MembersGroupState extends State<MembersGroup> {
             widget._group,
             userMembership,
             user,
+            // admin del grupo
+            BiuxUser()
           ),
         ),
       );

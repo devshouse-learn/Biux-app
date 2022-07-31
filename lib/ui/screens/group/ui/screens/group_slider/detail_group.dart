@@ -31,9 +31,11 @@ class DetailGroup extends StatefulWidget {
     this.currentUserId,
     this.photo,
     this.userName,
+    this.admin,
   });
 
   final BiuxUser? user;
+  final BiuxUser? admin;
   final int? currentUserId;
   final String? photo;
   final String? userName;
@@ -118,7 +120,7 @@ class _DetailGroupState extends State<DetailGroup> {
     city = City();
     getUserProfile();
     LocalStorage()
-        .saveGroupId(AppStrings.idGFirebase(id: widget.group!.id!.toString()));
+        .saveGroupId(AppStrings.idGFirebase(id: widget.group!.id.toString()));
   }
 
   unfollowUser() {
@@ -157,17 +159,18 @@ class _DetailGroupState extends State<DetailGroup> {
       () async {
         useR = await UserRepository().getPerson(username!);
         member = await MembersRepository().getApproved(
-          widget.group!.id!,
+          widget.group!.id,
           userId,
         );
-        city = await UserRepository()
-            .getSpecifiCities(widget.group!.admin!.cityId!);
+        // Se debe llamar los datos del admin
+        final BiuxUser admin = BiuxUser();
+        city = await UserRepository().getSpecifiCities(widget.admin!.cityId!);
         this.setState(
           () {
             if (member.approved != null) {
               joinMe = 1;
             } else {}
-            if (member.group!.admin!.id! == useR.id) {
+            if (admin.id! == useR.id) {
               joinMe = 2;
             } else {
               if (member.approved == null) {
@@ -331,6 +334,7 @@ class _DetailGroupState extends State<DetailGroup> {
                                           builder: (BuildContext context) =>
                                               EditGroups(
                                             widget.group!,
+                                            widget.admin!,
                                           ),
                                         ),
                                       );
@@ -442,7 +446,7 @@ class _DetailGroupState extends State<DetailGroup> {
                                                           setState(
                                                             () {
                                                               widget.group!
-                                                                      .numberMembers! -
+                                                                      .numberMembers -
                                                                   1;
                                                               joinMe = 0;
                                                             },
@@ -565,7 +569,7 @@ class _DetailGroupState extends State<DetailGroup> {
                                                                   .joinGroups(
                                                                 userId,
                                                                 widget
-                                                                    .group!.id!,
+                                                                    .group!.id,
                                                               );
                                                               Navigator.of(
                                                                       context)
@@ -587,7 +591,7 @@ class _DetailGroupState extends State<DetailGroup> {
                                                                 () {
                                                                   joinMe = 1;
                                                                   widget.group!
-                                                                          .numberMembers! +
+                                                                          .numberMembers +
                                                                       1;
                                                                 },
                                                               );
@@ -625,7 +629,7 @@ class _DetailGroupState extends State<DetailGroup> {
                     right: 10,
                   ),
                   child: Text(
-                    widget.group!.description!,
+                    widget.group!.description,
                     style: Styles.containerDescription,
                   ),
                 ),
@@ -645,11 +649,11 @@ class _DetailGroupState extends State<DetailGroup> {
                       child: Container(
                         padding: EdgeInsets.only(left: 0),
                         child: Text(
-                          widget.group!.admin!.names! == null
+                          widget.admin!.names! == null
                               ? AppStrings.loandingText
-                              : widget.group!.admin!.names! +
+                              : widget.admin!.names! +
                                   " " +
-                                  widget.group!.admin!.surnames!,
+                                  widget.admin!.surnames!,
                           style: Styles.advertisingTitle.copyWith(
                             fontSize: size.height * 0.025,
                           ),
@@ -660,7 +664,7 @@ class _DetailGroupState extends State<DetailGroup> {
                           context,
                           new MaterialPageRoute(
                             builder: (BuildContext context) => DetailUsers(
-                              widget.group!.admin!,
+                              widget.admin!,
                             ),
                           ),
                         );
@@ -771,7 +775,7 @@ class _DetailScreen4State extends State<DetailScreen4> {
                       image: NetworkImage(
                         widget.group.profileCover == null
                             ? AppStrings.urlDetailGroup
-                            : widget.group.profileCover!,
+                            : widget.group.profileCover,
                       ),
                     ),
                   ),
@@ -844,7 +848,7 @@ class _DetailScreen3State extends State<DetailScreen3> {
                     imageProvider: NetworkImage(
                       widget._group.logo == null
                           ? AppStrings.urlDetailGroup
-                          : widget._group.profileCover!,
+                          : widget._group.profileCover,
                     ),
                     minScale: PhotoViewComputedScale.contained * 1.0,
                     maxScale: PhotoViewComputedScale.covered * 10,
@@ -894,7 +898,7 @@ class _DetailScreen5State extends State<DetailScreen5> {
                 image: NetworkImage(
                   widget._group.logo == null
                       ? AppStrings.urlBiuxApp
-                      : widget._group.logo!,
+                      : widget._group.logo,
                 ),
               ),
             ),

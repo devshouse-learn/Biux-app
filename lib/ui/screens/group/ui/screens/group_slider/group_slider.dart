@@ -5,6 +5,7 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
+import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/groups/groups_repository.dart';
 import 'package:biux/data/repositories/members/members_repository.dart';
 import 'package:biux/data/shared_preferences/localstorage.dart';
@@ -23,12 +24,14 @@ class GroupSlider extends StatefulWidget {
   final int? id;
   final Function? byEnd;
   final Member? member;
+  final BiuxUser? admin;
 
   GroupSlider(
     this._group, {
     this.id,
     this.member,
     this.byEnd,
+    this.admin,
   });
 
   final ThemeData theme = darkTheme;
@@ -62,14 +65,14 @@ class GrupoSliderState extends State<GroupSlider>
     username = await LocalStorage().getUser();
     userId = id!;
     Future.delayed(Duration.zero, () async {
-      if (username == widget._group!.admin!.userName) {
+      if (username == widget.admin!.userName) {
         if (widget._group!.logo == null ||
             widget._group!.profileCover == null) {
           complete(context);
         }
       }
       member = await MembersRepository().getApproved(
-        widget._group!.id!,
+        widget._group!.id,
         userId,
       );
       this.setState(() {
@@ -150,7 +153,7 @@ class GrupoSliderState extends State<GroupSlider>
                 alignment: Alignment.center,
                 margin: new EdgeInsets.only(bottom: 500),
                 child: Text(
-                  widget._group!.name!.toUpperCase(),
+                  widget._group!.name.toUpperCase(),
                   style: Styles.containerWhite,
                 ),
               ),
@@ -184,7 +187,7 @@ class GrupoSliderState extends State<GroupSlider>
                             image: new NetworkImage(
                               widget._group!.logo == null
                                   ? AppStrings.urlBiuxApp
-                                  : widget._group!.logo!,
+                                  : widget._group!.logo,
                             ),
                             fit: BoxFit.cover,
                           ),
@@ -248,7 +251,7 @@ class GrupoSliderState extends State<GroupSlider>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    widget._group!.whatsapp! == "" ||
+                    widget._group!.whatsapp == "" ||
                             widget._group!.whatsapp == null
                         ? Row(
                             children: [
@@ -261,8 +264,8 @@ class GrupoSliderState extends State<GroupSlider>
                         : GestureDetector(
                             onTap: () {
                               launch(AppStrings.whatsappMessage(
-                                  whatsappNumber: widget._group!.whatsapp!,
-                                  name: widget._group!.name!));
+                                  whatsappNumber: widget._group!.whatsapp,
+                                  name: widget._group!.name));
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -288,8 +291,8 @@ class GrupoSliderState extends State<GroupSlider>
                     Container(
                       width: 10,
                     ),
-                    widget._group!.instagram! == AppStrings.notRegistered ||
-                            widget._group!.instagram! == null
+                    widget._group!.instagram == AppStrings.notRegistered ||
+                            widget._group!.instagram == null
                         ? Row(
                             children: [
                               Container(
@@ -301,7 +304,7 @@ class GrupoSliderState extends State<GroupSlider>
                         : GestureDetector(
                             onTap: () {
                               launch(AppStrings.instagramMessage(
-                                  nameInstagram: widget._group!.instagram!));
+                                  nameInstagram: widget._group!.instagram));
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -328,7 +331,7 @@ class GrupoSliderState extends State<GroupSlider>
                     Container(
                       width: 10,
                     ),
-                    widget._group!.facebook! == AppStrings.notRegistered ||
+                    widget._group!.facebook == AppStrings.notRegistered ||
                             widget._group!.facebook == null
                         ? Row(
                             children: [
@@ -340,7 +343,7 @@ class GrupoSliderState extends State<GroupSlider>
                           )
                         : GestureDetector(
                             onTap: () {
-                              launch("${widget._group!.facebook!}");
+                              launch("${widget._group!.facebook}");
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -397,7 +400,7 @@ class GrupoSliderState extends State<GroupSlider>
                                 width: 155,
                                 child: Text(
                                   AppStrings.rodadas(
-                                      numberRodadas: widget._group!.numberRoads!
+                                      numberRodadas: widget._group!.numberRoads
                                           .toString()),
                                   style: Styles.accentTextThemeBlack,
                                   textAlign: TextAlign.center,
@@ -418,7 +421,7 @@ class GrupoSliderState extends State<GroupSlider>
                                 width: 135,
                                 child: Text(
                                   AppStrings.seguidores(
-                                      members: widget._group!.numberMembers!
+                                      members: widget._group!.numberMembers
                                           .toString()),
                                   style: Styles.accentTextThemeBlack,
                                   textAlign: TextAlign.center,
@@ -440,7 +443,7 @@ class GrupoSliderState extends State<GroupSlider>
                             widget._group!,
                           ),
                           MembersGroup(
-                            widget._group!.id!,
+                            widget._group!.id,
                             widget._group!,
                           )
                         ],
@@ -589,8 +592,10 @@ class GrupoSliderState extends State<GroupSlider>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                EditGroups(widget._group!),
+                            builder: (BuildContext context) => EditGroups(
+                              widget._group!,
+                              widget.admin!,
+                            ),
                           ),
                         );
                       },

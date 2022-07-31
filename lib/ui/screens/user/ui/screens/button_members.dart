@@ -15,12 +15,14 @@ class ButtonMembers extends StatelessWidget {
   final Group? group;
   final List<UserMembership>? memberships;
   final BiuxUser? user;
+  final BiuxUser? admin;
 
   ButtonMembers(
     this.member,
     this.group,
     this.memberships,
     this.user,
+    this.admin
   );
 
   final ThemeData theme = darkTheme;
@@ -52,7 +54,7 @@ class ButtonMembers extends StatelessWidget {
     return Stack(
       alignment: Alignment.centerLeft,
       children: [
-        member!.user!.id! == group!.admin!.id!
+        member!.user!.id! == admin!.id!
             ? AdminStyle(
                 member: member!,
                 theme: theme,

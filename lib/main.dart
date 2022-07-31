@@ -1,5 +1,7 @@
 import 'dart:core';
 import 'package:biux/config/strings.dart';
+import 'package:biux/data/models/group.dart';
+import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
 import 'package:biux/ui/screens/splash_screen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:biux/config/themes/theme.dart';
@@ -27,6 +29,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await GroupsFirebaseRepository().updateGroup(Group(id: '2', name: 'name2', description: 'Prueba'));
   runApp(
     ChangeNotifierProvider<ThemeNotifier>(
       create: (_) =>

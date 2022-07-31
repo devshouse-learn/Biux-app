@@ -118,7 +118,7 @@ class _UserNormalState extends State<UserNormal> {
   late List<City> listCities;
   List<City> listFiltered = [];
   void initState() {
-    _group = Group();
+    _group = Group(id: '');
     super.initState();
     Future.delayed(
       Duration.zero,

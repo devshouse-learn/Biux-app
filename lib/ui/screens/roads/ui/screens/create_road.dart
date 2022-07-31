@@ -4,6 +4,7 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/data/models/city.dart';
 import 'package:biux/data/shared_preferences/localstorage.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
@@ -40,6 +41,9 @@ var ab = json.decode(a);
 class _CreateRoadState extends State<CreateRoad> {
   final _formKey = GlobalKey<FormState>();
   late Group _group;
+  late BiuxUser admin;
+  // se debe llenar con lod datos de la ciudad del grupo
+  late City city;
   var _nameRoute;
   var _difficulty;
   var _distanceR = 0.0;
@@ -89,11 +93,11 @@ class _CreateRoadState extends State<CreateRoad> {
     username = (await LocalStorage().getUser())!;
     user = await UserRepository().getPerson(username);
     final nMember = await MembersRepository().getMyGroupsUser(user.id!);
-    _group = await GroupsRepository().getSpecificGroup(nMember.group!.id!);
+    _group = await GroupsRepository().getSpecificGroup(nMember.group!.id);
     this.setState(
       () {
-        if (_group.admin!.id! == user.id)
-          groupId = _group.id!;
+        if (admin.id! == user.id)
+          groupId = _group.id;
         else {
           groupId = 0;
         }
@@ -103,7 +107,7 @@ class _CreateRoadState extends State<CreateRoad> {
         user.profileCover == AppStrings.urlBiuxApp) {
       complete(context);
     } else {}
-    if (username == _group.admin!.userName) {
+    if (username == admin.userName) {
       if (_group.logo == null || _group.profileCover == null) {
         complete2(context);
       }
@@ -545,7 +549,7 @@ class _CreateRoadState extends State<CreateRoad> {
                                     name: pathnameController.text,
                                     dateTime: dateController.text,
                                     groupId: groupId,
-                                    cityId: _group.city!.id!,
+                                    cityId: city.id!,
                                     routeLevel: rating.toInt(),
                                     modality: [
                                       AppStrings.urbanoText.toUpperCase(),
@@ -933,8 +937,11 @@ class _CreateRoadState extends State<CreateRoad> {
                         Navigator.push(
                           context,
                           new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                EditGroups(_group),
+                            builder: (BuildContext context) => EditGroups(
+                              _group,
+                              // se debe enviar el modelo del admin
+                              admin,
+                            ),
                           ),
                         );
                       },
@@ -972,8 +979,8 @@ class _CreateRoadState extends State<CreateRoad> {
               pathnameController.text,
               double.parse(distanceController.text),
               rating.toInt(),
-              _group.name!,
-              _group.city!.name!,
+              _group.name,
+              city.name!,
               meetingController.text,
             );
             _scaffolState.currentState!.showSnackBar(

@@ -20,7 +20,7 @@ class Member {
   Member.fromJson(Map json) {
     if (json != null) {
       this.approved = json["approved"];
-      this.group = Group.fromJson(json["group"]);
+      this.group = Group.fromJson(json: json["group"]);
       this.groupId = json["groupId"];
       this.id = json["id"];
       this.user = BiuxUser.fromJsonMap(json["user"]);

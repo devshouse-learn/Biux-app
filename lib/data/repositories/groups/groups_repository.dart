@@ -18,7 +18,7 @@ class GroupsRepository {
     Map responseData = json.decode(response.body);
     List<dynamic> groupsJson = responseData["data"];
     List<Group> groups =
-        groupsJson.map((grupoJson) => Group.fromJson(grupoJson)).toList();
+        groupsJson.map((grupoJson) => Group.fromJson(json: grupoJson)).toList();
 
     return groups;
   }
@@ -63,7 +63,7 @@ class GroupsRepository {
 
     Map<String, dynamic> responseData = json.decode(response.body);
     List groupJson = responseData["data"].toList();
-    return Group.fromJson(groupJson.first);
+    return Group.fromJson(json: groupJson.first);
   }
 
   Future<Group> getMembers(id) async {
@@ -73,7 +73,7 @@ class GroupsRepository {
 
     Map<String, dynamic> responseData = json.decode(response.body);
     List groupJson = responseData["data"].toList();
-    return Group.fromJson(groupJson.first);
+    return Group.fromJson(json: groupJson.first);
   }
 
   Future<List<Group>> getNamesGroups() async {
@@ -83,7 +83,7 @@ class GroupsRepository {
     List groupsJson = responseData["data"];
 
     List<Group> groups =
-        groupsJson.map((groupsJson) => Group.fromJson(groupsJson)).toList();
+        groupsJson.map((groupsJson) => Group.fromJson(json: groupsJson)).toList();
 
     if (response.statusCode == 200) {
       return groups;
@@ -105,7 +105,7 @@ class GroupsRepository {
         await http.patch(Uri.parse(url), headers: headers, body: body);
 
     if (response.statusCode == 200) {
-      return Group.fromJson(json.decode(response.body));
+      return Group.fromJson(json: json.decode(response.body));
     } else {
       throw Exception('Fallo en actualizar grupo');
     }

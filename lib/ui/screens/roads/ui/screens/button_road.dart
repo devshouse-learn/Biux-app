@@ -276,7 +276,7 @@ class _ButtonRoadState extends State<ButtonRoad> {
                           image:  NetworkImage(
                             widget.group.logo == null
                                 ? AppStrings.urlBiuxApp
-                                : widget.group.logo!,
+                                : widget.group.logo,
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -354,7 +354,7 @@ class _ButtonRoadState extends State<ButtonRoad> {
                     left: 8,
                   ),
                   child: Text(
-                    widget.group.name!.toUpperCase(),
+                    widget.group.name.toUpperCase(),
                     overflow: TextOverflow.fade,
                     style: Styles.gestureDetectorGroupName,
                   ),

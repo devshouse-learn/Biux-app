@@ -102,7 +102,7 @@ class _MenuRoadsState extends State<MenuRoads> {
         }
         var nMember = await MembersRepository().getMyGroupsUser(_user.id!);
         _group = await GroupsRepository().getSpecificGroup(
-          nMember.group!.id!,
+          nMember.group!.id,
         );
       },
     );
@@ -318,7 +318,7 @@ class _MenuRoadsState extends State<MenuRoads> {
             road,
             _user,
             // posiblemente se tengo que llamar al grupo de la rodada
-            Group()
+            Group(id: '')
           ),
         ),
       );

@@ -10,6 +10,8 @@ import '../../../../../../config/themes/theme.dart';
 
 class ButtonMyGroups extends StatelessWidget {
   Member? member;
+  BiuxUser? admin;
+
   ButtonMyGroups(
     this.member,
   );
@@ -26,12 +28,6 @@ class ButtonMyGroups extends StatelessWidget {
       ),
       group: Group(
         id: '0',
-        admin: BiuxUser(
-          surnames: "",
-          gender: "",
-          names: "",
-          id: '0',
-        ),
       ),
     );
   }
@@ -39,7 +35,7 @@ class ButtonMyGroups extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(alignment: Alignment.centerLeft, children: <Widget>[
-      member!.group!.admin!.id! == member!.user!.id!
+      admin!.id! == member!.user!.id!
           ? MyGroupStyle(
               member: member!,
               theme: theme,
@@ -61,7 +57,7 @@ class ButtonMyGroups extends StatelessWidget {
               image: NetworkImage(
                 member!.group!.logo == null
                     ? AppStrings.urlBiuxApp
-                    : member!.group!.logo!,
+                    : member!.group!.logo,
               ),
               fit: BoxFit.cover,
             ),
@@ -103,7 +99,7 @@ class MyGroupStyle extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(left: 70, top: 20),
                 child: Text(
-                  member.group!.name!.toUpperCase(),
+                  member.group!.name.toUpperCase(),
                   style: Styles.containerMemberGroup,
                 ),
               ),
@@ -130,7 +126,7 @@ class MyGroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberMembers!.toString(),
+                              member.group!.numberMembers.toString(),
                               style: Styles.rowGroupNumberMembers,
                             ),
                           ],
@@ -160,7 +156,7 @@ class MyGroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberRoads!.toString(),
+                              member.group!.numberRoads.toString(),
                               style: Styles.rowGroupNumberMembers,
                             )
                           ],
@@ -228,7 +224,7 @@ class GroupStyle extends StatelessWidget {
                   top: 20,
                 ),
                 child: Text(
-                  member.group!.name!.toUpperCase(),
+                  member.group!.name.toUpperCase(),
                   style: Styles.columnContainerGreyishNavyBlue,
                 ),
               ),
@@ -258,7 +254,7 @@ class GroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberMembers!.toString(),
+                              member.group!.numberMembers.toString(),
                               style: Styles.rowGroupNumberMembers,
                             ),
                           ],
@@ -288,7 +284,7 @@ class GroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberRoads!.toString(),
+                              member.group!.numberRoads.toString(),
                               style: Styles.rowGroupNumberMembers,
                             )
                           ],

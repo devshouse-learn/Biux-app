@@ -4,6 +4,7 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
+import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/shared_preferences/localstorage.dart';
 import 'package:biux/data/models/competitor_road.dart';
@@ -47,6 +48,10 @@ class _DetailRoadState extends State<DetailRoad> {
   late List<String> imagePaths = [];
   BiuxUser? user;
   int validated = 0;
+  // se debe llenar con los datos de la ciudad del grupo
+  late City city;
+  // se debe llenar con los datos del admin del grupo
+  late BiuxUser admin;
 
   @override
   void initState() {
@@ -108,7 +113,7 @@ class _DetailRoadState extends State<DetailRoad> {
     Future.delayed(
       Duration(seconds: 1),
       () {
-        validated == 1 ? showDialog4(context, widget.group.name!) : Container();
+        validated == 1 ? showDialog4(context, widget.group.name) : Container();
       },
     );
     return Scaffold(
@@ -174,8 +179,8 @@ class _DetailRoadState extends State<DetailRoad> {
                                           widget.road.name,
                                           widget.road.distance,
                                           widget.road.routeLevel,
-                                          widget.group.name!,
-                                          widget.group.city!.name!,
+                                          widget.group.name,
+                                          city.name!,
                                           widget.road.pointmeeting,
                                           widget.road.numberParticipants,
                                         );
@@ -217,8 +222,8 @@ class _DetailRoadState extends State<DetailRoad> {
                 widget.road.name,
                 widget.road.distance,
                 widget.road.routeLevel,
-                widget.group.name!,
-                widget.group.city!.name!,
+                widget.group.name,
+                city.name!,
                 widget.road.pointmeeting,
                 widget.road.numberParticipants,
               );
@@ -227,7 +232,7 @@ class _DetailRoadState extends State<DetailRoad> {
                 var response = await get(
                   Uri.parse(
                     widget.road.image == null
-                        ? widget.group.logo!
+                        ? widget.group.logo
                         : widget.road.image,
                   ),
                 );
@@ -243,8 +248,8 @@ class _DetailRoadState extends State<DetailRoad> {
                     date: widget.dates!,
                     roadName: widget.road.name,
                     distance: widget.road.distance.toString(),
-                    groupName: widget.group.name!,
-                    cellphone: widget.group.admin!.cellphone!,
+                    groupName: widget.group.name,
+                    cellphone: admin.cellphone!,
                     pointmeeting: widget.road.pointmeeting,
                   ),
                 );
@@ -259,7 +264,7 @@ class _DetailRoadState extends State<DetailRoad> {
                 child: Text(
                   widget.group.name == null
                       ? AppStrings.notFound
-                      : widget.group.name!.toUpperCase(),
+                      : widget.group.name.toUpperCase(),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -282,7 +287,7 @@ class _DetailRoadState extends State<DetailRoad> {
                         image: DecorationImage(
                           image: NetworkImage(
                             widget.road.image == null
-                                ? widget.group.logo!
+                                ? widget.group.logo
                                 : widget.road.image,
                           ),
                           fit: BoxFit.cover,
@@ -372,7 +377,7 @@ class _DetailRoadState extends State<DetailRoad> {
                   Expanded(
                     child: Container(
                       child: Text(
-                        widget.group.name!,
+                        widget.group.name,
                         overflow: TextOverflow.fade,
                       ),
                     ),
@@ -800,7 +805,7 @@ class _DetailRoadState extends State<DetailRoad> {
                                                                       userId!,
                                                                       widget
                                                                           .group
-                                                                          .id!,
+                                                                          .id,
                                                                     );
                                                                     setState(
                                                                       () {

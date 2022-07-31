@@ -60,7 +60,7 @@ class _ZoomPageState extends State<ZoomPage> {
                   child: PhotoView(
                     imageProvider: NetworkImage(
                       imageProfileCover
-                          ? widget._group.profileCover!
+                          ? widget._group.profileCover
                           : AppStrings.urlBiuxApp,
                     ),
                     minScale: PhotoViewComputedScale.contained * 1.0,
@@ -133,7 +133,7 @@ class _ZoomPageState2 extends State<ZoomPage2> {
                   child: PhotoView(
                     imageProvider: NetworkImage(
                       imagelogo
-                          ? widget._group.logo!
+                          ? widget._group.logo
                           : AppStrings.urlBiuxApp,
                     ),
                     minScale: PhotoViewComputedScale.contained * 1.0,
