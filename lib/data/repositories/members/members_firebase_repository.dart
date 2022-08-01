@@ -1,18 +1,27 @@
+import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 import 'package:biux/data/repositories/members/members_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../config/strings.dart';
+
 class MembersFirebaseRepository extends MembersRepositoryAbstract {
-  static final collection = 'members';
+  static final subcollection = 'members';
+  static final collection = 'groups';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
-  Future<Member> deleteMember(Member member) async {
+  Future<Member> deleteMember(Member member, String groupId) async {
     try {
-      await firestore.collection(collection).doc(member.id.toString()).delete();
+      await firestore
+          .collection(collection)
+          .doc(groupId)
+          .collection(subcollection)
+          .doc(member.id)
+          .delete();
       final response = await firestore
           .collection(collection)
-          .where('id', isEqualTo: member.id.toString())
+          .where('id', isEqualTo: member.id)
           .get();
       return Member.fromJson(
         response.docs.first.data(),
@@ -23,12 +32,14 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future<Member> getApproved(int id, int userId) async {
+  Future<Member> getApproved(String id, String userId, String groupId) async {
     try {
       final response = await firestore
           .collection(collection)
-          .where('id', isEqualTo: id.toString())
-          .where('userId', isEqualTo: userId.toString())
+          .doc(groupId)
+          .collection(subcollection)
+          .where('id', isEqualTo: id)
+          .where('userId', isEqualTo: userId)
           .get();
       return Member.fromJson(
         response.docs.first.data(),
@@ -39,27 +50,12 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future<List<Member>> getMembers(int offset) async {
-    try {
-      final result = await firestore.collection(collection).get();
-      return result.docs
-          .map(
-            (e) => Member.fromJson(
-              e.data(),
-            ),
-          )
-          .toList();
-    } catch (e) {
-      return List.empty();
-    }
-  }
-
-  @override
-  Future<List<Member>> getMembersGroup(int id, int offset) async {
+  Future<List<Member>> getMembers(String groupId) async {
     try {
       final result = await firestore
           .collection(collection)
-          .where('groupId', isEqualTo: id)
+          .doc(groupId)
+          .collection(subcollection)
           .get();
       return result.docs
           .map(
@@ -74,11 +70,11 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future<List<Member>> getMyGroups(int id) async {
+  Future<List<Member>> getMyGroups(String groupId) async {
     try {
       final result = await firestore
           .collection(collection)
-          .where('userId', isEqualTo: id)
+          .where('id', isEqualTo: groupId)
           .get();
       return result.docs
           .map(
@@ -93,11 +89,42 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future<Member> getMyGroupsUser(int id) async {
+  Future joinGroups(String groupId, Member member) async {
     try {
+      await firestore
+          .collection(collection)
+          .doc(groupId)
+          .collection(subcollection)
+          .add(member.toJson())
+          .then(
+        (DocumentReference doc) {
+          String docId = doc.id;
+          firestore
+              .collection(collection)
+              .doc(groupId)
+              .collection(subcollection)
+              .doc(docId)
+              .update(
+            {
+              AppStrings.idText: docId,
+            },
+          );
+        },
+      );
+    } catch (e) {}
+  }
+
+  Future<Member> leaveGroups(Member member, String groupId) async {
+    try {
+      await firestore
+          .collection(collection)
+          .doc(groupId)
+          .collection(subcollection)
+          .doc(member.id)
+          .update(member.toJson());
       final response = await firestore
           .collection(collection)
-          .where('adminId', isEqualTo: id.toString())
+          .where('id', isEqualTo: member.id)
           .get();
       return Member.fromJson(
         response.docs.first.data(),
@@ -105,11 +132,5 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
     } catch (e) {
       return Member();
     }
-  }
-
-  @override
-  Future<bool> joinGroups(int userId, int groupId) {
-    // TODO: implement joinGroups
-    throw UnimplementedError();
   }
 }

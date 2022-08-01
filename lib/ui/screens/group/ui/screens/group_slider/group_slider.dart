@@ -48,6 +48,9 @@ class GrupoSliderState extends State<GroupSlider>
   late TabController controller;
   bool cmbscritta = false;
   GroupsList third = GroupsList();
+  //se debe llamar los datos del usuario
+  late BiuxUser user;
+
   @override
   void initState() {
     super.initState();
@@ -76,10 +79,10 @@ class GrupoSliderState extends State<GroupSlider>
         userId,
       );
       this.setState(() {
-        if (member.user!.id == null)
+        if (user.id == null)
           admin = '0';
         else {
-          admin = member.user!.id!;
+          admin = user.id!;
         }
       });
     });

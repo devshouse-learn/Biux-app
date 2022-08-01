@@ -33,7 +33,7 @@ class ButtonMembers extends StatelessWidget {
     final bronce = AppColors.bronze;
     Color membershipColor = AppColors.bronze;
     var userMembership = memberships!.firstWhere(
-      (mem) => mem.user!.id! == member!.user!.id!,
+      (mem) => mem.user!.id! == member!.userId,
       orElse: () => memberships!.first,
     );
     // if (membresiaUsuario == null) {
@@ -54,13 +54,13 @@ class ButtonMembers extends StatelessWidget {
     return Stack(
       alignment: Alignment.centerLeft,
       children: [
-        member!.user!.id! == admin!.id!
+        user!.id! == group!.adminId
             ? AdminStyle(
                 member: member!,
                 theme: theme,
                 user: user!,
               )
-            : member!.user!.premium!
+            : user!.premium!
                 ? UserMembershipStyle(
                     membershipColor: membershipColor,
                     member: member!,
@@ -89,7 +89,7 @@ class ButtonMembers extends StatelessWidget {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: new NetworkImage(
-                            member!.user?.photo ??
+                            user?.photo ??
                                 AppStrings.urlBiuxApp,
                           ),
                           fit: BoxFit.cover,
@@ -116,10 +116,10 @@ class ButtonMembers extends StatelessWidget {
                   reverse: false,
                   lineWidth: 1.5,
                   circularStrokeCap: CircularStrokeCap.square,
-                  backgroundColor: member!.user!.premium! == true
+                  backgroundColor: user!.premium! == true
                       ? membershipColor
                       : AppColors.transparent,
-                  progressColor: member!.user!.premium! == true
+                  progressColor: user!.premium! == true
                       ? membershipColor
                       : AppColors.transparent,
                 ),
@@ -138,10 +138,10 @@ class ButtonMembers extends StatelessWidget {
                   percent: 0.4,
                   lineWidth: 5.5,
                   circularStrokeCap: CircularStrokeCap.butt,
-                  backgroundColor: member!.user!.premium! == true
+                  backgroundColor: user!.premium! == true
                       ? membershipColor.withOpacity(0.5)
                       : AppColors.transparent,
-                  progressColor: member!.user!.premium == true
+                  progressColor: user!.premium == true
                       ? membershipColor
                       : AppColors.transparent,
                 ),
@@ -195,7 +195,7 @@ class AdminStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      member.user!.names!,
+                      user.names!,
                       style: theme == darkTheme
                           ? Styles.containerColorligth
                           : Styles.containerColordark,
@@ -209,7 +209,7 @@ class AdminStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      member.user!.surnames!,
+                      user.surnames!,
                       style: theme == darkTheme
                           ? Styles.containerColorligth
                           : Styles.containerColordark,
@@ -242,7 +242,7 @@ class AdminStyle extends StatelessWidget {
           context,
           new MaterialPageRoute(
             builder: (BuildContext context) => DetailUsers(
-              member.user!,
+              user,
             ),
           ),
         );
@@ -287,7 +287,7 @@ class UserStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      member.user!.names!,
+                      user.names!,
                       style: Styles.rowMember,
                     ),
                   ),
@@ -299,7 +299,7 @@ class UserStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      member.user!.surnames!,
+                      user.surnames!,
                       style: Styles.rowMember,
                     ),
                   ),
@@ -330,7 +330,7 @@ class UserStyle extends StatelessWidget {
           context,
           new MaterialPageRoute(
             builder: (BuildContext context) => DetailUsers(
-              member.user!,
+              user,
             ),
           ),
         );
@@ -375,7 +375,7 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
             side: new BorderSide(
-                color: widget.member.user!.premium! == true
+                color: widget.user.premium! == true
                     ? widget.membershipColor
                     : AppColors.transparent,
                 width: 2.0),
@@ -394,8 +394,8 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
                       top: 15,
                     ),
                     child: Text(
-                      widget.member.user!.names!,
-                      style: widget.member.user!.premium! == true
+                      widget.user.names!,
+                      style: widget.user.premium! == true
                           ? Styles.rowMember
                               .copyWith(color: widget.membershipColor)
                           : Styles.rowMember,
@@ -409,8 +409,8 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
                       top: 15,
                     ),
                     child: Text(
-                      widget.member.user!.surnames!,
-                      style: widget.member.user!.premium! == true
+                      widget.user.surnames!,
+                      style: widget.user.premium! == true
                           ? Styles.rowMember
                               .copyWith(color: widget.membershipColor)
                           : Styles.rowMember,
@@ -443,7 +443,7 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
           context,
           new MaterialPageRoute(
             builder: (BuildContext context) => DetailUsers(
-              widget.member.user!,
+              widget.user,
             ),
           ),
         );

@@ -16,33 +16,27 @@ class ButtonMyGroups extends StatelessWidget {
     this.member,
   );
   final ThemeData theme = darkTheme;
+  //se debe obtener los datos del grupo
+  late Group group;
+  late BiuxUser user;
 
   void initState() {
-    member = Member(
-      id: 0,
-      user: BiuxUser(
-        surnames: "",
-        gender: "",
-        names: "",
-        id: '0',
-      ),
-      group: Group(
-        id: '0',
-      ),
-    );
+    member = Member(id: '0', approved: false, userId: '0');
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(alignment: Alignment.centerLeft, children: <Widget>[
-      admin!.id! == member!.user!.id!
+      group.adminId == user.id!
           ? MyGroupStyle(
               member: member!,
               theme: theme,
+              group: group,
             )
           : GroupStyle(
               member: member!,
               theme: theme,
+              group: group,
             ),
       Container(
         padding: new EdgeInsets.only(
@@ -55,9 +49,7 @@ class ButtonMyGroups extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               image: NetworkImage(
-                member!.group!.logo == null
-                    ? AppStrings.urlBiuxApp
-                    : member!.group!.logo,
+                group.logo == null ? AppStrings.urlBiuxApp : group.logo,
               ),
               fit: BoxFit.cover,
             ),
@@ -74,10 +66,12 @@ class MyGroupStyle extends StatelessWidget {
     Key? key,
     required this.member,
     required this.theme,
+    required this.group,
   }) : super(key: key);
 
   final Member member;
   final ThemeData theme;
+  final Group group;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +93,7 @@ class MyGroupStyle extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(left: 70, top: 20),
                 child: Text(
-                  member.group!.name.toUpperCase(),
+                  group.name.toUpperCase(),
                   style: Styles.containerMemberGroup,
                 ),
               ),
@@ -126,7 +120,7 @@ class MyGroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberMembers.toString(),
+                              group.numberMembers.toString(),
                               style: Styles.rowGroupNumberMembers,
                             ),
                           ],
@@ -156,7 +150,7 @@ class MyGroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberRoads.toString(),
+                              group.numberRoads.toString(),
                               style: Styles.rowGroupNumberMembers,
                             )
                           ],
@@ -180,7 +174,7 @@ class MyGroupStyle extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => GroupSlider(
-              member.group,
+              group,
               member: member,
             ),
           ),
@@ -195,10 +189,12 @@ class GroupStyle extends StatelessWidget {
     Key? key,
     required this.member,
     required this.theme,
+    required this.group,
   }) : super(key: key);
 
   final Member member;
   final ThemeData theme;
+  final Group group;
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +220,7 @@ class GroupStyle extends StatelessWidget {
                   top: 20,
                 ),
                 child: Text(
-                  member.group!.name.toUpperCase(),
+                  group.name.toUpperCase(),
                   style: Styles.columnContainerGreyishNavyBlue,
                 ),
               ),
@@ -254,7 +250,7 @@ class GroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberMembers.toString(),
+                              group.numberMembers.toString(),
                               style: Styles.rowGroupNumberMembers,
                             ),
                           ],
@@ -284,7 +280,7 @@ class GroupStyle extends StatelessWidget {
                               width: 8,
                             ),
                             Text(
-                              member.group!.numberRoads.toString(),
+                              group.numberRoads.toString(),
                               style: Styles.rowGroupNumberMembers,
                             )
                           ],
@@ -308,7 +304,7 @@ class GroupStyle extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => GroupSlider(
-              member.group,
+              group,
               member: member,
             ),
           ),

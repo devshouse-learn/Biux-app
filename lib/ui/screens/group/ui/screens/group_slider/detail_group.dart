@@ -73,6 +73,7 @@ class _DetailGroupState extends State<DetailGroup> {
   int joinMe = 0;
   var adminName;
   var userName;
+  late Group group;
 
   _DetailGroupState(
     this.user,
@@ -170,7 +171,7 @@ class _DetailGroupState extends State<DetailGroup> {
             if (member.approved != null) {
               joinMe = 1;
             } else {}
-            if (admin.id! == useR.id) {
+            if (group.adminId == useR.id) {
               joinMe = 2;
             } else {
               if (member.approved == null) {

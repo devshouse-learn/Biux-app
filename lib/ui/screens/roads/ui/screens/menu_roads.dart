@@ -102,7 +102,7 @@ class _MenuRoadsState extends State<MenuRoads> {
         }
         var nMember = await MembersRepository().getMyGroupsUser(_user.id!);
         _group = await GroupsRepository().getSpecificGroup(
-          nMember.group!.id,
+          _user.groupId!,
         );
       },
     );

@@ -40,6 +40,9 @@ class _Uploader extends State<Uploader> {
   BiuxUser? admin;
   var selectID;
   bool loading = false;
+  //se debe llamar al grupo del usuario
+  late Group group;
+
   @override
   final GlobalKey<ScaffoldState> _scaffolState = GlobalKey<ScaffoldState>();
   initState() {
@@ -49,16 +52,7 @@ class _Uploader extends State<Uploader> {
     currentLocation[AppStrings.longitude] = 0.0;
     //method to call location
     member = Member(
-      id: 0,
-      user: BiuxUser(
-        surnames: "",
-        gender: "",
-        names: "",
-        id: '0',
-      ),
-      group: Group(
-        id: '0',
-      ),
+      id: '0',
     );
     Future.delayed(
       Duration.zero,
@@ -241,12 +235,10 @@ class _Uploader extends State<Uploader> {
                   Padding(
                     padding: const EdgeInsets.only(top: 65),
                     child: Stack(
-
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 50),
                           child: Stack(
-
                             children: [
                               Center(
                                 child: Container(
@@ -265,112 +257,107 @@ class _Uploader extends State<Uploader> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceAround,
                                           children: <Widget>[
-                                            admin!.id! ==
+                                            group.adminId == 
                                                     widget.user!.id!
-                                                ? Row(
-                                                    children: [
-                                                      GestureDetector(
-                                                        child: Container(
-                                                          width: 80,
-                                                          height: 90,
-                                                          child: CircleAvatar(
-                                                            backgroundImage:
-                                                                NetworkImage(
-                                                              widget
-                                                                  .user!.photo!,
-                                                            ),
-                                                          ),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                              color: selected ==
-                                                                      1
-                                                                  ? AppColors
-                                                                      .strongCyan
-                                                                  : AppColors
-                                                                      .transparent,
-                                                              width: 4.0,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        onTap: () {
-                                                          setState(
-                                                            () {
-                                                              selected = 1;
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
-                                                      GestureDetector(
-                                                        child: Container(
-                                                          width: 80,
-                                                          height: 90,
-                                                          decoration:
-                                                              new BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border:
-                                                                new Border.all(
-                                                              color: selected ==
-                                                                      2
-                                                                  ? AppColors
-                                                                      .strongCyan
-                                                                  : AppColors
-                                                                      .transparent,
-                                                              width: 4.0,
-                                                            ),
-                                                          ),
-                                                          child: CircleAvatar(
-                                                            backgroundImage:
-                                                                NetworkImage(
-                                                              member!
-                                                                  .group!.logo,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        onTap: () {
-                                                          setState(
-                                                            () {
-                                                              selected = 2;
-                                                            },
-                                                          );
-                                                        },
-                                                      )
-                                                    ],
-                                                  )
-                                                : GestureDetector(
-                                                    child: Container(
-                                                      width: 80,
-                                                      height: 90,
-                                                      decoration:
-                                                          new BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        border: new Border.all(
-                                                          color: selected == 1
-                                                              ? AppColors
-                                                                  .strongCyan
-                                                              : AppColors
-                                                                  .transparent,
-                                                          width: 4.0,
-                                                        ),
-                                                      ),
-                                                      child: CircleAvatar(
-                                                        backgroundImage:
-                                                            NetworkImage(
-                                                          widget.user!.photo!,
-                                                        ),
+                                                ?
+                                            Row(
+                                              children: [
+                                                GestureDetector(
+                                                  child: Container(
+                                                    width: 80,
+                                                    height: 90,
+                                                    child: CircleAvatar(
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                        widget.user!.photo!,
                                                       ),
                                                     ),
-                                                    onTap: () {
-                                                      setState(
-                                                        () {
-                                                          selected = 1;
-                                                        },
-                                                      );
-                                                    },
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color: selected == 1
+                                                            ? AppColors
+                                                                .strongCyan
+                                                            : AppColors
+                                                                .transparent,
+                                                        width: 4.0,
+                                                      ),
+                                                    ),
                                                   ),
+                                                  onTap: () {
+                                                    setState(
+                                                      () {
+                                                        selected = 1;
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                                GestureDetector(
+                                                  child: Container(
+                                                    width: 80,
+                                                    height: 90,
+                                                    decoration:
+                                                        new BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      border: new Border.all(
+                                                        color: selected == 2
+                                                            ? AppColors
+                                                                .strongCyan
+                                                            : AppColors
+                                                                .transparent,
+                                                        width: 4.0,
+                                                      ),
+                                                    ),
+                                                    child: CircleAvatar(
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                        
+                                                            group.logo,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onTap: () {
+                                                    setState(
+                                                      () {
+                                                        selected = 2;
+                                                      },
+                                                    );
+                                                  },
+                                                )
+                                              ],
+                                            )
+                                            :
+                                            GestureDetector(
+                                                child: Container(
+                                                  width: 80,
+                                                  height: 90,
+                                                  decoration:
+                                                      new BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    border: new Border.all(
+                                                      color: selected == 1
+                                                          ? AppColors
+                                                              .strongCyan
+                                                          : AppColors
+                                                              .transparent,
+                                                      width: 4.0,
+                                                    ),
+                                                  ),
+                                                  child: CircleAvatar(
+                                                    backgroundImage:
+                                                        NetworkImage(
+                                                      widget.user!.photo!,
+                                                    ),
+                                                  ),
+                                                ),
+                                                onTap: () {
+                                                  setState(
+                                                    () {
+                                                      selected = 1;
+                                                    },
+                                                  );
+                                                },
+                                              ),
                                           ],
                                         ),
                                         Divider(),
@@ -524,8 +511,8 @@ class _Uploader extends State<Uploader> {
                                                   20.0,
                                                   15.0,
                                                 ),
-                                                hintText:
-                                                    AppStrings.whereDidThisStoryTakePlace,
+                                                hintText: AppStrings
+                                                    .whereDidThisStoryTakePlace,
                                                 errorBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                     color: AppColors.gray,
@@ -654,6 +641,7 @@ class _Uploader extends State<Uploader> {
                                   description: descriptionController.text,
                                   location: locationController.text,
                                   nameVal: widget.user!.userName,
+                                  group: group
                                 );
                               }).then(
                                 (_) {
@@ -699,10 +687,12 @@ class _Uploader extends State<Uploader> {
                                                 : descriptionController
                                                             .text.length <
                                                         20
-                                                    ? AppStrings.descriptionShort
+                                                    ? AppStrings
+                                                        .descriptionShort
                                                     : locationController
                                                             .text.isEmpty
-                                                        ? AppStrings.storyLocation
+                                                        ? AppStrings
+                                                            .storyLocation
                                                         : AppStrings.checkData,
                                         style: Styles.advertisingTitle,
                                       ),
@@ -796,6 +786,7 @@ class _Uploader extends State<Uploader> {
             description: descriptionController.text,
             location: locationController.text,
             nameVal: widget.user!.userName,
+            group: group
           );
         },
       ).then(
@@ -847,7 +838,9 @@ class _Uploader extends State<Uploader> {
 
 Future<String> uploadImage(var imageFile) async {
   var uuid = Uuid().v1();
-  Reference ref = FirebaseStorage.instance.ref().child(AppStrings.postIdFirebase(uuid: uuid));
+  Reference ref = FirebaseStorage.instance
+      .ref()
+      .child(AppStrings.postIdFirebase(uuid: uuid));
   UploadTask uploadTask = ref.putFile(imageFile);
   String downloadUrl = await (await uploadTask).ref.getDownloadURL();
   return downloadUrl;
@@ -861,12 +854,13 @@ void postToFireStore({
   Member? member,
   int? selected,
   String? nameVal,
+  Group? group,
 }) async {
   var reference = FirebaseFirestore.instance.collection(AppStrings.instaPosts);
   if (member != null && selected == 2) {
     Analitycs.postStory(
-      member.group!.name,
-      member.group!.id,
+      group!.name,
+      group.id.toString(),
       AppStrings.group,
     );
     reference.add({
@@ -875,12 +869,12 @@ void postToFireStore({
       AppStrings.likes: {},
       AppStrings.photoText: photo,
       AppStrings.typeText: AppStrings.group,
-      AppStrings.idGroup: member.group!.id,
+      AppStrings.idGroup: group.id.toString(),
       AppStrings.description2: description,
-      AppStrings.ownerIdText: '${member.group!.id}G',
+      AppStrings.ownerIdText: '${group.id.toString()}G',
       AppStrings.timestamp: DateTime.now(),
       AppStrings.nameVal: nameVal,
-      AppStrings.name: member.group!.name,
+      AppStrings.name: group.name,
     }).then(
       (DocumentReference doc) {
         String docId = doc.id;

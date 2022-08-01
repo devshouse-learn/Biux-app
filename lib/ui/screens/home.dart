@@ -148,18 +148,18 @@ class _MyHomeState extends State<MyHome> {
         userRecord = await ref
             .where(AppStrings.idText,
                 isEqualTo:
-                    AppStrings.idGFirebase(id: member.group!.id.toString()))
+                    AppStrings.idGFirebase(id: group.id.toString()))
             .get();
         if (userRecord2 == null) {
-          ref.doc(AppStrings.idGFirebase(id: member.group!.id.toString())).set(
+          ref.doc(AppStrings.idGFirebase(id: group.id.toString())).set(
             {
               AppStrings.idText:
-                  AppStrings.idGFirebase(id: member.group!.id.toString()),
-              AppStrings.user: member.group!.name,
+                  AppStrings.idGFirebase(id: group.id.toString()),
+              AppStrings.user: group.name,
               AppStrings.nameVal: user.userName,
-              AppStrings.photoText: member.group!.logo,
-              AppStrings.facebookText2: member.group!.facebook,
-              AppStrings.emailText: member.group!.name,
+              AppStrings.photoText: group.logo,
+              AppStrings.facebookText2: group.facebook,
+              AppStrings.emailText: group.name,
               AppStrings.bio: "",
               AppStrings.followersText: {},
               AppStrings.followingText: {},
@@ -406,7 +406,7 @@ class _MyHomeState extends State<MyHome> {
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
                                             GroupSlider(
-                                          member.group,
+                                          group,
                                         ),
                                       ),
                                     );

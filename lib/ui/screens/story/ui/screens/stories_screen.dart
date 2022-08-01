@@ -464,7 +464,7 @@ class _StoriesScreen extends State<StoriesScreen> {
                 ),
               ),
               ownerId.replaceAll('U', '') == user1!.id.toString() ||
-                      ownerId.replaceAll('G', '') == member.group!.id.toString()
+                      ownerId.replaceAll('G', '') == user1!.groupId
                   ? GestureDetector(
                       onTap: () async {
                         complete(

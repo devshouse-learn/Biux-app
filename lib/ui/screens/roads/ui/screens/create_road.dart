@@ -93,7 +93,7 @@ class _CreateRoadState extends State<CreateRoad> {
     username = (await LocalStorage().getUser())!;
     user = await UserRepository().getPerson(username);
     final nMember = await MembersRepository().getMyGroupsUser(user.id!);
-    _group = await GroupsRepository().getSpecificGroup(nMember.group!.id);
+    _group = await GroupsRepository().getSpecificGroup(user.groupId!);
     this.setState(
       () {
         if (admin.id! == user.id)
