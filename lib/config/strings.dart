@@ -1,9 +1,3 @@
-import 'package:biux/ui/screens/story/ui/screens/comment_screen.dart';
-import 'package:biux/ui/screens/user/password_screen.dart';
-import 'package:biux/ui/widgets/view_image_widget.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:googleapis/cloudbuild/v1.dart';
-
 class AppStrings {
   static const appId = "1770404886582959";
   static const version = "v11.0";
@@ -541,6 +535,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const wrongPassword = "Contraseña incorrecta";
   static const invalidEmail = "Correo electrónico inválido";
   static const msgErrorLogin = "Error al ingresar";
+  static const pathError = "Ruta no encontrada";
 
   ///
   /// Methods

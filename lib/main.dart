@@ -1,8 +1,7 @@
 import 'dart:core';
+import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
-import 'package:biux/data/models/group.dart';
-import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
-import 'package:biux/ui/screens/splash_screen.dart';
+import 'config/router/router.dart' as router;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
@@ -29,7 +28,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await GroupsFirebaseRepository().updateGroup(Group(id: '2', name: 'name2', description: 'Prueba'));
   runApp(
     ChangeNotifierProvider<ThemeNotifier>(
       create: (_) =>
@@ -44,7 +42,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -62,17 +60,16 @@ class MyApp extends StatelessWidget {
       supportedLocales: [
         const Locale(AppStrings.en, AppStrings.us),
       ],
-
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: analytics),
       ],
-
       title: AppStrings.APP_NAME,
       theme: themeNotifier.getTheme(),
-      home: SplashScreen(),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
       ),
+      initialRoute: AppRoutes.splashRoute,
+      onGenerateRoute: router.generateRoute,
       //    localizationsDelegates: [GlobalMaterialLocalizations.delegate],
     );
   }
