@@ -536,6 +536,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const invalidEmail = "Correo electrónico inválido";
   static const msgErrorLogin = "Error al ingresar";
   static const pathError = "Ruta no encontrada";
+  static const notFoundKey = "Variable no encontrada";
 
   ///
   /// Methods

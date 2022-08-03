@@ -2,7 +2,7 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/response.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

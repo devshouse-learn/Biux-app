@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:biux/data/models/story.dart';
 import 'package:biux/data/repositories/stories/stories_repository.dart';

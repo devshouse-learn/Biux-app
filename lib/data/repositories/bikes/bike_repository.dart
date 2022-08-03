@@ -5,7 +5,7 @@ import 'package:biux/data/models/trademark_bike.dart';
 import 'package:biux/data/models/type_bike.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 
 class BikeRepository {
   final urlBase = "https://biux-prod.ibacrea.com/api/v1/bicicletas";

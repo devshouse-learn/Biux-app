@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:biux/data/models/competitor_road.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/road.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

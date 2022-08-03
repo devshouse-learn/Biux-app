@@ -3,7 +3,7 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/users/user_repository.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -13,8 +13,6 @@ import 'package:biux/data/models/country.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/data/repositories/users/user_repository.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
 import 'package:biux/ui/screens/home.dart';
 import 'package:biux/ui/widgets/loading_widget.dart';
 import 'package:biux/ui/widgets/textField_widget.dart';

@@ -6,7 +6,7 @@ import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/bike.dart';
 import 'package:biux/data/models/stole_bikes.dart';
 import 'package:biux/data/repositories/stoles_bikes/stole_bikes_repository.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/user/edit_stolen_screen.dart';
 import 'package:biux/ui/widgets/map_general_widget.dart';
 import 'package:flutter/material.dart';

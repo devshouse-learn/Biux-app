@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:biux/data/models/eps.dart';
 import 'package:http/http.dart' as http;
-import 'package:biux/data/shared_preferences/localstorage.dart';
 
 class EpsRepository {
   final urlBase = "https://biux-prod.ibacrea.com/api/v1/eps";

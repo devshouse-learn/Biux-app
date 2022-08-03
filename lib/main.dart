@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/data/local_storage/local_storage.dart';
 import 'config/router/router.dart' as router;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:biux/config/themes/theme.dart';
@@ -28,6 +29,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await LocalStorage().init();
   runApp(
     ChangeNotifierProvider<ThemeNotifier>(
       create: (_) =>

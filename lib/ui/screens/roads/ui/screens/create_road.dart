@@ -5,7 +5,7 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/city.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 import 'package:biux/data/models/road.dart';

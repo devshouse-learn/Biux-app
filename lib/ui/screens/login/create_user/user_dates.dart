@@ -3,7 +3,7 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/analitics.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/home.dart';
 import 'package:diacritic/diacritic.dart';
 import 'package:biux/data/models/group.dart';

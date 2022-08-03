@@ -16,7 +16,7 @@ import 'package:biux/ui/widgets/textField_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:biux/data/repositories/users/user_repository.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 

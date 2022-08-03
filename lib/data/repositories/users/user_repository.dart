@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/user_membership.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
-import 'package:biux/data/shared_preferences/shared_preferences.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
+import 'package:biux/data/local_storage/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 

@@ -4,7 +4,7 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';

@@ -6,7 +6,7 @@ import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/data/models/competitor_road.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/analitics.dart';

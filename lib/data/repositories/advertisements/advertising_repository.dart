@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:biux/data/models/advertising.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

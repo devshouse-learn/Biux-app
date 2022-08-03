@@ -4,7 +4,7 @@ import 'package:biux/data/models/user_membership.dart';
 import 'package:biux/data/models/user.dart';
 import 'dart:io';
 import 'package:biux/data/repositories/users/user_repository_abstract.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/utils/firebase_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

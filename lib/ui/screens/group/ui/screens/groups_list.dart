@@ -6,7 +6,7 @@ import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/repositories/users/user_repository.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/group/ui/screens/groups_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/data/repositories/groups/groups_repository.dart';

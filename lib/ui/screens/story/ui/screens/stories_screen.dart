@@ -8,7 +8,7 @@ import 'package:biux/data/models/analitics.dart';
 import 'package:biux/data/repositories/groups/groups_repository.dart';
 import 'package:biux/data/repositories/members/members_repository.dart';
 import 'package:biux/data/repositories/users/user_repository.dart';
-import 'package:biux/data/shared_preferences/localstorage.dart';
+import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_slider/group_slider.dart';
 import 'package:biux/ui/screens/user/profile_screen.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_screen.dart';
