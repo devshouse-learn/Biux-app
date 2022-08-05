@@ -107,7 +107,7 @@ class AppStrings {
   static const coverGroup2 = "Portada de grupo";
   static const coverImage = "imagen Portada";
   static const zoomImagen = "Zoomimagen";
-  static const uploadCover = "Subir Portada";
+  static const uploadCover = "Subir Foto";
   static const WhatsappText = "Whatsapp";
   static const facebookText = "Facebook";
   static const facebookText2 = "facebook";
@@ -537,6 +537,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const msgErrorLogin = "Error al ingresar";
   static const pathError = "Ruta no encontrada";
   static const notFoundKey = "Variable no encontrada";
+  static const logoText = "logo";
 
   ///
   /// Methods

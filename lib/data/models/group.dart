@@ -20,7 +20,7 @@ class Group {
   String adminId;
 
   Group({
-    required this.id,
+    this.id = '',
     this.name = '',
     this.active = true,
     this.numberMembers = 0,

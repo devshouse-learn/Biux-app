@@ -1,6 +1,8 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_BLOC.dart';
+import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_screen.dart';
 import 'package:biux/ui/screens/login/login.dart';
 import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/splash_screen.dart';
@@ -23,6 +25,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _buildRoute(
         settings: settings,
         builder: SplashScreen(),
+      );
+    case AppRoutes.groupCreateRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => GroupCreateBloc(),
+          child: GroupCreateScreen(),
+        ),
       );
     default:
       return _errorRoute();

@@ -147,9 +147,10 @@ class Styles {
     color: AppColors.white,
   );
   static const uploadProfileCoverText = TextStyle(
-    fontSize: 13.0,
+    fontSize: 15,
     fontWeight: FontWeight.bold,
     color: AppColors.white,
+    fontFamily: "Poppins",
   );
   static const createGroupText = TextStyle(
     color: AppColors.white,
@@ -161,8 +162,10 @@ class Styles {
     fontWeight: FontWeight.bold,
   );
   static const sizedBoxHintStyle = TextStyle(
-    fontSize: 16.0,
+    fontSize: 18,
     fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+    color: AppColors.gray
   );
   static const alignText = TextStyle(
     fontWeight: FontWeight.w500,
@@ -497,5 +500,10 @@ class Styles {
   );
   static const selectableWidget = TextStyle(
     fontSize: 12,
+  );
+  static const containerImage = TextStyle(
+    color: AppColors.white,
+    fontSize: 15,
+    fontWeight: FontWeight.w300,
   );
 }

@@ -1,3 +1,4 @@
+import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/member.dart';
 import 'package:biux/data/models/group.dart';
 import 'dart:io';
@@ -158,7 +159,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
         id: group.id,
         cityId: group.cityId,
         description: group.description,
-        profileCover: url,
+        profileCover: group.profileCover,
         name: group.name,
         type: group.type,
         active: group.type,
@@ -166,7 +167,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
         cityAdmin: group.cityAdmin,
         facebook: group.facebook,
         instagram: group.instagram,
-        logo: group.logo,
+        logo: url,
         logoADM: group.logoADM,
         modality: group.modality,
         numberMembers: group.numberMembers,
@@ -182,14 +183,47 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   }
 
   @override
-  Future<bool> createGroup(Group group) async {
+  Future<bool> createGroup(Group group, File logo, File profileCover) async {
     try {
-      await firestore.collection(collection).doc(group.id).set(
-            group.toJson(),
+      await firestore.collection(collection).add(group.toJson()).then(
+        (DocumentReference doc) async {
+          String docId = doc.id;
+          final logoUrl = await updateImageLogo(logo, docId);
+          final profileCoverUrl = await updateImageProfileCover(profileCover, docId);
+          firestore.collection(collection).doc(docId).update(
+            {
+              AppStrings.logoText: logoUrl,
+              AppStrings.profileCoverText: profileCoverUrl,
+              AppStrings.idText: docId,
+            },
           );
+        },
+      );
       return true;
     } catch (e) {
       return false;
     }
+  }
+
+  Future<String> updateImageLogo(File filePhoto, String id) async {
+    FirebaseUtils firebaseUtils = FirebaseUtils();
+    final url = await firebaseUtils.uploadImage(
+      image: filePhoto,
+      nameImage: 'filePhoto',
+      imageFolder: 'filePhoto',
+    );
+
+    return url;
+  }
+
+  Future<String> updateImageProfileCover(File fileProfileCover, String id) async {
+    FirebaseUtils firebaseUtils = FirebaseUtils();
+    final url = await firebaseUtils.uploadImage(
+      image: fileProfileCover,
+      nameImage: 'fileProfileCover',
+      imageFolder: 'fileProfileCover',
+    );
+
+    return url;
   }
 }
