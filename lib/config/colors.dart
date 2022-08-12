@@ -61,6 +61,7 @@ class AppColors {
   static const palePurple = Color(0xfff0edf7);
   static const amber = Color(0xFFFFC107);
   static const paleBlue = Color(0xffeceef9);
+  static const profileCoverGroup = Color(0x8F000000);
 }
 
 Map<int, Color> color = {

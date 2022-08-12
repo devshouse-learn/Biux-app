@@ -146,7 +146,7 @@ class GrupoSliderState extends State<GroupSlider>
                     context,
                     MaterialPageRoute(
                       builder: (_) {
-                        return ZoomPage(widget._group!);
+                        return ZoomPage(widget._group!.profileCover, widget._group!.name);
                       },
                     ),
                   );
@@ -173,7 +173,7 @@ class GrupoSliderState extends State<GroupSlider>
                           context,
                           MaterialPageRoute(
                             builder: (_) {
-                              return ZoomPage2(widget._group!);
+                              return ZoomPage(widget._group!.logo, widget._group!.name);
                             },
                           ),
                         );

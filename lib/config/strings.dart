@@ -387,7 +387,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const storyText = "Historias";
   static const locationText = "location";
   static const likes = "likes";
-  static const description2 = "description";
+  static const description2 = "descriptión";
   static const name = "name";
   static const ownerError = "owner error";
   static const email = "correoElectronico";

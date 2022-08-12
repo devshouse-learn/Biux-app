@@ -3,9 +3,12 @@ import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_BLOC.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_screen.dart';
+import 'package:biux/ui/screens/group/ui/screens/see_group/view_group_bloc.dart';
+import 'package:biux/ui/screens/group/ui/screens/see_group/view_group_screen.dart';
 import 'package:biux/ui/screens/login/login.dart';
 import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/splash_screen.dart';
+import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +35,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => GroupCreateBloc(),
           child: GroupCreateScreen(),
+        ),
+      );
+    case AppRoutes.viewGroupRoute: 
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => ViewGroupBloc( adminId: args ,groupId: args),
+          child: ViewGroupScreen(),
         ),
       );
     default:

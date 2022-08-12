@@ -83,7 +83,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                         context,
                         MaterialPageRoute(
                           builder: (_) {
-                            return ZoomPage3(widget._sites);
+                            return ZoomPage(widget._sites.profileCover, widget._sites.name);
                           },
                         ),
                       );

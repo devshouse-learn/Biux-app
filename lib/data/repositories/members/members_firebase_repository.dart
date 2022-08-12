@@ -11,17 +11,17 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
-  Future<Member> deleteMember(Member member, String groupId) async {
+  Future<Member> deleteMember(String memberId, String groupId) async {
     try {
       await firestore
           .collection(collection)
           .doc(groupId)
           .collection(subcollection)
-          .doc(member.id)
+          .doc(memberId)
           .delete();
       final response = await firestore
           .collection(collection)
-          .where('id', isEqualTo: member.id)
+          .where('id', isEqualTo: memberId)
           .get();
       return Member.fromJson(
         response.docs.first.data(),
@@ -32,13 +32,12 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future<Member> getApproved(String id, String userId, String groupId) async {
+  Future<Member> getApproved(String userId, String groupId) async {
     try {
       final response = await firestore
           .collection(collection)
           .doc(groupId)
           .collection(subcollection)
-          .where('id', isEqualTo: id)
           .where('userId', isEqualTo: userId)
           .get();
       return Member.fromJson(
@@ -89,7 +88,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future joinGroups(String groupId, Member member) async {
+  Future joinGroups(String groupId, int memberNumer, Member member) async {
     try {
       await firestore
           .collection(collection)
@@ -111,26 +110,28 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           );
         },
       );
+      await firestore
+          .collection(collection)
+          .doc(groupId)
+          .update({'numberMembers': memberNumer + 1});
     } catch (e) {}
   }
 
-  Future<Member> leaveGroups(Member member, String groupId) async {
+  Future<bool> leaveGroups(String id, int numberMember, String groupId) async {
     try {
       await firestore
           .collection(collection)
           .doc(groupId)
           .collection(subcollection)
-          .doc(member.id)
-          .update(member.toJson());
-      final response = await firestore
+          .doc(id)
+          .delete();
+          await firestore
           .collection(collection)
-          .where('id', isEqualTo: member.id)
-          .get();
-      return Member.fromJson(
-        response.docs.first.data(),
-      );
+          .doc(groupId)
+          .update({'numberMembers': numberMember - 1});
+      return true;
     } catch (e) {
-      return Member();
+      return false;
     }
   }
 }

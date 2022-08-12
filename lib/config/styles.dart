@@ -248,8 +248,9 @@ class Styles {
     fontWeight: FontWeight.bold,
   );
   static const containerWhite = TextStyle(
+    fontFamily: "Poppins",
     color: AppColors.white,
-    fontSize: 20.0,
+    fontSize: 30.0,
     fontWeight: FontWeight.bold,
   );
   static const flatButton = TextStyle(
@@ -505,5 +506,9 @@ class Styles {
     color: AppColors.white,
     fontSize: 15,
     fontWeight: FontWeight.w300,
+  );
+  static const containerLead = TextStyle(
+    color: AppColors.strongCyan,
+    fontSize: 15.0,
   );
 }

@@ -25,10 +25,10 @@ class Group {
     this.active = true,
     this.numberMembers = 0,
     this.numberRoads = 0,
-    this.logo = '',
+    this.logo = 'https://play-lh.googleusercontent.com/wyyEURZBz5PI4qbTeJTelVlQrbXj5RQVu8ZCG-DldcOaZLDcULUq71palN3SWny2SrdK',
     this.logoADM = '',
     this.profileCoverADM = '',
-    this.profileCover = '',
+    this.profileCover = 'https://play-lh.googleusercontent.com/wyyEURZBz5PI4qbTeJTelVlQrbXj5RQVu8ZCG-DldcOaZLDcULUq71palN3SWny2SrdK',
     this.description = '',
     this.modality = const [],
     this.type = true,
@@ -60,6 +60,7 @@ class Group {
             "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
         profileCoverADM: json["profileCoverADM"],
         type: json["type"],
+        whatsapp: json["whatsapp"]
       );
 
   Map<String, dynamic> toJson() => {
