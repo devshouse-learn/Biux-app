@@ -162,11 +162,10 @@ class Styles {
     fontWeight: FontWeight.bold,
   );
   static const sizedBoxHintStyle = TextStyle(
-    fontSize: 18,
-    fontFamily: "Poppins",
-    fontWeight: FontWeight.w300,
-    color: AppColors.gray
-  );
+      fontSize: 18,
+      fontFamily: "Poppins",
+      fontWeight: FontWeight.w300,
+      color: AppColors.gray);
   static const alignText = TextStyle(
     fontWeight: FontWeight.w500,
     color: AppColors.white,
@@ -510,5 +509,23 @@ class Styles {
   static const containerLead = TextStyle(
     color: AppColors.strongCyan,
     fontSize: 15.0,
+  );
+  static const containerNameUser = TextStyle(
+    color: AppColors.white,
+    fontSize: 20.0,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.bold,
+  );
+  static const containerText = TextStyle(
+    color: AppColors.white,
+    fontSize: 15,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
+  static const containerFollowing = TextStyle(
+    color: AppColors.darkDeepNavyBlue,
+    fontSize: 20,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
   );
 }

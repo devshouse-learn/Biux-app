@@ -128,4 +128,24 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       name: urlImage,
     });
   }
+
+  Future<List<Story>> getStoriesId(String id) async {
+    try {
+      final response = await firestore
+          .collection(collection)
+          .where('userId', isEqualTo: id)
+          .get();
+      return response.docs
+          .map(
+            (e) => Story.fromJson(
+              e.data(),
+            ),
+          )
+          .toList();
+    } catch (e) {
+      return List.empty();
+    }
+  }
 }
+
+

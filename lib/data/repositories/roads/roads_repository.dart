@@ -87,7 +87,7 @@ class RoadsRepository {
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
     List<CompetitorRoad> listCompetitorRoad =
-        roadsJson.map((roadJson) => CompetitorRoad.fromJson(json: roadJson)).toList();
+        roadsJson.map((roadJson) => CompetitorRoad.fromJsonMap(json: roadJson)).toList();
 
     return listCompetitorRoad;
   }
@@ -167,7 +167,7 @@ class RoadsRepository {
 
     List participant = responseData["data"];
 
-    return CompetitorRoad.fromJson(json: participant.first);
+    return CompetitorRoad.fromJsonMap(json: participant.first);
   }
 
   Future<CompetitorRoad> deleteCompetitorRoad(
@@ -186,6 +186,6 @@ class RoadsRepository {
       headers: headers,
     );
 
-    return CompetitorRoad.fromJson(json: json.decode(response.body));
+    return CompetitorRoad.fromJsonMap(json: json.decode(response.body));
   }
 }

@@ -7,13 +7,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
   static final collection = 'roads';
-  static final collectionCompetitor = 'CompetitorRoad';
+  static final collectionCompetitor = 'competitorRoad';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
-  Future<bool> deleteCompetitorRoad({required CompetitorRoad competitorRoad, required String roadId,}) async {
+  Future<bool> deleteCompetitorRoad({
+    required CompetitorRoad competitorRoad,
+    required String roadId,
+  }) async {
     try {
       await firestore
-      .collection(collection).doc(roadId)
+          .collection(collection)
+          .doc(roadId)
           .collection(collectionCompetitor)
           .doc(competitorRoad.userId)
           .delete();
@@ -44,7 +48,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .get();
       return result.docs
           .map(
-            (e) => CompetitorRoad.fromJson(
+            (e) => CompetitorRoad.fromJsonMap(
               json: e.data(),
             ),
           )
@@ -55,7 +59,8 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
   }
 
   @override
-  Future<CompetitorRoad> getParticipantRoad({required String id, required String userId}) async {
+  Future<CompetitorRoad> getParticipantRoad(
+      {required String id, required String userId}) async {
     try {
       final response = await firestore
           .collection(collection)
@@ -63,7 +68,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .collection(collectionCompetitor)
           .where('userId', isEqualTo: userId)
           .get();
-      return CompetitorRoad.fromJson(
+      return CompetitorRoad.fromJsonMap(
         json: response.docs.first.data(),
       );
     } catch (e) {
@@ -210,6 +215,24 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<List<CompetitorRoad>> getListassistedRoads() async {
+    try {
+      final response = await firestore
+          .collectionGroup(collectionCompetitor)
+          .get();
+      print(response.docs.first);
+      return response.docs
+          .map(
+            (e) => CompetitorRoad.fromJsonMap(
+              json: e.data(),
+            ),
+          )
+          .toList();
+    } catch (e) {
+      return List.empty();
     }
   }
 }

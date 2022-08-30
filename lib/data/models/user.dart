@@ -24,6 +24,7 @@ class BiuxUser {
   final Map? followers;
   final Map? following;
   SituationAccident? situationAccident;
+  String? description;
 
   BiuxUser({
     this.id = '',
@@ -36,12 +37,14 @@ class BiuxUser {
     this.email = '',
     this.dateBirth = '',
     this.facebook = '',
-    this.photo = '',
+    this.photo =
+        'https://rubibike.com/wp-content/uploads/2020/12/la_importacia_del_equipamiento_para_el_ciclista.jpg',
     this.token = '',
     this.cellphone = '',
     this.modality = const [],
     this.password = '',
-    this.profileCover = '',
+    this.profileCover =
+        'https://rubibike.com/wp-content/uploads/2020/12/la_importacia_del_equipamiento_para_el_ciclista.jpg',
     this.followerS = 0,
     this.groupId = '',
     this.instagram = '',
@@ -49,36 +52,38 @@ class BiuxUser {
     this.followers = const {},
     this.following = const {},
     this.situationAccident,
+    this.description = '',
   });
 
   factory BiuxUser.fromJsonMap(Map json) {
     return BiuxUser(
-      id: json["id"],
-      names: json["names"],
-      surnames: json["surnames"],
-      whatsapp: json["whatsapp"],
-      userName: json["userName"],
-      gender: json["gender"],
-      cityId: json["cityId"],
-      token: json['token'],
-      email: json["email"],
-      dateBirth: json[" dateBirth"],
-      facebook: json["facebook"],
-      photo: json["photo"] ??
-          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-      cellphone: json["cellphone"],
-      password: json["password"],
-      profileCover: json["profileCover"] ??
-          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-      followerS: json["followerS"],
-      instagram: json["instagram"],
-      premium: json["premium"],
-      followers: json["followers"],
-      following: json["following"],
-      groupId: json["groupId"],
-      situationAccident: SituationAccident.fromJsonMap(json["situationAccident"])
-
-    );
+        id: json["id"],
+        names: json["names"],
+        surnames: json["surnames"],
+        whatsapp: json["whatsapp"],
+        userName: json["userName"],
+        gender: json["gender"],
+        cityId: json["cityId"],
+        token: json['token'],
+        email: json["email"],
+        dateBirth: json[" dateBirth"],
+        facebook: json["facebook"],
+        photo: json["photo"] ??
+            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+        cellphone: json["cellphone"],
+        password: json["password"],
+        profileCover: json["profileCover"] ??
+            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+        followerS: json["followerS"],
+        instagram: json["instagram"],
+        premium: json["premium"],
+        followers: json["followers"],
+        following: json["following"],
+        groupId: json["groupId"],
+        situationAccident:
+            SituationAccident.fromJsonMap(json["situationAccident"]),
+            description: json["description"],);
+        
   }
   Map<String, dynamic> toJson() {
     var userJson = {
@@ -105,6 +110,7 @@ class BiuxUser {
       "following": following,
       "groupId": groupId,
       'situationAccident': situationAccident?.toJson(),
+      "description": description,
     };
 
     var cleanUser = <String, dynamic>{};

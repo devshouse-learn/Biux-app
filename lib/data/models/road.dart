@@ -1,3 +1,5 @@
+import 'package:biux/data/models/competitor_road.dart';
+
 class Road {
   String id;
   int numberParticipants;

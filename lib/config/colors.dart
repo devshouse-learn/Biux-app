@@ -47,7 +47,7 @@ class AppColors {
   static const lightBlueAccent = Color(0xff40C4FF);
   static const darkBlue = Color(0xff0D1F2D);
   static const deepNavyBlue = Color(0xff000047);
-  static const deepNavyBlue2 = Color(0xff000036);
+  static const darkDeepNavyBlue = Color(0xff000036);
   static const blueGrey = Color(0xff607D8B);
   static const blue = Color(0xff2196F3);
   static const vividBlue = Color(0xff4285f4);
@@ -62,6 +62,7 @@ class AppColors {
   static const amber = Color(0xFFFFC107);
   static const paleBlue = Color(0xffeceef9);
   static const profileCoverGroup = Color(0x8F000000);
+  static const darkNavy = Color(0xFF111F2C);
 }
 
 Map<int, Color> color = {

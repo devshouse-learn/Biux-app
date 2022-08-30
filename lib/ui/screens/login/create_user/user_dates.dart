@@ -194,7 +194,7 @@ class _UserNormalState extends State<UserNormal> {
         child: MaterialApp(
           home: Scaffold(
             appBar: AppBar(
-              backgroundColor: AppColors.deepNavyBlue2,
+              backgroundColor: AppColors.darkDeepNavyBlue,
               title: Text(AppStrings.profileText),
             ),
             body: SafeArea(
@@ -309,7 +309,7 @@ class _UserNormalState extends State<UserNormal> {
                           padding: EdgeInsets.all(3),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: AppColors.deepNavyBlue2.withOpacity(0.5),
+                            color: AppColors.darkDeepNavyBlue.withOpacity(0.5),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -370,7 +370,7 @@ class _UserNormalState extends State<UserNormal> {
                           padding: EdgeInsets.all(3),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: AppColors.deepNavyBlue2.withOpacity(0.5),
+                            color: AppColors.darkDeepNavyBlue.withOpacity(0.5),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

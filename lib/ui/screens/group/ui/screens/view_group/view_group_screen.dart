@@ -2,7 +2,7 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/ui/screens/group/ui/screens/see_group/view_group_bloc.dart';
+import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
 import 'package:biux/ui/widgets/button_facebook_widget.dart';
 import 'package:biux/ui/widgets/button_instagram_widget.dart';

@@ -27,7 +27,7 @@ class CreateUserNormalOrPremiumState extends State<CreateUserNormalOrPremium>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.deepNavyBlue2,
+        backgroundColor: AppColors.darkDeepNavyBlue,
         title: Text(AppStrings.profileText),
       ),
       /*bottom: new TabBar(
