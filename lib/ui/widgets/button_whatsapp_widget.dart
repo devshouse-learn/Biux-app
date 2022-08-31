@@ -14,7 +14,7 @@ class ButtonWhatsappWidget extends StatelessWidget {
       this.width = 50,
       this.radiusCircular = 15})
       : super(key: key);
-  String whatsappLogo = Images.kWhatsappLogo;
+  String whatsappLogo = Images.kWhatsapp;
   final String whatsapp;
   final String name;
   final double height;

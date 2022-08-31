@@ -43,7 +43,7 @@ class GrupoSliderState extends State<GroupSlider>
     with SingleTickerProviderStateMixin {
   String whatsapp = Images.kWhatsappLogo;
   String facebook = Images.kFacebookLogo;
-  String instagram = Images.kInstagramLogoColorful;
+  String instagram = Images.kInstagram;
   var username;
   late TabController controller;
   bool cmbscritta = false;

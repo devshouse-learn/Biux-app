@@ -18,10 +18,12 @@ class Images {
   static const kBiuxLogoLettersWhite =
       '$kImagesPath/biux_logo_letters_white.png';
   static const kInstagramLogo = '$kImagesPath/instagram_logo.png';
-  static const kInstagramLogoColorful =
-      '$kImagesPath/instagram_logo_colorful.png';
+  static const kInstagram =
+      '$kImagesPath/instagram.png';
   static const kWhatsappLogo = '$kImagesPath/whatsapp_logo.png';
   static const kFacebookLogo = '$kImagesPath/facebook_logo.png';
+  static const kWhatsapp = '$kImagesPath/whatsapp.png';
+  static const kFacebook = '$kImagesPath/facebook.png';
   static const kGoogleLogo = '$kImagesPath/google_logo.png';
   static const kBackground = '$kImagesPath/background.png';
   static const kAdBiciCombeima = '$kImagesPath/ad_bici_combeima.jpeg';
@@ -36,5 +38,5 @@ class Images {
   static const kImageChange = '$kImagesPath/change.png';
   static const kImageGallery = '$kImagesPath/gallery.png';
   static const kImageSocial = '$kImagesPath/social.png';
-  static const kImageMultipleImage = '$kImagesPath/snakeCase.png';
+  static const kImageSnakeCase = '$kImagesPath/snakeCase.png';
 }

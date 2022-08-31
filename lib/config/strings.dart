@@ -74,8 +74,8 @@ class AppStrings {
   static const meeting = "Encuentro : ";
   static const level = "Nivel : ";
   static const kmText = "Km : ";
-  static const seeMore = "Ver más";
-  static const seeLess = "Ver menos";
+  static const seeMore = "más";
+  static const seeLess = " menos";
   static const ListParticipants = "Lista de participantes";
   static const instaFeed = "insta_a_feed";
   static const items = "items";
@@ -538,6 +538,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const pathError = "Ruta no encontrada";
   static const notFoundKey = "Variable no encontrada";
   static const logoText = "logo";
+  static const following2 = "Seguidos";
 
   ///
   /// Methods

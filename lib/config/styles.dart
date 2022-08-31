@@ -375,7 +375,7 @@ class Styles {
   static const moreStyle = TextStyle(
     color: AppColors.gray,
     fontSize: 14,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w300,
   );
   static const paddingGray = TextStyle(
     color: AppColors.gray,
@@ -523,8 +523,19 @@ class Styles {
     fontWeight: FontWeight.w300,
   );
   static const containerFollowing = TextStyle(
-    color: AppColors.darkDeepNavyBlue,
-    fontSize: 20,
+    color: AppColors.darkNavy,
+    fontSize: 15,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
+  static const numberBlack = TextStyle(
+    color: AppColors.black,
+    fontSize: 15.0,
+    fontWeight: FontWeight.bold,
+  );
+  static const containerTextGroup = TextStyle(
+    color: AppColors.black,
+    fontSize: 18,
     fontFamily: "Poppins",
     fontWeight: FontWeight.w300,
   );

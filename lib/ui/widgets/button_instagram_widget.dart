@@ -13,7 +13,7 @@ class ButtonInstagramWidget extends StatelessWidget {
       this.width = 50,
       this.radiusCircular = 15})
       : super(key: key);
-  String instagramLogo = Images.kInstagramLogoColorful;
+  String instagramLogo = Images.kInstagram;
   final String linkinstagram;
   final double height;
   final double width;
@@ -28,8 +28,6 @@ class ButtonInstagramWidget extends StatelessWidget {
           image: DecorationImage(
             image: new AssetImage(instagramLogo),
           ),
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(radiusCircular),
         ),
         height: height,
         width: width,

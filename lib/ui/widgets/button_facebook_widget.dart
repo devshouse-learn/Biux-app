@@ -13,7 +13,7 @@ class ButtonFacebookWidget extends StatelessWidget {
       this.width = 50,
       this.radiusCircular = 15})
       : super(key: key);
-  String facebookLogo = Images.kFacebookLogo;
+  String facebookLogo = Images.kFacebook;
   final String linkFacebook;
   final double height;
   final double width;

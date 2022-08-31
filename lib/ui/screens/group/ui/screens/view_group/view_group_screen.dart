@@ -1,15 +1,17 @@
 import 'package:biux/config/colors.dart';
+import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/data/models/user.dart';
+import 'package:biux/data/models/road.dart';
+import 'package:biux/data/models/story.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
 import 'package:biux/ui/widgets/button_facebook_widget.dart';
 import 'package:biux/ui/widgets/button_instagram_widget.dart';
-import 'package:biux/ui/widgets/button_border_widget.dart';
 import 'package:biux/ui/widgets/button_whatsapp_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
 import '../../../../../../data/models/group.dart';
 
 class ViewGroupScreen extends StatelessWidget {
@@ -19,14 +21,22 @@ class ViewGroupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<ViewGroupBloc>();
     return Scaffold(
-      backgroundColor: AppColors.darkBlue,
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.darkBlue,
+        title: Selector<ViewGroupBloc, Group>(
+            selector: (_, bloc) => bloc.group,
+            builder: (context, value, child) {
+              return _AppBar(group: bloc.group);
+            }),
+      ),
       body: Stack(
         alignment: Alignment.bottomRight,
         children: <Widget>[
           Selector<ViewGroupBloc, Group?>(
               selector: (_, bloc) => bloc.group,
               builder: (context, group, child) {
-                return _SuperiorSeeGroup(group: bloc.group);
+                return _HigherViewGroup(group: bloc.group);
               }),
           Selector<ViewGroupBloc, Group?>(
               selector: (_, bloc) => bloc.group,
@@ -40,7 +50,6 @@ class ViewGroupScreen extends StatelessWidget {
               builder: (context, group, child) {
                 return _TabBarSeeGroup(
                   group: bloc.group,
-                  admin: bloc.admin,
                 );
               }),
         ],
@@ -49,68 +58,59 @@ class ViewGroupScreen extends StatelessWidget {
   }
 }
 
-class _SuperiorSeeGroup extends StatelessWidget {
+class _AppBar extends StatelessWidget {
   Group group;
-  _SuperiorSeeGroup({Key? key, required this.group}) : super(key: key);
+  _AppBar({Key? key, required this.group}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    return Stack(children: <Widget>[
-      GestureDetector(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 250,
-              width: size.width,
-              decoration: BoxDecoration(
-                image: new DecorationImage(
-                  image: new NetworkImage(
-                    group.profileCover,
-                  ),
-                  opacity: 150.0,
-                  fit: BoxFit.cover,
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            children: [
+              Container(
+                child: IconButton(
+                  iconSize: 40,
+                  icon: Icon(Icons.arrow_back_rounded),
+                  color: AppColors.white,
+                  onPressed: () {},
                 ),
-                borderRadius: BorderRadius.circular(2.0),
+              ),
+              Container(
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    group.name,
+                    style: Styles.containerNameUser,
+                  )),
+            ],
+          ),
+          GestureDetector(
+            child: Container(
+              height: 35,
+              width: 35,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(Images.kImageShare),
+                ),
               ),
             ),
-          ],
-        ),
-        onTap: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return ZoomPage(group.profileCover, group.name);
-              });
-        },
-      ),
-      Container(
-        alignment: Alignment.topCenter,
-        margin: new EdgeInsets.only(top: 100),
-        child: Text(
-          group.name,
-          style: Styles.containerWhite,
-        ),
-      ),
-      GestureDetector(
-        child: Container(
-          margin: EdgeInsets.only(top: 45, left: 10),
-          height: 50,
-          width: 50,
-          child: GestureDetector(
-            child: Icon(
-              Icons.arrow_back_rounded,
-              color: AppColors.white,
-              size: 45,
-            ),
+            onTap: () {},
           ),
-        ),
-        onTap: () {},
-      ),
+        ]);
+  }
+}
+
+class _HigherViewGroup extends StatelessWidget {
+  Group group;
+  _HigherViewGroup({Key? key, required this.group}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: <Widget>[
       Container(
         alignment: Alignment.topCenter,
-        margin: new EdgeInsets.only(top: 180.0, right: 230),
+        margin: EdgeInsets.only(top: 20),
         child: GestureDetector(
           onTap: () {
             showDialog(
@@ -122,9 +122,10 @@ class _SuperiorSeeGroup extends StatelessWidget {
           child: Container(
             height: 130,
             width: 130,
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.white, width: 4),
               image: DecorationImage(
-                image: new NetworkImage(group.logo),
+                image: NetworkImage(group.logo),
                 fit: BoxFit.cover,
               ),
               borderRadius: BorderRadius.circular(100.0),
@@ -132,15 +133,46 @@ class _SuperiorSeeGroup extends StatelessWidget {
           ),
         ),
       ),
+      Container(
+        alignment: Alignment.topCenter,
+        margin: EdgeInsets.only(top: 115),
+        child: GestureDetector(
+          child: Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Images.kImageChange),
+              ),
+            ),
+          ),
+          onTap: () {},
+        ),
+      ),
+      Container(
+        height: 40,
+        margin: EdgeInsets.only(top: 160, left: 10),
+        alignment: Alignment.topCenter,
+        child: ButtonTheme(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+          ),
+          minWidth: 140,
+          height: 50,
+          child: RaisedButton(
+              color: AppColors.white,
+              child:
+                  Text(AppStrings.editGroup, style: Styles.containerTextGroup),
+              onPressed: () {}),
+        ),
+      )
     ]);
   }
 }
 
 class _TabBarSeeGroup extends StatefulWidget {
   Group group;
-  BiuxUser admin;
-  _TabBarSeeGroup({Key? key, required this.group, required this.admin})
-      : super(key: key);
+  _TabBarSeeGroup({Key? key, required this.group}) : super(key: key);
 
   @override
   State<_TabBarSeeGroup> createState() => _TabBarSeeGroupState();
@@ -161,50 +193,60 @@ class _TabBarSeeGroupState extends State<_TabBarSeeGroup>
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      margin: EdgeInsets.only(top: size.height * 0.40),
-      child: Column(
-        children: <Widget>[
-          TabBar(
-              onTap: (index) => setState(() => _selectedIndex = index),
-              labelPadding: EdgeInsets.zero,
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              controller: tabController,
-              indicatorWeight: 0.01,
-              splashBorderRadius: BorderRadius.circular(20),
-              unselectedLabelColor: AppColors.black,
-              tabs: List<Widget>.generate(
-                tabController.length,
-                (index) => _TabDecoration(
-                  borderRadius: index == 0
-                      ? BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          topLeft: Radius.circular(20))
-                      : index == 2
-                          ? BorderRadius.only(
-                              bottomRight: Radius.circular(20),
-                              topRight: Radius.circular(20))
-                          : BorderRadius.only(),
-                  index: index,
-                  selectedIndex: _selectedIndex,
-                  numberMembers: widget.group.numberMembers.toString(),
-                  numberRoads: widget.group.numberRoads.toString(),
-                ),
-              )),
-          Expanded(
-            child: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: tabController,
-              children: <Widget>[
-                _DescriptionGroup(group: widget.group, userAdmin: widget.admin),
-                _DescriptionGroup(group: widget.group, userAdmin: widget.admin),
-                _DescriptionGroup(group: widget.group, userAdmin: widget.admin),
-              ],
-            ),
+    final bloc = context.read<ViewGroupBloc>();
+    return Column(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 210, bottom: 10),
+          alignment: Alignment.topCenter,
+          padding: EdgeInsets.symmetric(horizontal: 35.0),
+          child: ReadMoreText(
+            bloc.group.description,
+            textAlign: TextAlign.center,
+            trimLines: 2,
+            trimMode: TrimMode.Line,
+            trimCollapsedText: AppStrings.seeMore,
+            trimExpandedText: AppStrings.seeLess,
+            moreStyle: Styles.moreStyle,
+            lessStyle: Styles.moreStyle,
+            style: Styles.containerFollowing,
           ),
-        ],
-      ),
+        ),
+        TabBar(
+            onTap: (index) => setState(() => _selectedIndex = index),
+            labelPadding: EdgeInsets.zero,
+            controller: tabController,
+            indicatorWeight: 0.01,
+            splashBorderRadius: BorderRadius.circular(20),
+            unselectedLabelColor: AppColors.black,
+            tabs: List<Widget>.generate(
+              tabController.length,
+              (index) => _TabDecoration(
+                borderRadius: index == 0
+                    ? BorderRadius.only(topLeft: Radius.circular(10))
+                    : index == 2
+                        ? BorderRadius.only(topRight: Radius.circular(10))
+                        : BorderRadius.only(),
+                index: index,
+                selectedIndex: _selectedIndex,
+              ),
+            )),
+        Expanded(
+          child: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
+            controller: tabController,
+            children: <Widget>[
+              Selector<ViewGroupBloc, List<Story>>(
+                  selector: (_, bloc) => bloc.stories,
+                  builder: (context, value, child) {
+                    return _ViewUserImage(stories: bloc.stories);
+                  }),
+              _ViewUserImage(stories: bloc.stories),
+              _ViewUserImage(stories: bloc.stories),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -218,101 +260,30 @@ class _SocialNetworks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<ViewGroupBloc>();
+    Size size = MediaQuery.of(context).size;
     return Container(
-      margin: EdgeInsets.only(bottom: 325, left: 180),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+      margin: EdgeInsets.only(left: size.width * 0.80, top: 5),
+      child: Column(
         children: <Widget>[
+          if (group.instagram.isNotEmpty)
+            ButtonInstagramWidget(
+              linkinstagram: group.instagram,
+            ),
+          Container(
+            height: 5,
+          ),
           if (group.whatsapp.isNotEmpty)
             ButtonWhatsappWidget(
               whatsapp: group.whatsapp,
               name: group.name,
             ),
           Container(
-            width: 15,
+            height: 5,
           ),
           if (group.facebook.isNotEmpty)
             ButtonFacebookWidget(
               linkFacebook: group.facebook,
             ),
-          Container(
-            width: 15,
-          ),
-          if (group.instagram.isNotEmpty)
-            ButtonInstagramWidget(
-              linkinstagram: group.instagram,
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DescriptionGroup extends StatelessWidget {
-  Group group;
-  BiuxUser userAdmin;
-  _DescriptionGroup({Key? key, required this.group, required this.userAdmin})
-      : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    final bloc = context.read<ViewGroupBloc>();
-
-    return Scaffold(
-      backgroundColor: AppColors.transparent,
-      body: ListView(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Container(
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 30, right: 30),
-                          child: SizedBox(
-                            width: 330,
-                            child: Text(
-                              group.description,
-                              style: Styles.containerDescription,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 30, right: 30),
-                      child: Row(
-                        children: [
-                          Text(
-                            AppStrings.leader,
-                            style: Styles.containerLead,
-                          ),
-                          Text(
-                            ' ${userAdmin.names} ${userAdmin.surnames}',
-                            style: Styles.containerDescription,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Selector<ViewGroupBloc, bool?>(
-                        selector: (_, bloc) => bloc.validation,
-                        builder: (context, validation, child) {
-                          return ButtonBorderWidget(
-                            onPressed: () => bloc.validation
-                                ? bloc.leaveGroup
-                                : bloc.joinGroup,
-                            text: bloc.validation
-                                ? AppStrings.outText
-                                : AppStrings.joinMe,
-                          );
-                        })
-                  ],
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -322,40 +293,124 @@ class _DescriptionGroup extends StatelessWidget {
 class _TabDecoration extends StatelessWidget {
   const _TabDecoration({
     Key? key,
-    this.numberMembers = '0',
-    this.numberRoads = '0',
     required this.borderRadius,
     required this.index,
     required this.selectedIndex,
   }) : super(key: key);
   final int index;
   final int selectedIndex;
-  final String numberRoads;
-  final String numberMembers;
   final BorderRadius borderRadius;
 
   @override
   Widget build(BuildContext context) {
+    final bloc = context.read<ViewGroupBloc>();
+    Size size = MediaQuery.of(context).size;
     return Tab(
-      iconMargin: EdgeInsets.zero,
+      height: 70,
       child: Container(
           alignment: Alignment.center,
-          height: 50,
-          width: 300,
-          child: Text(
-              index == 0
-                  ? AppStrings.description2
-                  : index == 1
-                      ? AppStrings.rodadas(numberRodadas: numberRoads)
-                      : index == 2
-                          ? AppStrings.seguidores(members: numberMembers)
-                          : '',
-              textAlign: TextAlign.center),
+          width: size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (index == 0)
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(Images.kImageGallery),
+                    ),
+                  ),
+                )
+              else if (index == 1)
+                Icon(
+                  Icons.directions_bike,
+                  color: AppColors.black,
+                )
+              else if (index == 2)
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(Images.kImageSocial),
+                    ),
+                  ),
+                ),
+              SizedBox(width: 10),
+              if (index == 0)
+                Selector<ViewGroupBloc, List<Story>>(
+                    selector: (_, bloc) => bloc.stories,
+                    builder: (context, value, child) {
+                      return Text(bloc.stories.length.toString(),
+                          style: Styles.rowItemColorligth);
+                    })
+              else if (index == 1)
+                Selector<ViewGroupBloc, List<Road>>(
+                    selector: (_, bloc) => bloc.roads,
+                    builder: (context, value, child) {
+                      return Text(bloc.roads.length.toString(),
+                          style: Styles.rowItemColorligth);
+                    })
+              else if (index == 2)
+                Selector<ViewGroupBloc, List<Story>>(
+                    selector: (_, bloc) => bloc.stories,
+                    builder: (context, value, child) {
+                      return Text(bloc.member.length.toString(),
+                          style: Styles.rowItemColorligth);
+                    }),
+            ],
+          ),
           decoration: BoxDecoration(
+              border: Border.all(color: AppColors.gray, width: 0.1),
               borderRadius: borderRadius,
-              color: index == selectedIndex
-                  ? AppColors.strongCyan
-                  : AppColors.white)),
+              color:
+                  index == selectedIndex ? AppColors.white2 : AppColors.white)),
+    );
+  }
+}
+
+class _ViewUserImage extends StatelessWidget {
+  List<Story> stories;
+  _ViewUserImage({Key? key, required this.stories}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: SingleChildScrollView(
+        child: Wrap(
+          children: stories
+              .map((story) => Stack(
+                    children: <Widget>[
+                      Container(
+                          height: 125,
+                          width: 130.8,
+                          decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: AppColors.gray, width: 1)),
+                          child: Image.network(
+                            story.fileUrl1,
+                            fit: BoxFit.fill,
+                          )),
+                      if (story.fileUrl2.isNotEmpty ||
+                          story.fileUrl3.isNotEmpty)
+                        Container(
+                          height: 20,
+                          width: 20,
+                          margin: EdgeInsets.only(left: 105, top: 5),
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(Images.kImageSnakeCase),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ))
+              .toList(),
+        ),
+      ),
     );
   }
 }

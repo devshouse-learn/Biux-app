@@ -45,14 +45,14 @@ class UserScreen extends StatelessWidget {
           Selector<UserScreenBloc, BiuxUser>(
               selector: (_, bloc) => bloc.user,
               builder: (context, value, child) {
-                return _EditUserButton(
+                return _button(
                   user: bloc.user,
                 );
               }),
           Selector<UserScreenBloc, BiuxUser>(
               selector: (_, bloc) => bloc.user,
               builder: (context, value, child) {
-                return _TextDescription(
+                return _TextDescripcion(
                   user: bloc.user,
                 );
               }),
@@ -114,42 +114,6 @@ class _SuperiorUserScreen extends StatelessWidget {
     var size = MediaQuery.of(context).size;
     return Stack(children: <Widget>[
       Container(
-        margin: EdgeInsets.only(left: size.width * 0.55),
-        height: 40,
-        color: AppColors.white2,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              height: 20,
-              width: 20,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: new AssetImage(Images.kImageHelmetRight),
-                ),
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.only(right: 10, left: 5),
-                child: Row(
-                  children: [
-                    Text(
-                      user.following!.length.toString(),
-                      style: Styles.containerBlack,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      AppStrings.following,
-                      style: Styles.containerFollowing,
-                    ),
-                  ],
-                )),
-          ],
-        ),
-      ),
-      Container(
         alignment: Alignment.topLeft,
         margin: new EdgeInsets.only(top: 15, left: 10),
         child: GestureDetector(
@@ -191,9 +155,9 @@ class _SuperiorUserScreen extends StatelessWidget {
   }
 }
 
-class _TextDescription extends StatelessWidget {
+class _TextDescripcion extends StatelessWidget {
   BiuxUser user;
-  _TextDescription({Key? key, required this.user}) : super(key: key);
+  _TextDescripcion({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -208,14 +172,51 @@ class _TextDescription extends StatelessWidget {
   }
 }
 
-class _EditUserButton extends StatelessWidget {
+class _button extends StatelessWidget {
   BiuxUser user;
-  _EditUserButton({Key? key, required this.user}) : super(key: key);
+  _button({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Stack(
       children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(left: size.width * 0.55),
+          height: 40,
+          color: AppColors.white2,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                height: 20,
+                width: 20,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: new AssetImage(Images.kImageHelmetRight),
+                  ),
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.only(right: 10, left: 5),
+                  child: Row(
+                    children: [
+                      Text(
+                        user.following!.length.toString(),
+                        style: Styles.containerBlack,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        AppStrings.following,
+                        style: Styles.containerFollowing,
+                      ),
+                    ],
+                  )),
+            ],
+          ),
+        ),
         Container(
           margin: EdgeInsets.only(top: 60, right: 10),
           alignment: Alignment.topRight,
@@ -418,18 +419,17 @@ class _ViewUserImage extends StatelessWidget {
                             story.fileUrl1,
                             fit: BoxFit.fill,
                           )),
-                      if (story.fileUrl2.isNotEmpty ||
-                          story.fileUrl3.isNotEmpty)
-                        Container(
-                          height: 20,
-                          width: 20,
-                          margin: EdgeInsets.only(left: 105, top: 5),
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: new AssetImage(Images.kImageMultipleImage),
-                            ),
+                          if(story.fileUrl2.isNotEmpty || story.fileUrl3.isNotEmpty)
+                      Container(
+                        height: 20,
+                        width: 20,
+                        margin: EdgeInsets.only(left: 105, top: 5),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: new AssetImage(Images.kImageSnakeCase),
                           ),
                         ),
+                      ),
                     ],
                   ))
               .toList(),
