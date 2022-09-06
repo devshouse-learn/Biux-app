@@ -539,4 +539,15 @@ class Styles {
     fontFamily: "Poppins",
     fontWeight: FontWeight.w300,
   );
+  static const mainMenuTextBiux = TextStyle(
+    fontSize: 25,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.bold,
+  );
+  static const containerTextName = TextStyle(
+    color: AppColors.white,
+    fontSize: 18,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
 }

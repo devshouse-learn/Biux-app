@@ -39,4 +39,11 @@ class Images {
   static const kImageGallery = '$kImagesPath/gallery.png';
   static const kImageSocial = '$kImagesPath/social.png';
   static const kImageSnakeCase = '$kImagesPath/snakeCase.png';
+  static const kImageLocation = '$kImagesPath/location.png';
+  static const kImageHome = '$kImagesPath/home.png';
+  static const kImageNotification = '$kImagesPath/notification.png';
+  static const kImageRoads = '$kImagesPath/roads.png';
+  static const kImageGroups = '$kImagesPath/groups.png';
+  static const kImageDisconnect = '$kImagesPath/disconnect.png';
+  static const kImageAdd = '$kImagesPath/add.png';
 }

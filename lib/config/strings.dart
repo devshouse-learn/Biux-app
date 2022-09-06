@@ -539,6 +539,8 @@ The navigation delegate is set to block navigation to the youtube website.
   static const notFoundKey = "Variable no encontrada";
   static const logoText = "logo";
   static const following2 = "Seguidos";
+  static const beginning = "Inicio";
+  static const myRoads = "Mis rodadas";
 
   ///
   /// Methods
