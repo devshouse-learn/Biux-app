@@ -549,7 +549,7 @@ class _CreateRoadState extends State<CreateRoad> {
                                     name: pathnameController.text,
                                     dateTime: dateController.text,
                                     groupId: groupId,
-                                    cityId: city.id!,
+                                    cityId: city.id,
                                     routeLevel: rating.toInt(),
                                     modality: [
                                       AppStrings.urbanoText.toUpperCase(),
@@ -980,7 +980,7 @@ class _CreateRoadState extends State<CreateRoad> {
               double.parse(distanceController.text),
               rating.toInt(),
               _group.name,
-              city.name!,
+              city.name,
               meetingController.text,
             );
             _scaffolState.currentState!.showSnackBar(

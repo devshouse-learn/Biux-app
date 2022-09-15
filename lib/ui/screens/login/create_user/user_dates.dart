@@ -154,7 +154,7 @@ class _UserNormalState extends State<UserNormal> {
       () {
         listFiltered = listCities
             .where(
-              (string) => string.name!.toLowerCase().contains(
+              (string) => string.name.toLowerCase().contains(
                     removeDiacritics(value).toLowerCase(),
                   ),
             )
@@ -169,7 +169,7 @@ class _UserNormalState extends State<UserNormal> {
     for (var i = 0; i < listCities.length; i++) {
       datasource.add(
         DropdownMenuItem<String>(
-          child: Text(listCities[i].name!),
+          child: Text(listCities[i].name),
           value: listCities[i].id.toString(),
         ),
       );

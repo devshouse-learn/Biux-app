@@ -63,7 +63,7 @@ class _GruposListaState extends State<GroupsList> {
       city = await UserRepository().getSpecifiCities(_user.cityId!);
 
       listGroups = await GroupsRepository().getGroups(
-        valCity == false ? city.name! : _city,
+        valCity == false ? city.name : _city,
       );
       this.setState(() {
         listGroups.sort(
@@ -71,7 +71,7 @@ class _GruposListaState extends State<GroupsList> {
         );
       });
       filteredList = await GroupsRepository().getGroups(
-        valCity == false ? city.name! : _city,
+        valCity == false ? city.name : _city,
       );
       this.setState(() {
         filteredList.sort(
@@ -81,11 +81,11 @@ class _GruposListaState extends State<GroupsList> {
       listCities = await UserRepository().getCities();
       setState(() {
         listCities.forEach(
-          (e) => listStringCities.add(e.name!),
+          (e) => listStringCities.add(e.name),
         );
       });
       if (cityController.text == '') {
-        cityController.text = city.name!;
+        cityController.text = city.name;
       }
     });
 

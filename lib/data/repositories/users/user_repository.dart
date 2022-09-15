@@ -254,7 +254,7 @@ class UserRepository {
     List groupJson = responseData["data"].toList();
 
     if (groupJson.isNotEmpty) {
-      return City.fromJsonMap(groupJson.first);
+      return City.fromJson(json: groupJson.first);
     } else {
       return cityVoid;
     }
@@ -326,7 +326,7 @@ class UserRepository {
     Map responseData = json.decode(response.body);
     List listCities = responseData["data"];
     List<City> cities =
-        listCities.map((groupJson) => City.fromJsonMap(groupJson)).toList();
+        listCities.map((groupJson) => City.fromJson(json: groupJson)).toList();
 
     return cities;
   }
@@ -337,7 +337,7 @@ class UserRepository {
 
     Map<String, dynamic> responseData = json.decode(response.body);
     List groupJson = responseData["data"].toList();
-    return City.fromJsonMap(groupJson.first);
+    return City.fromJson(json: groupJson.first);
   }
 
   Future<UserMembership> getMembership(UserMembership userMembership) async {

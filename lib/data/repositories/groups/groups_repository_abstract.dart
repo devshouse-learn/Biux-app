@@ -4,7 +4,8 @@ import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 
 abstract class GroupsRepositoryAbstract {
-  Future<List<Group>> getGroups(String cityAdmin);
+  Future<List<Group>> getGroups();
+  Future<List<Group>> getFilterGroups(String cityAdmin);
   Future<bool> uploadLogoGroup({
     required String id,
     required File filePhoto,

@@ -3,6 +3,8 @@ import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_BLOC.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_screen.dart';
+import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
+import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen_bloc.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_screen.dart';
 import 'package:biux/ui/screens/login/login.dart';
@@ -40,15 +42,15 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           child: GroupCreateScreen(),
         ),
       );
-    case AppRoutes.viewGroupRoute: 
+    case AppRoutes.viewGroupRoute:
       return _buildRoute(
         settings: settings,
         builder: ChangeNotifierProvider(
-          create: (_) => ViewGroupBloc( adminId: args ,groupId: args),
+          create: (_) => ViewGroupBloc(adminId: args, groupId: args),
           child: ViewGroupScreen(),
         ),
       );
-    case AppRoutes.userScreenRoute: 
+    case AppRoutes.userScreenRoute:
       return _buildRoute(
         settings: settings,
         builder: ChangeNotifierProvider(
@@ -56,12 +58,26 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           child: UserScreen(),
         ),
       );
-    case AppRoutes.mainMenuRoute: 
+    case AppRoutes.mainMenuRoute:
+      return _buildRoute(
+          settings: settings,
+          builder: MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (_) => MainMenuBloc(),
+              ),
+              ChangeNotifierProvider(
+                create: (_) => GroupListScreenBloc(),
+              ),
+            ],
+            child: MainMenu(),
+          ));
+    case AppRoutes.groupListRoute:
       return _buildRoute(
         settings: settings,
         builder: ChangeNotifierProvider(
-          create: (_) => MainMenuBloc(),
-          child: MainMenu(),
+          create: (_) => GroupListScreenBloc(),
+          child: GroupListScreen(),
         ),
       );
     default:

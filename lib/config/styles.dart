@@ -550,4 +550,22 @@ class Styles {
     fontFamily: "Poppins",
     fontWeight: FontWeight.w300,
   );
+  static const TextGroupList = TextStyle(
+    color: AppColors.black,
+    fontSize: 18,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w500,
+  );
+  static const TextCityList = TextStyle(
+    color: AppColors.blackPearl,
+    fontSize: 15,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
+  static const TextSearch = TextStyle(
+    color: AppColors.gray,
+    fontSize: 18,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w100,
+  );
 }

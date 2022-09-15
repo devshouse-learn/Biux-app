@@ -22,7 +22,25 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   }
 
   @override
-  Future<List<Group>> getGroups(String cityAdmin) async {
+  Future<List<Group>> getGroups() async {
+    try {
+      final result = await firestore
+          .collection(collection)
+          .get();
+      return result.docs
+          .map(
+            (e) => Group.fromJson(
+              json: e.data(),
+            ),
+          )
+          .toList();
+    } catch (e) {
+      return List.empty();
+    }
+  }
+
+  @override
+  Future<List<Group>> getFilterGroups(String cityAdmin) async {
     try {
       final result = await firestore
           .collection(collection)

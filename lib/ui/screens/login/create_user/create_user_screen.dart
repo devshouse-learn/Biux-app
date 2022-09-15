@@ -146,15 +146,7 @@ class _CreateUserState extends State<CreateUser> {
     super.initState();
     cityData = City(
       name: "",
-      state: StateCountry(
-        id: 0,
-        name: "",
-        country: Country(
-          id: 0,
-          name: "",
-        ),
-      ),
-      stateId: 0,
+      state: '0',
       id: '0',
     );
     listCities = [];
@@ -165,7 +157,7 @@ class _CreateUserState extends State<CreateUser> {
         listCities = await CitiesFirebaseRepository().getCities();
         this.setState(
           () {
-            listCities.forEach((e) => listStringCities.add(e.name!));
+            listCities.forEach((e) => listStringCities.add(e.name));
           },
         );
       },

@@ -541,6 +541,10 @@ The navigation delegate is set to block navigation to the youtube website.
   static const following2 = "Seguidos";
   static const beginning = "Inicio";
   static const myRoads = "Mis rodadas";
+  static const searchCitie = "Buscar Ciudad";
+  static const search = "Buscar";
+  static const currentLocation = "Ubicación actual";
+  static const points = "...";
 
   ///
   /// Methods

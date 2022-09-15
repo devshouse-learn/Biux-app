@@ -137,15 +137,7 @@ class _LoginPageState extends State<LoginPage> {
 
     cityData = City(
       name: "",
-      state: StateCountry(
-        id: 0,
-        name: "",
-        country: Country(
-          id: 0,
-          name: "",
-        ),
-      ),
-      stateId: 0,
+      state: '0',
       id: '0',
     );
   }

@@ -180,7 +180,7 @@ class _DetailRoadState extends State<DetailRoad> {
                                           widget.road.distance,
                                           widget.road.routeLevel,
                                           widget.group.name,
-                                          city.name!,
+                                          city.name,
                                           widget.road.pointmeeting,
                                           widget.road.numberParticipants,
                                         );
@@ -223,7 +223,7 @@ class _DetailRoadState extends State<DetailRoad> {
                 widget.road.distance,
                 widget.road.routeLevel,
                 widget.group.name,
-                city.name!,
+                city.name,
                 widget.road.pointmeeting,
                 widget.road.numberParticipants,
               );

@@ -63,6 +63,7 @@ class AppColors {
   static const paleBlue = Color(0xffeceef9);
   static const profileCoverGroup = Color(0x8F000000);
   static const darkNavy = Color(0xFF111F2C);
+  static const blackPearl = Color(0xFF16242D);
 }
 
 Map<int, Color> color = {

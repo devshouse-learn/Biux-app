@@ -2,6 +2,7 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
+import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,16 @@ import 'package:provider/provider.dart';
 class MainMenu extends StatelessWidget {
   MainMenu({Key? key}) : super(key: key);
 
+  final List<Widget> children = [
+    GroupListScreen()
+  ];
+
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<MainMenuBloc>();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.greyishNavyBlue,
+        backgroundColor: AppColors.blackPearl,
         title: Selector<MainMenuBloc, int>(
             selector: (_, bloc) => bloc.pageIndex,
             builder: (context, value, child) {
@@ -39,12 +44,14 @@ class MainMenu extends StatelessWidget {
           builder: (context, value, child) {
             return _BottomNavigationBar();
           }),
-          body: SafeArea(
-        child: IndexedStack(
-          index: bloc.pageIndex,
-          children: bloc.children,
+          body:  Container(
+            height: 1500,
+            child: IndexedStack(
+              alignment: AlignmentDirectional.center,
+            index: bloc.pageIndex,
+            children: children,
         ),
-      ),
+          ),
     );
   }
 }
@@ -248,7 +255,7 @@ class _BottomNavigationBar extends StatelessWidget {
     final bloc = context.read<MainMenuBloc>();
     return CurvedNavigationBar(
       height: 65,
-      backgroundColor: AppColors.transparent,
+      backgroundColor: AppColors.white2,
       key: _bottomNavigationKey,
       color: AppColors.darkBlue,
       buttonBackgroundColor: AppColors.white,

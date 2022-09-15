@@ -101,15 +101,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
     );
     cityData = City(
       name: "",
-      state: StateCountry(
-        id: 0,
-        name: "",
-        country: Country(
-          id: 0,
-          name: "",
-        ),
-      ),
-      stateId: 0,
+      state: '0',
       id: '0',
     );
     city = City();
@@ -122,7 +114,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
         this.setState(
           () {
             listCities.forEach(
-              (e) => listStringCity.add(e.name!),
+              (e) => listStringCity.add(e.name),
             );
           },
         );
@@ -171,7 +163,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
     nameController.text = user.names!;
     surnamesController.text = user.surnames!;
     nameUserController.text = user.userName!;
-    cityController.text = city.name!;
+    cityController.text = city.name;
     emailController.text = user.email!;
     cityData = await UserRepository().getCityId(cityController.text);
   }

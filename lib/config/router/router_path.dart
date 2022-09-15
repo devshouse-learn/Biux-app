@@ -5,4 +5,5 @@ class AppRoutes {
   static const String viewGroupRoute = 'viewGroup';
   static const String userScreenRoute = 'userScreen';
   static const String mainMenuRoute = 'mainMenu';
+  static const String groupListRoute = 'groupList';
 }

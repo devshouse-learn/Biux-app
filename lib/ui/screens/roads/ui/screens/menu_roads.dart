@@ -50,15 +50,7 @@ class _MenuRoadsState extends State<MenuRoads> {
     cityData = City();
     city = City(
       name: "",
-      state: StateCountry(
-        id: 0,
-        name: "",
-        country: Country(
-          id: 0,
-          name: "",
-        ),
-      ),
-      stateId: 0,
+      state: '0',
       id: '0',
     );
     _getUserData();
@@ -93,11 +85,11 @@ class _MenuRoadsState extends State<MenuRoads> {
         listCities = await UserRepository().getCities();
         setState(() {
           listCities.forEach(
-            (e) => listStringCities.add(e.name!),
+            (e) => listStringCities.add(e.name),
           );
         });
         if (cityController.text == '') {
-          cityController.text = city.name!;
+          cityController.text = city.name;
           cityId = city.id;
         }
         var nMember = await MembersRepository().getMyGroupsUser(_user.id!);
@@ -168,7 +160,7 @@ class _MenuRoadsState extends State<MenuRoads> {
                         color: AppColors.grey,
                       ),
                       onTap: () {
-                        cityController..text = city.name!;
+                        cityController..text = city.name;
                         setState(() {});
                       },
                     ),
@@ -197,14 +189,14 @@ class _MenuRoadsState extends State<MenuRoads> {
                         listRoads = await RoadsRepository().getRoads(
                           limit,
                           offset,
-                          cityData.id!,
+                          cityData.id,
                         );
                         setState(() {});
                         List<Road> siguienteRodadas =
                             await RoadsRepository().getRoads(
                           limit,
                           offset,
-                          cityData.id!,
+                          cityData.id,
                         );
                         setState(() {});
                         listRoads.addAll(siguienteRodadas);
