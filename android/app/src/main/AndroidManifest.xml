@@ -4,7 +4,8 @@
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
   <application
       android:name="${applicationName}"
-      android:label="Biux" android:icon="@mipmap/ic_launcher">
+      android:label="Biux" android:icon="@mipmap/ic_launcher"
+      android:requestLegacyExternalStorage="true">
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAo-m8HwLX29RWt-24qItFMtskNCb6ahjE" />
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAo-m8HwLX29RWt-24qItFMtskNCb6ahjE" />
 

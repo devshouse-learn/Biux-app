@@ -57,7 +57,7 @@ class Styles {
     fontStyle: FontStyle.normal,
   );
   static const snackBarContent = TextStyle(
-    color: AppColors.redAccent,
+    color: AppColors.white,
     letterSpacing: 0.5,
   );
   static const splashScreenViewText = TextStyle(
@@ -506,6 +506,11 @@ class Styles {
     fontSize: 15,
     fontWeight: FontWeight.w300,
   );
+  static const titleGallery = TextStyle(
+    color: AppColors.darkBlue,
+    fontSize: 20,
+    fontWeight: FontWeight.w300,
+  );
   static const containerLead = TextStyle(
     color: AppColors.strongCyan,
     fontSize: 15.0,
@@ -567,5 +572,16 @@ class Styles {
     fontSize: 18,
     fontFamily: "Poppins",
     fontWeight: FontWeight.w100,
+  );
+
+  final ButtonStyle textButtonStyle = ElevatedButton.styleFrom(
+    primary: AppColors.strongCyan,
+    padding: EdgeInsets.symmetric(horizontal: 20),
+    maximumSize: Size(200, 50),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(10),
+      ),
+    ),
   );
 }

@@ -1,5 +1,4 @@
 import 'package:biux/config/colors.dart';
-import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -27,22 +26,19 @@ class ButtonBorderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: top, left: left, bottom: 20),
+      margin: EdgeInsets.only(
+        top: top,
+        left: left,
+        bottom: 20,
+      ),
       width: width,
       height: height,
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: new BorderRadius.only(
-            bottomLeft: Radius.circular(bottomLeft),
-            topLeft: Radius.circular(topLeft),
-          ),
-          side: BorderSide(
-            width: 3,
-            color: AppColors.strongCyan,
-          ),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          primary: AppColors.strongCyan,
         ),
-        color: AppColors.strongCyan,
-        child: Text(text,
+        child: Text(
+          text,
           style: Styles.accentTextThemeWhite,
         ),
         onPressed: onPressed(),

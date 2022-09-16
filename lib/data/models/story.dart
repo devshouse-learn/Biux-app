@@ -1,37 +1,53 @@
-import 'package:biux/data/models/user.dart';
-
 class Story {
   String id;
-  String fileUrl1;
-  String fileUrl2;
-  String fileUrl3;
+  List<String> files;
   String description;
+  List<String> tags;
   String userId;
+  String get fileUrl1 {
+    try {
+      return files.first;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String get fileUrl2 {
+    try {
+      return files[1];
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String get fileUrl3 {
+    try {
+      return files[2];
+    } catch (e) {
+      return '';
+    }
+  }
 
   Story({
     this.id = '',
-    this.fileUrl1 = '',
-    this.fileUrl2 = '',
-    this.fileUrl3 = '',
     this.description = '',
     this.userId = '',
+    this.tags = const [],
+    this.files = const [],
   });
 
   factory Story.fromJson(Map json) => Story(
-        id: json["id"],
-        fileUrl1: json["fileUrl1"],
-        fileUrl2: json["fileUrl2"],
-        fileUrl3: json["fileUrl3"],
-        description: json["description"],
-        userId: json["userId"],
+        id: json['id'],
+        files: json['files'],
+        description: json['description'],
+        userId: json['userId'],
+        tags: json['tags'],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "fileUrl1": fileUrl1,
-        "fileUrl2": fileUrl2,
-        "fileUrl3": fileUrl3,
-        "description": description,
-        "userId": userId,
+        'files': files,
+        'description': description,
+        'userId': userId,
+        'tags': tags,
       };
 }

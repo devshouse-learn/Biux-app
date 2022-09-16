@@ -85,29 +85,29 @@ class _FormGroupWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Padding(padding: EdgeInsets.only(top: 20)),
-                  GroupCreateTextFormFieldWidget(
+                  TextFormFieldBiuxWidget(
                     controller: bloc.nameController,
                     text: AppStrings.nameText,
                   ),
-                  GroupCreateTextFormFieldWidget(
+                  TextFormFieldBiuxWidget(
                     controller: bloc.whatsappController,
                     text: AppStrings.WhatsappText,
                   ),
-                  GroupCreateTextFormFieldWidget(
+                  TextFormFieldBiuxWidget(
                     controller: bloc.ciudadController,
                     text: AppStrings.cityText,
                   ),
-                  GroupCreateTextFormFieldWidget(
+                  TextFormFieldBiuxWidget(
                     controller: bloc.facebookController,
                     text: AppStrings.facebookText,
                   ),
-                  GroupCreateTextFormFieldWidget(
+                  TextFormFieldBiuxWidget(
                     controller: bloc.instagramController,
                     text: AppStrings.instagramText,
                   ),
                   SizedBox(
                     height: 120,
-                    child: GroupCreateTextFormFieldWidget(
+                    child: TextFormFieldBiuxWidget(
                       maxLine: 5,
                       controller: bloc.descripcionController,
                       text: AppStrings.descriptionText,

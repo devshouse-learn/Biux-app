@@ -12,6 +12,8 @@ import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/main_menu/main_menu.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
 import 'package:biux/ui/screens/splash_screen.dart';
+import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
+import 'package:biux/ui/screens/story/story_create/story_create_screen.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen_bloc.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +43,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           create: (_) => GroupCreateBloc(),
           child: GroupCreateScreen(),
         ),
+      );
+    case AppRoutes.storyCreateRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => StoryCreateBloc(),
+          child: StoryCreateScreen(),
+        )
       );
     case AppRoutes.viewGroupRoute:
       return _buildRoute(

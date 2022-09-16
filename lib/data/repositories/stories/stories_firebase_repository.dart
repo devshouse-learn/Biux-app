@@ -1,9 +1,9 @@
+import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/reaction_story.dart';
 import 'package:biux/data/models/story.dart';
 import 'dart:io';
 
 import 'package:biux/data/repositories/stories/stories_repository_abstract.dart';
-import 'package:biux/utils/firebase_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -12,13 +12,29 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   static final collectionReaction = 'reactionStory';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
-  Future createStory(Story story) async {
+  Future<bool> createStory({
+    required Story story,
+    required List<File> listFile,
+  }) async {
     try {
-      await firestore
-          .collection(collection)
-          .doc(story.id.toString())
-          .set(story.toJson());
-    } catch (e) {}
+      final result = await firestore.collection(collection).add(story.toJson());
+      final listImages = await uploadStory(
+        id: result.id,
+        listFile: listFile,
+      );
+      updateStory(
+        id: result.id,
+        story: Story(
+          description: story.description,
+          files: listImages,
+          tags: story.tags,
+          userId: story.userId,
+        ),
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future deleteStory(String id) async {
@@ -90,43 +106,53 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   }
 
   @override
-  Future uploadStory(
-      String id, File fileUrl1, File fileUrl2, File fileUrl3) async {
-    await this.uploadImageStory(
-      nameUrl: 'fileUrl1',
-      id: id,
-      fileUrl: fileUrl1,
-    );
-    await this.uploadImageStory(
-      nameUrl: 'fileUrl2',
-      id: id,
-      fileUrl: fileUrl1,
-    );
-    await this.uploadImageStory(
-      nameUrl: 'fileUrl3',
-      id: id,
-      fileUrl: fileUrl1,
-    );
+  Future<List<String>> uploadStory({
+    required String id,
+    required List<File> listFile,
+  }) async {
+    List<String> listUrl = [];
+    List<String> listNamesPhotos = [
+      'photo1',
+      'photo2',
+      'photo3',
+    ];
+    for (var element in listFile) {
+      final image = await uploadImageStory(
+        nameUrl: listNamesPhotos.removeAt(0),
+        id: id,
+        fileUrl: element,
+      );
+      listUrl.add(image);
+    }
+    return listUrl;
   }
 
-  Future uploadImageStory({
+  Future<String> uploadImageStory({
     required String nameUrl,
     required String id,
     required File fileUrl,
   }) async {
     try {
-      Reference ref = FirebaseStorage.instance.ref('$id/$nameUrl');
+      final userId = LocalStorage().getUserId();
+      Reference ref = FirebaseStorage.instance.ref('$userId/$id/$nameUrl');
       UploadTask uploadTask = ref.putFile(fileUrl);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
-      await this.updateImage(nameUrl, downloadUrl, id);
-    } catch (e) {}
+      return downloadUrl;
+    } catch (e) {
+      return '';
+    }
   }
 
-  Future updateImage(String name, String urlImage, String id) async {
-    var reference = FirebaseFirestore.instance.collection(collection);
-    reference.doc(id).update({
-      name: urlImage,
-    });
+  Future<bool> updateStory({required String id, required Story story}) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(collection)
+          .doc(id)
+          .update(story.toJson());
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<List<Story>> getStoriesId(String id) async {
@@ -147,5 +173,3 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     }
   }
 }
-
-

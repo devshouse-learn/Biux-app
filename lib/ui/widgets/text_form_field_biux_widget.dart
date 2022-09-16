@@ -1,11 +1,9 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
-class GroupCreateTextFormFieldWidget extends StatelessWidget {
-  GroupCreateTextFormFieldWidget({
+class TextFormFieldBiuxWidget extends StatelessWidget {
+  TextFormFieldBiuxWidget({
     Key? key,
     required this.controller,
     required this.text,
@@ -18,6 +16,14 @@ class GroupCreateTextFormFieldWidget extends StatelessWidget {
     this.enabled = true,
     this.maxLine,
     this.radiusCircular = 45,
+    this.padding = const EdgeInsets.only(
+      left: 15,
+      right: 15,
+      top: 5,
+      bottom: 5,
+    ),
+    this.autofocus = false,
+    this.onFieldSubmitted,
   }) : super(key: key);
   final String text;
   final IconButton? iconButton;
@@ -30,21 +36,21 @@ class GroupCreateTextFormFieldWidget extends StatelessWidget {
   final bool enabled;
   final int? maxLine;
   final double radiusCircular;
+  final EdgeInsetsGeometry padding;
+  final bool autofocus;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 15,
-        right: 15,
-        top: 5,
-        bottom: 5,
-      ),
+      padding: padding,
       child: SizedBox(
-        height: 48,
+        // I remove this value by default since the size of the maxLines is not reflected
+        // height: 48,
         child: TextFormField(
+          autofocus: autofocus,
           style: TextStyle(
-            color: AppColors.black
+            color: AppColors.black,
           ),
           maxLines: maxLine,
           enabled: enabled,
@@ -95,6 +101,7 @@ class GroupCreateTextFormFieldWidget extends StatelessWidget {
           onChanged: onChanged,
           validator: validator,
           onSaved: saved,
+          onFieldSubmitted: onFieldSubmitted,
         ),
       ),
     );

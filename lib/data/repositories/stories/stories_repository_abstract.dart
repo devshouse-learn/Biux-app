@@ -6,8 +6,14 @@ import 'package:biux/data/models/story.dart';
 abstract class StoriesRepositoryAbstract {
   Future<List<Story>> getStories();
   Future<List<ReactionStory>> getReactionStory(String id);
-  Future createStory(Story story);
+  Future<bool> createStory({
+    required Story story,
+    required List<File> listFile,
+  });
   Future reactionStory(String userId, String storyId);
-  Future uploadStory(String id, File fileUrl1, File fileUrl2, File fileUrl3);
+  Future<List<String>> uploadStory({
+    required String id,
+    required List<File> listFile,
+  });
   Future deleteStory(String id);
 }

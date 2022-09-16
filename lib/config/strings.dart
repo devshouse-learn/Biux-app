@@ -381,7 +381,6 @@ The navigation delegate is set to block navigation to the youtube website.
   static const postId = "postId";
   static const foto = "foto";
   static const createStory = "Crear historia";
-  static const descriptionStory = "           Pon una descripcion aqui";
   static const postStory = "Publicar Historia";
   static const publishedStory = "Historia publicada ";
   static const storyText = "Historias";
@@ -538,6 +537,20 @@ The navigation delegate is set to block navigation to the youtube website.
   static const pathError = "Ruta no encontrada";
   static const notFoundKey = "Variable no encontrada";
   static const logoText = "logo";
+  static const titleAppBarCreateStory = 'Nueva historia BIUX';
+  static const galleryCreateStory = 'Galería';
+  static const permissionNotAccessibleCreateStory =
+      'El permiso no es accesible';
+  static const pathsNotFoundCreateStory = 'No se encontraron las imágenes';
+  static const pathsRequestCreateStory = 'Permita el acceso a la galería';
+  static const assetsNotFoundCreateStory =
+      'No se encontrarón imagenes en el dispositivo';
+  static const warnignNoMoreImages = 'No puede agregar más de 3 imágenes';
+  static const descriptionStory = 'Cuéntanos la historia...';
+  static const tagsStory = 'Etiquetas';
+  static const textValidatorDescriptionStory = 'Ingresa una descripción';
+  static const textSuccessfulCreateStory = 'Historia creada con éxito';
+  static const textErrorCreateStory = 'Error al crear la historia';
   static const following2 = "Seguidos";
   static const beginning = "Inicio";
   static const myRoads = "Mis rodadas";

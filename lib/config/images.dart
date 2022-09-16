@@ -28,8 +28,6 @@ class Images {
   static const kBackground = '$kImagesPath/background.png';
   static const kAdBiciCombeima = '$kImagesPath/ad_bici_combeima.jpeg';
   static const kLetter = '$kImagesPath/letter.png';
-  // TO DO nonexistent image
-  static const kBike = '$kImagesPath/';
   static const kImageEdit = '$kImagesPath/image_edit.png';
   static const kImageMedia = '$kImagesPath/media.png';
   static const kImageHelmet = '$kImagesPath/helmet.png';
@@ -47,4 +45,8 @@ class Images {
   static const kImageDisconnect = '$kImagesPath/disconnect.png';
   static const kImageAdd = '$kImagesPath/add.png';
   static const kImageLocation2 = '$kImagesPath/location2.png';
+  static const kDeselectedImage = '$kImagesPath/deselected_image.png';
+   static const kSelectedImage = '$kImagesPath/selected_image.png';
+  // TO DO nonexistent image
+  static const kBike = '$kImagesPath/';
 }

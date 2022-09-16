@@ -1,12 +1,12 @@
 import 'package:biux/config/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class ButtonContinueBiuxWidget extends StatelessWidget {
-  ButtonContinueBiuxWidget({Key? key, required this.onPressed})
-      : super(key: key);
-  Function onPressed;
+  ButtonContinueBiuxWidget({
+    Key? key,
+    required this.onPressed,
+  }) : super(key: key);
+  final Function onPressed;
 
   @override
   Widget build(BuildContext context) {
