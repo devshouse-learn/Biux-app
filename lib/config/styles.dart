@@ -573,7 +573,6 @@ class Styles {
     fontFamily: "Poppins",
     fontWeight: FontWeight.w100,
   );
-
   final ButtonStyle textButtonStyle = ElevatedButton.styleFrom(
     primary: AppColors.strongCyan,
     padding: EdgeInsets.symmetric(horizontal: 20),
@@ -583,5 +582,11 @@ class Styles {
         Radius.circular(10),
       ),
     ),
+  );
+  static const TextMemberList = TextStyle(
+    color: AppColors.black,
+    fontSize: 18,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
   );
 }

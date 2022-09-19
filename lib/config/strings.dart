@@ -632,4 +632,6 @@ The navigation delegate is set to block navigation to the youtube website.
       "¿Quiere confirmar la direccion $message y coincide con la que seleccionó en el mapa?";
   static markerIdMapMarker({required String id}) => "cl_$id";
   static numberFollowers({required int? followers}) => "  $followers seguidos";
+  static nameComplete({required String name, required String surName}) =>
+      "$name $surName";
 }

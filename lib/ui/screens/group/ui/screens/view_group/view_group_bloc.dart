@@ -15,6 +15,8 @@ class ViewGroupBloc extends ChangeNotifier {
   List<Road> roads = [];
   List<Story> stories = [];
   List<Member> member = [];
+  List<BiuxUser> listMember = [];
+  BiuxUser dataMember = BiuxUser();
   Group group = Group();
   BiuxUser admin = BiuxUser();
   final groupId;
@@ -30,6 +32,7 @@ class ViewGroupBloc extends ChangeNotifier {
       await getRoads(groupId);
       await getAdmin(adminId);
       await getStorie(groupId);
+      await getDataMembers();
     });
   }
 
@@ -59,5 +62,12 @@ class ViewGroupBloc extends ChangeNotifier {
     final dataStory = await StoriesFirebaseRepository().getStoriesId(groupId);
     stories = dataStory;
     notifyListeners();
+  }
+
+  Future<void> getDataMembers() async {
+    member.map((e) async {
+      dataMember = await UserFirebaseRepository().getUserId(e.userId);
+      listMember.add(dataMember);
+    }).toList();
   }
 }
