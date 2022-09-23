@@ -4,6 +4,7 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
+import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,12 +13,15 @@ class MainMenu extends StatelessWidget {
   MainMenu({Key? key}) : super(key: key);
 
   final List<Widget> children = [
-    GroupListScreen()
+    RoadsListScreen(),
+    GroupListScreen(),
+    GroupListScreen(),
+    GroupListScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<MainMenuBloc>();
+    final bloc = context.watch<MainMenuBloc>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.blackPearl,
@@ -44,14 +48,14 @@ class MainMenu extends StatelessWidget {
           builder: (context, value, child) {
             return _BottomNavigationBar();
           }),
-          body:  Container(
-            height: 1500,
-            child: IndexedStack(
-              alignment: AlignmentDirectional.center,
-            index: bloc.pageIndex,
-            children: children,
+      body: Container(
+        height: 1500,
+        child: IndexedStack(
+          alignment: AlignmentDirectional.center,
+          index: bloc.pageIndex,
+          children: children,
         ),
-          ),
+      ),
     );
   }
 }
@@ -95,21 +99,21 @@ class _ActionButton extends StatelessWidget {
     final bloc = context.read<MainMenuBloc>();
     return Row(children: <Widget>[
       if (bloc.pageIndex == 0 || bloc.pageIndex == 1)
-      Container(
-        height: 32,
-        width: 32,
-        margin: EdgeInsets.only(right: 30),
-        child: GestureDetector(
-          onTap: () {},
-          child: Image.asset(Images.kImageAdd),
+        Container(
+          height: 32,
+          width: 32,
+          margin: EdgeInsets.only(right: 30),
+          child: GestureDetector(
+            onTap: () {},
+            child: Image.asset(Images.kImageAdd),
+          ),
         ),
-      ),
     ]);
   }
 }
 
 class _MainMenuDrawer extends StatelessWidget {
-   _MainMenuDrawer({Key? key}) : super(key: key);
+  _MainMenuDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

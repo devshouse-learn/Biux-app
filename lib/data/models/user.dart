@@ -85,6 +85,14 @@ class BiuxUser {
             description: json["description"],);
         
   }
+
+  factory BiuxUser.fromMapRoad(Map json) {
+    return BiuxUser(
+      id: json["id"],
+      names: json["names"],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     var userJson = {
       "id": id,
@@ -121,4 +129,9 @@ class BiuxUser {
     });
     return cleanUser;
   }
+
+  Map<String, dynamic> toMapRoad() => {
+      "id": id,
+      "names": names,
+    };
 }

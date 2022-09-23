@@ -1,4 +1,6 @@
 import 'package:biux/data/models/competitor_road.dart';
+import 'package:biux/data/models/group.dart';
+import 'package:biux/data/models/user.dart';
 
 class Road {
   String id;
@@ -17,6 +19,8 @@ class Road {
   String cityId;
   bool type;
   bool status;
+  Group group;
+  List<BiuxUser> competitorRoad;
 
   Road({
     required this.id,
@@ -35,6 +39,8 @@ class Road {
     this.type = false,
     this.status = false,
     this.numberLikes = 0,
+    required this.group,
+    this.competitorRoad = const [],
   });
 
   factory Road.fromJson({required Map json}) => Road(
@@ -54,6 +60,10 @@ class Road {
         routeLevel: json["routeLevel"],
         status: json["status"],
         type: json["type"],
+        group: Group.fromJson(json: json["group"]),
+        competitorRoad: (json['competitorRoad'] as List<dynamic>)
+                .map((e) => BiuxUser.fromMapRoad(e))
+                .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -73,5 +83,8 @@ class Road {
         "cityId": cityId,
         "type": type,
         "status": status,
+        "group": group.toJson(),
+        "competitorRoad": competitorRoad.map((e) => e.toMapRoad()).toList(),
       };
 }
+

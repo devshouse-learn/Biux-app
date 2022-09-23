@@ -7,4 +7,5 @@ class AppRoutes {
   static const String userScreenRoute = 'userScreen';
   static const String mainMenuRoute = 'mainMenu';
   static const String groupListRoute = 'groupList';
+  static const String roadsListRoute = 'roadsList';
 }

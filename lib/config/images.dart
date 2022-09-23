@@ -18,8 +18,7 @@ class Images {
   static const kBiuxLogoLettersWhite =
       '$kImagesPath/biux_logo_letters_white.png';
   static const kInstagramLogo = '$kImagesPath/instagram_logo.png';
-  static const kInstagram =
-      '$kImagesPath/instagram.png';
+  static const kInstagram = '$kImagesPath/instagram.png';
   static const kWhatsappLogo = '$kImagesPath/whatsapp_logo.png';
   static const kFacebookLogo = '$kImagesPath/facebook_logo.png';
   static const kWhatsapp = '$kImagesPath/whatsapp.png';
@@ -46,7 +45,11 @@ class Images {
   static const kImageAdd = '$kImagesPath/add.png';
   static const kImageLocation2 = '$kImagesPath/location2.png';
   static const kDeselectedImage = '$kImagesPath/deselected_image.png';
-   static const kSelectedImage = '$kImagesPath/selected_image.png';
+  static const kSelectedImage = '$kImagesPath/selected_image.png';
   // TO DO nonexistent image
   static const kBike = '$kImagesPath/';
+  static const kImageLocationGrey = '$kImagesPath/location_grey.png';
+  static const kImageRoute = '$kImagesPath/image_route.png';
+  static const kMeetingPoint = '$kImagesPath/meeting_point.png';
+  static const kdifficulty = '$kImagesPath/difficulty.png';
 }

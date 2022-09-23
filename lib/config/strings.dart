@@ -558,6 +558,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const search = "Buscar";
   static const currentLocation = "Ubicación actual";
   static const points = "...";
+  static const seeMoreText = "Ver más";
 
   ///
   /// Methods

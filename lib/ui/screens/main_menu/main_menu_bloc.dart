@@ -1,7 +1,6 @@
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/user_membership.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/data/local_storage/localstorage.dart';
 

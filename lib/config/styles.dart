@@ -583,9 +583,38 @@ class Styles {
       ),
     ),
   );
+
+  static const TextRoads = TextStyle(
+    color: AppColors.black,
+    fontSize: 14,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextRoadsName = TextStyle(
+    color: AppColors.white,
+    fontSize: 14,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
+
   static const TextMemberList = TextStyle(
     color: AppColors.black,
     fontSize: 18,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
+
+  static const daysRoadListDateTime = TextStyle(
+    color: AppColors.white,
+    fontSize: 20,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
+
+  static const monthsRoadListDateTime = TextStyle(
+    color: AppColors.white,
+    fontSize: 10,
     fontFamily: "Poppins",
     fontWeight: FontWeight.w300,
   );

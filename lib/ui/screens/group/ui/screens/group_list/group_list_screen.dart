@@ -87,9 +87,10 @@ class WidgetSearchCity extends StatelessWidget {
               border: InputBorder.none,
               hintText: AppStrings.searchCitie,
               hintStyle: Styles.TextSearch,
-              prefixIcon: Icon(
-                Icons.location_on_outlined,
-                color: AppColors.grey,
+              prefixIcon: Image.asset(
+                Images.kImageLocationGrey,
+                height: 10,
+                scale: 3.0,
               ),
               suffixIcon: bloc.focusNodeCity.hasFocus
                   ? IconButton(
@@ -194,8 +195,8 @@ class ListCity extends StatelessWidget {
                             children: [
                               ListTile(
                                 contentPadding: EdgeInsets.only(left: 60),
-                                title: Text(city.name,
-                                    style: Styles.TextCityList),
+                                title:
+                                    Text(city.name, style: Styles.TextCityList),
                                 onTap: () {
                                   bloc.onTapCities(city.name);
                                 },

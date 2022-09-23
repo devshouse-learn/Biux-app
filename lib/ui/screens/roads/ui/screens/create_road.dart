@@ -562,6 +562,8 @@ class _CreateRoadState extends State<CreateRoad> {
                                     distance: double.parse(
                                       distanceController.text,
                                     ),
+                                    //here you have to go the data of the group
+                                    group: Group()
                                   ),
                                 );
                               } else {

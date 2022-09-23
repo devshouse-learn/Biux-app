@@ -532,6 +532,7 @@ class _EditRoadState extends State<EditRoad> {
                                 groupId: widget.road.groupId,
                                 numberParticipants:
                                     widget.road.numberParticipants,
+                                    group: Group()
                               );
                               response = await RoadsRepository().updateRoad(
                                 road,

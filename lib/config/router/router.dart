@@ -11,6 +11,8 @@ import 'package:biux/ui/screens/login/login.dart';
 import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/main_menu/main_menu.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
+import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen.dart';
+import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen_bloc.dart';
 import 'package:biux/ui/screens/splash_screen.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_screen.dart';
@@ -77,6 +79,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 create: (_) => MainMenuBloc(),
               ),
               ChangeNotifierProvider(
+                create: (_) => RoadsListScreenBloc(),
+              ),
+              ChangeNotifierProvider(
                 create: (_) => GroupListScreenBloc(),
               ),
             ],
@@ -88,6 +93,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => GroupListScreenBloc(),
           child: GroupListScreen(),
+        ),
+      );
+    case AppRoutes.roadsListRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => RoadsListScreenBloc(),
+          child: RoadsListScreen(),
         ),
       );
     default:
