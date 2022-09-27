@@ -228,7 +228,7 @@ class RoadsList extends StatelessWidget {
                                     children: <Widget>[
                                       Container(
                                           margin:
-                                              EdgeInsets.only(top: 5, left: 30),
+                                              EdgeInsets.only(top: 5, left: 25),
                                           child: Text(
                                             road.group.name,
                                             style: Styles.TextRoads,
@@ -240,7 +240,7 @@ class RoadsList extends StatelessWidget {
                                         alignment: Alignment.centerLeft,
                                         child: Padding(
                                           padding:
-                                              const EdgeInsets.only(left: 30),
+                                              const EdgeInsets.only(left: 20),
                                           child: Row(
                                             children: [
                                               Image.asset(
@@ -260,7 +260,7 @@ class RoadsList extends StatelessWidget {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 30, top: 10),
+                                            left: 20, top: 10),
                                         child: Row(
                                           children: [
                                             Image.asset(
@@ -279,7 +279,7 @@ class RoadsList extends StatelessWidget {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            top: 5, left: 30),
+                                            top: 5, left: 20),
                                         child: Row(
                                           children: [
                                             Image.asset(
@@ -306,7 +306,7 @@ class RoadsList extends StatelessWidget {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            top: 5, left: 30),
+                                            top: 5, left: 20),
                                         child: Row(
                                           children: [
                                             Image.asset(
@@ -368,7 +368,13 @@ class RoadsList extends StatelessWidget {
                                         bloc.onTapOutRoads(road);
                                       }),
                                 )
-                              else
+                              else if (bloc.member
+                                          .map((e) => e.groupId)
+                                          .contains(road.groupId) &&
+                                      bloc.member
+                                          .map((e) => e.userId)
+                                          .contains(bloc.user.id) ||
+                                  road.public == true)
                                 ButtonTheme(
                                   shape: RoundedRectangleBorder(
                                     borderRadius:
@@ -383,6 +389,10 @@ class RoadsList extends StatelessWidget {
                                       onPressed: () {
                                         bloc.onTapJoinRoads(road);
                                       }),
+                                )
+                              else
+                                const SizedBox(
+                                  width: 90,
                                 ),
                               const SizedBox(
                                 width: 10,

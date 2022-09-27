@@ -6,6 +6,7 @@ import 'package:biux/data/models/road.dart';
 import 'package:biux/data/models/story.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_members_group.dart';
+import 'package:biux/ui/screens/group/ui/screens/view_group/view_roads_group.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
 import 'package:biux/ui/widgets/button_facebook_widget.dart';
 import 'package:biux/ui/widgets/button_instagram_widget.dart';
@@ -242,7 +243,11 @@ class _TabBarSeeGroupState extends State<_TabBarSeeGroup>
                   builder: (context, value, child) {
                     return _ViewUserImage(stories: bloc.stories);
                   }),
-              _ViewUserImage(stories: bloc.stories),
+              Selector<ViewGroupBloc, List<Story>>(
+                  selector: (_, bloc) => bloc.stories,
+                  builder: (context, value, child) {
+                    return ViewRoadsGroup();
+                  }),
               ViewMembersGroup(),
             ],
           ),

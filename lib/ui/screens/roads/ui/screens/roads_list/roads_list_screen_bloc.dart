@@ -1,5 +1,6 @@
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
+import 'package:biux/data/models/member.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
@@ -14,6 +15,7 @@ class RoadsListScreenBloc extends ChangeNotifier {
   final searchCityController = TextEditingController();
   final FocusNode focusNodeCity = FocusNode();
   List<City> listCities = [];
+  List<Member> member = [];
   List<Road> listRoads = [];
   List<Group> listGroup = [];
   BiuxUser user = BiuxUser();
@@ -27,12 +29,12 @@ class RoadsListScreenBloc extends ChangeNotifier {
     getRoads();
     getCities();
     getGroup();
+    await getMember();
   }
 
   Future<void> getUser() async {
     String? userId = await LocalStorage().getUserId();
-    final dataUser = await UserFirebaseRepository()
-        .getUserId(userId!);
+    final dataUser = await UserFirebaseRepository().getUserId(userId!);
     user = dataUser;
     notifyListeners();
   }
@@ -88,6 +90,11 @@ class RoadsListScreenBloc extends ChangeNotifier {
           await GroupsFirebaseRepository().getSpecificGroup(e.groupId);
       listGroup.add(dataGroup);
     }).toList();
+    notifyListeners();
+  }
+
+  Future<void> getMember() async {
+    member = await GroupsFirebaseRepository().getListMemberGroup();
     notifyListeners();
   }
 

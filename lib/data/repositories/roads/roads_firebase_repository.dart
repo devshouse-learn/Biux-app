@@ -224,7 +224,6 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
     try {
       final response =
           await firestore.collectionGroup(collectionCompetitor).get();
-      print(response.docs.first);
       return response.docs
           .map(
             (e) => CompetitorRoad.fromJsonMap(

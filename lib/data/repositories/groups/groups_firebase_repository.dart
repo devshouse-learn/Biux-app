@@ -244,4 +244,20 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
 
     return url;
   }
+
+  Future<List<Member>> getListMemberGroup() async {
+    try {
+      final response =
+          await firestore.collectionGroup(subCollection).get();
+      return response.docs
+          .map(
+            (e) => Member.fromJson(
+               e.data(),
+            ),
+          )
+          .toList();
+    } catch (e) {
+      return List.empty();
+    }
+  }
 }

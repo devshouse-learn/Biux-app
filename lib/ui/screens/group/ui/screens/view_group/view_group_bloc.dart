@@ -16,6 +16,7 @@ class ViewGroupBloc extends ChangeNotifier {
   List<Story> stories = [];
   List<Member> member = [];
   List<BiuxUser> listMember = [];
+  BiuxUser user = BiuxUser();
   BiuxUser dataMember = BiuxUser();
   Group group = Group();
   BiuxUser admin = BiuxUser();
@@ -28,12 +29,20 @@ class ViewGroupBloc extends ChangeNotifier {
   Future<void> loadData(
       {required String groupId, required String adminId}) async {
     Future.delayed(Duration.zero, () async {
+      await getUser();
       await getGroup(groupId);
       await getRoads(groupId);
       await getAdmin(adminId);
       await getStorie(groupId);
       await getDataMembers();
     });
+  }
+
+  Future<void> getUser() async {
+    String? userId = await LocalStorage().getUserId();
+    final dataUser = await UserFirebaseRepository().getUserId(userId!);
+    user = dataUser;
+    notifyListeners();
   }
 
   Future<void> getGroup(String groupId) async {
@@ -69,5 +78,21 @@ class ViewGroupBloc extends ChangeNotifier {
       dataMember = await UserFirebaseRepository().getUserId(e.userId);
       listMember.add(dataMember);
     }).toList();
+  }
+
+  Future<void> onTapOutRoads(Road road) async {
+    road.numberParticipants = road.numberParticipants - 1;
+    road.competitorRoad = road.competitorRoad
+        .where((competitor) => competitor.id != user.id)
+        .toList();
+    final validator = await RoadsFirebaseRepository().onTapRoad(road);
+    notifyListeners();
+  }
+
+  Future<void> onTapJoinRoads(Road road) async {
+    road.numberParticipants = road.numberParticipants + 1;
+    road.competitorRoad.add(BiuxUser(id: user.id, names: user.names));
+    final validator = await RoadsFirebaseRepository().onTapRoad(road);
+    notifyListeners();
   }
 }

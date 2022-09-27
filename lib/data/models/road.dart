@@ -19,6 +19,7 @@ class Road {
   String cityId;
   bool type;
   bool status;
+  bool public;
   Group group;
   List<BiuxUser> competitorRoad;
 
@@ -39,6 +40,7 @@ class Road {
     this.type = false,
     this.status = false,
     this.numberLikes = 0,
+    this.public = false,
     required this.group,
     this.competitorRoad = const [],
   });
@@ -60,10 +62,11 @@ class Road {
         routeLevel: json["routeLevel"],
         status: json["status"],
         type: json["type"],
+        public: json["public"],
         group: Group.fromJson(json: json["group"]),
         competitorRoad: (json['competitorRoad'] as List<dynamic>)
-                .map((e) => BiuxUser.fromMapRoad(e))
-                .toList(),
+            .map((e) => BiuxUser.fromMapRoad(e))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -83,8 +86,8 @@ class Road {
         "cityId": cityId,
         "type": type,
         "status": status,
+        "public": public,
         "group": group.toJson(),
         "competitorRoad": competitorRoad.map((e) => e.toMapRoad()).toList(),
       };
 }
-
