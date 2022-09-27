@@ -16,8 +16,6 @@ import 'package:biux/data/local_storage/shared_preferences.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/analitics.dart';
 import 'package:biux/data/models/city.dart';
-import 'package:biux/data/models/state.dart';
-import 'package:biux/data/models/country.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/ui/screens/home.dart';
 import 'package:biux/ui/screens/login/create_user/create_user_screen.dart';
@@ -478,7 +476,7 @@ class _LoginPageState extends State<LoginPage> {
                                     await CitiesFirebaseRepository().getCityId(
                                   AppStrings.ibagueText.toLowerCase(),
                                 );
-                                if (userfacebook.facebook!.isEmpty) {
+                                if (userfacebook.facebook.isEmpty) {
                                   setState(
                                     () {
                                       loading = false;
@@ -491,7 +489,7 @@ class _LoginPageState extends State<LoginPage> {
                                   createUser(
                                     BiuxUser(
                                       id: userCredential!.user!.uid,
-                                      userName: userfacebook.facebook! != ''
+                                      userName: userfacebook.facebook != ''
                                           ? userfacebook.userName
                                           : nameUser,
                                       modality: [
@@ -506,7 +504,7 @@ class _LoginPageState extends State<LoginPage> {
                                       surnames:
                                           _userData![AppStrings.lastNameText],
                                       premium: false,
-                                      email: userCredential.user!.email,
+                                      email: userCredential.user!.email!,
                                       password: AppStrings.keyCode,
                                       facebook: AppStrings.validationFacebook(
                                         userdata: _userData!,
@@ -613,7 +611,7 @@ class _LoginPageState extends State<LoginPage> {
                                       cellphone: "",
                                       surnames: text[1],
                                       premium: false,
-                                      email: user.email,
+                                      email: user.email!,
                                       password: "000000",
                                       facebook: "",
                                       instagram: "",
@@ -740,7 +738,7 @@ class _LoginPageState extends State<LoginPage> {
     User? us,
   }) async {
     final uriResponse = await UserFirebaseRepository().getValidationEmails(
-      biuxUser.email!,
+      biuxUser.email,
     );
     if (uriResponse.email == null || uriResponse.email != null) {
       if (uriResponse.email == null && us != null) {
@@ -751,7 +749,7 @@ class _LoginPageState extends State<LoginPage> {
           Duration(seconds: 1),
           () async {
             await UserFirebaseRepository().uploadPhoto(
-              biuxUser.id!,
+              biuxUser.id,
               imageNetworks,
               biuxUser,
             );
@@ -766,7 +764,7 @@ class _LoginPageState extends State<LoginPage> {
             );
           },
         );
-        Analitycs.sendSignUp(biuxUser.id!);
+        Analitycs.sendSignUp(biuxUser.id);
       } else {
         if (_userData != null) {
           if (uriResponse.email == null &&
@@ -778,7 +776,7 @@ class _LoginPageState extends State<LoginPage> {
               Duration(seconds: 1),
               () async {
                 await UserFirebaseRepository().uploadPhoto(
-                  biuxUser.id!,
+                  biuxUser.id,
                   imageNetworks,
                   biuxUser,
                 );
@@ -793,11 +791,11 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
             );
-            Analitycs.sendSignUp(biuxUser.id!);
+            Analitycs.sendSignUp(biuxUser.id);
           }
           if (uriResponse.email != null &&
               _userData![AppStrings.firstNameText] != null) {
-            LocalStorage().saveUser(userfacebook.userName!);
+            LocalStorage().saveUser(userfacebook.userName);
             setState(
               () {
                 loading = false;
@@ -813,7 +811,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         } else {
           if (uriResponse.email != null && us!.email != null) {
-            LocalStorage().saveUser(userEmail.userName!);
+            LocalStorage().saveUser(userEmail.userName);
             setState(
               () {
                 loading = false;
@@ -1003,13 +1001,13 @@ class _LoginPageState extends State<LoginPage> {
                             AppStrings.rutaText.toLowerCase()
                           ],
                           dateBirth: AppStrings.fechaText,
-                          photo: user.photoURL,
+                          photo: user.photoURL!,
                           names: text[0],
                           cityId: cityData.id,
                           cellphone: "",
                           surnames: text[1],
                           premium: false,
-                          email: user.email,
+                          email: user.email!,
                           password: AppStrings.keyCode,
                           facebook: "",
                           instagram: "",

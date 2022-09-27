@@ -33,7 +33,7 @@ class UserScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getStorie() async {
-    final dataStory = await StoriesFirebaseRepository().getStoriesId(user.id!);
+    final dataStory = await StoriesFirebaseRepository().getStoriesId(user.id);
     stories = dataStory;
     notifyListeners();
   }

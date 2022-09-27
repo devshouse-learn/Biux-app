@@ -59,7 +59,7 @@ class _Uploader extends State<Uploader> {
       () async {
         initPlatformState();
         member = await MembersRepository().getMyGroupsUser(
-          widget.user!.id!,
+          widget.user!.id,
         );
         this.setState(() => {});
       },
@@ -258,7 +258,7 @@ class _Uploader extends State<Uploader> {
                                               MainAxisAlignment.spaceAround,
                                           children: <Widget>[
                                             group.adminId == 
-                                                    widget.user!.id!
+                                                    widget.user!.id
                                                 ?
                                             Row(
                                               children: [
@@ -269,7 +269,7 @@ class _Uploader extends State<Uploader> {
                                                     child: CircleAvatar(
                                                       backgroundImage:
                                                           NetworkImage(
-                                                        widget.user!.photo!,
+                                                        widget.user!.photo,
                                                       ),
                                                     ),
                                                     decoration: BoxDecoration(
@@ -346,7 +346,7 @@ class _Uploader extends State<Uploader> {
                                                   child: CircleAvatar(
                                                     backgroundImage:
                                                         NetworkImage(
-                                                      widget.user!.photo!,
+                                                      widget.user!.photo,
                                                     ),
                                                   ),
                                                 ),
@@ -864,7 +864,7 @@ void postToFireStore({
       AppStrings.group,
     );
     reference.add({
-      AppStrings.user: user!.userName!,
+      AppStrings.user: user!.userName,
       AppStrings.locationText: location,
       AppStrings.likes: {},
       AppStrings.photoText: photo,
@@ -887,8 +887,8 @@ void postToFireStore({
     );
   } else {
     Analitycs.postStory(
-      user!.userName!,
-      user.id!,
+      user!.userName,
+      user.id,
       AppStrings.user,
     );
     reference.add({
@@ -900,7 +900,7 @@ void postToFireStore({
       AppStrings.ownerIdText: '${user.id.toString()}U',
       AppStrings.timestamp: DateTime.now(),
       AppStrings.nameVal: nameVal,
-      AppStrings.name: user.userName!,
+      AppStrings.name: user.userName,
     }).then(
       (DocumentReference doc) {
         String docId = doc.id;

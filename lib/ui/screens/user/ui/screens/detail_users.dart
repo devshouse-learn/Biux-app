@@ -51,7 +51,7 @@ class _DetailUsersState extends State<DetailUsers> {
                       image: NetworkImage(
                         widget._user!.profileCover == null
                             ? AppStrings.urlBiuxApp
-                            : widget._user!.profileCover!,
+                            : widget._user!.profileCover,
                       ),
                       fit: BoxFit.cover,
                     ),
@@ -80,7 +80,7 @@ class _DetailUsersState extends State<DetailUsers> {
                               },
                             ),
                           ),
-                          username == widget._user!.userName!
+                          username == widget._user!.userName
                               ? Container(
                                   child: IconButton(
                                     icon: Icon(Icons.share,
@@ -89,7 +89,9 @@ class _DetailUsersState extends State<DetailUsers> {
                                       final RenderObject? box =
                                           context.findRenderObject();
                                       if (Platform.isAndroid) {
-                                        AppStrings.messageWhatsapp(usuario: widget._user!.userName!);
+                                        AppStrings.messageWhatsapp(
+                                          usuario: widget._user!.userName,
+                                        );
                                         // );
                                       }
                                     },
@@ -143,7 +145,7 @@ class _DetailUsersState extends State<DetailUsers> {
                                           image: NetworkImage(
                                             widget._user!.photo == null
                                                 ? AppStrings.urlBiuxApp
-                                                : widget._user!.photo!,
+                                                : widget._user!.photo,
                                           )),
                                       borderRadius: new BorderRadius.all(
                                         const Radius.circular(80.0),
@@ -164,7 +166,7 @@ class _DetailUsersState extends State<DetailUsers> {
                           alignment: Alignment.center,
                           padding: const EdgeInsets.only(top: 15.0),
                           child: Text(
-                            widget._user!.names!,
+                            widget._user!.names,
                             style: Styles.containerWhite,
                           ),
                         ),
@@ -175,9 +177,9 @@ class _DetailUsersState extends State<DetailUsers> {
                           alignment: Alignment.center,
                           padding: const EdgeInsets.only(top: 15.0),
                           child: Text(
-                            widget._user!.surnames! == ''
+                            widget._user!.surnames == ''
                                 ? ''
-                                : widget._user!.surnames!,
+                                : widget._user!.surnames,
                             style: Styles.containerWhite,
                           ),
                         ),
@@ -190,7 +192,7 @@ class _DetailUsersState extends State<DetailUsers> {
                           alignment: Alignment.center,
                           padding: const EdgeInsets.only(top: 4.0),
                           child: Text(
-                            widget._user!.userName!,
+                            widget._user!.userName,
                             style: Styles.containerDescription,
                           ),
                         ),
@@ -200,7 +202,7 @@ class _DetailUsersState extends State<DetailUsers> {
                           child: Text(
                             widget._user!.email == null
                                 ? ''
-                                : "- ${widget._user!.email!}",
+                                : "- ${widget._user!.email}",
                             style: Styles.containerDescription,
                           ),
                         ),
@@ -212,13 +214,12 @@ class _DetailUsersState extends State<DetailUsers> {
                       child: Text(
                         widget._user!.cellphone == null
                             ? ''
-                            : "${widget._user!.cellphone!}",
+                            : "${widget._user!.cellphone}",
                         style: Styles.containerDescription,
                       ),
                     ),
                   ],
                 ),
-
               ],
             ),
             Container(
@@ -263,7 +264,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 image: NetworkImage(
                   widget._user.photo == null
                       ? AppStrings.urlBiuxApp
-                      : widget._user.photo!,
+                      : widget._user.photo,
                 ),
               ),
             ),
@@ -309,7 +310,7 @@ class _DetailScreen2State extends State<DetailScreen2> {
                 image: NetworkImage(
                   widget._user.profileCover == null
                       ? AppStrings.urlBiuxApp
-                      : widget._user.profileCover!,
+                      : widget._user.profileCover,
                 ),
               ),
             ),

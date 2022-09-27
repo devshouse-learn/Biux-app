@@ -111,12 +111,13 @@ class Styles {
     color: AppColors.white,
     shadows: <Shadow>[
       Shadow(
-          offset: Offset(
-            1.0,
-            1.0,
-          ),
-          blurRadius: 1.0,
-          color: AppColors.black),
+        offset: Offset(
+          1.0,
+          1.0,
+        ),
+        blurRadius: 1.0,
+        color: AppColors.black,
+      ),
     ],
     fontSize: 22,
     fontWeight: FontWeight.bold,

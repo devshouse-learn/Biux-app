@@ -1,12 +1,12 @@
 class SituationAccident {
-  String? allergies;
-  String? contactEmergency;
-  String? nameEps;
-  int? id;
-  String? medicines;
-  String? rh;
+  final String? allergies;
+  final String? contactEmergency;
+  final String? nameEps;
+  final int? id;
+  final String? medicines;
+  final String? rh;
 
-  SituationAccident({
+  const SituationAccident({
     this.allergies,
     this.contactEmergency,
     this.nameEps,
@@ -15,13 +15,15 @@ class SituationAccident {
     this.rh,
   });
 
-  SituationAccident.fromJsonMap(Map json) {
-    this.allergies = json["allergies"];
-    this.contactEmergency = json["contactEmergency"];
-    this.nameEps = json["epsId"];
-    this.id = json["id"];
-    this.medicines = json["medicines"];
-    this.rh = json["rh"];
+  factory SituationAccident.fromJsonMap(Map json) {
+    return SituationAccident(
+      allergies: json["allergies"],
+      contactEmergency: json["contactEmergency"],
+      id: json["id"],
+      medicines: json["medicines"],
+      nameEps: json["epsId"],
+      rh: json["rh"],
+    );
   }
 
   Map<String, dynamic> toJson() => {

@@ -32,9 +32,9 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
 
   void initState() {
     super.initState();
-    cellphoneController.text = widget.user.cellphone!;
-    facebookController.text = widget.user.facebook!;
-    instagramController.text = widget.user.instagram!;
+    cellphoneController.text = widget.user.cellphone;
+    facebookController.text = widget.user.facebook;
+    instagramController.text = widget.user.instagram;
     Future.delayed(
       Duration.zero,
       () async {
@@ -281,12 +281,12 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
                                 cellphoneController.text.length == 10) {
                               if (facebookController.text.isEmpty ||
                                   facebookController.text ==
-                                      widget.user.facebook! ||
+                                      widget.user.facebook ||
                                   facebookController.text.contains(
                                           AppStrings.urlFacebook) &&
                                       userfacebook.facebook == '' ||
                                   userfacebook.facebook ==
-                                      widget.user.facebook!) {
+                                      widget.user.facebook) {
                                 setState(
                                   () {
                                     loading = true;

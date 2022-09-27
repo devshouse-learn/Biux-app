@@ -5,8 +5,6 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/city.dart';
-import 'package:biux/data/models/state.dart';
-import 'package:biux/data/models/country.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/data/repositories/groups/groups_repository.dart';
 import 'package:biux/data/repositories/members/members_repository.dart';
@@ -70,11 +68,11 @@ class _MenuRoadsState extends State<MenuRoads> {
       () async {
         String? username = await LocalStorage().getUser();
         _user = await UserRepository().getPerson(username!);
-        city = await UserRepository().getSpecifiCities(_user.cityId!);
+        city = await UserRepository().getSpecifiCities(_user.cityId);
         listRoads = await RoadsRepository().getRoads(
           limit,
           offset,
-          _user.cityId!,
+          _user.cityId,
         );
         this.setState(
           () => {
@@ -92,9 +90,9 @@ class _MenuRoadsState extends State<MenuRoads> {
           cityController.text = city.name;
           cityId = city.id;
         }
-        var nMember = await MembersRepository().getMyGroupsUser(_user.id!);
+        var nMember = await MembersRepository().getMyGroupsUser(_user.id);
         _group = await GroupsRepository().getSpecificGroup(
-          _user.groupId!,
+          _user.groupId,
         );
       },
     );

@@ -9,8 +9,6 @@ import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/analitics.dart';
 import 'package:biux/data/models/city.dart';
-import 'package:biux/data/models/state.dart';
-import 'package:biux/data/models/country.dart';
 import 'package:biux/ui/screens/home.dart';
 import 'package:biux/ui/screens/user/password_screen.dart';
 import 'package:biux/ui/screens/user/social_networks_screen.dart';
@@ -137,7 +135,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
   Widget _showPhoto() {
     if (user.profileCover != null) {
       return FadeInImage(
-        image: NetworkImage(user.profileCover!),
+        image: NetworkImage(user.profileCover),
         placeholder: AssetImage(Images.kBike),
         height: 300.0,
         fit: BoxFit.contain,
@@ -154,17 +152,17 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
   getUserProfile() async {
     username = await LocalStorage().getUser();
     user = await UserRepository().getPerson(username!);
-    city = await UserRepository().getSpecifiCities(user.cityId!);
+    city = await UserRepository().getSpecifiCities(user.cityId);
     setState(
       () {
         isLoggedIn = true;
       },
     );
-    nameController.text = user.names!;
-    surnamesController.text = user.surnames!;
-    nameUserController.text = user.userName!;
+    nameController.text = user.names;
+    surnamesController.text = user.surnames;
+    nameUserController.text = user.userName;
     cityController.text = city.name;
-    emailController.text = user.email!;
+    emailController.text = user.email;
     cityData = await UserRepository().getCityId(cityController.text);
   }
 
@@ -262,7 +260,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                       .profileCover ==
                                                   null
                                               ? AppStrings.urlBiuxApp
-                                              : user.profileCover!),
+                                              : user.profileCover),
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -605,11 +603,11 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                               result
                                                                   as BiuxUser;
                                                           _facebook = userData
-                                                              .facebook!;
+                                                              .facebook;
                                                           _instagram = userData
-                                                              .instagram!;
+                                                              .instagram;
                                                           _cellPhone = userData
-                                                              .cellphone!;
+                                                              .cellphone;
                                                           setState(() {});
                                                         }
                                                       },
@@ -673,7 +671,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                                         as BiuxUser;
                                                                 _password =
                                                                     userData
-                                                                        .password!;
+                                                                        .password;
                                                                 setState(() {});
                                                               }
                                                             },
@@ -748,11 +746,11 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                         _image2 != null) {
                                       if (user.cellphone != '' ||
                                           _cellPhone != null) {
-                                        if (emailList.email! == user.email ||
-                                            emailList.email!.isEmpty &&
-                                                userRepeted.userName! ==
+                                        if (emailList.email == user.email ||
+                                            emailList.email.isEmpty &&
+                                                userRepeted.userName ==
                                                     user.userName ||
-                                            userRepeted.userName!.isEmpty) {
+                                            userRepeted.userName.isEmpty) {
                                           _nameUser = nameUserController.text;
                                           _names = nameController.text;
                                           _surnames = surnamesController.text;
@@ -766,7 +764,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                             () {
                                               Analitycs.editUser(
                                                 _nameUser,
-                                                user.id!,
+                                                user.id,
                                               );
                                               _scaffolState.currentState!
                                                   .showSnackBar(
@@ -822,7 +820,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
 
                                           if (_image != null) {
                                             UserRepository().uploadPhoto(
-                                              user.id!,
+                                              user.id,
                                               _image,
                                             );
                                             uploadImage(_image).then(
@@ -830,14 +828,14 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                 postToFireStore(
                                                   photo: data,
                                                   userId:
-                                                      '${user.id!.toString()}U',
+                                                      '${user.id.toString()}U',
                                                 );
                                               },
                                             );
                                           }
                                           if (_image2 != null) {
                                             UserRepository().uploadProfileCover(
-                                              user.id!,
+                                              user.id,
                                               _image2,
                                             );
                                             uploadImage2(_image2).then(
@@ -845,7 +843,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                 postToFireStore2(
                                                   photo2: data2,
                                                   userId:
-                                                      '${user.id!.toString()}U',
+                                                      '${user.id.toString()}U',
                                                 );
                                               },
                                             );
@@ -863,7 +861,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                             surname: _surnames,
                                             email: _email,
                                             user: _nameUser,
-                                            userId: '${user.id!.toString()}U',
+                                            userId: '${user.id.toString()}U',
                                           );
                                           // await UsuariosRepositorio().obtenerMembresia(
                                           //   usuarioMembresia,
@@ -893,10 +891,10 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                 loading = false;
                                               });
                                               _showDialog2(
-                                                emailList.email!.isNotEmpty
+                                                emailList.email.isNotEmpty
                                                     ? AppStrings.messageRegisteredGmail(message: emailController.text)
                                                     : userRepeted
-                                                            .userName!.isNotEmpty
+                                                            .userName.isNotEmpty
                                                         ? AppStrings.messageRegisteredUser(message: nameUserController.text)
                                                         : '',
                                               );
@@ -1011,7 +1009,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                       image: NetworkImage(
                                                         user.photo == null
                                                             ? AppStrings.urlBiuxApp
-                                                            : user.photo!,
+                                                            : user.photo,
                                                       ),
                                                     ),
                                                     borderRadius:
@@ -1130,7 +1128,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
   }
 
   Future updateLocalUser(BiuxUser user) async {
-    LocalStorage().saveUser(user.userName!);
+    LocalStorage().saveUser(user.userName);
     // _prefs = await SharedPreferences.getInstance();
     // await _prefs.gu(username, _nombreUsuario);
   }

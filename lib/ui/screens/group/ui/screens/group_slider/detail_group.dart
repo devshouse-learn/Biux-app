@@ -165,7 +165,7 @@ class _DetailGroupState extends State<DetailGroup> {
         );
         // Se debe llamar los datos del admin
         final BiuxUser admin = BiuxUser();
-        city = await UserRepository().getSpecifiCities(widget.admin!.cityId!);
+        city = await UserRepository().getSpecifiCities(widget.admin!.cityId);
         this.setState(
           () {
             if (member.approved != null) {
@@ -650,11 +650,11 @@ class _DetailGroupState extends State<DetailGroup> {
                       child: Container(
                         padding: EdgeInsets.only(left: 0),
                         child: Text(
-                          widget.admin!.names! == null
+                          widget.admin!.names == null
                               ? AppStrings.loandingText
-                              : widget.admin!.names! +
+                              : widget.admin!.names +
                                   " " +
-                                  widget.admin!.surnames!,
+                                  widget.admin!.surnames,
                           style: Styles.advertisingTitle.copyWith(
                             fontSize: size.height * 0.025,
                           ),

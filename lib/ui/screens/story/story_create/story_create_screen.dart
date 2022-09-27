@@ -352,10 +352,14 @@ class _AppbarCreateStory extends StatelessWidget
               showDialogCreateStory(
                 context: context,
                 onSave: (listTags, description) async {
+                  final userId = LocalStorage().getUserId();
+                  final user = await bloc.getUser(id: userId);
+                  final creationDate = DateTime.now();
                   final story = Story(
                     description: description,
                     tags: listTags,
-                    userId: LocalStorage().getUserId(),
+                    creationDate: creationDate.toString(),
+                    user: user,
                   );
                   final result = await bloc.createStory(
                     story: story,
@@ -369,8 +373,7 @@ class _AppbarCreateStory extends StatelessWidget
                       backgroundColor: AppColors.darkBlue,
                     ),
                   );
-                  // TO DO: activate when the View Stories screen is created
-                  // Navigator.of(context).pop();
+                  Navigator.pop(context, true);
                 },
               );
             }

@@ -104,7 +104,7 @@ class _MyHomeState extends State<MyHome> {
         final useR = await UserRepository().getPerson(username);
         final ref =
             FirebaseFirestore.instance.collection(AppStrings.instaUsers);
-        final nMember = await MembersRepository().getMyGroupsUser(user.id!);
+        final nMember = await MembersRepository().getMyGroupsUser(user.id);
 
         LocalStorage().saveUserId(
           user.id.toString(),
@@ -115,8 +115,8 @@ class _MyHomeState extends State<MyHome> {
             () {
               user = useR;
               member = nMember;
-              vip = user.premium!;
-              final nombreAdmin = admin.id ?? '';
+              vip = user.premium;
+              final nombreAdmin = admin.id;
               if (nombreAdmin == user.id) {
                 joinMe = 1;
               }
@@ -147,8 +147,7 @@ class _MyHomeState extends State<MyHome> {
 
         userRecord = await ref
             .where(AppStrings.idText,
-                isEqualTo:
-                    AppStrings.idGFirebase(id: group.id.toString()))
+                isEqualTo: AppStrings.idGFirebase(id: group.id.toString()))
             .get();
         if (userRecord2 == null) {
           ref.doc(AppStrings.idGFirebase(id: group.id.toString())).set(
@@ -234,8 +233,7 @@ class _MyHomeState extends State<MyHome> {
                 ),
               ],
             ),
-            actions: <Widget>[
-            ],
+            actions: <Widget>[],
           ),
           drawer: Container(
             color: AppColors.greyishNavyBlue,
@@ -286,7 +284,9 @@ class _MyHomeState extends State<MyHome> {
                               bottom: 5,
                             ),
                             child: Text(
-                              user.names ?? AppStrings.loadingName,
+                              user.names == ''
+                                  ? AppStrings.loadingName
+                                  : user.names,
                               style: _darkTheme == true
                                   ? Styles.wrapDrawerWhite
                                   : Styles.wrapDrawerBlack,
@@ -357,7 +357,7 @@ class _MyHomeState extends State<MyHome> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (BuildContext context) => MyGroups(
-                                    user.id!,
+                                    user.id,
                                   ),
                                 ),
                               );
@@ -521,7 +521,8 @@ class _MyHomeState extends State<MyHome> {
                                               onPressed: () async {
                                                 await FacebookAuth.instance
                                                     .logOut();
-                                                await AuthenticationRepository.signOut(
+                                                await AuthenticationRepository
+                                                    .signOut(
                                                   context: context,
                                                 );
                                                 deleteLoginToken();

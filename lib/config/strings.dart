@@ -385,7 +385,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const publishedStory = "Historia publicada ";
   static const storyText = "Historias";
   static const locationText = "location";
-  static const likes = "likes";
+  static const likes = "Me gusta";
   static const description2 = "descriptión";
   static const name = "name";
   static const ownerError = "owner error";
@@ -558,12 +558,24 @@ The navigation delegate is set to block navigation to the youtube website.
   static const search = "Buscar";
   static const currentLocation = "Ubicación actual";
   static const points = "...";
+  static const titleShareStory = "!No te pierdas esta historia de Biux!";
+  static const textShareStory = " ha compartido esta historia en Biux...";
   static const seeMoreText = "Ver más";
+  static const minutesText = "minutos";
+  static const hoursText = "horas";
+  static const daysText = "dias";
+  static const weeksText = "semanas";
+  static const monthsText = "meses";
 
   ///
   /// Methods
   ///
 
+  static String storytimeHaveCreated({
+    required String number,
+    required String time,
+  }) =>
+      "Hace $number $time";
   static String whatsappMessage(
           {required String whatsappNumber, required String name}) =>
       'https://wa.me/+57$whatsappNumber/?text=Hola $name llegue de BIUX';

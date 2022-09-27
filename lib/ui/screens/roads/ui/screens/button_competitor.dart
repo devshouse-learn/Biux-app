@@ -40,7 +40,7 @@ class ButtonCompetitorRoad extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          user.names!,
+                          user.names,
                           overflow: TextOverflow.ellipsis,
                           style: Styles.containerNames,
                         ),
@@ -53,7 +53,7 @@ class ButtonCompetitorRoad extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          user.surnames!,
+                          user.surnames,
                           style: Styles.containerNames,
                         ),
                       ),
@@ -76,7 +76,7 @@ class ButtonCompetitorRoad extends StatelessWidget {
                 image: new NetworkImage(
                   user.photo == null
                       ? AppStrings.urlBiuxApp
-                      : user.photo!,
+                      : user.photo,
                 ),
                 fit: BoxFit.cover,
               ),

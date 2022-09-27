@@ -73,7 +73,7 @@ class _CircleImageState extends State<CircleImage> {
                             backgroundColor: AppColors.greyishNavyBlue,
                             backgroundImage: NetworkImage(
                               widget.user.photo != null
-                                  ? widget.user.photo!
+                                  ? widget.user.photo
                                   : AppStrings.urlBiuxApp,
                             ),
                             minRadius: 90,

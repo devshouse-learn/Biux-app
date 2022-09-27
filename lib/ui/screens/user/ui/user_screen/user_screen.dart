@@ -112,46 +112,48 @@ class _SuperiorUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Stack(children: <Widget>[
-      Container(
-        alignment: Alignment.topLeft,
-        margin: new EdgeInsets.only(top: 15, left: 10),
-        child: GestureDetector(
-          onTap: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ZoomPage(user.photo!, user.names);
-                });
-          },
-          child: Container(
-            height: 130,
-            width: 130,
-            decoration: new BoxDecoration(
-              border: Border.all(color: AppColors.white, width: 4),
-              image: DecorationImage(
-                image: new NetworkImage(user.photo!),
-                fit: BoxFit.cover,
+    return Stack(
+      children: <Widget>[
+        Container(
+          alignment: Alignment.topLeft,
+          margin: new EdgeInsets.only(top: 15, left: 10),
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ZoomPage(user.photo, user.names);
+                  });
+            },
+            child: Container(
+              height: 130,
+              width: 130,
+              decoration: new BoxDecoration(
+                border: Border.all(color: AppColors.white, width: 4),
+                image: DecorationImage(
+                  image: new NetworkImage(user.photo),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(100.0),
               ),
-              borderRadius: BorderRadius.circular(100.0),
             ),
           ),
         ),
-      ),
-      GestureDetector(
-        child: Container(
-          margin: new EdgeInsets.only(top: 115, left: 45),
-          height: 60,
-          width: 60,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: new AssetImage(Images.kImageChange),
+        GestureDetector(
+          child: Container(
+            margin: new EdgeInsets.only(top: 115, left: 45),
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: new AssetImage(Images.kImageChange),
+              ),
             ),
           ),
+          onTap: () {},
         ),
-        onTap: () {},
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -165,7 +167,7 @@ class _TextDescripcion extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       margin: EdgeInsets.only(top: 150),
       child: Text(
-        user.description!,
+        user.description,
         style: Styles.containerFollowing,
       ),
     );
@@ -202,7 +204,7 @@ class _button extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        user.following!.length.toString(),
+                        user.following.length.toString(),
                         style: Styles.containerBlack,
                       ),
                       SizedBox(
@@ -413,23 +415,27 @@ class _ViewUserImage extends StatelessWidget {
                           height: 125,
                           width: 130.8,
                           decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: AppColors.gray, width: 1)),
+                            border: Border.all(
+                              color: AppColors.gray,
+                              width: 1,
+                            ),
+                          ),
                           child: Image.network(
                             story.fileUrl1,
                             fit: BoxFit.fill,
                           )),
-                          if(story.fileUrl2.isNotEmpty || story.fileUrl3.isNotEmpty)
-                      Container(
-                        height: 20,
-                        width: 20,
-                        margin: EdgeInsets.only(left: 105, top: 5),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: new AssetImage(Images.kImageSnakeCase),
+                      if (story.fileUrl2.isNotEmpty ||
+                          story.fileUrl3.isNotEmpty)
+                        Container(
+                          height: 20,
+                          width: 20,
+                          margin: EdgeInsets.only(left: 105, top: 5),
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: new AssetImage(Images.kImageSnakeCase),
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ))
               .toList(),

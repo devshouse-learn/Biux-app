@@ -1,22 +1,19 @@
-import 'package:biux/data/models/story.dart';
-import 'package:biux/data/models/user.dart';
-
 class ReactionStory {
   String id;
-  String userId;
+  String username;
 
   ReactionStory({
     this.id = '',
-    this.userId = '',
+    this.username = '',
   });
 
- factory ReactionStory.fromJson(Map json) => ReactionStory(
-    id: json["id"],
-    userId: json["userId"],
-  );
+  factory ReactionStory.fromJson(Map json) => ReactionStory(
+        id: json["id"],
+        username: json["username"],
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "userId": userId,
+        "username": username,
       };
 }

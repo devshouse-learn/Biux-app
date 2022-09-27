@@ -174,8 +174,8 @@ class _DetailRoadState extends State<DetailRoad> {
                                       ),
                                       onPressed: () async {
                                         Analitycs.deleteRoad(
-                                          user!.names!,
-                                          user!.id!,
+                                          user!.names,
+                                          user!.id,
                                           widget.road.name,
                                           widget.road.distance,
                                           widget.road.routeLevel,
@@ -217,8 +217,8 @@ class _DetailRoadState extends State<DetailRoad> {
             icon: Icon(Icons.share),
             onPressed: () async {
               Analitycs.shareRoad(
-                user!.names!,
-                user!.id!,
+                user!.names,
+                user!.id,
                 widget.road.name,
                 widget.road.distance,
                 widget.road.routeLevel,
@@ -249,7 +249,7 @@ class _DetailRoadState extends State<DetailRoad> {
                     roadName: widget.road.name,
                     distance: widget.road.distance.toString(),
                     groupName: widget.group.name,
-                    cellphone: admin.cellphone!,
+                    cellphone: admin.cellphone,
                     pointmeeting: widget.road.pointmeeting,
                   ),
                 );

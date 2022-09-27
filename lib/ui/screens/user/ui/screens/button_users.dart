@@ -1,4 +1,3 @@
-import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
@@ -40,7 +39,7 @@ class ButtonUsers extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          _user.names!,
+                          _user.names,
                           style: theme == darkTheme
                               ? Styles.rowItemColordark
                               : Styles.rowItemColorligth,
@@ -54,7 +53,7 @@ class ButtonUsers extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          _user.surnames!,
+                          _user.surnames,
                           style: theme == darkTheme
                               ? Styles.rowItemColordark
                               : Styles.rowItemColorligth,
@@ -96,7 +95,7 @@ class ButtonUsers extends StatelessWidget {
                 image: NetworkImage(
                   _user.photo == null
                       ? AppStrings.urlDetailGroup
-                      : _user.photo!,
+                      : _user.photo,
                 ),
                 fit: BoxFit.fill,
               ),

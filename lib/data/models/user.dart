@@ -1,32 +1,32 @@
 import 'package:biux/data/models/situation_accident.dart';
 
 class BiuxUser {
-  String? id;
-  String? names;
-  String? surnames;
-  String? cityId;
-  String? userName;
-  String? whatsapp;
-  String? gender;
-  String? email;
-  String? dateBirth;
-  String? facebook;
-  String? photo;
-  String? token;
-  String? cellphone;
-  String? password;
-  String? profileCover;
-  int? followerS;
-  String? groupId;
-  List? modality;
-  String? instagram;
-  bool? premium;
-  final Map? followers;
-  final Map? following;
-  SituationAccident? situationAccident;
-  String? description;
+  final String id;
+  final String names;
+  final String surnames;
+  final String cityId;
+  final String userName;
+  final String whatsapp;
+  final String gender;
+  final String email;
+  final String dateBirth;
+  final String facebook;
+  final String photo;
+  final String token;
+  final String cellphone;
+  final String password;
+  final String profileCover;
+  final int followerS;
+  final String groupId;
+  final List modality;
+  final String instagram;
+  final bool premium;
+  final Map followers;
+  final Map following;
+  final SituationAccident situationAccident;
+  final String description;
 
-  BiuxUser({
+  const BiuxUser({
     this.id = '',
     this.names = '',
     this.surnames = '',
@@ -51,39 +51,50 @@ class BiuxUser {
     this.premium = false,
     this.followers = const {},
     this.following = const {},
-    this.situationAccident,
+    this.situationAccident = const SituationAccident(),
     this.description = '',
   });
 
   factory BiuxUser.fromJsonMap(Map json) {
     return BiuxUser(
-        id: json["id"],
-        names: json["names"],
-        surnames: json["surnames"],
-        whatsapp: json["whatsapp"],
-        userName: json["userName"],
-        gender: json["gender"],
-        cityId: json["cityId"],
-        token: json['token'],
-        email: json["email"],
-        dateBirth: json[" dateBirth"],
-        facebook: json["facebook"],
-        photo: json["photo"] ??
-            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-        cellphone: json["cellphone"],
-        password: json["password"],
-        profileCover: json["profileCover"] ??
-            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-        followerS: json["followerS"],
-        instagram: json["instagram"],
-        premium: json["premium"],
-        followers: json["followers"],
-        following: json["following"],
-        groupId: json["groupId"],
-        situationAccident:
-            SituationAccident.fromJsonMap(json["situationAccident"]),
-            description: json["description"],);
-        
+      id: json["id"],
+      names: json["names"],
+      surnames: json["surnames"],
+      whatsapp: json["whatsapp"] ?? '',
+      userName: json["userName"],
+      gender: json["gender"] ?? '',
+      cityId: json["cityId"] ?? '',
+      token: json['token'] ?? '',
+      email: json["email"],
+      dateBirth: json[" dateBirth"] ?? '',
+      facebook: json["facebook"] ?? '',
+      photo: json["photo"] ??
+          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      cellphone: json["cellphone"] ?? '',
+      password: json["password"],
+      profileCover: json["profileCover"] ??
+          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      followerS: json["followerS"] ?? 0,
+      instagram: json["instagram"] ?? '',
+      premium: json["premium"] ?? false,
+      followers: json["followers"] ?? {},
+      following: json["following"] ?? {},
+      groupId: json["groupId"] ?? '',
+      situationAccident: SituationAccident.fromJsonMap(
+        json["situationAccident"],
+      ),
+      description: json["description"],
+    );
+  }
+  factory BiuxUser.fromMapStory(Map json) {
+    return BiuxUser(
+      id: json["id"],
+      names: json["names"],
+      surnames: json["surnames"],
+      userName: json["userName"],
+      photo: json["photo"] ??
+          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+    );
   }
 
   factory BiuxUser.fromMapRoad(Map json) {
@@ -117,21 +128,31 @@ class BiuxUser {
       "followers": followers,
       "following": following,
       "groupId": groupId,
-      'situationAccident': situationAccident?.toJson(),
+      'situationAccident': situationAccident.toJson(),
       "description": description,
     };
 
     var cleanUser = <String, dynamic>{};
-    userJson.forEach((key, value) {
-      if (value != null) {
-        cleanUser.putIfAbsent(key, () => value);
-      }
-    });
+    userJson.forEach(
+      (key, value) {
+        if (value != null) {
+          cleanUser.putIfAbsent(key, () => value);
+        }
+      },
+    );
     return cleanUser;
   }
 
+  Map<String, dynamic> toMapStory() => {
+        "id": id,
+        "names": names,
+        "surnames": surnames,
+        "userName": userName,
+        "photo": photo,
+      };
+
   Map<String, dynamic> toMapRoad() => {
-      "id": id,
-      "names": names,
-    };
+        "id": id,
+        "names": names,
+      };
 }

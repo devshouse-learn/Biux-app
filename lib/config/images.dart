@@ -45,7 +45,8 @@ class Images {
   static const kImageAdd = '$kImagesPath/add.png';
   static const kImageLocation2 = '$kImagesPath/location2.png';
   static const kDeselectedImage = '$kImagesPath/deselected_image.png';
-  static const kSelectedImage = '$kImagesPath/selected_image.png';
+   static const kSelectedImage = '$kImagesPath/selected_image.png';
+   static const kBikeLikesImage = '$kImagesPath/bike_likes.png';
   // TO DO nonexistent image
   static const kBike = '$kImagesPath/';
   static const kImageLocationGrey = '$kImagesPath/location_grey.png';

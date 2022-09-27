@@ -338,7 +338,7 @@ class _ViewProfileBiux extends State<ViewProfileBiux>
                               AppColors.black.withOpacity(0.6),
                               BlendMode.colorBurn),
                           image: NetworkImage(
-                            widget.user!.profileCover!,
+                            widget.user!.profileCover,
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -406,7 +406,7 @@ class _ViewProfileBiux extends State<ViewProfileBiux>
                                       MaterialPageRoute(
                                         builder: (_) {
                                           return ZoomPage3(
-                                            widget.user!.photo!,
+                                            widget.user!.photo,
                                           );
                                         },
                                       ),
@@ -429,7 +429,7 @@ class _ViewProfileBiux extends State<ViewProfileBiux>
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: NetworkImage(
-                                              widget.user!.photo!,
+                                              widget.user!.photo,
                                             ),
                                           ),
                                           borderRadius: BorderRadius.all(

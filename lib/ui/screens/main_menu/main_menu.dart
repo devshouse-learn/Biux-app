@@ -1,9 +1,12 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
+import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
+import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
+import 'package:biux/ui/screens/story/story_view/story_view_screen.dart';
 import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +16,8 @@ class MainMenu extends StatelessWidget {
   MainMenu({Key? key}) : super(key: key);
 
   final List<Widget> children = [
+    StoryViewScreen(),
     RoadsListScreen(),
-    GroupListScreen(),
     GroupListScreen(),
     GroupListScreen(),
   ];
@@ -26,23 +29,26 @@ class MainMenu extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.blackPearl,
         title: Selector<MainMenuBloc, int>(
-            selector: (_, bloc) => bloc.pageIndex,
-            builder: (context, value, child) {
-              return _AppBar();
-            }),
+          selector: (_, bloc) => bloc.pageIndex,
+          builder: (context, value, child) {
+            return _AppBar();
+          },
+        ),
         actions: [
           Selector<MainMenuBloc, int>(
-              selector: (_, bloc) => bloc.pageIndex,
-              builder: (context, value, child) {
-                return _ActionButton();
-              }),
+            selector: (_, bloc) => bloc.pageIndex,
+            builder: (context, value, child) {
+              return _ActionButton();
+            },
+          ),
         ],
       ),
       drawer: Selector<MainMenuBloc, int>(
-          selector: (_, bloc) => bloc.pageIndex,
-          builder: (context, value, child) {
-            return _MainMenuDrawer();
-          }),
+        selector: (_, bloc) => bloc.pageIndex,
+        builder: (context, value, child) {
+          return _MainMenuDrawer();
+        },
+      ),
       bottomNavigationBar: Selector<MainMenuBloc, int>(
           selector: (_, bloc) => bloc.pageIndex,
           builder: (context, value, child) {
@@ -85,7 +91,10 @@ class _AppBar extends StatelessWidget {
           Text(
             '${AppStrings.map} ',
           ),
-        Text(AppStrings.APP_NAME.toUpperCase(), style: Styles.mainMenuTextBiux),
+        Text(
+          AppStrings.APP_NAME.toUpperCase(),
+          style: Styles.mainMenuTextBiux,
+        ),
       ],
     );
   }
@@ -97,18 +106,31 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<MainMenuBloc>();
-    return Row(children: <Widget>[
-      if (bloc.pageIndex == 0 || bloc.pageIndex == 1)
-        Container(
-          height: 32,
-          width: 32,
-          margin: EdgeInsets.only(right: 30),
-          child: GestureDetector(
-            onTap: () {},
-            child: Image.asset(Images.kImageAdd),
+    return Row(
+      children: <Widget>[
+        if (bloc.pageIndex == 0 || bloc.pageIndex == 1)
+          Container(
+            height: 32,
+            width: 32,
+            margin: EdgeInsets.only(right: 30),
+            child: GestureDetector(
+              onTap: () async {
+                if (bloc.pageIndex == 0) {
+                  final bloc = context.read<StoryViewBloc>();
+                  final result = await Navigator.pushNamed(
+                    context,
+                    AppRoutes.storyCreateRoute,
+                  );
+                  if (result as bool) {
+                    bloc.getIntitalStories();
+                  }
+                }
+              },
+              child: Image.asset(Images.kImageAdd),
+            ),
           ),
-        ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -123,128 +145,134 @@ class _MainMenuDrawer extends StatelessWidget {
       width: 300,
       child: Drawer(
         backgroundColor: AppColors.darkBlue,
-        child: ListView(children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(top: 15, left: 5),
-            child: Image.asset(
-              Images.kBiuxLogoBackgroundWhite,
-              color: AppColors.white,
-              height: 30,
+        child: ListView(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.only(top: 15, left: 5),
+              child: Image.asset(
+                Images.kBiuxLogoBackgroundWhite,
+                color: AppColors.white,
+                height: 30,
+              ),
             ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(top: 20),
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                height: 130,
-                width: 130,
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.white, width: 4),
-                  image: DecorationImage(
-                    image: NetworkImage(bloc.user.photo!),
-                    fit: BoxFit.cover,
+            Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.only(top: 20),
+              child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  height: 130,
+                  width: 130,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.white, width: 4),
+                    image: DecorationImage(
+                      image: NetworkImage(bloc.user.photo),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(100.0),
                   ),
-                  borderRadius: BorderRadius.circular(100.0),
                 ),
               ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 10),
-            alignment: Alignment.center,
-            child: Text(
-              bloc.user.names == '' ? AppStrings.loadingName : bloc.user.names!,
-              style: Styles.containerTextName,
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 30, right: 30),
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              color: AppColors.white,
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              alignment: Alignment.center,
               child: Text(
-                AppStrings.editProfile,
-                style: Styles.containerTextGroup,
+                bloc.user.names == ''
+                    ? AppStrings.loadingName
+                    : bloc.user.names,
+                style: Styles.containerTextName,
               ),
-              onPressed: () {},
             ),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 20, top: 10),
-            height: 500,
-            child: Column(children: <Widget>[
-              ListTile(
-                horizontalTitleGap: 10,
-                leading: Image.asset(
-                  Images.kImageHome,
-                  color: AppColors.white,
-                  height: 30,
+            Container(
+              margin: EdgeInsets.only(left: 30, right: 30),
+              child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                title: Text(
-                  AppStrings.beginning,
-                  style: Styles.containerTextName,
+                color: AppColors.white,
+                child: Text(
+                  AppStrings.editProfile,
+                  style: Styles.containerTextGroup,
                 ),
-                onTap: () {},
+                onPressed: () {},
               ),
-              ListTile(
-                horizontalTitleGap: 10,
-                leading: Image.asset(
-                  Images.kImageNotification,
-                  color: AppColors.white,
-                  height: 30,
-                ),
-                title: Text(
-                  AppStrings.notifications,
-                  style: Styles.containerTextName,
-                ),
-                onTap: () {},
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 20, top: 10),
+              height: 500,
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    horizontalTitleGap: 10,
+                    leading: Image.asset(
+                      Images.kImageHome,
+                      color: AppColors.white,
+                      height: 30,
+                    ),
+                    title: Text(
+                      AppStrings.beginning,
+                      style: Styles.containerTextName,
+                    ),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    horizontalTitleGap: 10,
+                    leading: Image.asset(
+                      Images.kImageNotification,
+                      color: AppColors.white,
+                      height: 30,
+                    ),
+                    title: Text(
+                      AppStrings.notifications,
+                      style: Styles.containerTextName,
+                    ),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    horizontalTitleGap: 10,
+                    leading: Image.asset(
+                      Images.kImageRoads,
+                      color: AppColors.white,
+                      height: 30,
+                    ),
+                    title: Text(
+                      AppStrings.myRoads,
+                      style: Styles.containerTextName,
+                    ),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    horizontalTitleGap: 10,
+                    leading: Image.asset(
+                      Images.kImageGroups,
+                      color: AppColors.white,
+                      height: 30,
+                    ),
+                    title: Text(
+                      AppStrings.MyGroupText,
+                      style: Styles.containerTextName,
+                    ),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    horizontalTitleGap: 10,
+                    leading: Image.asset(
+                      Images.kImageDisconnect,
+                      color: AppColors.white,
+                      height: 30,
+                    ),
+                    title: Text(
+                      AppStrings.signOff,
+                      style: Styles.containerTextName,
+                    ),
+                    onTap: () {},
+                  ),
+                ],
               ),
-              ListTile(
-                horizontalTitleGap: 10,
-                leading: Image.asset(
-                  Images.kImageRoads,
-                  color: AppColors.white,
-                  height: 30,
-                ),
-                title: Text(
-                  AppStrings.myRoads,
-                  style: Styles.containerTextName,
-                ),
-                onTap: () {},
-              ),
-              ListTile(
-                horizontalTitleGap: 10,
-                leading: Image.asset(
-                  Images.kImageGroups,
-                  color: AppColors.white,
-                  height: 30,
-                ),
-                title: Text(
-                  AppStrings.MyGroupText,
-                  style: Styles.containerTextName,
-                ),
-                onTap: () {},
-              ),
-              ListTile(
-                horizontalTitleGap: 10,
-                leading: Image.asset(
-                  Images.kImageDisconnect,
-                  color: AppColors.white,
-                  height: 30,
-                ),
-                title: Text(
-                  AppStrings.signOff,
-                  style: Styles.containerTextName,
-                ),
-                onTap: () {},
-              ),
-            ]),
-          )
-        ]),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -252,7 +280,7 @@ class _MainMenuDrawer extends StatelessWidget {
 
 class _BottomNavigationBar extends StatelessWidget {
   _BottomNavigationBar({Key? key}) : super(key: key);
-  GlobalKey _bottomNavigationKey = GlobalKey();
+  final GlobalKey _bottomNavigationKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {

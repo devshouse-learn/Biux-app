@@ -60,7 +60,7 @@ class _GruposListaState extends State<GroupsList> {
     Future.delayed(Duration.zero, () async {
       String? username = await LocalStorage().getUser();
       _user = await UserRepository().getPerson(username!);
-      city = await UserRepository().getSpecifiCities(_user.cityId!);
+      city = await UserRepository().getSpecifiCities(_user.cityId);
 
       listGroups = await GroupsRepository().getGroups(
         valCity == false ? city.name : _city,

@@ -92,11 +92,11 @@ class _CreateRoadState extends State<CreateRoad> {
     // userId = id!;
     username = (await LocalStorage().getUser())!;
     user = await UserRepository().getPerson(username);
-    final nMember = await MembersRepository().getMyGroupsUser(user.id!);
-    _group = await GroupsRepository().getSpecificGroup(user.groupId!);
+    final nMember = await MembersRepository().getMyGroupsUser(user.id);
+    _group = await GroupsRepository().getSpecificGroup(user.groupId);
     this.setState(
       () {
-        if (admin.id! == user.id)
+        if (admin.id == user.id)
           groupId = _group.id;
         else {
           groupId = 0;
@@ -976,8 +976,8 @@ class _CreateRoadState extends State<CreateRoad> {
           Duration(seconds: 2),
           () {
             Analitycs.createRoad(
-              user.userName!,
-              user.id!,
+              user.userName,
+              user.id,
               pathnameController.text,
               double.parse(distanceController.text),
               rating.toInt(),

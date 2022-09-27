@@ -1,5 +1,4 @@
 import 'package:biux/data/local_storage/local_storage.dart';
-import 'package:biux/data/models/reaction_story.dart';
 import 'package:biux/data/models/story.dart';
 import 'dart:io';
 
@@ -9,7 +8,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   static final collection = 'stories';
-  static final collectionReaction = 'reactionStory';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   Future<bool> createStory({
@@ -17,7 +15,9 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     required List<File> listFile,
   }) async {
     try {
-      final result = await firestore.collection(collection).add(story.toJson());
+      final result = await firestore.collection(collection).add(
+            story.toJson(),
+          );
       final listImages = await uploadStory(
         id: result.id,
         listFile: listFile,
@@ -28,7 +28,9 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           description: story.description,
           files: listImages,
           tags: story.tags,
-          userId: story.userId,
+          user: story.user,
+          creationDate: story.creationDate,
+          listReactions: story.listReactions,
         ),
       );
       return true;
@@ -47,62 +49,15 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   Future<List<Story>> getStories() async {
     try {
       final result = await firestore.collection(collection).get();
+
       return result.docs
           .map(
-            (e) => Story.fromJson(
-              e.data(),
-            ),
+            (e) => Story.fromJson(e.data(), e.id),
           )
           .toList();
     } catch (e) {
-      return List.empty();
+      return [];
     }
-  }
-
-  @override
-  Future<List<ReactionStory>> getReactionStory(String id) async {
-    try {
-      final result = await firestore
-          .collection(collection)
-          .doc(id)
-          .collection(collectionReaction)
-          .get();
-      return result.docs
-          .map(
-            (e) => ReactionStory.fromJson(
-              e.data(),
-            ),
-          )
-          .toList();
-    } catch (e) {
-      return List.empty();
-    }
-  }
-
-  @override
-  Future reactionStory(String userId, String storyId) async {
-    try {
-      final response = await firestore
-          .collection(collection)
-          .doc(storyId)
-          .collection(collectionReaction)
-          .doc(userId)
-          .set({
-        'userId': userId,
-        'storyId': storyId,
-      });
-    } catch (e) {}
-  }
-
-  Future deleteReactionStory(String userId, String storyId) async {
-    try {
-      final response = await firestore
-          .collection(collection)
-          .doc(storyId)
-          .collection(collectionReaction)
-          .doc(userId)
-          .delete();
-    } catch (e) {}
   }
 
   @override
@@ -165,6 +120,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .map(
             (e) => Story.fromJson(
               e.data(),
+              e.id,
             ),
           )
           .toList();

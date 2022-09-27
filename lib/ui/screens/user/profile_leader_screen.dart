@@ -286,7 +286,7 @@ class _DetailScreenState extends State<DetailScreen> {
             child: Container(
               child: Image(
                 image: NetworkImage(
-                  widget._user.photo!,
+                  widget._user.photo,
                 ),
               ),
             ),
@@ -332,7 +332,7 @@ class _DetailScreen2State extends State<DetailScreen2> {
                 image: NetworkImage(
                   widget._user.profileCover == null
                       ? AppStrings.urlBiuxApp
-                      : widget._user.profileCover!,
+                      : widget._user.profileCover,
                 ),
               ),
             ),

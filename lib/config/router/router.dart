@@ -16,6 +16,8 @@ import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen_bl
 import 'package:biux/ui/screens/splash_screen.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_screen.dart';
+import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
+import 'package:biux/ui/screens/story/story_view/story_view_screen.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen_bloc.dart';
 import 'package:flutter/material.dart';
@@ -48,12 +50,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case AppRoutes.storyCreateRoute:
       return _buildRoute(
-        settings: settings,
-        builder: ChangeNotifierProvider(
-          create: (_) => StoryCreateBloc(),
-          child: StoryCreateScreen(),
-        )
-      );
+          settings: settings,
+          builder: ChangeNotifierProvider(
+            create: (_) => StoryCreateBloc(),
+            child: StoryCreateScreen(),
+          ));
     case AppRoutes.viewGroupRoute:
       return _buildRoute(
         settings: settings,
@@ -79,6 +80,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
                 create: (_) => MainMenuBloc(),
               ),
               ChangeNotifierProvider(
+                create: (_) => StoryViewBloc(),
+              ),
+              ChangeNotifierProvider(
                 create: (_) => RoadsListScreenBloc(),
               ),
               ChangeNotifierProvider(
@@ -93,6 +97,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => GroupListScreenBloc(),
           child: GroupListScreen(),
+        ),
+      );
+    case AppRoutes.viewStoryRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => StoryViewBloc(),
+          child: StoryViewScreen(),
         ),
       );
     case AppRoutes.roadsListRoute:

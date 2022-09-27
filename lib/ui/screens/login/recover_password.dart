@@ -2,7 +2,6 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
-import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/users/user_repository.dart';
 import 'package:biux/ui/screens/login/login.dart';
@@ -318,7 +317,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                       },
                                     );
                                     await UserRepository()
-                                        .sendEmail(emailList.userName!);
+                                        .sendEmail(emailList.userName);
                                   }
                                 } else {
                                   final snackBar = SnackBar(

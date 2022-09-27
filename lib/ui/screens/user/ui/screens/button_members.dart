@@ -18,12 +18,7 @@ class ButtonMembers extends StatelessWidget {
   final BiuxUser? admin;
 
   ButtonMembers(
-    this.member,
-    this.group,
-    this.memberships,
-    this.user,
-    this.admin
-  );
+      this.member, this.group, this.memberships, this.user, this.admin);
 
   final ThemeData theme = darkTheme;
   @override
@@ -33,13 +28,14 @@ class ButtonMembers extends StatelessWidget {
     final bronce = AppColors.bronze;
     Color membershipColor = AppColors.bronze;
     var userMembership = memberships!.firstWhere(
-      (mem) => mem.user!.id! == member!.userId,
+      (mem) => mem.user!.id == member!.userId,
       orElse: () => memberships!.first,
     );
     // if (membresiaUsuario == null) {
     //   miembro.usuario.premium == false;
     // }
-    final nameMembership = userMembership.membership?.name ?? AppStrings.notFound2;
+    final nameMembership =
+        userMembership.membership?.name ?? AppStrings.notFound2;
     switch (nameMembership) {
       case AppStrings.silver:
         membershipColor = plata;
@@ -54,13 +50,13 @@ class ButtonMembers extends StatelessWidget {
     return Stack(
       alignment: Alignment.centerLeft,
       children: [
-        user!.id! == group!.adminId
+        user!.id == group!.adminId
             ? AdminStyle(
                 member: member!,
                 theme: theme,
                 user: user!,
               )
-            : user!.premium!
+            : user!.premium
                 ? UserMembershipStyle(
                     membershipColor: membershipColor,
                     member: member!,
@@ -89,8 +85,7 @@ class ButtonMembers extends StatelessWidget {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: new NetworkImage(
-                            user?.photo ??
-                                AppStrings.urlBiuxApp,
+                            user?.photo ?? AppStrings.urlBiuxApp,
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -116,10 +111,10 @@ class ButtonMembers extends StatelessWidget {
                   reverse: false,
                   lineWidth: 1.5,
                   circularStrokeCap: CircularStrokeCap.square,
-                  backgroundColor: user!.premium! == true
+                  backgroundColor: user!.premium == true
                       ? membershipColor
                       : AppColors.transparent,
-                  progressColor: user!.premium! == true
+                  progressColor: user!.premium == true
                       ? membershipColor
                       : AppColors.transparent,
                 ),
@@ -138,7 +133,7 @@ class ButtonMembers extends StatelessWidget {
                   percent: 0.4,
                   lineWidth: 5.5,
                   circularStrokeCap: CircularStrokeCap.butt,
-                  backgroundColor: user!.premium! == true
+                  backgroundColor: user!.premium == true
                       ? membershipColor.withOpacity(0.5)
                       : AppColors.transparent,
                   progressColor: user!.premium == true
@@ -195,7 +190,7 @@ class AdminStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.names!,
+                      user.names,
                       style: theme == darkTheme
                           ? Styles.containerColorligth
                           : Styles.containerColordark,
@@ -209,7 +204,7 @@ class AdminStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.surnames!,
+                      user.surnames,
                       style: theme == darkTheme
                           ? Styles.containerColorligth
                           : Styles.containerColordark,
@@ -287,7 +282,7 @@ class UserStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.names!,
+                      user.names,
                       style: Styles.rowMember,
                     ),
                   ),
@@ -299,7 +294,7 @@ class UserStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.surnames!,
+                      user.surnames,
                       style: Styles.rowMember,
                     ),
                   ),
@@ -375,10 +370,11 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
             side: new BorderSide(
-                color: widget.user.premium! == true
-                    ? widget.membershipColor
-                    : AppColors.transparent,
-                width: 2.0),
+              color: widget.user.premium == true
+                  ? widget.membershipColor
+                  : AppColors.transparent,
+              width: 2.0,
+            ),
           ),
           margin: EdgeInsets.only(left: 40),
           child: Column(
@@ -394,8 +390,8 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
                       top: 15,
                     ),
                     child: Text(
-                      widget.user.names!,
-                      style: widget.user.premium! == true
+                      widget.user.names,
+                      style: widget.user.premium == true
                           ? Styles.rowMember
                               .copyWith(color: widget.membershipColor)
                           : Styles.rowMember,
@@ -409,8 +405,8 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
                       top: 15,
                     ),
                     child: Text(
-                      widget.user.surnames!,
-                      style: widget.user.premium! == true
+                      widget.user.surnames,
+                      style: widget.user.premium == true
                           ? Styles.rowMember
                               .copyWith(color: widget.membershipColor)
                           : Styles.rowMember,

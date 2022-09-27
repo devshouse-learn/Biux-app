@@ -27,7 +27,7 @@ class ButtonMyGroups extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(alignment: Alignment.centerLeft, children: <Widget>[
-      group.adminId == user.id!
+      group.adminId == user.id
           ? MyGroupStyle(
               member: member!,
               theme: theme,

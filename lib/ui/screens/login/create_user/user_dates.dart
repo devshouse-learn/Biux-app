@@ -1002,7 +1002,7 @@ class _UserNormalState extends State<UserNormal> {
                                     userNameController.text.toLowerCase();
                                 for (var i = 0; i < listUsers.length; i++) {
                                   username =
-                                      listUsers[i].userName!.contains(_userName);
+                                      listUsers[i].userName.contains(_userName);
                                   if (username) {
                                     validate = 2;
                                   }

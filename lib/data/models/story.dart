@@ -1,9 +1,14 @@
+import 'package:biux/data/models/reaction_story.dart';
+import 'package:biux/data/models/user.dart';
+
 class Story {
   String id;
   List<String> files;
   String description;
   List<String> tags;
-  String userId;
+  BiuxUser user;
+  String creationDate;
+  List<ReactionStory> listReactions;
   String get fileUrl1 {
     try {
       return files.first;
@@ -31,23 +36,42 @@ class Story {
   Story({
     this.id = '',
     this.description = '',
-    this.userId = '',
+    this.user = const BiuxUser(),
     this.tags = const [],
     this.files = const [],
+    this.listReactions = const [],
+    this.creationDate = '',
   });
 
-  factory Story.fromJson(Map json) => Story(
-        id: json['id'],
-        files: json['files'],
+  factory Story.fromJson(
+    Map json,
+    String id,
+  ) =>
+      Story(
+        id: id,
+        files:
+            (json['files'] as List<dynamic>).map((e) => e.toString()).toList(),
         description: json['description'],
-        userId: json['userId'],
-        tags: json['tags'],
+        user: BiuxUser.fromMapStory(json['user']),
+        tags: json['tags'] != null
+            ? (json['tags'] as List<dynamic>).map((e) => e.toString()).toList()
+            : [],
+        creationDate: json['creationDate'],
+        listReactions: json['listReactions'] != null
+            ? (json['listReactions'] as List<dynamic>)
+                .map(
+                  (e) => ReactionStory.fromJson(e),
+                )
+                .toList()
+            : [],
       );
 
   Map<String, dynamic> toJson() => {
         'files': files,
         'description': description,
-        'userId': userId,
+        'user': user.toMapStory(),
         'tags': tags,
+        'creationDate': creationDate,
+        'listReactions': listReactions.map((e) => e.toJson()).toList(),
       };
 }

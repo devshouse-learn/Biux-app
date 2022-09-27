@@ -172,7 +172,7 @@ class _StoriesScreen extends State<StoriesScreen> {
         var username = (await LocalStorage().getUser())!;
         user1 = await UserRepository().getPerson(username);
         final nMember = await MembersRepository().getMyGroupsUser(
-          user1!.id!,
+          user1!.id,
         );
         setState(
           () {
@@ -362,7 +362,7 @@ class _StoriesScreen extends State<StoriesScreen> {
                                 ),
                                 photo: user1!.photo,
                                 user: user1,
-                                username: user1!.userName!,
+                                username: user1!.userName,
                                 profileCover: user1!.profileCover,
                               ),
                             ),
@@ -409,7 +409,7 @@ class _StoriesScreen extends State<StoriesScreen> {
                           currentUserId: ownerId,
                           photo: user1!.photo,
                           user: user1,
-                          username: user1!.userName!,
+                          username: user1!.userName,
                         ),
                       ),
                     );
@@ -527,6 +527,7 @@ class _StoriesScreen extends State<StoriesScreen> {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     var storie = snapshot.data![index];
+                    // Hours
                     DateTime dt = (storie.timestamp).toDate();
                     formatted = date2.difference(dt).inHours;
                     formatted2 = date2.difference(dt).inDays;
@@ -987,8 +988,8 @@ class _StoriesScreen extends State<StoriesScreen> {
                         ),
                         onPressed: () {
                           Analitycs.deleteStory(
-                            user1!.userName!,
-                            user1!.id!,
+                            user1!.userName,
+                            user1!.id,
                             analiticImage,
                             name!,
                           );
@@ -1024,8 +1025,8 @@ class _StoriesScreen extends State<StoriesScreen> {
 
     if (_liked) {
       Analitycs.likeStory(
-        user1!.userName!,
-        user1!.id!,
+        user1!.userName,
+        user1!.id,
         photo,
         name,
       );

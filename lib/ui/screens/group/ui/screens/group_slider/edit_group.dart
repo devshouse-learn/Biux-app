@@ -445,14 +445,14 @@ class _EditGroupsState extends State<EditGroups> {
                                   });
                                   var group = Group(
                                     id: widget._groups.id,
-                                    cityAdmin: widget.admin.cityId!
+                                    cityAdmin: widget.admin.cityId
                                         .toString(),
                                     name: nameController.text,
                                     description: descriptionController.text,
                                     whatsapp: whatsappController.text,
                                     type: true,
-                                    cityId: widget.admin.cityId!,
-                                    adminId: widget.admin.id!,
+                                    cityId: widget.admin.cityId,
+                                    adminId: widget.admin.id,
                                     facebook: _facebook,
                                     instagram: _instagram,
                                     modality: modalityToList(isSelected),

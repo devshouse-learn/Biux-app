@@ -317,9 +317,9 @@ class _ButtonRoadState extends State<ButtonRoad> {
                   color: AppColors.greyishNavyBlue,
                   onPressed: () async {
                     Analitycs.viewRoad(
-                      widget.user.userName!,
+                      widget.user.userName,
                       widget.road.name,
-                      widget.user.id!,
+                      widget.user.id,
                       widget.road.id,
                       widget.road.pointmeeting,
                     );

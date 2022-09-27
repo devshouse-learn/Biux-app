@@ -172,7 +172,7 @@ class _ButtonStoryState extends State<ButtonStory> {
                     ),
                     onTap: () async {
                       response = await StoriesRepository().reactionStory(
-                        widget.story.userId,
+                        widget.story.user.id,
                         widget.story.id,
                       );
                       // .whenComplete(

@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:biux/data/models/story.dart';
+import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/stories/stories_firebase_repository.dart';
+import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -11,6 +13,8 @@ class StoryCreateBloc extends ChangeNotifier {
   int current = 0;
   final StoriesFirebaseRepository storiesFirebaseRepository =
       StoriesFirebaseRepository();
+  final UserFirebaseRepository userFirebaseRepository =
+      UserFirebaseRepository();
 
   void initialEntities({required List<AssetEntity> entitiesList}) {
     this.entitiesList = entitiesList;
@@ -43,6 +47,12 @@ class StoryCreateBloc extends ChangeNotifier {
   void changeCurrent({required int current}) {
     this.current = current;
     notifyListeners();
+  }
+
+  Future<BiuxUser> getUser({required String id}) async {
+    final user = await userFirebaseRepository.getUserById(id);
+    notifyListeners();
+    return user;
   }
 
   Future<bool> createStory({

@@ -173,11 +173,11 @@ class _CommentScreenState extends State<CommentScreen> {
         fetchedComments = List.from(fetchedComments)
           ..add(
             Comment(
-              username: widget.user.userName!,
+              username: widget.user.userName,
               comment: comment,
               timestamp: Timestamp.now(),
-              avatarUrl: widget.user.photo!,
-              userId: widget.user.id!.toString(),
+              avatarUrl: widget.user.photo,
+              userId: widget.user.id.toString(),
             ),
           );
       },
@@ -248,7 +248,7 @@ class Comment extends StatelessWidget {
                             currentUserId: userId,
                             photo: user!.photo,
                             user: user,
-                            username: user!.userName!,
+                            username: user!.userName,
                             profileCover: user!.profileCover,
                           ),
                         ),

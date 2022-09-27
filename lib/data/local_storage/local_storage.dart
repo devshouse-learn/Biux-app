@@ -51,7 +51,9 @@ class LocalStorage {
   }
 
   String _getString(String key) {
-    return _prefs.getString(key) ?? AppStrings.notFoundKey;
+    // TO DO: uncomment when it's the local Storage is enabled
+    // return _prefs.getString(key) ?? AppStrings.notFoundKey;
+    return 'uSQDPSNH8VObpQFBaZd2HrPt4l22';
   }
 
   Future<void> _setString({
@@ -69,6 +71,14 @@ class LocalStorage {
 
   String getUserId() => _getString(StorageKeys.userId);
 
+  // TO DO // Remove
+  String _getStringTest(String key) {
+    // TO DO: uncomment when it's the local Storage is enabled
+    // return _prefs.getString(key) ?? AppStrings.notFoundKey;
+    return 'nataSer24';
+  }
+  String getUserName() => _getStringTest(StorageKeys.userName);
+
   Future<void> deleteUserId() => _removeValue(StorageKeys.userId);
 
   // loggedIn
@@ -80,5 +90,4 @@ class LocalStorage {
   bool getLoggedIn() => _getBool(StorageKeys.loggedIn);
 
   Future<void> deleteLoggedIn() => _removeValue(StorageKeys.loggedIn);
-
 }

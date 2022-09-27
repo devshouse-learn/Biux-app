@@ -82,7 +82,7 @@ class GrupoSliderState extends State<GroupSlider>
         if (user.id == null)
           admin = '0';
         else {
-          admin = user.id!;
+          admin = user.id;
         }
       });
     });

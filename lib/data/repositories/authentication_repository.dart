@@ -190,8 +190,8 @@ class AuthenticationRepository {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
-        email: user.email!,
-        password: user.password!,
+        email: user.email,
+        password: user.password,
       );
       final String uid = userCredential.user!.uid;
       final BiuxUser biuxUser = BiuxUser(
@@ -220,11 +220,11 @@ class AuthenticationRepository {
         whatsapp: user.whatsapp,
       );
       await UserFirebaseRepository().registerUser(user: biuxUser);
-      LocalStorage().saveKey(user.password!);
-      LocalStorage().saveUserEmail(user.email!);
+      LocalStorage().saveKey(user.password);
+      LocalStorage().saveUserEmail(user.email);
       LocalStorage().saveUserId(uid);
       return ResponseRepo(
-        message: biuxUser.id!,
+        message: biuxUser.id,
         status: true,
         statusCode: 200,
       );

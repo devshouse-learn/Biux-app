@@ -16,7 +16,7 @@ class StoriesRepository {
     Map responseData = json.decode(response.body);
     List storyJson = responseData["data"];
     List<Story> stories =
-        storyJson.map((storyJson) => Story.fromJson(storyJson)).toList();
+        storyJson.map((storyJson) => Story.fromJson(storyJson, storyJson)).toList();
 
     return stories;
   }
@@ -27,7 +27,7 @@ class StoriesRepository {
     Map responseData = json.decode(response.body);
     List storyItemJson = responseData["data"];
     List<Story> storiesItem = storyItemJson
-        .map((storyItemJson) => Story.fromJson(storyItemJson))
+        .map((storyItemJson) => Story.fromJson(storyItemJson, storyItemJson))
         .toList();
 
     return storiesItem;

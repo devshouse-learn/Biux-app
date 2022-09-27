@@ -96,6 +96,20 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     }
   }
 
+  Future<BiuxUser> getUserById(String id) async {
+    try {
+      final result = await firestore
+          .collection(collection)
+          .where('id', isEqualTo: id)
+          .get();
+      return BiuxUser.fromJsonMap(
+        result.docs.first.data(),
+      );
+    } catch (e) {
+      return BiuxUser();
+    }
+  }
+
   @override
   Future<List<BiuxUser>> getUsernames() async {
     try {
@@ -216,7 +230,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       await firestore.collection(collection).doc(user.id).update(
             user.toJson(),
           );
-      final response = await this.getUserId(user.id!);
+      final response = await this.getUserId(user.id);
       return response;
     } catch (e) {
       return BiuxUser();
@@ -298,8 +312,8 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       await firestore.collection(collection).doc(user.id).set(
             user.toJson(),
           );
-      LocalStorage().saveUserEmail(user.email!);
-      LocalStorage().saveUserId(user.id!);
+      LocalStorage().saveUserEmail(user.email);
+      LocalStorage().saveUserId(user.id);
       return ResponseRepo(
         status: true,
         message: '',

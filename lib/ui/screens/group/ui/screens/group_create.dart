@@ -138,7 +138,7 @@ class _GroupScreenState extends State<GroupScreen> {
   getUserProfile() async {
     String? username = await LocalStorage().getUser();
     _user = await UserRepository().getPerson(username!);
-    ciudad = await UserRepository().getSpecifiCities(_user.cityId!);
+    ciudad = await UserRepository().getSpecifiCities(_user.cityId);
     setState(() {
       isLoggedIn = true;
     });
@@ -536,8 +536,8 @@ class _GroupScreenState extends State<GroupScreen> {
                                       Duration(seconds: 2),
                                       () {
                                         Analitycs.createGroup(
-                                            _user.userName!,
-                                            _user.id!,
+                                            _user.userName,
+                                            _user.id,
                                             nameGroupController.text,
                                             ciudad.nombre!);
                                         _scaffolState.currentState!
@@ -565,13 +565,13 @@ class _GroupScreenState extends State<GroupScreen> {
                                         cityAdmin: _user.cityId.toString(),
                                         name: nameGroupController.text,
                                         description: descriptionController.text,
-                                        logoADM: _user.photo!,
-                                        profileCoverADM: _user.profileCover!,
+                                        logoADM: _user.photo,
+                                        profileCoverADM: _user.profileCover,
                                         active: true,
                                         whatsapp: whatsappController.text,
                                         type: true,
-                                        cityId: _user.cityId!,
-                                        adminId: _user.id!,
+                                        cityId: _user.cityId,
+                                        adminId: _user.id,
                                         facebook: _facebook,
                                         instagram: _instagram,
                                         modality: [
