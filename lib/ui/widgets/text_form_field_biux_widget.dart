@@ -7,6 +7,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
     Key? key,
     required this.controller,
     required this.text,
+    this.image,
     this.validator,
     this.onChanged,
     this.keyboardType,
@@ -38,6 +39,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
   final double radiusCircular;
   final EdgeInsetsGeometry padding;
   final bool autofocus;
+  final Widget? image;
   final void Function(String)? onFieldSubmitted;
 
   @override
@@ -59,6 +61,9 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
           controller: controller,
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
+            errorStyle: TextStyle(fontSize: 0, height: 0),
+            counterStyle: Styles.cancelButtonText,
+            prefixIcon: image,
             fillColor: AppColors.white,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -83,11 +88,11 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
             ),
             hintText: text,
             errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.gray, width: 0.5),
+              borderSide: BorderSide(color: AppColors.red, width: 0.5),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.gray, width: 0.5),
+              borderSide: BorderSide(color: AppColors.red, width: 0.5),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedBorder: OutlineInputBorder(

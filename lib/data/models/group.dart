@@ -1,4 +1,3 @@
-
 class Group {
   String id;
   String name;
@@ -18,6 +17,7 @@ class Group {
   String instagram;
   String cityId;
   String adminId;
+  bool public;
 
   Group({
     this.id = '',
@@ -25,10 +25,12 @@ class Group {
     this.active = true,
     this.numberMembers = 0,
     this.numberRoads = 0,
-    this.logo = 'https://play-lh.googleusercontent.com/wyyEURZBz5PI4qbTeJTelVlQrbXj5RQVu8ZCG-DldcOaZLDcULUq71palN3SWny2SrdK',
+    this.logo =
+        'https://play-lh.googleusercontent.com/wyyEURZBz5PI4qbTeJTelVlQrbXj5RQVu8ZCG-DldcOaZLDcULUq71palN3SWny2SrdK',
     this.logoADM = '',
     this.profileCoverADM = '',
-    this.profileCover = 'https://play-lh.googleusercontent.com/wyyEURZBz5PI4qbTeJTelVlQrbXj5RQVu8ZCG-DldcOaZLDcULUq71palN3SWny2SrdK',
+    this.profileCover =
+        'https://play-lh.googleusercontent.com/wyyEURZBz5PI4qbTeJTelVlQrbXj5RQVu8ZCG-DldcOaZLDcULUq71palN3SWny2SrdK',
     this.description = '',
     this.modality = const [],
     this.type = true,
@@ -38,30 +40,31 @@ class Group {
     this.facebook = '',
     this.instagram = '',
     this.whatsapp = '',
+    this.public = false,
   });
 
   factory Group.fromJson({required Map json}) => Group(
-        id: json["id"],
-        name: json["name"],
-        active: json["active"],
-        adminId: json["adminId"],
-        cityAdmin: json["cityAdmin"],
-        cityId: json["cityId"],
-        description: json["description"],
-        facebook: json["facebook"],
-        instagram: json["instagram"],
-        logo: json["logo"] ??
-            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-        logoADM: json["logoADM"],
-        modality: json["modality"],
-        numberMembers: json["numberMembers"],
-        numberRoads: json["numberRoads"],
-        profileCover: json["profileCover"] ??
-            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-        profileCoverADM: json["profileCoverADM"],
-        type: json["type"],
-        whatsapp: json["whatsapp"]
-      );
+      id: json["id"],
+      name: json["name"],
+      active: json["active"],
+      adminId: json["adminId"],
+      cityAdmin: json["cityAdmin"],
+      cityId: json["cityId"],
+      description: json["description"],
+      facebook: json["facebook"],
+      instagram: json["instagram"],
+      logo: json["logo"] ??
+          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      logoADM: json["logoADM"],
+      modality: json["modality"],
+      numberMembers: json["numberMembers"],
+      numberRoads: json["numberRoads"],
+      profileCover: json["profileCover"] ??
+          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      profileCoverADM: json["profileCoverADM"],
+      type: json["type"],
+      whatsapp: json["whatsapp"],
+      public: json["public"] );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -82,5 +85,6 @@ class Group {
         "cityId": cityId,
         "facebook": facebook,
         "instagram": instagram,
+        "public": public
       };
 }

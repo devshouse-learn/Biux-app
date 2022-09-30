@@ -566,6 +566,17 @@ The navigation delegate is set to block navigation to the youtube website.
   static const daysText = "dias";
   static const weeksText = "semanas";
   static const monthsText = "meses";
+  static const linkFacebook = "Link Facebook";
+  static const create = "Crear";
+  static const public = "Público";
+  static const private = "Privado";
+  static const missingLogo = "Elige una imagen de grupo";
+  static const missingNameGroup = "Ingresa el nombre de grupo";
+  static const missingWhatssap = "Ingresa el whatsapp del grupo";
+  static const missingWhatssapLength = "Ingresa el whatsapp del grupo";
+  static const missingDescription = "Ingresa la descripción del grupo";
+  static const missingValidatorPublic = "Selecciona público o privado";
+  static const adminIdText = 'adminId';
 
   ///
   /// Methods

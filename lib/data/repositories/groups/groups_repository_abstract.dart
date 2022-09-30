@@ -19,5 +19,5 @@ abstract class GroupsRepositoryAbstract {
   Future<List<String>> getNamesGroups();
   Future<bool> updateGroup(Group group);
   Future<bool> deleteGroup(Group group);
-  Future<bool> createGroup(Group group, File logo, File profileCover);
+  Future<String> createGroup(Group group, File logo,);
 }

@@ -20,8 +20,8 @@ class ViewGroupBloc extends ChangeNotifier {
   BiuxUser dataMember = BiuxUser();
   Group group = Group();
   BiuxUser admin = BiuxUser();
-  final groupId;
-  final adminId;
+  final String groupId;
+  final String adminId;
   ViewGroupBloc({required this.groupId, required this.adminId}) {
     loadData(adminId: adminId, groupId: groupId);
   }

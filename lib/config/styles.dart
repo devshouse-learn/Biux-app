@@ -59,6 +59,8 @@ class Styles {
   static const snackBarContent = TextStyle(
     color: AppColors.white,
     letterSpacing: 0.5,
+    fontSize: 18,
+    fontWeight: FontWeight.w300,
   );
   static const splashScreenViewText = TextStyle(
     fontSize: 40.0,

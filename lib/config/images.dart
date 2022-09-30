@@ -45,8 +45,13 @@ class Images {
   static const kImageAdd = '$kImagesPath/add.png';
   static const kImageLocation2 = '$kImagesPath/location2.png';
   static const kDeselectedImage = '$kImagesPath/deselected_image.png';
-   static const kSelectedImage = '$kImagesPath/selected_image.png';
-   static const kBikeLikesImage = '$kImagesPath/bike_likes.png';
+  static const kSelectedImage = '$kImagesPath/selected_image.png';
+  static const kBikeLikesImage = '$kImagesPath/bike_likes.png';
+  static const kImageIconFacebook = '$kImagesPath/icon_facebook.png';
+  static const kImageIconWhatsapp = '$kImagesPath/icon_whatsapp.png';
+  static const kImageIconInstagram = '$kImagesPath/icon_instagram.png';
+  static const kSelectedBlackImage = '$kImagesPath/selected_black_image.png';
+  static const kDeselectedBlackImage = '$kImagesPath/deselected_black_image.png';
   // TO DO nonexistent image
   static const kBike = '$kImagesPath/';
   static const kImageLocationGrey = '$kImagesPath/location_grey.png';

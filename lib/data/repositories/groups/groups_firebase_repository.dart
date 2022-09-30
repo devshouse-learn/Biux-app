@@ -24,9 +24,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   @override
   Future<List<Group>> getGroups() async {
     try {
-      final result = await firestore
-          .collection(collection)
-          .get();
+      final result = await firestore.collection(collection).get();
       return result.docs
           .map(
             (e) => Group.fromJson(
@@ -201,25 +199,27 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   }
 
   @override
-  Future<bool> createGroup(Group group, File logo, File profileCover) async {
+  Future<String> createGroup(
+    Group group,
+    File logo,
+  ) async {
+    String? docId;
     try {
       await firestore.collection(collection).add(group.toJson()).then(
         (DocumentReference doc) async {
-          String docId = doc.id;
-          final logoUrl = await updateImageLogo(logo, docId);
-          final profileCoverUrl = await updateImageProfileCover(profileCover, docId);
+          docId = doc.id;
+          final logoUrl = await updateImageLogo(logo, docId!);
           firestore.collection(collection).doc(docId).update(
             {
               AppStrings.logoText: logoUrl,
-              AppStrings.profileCoverText: profileCoverUrl,
               AppStrings.idText: docId,
             },
           );
         },
       );
-      return true;
+      return docId!;
     } catch (e) {
-      return false;
+      return docId!;
     }
   }
 
@@ -234,7 +234,8 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
     return url;
   }
 
-  Future<String> updateImageProfileCover(File fileProfileCover, String id) async {
+  Future<String> updateImageProfileCover(
+      File fileProfileCover, String id) async {
     FirebaseUtils firebaseUtils = FirebaseUtils();
     final url = await firebaseUtils.uploadImage(
       image: fileProfileCover,
@@ -247,12 +248,11 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
 
   Future<List<Member>> getListMemberGroup() async {
     try {
-      final response =
-          await firestore.collectionGroup(subCollection).get();
+      final response = await firestore.collectionGroup(subCollection).get();
       return response.docs
           .map(
             (e) => Member.fromJson(
-               e.data(),
+              e.data(),
             ),
           )
           .toList();

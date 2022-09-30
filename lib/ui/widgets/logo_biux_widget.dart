@@ -5,16 +5,23 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class LogoBiuxWidget extends StatelessWidget {
-  LogoBiuxWidget({Key? key, required this.imageLogo, required this.getImage})
+  LogoBiuxWidget(
+      {Key? key,
+      required this.imageLogo,
+      required this.getImage,
+      this.left = 10,
+      this.top = 90})
       : super(key: key);
   final imageLogo;
   Function getImage;
+  double top;
+  double left;
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       Container(
-        margin: EdgeInsets.only(top: 100, left: 20),
+        margin: EdgeInsets.only(top: top, left: left),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60.0),
           boxShadow: [
@@ -31,38 +38,38 @@ class LogoBiuxWidget extends StatelessWidget {
               shape: BoxShape.circle,
               color: AppColors.strongCyan,
             ),
-            height: 110,
-            width: 110,
+            height: 120,
+            width: 120,
             child: imageLogo == null
                 ? new Center(
-                  child: new Text('Logo', style: Styles.containerImage),
-                )
+                    child: new Text('Logo', style: Styles.containerImage),
+                  )
                 : Container(
-                  alignment: (Alignment(-1.0, 2.5)),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: FileImage(
-                        imageLogo.path != null ? imageLogo : getImage,
+                    alignment: (Alignment(-1.0, 2.5)),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: FileImage(
+                          imageLogo.path != null ? imageLogo : getImage,
+                        ),
+                      ),
+                      borderRadius: BorderRadius.all(
+                        const Radius.circular(80.0),
                       ),
                     ),
-                    borderRadius: BorderRadius.all(
-                      const Radius.circular(80.0),
-                    ),
                   ),
-                ),
           ),
         ),
       ),
       Container(
-        margin: EdgeInsets.only(top: 180, left: 100),
+        margin: EdgeInsets.only(top: 110, left: 210),
         child: GestureDetector(
             child: Container(
               height: 30,
               width: 30,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(60.0),
-                  color: AppColors.white,
+                  color: AppColors.darkBlue,
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 1.0,
@@ -70,9 +77,9 @@ class LogoBiuxWidget extends StatelessWidget {
                     )
                   ]),
               child: Icon(
-                Icons.camera_alt_outlined,
-                color: AppColors.strongCyan,
-                size: 19,
+                Icons.add,
+                color: AppColors.white,
+                size: 25,
               ),
             ),
             onTap: getImage()),

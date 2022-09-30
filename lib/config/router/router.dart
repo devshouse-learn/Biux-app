@@ -56,10 +56,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             child: StoryCreateScreen(),
           ));
     case AppRoutes.viewGroupRoute:
+      final map = args as Map;
       return _buildRoute(
         settings: settings,
         builder: ChangeNotifierProvider(
-          create: (_) => ViewGroupBloc(adminId: args, groupId: args),
+          create: (_) => ViewGroupBloc(adminId: map['adminId'], groupId: map['groupId']),
           child: ViewGroupScreen(),
         ),
       );

@@ -72,14 +72,6 @@ class _AppBar extends StatelessWidget {
           Row(
             children: [
               Container(
-                child: IconButton(
-                  iconSize: 40,
-                  icon: Icon(Icons.arrow_back_rounded),
-                  color: AppColors.white,
-                  onPressed: () {},
-                ),
-              ),
-              Container(
                   alignment: Alignment.topCenter,
                   child: Text(
                     group.name,
