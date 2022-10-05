@@ -450,7 +450,6 @@ class _EditGroupsState extends State<EditGroups> {
                                     name: nameController.text,
                                     description: descriptionController.text,
                                     whatsapp: whatsappController.text,
-                                    type: true,
                                     cityId: widget.admin.cityId,
                                     adminId: widget.admin.id,
                                     facebook: _facebook,

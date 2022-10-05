@@ -548,9 +548,8 @@ class _CreateRoadState extends State<CreateRoad> {
                                     id: '',
                                     name: pathnameController.text,
                                     dateTime: dateController.text,
-                                    groupId: groupId,
                                     cityId: city.id,
-                                    routeLevel: rating.toInt(),
+                                    routeLevel: rating,
                                     modality: [
                                       AppStrings.urbanoText.toUpperCase(),
                                       AppStrings.rutaText.toUpperCase()
@@ -558,7 +557,6 @@ class _CreateRoadState extends State<CreateRoad> {
                                     description: meetingController.text,
                                     pointmeeting: meetingController.text,
                                     status: true,
-                                    type: true,
                                     distance: double.parse(
                                       distanceController.text,
                                     ),

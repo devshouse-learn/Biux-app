@@ -1,7 +1,6 @@
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/data/models/competitor_road.dart';
-import 'package:biux/data/models/user.dart';
 import 'dart:io';
 import 'package:biux/data/repositories/roads/roads_repository_abstract.dart';
 import 'package:biux/utils/firebase_utils.dart';
@@ -93,6 +92,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .map(
             (e) => Road.fromJson(
               json: e.data(),
+              id: e.id,
             ),
           )
           .toList();
@@ -116,6 +116,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .map(
             (e) => Road.fromJson(
               json: e.data(),
+              id: e.id,
             ),
           )
           .toList();
@@ -170,23 +171,21 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
       );
       Road road = await this.getRoad(id);
       final roadUpdate = Road(
-          id: road.id,
-          cityId: road.cityId,
-          dateTime: road.dateTime,
-          description: road.description,
-          distance: road.distance,
-          groupId: road.groupId,
-          image: url,
-          modality: road.modality,
-          name: road.name,
-          numberLikes: road.numberLikes,
-          numberParticipants: road.numberParticipants,
-          pointmeeting: road.pointmeeting,
-          route: road.route,
-          routeLevel: road.routeLevel,
-          status: road.status,
-          type: road.type,
-          group: road.group);
+        id: road.id,
+        cityId: road.cityId,
+        dateTime: road.dateTime,
+        description: road.description,
+        distance: road.distance,
+        image: url,
+        modality: road.modality,
+        name: road.name,
+        numberLikes: road.numberLikes,
+        numberParticipants: road.numberParticipants,
+        pointmeeting: road.pointmeeting,
+        routeLevel: road.routeLevel,
+        status: road.status,
+        group: road.group,
+      );
       await this.updateRoad(roadUpdate);
       return true;
     } catch (e) {
@@ -202,6 +201,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .get();
       return Road.fromJson(
         json: response.docs.first.data(),
+        id: response.docs.first.id,
       );
     } catch (e) {
       return Road(id: '', group: Group());
@@ -211,7 +211,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
   @override
   Future<bool> createRoad(Road road) async {
     try {
-      await firestore.collection(collection).doc(road.id).set(
+      await firestore.collection(collection).add(
             road.toJson(),
           );
       return true;
@@ -236,12 +236,11 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
     }
   }
 
-  Future<bool> onTapRoad(Road road,) async {
+  Future<bool> onTapRoad(
+    Road road,
+  ) async {
     try {
-      await firestore
-          .collection(collection)
-          .doc(road.id)
-          .update(road.toJson());
+      await firestore.collection(collection).doc(road.id).update(road.toJson());
       return true;
     } catch (e) {
       return false;

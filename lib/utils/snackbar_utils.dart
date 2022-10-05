@@ -5,16 +5,15 @@ import 'package:flutter/material.dart';
 class SnackBarUtils {
   static SnackBar customSnackBar({
     required String content,
-    Color backgroundColor = AppColors.black,
+    Color backgroundColor = AppColors.strongCyan,
   }) {
     return SnackBar(
       backgroundColor: backgroundColor,
       shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
+          borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20),
         topRight: Radius.circular(20),
-      )
-    ),
+      )),
       content: Text(
         content,
         textAlign: TextAlign.center,

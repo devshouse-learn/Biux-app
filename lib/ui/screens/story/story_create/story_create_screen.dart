@@ -370,10 +370,13 @@ class _AppbarCreateStory extends StatelessWidget
                       content: result
                           ? AppStrings.textSuccessfulCreateStory
                           : AppStrings.textErrorCreateStory,
-                      backgroundColor: AppColors.darkBlue,
+                      backgroundColor:
+                          result ? AppColors.strongCyan : AppColors.redAccent,
                     ),
                   );
-                  Navigator.pop(context, true);
+                  if (result) {
+                    Navigator.pop(context, true);
+                  }
                 },
               );
             }

@@ -7,7 +7,7 @@ import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.da
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_screen.dart';
-import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen.dart';
+import 'package:biux/ui/screens/roads/roads_list/roads_list_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -108,22 +108,20 @@ class _ActionButton extends StatelessWidget {
     final bloc = context.read<MainMenuBloc>();
     return Row(
       children: <Widget>[
-        if (bloc.pageIndex == 0 || bloc.pageIndex == 1)
+        if (bloc.pageIndex == 0)
           Container(
             height: 32,
             width: 32,
             margin: EdgeInsets.only(right: 30),
             child: GestureDetector(
               onTap: () async {
-                if (bloc.pageIndex == 0) {
-                  final bloc = context.read<StoryViewBloc>();
-                  final result = await Navigator.pushNamed(
-                    context,
-                    AppRoutes.storyCreateRoute,
-                  );
-                  if (result as bool) {
-                    bloc.getIntitalStories();
-                  }
+                final bloc = context.read<StoryViewBloc>();
+                final result = await Navigator.pushNamed(
+                  context,
+                  AppRoutes.storyCreateRoute,
+                );
+                if (result as bool) {
+                  bloc.getIntitalStories();
                 }
               },
               child: Image.asset(Images.kImageAdd),

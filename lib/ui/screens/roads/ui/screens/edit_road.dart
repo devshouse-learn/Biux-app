@@ -522,14 +522,12 @@ class _EditRoadState extends State<EditRoad> {
                                 dateTime: _date,
                                 name: pathnameController.text,
                                 cityId: widget.road.cityId,
-                                routeLevel: rating.toInt(),
+                                routeLevel: rating,
                                 modality: [AppStrings.urbanoText.toUpperCase(), AppStrings.rutaText.toUpperCase()],
                                 description: descriptionController.text,
                                 pointmeeting: meetingController.text,
                                 status: true,
-                                type: true,
                                 distance: _distance,
-                                groupId: widget.road.groupId,
                                 numberParticipants:
                                     widget.road.numberParticipants,
                                     group: Group()

@@ -165,10 +165,11 @@ class Styles {
     fontWeight: FontWeight.bold,
   );
   static const sizedBoxHintStyle = TextStyle(
-      fontSize: 18,
-      fontFamily: "Poppins",
-      fontWeight: FontWeight.w300,
-      color: AppColors.gray);
+    fontSize: 18,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+    color: AppColors.gray,
+  );
   static const alignText = TextStyle(
     fontWeight: FontWeight.w500,
     color: AppColors.white,

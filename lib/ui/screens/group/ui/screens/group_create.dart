@@ -569,7 +569,6 @@ class _GroupScreenState extends State<GroupScreen> {
                                         profileCoverADM: _user.profileCover,
                                         active: true,
                                         whatsapp: whatsappController.text,
-                                        type: true,
                                         cityId: _user.cityId,
                                         adminId: _user.id,
                                         facebook: _facebook,

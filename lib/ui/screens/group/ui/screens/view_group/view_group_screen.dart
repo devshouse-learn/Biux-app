@@ -1,7 +1,9 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
+import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
+import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/data/models/story.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
@@ -27,10 +29,11 @@ class ViewGroupScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.darkBlue,
         title: Selector<ViewGroupBloc, Group>(
-            selector: (_, bloc) => bloc.group,
-            builder: (context, value, child) {
-              return _AppBar(group: bloc.group);
-            }),
+          selector: (_, bloc) => bloc.group,
+          builder: (context, value, child) {
+            return _AppBar(group: bloc.group);
+          },
+        ),
       ),
       body: Stack(
         alignment: Alignment.bottomRight,
@@ -61,111 +64,137 @@ class ViewGroupScreen extends StatelessWidget {
 }
 
 class _AppBar extends StatelessWidget {
-  Group group;
+  final Group group;
   _AppBar({Key? key, required this.group}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            children: [
-              Container(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    group.name,
-                    style: Styles.containerNameUser,
-                  )),
-            ],
-          ),
-          GestureDetector(
-            child: Container(
-              height: 35,
-              width: 35,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(Images.kImageShare),
-                ),
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.topCenter,
+              child: Text(
+                group.name,
+                style: Styles.containerNameUser,
               ),
             ),
-            onTap: () {},
-          ),
-        ]);
-  }
-}
-
-class _HigherViewGroup extends StatelessWidget {
-  Group group;
-  _HigherViewGroup({Key? key, required this.group}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Container(
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: 20),
-        child: GestureDetector(
-          onTap: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ZoomPage(group.logo, group.name);
-                });
-          },
-          child: Container(
-            height: 130,
-            width: 130,
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.white, width: 4),
-              image: DecorationImage(
-                image: NetworkImage(group.logo),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(100.0),
-            ),
-          ),
+          ],
         ),
-      ),
-      Container(
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: 115),
-        child: GestureDetector(
+        if (LocalStorage().getUserId() == group.adminId)
+          GestureDetector(
+            onTap: () async {
+              await Navigator.pushNamed(
+                context,
+                AppRoutes.roadCreateRoute,
+                arguments: group,
+              );
+            },
+            child: Image.asset(
+              Images.kImageAdd,
+              height: 32,
+              width: 32,
+            ),
+          ),
+        GestureDetector(
           child: Container(
-            height: 60,
-            width: 60,
+            height: 35,
+            width: 35,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(Images.kImageChange),
+                image: AssetImage(Images.kImageShare),
               ),
             ),
           ),
           onTap: () {},
         ),
-      ),
-      Container(
-        height: 40,
-        margin: EdgeInsets.only(top: 160, left: 10),
-        alignment: Alignment.topCenter,
-        child: ButtonTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+      ],
+    );
+  }
+}
+
+class _HigherViewGroup extends StatelessWidget {
+  final Group group;
+  _HigherViewGroup({Key? key, required this.group}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          alignment: Alignment.topCenter,
+          margin: EdgeInsets.only(top: 20),
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return ZoomPage(
+                    group.logo,
+                    group.name,
+                  );
+                },
+              );
+            },
+            child: Container(
+              height: 130,
+              width: 130,
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.white, width: 4),
+                image: DecorationImage(
+                  image: NetworkImage(group.logo),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(100.0),
+              ),
+            ),
           ),
-          minWidth: 140,
-          height: 50,
-          child: RaisedButton(
-              color: AppColors.white,
-              child:
-                  Text(AppStrings.editGroup, style: Styles.containerTextGroup),
-              onPressed: () {}),
         ),
-      )
-    ]);
+        Container(
+          alignment: Alignment.topCenter,
+          margin: EdgeInsets.only(top: 115),
+          child: GestureDetector(
+            child: Container(
+              height: 60,
+              width: 60,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(Images.kImageChange),
+                ),
+              ),
+            ),
+            onTap: () {},
+          ),
+        ),
+        Container(
+          height: 40,
+          margin: EdgeInsets.only(top: 160, left: 10),
+          alignment: Alignment.topCenter,
+          child: ButtonTheme(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+            minWidth: 140,
+            height: 50,
+            child: RaisedButton(
+              color: AppColors.white,
+              child: Text(
+                AppStrings.editGroup,
+                style: Styles.containerTextGroup,
+              ),
+              onPressed: () {},
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
 
 class _TabBarSeeGroup extends StatefulWidget {
-  Group group;
+  final Group group;
   _TabBarSeeGroup({Key? key, required this.group}) : super(key: key);
 
   @override
@@ -250,7 +279,7 @@ class _TabBarSeeGroupState extends State<_TabBarSeeGroup>
 }
 
 class _SocialNetworks extends StatelessWidget {
-  Group group;
+  final Group group;
   _SocialNetworks({
     Key? key,
     required this.group,

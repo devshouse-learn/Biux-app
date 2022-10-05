@@ -522,7 +522,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const bio = "bio";
   static const loadingName = "loanding............";
   static const viewProfile = "Ver perfil";
-  static const createRoll = "Crear Rodada";
+  static const createRoadText = "Crear Rodada";
   static const noFound = "no found";
   static const signOff = "Cerrar sesión";
   static const signOff2 = "Realmente deseas salir te perderas de las rodadas";
@@ -566,6 +566,16 @@ The navigation delegate is set to block navigation to the youtube website.
   static const daysText = "dias";
   static const weeksText = "semanas";
   static const monthsText = "meses";
+  static const routeNameText = "Nombre Ruta";
+  static const meetingPointText = "Punto de encuentro";
+  static const geolocationPointText = "Geolocalización del punto";
+  static const dateTimeText = "Fecha y hora";
+  static const descriptionRecomendationsText = "Descripción y recomendaciones";
+  static const levelText = "Nivel";
+  static const validationCreateRoadText = "Debe completar todos los campos";
+  static const savePointText = "Guardar el punto";
+  static const succesCreateRoadText = "Rodada creada con éxito";
+  static const errorCreateRoadText = "Error al crear la Rodada. Inténtelo mas tarde";
   static const linkFacebook = "Link Facebook";
   static const create = "Crear";
   static const public = "Público";

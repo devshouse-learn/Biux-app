@@ -12,7 +12,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
     this.onChanged,
     this.keyboardType,
     this.maxLength,
-    this.iconButton,
+    this.prefixIcon,
     this.saved,
     this.enabled = true,
     this.maxLine,
@@ -25,9 +25,12 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
     ),
     this.autofocus = false,
     this.onFieldSubmitted,
+    this.fontSize = 18,
+    this.onTap,
+    this.readOnly = false,
   }) : super(key: key);
   final String text;
-  final IconButton? iconButton;
+  final Widget? prefixIcon;
   final TextEditingController controller;
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
@@ -41,14 +44,15 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
   final bool autofocus;
   final Widget? image;
   final void Function(String)? onFieldSubmitted;
+  final void Function()? onTap;
+  final double fontSize;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: padding,
       child: SizedBox(
-        // I remove this value by default since the size of the maxLines is not reflected
-        // height: 48,
         child: TextFormField(
           autofocus: autofocus,
           style: TextStyle(
@@ -56,14 +60,13 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
           ),
           maxLines: maxLine,
           enabled: enabled,
+          readOnly: readOnly,
           keyboardType: keyboardType,
           maxLength: maxLength,
           controller: controller,
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
-            errorStyle: TextStyle(fontSize: 0, height: 0),
-            counterStyle: Styles.cancelButtonText,
-            prefixIcon: image,
+            errorStyle: TextStyle(fontSize: 1),
             fillColor: AppColors.white,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -87,26 +90,45 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
               15.0,
             ),
             hintText: text,
+            prefixIcon: prefixIcon,
+            prefixIconConstraints: prefixIcon != null
+                ? BoxConstraints(
+                    minWidth: 40,
+                    minHeight: 40,
+                  )
+                : BoxConstraints(),
             errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.red, width: 0.5),
+              borderSide: BorderSide(
+                color: AppColors.red,
+                width: 0.5,
+              ),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.red, width: 0.5),
+              borderSide: BorderSide(
+                color: AppColors.red,
+                width: 0.5,
+              ),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.gray, width: 0.5),
+              borderSide: BorderSide(
+                color: AppColors.gray,
+                width: 0.5,
+              ),
               borderRadius: BorderRadius.all(
                 Radius.circular(radiusCircular),
               ),
             ),
-            hintStyle: Styles.sizedBoxHintStyle,
+            hintStyle: Styles.sizedBoxHintStyle.copyWith(
+              fontSize: fontSize,
+            ),
           ),
           onChanged: onChanged,
           validator: validator,
           onSaved: saved,
           onFieldSubmitted: onFieldSubmitted,
+          onTap: onTap,
         ),
       ),
     );

@@ -143,7 +143,7 @@ class _TextSection extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    road.route,
+                    road.name,
                     style: Styles.TextRoadsName,
                   ),
                 ],

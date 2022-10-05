@@ -3,7 +3,7 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/city.dart';
-import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen_bloc.dart';
+import 'package:biux/ui/screens/roads/roads_list/roads_list_screen_bloc.dart';
 import 'package:biux/utils/strings_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -251,7 +251,7 @@ class RoadsList extends StatelessWidget {
                                                 width: 10,
                                               ),
                                               Text(
-                                                road.route,
+                                                road.name,
                                                 style: Styles.TextRoadsName,
                                               ),
                                             ],
@@ -338,7 +338,7 @@ class RoadsList extends StatelessWidget {
                                 border: Border.all(
                                     color: AppColors.white, width: 4),
                                 image: DecorationImage(
-                                  image: NetworkImage(road.image),
+                                  image: NetworkImage(road.group.logo),
                                   fit: BoxFit.cover,
                                 ),
                                 borderRadius: BorderRadius.circular(100.0),
@@ -370,7 +370,7 @@ class RoadsList extends StatelessWidget {
                                 )
                               else if (bloc.member
                                           .map((e) => e.groupId)
-                                          .contains(road.groupId) &&
+                                          .contains(road.group.id) &&
                                       bloc.member
                                           .map((e) => e.userId)
                                           .contains(bloc.user.id) ||

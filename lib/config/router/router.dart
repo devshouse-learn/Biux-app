@@ -1,6 +1,7 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/data/models/group.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_BLOC.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_screen.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
@@ -11,8 +12,12 @@ import 'package:biux/ui/screens/login/login.dart';
 import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/main_menu/main_menu.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
-import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen.dart';
-import 'package:biux/ui/screens/roads/ui/screens/roads_list/roads_list_screen_bloc.dart';
+import 'package:biux/ui/screens/roads/road_create/map_road/map_road_bloc.dart';
+import 'package:biux/ui/screens/roads/road_create/map_road/map_road_screen.dart';
+import 'package:biux/ui/screens/roads/road_create/road_create_bloc.dart';
+import 'package:biux/ui/screens/roads/road_create/road_create_screen.dart';
+import 'package:biux/ui/screens/roads/roads_list/roads_list_screen.dart';
+import 'package:biux/ui/screens/roads/roads_list/roads_list_screen_bloc.dart';
 import 'package:biux/ui/screens/splash_screen.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_screen.dart';
@@ -60,7 +65,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _buildRoute(
         settings: settings,
         builder: ChangeNotifierProvider(
-          create: (_) => ViewGroupBloc(adminId: map['adminId'], groupId: map['groupId']),
+          create: (_) => ViewGroupBloc(
+            adminId: map['adminId'],
+            groupId: map['groupId'],
+          ),
           child: ViewGroupScreen(),
         ),
       );
@@ -74,24 +82,25 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case AppRoutes.mainMenuRoute:
       return _buildRoute(
-          settings: settings,
-          builder: MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                create: (_) => MainMenuBloc(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => StoryViewBloc(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => RoadsListScreenBloc(),
-              ),
-              ChangeNotifierProvider(
-                create: (_) => GroupListScreenBloc(),
-              ),
-            ],
-            child: MainMenu(),
-          ));
+        settings: settings,
+        builder: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => MainMenuBloc(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => StoryViewBloc(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => RoadsListScreenBloc(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => GroupListScreenBloc(),
+            ),
+          ],
+          child: MainMenu(),
+        ),
+      );
     case AppRoutes.groupListRoute:
       return _buildRoute(
         settings: settings,
@@ -114,6 +123,25 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => RoadsListScreenBloc(),
           child: RoadsListScreen(),
+        ),
+      );
+    case AppRoutes.roadCreateRoute:
+      final group = args as Group;
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => RoadCreateBloc(
+            group: group,
+          ),
+          child: RoadCreateScreen(),
+        ),
+      );
+    case AppRoutes.roadMapRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => MapRoadBloc(),
+          child: MapRoadsLocation(),
         ),
       );
     default:

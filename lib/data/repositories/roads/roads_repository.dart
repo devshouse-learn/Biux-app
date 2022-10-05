@@ -26,8 +26,12 @@ class RoadsRepository {
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
-    List<Road> roads =
-        roadsJson.map((roadJson) => Road.fromJson(json: roadJson)).toList();
+    List<Road> roads = roadsJson
+        .map((roadJson) => Road.fromJson(
+              json: roadJson,
+              id: roadJson,
+            ))
+        .toList();
 
     return roads;
   }
@@ -65,7 +69,10 @@ class RoadsRepository {
     );
 
     if (response.statusCode == 200) {
-      return Road.fromJson(json: json.decode(response.body));
+      return Road.fromJson(
+        json: json.decode(response.body),
+        id: json.decode(response.body),
+      );
     } else {
       throw Exception('Fallo en actualizar grupo');
     }
@@ -86,8 +93,9 @@ class RoadsRepository {
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
-    List<CompetitorRoad> listCompetitorRoad =
-        roadsJson.map((roadJson) => CompetitorRoad.fromJsonMap(json: roadJson)).toList();
+    List<CompetitorRoad> listCompetitorRoad = roadsJson
+        .map((roadJson) => CompetitorRoad.fromJsonMap(json: roadJson))
+        .toList();
 
     return listCompetitorRoad;
   }
@@ -101,8 +109,12 @@ class RoadsRepository {
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
-    List<Road> roadsGroup =
-        roadsJson.map((roadJson) => Road.fromJson(json: roadJson)).toList();
+    List<Road> roadsGroup = roadsJson
+        .map((roadJson) => Road.fromJson(
+              json: roadJson,
+              id: roadJson,
+            ))
+        .toList();
 
     return roadsGroup;
   }

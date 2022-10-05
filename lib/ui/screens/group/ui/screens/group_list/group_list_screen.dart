@@ -1,10 +1,12 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
+import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen_bloc.dart';
+import 'package:biux/ui/screens/roads/roads_list/roads_list_screen_bloc.dart';
 import 'package:biux/ui/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -165,7 +167,10 @@ class ListCity extends StatelessWidget {
 
 class GroupList extends StatelessWidget {
   List<Group> groupList = [];
-  GroupList({Key? key, required this.groupList}) : super(key: key);
+  GroupList({
+    Key? key,
+    required this.groupList,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -183,16 +188,22 @@ class GroupList extends StatelessWidget {
                         height: 170,
                         width: 160,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border:
-                                Border.all(color: AppColors.grey, width: 1)),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.grey,
+                            width: 1,
+                          ),
+                        ),
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               if (group.name.length > 13)
                                 Text(
                                   group.name.replaceRange(
-                                      13, group.name.length, AppStrings.points),
+                                    13,
+                                    group.name.length,
+                                    AppStrings.points,
+                                  ),
                                   style: Styles.TextGroupList,
                                 )
                               else
@@ -200,7 +211,7 @@ class GroupList extends StatelessWidget {
                                   group.name,
                                   style: Styles.TextGroupList,
                                 ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Row(
@@ -247,13 +258,26 @@ class GroupList extends StatelessWidget {
                       Container(
                         margin: EdgeInsets.only(left: 40, bottom: 50),
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () async {
+                            await Navigator.pushNamed(
+                              context,
+                              AppRoutes.viewGroupRoute,
+                              arguments: {
+                                'adminId': group.adminId,
+                                'groupId': group.id,
+                              },
+                            );
+                            final bloc = context.read<RoadsListScreenBloc>();
+                            bloc.loadData();
+                          },
                           child: Container(
                             height: 86,
                             width: 85,
                             decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: AppColors.white, width: 4),
+                              border: Border.all(
+                                color: AppColors.white,
+                                width: 4,
+                              ),
                               image: DecorationImage(
                                 image: NetworkImage(group.logo),
                                 fit: BoxFit.cover,
@@ -264,18 +288,26 @@ class GroupList extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 35, top: 185),
+                        margin: EdgeInsets.only(
+                          left: 35,
+                          top: 185,
+                        ),
                         child: ButtonTheme(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15),
+                            ),
                           ),
                           minWidth: 80,
                           height: 40,
                           child: RaisedButton(
-                              color: AppColors.darkBlue,
-                              child: Text(AppStrings.joinMe,
-                                  style: Styles.containerTextName),
-                              onPressed: () {}),
+                            color: AppColors.darkBlue,
+                            child: Text(
+                              AppStrings.joinMe,
+                              style: Styles.containerTextName,
+                            ),
+                            onPressed: () {},
+                          ),
                         ),
                       )
                     ],

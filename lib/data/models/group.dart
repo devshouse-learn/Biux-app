@@ -10,7 +10,6 @@ class Group {
   String profileCover;
   String description;
   List modality;
-  bool type;
   String cityAdmin;
   String whatsapp;
   String facebook;
@@ -33,7 +32,6 @@ class Group {
         'https://play-lh.googleusercontent.com/wyyEURZBz5PI4qbTeJTelVlQrbXj5RQVu8ZCG-DldcOaZLDcULUq71palN3SWny2SrdK',
     this.description = '',
     this.modality = const [],
-    this.type = true,
     this.cityId = '',
     this.cityAdmin = '',
     this.adminId = '',
@@ -44,27 +42,34 @@ class Group {
   });
 
   factory Group.fromJson({required Map json}) => Group(
-      id: json["id"],
-      name: json["name"],
-      active: json["active"],
-      adminId: json["adminId"],
-      cityAdmin: json["cityAdmin"],
-      cityId: json["cityId"],
-      description: json["description"],
-      facebook: json["facebook"],
-      instagram: json["instagram"],
-      logo: json["logo"] ??
-          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-      logoADM: json["logoADM"],
-      modality: json["modality"],
-      numberMembers: json["numberMembers"],
-      numberRoads: json["numberRoads"],
-      profileCover: json["profileCover"] ??
-          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-      profileCoverADM: json["profileCoverADM"],
-      type: json["type"],
-      whatsapp: json["whatsapp"],
-      public: json["public"] );
+        id: json["id"],
+        name: json["name"],
+        active: json["active"],
+        adminId: json["adminId"],
+        cityAdmin: json["cityAdmin"],
+        cityId: json["cityId"],
+        description: json["description"],
+        facebook: json["facebook"],
+        instagram: json["instagram"],
+        logo: json["logo"] ??
+            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+        logoADM: json["logoADM"],
+        modality: json["modality"],
+        numberMembers: json["numberMembers"],
+        numberRoads: json["numberRoads"],
+        profileCover: json["profileCover"] ??
+            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+        profileCoverADM: json["profileCoverADM"],
+        whatsapp: json["whatsapp"],
+        public: json["public"],
+      );
+
+  factory Group.fromJsonRoad({required Map json}) => Group(
+        id: json["id"],
+        adminId: json["adminId"],
+        logo: json["logo"] ??
+            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -79,12 +84,17 @@ class Group {
         "profileCover": profileCover,
         "description": description,
         "modality": modality,
-        "type": type,
         "cityAdmin": cityAdmin,
         "whatsapp": whatsapp,
         "cityId": cityId,
         "facebook": facebook,
         "instagram": instagram,
         "public": public
+      };
+
+  Map<String, dynamic> toJsonRoad() => {
+        "id": id,
+        "logo": logo,
+        "adminId": adminId,
       };
 }

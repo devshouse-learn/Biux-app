@@ -87,7 +87,7 @@ class RoadsListScreenBloc extends ChangeNotifier {
   Future<void> getGroup() async {
     listRoads.map((e) async {
       final dataGroup =
-          await GroupsFirebaseRepository().getSpecificGroup(e.groupId);
+          await GroupsFirebaseRepository().getSpecificGroup(e.group.id);
       listGroup.add(dataGroup);
     }).toList();
     notifyListeners();
