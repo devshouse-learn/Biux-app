@@ -260,7 +260,7 @@ class _ButtonSection extends StatelessWidget {
               height: 40,
               child: RaisedButton(
                   color: AppColors.white,
-                  child: Text(AppStrings.outText, style: Styles.TextMemberList),
+                  child: Text(AppStrings.outText, style: Styles.textLightBlack),
                   onPressed: () {
                     bloc.onTapOutRoads(road);
                   }),

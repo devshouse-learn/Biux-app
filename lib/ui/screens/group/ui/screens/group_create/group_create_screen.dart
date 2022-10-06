@@ -217,7 +217,7 @@ class _BotonSend extends StatelessWidget {
           height: 40,
           child: RaisedButton(
               color: AppColors.white,
-              child: Text(AppStrings.cancelText, style: Styles.TextMemberList),
+              child: Text(AppStrings.cancelText, style: Styles.textLightBlack),
               onPressed: () {
                 bloc.onTapPop(context);
               }),

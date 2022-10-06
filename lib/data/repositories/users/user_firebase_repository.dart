@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/response.dart';
 import 'package:biux/data/models/user_membership.dart';
 import 'package:biux/data/models/user.dart';
@@ -227,8 +228,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
-      await firestore.collection(collection).doc(user.id).update(
-            user.toJson(),
+      await firestore.collection(collection).doc(user.id).update({
+        AppStrings.fullName: user.fullName,
+        AppStrings.whatsappLowercase: user.whatsapp,
+        AppStrings.cityId: user.cityId,
+        AppStrings.description: user.description
+      }
           );
       final response = await this.getUserId(user.id);
       return response;
@@ -258,7 +263,6 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   Future uploadPhoto(
     String id,
     File filePhoto,
-    BiuxUser user,
   ) async {
     try {
       final url = await firebaseUtils.uploadImage(
@@ -266,32 +270,11 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         nameImage: 'PhotoUser',
         imageFolder: id,
       );
-      final BiuxUser biuxUser = BiuxUser(
-        cellphone: user.cellphone,
-        cityId: user.cityId,
-        dateBirth: user.dateBirth,
-        email: user.email,
-        facebook: user.facebook,
-        followerS: user.followerS,
-        followers: user.followers,
-        following: user.following,
-        gender: user.gender,
-        groupId: user.groupId,
-        id: user.id,
-        instagram: user.instagram,
-        modality: user.modality,
-        names: user.names,
-        password: user.password,
-        photo: url,
-        premium: user.premium,
-        profileCover: user.profileCover,
-        situationAccident: user.situationAccident,
-        surnames: user.surnames,
-        token: user.token,
-        userName: user.userName,
-        whatsapp: user.whatsapp,
-      );
-      await this.updateUser(biuxUser);
+      await firestore.collection(collection).doc(id).update({
+        AppStrings.photoText: url,
+      });
+      final response = await this.getUserId(id);
+      return response;
     } catch (e) {}
   }
 

@@ -2,6 +2,7 @@ import 'package:biux/data/models/situation_accident.dart';
 
 class BiuxUser {
   final String id;
+  final String fullName;
   final String names;
   final String surnames;
   final String cityId;
@@ -13,7 +14,6 @@ class BiuxUser {
   final String facebook;
   final String photo;
   final String token;
-  final String cellphone;
   final String password;
   final String profileCover;
   final int followerS;
@@ -28,6 +28,7 @@ class BiuxUser {
 
   const BiuxUser({
     this.id = '',
+    this.fullName = '',
     this.names = '',
     this.surnames = '',
     this.userName = '',
@@ -40,7 +41,6 @@ class BiuxUser {
     this.photo =
         'https://rubibike.com/wp-content/uploads/2020/12/la_importacia_del_equipamiento_para_el_ciclista.jpg',
     this.token = '',
-    this.cellphone = '',
     this.modality = const [],
     this.password = '',
     this.profileCover =
@@ -58,6 +58,7 @@ class BiuxUser {
   factory BiuxUser.fromJsonMap(Map json) {
     return BiuxUser(
       id: json["id"],
+      fullName: json["fullName"] ?? '',
       names: json["names"],
       surnames: json["surnames"],
       whatsapp: json["whatsapp"] ?? '',
@@ -70,7 +71,6 @@ class BiuxUser {
       facebook: json["facebook"] ?? '',
       photo: json["photo"] ??
           "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-      cellphone: json["cellphone"] ?? '',
       password: json["password"],
       profileCover: json["profileCover"] ??
           "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
@@ -107,6 +107,7 @@ class BiuxUser {
   Map<String, dynamic> toJson() {
     var userJson = {
       "id": id,
+      "fullName": fullName,
       "names": names,
       "surnames": surnames,
       "whatsapp": whatsapp,
@@ -118,7 +119,6 @@ class BiuxUser {
       "facebook": facebook,
       "photo": photo,
       "token": token,
-      "cellphone": cellphone,
       "modality": modality,
       "premium": premium,
       "password": password,

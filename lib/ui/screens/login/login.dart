@@ -500,7 +500,6 @@ class _LoginPageState extends State<LoginPage> {
                                       names:
                                           _userData![AppStrings.firstNameText],
                                       cityId: cityData.id,
-                                      cellphone: '',
                                       surnames:
                                           _userData![AppStrings.lastNameText],
                                       premium: false,
@@ -608,7 +607,6 @@ class _LoginPageState extends State<LoginPage> {
                                       dateBirth: "fecha",
                                       names: text[0],
                                       cityId: cityData.id,
-                                      cellphone: "",
                                       surnames: text[1],
                                       premium: false,
                                       email: user.email!,
@@ -751,7 +749,6 @@ class _LoginPageState extends State<LoginPage> {
             await UserFirebaseRepository().uploadPhoto(
               biuxUser.id,
               imageNetworks,
-              biuxUser,
             );
             setState(() {
               loading = false;
@@ -778,7 +775,6 @@ class _LoginPageState extends State<LoginPage> {
                 await UserFirebaseRepository().uploadPhoto(
                   biuxUser.id,
                   imageNetworks,
-                  biuxUser,
                 );
                 setState(() {
                   loading = false;
@@ -904,7 +900,6 @@ class _LoginPageState extends State<LoginPage> {
                               [AppStrings.dataText][AppStrings.urlText],
                           names: _userData![AppStrings.firstNameText],
                           cityId: cityData.id,
-                          cellphone: '',
                           surnames: _userData![AppStrings.lastNameText],
                           premium: false,
                           email: userCredential!.user?.email ?? '',
@@ -1004,7 +999,6 @@ class _LoginPageState extends State<LoginPage> {
                           photo: user.photoURL!,
                           names: text[0],
                           cityId: cityData.id,
-                          cellphone: "",
                           surnames: text[1],
                           premium: false,
                           email: user.email!,

@@ -55,9 +55,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
       child: SizedBox(
         child: TextFormField(
           autofocus: autofocus,
-          style: TextStyle(
-            color: AppColors.black,
-          ),
+          style: enabled ? Styles.textLightBlack : Styles.sizedBoxHintStyle,
           maxLines: maxLine,
           enabled: enabled,
           readOnly: readOnly,
@@ -66,7 +64,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
           controller: controller,
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
-            errorStyle: TextStyle(fontSize: 1),
+            errorStyle: TextStyle(fontSize: 1, height: 0),
             fillColor: AppColors.white,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(

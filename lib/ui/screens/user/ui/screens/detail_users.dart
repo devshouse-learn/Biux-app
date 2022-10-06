@@ -212,9 +212,9 @@ class _DetailUsersState extends State<DetailUsers> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
-                        widget._user!.cellphone == null
+                        widget._user!.whatsapp == null
                             ? ''
-                            : "${widget._user!.cellphone}",
+                            : "${widget._user!.whatsapp}",
                         style: Styles.containerDescription,
                       ),
                     ),

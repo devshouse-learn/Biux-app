@@ -658,7 +658,6 @@ class _CreateUserState extends State<CreateUser> {
                                   dateBirth: AppStrings.selectDateText,
                                   names: _names,
                                   cityId: cityData.id,
-                                  cellphone: cellphone,
                                   surnames: _surnames,
                                   premium: false,
                                   email: _email,
@@ -949,7 +948,6 @@ class _CreateUserState extends State<CreateUser> {
                   await UserFirebaseRepository().uploadPhoto(
                     id,
                     _image,
-                    user,
                   );
                 },
               );

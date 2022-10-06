@@ -363,7 +363,7 @@ class RoadsList extends StatelessWidget {
                                   child: RaisedButton(
                                       color: AppColors.white,
                                       child: Text(AppStrings.outText,
-                                          style: Styles.TextMemberList),
+                                          style: Styles.textLightBlack),
                                       onPressed: () {
                                         bloc.onTapOutRoads(road);
                                       }),

@@ -20,7 +20,6 @@ class _RecoverPasswordState extends State<RecoverPassword> {
     gender: "",
     names: "",
     id: '0',
-    cellphone: "",
     cityId: '',
     password: "",
     email: "",

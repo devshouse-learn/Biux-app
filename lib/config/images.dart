@@ -56,6 +56,8 @@ class Images {
   static const kPointMeetingImage = '$kImagesPath/point_meeting.png';
   static const kLocationGreyImage = '$kImagesPath/location_grey.png';
   static const kDateTimeImage = '$kImagesPath/date_time.png';
+  static const kImageLetterGrey = '$kImagesPath/letter_grey.png';
+  static const kImagePhone = '$kImagesPath/phone.png';
 
   // TO DO nonexistent image
   static const kBike = '$kImagesPath/';

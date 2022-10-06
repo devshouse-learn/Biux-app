@@ -1,12 +1,12 @@
 import 'package:biux/data/models/state.dart';
 
 class City {
-  String id;
-  String name;
-  String state;
-  String country;
+  final String id;
+  final String name;
+  final String state;
+  final String country;
 
-  City({
+  const City({
     this.id = "",
     this.name = "",
     this.state = "",
@@ -20,10 +20,22 @@ class City {
         country: json["country"],
       );
 
+  factory City.fromMapUser(Map json) {
+    return City(
+      id: json["id"],
+      name: json["name"],
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "state": state,
         "country": country,
+      };
+
+  Map<String, dynamic> toMapUser() => {
+        "id": id,
+        "name": name,
       };
 }

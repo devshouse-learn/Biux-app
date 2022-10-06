@@ -90,7 +90,6 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
     super.initState();
     user = BiuxUser(
       surnames: "",
-      cellphone: "",
       password: "",
       facebook: "",
       email: "",
@@ -607,7 +606,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                                           _instagram = userData
                                                               .instagram;
                                                           _cellPhone = userData
-                                                              .cellphone;
+                                                              .whatsapp;
                                                           setState(() {});
                                                         }
                                                       },
@@ -744,7 +743,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                   if (user.photo != null || _image != null) {
                                     if (user.profileCover != null ||
                                         _image2 != null) {
-                                      if (user.cellphone != '' ||
+                                      if (user.whatsapp != '' ||
                                           _cellPhone != null) {
                                         if (emailList.email == user.email ||
                                             emailList.email.isEmpty &&
@@ -794,7 +793,7 @@ class _ViewEditProfileState extends State<ViewEditProfile> {
                                             names: _names,
                                             surnames: _surnames,
                                             email: _email,
-                                            cellphone: _cellPhone,
+                                            whatsapp: _cellPhone,
                                             id: user.id,
                                             cityId: _cityId,
                                             facebook: _facebook,

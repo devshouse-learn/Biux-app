@@ -249,7 +249,7 @@ class _DetailRoadState extends State<DetailRoad> {
                     roadName: widget.road.name,
                     distance: widget.road.distance.toString(),
                     groupName: widget.group.name,
-                    cellphone: admin.cellphone,
+                    cellphone: admin.whatsapp,
                     pointmeeting: widget.road.pointmeeting,
                   ),
                 );

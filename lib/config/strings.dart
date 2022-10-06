@@ -19,7 +19,7 @@ class AppStrings {
       "https://biux-prod.ibacrea.com/api/v1/historias";
   static const ok = "Ok";
   static const advertising = "   Publicidad";
-  static const description =
+  static const descriptionAdvertising =
       " descripcion de la publicidad bien largaaaaaaaaaaaaa";
   static const contact = "Contactar";
   static const advert = "Anuncio";
@@ -426,7 +426,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const a = "a+";
   static const a2 = "a-";
   static const a3 = "a+-";
-  static const number2 = "Numero";
+  static const numberText = "Numero";
   static const enterYourAllergies = "Ingresa tus alergias";
   static const epsTest = "prueba eps";
   static const dataMyBike = "Datos de mi bici";
@@ -575,7 +575,8 @@ The navigation delegate is set to block navigation to the youtube website.
   static const validationCreateRoadText = "Debe completar todos los campos";
   static const savePointText = "Guardar el punto";
   static const succesCreateRoadText = "Rodada creada con éxito";
-  static const errorCreateRoadText = "Error al crear la Rodada. Inténtelo mas tarde";
+  static const errorCreateRoadText =
+      "Error al crear la Rodada. Inténtelo mas tarde";
   static const linkFacebook = "Link Facebook";
   static const create = "Crear";
   static const public = "Público";
@@ -587,6 +588,16 @@ The navigation delegate is set to block navigation to the youtube website.
   static const missingDescription = "Ingresa la descripción del grupo";
   static const missingValidatorPublic = "Selecciona público o privado";
   static const adminIdText = 'adminId';
+  static const fullName = 'fullName';
+  static const cityId = 'cityId';
+  static const description = 'description';
+  static const whatsappLowercase = 'whatsapp';
+  static const update = 'Actualizar';
+  static const fullNameIsEmpty = "Ingresa tu nombre";
+  static const numberIsEmpty = "Ingresa tu numero";
+  static const cityIsEmpty = "Ingresa tu ciudad";
+  static const descritionIsEmpty = "Ingresa tu descripción";
+  static const userUpdate = "Tu usuario se ha actualizado";
 
   ///
   /// Methods

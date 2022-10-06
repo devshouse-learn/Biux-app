@@ -137,7 +137,7 @@ class _MainMenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<MainMenuBloc>();
+    final bloc = context.watch<MainMenuBloc>();
     return Container(
       color: AppColors.greyishNavyBlue,
       width: 300,
@@ -176,9 +176,7 @@ class _MainMenuDrawer extends StatelessWidget {
               margin: EdgeInsets.symmetric(vertical: 10),
               alignment: Alignment.center,
               child: Text(
-                bloc.user.names == ''
-                    ? AppStrings.loadingName
-                    : bloc.user.names,
+                bloc.user.fullName,
                 style: Styles.containerTextName,
               ),
             ),
@@ -190,10 +188,12 @@ class _MainMenuDrawer extends StatelessWidget {
                 ),
                 color: AppColors.white,
                 child: Text(
-                  AppStrings.editProfile,
+                  AppStrings.viewProfile,
                   style: Styles.containerTextGroup,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  bloc.onTapViewProfile(context);
+                },
               ),
             ),
             Container(
@@ -201,19 +201,6 @@ class _MainMenuDrawer extends StatelessWidget {
               height: 500,
               child: Column(
                 children: <Widget>[
-                  ListTile(
-                    horizontalTitleGap: 10,
-                    leading: Image.asset(
-                      Images.kImageHome,
-                      color: AppColors.white,
-                      height: 30,
-                    ),
-                    title: Text(
-                      AppStrings.beginning,
-                      style: Styles.containerTextName,
-                    ),
-                    onTap: () {},
-                  ),
                   ListTile(
                     horizontalTitleGap: 10,
                     leading: Image.asset(

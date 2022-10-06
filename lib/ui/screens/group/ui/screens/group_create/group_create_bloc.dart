@@ -37,8 +37,7 @@ class GroupCreateBloc extends ChangeNotifier {
 
   Future<void> getUser() async {
     String? userId = await LocalStorage().getUserId();
-    final dataUser = await UserFirebaseRepository()
-        .getUserId(userId!);
+    final dataUser = await UserFirebaseRepository().getUserId(userId!);
     user = dataUser;
     notifyListeners();
   }
@@ -102,13 +101,13 @@ class GroupCreateBloc extends ChangeNotifier {
 
   Future<void> onTapPop(BuildContext context) async {
     Navigator.pop(context);
+    notifyListeners();
   }
 
   Future<void> onTapValidator(String validator) async {
     if (validator == AppStrings.public)
       publicValidator = true;
-    else if (validator == AppStrings.private)
-      publicValidator = false;
+    else if (validator == AppStrings.private) publicValidator = false;
     notifyListeners();
     return publicValidator;
   }

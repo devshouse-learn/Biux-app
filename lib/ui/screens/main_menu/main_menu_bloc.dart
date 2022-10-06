@@ -1,3 +1,4 @@
+import 'package:biux/config/router/router_path.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/user_membership.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
@@ -8,7 +9,6 @@ class MainMenuBloc extends ChangeNotifier {
   int pageIndex = 0;
   BiuxUser user = BiuxUser();
   UserMembership userMembership = UserMembership();
-  
 
   MainMenuBloc() {
     loadData();
@@ -30,5 +30,11 @@ class MainMenuBloc extends ChangeNotifier {
   Future<void> onTabTapped(int? index) async {
     pageIndex = index!;
     notifyListeners();
+  }
+
+  Future<void> onTapViewProfile(BuildContext context) async {
+    await Navigator.pushNamed(context, AppRoutes.userScreenRoute);
+    notifyListeners();
+    getUser();
   }
 }

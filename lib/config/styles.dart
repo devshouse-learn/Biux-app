@@ -602,7 +602,7 @@ class Styles {
     fontWeight: FontWeight.w300,
   );
 
-  static const TextMemberList = TextStyle(
+  static const textLightBlack = TextStyle(
     color: AppColors.black,
     fontSize: 18,
     fontFamily: "Poppins",

@@ -23,6 +23,8 @@ import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_screen.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_screen.dart';
+import 'package:biux/ui/screens/user/ui/screens/edit_user_screen/edit_user_screen.dart';
+import 'package:biux/ui/screens/user/ui/screens/edit_user_screen/edit_user_screen_bloc.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen_bloc.dart';
 import 'package:flutter/material.dart';
@@ -142,6 +144,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => MapRoadBloc(),
           child: MapRoadsLocation(),
+        ),
+      );
+    case AppRoutes.editUserScreenRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => EditUserScreenBloc(),
+          child: UserEditScreen(),
         ),
       );
     default:

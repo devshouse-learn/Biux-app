@@ -15,7 +15,7 @@ class UserScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<UserScreenBloc>();
+    final bloc = context.watch<UserScreenBloc>();
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -47,6 +47,7 @@ class UserScreen extends StatelessWidget {
               builder: (context, value, child) {
                 return _button(
                   user: bloc.user,
+                  context: context,
                 );
               }),
           Selector<UserScreenBloc, BiuxUser>(
@@ -71,24 +72,12 @@ class _AppBar extends StatelessWidget {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            children: [
-              Container(
-                child: IconButton(
-                  iconSize: 40,
-                  icon: Icon(Icons.arrow_back_rounded),
-                  color: AppColors.white,
-                  onPressed: () {},
-                ),
-              ),
-              Container(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    '${user.names} ${user.surnames}',
-                    style: Styles.containerNameUser,
-                  )),
-            ],
-          ),
+          Container(
+              alignment: Alignment.topCenter,
+              child: Text(
+                user.fullName,
+                style: Styles.containerNameUser,
+              )),
           GestureDetector(
             child: Container(
               height: 35,
@@ -111,7 +100,6 @@ class _SuperiorUserScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return Stack(
       children: <Widget>[
         Container(
@@ -176,10 +164,13 @@ class _TextDescripcion extends StatelessWidget {
 
 class _button extends StatelessWidget {
   BiuxUser user;
-  _button({Key? key, required this.user}) : super(key: key);
+  BuildContext context;
+  _button({Key? key, required this.user, required this.context})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final bloc = context.watch<UserScreenBloc>();
     Size size = MediaQuery.of(context).size;
     return Stack(
       children: <Widget>[
@@ -232,7 +223,9 @@ class _button extends StatelessWidget {
                 color: AppColors.white,
                 child: Text(AppStrings.editProfile,
                     style: Styles.containerFollowing),
-                onPressed: () {}),
+                onPressed: () {
+                  bloc.onTapEdit(context);
+                }),
           ),
         )
       ],
@@ -266,7 +259,7 @@ class _TabBarViewUserState extends State<_TabBarViewUser>
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<UserScreenBloc>();
+    final bloc = context.watch<UserScreenBloc>();
     Size size = MediaQuery.of(context).size;
     return Container(
       margin: EdgeInsets.only(top: size.height * 0.30),
@@ -328,7 +321,7 @@ class _TabDecoration extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<UserScreenBloc>();
+    final bloc = context.watch<UserScreenBloc>();
     Size size = MediaQuery.of(context).size;
     return Tab(
       height: 70,

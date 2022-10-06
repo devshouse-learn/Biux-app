@@ -11,4 +11,5 @@ class AppRoutes {
   static const String roadsListRoute = 'roadsList';
   static const String roadCreateRoute = 'roadCreate';
   static const String roadMapRoute = 'roadMap';
+  static const String editUserScreenRoute = 'editUserScreen';
 }

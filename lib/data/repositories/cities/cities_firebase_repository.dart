@@ -23,11 +23,11 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
   }
 
   @override
-  Future<City> getCityId(String cityName) async {
+  Future<City> getCityId(String cityId) async {
     try {
       final response = await firestore
           .collection(collectionCities)
-          .where('name', isEqualTo: cityName)
+          .where('id', isEqualTo: cityId)
           .get();
       return City.fromJson(json: 
         response.docs.first.data(),

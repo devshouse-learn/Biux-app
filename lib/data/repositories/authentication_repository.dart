@@ -196,7 +196,6 @@ class AuthenticationRepository {
       final String uid = userCredential.user!.uid;
       final BiuxUser biuxUser = BiuxUser(
         id: uid,
-        cellphone: user.cellphone,
         cityId: user.cityId,
         dateBirth: user.dateBirth,
         email: user.email,

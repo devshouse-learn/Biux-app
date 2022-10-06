@@ -194,7 +194,7 @@ class _AccidentScreenState extends State<AccidentScreen> {
                                                     20.0,
                                                     15.0,
                                                   ),
-                                                  hintText: AppStrings.number2,
+                                                  hintText: AppStrings.numberText,
                                                   errorBorder:
                                                       OutlineInputBorder(
                                                     borderSide: BorderSide(

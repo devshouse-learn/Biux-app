@@ -73,7 +73,7 @@ class ViewMembersGroup extends StatelessWidget {
                             ),
                             Text(
                               member.userName,
-                              style: Styles.TextMemberList,
+                              style: Styles.textLightBlack,
                             ),
                             Row(
                               children: [
@@ -109,7 +109,7 @@ class ViewMembersGroup extends StatelessWidget {
                                     color: AppColors.white,
                                     child: Text(
                                       AppStrings.deletedText,
-                                      style: Styles.TextMemberList,
+                                      style: Styles.textLightBlack,
                                     ),
                                     onPressed: () {},
                                   ),

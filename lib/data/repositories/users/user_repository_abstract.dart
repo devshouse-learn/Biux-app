@@ -6,7 +6,7 @@ abstract class UserRepositoryAbstract {
   Future<List<BiuxUser>> getUsers(int limit, int offset);
   Future<bool> login(String biuxUser, String password);
   Future<List<BiuxUser>> getUsernames();
-  Future uploadPhoto(String id, File filePhoto, BiuxUser user);
+  Future uploadPhoto(String id, File filePhoto,);
   Future uploadProfileCover(String id, File fileProfileCover);
   Future sendEmail(String user);
   Future<BiuxUser> getPerson(String nUsername);

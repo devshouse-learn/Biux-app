@@ -32,7 +32,7 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
 
   void initState() {
     super.initState();
-    cellphoneController.text = widget.user.cellphone;
+    cellphoneController.text = widget.user.whatsapp;
     facebookController.text = widget.user.facebook;
     instagramController.text = widget.user.instagram;
     Future.delayed(
@@ -293,7 +293,7 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
                                   },
                                 );
                                 var user = BiuxUser(
-                                  cellphone: _cellphone,
+                                  whatsapp: _cellphone,
                                   id: widget.user.id,
                                   facebook: _facebook,
                                   instagram: _instagram,

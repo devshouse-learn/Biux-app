@@ -1029,7 +1029,6 @@ class _UserNormalState extends State<UserNormal> {
                                           dateBirth: _date,
                                           names: _names,
                                           cityId: listFiltered.first.id,
-                                          cellphone: cellphone,
                                           surnames: _surnames,
                                           premium: false,
                                           email: _email,
