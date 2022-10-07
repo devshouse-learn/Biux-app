@@ -2,8 +2,8 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/story.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
 import 'package:biux/ui/widgets/tags_story_widgets.dart';
 import 'package:biux/ui/widgets/text_form_field_biux_widget.dart';
@@ -352,7 +352,7 @@ class _AppbarCreateStory extends StatelessWidget
               showDialogCreateStory(
                 context: context,
                 onSave: (listTags, description) async {
-                  final userId = LocalStorage().getUserId();
+                  final userId = AuthenticationRepository().getUserId;
                   final user = await bloc.getUser(id: userId);
                   final creationDate = DateTime.now();
                   final story = Story(

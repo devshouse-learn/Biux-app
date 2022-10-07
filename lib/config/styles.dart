@@ -588,6 +588,26 @@ class Styles {
     ),
   );
 
+  final ButtonStyle textButtonStrongCyanStyle = ElevatedButton.styleFrom(
+      primary: AppColors.strongCyan,
+      padding: EdgeInsets.all(0),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(20),
+        ),
+      ));
+
+  final ButtonStyle textButtonWhiteStyle = ElevatedButton.styleFrom(
+    primary: AppColors.white2,
+    padding: EdgeInsets.symmetric(horizontal: 0),
+    maximumSize: Size(64, 50),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(10),
+      ),
+    ),
+  );
+
   static const TextRoads = TextStyle(
     color: AppColors.black,
     fontSize: 14,

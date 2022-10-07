@@ -1,6 +1,7 @@
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/user_membership.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/data/local_storage/localstorage.dart';
@@ -9,6 +10,8 @@ class MainMenuBloc extends ChangeNotifier {
   int pageIndex = 0;
   BiuxUser user = BiuxUser();
   UserMembership userMembership = UserMembership();
+  final AuthenticationRepository authenticationRepository =
+      AuthenticationRepository();
 
   MainMenuBloc() {
     loadData();
@@ -18,6 +21,11 @@ class MainMenuBloc extends ChangeNotifier {
     Future.delayed(Duration.zero, () async {
       await getUser();
     });
+  }
+
+  Future<void> signOut() async{
+    await authenticationRepository.signOut();
+    notifyListeners();
   }
 
   Future<void> getUser() async {

@@ -1,6 +1,5 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/config/strings.dart';
 import 'package:flutter/material.dart';
 
 class TexFieldWidget extends StatefulWidget {
@@ -41,7 +40,6 @@ class TexFieldWidget extends StatefulWidget {
 class _TexFieldWidgetState extends State<TexFieldWidget> {
   @override
   Widget build(BuildContext context) {
-    var errorColors = false;
     return Theme(
       data: Theme.of(context).copyWith(
         primaryColor: AppColors.strongCyan,
@@ -72,14 +70,14 @@ class _TexFieldWidgetState extends State<TexFieldWidget> {
                   color: AppColors.gray,
                   width: 1,
                 ),
-                borderRadius: BorderRadius.circular(45),
+                borderRadius: BorderRadius.circular(15),
               ),
               disabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: AppColors.gray,
                   width: 1,
                 ),
-                borderRadius: BorderRadius.circular(45),
+                borderRadius: BorderRadius.circular(15),
               ),
               filled: true,
               contentPadding: EdgeInsets.fromLTRB(

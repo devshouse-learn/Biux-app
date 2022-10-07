@@ -251,7 +251,19 @@ class _MainMenuDrawer extends StatelessWidget {
                       AppStrings.signOff,
                       style: Styles.containerTextName,
                     ),
-                    onTap: () {},
+                    onTap: () async {
+                      showDialogSignOut(
+                        context: context,
+                        onTap: () async {
+                          await bloc.signOut();
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.loginRoute,
+                            (route) => false,
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
@@ -261,6 +273,162 @@ class _MainMenuDrawer extends StatelessWidget {
       ),
     );
   }
+}
+
+void showDialogSignOut({
+  required BuildContext context,
+  required VoidCallback onTap,
+}) async {
+  return await showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: AppColors.transparent,
+        alignment: Alignment.center,
+        contentPadding: EdgeInsets.zero,
+        content: DecoratedBox(
+          decoration: ShapeDecoration(
+            color: AppColors.transparent,
+            shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: AppColors.white,
+                    width: double.infinity,
+                  ),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                ) +
+                Border(
+                  bottom: BorderSide(
+                    width: 20,
+                    color: AppColors.transparent,
+                  ),
+                ) +
+                Border.symmetric(
+                  vertical: BorderSide(
+                    width: 5,
+                    color: AppColors.transparent,
+                  ),
+                ) +
+                Border.symmetric(
+                  vertical: BorderSide(
+                    width: 5,
+                    color: AppColors.transparent,
+                  ),
+                ) +
+                Border(
+                  top: BorderSide(
+                    width: 20,
+                    color: AppColors.transparent,
+                  ),
+                ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: const SizedBox(),
+                  ),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.transparent,
+                        width: 4,
+                      ),
+                      image: DecorationImage(
+                        image: AssetImage(Images.kBiuxLogoBackgroundBlue),
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.circular(100.0),
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: ClipOval(
+                        child: Material(
+                          color: AppColors.strongCyan,
+                          child: InkWell(
+                            splashColor: AppColors.strongCyan,
+                            onTap: () => Navigator.of(context).pop(),
+                            child: SizedBox(
+                              width: 25,
+                              height: 25,
+                              child: Icon(
+                                Icons.close,
+                                color: AppColors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              RichText(
+                text: TextSpan(
+                  style: Styles.accentTextThemeBlack,
+                  children: [
+                    TextSpan(text: AppStrings.wantText),
+                    TextSpan(text: AppStrings.wantSignOff),
+                    TextSpan(text: AppStrings.symbolText)
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: 110,
+                    child: TextButton(
+                      style: Styles().textButtonWhiteStyle,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        AppStrings.cancelText,
+                        style: Styles.containerImage.copyWith(
+                          color: AppColors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 110,
+                    child: TextButton(
+                      style: Styles().textButtonStyle,
+                      onPressed: () {
+                        onTap();
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        AppStrings.confirm,
+                        style: Styles.containerImage,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
 
 class _BottomNavigationBar extends StatelessWidget {

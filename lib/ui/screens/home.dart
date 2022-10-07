@@ -306,7 +306,7 @@ class _MyHomeState extends State<MyHome> {
                             width: 50,
                             height: 50,
                             child: Image.asset(
-                              logo,
+                              'logo',
                               width: 120,
                               height: 120,
                             ),
@@ -521,10 +521,9 @@ class _MyHomeState extends State<MyHome> {
                                               onPressed: () async {
                                                 await FacebookAuth.instance
                                                     .logOut();
-                                                await AuthenticationRepository
-                                                    .signOut(
-                                                  context: context,
-                                                );
+                                                // await AuthenticationRepository
+                                                //     .signOut(
+                                                // );
                                                 deleteLoginToken();
                                                 // pushNotificationsManager
                                                 //     .unSubscribeToTopic("biux-all");

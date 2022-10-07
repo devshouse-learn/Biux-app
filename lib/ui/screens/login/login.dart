@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
+import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
@@ -30,34 +30,25 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import '../../../data/repositories/stories/stories_firebase_repository.dart';
-
-String gifl = Images.kGifBike;
-String logo = Images.kBiuxLogoBackgroundWhite;
-
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _autoValidate = false;
+  bool autoValidate = false;
   String message = AppStrings.message;
-  var _name;
-  var password;
   bool obscureText = true;
-  final namecontroller = TextEditingController();
-  final newUserController = TextEditingController();
-  final newUser2Controller = TextEditingController();
+  final TextEditingController namecontroller = TextEditingController();
+  final TextEditingController newUserController = TextEditingController();
+  final TextEditingController newUser2Controller = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   Map<String, dynamic>? _userData;
-  Map<String, dynamic>? number;
   AccessToken? _accessToken;
-  late Uint8List uploadedImage;
   bool loading = false;
   bool checking = true;
   late City cityData;
   bool logged = false;
-  final passwordController = TextEditingController();
   late User user;
   var nameUser;
   late BiuxUser userfacebook;
@@ -118,10 +109,6 @@ class _LoginPageState extends State<LoginPage> {
 
   var _darkTheme = true;
 
-  get() async {
-    final example = await StoriesFirebaseRepository().deleteStory('2');
-  }
-
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -131,8 +118,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    get();
-
     cityData = City(
       name: "",
       state: '0',
@@ -157,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
               ? Loading()
               : Form(
                   key: _formKey,
-                  autovalidateMode: _autoValidate
+                  autovalidateMode: autoValidate
                       ? AutovalidateMode.always
                       : AutovalidateMode.disabled,
                   child: Container(
@@ -171,25 +156,27 @@ class _LoginPageState extends State<LoginPage> {
                     child: ListView(
                       children: <Widget>[
                         Container(
-                          height: 60,
-                        ),
-                        Container(
                           height: 100,
+                          margin: const EdgeInsets.only(
+                            top: 70,
+                          ),
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage(logo),
+                              image: AssetImage(
+                                Images.kBiuxLogoLettersWhite,
+                              ),
                               fit: BoxFit.contain,
                             ),
                           ),
                         ),
-                        Container(
-                          height: 90,
+                        const SizedBox(
+                          height: 30,
                         ),
                         Stack(
                           children: [
                             Center(
                               child: Container(
-                                height: 260,
+                                height: 250,
                                 width: 370,
                                 child: Card(
                                   color: AppColors.white,
@@ -202,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                             Center(
                               child: Container(
                                 margin: EdgeInsets.only(
-                                  top: 10,
+                                  top: 15,
                                 ),
                                 child: Text(
                                   AppStrings.loginText,
@@ -216,7 +203,6 @@ class _LoginPageState extends State<LoginPage> {
                                   top: 40,
                                 ),
                                 child: SizedBox(
-                                  width: 280,
                                   child: TexFieldWidget(
                                     obscureText: false,
                                     focusNode: _focusNodes[0],
@@ -238,16 +224,12 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            Container(
-                              height: 20,
-                            ),
                             Center(
                               child: Container(
                                 margin: EdgeInsets.only(
-                                  top: 120,
+                                  top: 105,
                                 ),
                                 child: SizedBox(
-                                  width: 280,
                                   child: TexFieldWidget(
                                     focusNode: _focusNodes[1],
                                     nameController: passwordController,
@@ -281,7 +263,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(
-                                    top: 180,
+                                    top: 170,
                                   ),
                                   child: Text(AppStrings.forgetYourPassword),
                                 ),
@@ -298,7 +280,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             GestureDetector(
                               child: Container(
-                                margin: EdgeInsets.only(top: 220),
+                                margin: EdgeInsets.only(top: 200),
                                 child: Align(
                                   alignment: Alignment.bottomCenter,
                                   child: Material(
@@ -320,8 +302,8 @@ class _LoginPageState extends State<LoginPage> {
                                           shape: BoxShape.circle,
                                           color: AppColors.strongCyan,
                                         ),
-                                        height: 70,
-                                        width: 70,
+                                        height: 60,
+                                        width: 60,
                                         child: Stack(
                                           children: <Widget>[
                                             Center(
@@ -340,8 +322,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               onTap: () async {
                                 _validateInputs();
-                                _name = namecontroller.text;
-                                password = passwordController.text;
                                 setState(
                                   () {
                                     loading = true;
@@ -353,12 +333,12 @@ class _LoginPageState extends State<LoginPage> {
                                   passwordController.text,
                                 );
                                 if (logged.status) {
-                                  Analitycs.login(_name);
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(
-                                        builder: (context) => MyHome(),
-                                      ),
-                                      (Route<dynamic> route) => false);
+                                  Analitycs.login(namecontroller.text);
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    AppRoutes.mainMenuRoute,
+                                    (route) => false,
+                                  );
                                 } else {
                                   setState(
                                     () {
@@ -401,10 +381,7 @@ class _LoginPageState extends State<LoginPage> {
                             loading == true ? Loading() : Container(),
                           ],
                         ),
-                        Container(
-                          height: 30,
-                        ),
-                        Container(
+                        const SizedBox(
                           height: 20,
                         ),
                         Row(
@@ -508,18 +485,17 @@ class _LoginPageState extends State<LoginPage> {
                                       facebook: AppStrings.validationFacebook(
                                         userdata: _userData!,
                                       ),
-                                      instagram: "",
                                     ),
                                   );
                                 }
                               },
                             ),
-                            Container(
-                              width: 25,
+                            const SizedBox(
+                              width: 30,
                             ),
                             buttonStartDataData(),
-                            Container(
-                              width: 25,
+                            const SizedBox(
+                              width: 30,
                             ),
                             GestureDetector(
                               child: Stack(
@@ -555,10 +531,8 @@ class _LoginPageState extends State<LoginPage> {
                                     loading = true;
                                   },
                                 );
-                                user = (await AuthenticationRepository
-                                    .signInWithGoogle(
-                                  context: context,
-                                ))!;
+                                user = await AuthenticationRepository
+                                    .signInWithGoogle(context: context);
                                 if (user == null) {
                                   setState(
                                     () {
@@ -611,8 +585,6 @@ class _LoginPageState extends State<LoginPage> {
                                       premium: false,
                                       email: user.email!,
                                       password: "000000",
-                                      facebook: "",
-                                      instagram: "",
                                     ),
                                     us: user,
                                   );
@@ -621,8 +593,8 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                        Container(
-                          height: 20,
+                        const SizedBox(
+                          height: 10,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -657,19 +629,15 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(
                                 15.0,
                               ),
-                              side: BorderSide(
-                                width: 3,
-                                color: AppColors.greyishNavyBlue,
-                              ),
                             ),
                             color: _darkTheme == true
                                 ? AppColors.greyishNavyBlue
-                                : AppColors.white,
+                                : AppColors.strongCyan,
                             child: Text(
                               AppStrings.createUser,
                               style: _darkTheme == true
                                   ? Styles.sizedBoxWhite
-                                  : Styles.sizedBoxBlack,
+                                  : Styles.sizedBoxWhite,
                             ),
                             onPressed: () {
                               deleteLoginToken();
@@ -738,8 +706,9 @@ class _LoginPageState extends State<LoginPage> {
     final uriResponse = await UserFirebaseRepository().getValidationEmails(
       biuxUser.email,
     );
-    if (uriResponse.email == null || uriResponse.email != null) {
-      if (uriResponse.email == null && us != null) {
+    if (uriResponse.email == '' || uriResponse.email != '') {
+      if (uriResponse.email == '' && us != null) {
+        // If the user non-existent and is GoogleSign
         await UserFirebaseRepository().registerUser(
           user: biuxUser,
         );
@@ -750,21 +719,22 @@ class _LoginPageState extends State<LoginPage> {
               biuxUser.id,
               imageNetworks,
             );
-            setState(() {
-              loading = false;
-            });
-            Navigator.push(
+            setState(
+              () {
+                loading = false;
+              },
+            );
+            Navigator.pushNamedAndRemoveUntil(
               context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => MyHome(),
-              ),
+              AppRoutes.mainMenuRoute,
+              (route) => false,
             );
           },
         );
         Analitycs.sendSignUp(biuxUser.id);
       } else {
         if (_userData != null) {
-          if (uriResponse.email == null &&
+          if (uriResponse.email == '' &&
               _userData![AppStrings.firstNameText] != null) {
             await UserFirebaseRepository().registerUser(
               user: biuxUser,
@@ -779,17 +749,16 @@ class _LoginPageState extends State<LoginPage> {
                 setState(() {
                   loading = false;
                 });
-                Navigator.push(
+                Navigator.pushNamedAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => MyHome(),
-                  ),
+                  AppRoutes.mainMenuRoute,
+                  (route) => false,
                 );
               },
             );
             Analitycs.sendSignUp(biuxUser.id);
           }
-          if (uriResponse.email != null &&
+          if (uriResponse.email != '' &&
               _userData![AppStrings.firstNameText] != null) {
             LocalStorage().saveUser(userfacebook.userName);
             setState(
@@ -798,27 +767,25 @@ class _LoginPageState extends State<LoginPage> {
               },
             );
             Analitycs.login(_userData![AppStrings.emailText]!);
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => MyHome(),
-              ),
-              (Route<dynamic> route) => false,
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.mainMenuRoute,
+              (route) => false,
             );
           }
         } else {
-          if (uriResponse.email != null && us!.email != null) {
-            LocalStorage().saveUser(userEmail.userName);
+          if (uriResponse.email != '' && us!.email != null) {
+            // If user exits and is GoogleSign
             setState(
               () {
                 loading = false;
               },
             );
             Analitycs.login(us.email!);
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => MyHome(),
-              ),
-              (Route<dynamic> route) => false,
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.mainMenuRoute,
+              (route) => false,
             );
           }
         }
@@ -1003,8 +970,6 @@ class _LoginPageState extends State<LoginPage> {
                           premium: false,
                           email: user.email!,
                           password: AppStrings.keyCode,
-                          facebook: "",
-                          instagram: "",
                         ),
                         us: user,
                       );

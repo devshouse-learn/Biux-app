@@ -526,7 +526,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const noFound = "no found";
   static const signOff = "Cerrar sesión";
   static const signOff2 = "Realmente deseas salir te perderas de las rodadas";
-  static const wantSignOff = "Deseas cerrar sesión";
+  static const wantSignOff = "cerrar la sesión";
   static const map = "Mapa";
   static const emailAlreadyUse = "El correo ya esta registrado en Biux";
   static const errorRegisterUser = "Error al registrar el usuario";
@@ -598,6 +598,8 @@ The navigation delegate is set to block navigation to the youtube website.
   static const cityIsEmpty = "Ingresa tu ciudad";
   static const descritionIsEmpty = "Ingresa tu descripción";
   static const userUpdate = "Tu usuario se ha actualizado";
+  static const wantText = "¿Desea ";
+  static const symbolText = "?";
 
   ///
   /// Methods

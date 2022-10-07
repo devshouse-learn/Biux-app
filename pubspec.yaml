@@ -55,7 +55,6 @@ dependencies:
   flutter_cache_manager: ^3.1.2
   http: ^0.13.3
   image_picker: ^0.8.2
-  splash_screen_view: ^3.0.0
   vector_math: ^2.1.0
   cached_network_image: ^3.1.0
   autocomplete_textfield_ns: ^2.0.0
@@ -91,6 +90,7 @@ dependencies:
   photo_manager: ^2.2.1
   flutter_share: ^2.0.0
   smooth_star_rating_nsafe: ^1.0.0+1
+  easy_splash_screen: ^1.0.4
 
 dev_dependencies:
   flutter_test:

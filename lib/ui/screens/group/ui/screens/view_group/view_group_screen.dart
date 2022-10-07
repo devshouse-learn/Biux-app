@@ -3,9 +3,9 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/data/models/story.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_members_group.dart';
 import 'package:biux/ui/screens/group/ui/screens/view_group/view_roads_group.dart';
@@ -83,7 +83,7 @@ class _AppBar extends StatelessWidget {
             ),
           ],
         ),
-        if (LocalStorage().getUserId() == group.adminId)
+        if (AuthenticationRepository().getUserId == group.adminId)
           GestureDetector(
             onTap: () async {
               await Navigator.pushNamed(

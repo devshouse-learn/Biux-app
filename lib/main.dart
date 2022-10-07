@@ -70,9 +70,8 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
       ),
-      initialRoute: AppRoutes.mainMenuRoute,
+      initialRoute: AppRoutes.splashRoute,
       onGenerateRoute: router.generateRoute,
-      //    localizationsDelegates: [GlobalMaterialLocalizations.delegate],
     );
   }
 }

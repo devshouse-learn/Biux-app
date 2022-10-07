@@ -2,8 +2,8 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/story.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
 import 'package:biux/ui/widgets/search_bar_widget.dart';
 import 'package:biux/utils/share_utils.dart';
@@ -107,7 +107,7 @@ class _ButtonLikesStory extends StatelessWidget {
     required this.story,
     required this.onTap,
   }) : super(key: key);
-  final idUser = LocalStorage().getUserId();
+  final idUser = AuthenticationRepository().getUserId;
   bool exists = false;
   @override
   Widget build(BuildContext context) {
@@ -363,7 +363,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
           story: widget.story,
           onTap: () {
             bloc.updateStoryLike(
-              idUser: LocalStorage().getUserId(),
+              idUser: AuthenticationRepository().getUserId,
               story: widget.story,
             );
             setState(

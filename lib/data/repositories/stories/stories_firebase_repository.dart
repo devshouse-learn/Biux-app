@@ -1,7 +1,6 @@
-import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/story.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'dart:io';
-
 import 'package:biux/data/repositories/stories/stories_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -88,7 +87,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     required File fileUrl,
   }) async {
     try {
-      final userId = LocalStorage().getUserId();
+      final userId = AuthenticationRepository().getUserId;
       Reference ref = FirebaseStorage.instance.ref('$userId/$id/$nameUrl');
       UploadTask uploadTask = ref.putFile(fileUrl);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
