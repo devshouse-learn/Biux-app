@@ -21,6 +21,17 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
     }
   }
 
+  Future<bool> createSites(Sites sites) async {
+    try {
+      await firestore.collection(collection).add(
+            sites.toJson(),
+          );
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Future<List<Sites>> getSitesFilterByTypeSites() async {
     try {

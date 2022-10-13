@@ -12,6 +12,7 @@ import 'package:biux/ui/screens/login/login.dart';
 import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/main_menu/main_menu.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
+import 'package:biux/ui/screens/map/map_screen_bloc.dart';
 import 'package:biux/ui/screens/roads/road_create/map_road/map_road_bloc.dart';
 import 'package:biux/ui/screens/roads/road_create/map_road/map_road_screen.dart';
 import 'package:biux/ui/screens/roads/road_create/road_create_bloc.dart';
@@ -27,6 +28,7 @@ import 'package:biux/ui/screens/user/ui/screens/edit_user_screen/edit_user_scree
 import 'package:biux/ui/screens/user/ui/screens/edit_user_screen/edit_user_screen_bloc.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen.dart';
 import 'package:biux/ui/screens/user/ui/user_screen/user_screen_bloc.dart';
+import 'package:biux/ui/screens/map/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -99,6 +101,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             ChangeNotifierProvider(
               create: (_) => GroupListScreenBloc(),
             ),
+            ChangeNotifierProvider(
+              create: (_) => MapScreenBloc(),
+            )
           ],
           child: MainMenu(),
         ),
@@ -152,6 +157,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => EditUserScreenBloc(),
           child: UserEditScreen(),
+        ),
+      );
+    case AppRoutes.mapScreenRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => MapScreenBloc(),
+          child: MapScreen(),
         ),
       );
     default:

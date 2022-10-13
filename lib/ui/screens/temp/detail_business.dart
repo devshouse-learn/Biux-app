@@ -166,7 +166,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                   Container(
                     height: 10,
                   ),
-                  widget._sites.telephone == ""
+                  widget._sites.whatsapp == ""
                       ? SizedBox()
                       : Row(
                           children: <Widget>[
@@ -185,7 +185,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                               child: Container(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  widget._sites.telephone,
+                                  widget._sites.whatsapp,
                                   style: Styles.roadDescriptionText,
                                 ),
                               ),
@@ -269,7 +269,7 @@ class _DetailBusinessState extends State<DetailBusiness> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      widget._sites.telephone == ""
+                      widget._sites.whatsapp == ""
                           ? Container(
                               alignment: Alignment.center,
                             )

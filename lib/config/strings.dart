@@ -411,7 +411,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const group = "group";
   static const idGroup = "idGroup";
   static const missingOpening = " falta apertura";
-  static const HowGet = "¿Como llegar?";
+  static const HowGet = "Cómo llegar";
   static const premium = "Premium";
   static const grid = "grid";
   static const editProfile = "Editar perfil";
@@ -600,6 +600,11 @@ The navigation delegate is set to block navigation to the youtube website.
   static const userUpdate = "Tu usuario se ha actualizado";
   static const wantText = "¿Desea ";
   static const symbolText = "?";
+  static const grantedText = "granted";
+  static const deniedForeverText = "deniedForever";
+  static const deniedText = "denied";
+  static const permissionsText =
+      "Necesitas activar los servicios de localización";
 
   ///
   /// Methods

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:biux/data/local_storage/localstorage.dart';
+import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
@@ -33,9 +33,9 @@ class EditUserScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = await LocalStorage().getUserId();
+    String? userId = LocalStorage().getUserName();
     final dataUser = await UserFirebaseRepository().getUserId(
-      userId!,
+      userId,
     );
     final dataCity = await CitiesFirebaseRepository().getCityId(
       dataUser.cityId,

@@ -5,20 +5,25 @@ class City {
   final String name;
   final String state;
   final String country;
+  final String latitude;
+  final String longitude;
 
   const City({
     this.id = "",
     this.name = "",
     this.state = "",
     this.country = "",
+    this.latitude = "",
+    this.longitude = "",
   });
 
   factory City.fromJson({required Map json}) => City(
-        id: json["id"],
-        name: json["name"],
-        state: json["state"],
-        country: json["country"],
-      );
+      id: json["id"],
+      name: json["name"],
+      state: json["state"],
+      country: json["country"],
+      latitude: json["latitude"],
+      longitude: json["longitude"]);
 
   factory City.fromMapUser(Map json) {
     return City(
@@ -32,6 +37,8 @@ class City {
         "name": name,
         "state": state,
         "country": country,
+        "latitude": latitude,
+        "longitude": longitude
       };
 
   Map<String, dynamic> toMapUser() => {
