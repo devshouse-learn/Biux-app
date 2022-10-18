@@ -48,7 +48,7 @@ class ViewGroupBloc extends ChangeNotifier {
   Future<void> getGroup(String groupId) async {
     final dataGroup =
         await GroupsFirebaseRepository().getSpecificGroup(groupId);
-    final dataMembers = await MembersFirebaseRepository().getMembers(groupId);
+    final dataMembers = await MembersFirebaseRepository().getMyMembers(groupId);
     member = dataMembers;
     group = dataGroup;
     notifyListeners();

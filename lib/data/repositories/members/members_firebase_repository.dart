@@ -49,7 +49,22 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future<List<Member>> getMembers(String groupId) async {
+  Future<List<Member>> getMembers() async {
+    try {
+      final result = await firestore.collectionGroup(subcollection).get();
+      return result.docs
+          .map(
+            (e) => Member.fromJson(
+              e.data(),
+            ),
+          )
+          .toList();
+    } catch (e) {
+      return List.empty();
+    }
+  }
+
+  Future<List<Member>> getMyMembers(String groupId) async {
     try {
       final result = await firestore
           .collection(collection)
@@ -88,7 +103,9 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
   }
 
   @override
-  Future joinGroups(String groupId, int memberNumer, Member member) async {
+  Future<String> joinGroups(
+      String groupId, int numberMember, Member member) async {
+    String docId = '';
     try {
       await firestore
           .collection(collection)
@@ -97,7 +114,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .add(member.toJson())
           .then(
         (DocumentReference doc) {
-          String docId = doc.id;
+          docId = doc.id;
           firestore
               .collection(collection)
               .doc(groupId)
@@ -113,8 +130,11 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
       await firestore
           .collection(collection)
           .doc(groupId)
-          .update({'numberMembers': memberNumer + 1});
-    } catch (e) {}
+          .update({'numberMembers': numberMember + 1});
+      return docId;
+    } catch (e) {
+      return '';
+    }
   }
 
   Future<bool> leaveGroups(String id, int numberMember, String groupId) async {
@@ -125,7 +145,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
           .collection(subcollection)
           .doc(id)
           .delete();
-          await firestore
+      await firestore
           .collection(collection)
           .doc(groupId)
           .update({'numberMembers': numberMember - 1});

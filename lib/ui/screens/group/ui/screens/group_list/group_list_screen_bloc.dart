@@ -1,9 +1,11 @@
 import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
+import 'package:biux/data/models/member.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
+import 'package:biux/data/repositories/members/members_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +15,7 @@ class GroupListScreenBloc extends ChangeNotifier {
   List<Group> listFilterGroup = [];
   BiuxUser user = BiuxUser();
   List<City> listCities = [];
+  List<Member> listMembers = [];
   final FocusNode focusNodeCity = FocusNode();
   final FocusNode focusNodeGrupo = FocusNode();
   final searchCityController = TextEditingController();
@@ -23,17 +26,32 @@ class GroupListScreenBloc extends ChangeNotifier {
   }
 
   Future<void> loadData() async {
-    getGroupList();
-    getCities();
+    await getUser();
+    await getGroupList();
+    await getCities();
   }
 
   Future<List<Group>> getGroupList() async {
-    if (searchCityController.text.isEmpty)
+    if (searchCityController.text.isEmpty) {
       listGroup = await GroupsFirebaseRepository().getGroups();
-    else
+      final dataMembers = await MembersFirebaseRepository().getMembers();
+      listMembers = dataMembers
+          .where(
+            (member) => member.userId == user.id,
+          )
+          .toList();
+      notifyListeners();
+    } else {
       listGroup = await GroupsFirebaseRepository()
           .getFilterGroups(searchCityController.text);
-    notifyListeners();
+      final dataMembers = await MembersFirebaseRepository().getMembers();
+      listMembers = dataMembers
+          .where(
+            (member) => member.userId == user.id,
+          )
+          .toList();
+      notifyListeners();
+    }
     return listGroup;
   }
 
@@ -53,7 +71,8 @@ class GroupListScreenBloc extends ChangeNotifier {
 
   Future<void> getUser() async {
     String? userId = await LocalStorage().getUserId();
-    final dataUser = await UserFirebaseRepository().getUserId(userId!);
+    final dataUser = await UserFirebaseRepository()
+        .getUserId(userId!);
     user = dataUser;
     notifyListeners();
   }
@@ -95,5 +114,31 @@ class GroupListScreenBloc extends ChangeNotifier {
       SystemNavigator.pop();
     notifyListeners();
     return Future.value(false);
+  }
+
+  Future<void> onTapJoin(
+      Member member, List<Member> members, Group group) async {
+    final valueJoin = await MembersFirebaseRepository()
+        .joinGroups(group.id, group.numberMembers, member);
+    group.numberMembers = group.numberMembers + 1;
+    listMembers.add(
+      Member(
+        approved: true,
+        groupId: group.id,
+        id: valueJoin,
+        userId: user.id,
+      ),
+    );
+    notifyListeners();
+  }
+
+  Future<void> onTapLeave(String idMember, List<Member> members, Group group,
+      int numberMembers) async {
+    group.numberMembers = group.numberMembers - 1;
+    listMembers =
+        listMembers.where((memebr) => memebr.groupId != group.id).toList();
+    final valueLeave = await MembersFirebaseRepository()
+        .leaveGroups(idMember, numberMembers, group.id);
+    notifyListeners();
   }
 }

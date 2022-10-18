@@ -5,6 +5,8 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
+import 'package:biux/data/models/member.dart';
+import 'package:biux/data/models/user.dart';
 import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen_bloc.dart';
 import 'package:biux/ui/screens/roads/roads_list/roads_list_screen_bloc.dart';
 import 'package:biux/ui/widgets/search_bar_widget.dart';
@@ -27,7 +29,9 @@ class GroupListScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.white,
         body: ListView(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(
+            8.0,
+          ),
           children: [
             Selector<GroupListScreenBloc, FocusNode>(
                 selector: (_, bloc) => bloc.focusNodeCity,
@@ -40,15 +44,17 @@ class GroupListScreen extends StatelessWidget {
               )
             else ...[
               SearchBarWidget(),
-              Align(
-                alignment: Alignment.center,
-                child: Selector<GroupListScreenBloc, List<Group>>(
-                    selector: (_, bloc) => bloc.listGroup,
-                    builder: (context, value, child) {
-                      return GroupList(
-                        groupList: bloc.listGroup,
-                      );
-                    }),
+              Selector<GroupListScreenBloc, List<Member>>(
+                selector: (_, bloc) => bloc.listMembers,
+                builder: (context, listMembers, child) {
+                  return GroupList(
+                    groupList: bloc.listGroup,
+                    listMembers: bloc.listMembers,
+                    onTapJoin: bloc.onTapJoin,
+                    onTapLeave: bloc.onTapLeave,
+                    user: bloc.user,
+                  );
+                },
               ),
             ]
           ],
@@ -66,11 +72,21 @@ class WidgetSearchCity extends StatelessWidget {
     final bloc = context.watch<GroupListScreenBloc>();
     return Container(
         width: 350,
-        margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+        margin: EdgeInsets.only(
+          top: 10,
+          left: 10,
+          right: 10,
+        ),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.gray, width: 1)),
+          borderRadius: BorderRadius.circular(
+            20,
+          ),
+          border: Border.all(
+            color: AppColors.gray,
+            width: 1,
+          ),
+        ),
         child: TextFormField(
           controller: bloc.searchCityController,
           onTap: bloc.setState,
@@ -81,34 +97,36 @@ class WidgetSearchCity extends StatelessWidget {
             if (bloc.searchCityController.text.isEmpty) bloc.getGroupList();
           },
           decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(
-                10.0,
-                15.0,
-                20.0,
-                15.0,
-              ),
-              border: InputBorder.none,
-              hintText: AppStrings.searchCitie,
-              hintStyle: Styles.TextSearch,
-              prefixIcon: Image.asset(
-                Images.kImageLocationGrey,
-                height: 10,
-                scale: 3.0,
-              ),
-              suffixIcon: bloc.focusNodeCity.hasFocus
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: AppColors.gray,
-                      ),
-                      onPressed: () {
-                        bloc.searchCityController.clear();
-                        bloc.getGroupList();
-                        bloc.getCities();
-                        bloc.focusNodeCity.unfocus();
-                        bloc.setState();
-                      })
-                  : SizedBox()),
+            contentPadding: EdgeInsets.fromLTRB(
+              10.0,
+              15.0,
+              20.0,
+              15.0,
+            ),
+            border: InputBorder.none,
+            hintText: AppStrings.searchCitie,
+            hintStyle: Styles.TextSearch,
+            prefixIcon: Image.asset(
+              Images.kImageLocationGrey,
+              height: 10,
+              scale: 3.0,
+            ),
+            suffixIcon: bloc.focusNodeCity.hasFocus
+                ? IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: AppColors.gray,
+                    ),
+                    onPressed: () {
+                      bloc.searchCityController.clear();
+                      bloc.getGroupList();
+                      bloc.getCities();
+                      bloc.focusNodeCity.unfocus();
+                      bloc.setState();
+                    },
+                  )
+                : const SizedBox(),
+          ),
         ));
   }
 }
@@ -124,7 +142,9 @@ class ListCity extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            contentPadding: EdgeInsets.only(left: 25),
+            contentPadding: EdgeInsets.only(
+              left: 25,
+            ),
             horizontalTitleGap: 0,
             minLeadingWidth: 36,
             iconColor: AppColors.black,
@@ -132,7 +152,10 @@ class ListCity extends StatelessWidget {
               Images.kImageLocation2,
               height: 20,
             ),
-            title: Text(AppStrings.currentLocation, style: Styles.TextCityList),
+            title: Text(
+              AppStrings.currentLocation,
+              style: Styles.TextCityList,
+            ),
             onTap: () {},
           ),
           Divider(
@@ -140,25 +163,35 @@ class ListCity extends StatelessWidget {
             height: 1,
           ),
           SingleChildScrollView(
-              child: Wrap(
-                  children: listCities
-                      .map((city) => Column(
-                            children: [
-                              ListTile(
-                                contentPadding: EdgeInsets.only(left: 60),
-                                title:
-                                    Text(city.name, style: Styles.TextCityList),
-                                onTap: () {
-                                  bloc.onTapCities(city.name);
-                                },
-                              ),
-                              Divider(
-                                color: AppColors.gray,
-                                height: 1,
-                              ),
-                            ],
-                          ))
-                      .toList())),
+            child: Wrap(
+              children: listCities
+                  .map(
+                    (city) => Column(
+                      children: [
+                        ListTile(
+                          contentPadding: EdgeInsets.only(
+                            left: 60,
+                          ),
+                          title: Text(
+                            city.name,
+                            style: Styles.TextCityList,
+                          ),
+                          onTap: () {
+                            bloc.onTapCities(
+                              city.name,
+                            );
+                          },
+                        ),
+                        Divider(
+                          color: AppColors.gray,
+                          height: 1,
+                        ),
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
         ],
       ),
     );
@@ -167,126 +200,152 @@ class ListCity extends StatelessWidget {
 
 class GroupList extends StatelessWidget {
   List<Group> groupList = [];
+  List<Member> listMembers = [];
+  BiuxUser user = BiuxUser();
+  final Function onTapLeave;
+  final Function onTapJoin;
   GroupList({
     Key? key,
     required this.groupList,
+    required this.listMembers,
+    required this.onTapLeave,
+    required this.onTapJoin,
+    required this.user,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 10),
+      alignment: Alignment.center,
+      margin: EdgeInsets.only(
+        top: 10,
+      ),
       child: SingleChildScrollView(
         child: Wrap(
           spacing: 20,
           runSpacing: 15,
           children: groupList
-              .map((group) => Stack(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(top: 40),
-                        height: 170,
-                        width: 160,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.grey,
-                            width: 1,
-                          ),
+              .map(
+                (group) => Stack(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(
+                        top: 40,
+                      ),
+                      height: 170,
+                      width: 160,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          20,
                         ),
-                        child: Column(
+                        border: Border.all(
+                          color: AppColors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          if (group.name.length > 13)
+                            Text(
+                              group.name.replaceRange(
+                                13,
+                                group.name.length,
+                                AppStrings.points,
+                              ),
+                              style: Styles.TextGroupList,
+                            )
+                          else
+                            Text(
+                              group.name,
+                              style: Styles.TextGroupList,
+                            ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              if (group.name.length > 13)
-                                Text(
-                                  group.name.replaceRange(
-                                    13,
-                                    group.name.length,
-                                    AppStrings.points,
-                                  ),
-                                  style: Styles.TextGroupList,
-                                )
-                              else
-                                Text(
-                                  group.name,
-                                  style: Styles.TextGroupList,
-                                ),
+                              Image.asset(
+                                Images.kImageSocial,
+                                color: AppColors.black,
+                                height: 20,
+                              ),
                               const SizedBox(
-                                height: 10,
+                                width: 15,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Image.asset(
-                                    Images.kImageSocial,
-                                    color: AppColors.black,
-                                    height: 20,
-                                  ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  Text(
-                                    group.numberMembers.toString(),
-                                    style: Styles.TextGroupList,
-                                  ),
-                                ],
+                              Text(
+                                group.numberMembers.toString(),
+                                style: Styles.TextGroupList,
                               ),
-                              SizedBox(
-                                height: 10,
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                child: Icon(
+                                  Icons.directions_bike,
+                                  color: AppColors.black,
+                                  size: 20,
+                                ),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Container(
-                                    child: Icon(
-                                      Icons.directions_bike,
-                                      color: AppColors.black,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  Text(
-                                    group.numberRoads.toString(),
-                                    style: Styles.TextGroupList,
-                                  ),
-                                ],
+                              const SizedBox(
+                                width: 15,
                               ),
-                            ]),
+                              Text(
+                                group.numberRoads.toString(),
+                                style: Styles.TextGroupList,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 40, bottom: 50),
-                        child: GestureDetector(
-                          onTap: () async {
-                            await Navigator.pushNamed(
-                              context,
-                              AppRoutes.viewGroupRoute,
-                              arguments: {
-                                'adminId': group.adminId,
-                                'groupId': group.id,
-                              },
-                            );
-                            final bloc = context.read<RoadsListScreenBloc>();
-                            bloc.loadData();
-                          },
-                          child: Container(
-                            height: 86,
-                            width: 85,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.white,
-                                width: 4,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(
+                        left: 40,
+                        bottom: 50,
+                      ),
+                      child: GestureDetector(
+                        onTap: () async {
+                          await Navigator.pushNamed(
+                            context,
+                            AppRoutes.viewGroupRoute,
+                            arguments: {
+                              'adminId': group.adminId,
+                              'groupId': group.id,
+                            },
+                          );
+                          final bloc = context.read<RoadsListScreenBloc>();
+                          bloc.loadData();
+                        },
+                        child: Container(
+                          height: 86,
+                          width: 85,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.white,
+                              width: 4,
+                            ),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                group.logo,
                               ),
-                              image: DecorationImage(
-                                image: NetworkImage(group.logo),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(100.0),
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              100.0,
                             ),
                           ),
                         ),
                       ),
+                    ),
+                    if (listMembers.map((e) => e.groupId).contains(group.id))
                       Container(
                         margin: EdgeInsets.only(
                           left: 35,
@@ -295,23 +354,126 @@ class GroupList extends StatelessWidget {
                         child: ButtonTheme(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(
-                              Radius.circular(15),
+                              Radius.circular(
+                                15,
+                              ),
                             ),
                           ),
                           minWidth: 80,
                           height: 40,
-                          child: RaisedButton(
-                            color: AppColors.darkBlue,
-                            child: Text(
-                              AppStrings.joinMe,
-                              style: Styles.containerTextName,
+                          child: ElevatedButtonTheme(
+                            data: ElevatedButtonThemeData(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                        15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                padding: MaterialStateProperty.all(
+                                  EdgeInsets.only(
+                                    left: 10,
+                                    right: 10,
+                                  ),
+                                ),
+                              ),
                             ),
-                            onPressed: () {},
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                  AppColors.white,
+                                ),
+                              ),
+                              child: Text(
+                                AppStrings.outText,
+                                style: Styles.textLightBlack,
+                              ),
+                              onPressed: () async {
+                                List<Member> member = listMembers
+                                    .where(
+                                      (element) => element.groupId == group.id,
+                                    )
+                                    .toList();
+                                onTapLeave(
+                                  member.first.id,
+                                  listMembers,
+                                  group,
+                                  group.numberMembers,
+                                );
+                              },
+                            ),
                           ),
                         ),
                       )
-                    ],
-                  ))
+                    else
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 35,
+                          top: 185,
+                        ),
+                        child: ButtonTheme(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(
+                                15,
+                              ),
+                            ),
+                          ),
+                          minWidth: 80,
+                          height: 40,
+                          child: ElevatedButtonTheme(
+                            data: ElevatedButtonThemeData(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                        15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                padding: MaterialStateProperty.all(
+                                  EdgeInsets.only(
+                                    left: 10,
+                                    right: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                  AppColors.darkBlue,
+                                ),
+                              ),
+                              child: Text(
+                                AppStrings.joinMe,
+                                style: Styles.containerTextName,
+                              ),
+                              onPressed: () async {
+                                onTapJoin(
+                                  Member(
+                                    approved: true,
+                                    groupId: group.id,
+                                    userId: user.id,
+                                  ),
+                                  listMembers,
+                                  group,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                  ],
+                ),
+              )
               .toList(),
         ),
       ),
