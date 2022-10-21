@@ -3,13 +3,13 @@ import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/data/models/user.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
 import 'package:biux/data/repositories/roads/roads_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 
 class RoadsListScreenBloc extends ChangeNotifier {
   final searchCityController = TextEditingController();
@@ -33,8 +33,8 @@ class RoadsListScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = await LocalStorage().getUserId();
-    final dataUser = await UserFirebaseRepository().getUserId(userId!);
+    String? userId = AuthenticationRepository().getUserId;
+    final dataUser = await UserFirebaseRepository().getUserId(userId);
     user = dataUser;
     notifyListeners();
   }
@@ -109,7 +109,7 @@ class RoadsListScreenBloc extends ChangeNotifier {
 
   Future<void> onTapJoinRoads(Road road) async {
     road.numberParticipants = road.numberParticipants + 1;
-    road.competitorRoad.add(BiuxUser(id: user.id, names: user.names));
+    road.competitorRoad.add(BiuxUser(id: user.id, fullName: user.fullName));
     final validator = await RoadsFirebaseRepository().onTapRoad(road);
     notifyListeners();
   }

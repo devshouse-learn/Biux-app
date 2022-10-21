@@ -8,17 +8,15 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
+import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/response.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/data/local_storage/shared_preferences.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/analitics.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
-import 'package:biux/ui/screens/home.dart';
-import 'package:biux/ui/screens/login/create_user/create_user_screen.dart';
 import 'package:biux/ui/screens/login/recover_password.dart';
 import 'package:biux/ui/widgets/loading_widget.dart';
 import 'package:biux/ui/widgets/textField_widget.dart';
@@ -213,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                                           ? AppColors.strongCyan
                                           : AppColors.gray,
                                     ),
-                                    text: AppStrings.nameUserText,
+                                    text: AppStrings.correoText,
                                     validator: (value) {
                                       if (value!.isEmpty) {
                                         return AppStrings
@@ -334,6 +332,11 @@ class _LoginPageState extends State<LoginPage> {
                                 );
                                 if (logged.status) {
                                   Analitycs.login(namecontroller.text);
+                                  final biuxUser =
+                                      await UserFirebaseRepository().getUserId(
+                                    logged.message,
+                                  );
+                                  LocalStorage().setUserName(biuxUser.userName);
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
                                     AppRoutes.mainMenuRoute,
@@ -474,11 +477,11 @@ class _LoginPageState extends State<LoginPage> {
                                         AppStrings.rutaText.toLowerCase()
                                       ],
                                       dateBirth: AppStrings.fechaText,
-                                      names:
-                                          _userData![AppStrings.firstNameText],
-                                      cityId: cityData.id,
-                                      surnames:
+                                      fullName: _userData![
+                                              AppStrings.firstNameText] +
+                                          ' ' +
                                           _userData![AppStrings.lastNameText],
+                                      cityId: cityData,
                                       premium: false,
                                       email: userCredential.user!.email!,
                                       password: AppStrings.keyCode,
@@ -561,7 +564,6 @@ class _LoginPageState extends State<LoginPage> {
                                   await _completeUser2();
                                 }
                                 if (user.email == userEmail.email) {
-                                  var text = user.displayName!.split(" ");
                                   createUser(
                                     BiuxUser(
                                       followerS: userEmail.followerS,
@@ -579,9 +581,8 @@ class _LoginPageState extends State<LoginPage> {
                                       userName: userEmail.userName,
                                       modality: ["urbano", "ruta"],
                                       dateBirth: "fecha",
-                                      names: text[0],
-                                      cityId: cityData.id,
-                                      surnames: text[1],
+                                      fullName: user.displayName!,
+                                      cityId: cityData,
                                       premium: false,
                                       email: user.email!,
                                       password: "000000",
@@ -641,11 +642,9 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             onPressed: () {
                               deleteLoginToken();
-                              Navigator.push(
+                              Navigator.pushNamed(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => CreateUser(),
-                                ),
+                                AppRoutes.createUserRoute,
                               );
                             },
                           ),
@@ -724,6 +723,7 @@ class _LoginPageState extends State<LoginPage> {
                 loading = false;
               },
             );
+            LocalStorage().setUserName(biuxUser.userName);
             Navigator.pushNamedAndRemoveUntil(
               context,
               AppRoutes.mainMenuRoute,
@@ -749,6 +749,7 @@ class _LoginPageState extends State<LoginPage> {
                 setState(() {
                   loading = false;
                 });
+                LocalStorage().setUserName(biuxUser.userName);
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   AppRoutes.mainMenuRoute,
@@ -760,7 +761,7 @@ class _LoginPageState extends State<LoginPage> {
           }
           if (uriResponse.email != '' &&
               _userData![AppStrings.firstNameText] != null) {
-            LocalStorage().saveUser(userfacebook.userName);
+            LocalStorage().setUserName(userfacebook.userName);
             setState(
               () {
                 loading = false;
@@ -781,6 +782,7 @@ class _LoginPageState extends State<LoginPage> {
                 loading = false;
               },
             );
+            LocalStorage().setUserName(biuxUser.userName);
             Analitycs.login(us.email!);
             Navigator.pushNamedAndRemoveUntil(
               context,
@@ -839,11 +841,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   onPressed: () async {
-                    var valUser = await UserFirebaseRepository()
-                        .getValidationUser(newUserController.text);
-                    if (newUserController.text.length >= 4 &&
-                            valUser.userName == '' ||
-                        valUser.userName == null ||
+                    final valUser = await UserFirebaseRepository()
+                        .getValidationUserName(newUserController.text);
+                    if (newUserController.text.length >= 4 && !valUser ||
                         userfacebook.facebook ==
                             AppStrings.validationFacebook(
                               userdata: _userData!,
@@ -865,9 +865,10 @@ class _LoginPageState extends State<LoginPage> {
                           dateBirth: AppStrings.fechaText,
                           photo: _userData![AppStrings.pictureText]
                               [AppStrings.dataText][AppStrings.urlText],
-                          names: _userData![AppStrings.firstNameText],
-                          cityId: cityData.id,
-                          surnames: _userData![AppStrings.lastNameText],
+                          fullName: _userData![AppStrings.firstNameText] +
+                              ' ' +
+                              _userData![AppStrings.lastNameText],
+                          cityId: cityData,
                           premium: false,
                           email: userCredential!.user?.email ?? '',
                           id: userCredential.user?.uid ?? '',
@@ -941,11 +942,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   onPressed: () async {
-                    var valUser = await UserFirebaseRepository()
-                        .getValidationUser(newUser2Controller.text);
-                    if (newUser2Controller.text.length >= 4 &&
-                            valUser.userName == '' ||
-                        valUser.userName == null) {
+                    final valUser = await UserFirebaseRepository()
+                        .getValidationUserName(newUser2Controller.text);
+                    if (newUser2Controller.text.length >= 4 && !valUser) {
                       nameUser = newUser2Controller.text;
                       var text = user.displayName!.split(" ");
                       Navigator.pop(context);
@@ -964,9 +963,8 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                           dateBirth: AppStrings.fechaText,
                           photo: user.photoURL!,
-                          names: text[0],
-                          cityId: cityData.id,
-                          surnames: text[1],
+                          fullName: user.displayName!,
+                          cityId: cityData,
                           premium: false,
                           email: user.email!,
                           password: AppStrings.keyCode,

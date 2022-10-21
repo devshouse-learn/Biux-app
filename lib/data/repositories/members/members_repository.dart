@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:biux/data/models/member.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -53,7 +52,7 @@ class MembersRepository {
 
       bool approved = data["approved"];
 
-      LocalStorage().saveApproved(approved);
+      // LocalStorage().saveApproved(approved);
 
       return true;
     } else {
@@ -113,7 +112,7 @@ class MembersRepository {
   Future<Member> deleteMember(Member member) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
     var url = '$URLMembers/${member.id}';

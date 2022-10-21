@@ -1,7 +1,7 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen_bloc.dart';
+import 'package:biux/ui/screens/group/group_list/group_list_screen_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

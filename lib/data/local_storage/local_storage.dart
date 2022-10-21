@@ -61,13 +61,12 @@ class LocalStorage {
     await _prefs.setString(key, value);
   }
 
-  // TO DO // Remove
-  String _getStringTest(String key) {
-    // TO DO: uncomment when it's the local Storage is enabled
-    // return _prefs.getString(key) ?? AppStrings.notFoundKey;
-    return 'nataSer24';
-  }
+  // userName
+  Future setUserName(String userId) => _setString(
+        key: StorageKeys.userName,
+        value: userId,
+      );
 
-  String getUserName() => _getStringTest(StorageKeys.userName);
+  String getUserName() => _getString(StorageKeys.userName);
 
 }

@@ -5,8 +5,8 @@ import 'package:biux/config/themes/theme.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/bike.dart';
 import 'package:biux/data/models/stole_bikes.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/stoles_bikes/stole_bikes_repository.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/user/edit_stolen_screen.dart';
 import 'package:biux/ui/widgets/map_general_widget.dart';
 import 'package:flutter/material.dart';
@@ -35,8 +35,8 @@ class _StolenScreenState extends State<StolenScreen> {
   }
 
   getInfoStoleBike() async {
-    var id = await LocalStorage().getUserId();
-    int finalId = int.parse(id!);
+    var id =  AuthenticationRepository().getUserId;
+    int finalId = int.parse(id);
     setState(() {
       isLoggedIn = true;
     });

@@ -5,7 +5,6 @@ import 'package:biux/data/models/trademark_bike.dart';
 import 'package:biux/data/models/type_bike.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
-import 'package:biux/data/local_storage/localstorage.dart';
 
 class BikeRepository {
   final urlBase = "https://biux-prod.ibacrea.com/api/v1/bicicletas";
@@ -64,7 +63,7 @@ class BikeRepository {
   ) async {
     Dio dio = new Dio();
     //  dio.options.headers["content-Type"] = "multipart/form-data";
-    dio.options.headers["authorization"] = await LocalStorage().getToken();
+    // dio.options.headers["authorization"] = await LocalStorage().getToken();
     FormData formData = FormData.fromMap(
       {
         "photoBikeComplete": await MultipartFile.fromFile(
@@ -96,7 +95,7 @@ class BikeRepository {
   Future sendDatesBike(Bike bike) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
     var body = jsonEncode(bike.toJson());
     final http.Response response = await http.post(
@@ -115,7 +114,7 @@ class BikeRepository {
     final urlBase2 = "https://biux-prod.ibacrea.com/api/v1/bicicletas";
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
     var body = jsonEncode(bike.toJson());
     var url = '$urlBase2/${bike.id}';

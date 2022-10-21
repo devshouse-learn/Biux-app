@@ -1,8 +1,8 @@
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 import 'package:biux/data/models/user.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
 import 'package:biux/data/repositories/members/members_firebase_repository.dart';
@@ -70,9 +70,8 @@ class GroupListScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = await LocalStorage().getUserId();
-    final dataUser = await UserFirebaseRepository()
-        .getUserId(userId!);
+    String? userId = AuthenticationRepository().getUserId;
+    final dataUser = await UserFirebaseRepository().getUserId(userId);
     user = dataUser;
     notifyListeners();
   }

@@ -190,7 +190,7 @@ class AdminStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.names,
+                      user.fullName,
                       style: theme == darkTheme
                           ? Styles.containerColorligth
                           : Styles.containerColordark,
@@ -204,7 +204,7 @@ class AdminStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.surnames,
+                      user.fullName,
                       style: theme == darkTheme
                           ? Styles.containerColorligth
                           : Styles.containerColordark,
@@ -282,7 +282,7 @@ class UserStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.names,
+                      user.fullName,
                       style: Styles.rowMember,
                     ),
                   ),
@@ -294,7 +294,7 @@ class UserStyle extends StatelessWidget {
                       top: 15,
                     ),
                     child: Text(
-                      user.surnames,
+                      user.fullName,
                       style: Styles.rowMember,
                     ),
                   ),
@@ -390,7 +390,7 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
                       top: 15,
                     ),
                     child: Text(
-                      widget.user.names,
+                      widget.user.fullName,
                       style: widget.user.premium == true
                           ? Styles.rowMember
                               .copyWith(color: widget.membershipColor)
@@ -405,7 +405,7 @@ class _UserMembershipStyleState extends State<UserMembershipStyle> {
                       top: 15,
                     ),
                     child: Text(
-                      widget.user.surnames,
+                      widget.user.fullName,
                       style: widget.user.premium == true
                           ? Styles.rowMember
                               .copyWith(color: widget.membershipColor)

@@ -1,7 +1,7 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
+import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +33,7 @@ class ViewMembersGroup extends StatelessWidget {
                               builder: (BuildContext context) {
                                 return ZoomPage(
                                   member.photo,
-                                  member.names,
+                                  member.fullName,
                                 );
                               },
                             );
@@ -65,10 +65,7 @@ class ViewMembersGroup extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              AppStrings.nameComplete(
-                                name: member.names,
-                                surName: member.surnames,
-                              ),
+                              member.fullName,
                               style: Styles.TextGroupList,
                             ),
                             Text(

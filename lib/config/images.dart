@@ -58,6 +58,8 @@ class Images {
   static const kDateTimeImage = '$kImagesPath/date_time.png';
   static const kImageLetterGrey = '$kImagesPath/letter_grey.png';
   static const kImagePhone = '$kImagesPath/phone.png';
+  static const kRecordCyclist = '$kImagesPath/record_cyclist.png';
+  
 
   // TO DO nonexistent image
   static const kBike = '$kImagesPath/';

@@ -1,5 +1,3 @@
-import 'package:biux/data/models/state.dart';
-
 class City {
   final String id;
   final String name;
@@ -18,12 +16,13 @@ class City {
   });
 
   factory City.fromJson({required Map json}) => City(
-      id: json["id"],
-      name: json["name"],
-      state: json["state"],
-      country: json["country"],
-      latitude: json["latitude"],
-      longitude: json["longitude"]);
+        id: json["id"],
+        name: json["name"],
+        state: json["state"],
+        country: json["country"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
+      );
 
   factory City.fromMapUser(Map json) {
     return City(

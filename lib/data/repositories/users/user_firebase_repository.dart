@@ -5,7 +5,6 @@ import 'package:biux/data/models/user_membership.dart';
 import 'package:biux/data/models/user.dart';
 import 'dart:io';
 import 'package:biux/data/repositories/users/user_repository_abstract.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/utils/firebase_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -177,17 +176,19 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   }
 
   @override
-  Future<BiuxUser> getValidationUser(String userName) async {
+  Future<bool> getValidationUserName(String userName) async {
     try {
       final result = await firestore
           .collection(collection)
           .where('userName', isEqualTo: userName)
           .get();
-      return BiuxUser.fromJsonMap(
-        result.docs.first.data(),
-      );
+      if (result.docs.isEmpty) {
+        return false;
+      } else {
+        return true;
+      }
     } catch (e) {
-      return BiuxUser();
+      return false;
     }
   }
 
@@ -233,8 +234,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         AppStrings.whatsappLowercase: user.whatsapp,
         AppStrings.cityId: user.cityId,
         AppStrings.description: user.description
-      }
-          );
+      });
       final response = await this.getUserId(user.id);
       return response;
     } catch (e) {
@@ -295,8 +295,8 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       await firestore.collection(collection).doc(user.id).set(
             user.toJson(),
           );
-      LocalStorage().saveUserEmail(user.email);
-      LocalStorage().saveUserId(user.id);
+      // LocalStorage().saveUserEmail(user.email);
+      // LocalStorage().saveUserId(user.id);
       return ResponseRepo(
         status: true,
         message: '',

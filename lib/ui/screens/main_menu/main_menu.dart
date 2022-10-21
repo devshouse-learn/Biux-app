@@ -3,7 +3,8 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
+import 'package:biux/data/local_storage/local_storage.dart';
+import 'package:biux/ui/screens/group/group_list/group_list_screen.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
 import 'package:biux/ui/screens/map/map_screen.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
@@ -414,6 +415,7 @@ void showDialogSignOut({
                       style: Styles().textButtonStyle,
                       onPressed: () {
                         onTap();
+                        LocalStorage().clearLocalStorage();
                         Navigator.pop(context);
                       },
                       child: Text(

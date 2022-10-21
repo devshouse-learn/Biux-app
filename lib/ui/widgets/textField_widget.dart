@@ -52,18 +52,16 @@ class _TexFieldWidgetState extends State<TexFieldWidget> {
           bottom: 5,
         ),
         child: SizedBox(
-          height: 48,
           child: TextFormField(
             enabled: widget.enabled,
             keyboardType: widget.keyboardType,
             maxLength: widget.maxLength,
             focusNode: widget.focusNode,
-            style: Styles.indicatePerson.copyWith(
-              color: widget.color,
-            ),
+            style: Styles.textLightBlack,
             controller: widget.nameController,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
+              errorStyle: TextStyle(fontSize: 1, height: 0),
               fillColor: AppColors.white,
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
@@ -89,20 +87,22 @@ class _TexFieldWidgetState extends State<TexFieldWidget> {
               hintText: widget.text,
               errorBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: AppColors.gray,
+                  color: AppColors.red,
                 ),
                 borderRadius: BorderRadius.circular(15),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: AppColors.gray,
+                  color: AppColors.red,
                 ),
                 borderRadius: BorderRadius.circular(15),
               ),
               prefixIcon: widget.icon,
               suffixIcon: widget.iconButton,
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.gray),
+                borderSide: BorderSide(
+                  color: AppColors.gray,
+                ),
                 borderRadius: BorderRadius.all(
                   Radius.circular(45),
                 ),

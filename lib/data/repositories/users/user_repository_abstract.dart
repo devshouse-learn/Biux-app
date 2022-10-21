@@ -12,7 +12,7 @@ abstract class UserRepositoryAbstract {
   Future<BiuxUser> getPerson(String nUsername);
   Future<BiuxUser> getUser(String username);
   Future<BiuxUser> getValidationEmails(String email);
-  Future<BiuxUser> getValidationUser(String email);
+  Future<bool> getValidationUserName(String userName);
   Future<BiuxUser> getValidationFacebook(String facebook);
   Future<BiuxUser> updateUser(BiuxUser user);
   Future<UserMembership> getMembershipPerson(String id);

@@ -1,11 +1,9 @@
 import 'dart:io';
 import 'package:biux/config/colors.dart';
-import 'package:biux/config/router/router.dart';
-import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/data/models/user.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:biux/utils/snackbar_utils.dart';
@@ -36,8 +34,8 @@ class GroupCreateBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = await LocalStorage().getUserId();
-    final dataUser = await UserFirebaseRepository().getUserId(userId!);
+    String? userId = AuthenticationRepository().getUserId;
+    final dataUser = await UserFirebaseRepository().getUserId(userId);
     user = dataUser;
     notifyListeners();
   }
@@ -80,7 +78,7 @@ class GroupCreateBloc extends ChangeNotifier {
         instagram: instagramController.text,
         description: descripcionController.text,
         adminId: user.id,
-        cityAdmin: user.cityId,
+        cityAdmin: user.cityId.name,
         logoADM: user.photo,
         public: publicValidator,
       ),

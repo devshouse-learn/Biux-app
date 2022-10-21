@@ -1,5 +1,4 @@
 import 'package:biux/data/models/stole_bikes.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:convert';
@@ -33,7 +32,7 @@ class StoleBikesRepository {
   Future sendDatesStoleBikes(StoleBikes stoleBikes) async {
     var headers = {
       'Content-type': 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
     var body = jsonEncode(stoleBikes.toJson());
     final http.Response response = await http.post(
@@ -49,7 +48,7 @@ class StoleBikesRepository {
   Future updateDatesStoleBikes(StoleBikes stoleBikes) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'aplication/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken()
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken()
     };
     var body = jsonEncode(stoleBikes.toJson());
     final http.Response response = await http.patch(

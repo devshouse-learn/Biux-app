@@ -9,11 +9,17 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
   @override
   Future<List<City>> getCities() async {
     try {
-      final result = await firestore.collection(collectionCities).orderBy("name", descending: false).get();
+      final result = await firestore
+          .collection(collectionCities)
+          .orderBy(
+            "name",
+            descending: false,
+          )
+          .get();
       return result.docs
           .map(
-            (e) => City.fromJson(json: 
-              e.data(),
+            (e) => City.fromJson(
+              json: e.data(),
             ),
           )
           .toList();
@@ -29,8 +35,8 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .collection(collectionCities)
           .where('id', isEqualTo: cityId)
           .get();
-      return City.fromJson(json: 
-        response.docs.first.data(),
+      return City.fromJson(
+        json: response.docs.first.data(),
       );
     } catch (e) {
       return City();
@@ -44,8 +50,8 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .collection(collectionCities)
           .where('id', isEqualTo: id)
           .get();
-      return City.fromJson(json: 
-        result.docs.first.data(),
+      return City.fromJson(
+        json: result.docs.first.data(),
       );
     } catch (e) {
       return City();

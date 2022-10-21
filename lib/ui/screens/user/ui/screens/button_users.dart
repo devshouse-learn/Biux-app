@@ -39,7 +39,7 @@ class ButtonUsers extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          _user.names,
+                          _user.fullName,
                           style: theme == darkTheme
                               ? Styles.rowItemColordark
                               : Styles.rowItemColorligth,
@@ -53,7 +53,7 @@ class ButtonUsers extends StatelessWidget {
                           top: 15,
                         ),
                         child: Text(
-                          _user.surnames,
+                          _user.fullName,
                           style: theme == darkTheme
                               ? Styles.rowItemColordark
                               : Styles.rowItemColorligth,

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:biux/data/models/type_bike.dart';
 import 'package:http/http.dart' as http;
-import 'package:biux/data/local_storage/localstorage.dart';
 
 class TypesBikeRepository {
   final urlBase = "https://biux-prod.ibacrea.com/api/v1/tiposBicicletas";
@@ -34,7 +33,7 @@ class TypesBikeRepository {
   Future sendDatesTypesBike(TypeBike typeBike) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'aplication/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
     var body = jsonEncode(typeBike.toJson());
     final http.Response response = await http.post(

@@ -110,7 +110,7 @@ class _SuperiorUserScreen extends StatelessWidget {
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return ZoomPage(user.photo, user.names);
+                    return ZoomPage(user.photo, user.fullName);
                   });
             },
             child: Container(

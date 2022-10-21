@@ -4,6 +4,7 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/sites.dart';
 import 'package:biux/data/models/user.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/sites/sites_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
@@ -49,12 +50,12 @@ class MapScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = LocalStorage().getUserName();
+    String? userId = AuthenticationRepository().getUserId;
     user = await UserFirebaseRepository().getUserId(
       userId,
     );
     cityUser = await CitiesFirebaseRepository().getCityId(
-      user.cityId,
+      user.cityId.name,
     );
     notifyListeners();
   }

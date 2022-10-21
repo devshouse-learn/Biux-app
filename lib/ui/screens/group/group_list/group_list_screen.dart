@@ -7,7 +7,7 @@ import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen_bloc.dart';
+import 'package:biux/ui/screens/group/group_list/group_list_screen_bloc.dart';
 import 'package:biux/ui/screens/roads/roads_list/roads_list_screen_bloc.dart';
 import 'package:biux/ui/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';

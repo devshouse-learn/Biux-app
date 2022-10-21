@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:biux/data/models/story.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -41,7 +40,7 @@ class StoriesRepository {
           body: jsonEncode(storyItem.toJson()),
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
-            HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+            // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
           });
       if (uriResponse.statusCode == 200) {
       } else {
@@ -61,7 +60,7 @@ class StoriesRepository {
         }),
         headers: {
           'Content-type': 'application/json',
-          HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+          // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
         });
     if (uriResponse.statusCode == 200) {
       final data = json.decode(uriResponse.body);
@@ -78,7 +77,7 @@ class StoriesRepository {
   ) async {
     Dio dio = new Dio();
     // dio.options.headers["content-Type"] = "multipart/form-data";
-    dio.options.headers["authorization"] = await LocalStorage().getToken();
+    // dio.options.headers["authorization"] = await LocalStorage().getToken();
     FormData formData = FormData.fromMap(
       {
         "file": await MultipartFile.fromFile(

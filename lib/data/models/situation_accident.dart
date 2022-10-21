@@ -2,7 +2,7 @@ class SituationAccident {
   final String? allergies;
   final String? contactEmergency;
   final String? nameEps;
-  final int? id;
+  final String? id;
   final String? medicines;
   final String? rh;
 
@@ -17,12 +17,12 @@ class SituationAccident {
 
   factory SituationAccident.fromJsonMap(Map json) {
     return SituationAccident(
-      allergies: json["allergies"],
-      contactEmergency: json["contactEmergency"],
-      id: json["id"],
-      medicines: json["medicines"],
-      nameEps: json["epsId"],
-      rh: json["rh"],
+      allergies: json["allergies"] ?? '',
+      contactEmergency: json["contactEmergency"] ?? '',
+      id: json["id"] ?? '',
+      medicines: json["medicines"] ?? '',
+      nameEps: json["epsId"] ?? '',
+      rh: json["rh"] ?? '',
     );
   }
 

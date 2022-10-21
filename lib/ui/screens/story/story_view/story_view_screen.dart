@@ -215,7 +215,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${widget.story.user.names} ${widget.story.user.surnames}',
+                      '${widget.story.user.fullName}',
                       style: Styles.advertisingTitleBlack,
                     ),
                   ),

@@ -2,12 +2,14 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/group.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_BLOC.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_create/group_create_screen.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen.dart';
-import 'package:biux/ui/screens/group/ui/screens/group_list/group_list_screen_bloc.dart';
-import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
-import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_screen.dart';
+import 'package:biux/ui/screens/group/group_create/group_create_bloc.dart';
+import 'package:biux/ui/screens/group/group_create/group_create_screen.dart';
+import 'package:biux/ui/screens/group/group_list/group_list_screen.dart';
+import 'package:biux/ui/screens/group/group_list/group_list_screen_bloc.dart';
+import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
+import 'package:biux/ui/screens/group/view_group/view_group_screen.dart';
+import 'package:biux/ui/screens/login/create_user/create_user_bloc.dart';
+import 'package:biux/ui/screens/login/create_user/create_user_screen.dart';
 import 'package:biux/ui/screens/login/login.dart';
 import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/main_menu/main_menu.dart';
@@ -157,6 +159,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => EditUserScreenBloc(),
           child: UserEditScreen(),
+        ),
+      );
+    case AppRoutes.createUserRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => CreateUserBloc(),
+          child: CreateUserScreen(),
         ),
       );
     case AppRoutes.mapScreenRoute:

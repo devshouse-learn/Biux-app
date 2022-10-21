@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -26,7 +25,7 @@ class GroupsRepository {
   Future uploadLogoGroup(String id, File filePhoto) async {
     Dio dio = Dio();
     // dio.options.headers["Content-Type"] = "multipart/form-data";
-    var token = await LocalStorage().getToken();
+    var token;
     dio.options.headers["authorization"] = token;
 
     FormData formData = FormData.fromMap({
@@ -43,7 +42,7 @@ class GroupsRepository {
   Future uploadGroupProfileCover(String id, File fileProfileCover) async {
     Dio dio = Dio();
     // dio.options.headers["Content-Type"] = "multipart/form-data";
-    var token = await LocalStorage().getToken();
+    var token;
     dio.options.headers["authorization"] = token;
 
     FormData formData = FormData.fromMap({
@@ -95,7 +94,7 @@ class GroupsRepository {
   Future<Group> updateGroup(Group group) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
     var body = jsonEncode(group.toJson());
@@ -119,7 +118,7 @@ class GroupsRepository {
   Future<Member> deleteGroup(Group group) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
     var url = '$URL_BASE/${group.id}';

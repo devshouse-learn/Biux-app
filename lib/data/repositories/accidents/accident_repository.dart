@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:biux/data/models/situation_accident.dart';
 import 'package:http/http.dart' as http;
-import 'package:biux/data/local_storage/localstorage.dart';
 
 
 class AccidentRepository {
@@ -29,7 +28,7 @@ class AccidentRepository {
   Future sendDatesAccident(SituationAccident situationAccident) async {
     var headers = {
       'Content-type': 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
     var body = jsonEncode(situationAccident.toJson());
     final http.Response response = await http.post(

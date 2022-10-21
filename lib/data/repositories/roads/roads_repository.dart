@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:biux/data/models/competitor_road.dart';
 import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/road.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -41,7 +40,7 @@ class RoadsRepository {
     File filePhoto,
   ) async {
     Dio dio = Dio();
-    dio.options.headers["authorization"] = await LocalStorage().getToken();
+    // dio.options.headers["authorization"] = await LocalStorage().getToken();
     FormData formData = FormData.fromMap({
       "fileImagen": await MultipartFile.fromFile(
         filePhoto.path,
@@ -56,7 +55,7 @@ class RoadsRepository {
   Future<Road> updateRoad(Road road) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
     var body = jsonEncode(road.toJson());
@@ -133,13 +132,13 @@ class RoadsRepository {
       ),
       headers: {
         'Content-type': 'application/json',
-        HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+        // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
       },
     );
     if (uriResponse.statusCode == 200) {
       final data = json.decode(uriResponse.body);
       int id = data["id"];
-      LocalStorage().saveJoinRoad(id.toString());
+      // LocalStorage().saveJoinRoad(id.toString());
 
       return;
     } else if (uriResponse.statusCode == 409) {
@@ -153,7 +152,7 @@ class RoadsRepository {
         Uri.parse('$URL_BASE/${road.id}'),
         headers: {
           'Content-type': 'application/json',
-          HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+          // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
         },
       );
       if (uriResponse.statusCode == 200) {
@@ -187,7 +186,7 @@ class RoadsRepository {
   ) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
     var body = jsonEncode(competitorRoad.toJson());

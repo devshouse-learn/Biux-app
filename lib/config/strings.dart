@@ -45,7 +45,7 @@ class AppStrings {
   static const sendText = "enviar";
   static const eventsText = "eventos ";
   static const titleRegistrationForm = "Formulario de inscripción";
-  static const nameText = "Nombre";
+  static const nameText = "Nombre Completo";
   static const namesText = "Nombres";
   static const surnameText = "Apellido";
   static const surnamesText = "Apellidos";
@@ -600,6 +600,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const userUpdate = "Tu usuario se ha actualizado";
   static const wantText = "¿Desea ";
   static const symbolText = "?";
+  static const selectedCityText = "Seleccione la ciudad";
   static const grantedText = "granted";
   static const deniedForeverText = "deniedForever";
   static const deniedText = "denied";

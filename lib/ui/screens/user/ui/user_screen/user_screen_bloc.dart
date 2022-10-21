@@ -2,11 +2,11 @@ import 'package:biux/config/router/router_path.dart';
 import 'package:biux/data/models/competitor_road.dart';
 import 'package:biux/data/models/story.dart';
 import 'package:biux/data/models/user.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/roads/roads_firebase_repository.dart';
 import 'package:biux/data/repositories/stories/stories_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 
 class UserScreenBloc extends ChangeNotifier {
   BiuxUser user = BiuxUser();
@@ -26,9 +26,9 @@ class UserScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = await LocalStorage().getUserId();
+    String? userId = AuthenticationRepository().getUserId;
     final dataUser = await UserFirebaseRepository().getUserId(
-      userId!,
+      userId,
     );
     user = dataUser;
     notifyListeners();

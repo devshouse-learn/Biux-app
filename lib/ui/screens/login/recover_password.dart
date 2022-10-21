@@ -3,7 +3,6 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/data/repositories/users/user_repository.dart';
 import 'package:biux/ui/screens/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,11 +15,8 @@ class RecoverPassword extends StatefulWidget {
 class _RecoverPasswordState extends State<RecoverPassword> {
   var _darkTheme = true;
   var emailList = BiuxUser(
-    surnames: "",
     gender: "",
-    names: "",
     id: '0',
-    cityId: '',
     password: "",
     email: "",
     facebook: "",
@@ -265,10 +261,10 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                               ),
                               onTap: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  emailList = await UserRepository()
-                                      .getValidationEmails(
-                                    emailController.text,
-                                  );
+                                  // emailList = await UserRepository()
+                                  //     .getValidationEmails(
+                                  //   emailController.text,
+                                  // );
                                   if (emailList.email == '') {
                                     setState(() {
                                       final snackBar = SnackBar(
@@ -315,8 +311,8 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                         );
                                       },
                                     );
-                                    await UserRepository()
-                                        .sendEmail(emailList.userName);
+                                    // await UserRepository()
+                                    //     .sendEmail(emailList.userName);
                                   }
                                 } else {
                                   final snackBar = SnackBar(

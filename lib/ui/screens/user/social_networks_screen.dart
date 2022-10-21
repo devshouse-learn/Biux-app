@@ -3,7 +3,6 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/data/repositories/users/user_repository.dart';
 import 'package:biux/ui/widgets/loading_widget.dart';
 import 'package:biux/ui/widgets/textField_widget.dart';
 import 'package:flutter/material.dart';
@@ -93,12 +92,10 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 65),
                     child: Stack(
-
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 50),
                           child: Stack(
-
                             children: [
                               Center(
                                 child: Container(
@@ -194,7 +191,8 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
                                           validator: (value) {
                                             if (instagramController
                                                 .text.isEmpty) {
-                                              _instagram = AppStrings.notRegistered;
+                                              _instagram =
+                                                  AppStrings.notRegistered;
                                             } else {
                                               _instagram =
                                                   instagramController.text;
@@ -216,7 +214,8 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
                                           validator: (value) {
                                             if (facebookController
                                                 .text.isEmpty) {
-                                              _facebook = AppStrings.notRegistered;
+                                              _facebook =
+                                                  AppStrings.notRegistered;
                                             } else {
                                               _facebook =
                                                   facebookController.text;
@@ -273,17 +272,14 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
                             ),
                           ),
                           onTap: () async {
-                            var userfacebook =
-                                await UserRepository().getValidationFacebook(
-                              facebookController.text,
-                            );
+                            var userfacebook = null;
                             if (_formKey.currentState!.validate() &&
                                 cellphoneController.text.length == 10) {
                               if (facebookController.text.isEmpty ||
                                   facebookController.text ==
                                       widget.user.facebook ||
-                                  facebookController.text.contains(
-                                          AppStrings.urlFacebook) &&
+                                  facebookController.text
+                                          .contains(AppStrings.urlFacebook) &&
                                       userfacebook.facebook == '' ||
                                   userfacebook.facebook ==
                                       widget.user.facebook) {
@@ -312,7 +308,8 @@ class _SocialNetworksScreenState extends State<SocialNetworksScreen> {
                                 _showDialog2(facebookController.text !=
                                         AppStrings.urlFacebook
                                     ? AppStrings.enterYourFacebook
-                                    : AppStrings.messageRegisteredFacebook(facebook: facebookController.text));
+                                    : AppStrings.messageRegisteredFacebook(
+                                        facebook: facebookController.text));
                               }
                             } else {
                               _showDialog2(cellphoneController.text.isEmpty

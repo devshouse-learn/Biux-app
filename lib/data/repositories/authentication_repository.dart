@@ -1,8 +1,8 @@
 import 'package:biux/config/strings.dart';
+import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/response.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +76,7 @@ class AuthenticationRepository {
       );
       final user = userCredential.user;
       return ResponseRepo(
-        message: '',
+        message: user!.uid,
         status: true,
         statusCode: 200,
       );
@@ -180,6 +180,7 @@ class AuthenticationRepository {
       final String uid = userCredential.user!.uid;
       final BiuxUser biuxUser = BiuxUser(
         id: uid,
+        fullName: user.fullName,
         cityId: user.cityId,
         dateBirth: user.dateBirth,
         email: user.email,
@@ -191,21 +192,17 @@ class AuthenticationRepository {
         groupId: user.groupId,
         instagram: user.instagram,
         modality: user.modality,
-        names: user.names,
         password: user.password,
         photo: user.photo,
         premium: user.premium,
         profileCover: user.profileCover,
         situationAccident: user.situationAccident,
-        surnames: user.surnames,
         token: user.token,
         userName: user.userName,
         whatsapp: user.whatsapp,
       );
       await UserFirebaseRepository().registerUser(user: biuxUser);
-      LocalStorage().saveKey(user.password);
-      LocalStorage().saveUserEmail(user.email);
-      LocalStorage().saveUserId(uid);
+      LocalStorage().setUserName(user.userName);
       return ResponseRepo(
         message: biuxUser.id,
         status: true,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:biux/data/models/trademark_bike.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:http/http.dart' as http;
 
 class TrademarkBikeRepository {
@@ -36,7 +35,7 @@ class TrademarkBikeRepository {
   Future sendDatesTrademarkBike(TrademarkBike trademarkBike) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'aplication/json',
-      HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
     var body = jsonEncode(trademarkBike.toJson());
     final http.Response response =

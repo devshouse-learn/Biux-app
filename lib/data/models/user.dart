@@ -1,11 +1,10 @@
+import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/situation_accident.dart';
 
 class BiuxUser {
   final String id;
   final String fullName;
-  final String names;
-  final String surnames;
-  final String cityId;
+  final City cityId;
   final String userName;
   final String whatsapp;
   final String gender;
@@ -29,11 +28,9 @@ class BiuxUser {
   const BiuxUser({
     this.id = '',
     this.fullName = '',
-    this.names = '',
-    this.surnames = '',
     this.userName = '',
     this.whatsapp = '',
-    this.cityId = '',
+    this.cityId = const City(),
     this.gender = '',
     this.email = '',
     this.dateBirth = '',
@@ -57,21 +54,19 @@ class BiuxUser {
 
   factory BiuxUser.fromJsonMap(Map json) {
     return BiuxUser(
-      id: json["id"],
+      id: json["id"] ?? '',
       fullName: json["fullName"] ?? '',
-      names: json["names"],
-      surnames: json["surnames"],
       whatsapp: json["whatsapp"] ?? '',
-      userName: json["userName"],
+      userName: json["userName"] ?? '',
       gender: json["gender"] ?? '',
-      cityId: json["cityId"] ?? '',
+      cityId: City.fromJson(json: json["cityId"] ?? City()),
       token: json['token'] ?? '',
-      email: json["email"],
+      email: json["email"] ?? '',
       dateBirth: json[" dateBirth"] ?? '',
       facebook: json["facebook"] ?? '',
       photo: json["photo"] ??
           "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-      password: json["password"],
+      password: json["password"] ?? '',
       profileCover: json["profileCover"] ??
           "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
       followerS: json["followerS"] ?? 0,
@@ -80,17 +75,17 @@ class BiuxUser {
       followers: json["followers"] ?? {},
       following: json["following"] ?? {},
       groupId: json["groupId"] ?? '',
+      modality: json["modality"],
       situationAccident: SituationAccident.fromJsonMap(
         json["situationAccident"],
       ),
-      description: json["description"],
+      description: json["description"] ?? '',
     );
   }
   factory BiuxUser.fromMapStory(Map json) {
     return BiuxUser(
       id: json["id"],
-      names: json["names"],
-      surnames: json["surnames"],
+      fullName: json["fullName"],
       userName: json["userName"],
       photo: json["photo"] ??
           "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
@@ -100,7 +95,7 @@ class BiuxUser {
   factory BiuxUser.fromMapRoad(Map json) {
     return BiuxUser(
       id: json["id"],
-      names: json["names"],
+      fullName: json["fullName"],
     );
   }
 
@@ -108,12 +103,10 @@ class BiuxUser {
     var userJson = {
       "id": id,
       "fullName": fullName,
-      "names": names,
-      "surnames": surnames,
       "whatsapp": whatsapp,
       "gender": gender,
       "userName": userName,
-      "cityId": cityId,
+      "cityId": cityId.toJson(),
       "email": email,
       "dateBirth": dateBirth,
       "facebook": facebook,
@@ -145,14 +138,13 @@ class BiuxUser {
 
   Map<String, dynamic> toMapStory() => {
         "id": id,
-        "names": names,
-        "surnames": surnames,
+        'fullName': fullName,
         "userName": userName,
         "photo": photo,
       };
 
   Map<String, dynamic> toMapRoad() => {
         "id": id,
-        "names": names,
+        'fullName': fullName,
       };
 }

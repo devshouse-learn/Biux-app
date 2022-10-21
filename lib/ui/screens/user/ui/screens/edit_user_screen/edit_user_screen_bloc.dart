@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/user.dart';
+import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ class EditUserScreenBloc extends ChangeNotifier {
   BiuxUser user = BiuxUser();
   String imageLogo = '';
   List<City> listCities = [];
-  String cityId = '';
+  City cityId = City();
   var imageNew;
   final FocusNode focusNodeCity = FocusNode();
   final nameController = TextEditingController();
@@ -33,12 +33,12 @@ class EditUserScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = LocalStorage().getUserName();
+    String? userId = AuthenticationRepository().getUserId;
     final dataUser = await UserFirebaseRepository().getUserId(
       userId,
     );
     final dataCity = await CitiesFirebaseRepository().getCityId(
-      dataUser.cityId,
+      dataUser.cityId.name,
     );
     user = dataUser;
     imageLogo = user.photo;
@@ -71,7 +71,7 @@ class EditUserScreenBloc extends ChangeNotifier {
 
   Future<void> onTapCities(String nameCity, String cityIdSelected) async {
     cityController.text = nameCity;
-    cityId = cityIdSelected;
+    cityId = City(name: cityIdSelected);
     focusNodeCity.unfocus();
     notifyListeners();
   }

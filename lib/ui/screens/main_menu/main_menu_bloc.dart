@@ -4,7 +4,6 @@ import 'package:biux/data/models/user_membership.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 
 class MainMenuBloc extends ChangeNotifier {
   int pageIndex = 0;
@@ -29,8 +28,8 @@ class MainMenuBloc extends ChangeNotifier {
   }
 
   Future<void> getUser() async {
-    String? userId = await LocalStorage().getUserId();
-    final dataUser = await UserFirebaseRepository().getUserId(userId!);
+    String? userId =  AuthenticationRepository().getUserId;
+    final dataUser = await UserFirebaseRepository().getUserId(userId);
     user = dataUser;
     notifyListeners();
   }

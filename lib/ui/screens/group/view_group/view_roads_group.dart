@@ -3,7 +3,7 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/road.dart';
-import 'package:biux/ui/screens/group/ui/screens/view_group/view_group_bloc.dart';
+import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';

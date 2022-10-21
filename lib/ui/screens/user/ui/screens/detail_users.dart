@@ -3,8 +3,8 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
+import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/data/local_storage/localstorage.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,7 +31,7 @@ class _DetailUsersState extends State<DetailUsers> {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () async {
-      username = (await LocalStorage().getUser())!;
+      username = (LocalStorage().getUserName());
     });
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -166,7 +166,7 @@ class _DetailUsersState extends State<DetailUsers> {
                           alignment: Alignment.center,
                           padding: const EdgeInsets.only(top: 15.0),
                           child: Text(
-                            widget._user!.names,
+                            widget._user!.fullName,
                             style: Styles.containerWhite,
                           ),
                         ),
@@ -177,9 +177,9 @@ class _DetailUsersState extends State<DetailUsers> {
                           alignment: Alignment.center,
                           padding: const EdgeInsets.only(top: 15.0),
                           child: Text(
-                            widget._user!.surnames == ''
+                            widget._user!.fullName == ''
                                 ? ''
-                                : widget._user!.surnames,
+                                : widget._user!.fullName,
                             style: Styles.containerWhite,
                           ),
                         ),
