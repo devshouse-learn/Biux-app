@@ -206,7 +206,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
       await firestore.collection(collection).add(group.toJson()).then(
         (DocumentReference doc) async {
           docId = doc.id;
-          final logoUrl = await updateImageLogo(logo, docId!);
+          final logoUrl = await updateImageLogo(logo, group.name);
           firestore.collection(collection).doc(docId).update(
             {
               AppStrings.logoText: logoUrl,
@@ -221,12 +221,12 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
     }
   }
 
-  Future<String> updateImageLogo(File filePhoto, String id) async {
+  Future<String> updateImageLogo(File filePhoto, String nameGroup) async {
     FirebaseUtils firebaseUtils = FirebaseUtils();
     final url = await firebaseUtils.uploadImage(
       image: filePhoto,
-      nameImage: 'filePhoto',
-      imageFolder: 'filePhoto',
+      nameImage: nameGroup,
+      imageFolder: nameGroup,
     );
 
     return url;

@@ -45,9 +45,9 @@ class MapScreen extends StatelessWidget {
                         })
                   else ...[
                     if (bloc.serviceEnabled)
-                      Selector<MapScreenBloc, LocationData?>(
-                          selector: (_, bloc) => bloc.result,
-                          builder: (context, result, child) {
+                      Selector<MapScreenBloc, CameraPosition?>(
+                          selector: (_, bloc) => bloc.currentLocation,
+                          builder: (context, currentLocation, child) {
                             return _MainMapEnabled();
                           })
                     else

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
@@ -7,9 +8,11 @@ import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
 import 'package:biux/ui/widgets/tags_story_widgets.dart';
 import 'package:biux/ui/widgets/text_form_field_biux_widget.dart';
+import 'package:biux/utils/bytes_utils.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
@@ -397,7 +400,7 @@ class _CarouselImagesSelected extends StatelessWidget {
   final ImagePicker _picker = ImagePicker();
 
   void _takePhoto({required StoryCreateBloc bloc}) async {
-    final XFile? pickedFile = await _picker.pickImage(
+    XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
     );
     if (pickedFile != null && pickedFile.path != null) {

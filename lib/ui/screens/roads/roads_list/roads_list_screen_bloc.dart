@@ -25,10 +25,10 @@ class RoadsListScreenBloc extends ChangeNotifier {
   }
 
   Future<void> loadData() async {
-    getUser();
     getRoads();
-    getCities();
     getGroup();
+    getUser();
+    getCities();
     await getMember();
   }
 

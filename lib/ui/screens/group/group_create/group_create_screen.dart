@@ -72,7 +72,10 @@ class _FormGroupWidget extends StatelessWidget {
                 image: Image.asset(Images.kImageSocial,
                     scale: 4, color: AppColors.gray),
                 validator: (value) {
-                  return value;
+                  if (value!.isEmpty) {
+                    return '';
+                  }
+                  return null;
                 },
               ),
               TextFormFieldBiuxWidget(
@@ -94,7 +97,10 @@ class _FormGroupWidget extends StatelessWidget {
                   color: AppColors.gray,
                 ),
                 validator: (value) {
-                  return value;
+                  if (value!.isEmpty) {
+                    return '';
+                  }
+                  return null;
                 },
               ),
               TextFormFieldBiuxWidget(
@@ -115,7 +121,10 @@ class _FormGroupWidget extends StatelessWidget {
                   radiusCircular: 15,
                   maxLength: 300,
                   validator: (value) {
-                    return value;
+                    if (value!.isEmpty) {
+                      return '';
+                    }
+                    return null;
                   },
                 ),
               ),

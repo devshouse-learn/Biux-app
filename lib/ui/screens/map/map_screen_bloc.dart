@@ -28,7 +28,13 @@ class MapScreenBloc extends ChangeNotifier {
   PolylinePoints polylinePoints = PolylinePoints();
   final FocusNode focusNodeCity = FocusNode();
   bool serviceEnabled = false;
-  var currentLocation;
+  CameraPosition currentLocation = CameraPosition(
+    target: LatLng(
+      4.4410096,
+      -75.2135319,
+    ),
+    zoom: 14.4746,
+  );
   var result;
   String validate = '';
   String cityId = '';
@@ -43,8 +49,8 @@ class MapScreenBloc extends ChangeNotifier {
     Future.delayed(Duration.zero, () async {
       await getUser();
       await hasPermision();
-      await getCities();
       await getLocation();
+      await getCities();
       await getSites();
     });
   }
@@ -99,26 +105,23 @@ class MapScreenBloc extends ChangeNotifier {
   }
 
   Future<void> getLocation() async {
-    if (serviceEnabled) {
-      result = await location.getLocation();
-      currentLocation = CameraPosition(
-        target: LatLng(
-          result.latitude!,
-          result.longitude!,
-        ),
-        zoom: 16.0,
-      );
-      notifyListeners();
-    } else {
-      currentLocation = CameraPosition(
-        target: LatLng(
-          4.437824,
-          -75.222290,
-        ),
-        zoom: 16.0,
-      );
-      notifyListeners();
-    }
+    result = await location.getLocation();
+    currentLocation = CameraPosition(
+      target: LatLng(
+        result.latitude!,
+        result.longitude!,
+      ),
+      zoom: 16.0,
+    );
+    changeCameraPosition(currentLocation);
+    notifyListeners();
+  }
+
+  Future<void> changeCameraPosition(CameraPosition cameraPosition) async {
+    final GoogleMapController controllerMap = await controller.future;
+    controllerMap.animateCamera(
+      CameraUpdate.newCameraPosition(cameraPosition),
+    );
   }
 
   Future<void> getRoute(LatLng origen, LatLng destino) async {

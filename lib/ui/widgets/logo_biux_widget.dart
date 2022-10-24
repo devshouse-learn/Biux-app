@@ -1,4 +1,5 @@
 import 'package:biux/config/colors.dart';
+import 'package:biux/config/images.dart';
 import 'package:biux/config/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -42,7 +43,8 @@ class LogoBiuxWidget extends StatelessWidget {
             width: 120,
             child: imageLogo == null
                 ? new Center(
-                    child: new Text('Logo', style: Styles.containerImage),
+                    child: new Image.asset(Images.kBiuxLogoLettersWhite,
+                        scale: 20, color: AppColors.white),
                   )
                 : Container(
                     alignment: (Alignment(-1.0, 2.5)),

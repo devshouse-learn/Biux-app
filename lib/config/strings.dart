@@ -606,6 +606,12 @@ The navigation delegate is set to block navigation to the youtube website.
   static const deniedText = "denied";
   static const permissionsText =
       "Necesitas activar los servicios de localización";
+  static const zeroBytes = "0 Bytes";
+  static const bytes = "Bytes";
+  static const kiloBytes = "KB";
+  static const megaBytes = "MB";
+  static const gigaBytes = "GB";
+  static const teraBytes = "TB";
 
   ///
   /// Methods

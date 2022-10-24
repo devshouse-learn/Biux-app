@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
+import 'package:biux/utils/bytes_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditUserScreenBloc extends ChangeNotifier {
@@ -54,14 +57,14 @@ class EditUserScreenBloc extends ChangeNotifier {
 
   Future<File> getImageLogo() async {
     ImagePicker imagePicker = ImagePicker();
-    PickedFile pickedFile;
-    pickedFile = (await imagePicker.getImage(
+    XFile pickedFile;
+    pickedFile = (await imagePicker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 20,
     ))!;
     File image = File(
       pickedFile.path,
     );
+    
     if (image != null) {
       imageNew = image;
     }

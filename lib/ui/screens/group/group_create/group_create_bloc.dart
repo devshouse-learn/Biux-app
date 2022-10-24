@@ -6,8 +6,10 @@ import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
+import 'package:biux/utils/bytes_utils.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../../data/models/group.dart';
 
@@ -40,24 +42,12 @@ class GroupCreateBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<File> getImageProfileCover() async {
-    ImagePicker imagePicker = ImagePicker();
-    PickedFile pickedFile;
-    pickedFile = (await imagePicker.getImage(
-        source: ImageSource.gallery, imageQuality: 20))!;
-    File image = File(pickedFile.path);
-    if (image != null) {
-      imageProfileCover = image;
-    }
-    notifyListeners();
-    return image;
-  }
-
   Future<File> getImageLogo() async {
     ImagePicker imagePicker = ImagePicker();
-    PickedFile pickedFile;
-    pickedFile = (await imagePicker.getImage(
-        source: ImageSource.gallery, imageQuality: 20))!;
+    XFile pickedFile;
+    pickedFile = (await imagePicker.pickImage(
+      source: ImageSource.gallery,
+    ))!;
     File image = File(pickedFile.path);
     if (image != null) {
       imageLogo = image;
