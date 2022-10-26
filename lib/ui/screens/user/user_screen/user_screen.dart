@@ -5,7 +5,7 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/competitor_road.dart';
 import 'package:biux/data/models/story.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/ui/screens/user/ui/user_screen/user_screen_bloc.dart';
+import 'package:biux/ui/screens/user/user_screen/user_screen_bloc.dart';
 import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -4,7 +4,7 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/city.dart';
-import 'package:biux/ui/screens/user/ui/screens/edit_user_screen/edit_user_screen_bloc.dart';
+import 'package:biux/ui/screens/user/edit_user_screen/edit_user_screen_bloc.dart';
 import 'package:biux/ui/widgets/text_form_field_biux_widget.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';

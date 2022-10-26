@@ -12,7 +12,6 @@ import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/models/response.dart';
 import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/data/local_storage/shared_preferences.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/analitics.dart';
 import 'package:biux/data/models/city.dart';
@@ -641,7 +640,6 @@ class _LoginPageState extends State<LoginPage> {
                                   : Styles.sizedBoxWhite,
                             ),
                             onPressed: () {
-                              deleteLoginToken();
                               Navigator.pushNamed(
                                 context,
                                 AppRoutes.createUserRoute,

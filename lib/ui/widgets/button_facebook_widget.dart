@@ -2,9 +2,6 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/utils/launch_social_networks_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-
 class ButtonFacebookWidget extends StatelessWidget {
    ButtonFacebookWidget(
       {Key? key,
@@ -13,7 +10,7 @@ class ButtonFacebookWidget extends StatelessWidget {
       this.width = 50,
       this.radiusCircular = 15})
       : super(key: key);
-  String facebookLogo = Images.kFacebook;
+  final String facebookLogo = Images.kFacebook;
   final String linkFacebook;
   final double height;
   final double width;
