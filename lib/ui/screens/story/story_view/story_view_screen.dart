@@ -142,6 +142,7 @@ class _ButtonLikesStory extends StatelessWidget {
                 children: [
                   Text(
                     story.listReactions.length.toString(),
+                    style: Styles.accentTextThemeWhite,
                   ),
                   Image.asset(
                     Images.kBikeLikesImage,
@@ -150,7 +151,10 @@ class _ButtonLikesStory extends StatelessWidget {
                   ),
                 ],
               ),
-              Text(AppStrings.likes),
+              Text(
+                AppStrings.likes,
+                style: Styles.accentTextThemeWhite,
+              ),
             ],
           ),
         ),
@@ -221,7 +225,10 @@ class _CarouselImagesState extends State<_CarouselImages> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: Text(widget.story.creationDate.timeHaveCreated),
+                    child: Text(
+                      widget.story.creationDate.timeHaveCreated,
+                      style: Styles.accentTextThemeWhite,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => ShareUtils().shareFile(
