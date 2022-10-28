@@ -138,7 +138,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     try {
       final response = await firestore
           .collection(collection)
-          .where('userId', isEqualTo: id)
+          .where('user.id', isEqualTo: id)
           .get();
       return response.docs
           .map(

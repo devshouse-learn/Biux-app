@@ -51,12 +51,13 @@ class UserScreen extends StatelessWidget {
                 );
               }),
           Selector<UserScreenBloc, BiuxUser>(
-              selector: (_, bloc) => bloc.user,
-              builder: (context, value, child) {
-                return _TextDescripcion(
-                  user: bloc.user,
-                );
-              }),
+            selector: (_, bloc) => bloc.user,
+            builder: (context, value, child) {
+              return _TextDescripcion(
+                user: bloc.user,
+              );
+            },
+          ),
         ],
       ),
     );
@@ -70,27 +71,29 @@ class _AppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-              alignment: Alignment.topCenter,
-              child: Text(
-                user.fullName,
-                style: Styles.containerNameUser,
-              )),
-          GestureDetector(
-            child: Container(
-              height: 35,
-              width: 35,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: new AssetImage(Images.kImageShare),
-                ),
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Container(
+          alignment: Alignment.topCenter,
+          child: Text(
+            user.fullName,
+            style: Styles.containerNameUser,
+          ),
+        ),
+        GestureDetector(
+          child: Container(
+            height: 35,
+            width: 35,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: new AssetImage(Images.kImageShare),
               ),
             ),
-            onTap: () {},
           ),
-        ]);
+          onTap: () {},
+        ),
+      ],
+    );
   }
 }
 
@@ -104,37 +107,56 @@ class _SuperiorUserScreen extends StatelessWidget {
       children: <Widget>[
         Container(
           alignment: Alignment.topLeft,
-          margin: new EdgeInsets.only(top: 15, left: 10),
+          margin: new EdgeInsets.only(
+            top: 15,
+            left: 10,
+          ),
           child: GestureDetector(
             onTap: () {
               showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ZoomPage(user.photo, user.fullName);
-                  });
+                context: context,
+                builder: (BuildContext context) {
+                  return ZoomPage(
+                    user.photo,
+                    user.fullName,
+                  );
+                },
+              );
             },
             child: Container(
               height: 130,
               width: 130,
               decoration: new BoxDecoration(
-                border: Border.all(color: AppColors.white, width: 4),
+                border: Border.all(
+                  color: AppColors.white,
+                  width: 4,
+                ),
                 image: DecorationImage(
-                  image: new NetworkImage(user.photo),
+                  image: new NetworkImage(
+                    user.photo,
+                  ),
                   fit: BoxFit.cover,
                 ),
-                borderRadius: BorderRadius.circular(100.0),
+                borderRadius: BorderRadius.circular(
+                  100.0,
+                ),
               ),
             ),
           ),
         ),
         GestureDetector(
           child: Container(
-            margin: new EdgeInsets.only(top: 115, left: 45),
+            margin: new EdgeInsets.only(
+              top: 115,
+              left: 45,
+            ),
             height: 60,
             width: 60,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: new AssetImage(Images.kImageChange),
+                image: new AssetImage(
+                  Images.kImageChange,
+                ),
               ),
             ),
           ),
@@ -152,8 +174,12 @@ class _TextDescripcion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(15.0),
-      margin: EdgeInsets.only(top: 150),
+      padding: const EdgeInsets.all(
+        15.0,
+      ),
+      margin: EdgeInsets.only(
+        top: 150,
+      ),
       child: Text(
         user.description,
         style: Styles.containerFollowing,
@@ -175,7 +201,9 @@ class _button extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(left: size.width * 0.55),
+          margin: EdgeInsets.only(
+            left: size.width * 0.55,
+          ),
           height: 40,
           color: AppColors.white2,
           child: Row(
@@ -186,46 +214,64 @@ class _button extends StatelessWidget {
                 width: 20,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: new AssetImage(Images.kImageHelmetRight),
+                    image: new AssetImage(
+                      Images.kImageHelmetRight,
+                    ),
                   ),
                 ),
               ),
               Container(
-                  margin: EdgeInsets.only(right: 10, left: 5),
-                  child: Row(
-                    children: [
-                      Text(
-                        user.following.length.toString(),
-                        style: Styles.containerBlack,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        AppStrings.following,
-                        style: Styles.containerFollowing,
-                      ),
-                    ],
-                  )),
+                margin: EdgeInsets.only(
+                  right: 10,
+                  left: 5,
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      user.following.length.toString(),
+                      style: Styles.containerBlack,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      AppStrings.following,
+                      style: Styles.containerFollowing,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
         Container(
-          margin: EdgeInsets.only(top: 60, right: 10),
+          margin: EdgeInsets.only(
+            top: 60,
+            right: 10,
+          ),
           alignment: Alignment.topRight,
           child: ButtonTheme(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              borderRadius: BorderRadius.all(
+                Radius.circular(
+                  20,
+                ),
+              ),
             ),
             minWidth: 160,
             height: 50,
             child: RaisedButton(
-                color: AppColors.white,
-                child: Text(AppStrings.editProfile,
-                    style: Styles.containerFollowing),
-                onPressed: () {
-                  bloc.onTapEdit(context);
-                }),
+              color: AppColors.white,
+              child: Text(
+                AppStrings.editProfile,
+                style: Styles.containerFollowing,
+              ),
+              onPressed: () {
+                bloc.onTapEdit(
+                  context,
+                );
+              },
+            ),
           ),
         )
       ],
@@ -262,7 +308,9 @@ class _TabBarViewUserState extends State<_TabBarViewUser>
     final bloc = context.watch<UserScreenBloc>();
     Size size = MediaQuery.of(context).size;
     return Container(
-      margin: EdgeInsets.only(top: size.height * 0.30),
+      margin: EdgeInsets.only(
+        top: size.height * 0.30,
+      ),
       child: Column(
         children: <Widget>[
           TabBar(
@@ -270,15 +318,25 @@ class _TabBarViewUserState extends State<_TabBarViewUser>
               labelPadding: EdgeInsets.zero,
               controller: tabController,
               indicatorWeight: 0.01,
-              splashBorderRadius: BorderRadius.circular(20),
+              splashBorderRadius: BorderRadius.circular(
+                20,
+              ),
               unselectedLabelColor: AppColors.black,
               tabs: List<Widget>.generate(
                 tabController.length,
                 (index) => _TabDecoration(
                   borderRadius: index == 0
-                      ? BorderRadius.only(topLeft: Radius.circular(10))
+                      ? BorderRadius.only(
+                          topLeft: Radius.circular(
+                            10,
+                          ),
+                        )
                       : index == 2
-                          ? BorderRadius.only(topRight: Radius.circular(10))
+                          ? BorderRadius.only(
+                              topRight: Radius.circular(
+                                10,
+                              ),
+                            )
                           : BorderRadius.only(),
                   index: index,
                   selectedIndex: _selectedIndex,
@@ -293,10 +351,16 @@ class _TabBarViewUserState extends State<_TabBarViewUser>
                 Selector<UserScreenBloc, List<Story>>(
                     selector: (_, bloc) => bloc.stories,
                     builder: (context, value, child) {
-                      return _ViewUserImage(stories: bloc.stories);
+                      return _ViewUserImage(
+                        stories: bloc.stories,
+                      );
                     }),
-                _ViewUserImage(stories: bloc.stories),
-                _ViewUserImage(stories: bloc.stories),
+                _ViewUserImage(
+                  stories: bloc.stories,
+                ),
+                _ViewUserImage(
+                  stories: bloc.stories,
+                ),
               ],
             ),
           ),
@@ -326,67 +390,81 @@ class _TabDecoration extends StatelessWidget {
     return Tab(
       height: 70,
       child: Container(
-          alignment: Alignment.center,
-          width: size.width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              index == 0
-                  ? Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: new AssetImage(Images.kImageGallery),
+        alignment: Alignment.center,
+        width: size.width,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            index == 0
+                ? Container(
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: new AssetImage(
+                          Images.kImageGallery,
                         ),
                       ),
-                    )
-                  : index == 1
-                      ? Icon(
-                          Icons.directions_bike,
-                          color: AppColors.black,
-                        )
-                      : index == 2
-                          ? Container(
-                              height: 25,
-                              width: 25,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: new AssetImage(Images.kImageSocial),
+                    ),
+                  )
+                : index == 1
+                    ? Icon(
+                        Icons.directions_bike,
+                        color: AppColors.black,
+                      )
+                    : index == 2
+                        ? Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: new AssetImage(
+                                  Images.kImageSocial,
                                 ),
                               ),
-                            )
-                          : SizedBox(),
-              SizedBox(width: 10),
-              index == 0
-                  ? Selector<UserScreenBloc, List<Story>>(
-                      selector: (_, bloc) => bloc.stories,
-                      builder: (context, value, child) {
-                        return Text(bloc.stories.length.toString(),
-                            style: Styles.rowItemColorligth);
-                      })
-                  : index == 1
-                      ? Selector<UserScreenBloc, List<CompetitorRoad>>(
-                          selector: (_, bloc) => bloc.competitorRoad,
-                          builder: (context, value, child) {
-                            return Text(bloc.competitorRoad.length.toString(),
-                                style: Styles.rowItemColorligth);
-                          })
-                      : index == 2
-                          ? Selector<UserScreenBloc, List<Story>>(
-                              selector: (_, bloc) => bloc.stories,
-                              builder: (context, value, child) {
-                                return Text(bloc.user.followerS.toString(),
-                                    style: Styles.rowItemColorligth);
-                              })
-                          : SizedBox(),
-            ],
+                            ),
+                          )
+                        : SizedBox(),
+            SizedBox(width: 10),
+            index == 0
+                ? Selector<UserScreenBloc, List<Story>>(
+                    selector: (_, bloc) => bloc.stories,
+                    builder: (context, value, child) {
+                      return Text(
+                        bloc.stories.length.toString(),
+                        style: Styles.rowItemColorligth,
+                      );
+                    })
+                : index == 1
+                    ? Selector<UserScreenBloc, List<CompetitorRoad>>(
+                        selector: (_, bloc) => bloc.competitorRoad,
+                        builder: (context, value, child) {
+                          return Text(
+                            bloc.competitorRoad.length.toString(),
+                            style: Styles.rowItemColorligth,
+                          );
+                        })
+                    : index == 2
+                        ? Selector<UserScreenBloc, List<Story>>(
+                            selector: (_, bloc) => bloc.stories,
+                            builder: (context, value, child) {
+                              return Text(
+                                bloc.user.followerS.toString(),
+                                style: Styles.rowItemColorligth,
+                              );
+                            })
+                        : SizedBox(),
+          ],
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: AppColors.gray,
+            width: 0.1,
           ),
-          decoration: BoxDecoration(
-              border: Border.all(color: AppColors.gray, width: 0.1),
-              borderRadius: borderRadius,
-              color:
-                  index == selectedIndex ? AppColors.white2 : AppColors.white)),
+          borderRadius: borderRadius,
+          color: index == selectedIndex ? AppColors.white2 : AppColors.white,
+        ),
+      ),
     );
   }
 }
@@ -402,35 +480,42 @@ class _ViewUserImage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Wrap(
           children: stories
-              .map((story) => Stack(
-                    children: <Widget>[
+              .map(
+                (story) => Stack(
+                  children: <Widget>[
+                    Container(
+                      height: 125,
+                      width: 130.8,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.gray,
+                          width: 1,
+                        ),
+                      ),
+                      child: Image.network(
+                        story.files.first,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    if (story.files.length > 1)
                       Container(
-                          height: 125,
-                          width: 130.8,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.gray,
-                              width: 1,
-                            ),
-                          ),
-                          child: Image.network(
-                            story.fileUrl1,
-                            fit: BoxFit.fill,
-                          )),
-                      if (story.fileUrl2.isNotEmpty ||
-                          story.fileUrl3.isNotEmpty)
-                        Container(
-                          height: 20,
-                          width: 20,
-                          margin: EdgeInsets.only(left: 105, top: 5),
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: new AssetImage(Images.kImageSnakeCase),
+                        height: 20,
+                        width: 20,
+                        margin: EdgeInsets.only(
+                          left: 105,
+                          top: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: new AssetImage(
+                              Images.kImageSnakeCase,
                             ),
                           ),
                         ),
-                    ],
-                  ))
+                      ),
+                  ],
+                ),
+              )
               .toList(),
         ),
       ),

@@ -25,41 +25,41 @@ class MapScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          ListView(
-            primary: false,
-            children: [
-              Column(
-                children: [
+          SingleChildScrollView(
+            physics: bloc.focusNodeCity.hasFocus
+                ? AlwaysScrollableScrollPhysics()
+                : NeverScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                Selector<MapScreenBloc, bool?>(
+                    selector: (_, bloc) => bloc.serviceEnabled,
+                    builder: (context, serviceEnabled, child) {
+                      return _WidgetSearchCity();
+                    }),
+                if (bloc.focusNodeCity.hasFocus)
                   Selector<MapScreenBloc, bool?>(
                       selector: (_, bloc) => bloc.serviceEnabled,
                       builder: (context, serviceEnabled, child) {
-                        return _WidgetSearchCity();
-                      }),
-                  if (bloc.focusNodeCity.hasFocus)
-                    Selector<MapScreenBloc, bool?>(
-                        selector: (_, bloc) => bloc.serviceEnabled,
-                        builder: (context, serviceEnabled, child) {
-                          return _ListCity(
-                            listCities: bloc.listCities,
-                          );
+                        return _ListCity(
+                          listCities: bloc.listCities,
+                        );
+                      })
+                else ...[
+                  if (bloc.serviceEnabled)
+                    Selector<MapScreenBloc, CameraPosition?>(
+                        selector: (_, bloc) => bloc.currentLocation,
+                        builder: (context, currentLocation, child) {
+                          return _MainMapEnabled();
                         })
-                  else ...[
-                    if (bloc.serviceEnabled)
-                      Selector<MapScreenBloc, CameraPosition?>(
-                          selector: (_, bloc) => bloc.currentLocation,
-                          builder: (context, currentLocation, child) {
-                            return _MainMapEnabled();
-                          })
-                    else
-                      Selector<MapScreenBloc, LocationData?>(
-                          selector: (_, bloc) => bloc.result,
-                          builder: (context, result, child) {
-                            return _MainMapDisabled();
-                          })
-                  ]
-                ],
-              ),
-            ],
+                  else
+                    Selector<MapScreenBloc, LocationData?>(
+                        selector: (_, bloc) => bloc.result,
+                        builder: (context, result, child) {
+                          return _MainMapDisabled();
+                        })
+                ]
+              ],
+            ),
           ),
         ],
       ),
@@ -76,7 +76,7 @@ class _MainMapEnabled extends StatelessWidget {
     final bloc = context.watch<MapScreenBloc>();
     var size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.724,
+      height: size.height * 0.730,
       child: GoogleMap(
         mapToolbarEnabled: false,
         zoomControlsEnabled: false,
@@ -139,7 +139,7 @@ class _MainMapDisabled extends StatelessWidget {
     final bloc = context.watch<MapScreenBloc>();
     var size = MediaQuery.of(context).size;
     return SizedBox(
-      height: size.height * 0.724,
+      height: size.height * 0.730,
       child: GoogleMap(
         onCameraMove: (value) {
           bloc.onTapService();
@@ -681,7 +681,7 @@ class _ListCity extends StatelessWidget {
             onTap: () {
               if (bloc.serviceEnabled) {
                 bloc.onTapMyLocation();
-              } else if (!bloc.serviceEnabled && 
+              } else if (!bloc.serviceEnabled &&
                   bloc.validate == AppStrings.deniedText) {
                 bloc.onTapService();
               } else if (bloc.validate == AppStrings.deniedForeverText) {
