@@ -50,8 +50,13 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   @override
   Future<List<Story>> getStories() async {
     try {
-      final result = await firestore.collection(collection).get();
-
+      final result = await firestore
+          .collection(collection)
+          .orderBy(
+            'creationDate', 
+            descending: true,
+          )
+          .get();
       return result.docs
           .map(
             (e) => Story.fromJson(e.data(), e.id),

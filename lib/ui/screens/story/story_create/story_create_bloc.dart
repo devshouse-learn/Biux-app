@@ -10,6 +10,7 @@ import 'package:photo_manager/photo_manager.dart';
 class StoryCreateBloc extends ChangeNotifier {
   List<AssetEntity> imgList = [];
   List<AssetEntity> entitiesList = [];
+  bool loading = false;
   int current = 0;
   final StoriesFirebaseRepository storiesFirebaseRepository =
       StoriesFirebaseRepository();
@@ -53,6 +54,11 @@ class StoryCreateBloc extends ChangeNotifier {
     final user = await userFirebaseRepository.getUserById(id);
     notifyListeners();
     return user;
+  }
+
+  void changeLoading(bool loading) {
+    this.loading = loading;
+    notifyListeners();
   }
 
   Future<bool> createStory({

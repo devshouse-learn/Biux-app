@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';

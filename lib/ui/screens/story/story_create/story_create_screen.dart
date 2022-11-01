@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
@@ -6,13 +5,12 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/story.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/ui/screens/story/story_create/story_create_bloc.dart';
+import 'package:biux/ui/widgets/loading_widget.dart';
 import 'package:biux/ui/widgets/tags_story_widgets.dart';
 import 'package:biux/ui/widgets/text_form_field_biux_widget.dart';
-import 'package:biux/utils/bytes_utils.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
@@ -337,9 +335,11 @@ class _AppbarCreateStory extends StatelessWidget
       backgroundColor: AppColors.darkBlue,
       leading: IconButton(
         icon: Icon(
-          Icons.menu,
+          Icons.arrow_back,
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pop(context, false);
+        },
       ),
       title: Text(
         AppStrings.titleAppBarCreateStory,
@@ -364,10 +364,12 @@ class _AppbarCreateStory extends StatelessWidget
                     creationDate: creationDate.toString(),
                     user: user,
                   );
+                  bloc.changeLoading(true);
                   final result = await bloc.createStory(
                     story: story,
                     list: bloc.imgList,
                   );
+                  bloc.changeLoading(false);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBarUtils.customSnackBar(
                       content: result
@@ -439,88 +441,93 @@ class _CarouselImagesSelected extends StatelessWidget {
           ),
         )
         .toList();
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          child: CarouselSlider(
-            items: imageSliders,
-            carouselController: _controller,
-            options: CarouselOptions(
-              enableInfiniteScroll: false,
-              viewportFraction: 1.0,
-              initialPage: 0,
-              enlargeCenterPage: false,
-              height: sizeScreen.height * 0.5,
-              onPageChanged: (index, reason) {
-                bloc.changeCurrent(current: index);
-              },
-            ),
-          ),
-        ),
-        ColoredBox(
-          color: AppColors.white,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: bloc.imgList.asMap().entries.map(
-                  (entry) {
-                    return GestureDetector(
-                      onTap: () => _controller.animateToPage(entry.key),
-                      child: Container(
-                        width: 10.0,
-                        height: 10.0,
-                        margin: EdgeInsets.symmetric(
-                          vertical: 5.0,
-                          horizontal: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.black,
-                          ),
-                          color: (bloc.current == entry.key
-                              ? AppColors.strongCyan
-                              : AppColors.darkBlue),
-                        ),
-                      ),
-                    );
+        Column(
+          children: [
+            Expanded(
+              child: CarouselSlider(
+                items: imageSliders,
+                carouselController: _controller,
+                options: CarouselOptions(
+                  enableInfiniteScroll: false,
+                  viewportFraction: 1.0,
+                  initialPage: 0,
+                  enlargeCenterPage: false,
+                  height: sizeScreen.height * 0.5,
+                  onPageChanged: (index, reason) {
+                    bloc.changeCurrent(current: index);
                   },
-                ).toList(),
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 10,
-                  left: 10,
-                  right: 10,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppStrings.galleryCreateStory,
-                      style: Styles.titleGallery,
-                    ),
-                    if (bloc.imgList.length < 3)
-                      CircleAvatar(
-                        backgroundColor: AppColors.darkBlue,
-                        child: IconButton(
-                          color: AppColors.white,
-                          onPressed: () async {
-                            _takePhoto(bloc: bloc);
-                          },
-                          icon: Icon(
-                            Icons.camera_alt_outlined,
+            ),
+            ColoredBox(
+              color: AppColors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: bloc.imgList.asMap().entries.map(
+                      (entry) {
+                        return GestureDetector(
+                          onTap: () => _controller.animateToPage(entry.key),
+                          child: Container(
+                            width: 10.0,
+                            height: 10.0,
+                            margin: EdgeInsets.symmetric(
+                              vertical: 5.0,
+                              horizontal: 4.0,
+                            ),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.black,
+                              ),
+                              color: (bloc.current == entry.key
+                                  ? AppColors.strongCyan
+                                  : AppColors.darkBlue),
+                            ),
                           ),
+                        );
+                      },
+                    ).toList(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                      left: 10,
+                      right: 10,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          AppStrings.galleryCreateStory,
+                          style: Styles.titleGallery,
                         ),
-                      )
-                  ],
-                ),
-              )
-            ],
-          ),
+                        if (bloc.imgList.length < 3)
+                          CircleAvatar(
+                            backgroundColor: AppColors.darkBlue,
+                            child: IconButton(
+                              color: AppColors.white,
+                              onPressed: () async {
+                                _takePhoto(bloc: bloc);
+                              },
+                              icon: Icon(
+                                Icons.camera_alt_outlined,
+                              ),
+                            ),
+                          )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
+        if (bloc.loading) Loading()
       ],
     );
   }
