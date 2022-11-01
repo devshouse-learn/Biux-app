@@ -472,22 +472,25 @@ class _buttonSocialNetworks extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ButtonInstagramWidget(
-            linkinstagram: site.instagram,
-          ),
+          if (site.instagram.isNotEmpty)
+            ButtonInstagramWidget(
+              linkinstagram: site.instagram,
+            ),
           const SizedBox(
             width: 20,
           ),
-          ButtonWhatsappWidget(
-            whatsapp: site.whatsapp,
-            name: site.name,
-          ),
+          if (site.whatsapp.isNotEmpty)
+            ButtonWhatsappWidget(
+              whatsapp: site.whatsapp,
+              name: site.name,
+            ),
           const SizedBox(
             width: 20,
           ),
-          ButtonFacebookWidget(
-            linkFacebook: site.facebook,
-          ),
+          if (site.facebook.isNotEmpty)
+            ButtonFacebookWidget(
+              linkFacebook: site.facebook,
+            ),
         ],
       ),
     );
