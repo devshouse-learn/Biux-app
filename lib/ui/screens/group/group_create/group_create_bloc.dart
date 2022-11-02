@@ -62,8 +62,7 @@ class GroupCreateBloc extends ChangeNotifier {
         active: true,
         name: nameController.text,
         whatsapp: whatsappController.text,
-        //here add the id of the city where you are
-        cityId: 'ibague',
+        cityId: user.cityId.id,
         facebook: facebookController.text,
         instagram: instagramController.text,
         description: descripcionController.text,

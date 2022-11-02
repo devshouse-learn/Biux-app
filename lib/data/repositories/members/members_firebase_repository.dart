@@ -64,7 +64,7 @@ class MembersFirebaseRepository extends MembersRepositoryAbstract {
     }
   }
 
-  Future<List<Member>> getMyMembers(String groupId) async {
+  Future<List<Member>> getMyMembersGroup(String groupId) async {
     try {
       final result = await firestore
           .collection(collection)

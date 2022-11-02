@@ -166,7 +166,7 @@ class AppStrings {
   static const searchGroups = "Buscar grupos";
   static const firstCreateGroupText =
       "Se el primero en crear grupos en tu ciudad";
-  static const MyGroupText = "Mis grupos";
+  static const MyGroupText = "Mis Grupos";
   static const myGrupoText2 = "Mi grupo";
   static const errorTextJoinRolls =
       "Aun no tienes grupos unete o crea uno para poder unirte a las rodadas";
@@ -612,6 +612,7 @@ The navigation delegate is set to block navigation to the youtube website.
   static const megaBytes = "MB";
   static const gigaBytes = "GB";
   static const teraBytes = "TB";
+  static const usersText = "users";
 
   ///
   /// Methods

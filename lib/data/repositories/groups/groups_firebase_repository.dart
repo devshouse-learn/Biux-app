@@ -213,6 +213,9 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
               AppStrings.idText: docId,
             },
           );
+          await firestore.collection(AppStrings.usersText).doc(group.adminId).update({
+            AppStrings.groupIdText: docId,
+          });
         },
       );
       return docId!;

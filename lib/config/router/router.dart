@@ -6,6 +6,8 @@ import 'package:biux/ui/screens/group/group_create/group_create_bloc.dart';
 import 'package:biux/ui/screens/group/group_create/group_create_screen.dart';
 import 'package:biux/ui/screens/group/group_list/group_list_screen.dart';
 import 'package:biux/ui/screens/group/group_list/group_list_screen_bloc.dart';
+import 'package:biux/ui/screens/group/my_groups/my_groups_bloc.dart';
+import 'package:biux/ui/screens/group/my_groups/my_groups_screen.dart';
 import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/group/view_group/view_group_screen.dart';
 import 'package:biux/ui/screens/login/create_user/create_user_bloc.dart';
@@ -175,6 +177,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         builder: ChangeNotifierProvider(
           create: (_) => MapScreenBloc(),
           child: MapScreen(),
+        ),
+      );
+      case AppRoutes.myGroupsRoute:
+      return _buildRoute(
+        settings: settings,
+        builder: ChangeNotifierProvider(
+          create: (_) => MyGroupsBloc(),
+          child: MyGroupsScreen(),
         ),
       );
     default:

@@ -3,12 +3,13 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
-import 'package:biux/ui/screens/group/group_create/group_create_BLOC.dart';
+import 'package:biux/ui/screens/group/group_create/group_create_bloc.dart';
 import 'package:biux/ui/widgets/logo_biux_widget.dart';
 import 'package:biux/ui/widgets/text_form_field_biux_widget.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 
 class GroupCreateScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();

@@ -14,4 +14,5 @@ class AppRoutes {
   static const String editUserScreenRoute = 'editUserScreen';
   static const String createUserRoute = 'createUser';
   static const String mapScreenRoute = 'mapScreen';
+  static const String myGroupsRoute = 'myGroupsScreen';
 }

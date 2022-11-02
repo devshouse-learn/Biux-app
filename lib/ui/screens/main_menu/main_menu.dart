@@ -240,7 +240,9 @@ class _MainMenuDrawer extends StatelessWidget {
                       AppStrings.MyGroupText,
                       style: Styles.containerTextName,
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      bloc.onTapViewMyGroups(context);
+                    },
                   ),
                   ListTile(
                     horizontalTitleGap: 10,

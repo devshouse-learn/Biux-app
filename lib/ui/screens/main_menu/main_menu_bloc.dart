@@ -44,4 +44,10 @@ class MainMenuBloc extends ChangeNotifier {
     notifyListeners();
     getUser();
   }
+
+  Future<void> onTapViewMyGroups(BuildContext context) async {
+    await Navigator.pushNamed(context, AppRoutes.myGroupsRoute);
+    notifyListeners();
+    getUser();
+  }
 }

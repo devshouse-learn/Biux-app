@@ -7,4 +7,5 @@ abstract class MembersRepositoryAbstract {
   Future<Member> getApproved(String userId, String groupId);
   Future<List<Member>> getMyGroups(String id);
   Future<Member> deleteMember(String memberId, String groupId);
+  Future<List<Member>> getMyMembersGroup(String groupId);
 }
