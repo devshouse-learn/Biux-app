@@ -81,6 +81,7 @@ class MyGroupsBloc extends ChangeNotifier {
         listMembers.where((memebr) => memebr.groupId != group.id).toList();
     final valueLeave = await MembersFirebaseRepository()
         .leaveGroups(idMember, numberMembers, group.id);
+    getGroups();
     notifyListeners();
   }
 }

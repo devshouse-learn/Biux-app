@@ -215,71 +215,7 @@ class GroupList extends StatelessWidget {
                         .contains(group.id))
                       Container(
                         margin: EdgeInsets.only(
-                          left: 35,
-                          top: 185,
-                        ),
-                        child: ButtonTheme(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(
-                                15,
-                              ),
-                            ),
-                          ),
-                          minWidth: 80,
-                          height: 40,
-                          child: ElevatedButtonTheme(
-                            data: ElevatedButtonThemeData(
-                              style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(
-                                        15,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                padding: MaterialStateProperty.all(
-                                  EdgeInsets.only(
-                                    left: 10,
-                                    right: 10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                  AppColors.white,
-                                ),
-                              ),
-                              child: Text(
-                                AppStrings.outText,
-                                style: Styles.textLightBlack,
-                              ),
-                              onPressed: () async {
-                                List<Member> member = listMembers
-                                    .where(
-                                      (element) => element.groupId == group.id,
-                                    )
-                                    .toList();
-                                onTapLeave(
-                                  member.first.id,
-                                  listMembers,
-                                  group,
-                                  group.numberMembers,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        margin: EdgeInsets.only(
-                          left: 35,
+                          left: 26,
                           top: 185,
                         ),
                         child: ButtonTheme(
@@ -320,8 +256,72 @@ class GroupList extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                AppStrings.joinMe,
+                                AppStrings.outText,
                                 style: Styles.containerTextName,
+                              ),
+                              onPressed: () async {
+                                List<Member> member = listMembers
+                                    .where(
+                                      (element) => element.groupId == group.id,
+                                    )
+                                    .toList();
+                                onTapLeave(
+                                  member.first.id,
+                                  listMembers,
+                                  group,
+                                  group.numberMembers,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: 40,
+                          top: 185,
+                        ),
+                        child: ButtonTheme(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(
+                                15,
+                              ),
+                            ),
+                          ),
+                          minWidth: 80,
+                          height: 40,
+                          child: ElevatedButtonTheme(
+                            data: ElevatedButtonThemeData(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                        15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                padding: MaterialStateProperty.all(
+                                  EdgeInsets.only(
+                                    left: 10,
+                                    right: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                  AppColors.white,
+                                ),
+                              ),
+                              child: Text(
+                                AppStrings.joinMe,
+                                style: Styles.textLightBlack,
                               ),
                               onPressed: () async {
                                 onTapJoin(

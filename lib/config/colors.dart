@@ -29,7 +29,7 @@ class AppColors {
   static const greyishNavyBlue = Color(0xff2e3b5a);
   static const greyishNavyBlue2 = Color(0xff1E2947);
   static const greyishNavyBlue3 = Color(0xff2e3a5c);
-  static const strongCyan = Color(0xff379392);
+  static const strongCyan = Color(0xff519192);
   static const black87 = Color(0xDD000000);
   static const black45 = Color(0x73000000);
   static const black54 = Color(0x8a000000);

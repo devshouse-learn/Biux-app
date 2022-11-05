@@ -9,10 +9,10 @@ import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/group/view_group/view_members_group.dart';
 import 'package:biux/ui/screens/group/view_group/view_roads_group.dart';
-import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
 import 'package:biux/ui/widgets/button_facebook_widget.dart';
 import 'package:biux/ui/widgets/button_instagram_widget.dart';
 import 'package:biux/ui/widgets/button_whatsapp_widget.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
@@ -128,14 +128,13 @@ class _HigherViewGroup extends StatelessWidget {
           margin: EdgeInsets.only(top: 20),
           child: GestureDetector(
             onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ZoomPage(
-                    group.logo,
-                    group.name,
-                  );
-                },
+              final imageProvider = Image.network(group.logo).image;
+              showImageViewer(
+                context,
+                imageProvider,
+                backgroundColor: AppColors.black45,
+                useSafeArea: true,
+                immersive: false,
               );
             },
             child: Container(

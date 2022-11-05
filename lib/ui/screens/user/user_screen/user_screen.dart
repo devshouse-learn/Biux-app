@@ -6,7 +6,7 @@ import 'package:biux/data/models/competitor_road.dart';
 import 'package:biux/data/models/story.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/ui/screens/user/user_screen/user_screen_bloc.dart';
-import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -113,14 +113,13 @@ class _SuperiorUserScreen extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ZoomPage(
-                    user.photo,
-                    user.fullName,
-                  );
-                },
+              final imageProvider = Image.network(user.photo).image;
+              showImageViewer(
+                context,
+                imageProvider,
+                backgroundColor: AppColors.black45,
+                useSafeArea: true,
+                immersive: false,
               );
             },
             child: Container(

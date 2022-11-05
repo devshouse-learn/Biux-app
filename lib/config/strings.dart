@@ -95,7 +95,7 @@ class AppStrings {
   static const instaPosts = "insta_posts";
   static const groupIdText = "groupId";
   static const editGroup = "Editar grupo";
-  static const outText = "Salirme";
+  static const outText = "Abandonar";
   static const wantOutGroup = "¿Deseas salir de este grupo?";
   static const cancelText = "Cancelar";
   static const joined = "Te uniste";

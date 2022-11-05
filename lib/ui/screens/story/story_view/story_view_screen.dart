@@ -9,6 +9,7 @@ import 'package:biux/ui/widgets/search_bar_widget.dart';
 import 'package:biux/utils/share_utils.dart';
 import 'package:biux/utils/strings_utils.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
@@ -249,7 +250,29 @@ class _CarouselImagesState extends State<_CarouselImages> {
               alignment: Alignment.topRight,
               children: [
                 CarouselSlider(
-                  items: imageSliders,
+                  items: widget.story.files
+                      .map(
+                        (e) => GestureDetector(
+                          child: Container(
+                            width: 315,
+                            child: Image.network(
+                              e,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          onTap: () {
+                            final imageProvider = Image.network(e).image;
+                            showImageViewer(
+                              context,
+                              imageProvider,
+                              backgroundColor: AppColors.black45,
+                              useSafeArea: true,
+                              immersive: false,
+                            );
+                          },
+                        ),
+                      )
+                      .toList(),
                   carouselController: _controller,
                   options: CarouselOptions(
                     enableInfiniteScroll: false,
@@ -262,20 +285,6 @@ class _CarouselImagesState extends State<_CarouselImages> {
                         current = index;
                       });
                     },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  margin: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlue.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    '${current + 1}/${widget.story.files.length}',
                   ),
                 ),
                 if (_visible)

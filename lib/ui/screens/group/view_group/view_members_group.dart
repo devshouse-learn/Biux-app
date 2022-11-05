@@ -2,7 +2,7 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
-import 'package:biux/ui/screens/zoom_screen/zoom_page.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,14 +28,14 @@ class ViewMembersGroup extends StatelessWidget {
                         margin: EdgeInsets.only(top: 20, left: 15),
                         child: GestureDetector(
                           onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return ZoomPage(
-                                  member.photo,
-                                  member.fullName,
-                                );
-                              },
+                            final imageProvider =
+                                Image.network(member.photo).image;
+                            showImageViewer(
+                              context,
+                              imageProvider,
+                              backgroundColor: AppColors.black45,
+                              useSafeArea: true,
+                              immersive: false,
                             );
                           },
                           child: Container(
