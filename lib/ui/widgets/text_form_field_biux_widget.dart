@@ -7,6 +7,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
     Key? key,
     required this.controller,
     required this.text,
+    this.addButton,
     this.image,
     this.validator,
     this.onChanged,
@@ -47,6 +48,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
   final void Function()? onTap;
   final double fontSize;
   final bool readOnly;
+  final Widget? addButton;
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +120,9 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
                 Radius.circular(radiusCircular),
               ),
             ),
+            suffixIcon: onFieldSubmitted != null
+                ? addButton
+                : SizedBox(),
             hintStyle: Styles.sizedBoxHintStyle.copyWith(
               fontSize: fontSize,
             ),

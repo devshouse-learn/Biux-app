@@ -358,7 +358,13 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     ).toList(),
                   ),
                   ReadMoreText(
-                    widget.story.description,
+                    widget.story.description +
+                        '\n' +
+                        widget.story.tags
+                            .map((e) => '#$e')
+                            .toString()
+                            .replaceAll(')', '',)
+                            .replaceAll('(', '',),
                     textAlign: TextAlign.left,
                     preDataText: widget.story.user.userName,
                     preDataTextStyle: Styles.numberBlack,

@@ -354,6 +354,8 @@ class _AppbarCreateStory extends StatelessWidget
             if (bloc.imgList.isNotEmpty) {
               showDialogCreateStory(
                 context: context,
+                listTags: bloc.listTags,
+                onTapAdd: bloc.addLabel,
                 onSave: (listTags, description) async {
                   final userId = AuthenticationRepository().getUserId;
                   final user = await bloc.getUser(id: userId);
@@ -536,11 +538,13 @@ class _CarouselImagesSelected extends StatelessWidget {
 void showDialogCreateStory({
   required context,
   required Function(List<String>, String) onSave,
+  required List<String> listTags,
+  required Function onTapAdd,
 }) async {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _labelsController = TextEditingController();
-  final List<String> listTags = [];
+
   return await showDialog(
     context: context,
     builder: (context) {
@@ -585,7 +589,22 @@ void showDialogCreateStory({
                       controller: _labelsController,
                       padding: const EdgeInsets.all(10),
                       radiusCircular: 20,
-                      onFieldSubmitted: (value) => listTags.add(value),
+                      addButton: Container(
+                        height: 32,
+                        width: 32,
+                        margin: EdgeInsets.only(right: 10),
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (listTags.length < 10)
+                              onTapAdd(_labelsController.text);
+                            setState(() {});
+                          },
+                          child: Image.asset(Images.kImageAdd),
+                        ),
+                      ),
+                      onFieldSubmitted: listTags.length < 10
+                          ? (value) => listTags.add(value)
+                          : (value) {},
                     ),
                     Wrap(
                       alignment: WrapAlignment.start,

@@ -10,6 +10,7 @@ import 'package:photo_manager/photo_manager.dart';
 class StoryCreateBloc extends ChangeNotifier {
   List<AssetEntity> imgList = [];
   List<AssetEntity> entitiesList = [];
+  final List<String> listTags = [];
   bool loading = false;
   int current = 0;
   final StoriesFirebaseRepository storiesFirebaseRepository =
@@ -82,5 +83,10 @@ class StoryCreateBloc extends ChangeNotifier {
     } catch (e) {
       return false;
     }
+  }
+
+  Future<void> addLabel(String value) async {
+    listTags.add(value);
+    notifyListeners();
   }
 }
