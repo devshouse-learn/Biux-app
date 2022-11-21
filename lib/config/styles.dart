@@ -642,4 +642,41 @@ class Styles {
     fontFamily: "Poppins",
     fontWeight: FontWeight.w300,
   );
+
+  final ButtonStyle buttonStyleConfirmation = ElevatedButton.styleFrom(
+    primary: AppColors.strongCyan,
+    padding: EdgeInsets.symmetric(horizontal: 20),
+    maximumSize: Size(250, 50),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(20),
+      ),
+    ),
+  );
+
+  final ButtonStyle buttonStyleCancel = ElevatedButton.styleFrom(
+    primary: AppColors.white,
+    padding: EdgeInsets.symmetric(horizontal: 0),
+    maximumSize: Size(64, 50),
+    shape: const RoundedRectangleBorder(
+      side: BorderSide(color: AppColors.gray, width: 1),
+      borderRadius: BorderRadius.all(
+        Radius.circular(20),
+      ),
+    ),
+  );
+
+  static const textConfirmation = TextStyle(
+    color: AppColors.white,
+    fontSize: 17,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w500,
+  );
+
+  static const textMessageConfirmation = TextStyle(
+    color: AppColors.black,
+    fontSize: 15,
+    fontFamily: "Poppins",
+    fontWeight: FontWeight.w300,
+  );
 }

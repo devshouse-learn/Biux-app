@@ -347,8 +347,12 @@ class RoadsList extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 190, left: 110),
+                          padding: const EdgeInsets.only(
+                            top: 190,
+                            right: 60,
+                          ),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               if (road.competitorRoad
                                   .map((e) => e.id)
@@ -387,7 +391,12 @@ class RoadsList extends StatelessWidget {
                                       child: Text(AppStrings.joinMe,
                                           style: Styles.containerTextName),
                                       onPressed: () {
-                                        bloc.onTapJoinRoads(road);
+                                        showDialogConfirmationMessage(
+                                            context: context,
+                                            nameGroup: road.name,
+                                            onTap: () {
+                                              bloc.onTapJoinRoads(road);
+                                            });
                                       }),
                                 )
                               else
@@ -419,4 +428,122 @@ class RoadsList extends StatelessWidget {
                   .toList()),
         ));
   }
+}
+
+void showDialogConfirmationMessage({
+  required BuildContext context,
+  required String nameGroup,
+  required Function onTap,
+}) async {
+  return await showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: AppColors.transparent,
+        alignment: Alignment.center,
+        contentPadding: EdgeInsets.zero,
+        content: DecoratedBox(
+          decoration: ShapeDecoration(
+            color: AppColors.transparent,
+            shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: AppColors.white,
+                    width: double.infinity,
+                  ),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(
+                      15,
+                    ),
+                  ),
+                ) +
+                Border(
+                  bottom: BorderSide(
+                    width: 10,
+                    color: AppColors.transparent,
+                  ),
+                ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 60,
+                width: 300,
+                margin: EdgeInsets.only(
+                  bottom: 10,
+                ),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.darkBlue,
+                  borderRadius: BorderRadius.circular(
+                    10,
+                  ),
+                ),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: nameGroup,
+                    style: Styles.textConfirmation,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: AppStrings.roadConfirmationMessage,
+                  style: Styles.textMessageConfirmation,
+                ),
+              ),
+              const SizedBox(
+                height: 35,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 40,
+                    width: 130,
+                    child: TextButton(
+                      style: Styles().buttonStyleCancel,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        AppStrings.cancelText,
+                        style: Styles.daysRoadListDateTime.copyWith(
+                          color: AppColors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  SizedBox(
+                    height: 40,
+                    width: 130,
+                    child: TextButton(
+                      style: Styles().buttonStyleConfirmation,
+                      onPressed: () {
+                        onTap();
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        AppStrings.confirm,
+                        style: Styles.daysRoadListDateTime,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
