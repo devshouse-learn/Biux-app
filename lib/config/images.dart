@@ -44,4 +44,6 @@ class Images {
   static const kImageRoute = '$kImagesPath/image_route.png';
   static const kMeetingPoint = '$kImagesPath/meeting_point.png';
   static const kdifficulty = '$kImagesPath/difficulty.png';
+  static const kImageDistance = '$kImagesPath/distance.png';
+  static const kImageCity = '$kImagesPath/city.png';
 }

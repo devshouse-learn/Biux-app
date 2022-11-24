@@ -613,7 +613,11 @@ The navigation delegate is set to block navigation to the youtube website.
   static const gigaBytes = "GB";
   static const teraBytes = "TB";
   static const usersText = "users";
-  static const roadConfirmationMessage = "¿Estás seguro que deseas\nunirte a esta rodada?";
+  static const roadConfirmationMessage =
+      "¿Estás seguro que deseas\nunirte a esta rodada?";
+  static const distanceText = "Distancia";
+  static const advertDistance = "Distancia solo debe contener numeros";
+  static const validatorNumber = r'^[0-9]+$';
 
   ///
   /// Methods

@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
+import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/ui/screens/roads/road_create/road_create_bloc.dart';
 import 'package:biux/ui/widgets/text_form_field_biux_widget.dart';
@@ -23,6 +26,7 @@ class RoadCreateScreen extends StatelessWidget {
   final TextEditingController controllerDateTime = TextEditingController();
   final TextEditingController controllerDescriptionRecomendations =
       TextEditingController();
+  final TextEditingController controllerDistance = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +133,84 @@ class RoadCreateScreen extends StatelessWidget {
                       }
                     },
                   ),
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.only(
+                      left: 5,
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.gray,
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          Images.kImageCity,
+                          height: 30,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: DropdownButton<String>(
+                            value: bloc.dropdownValueCity.name,
+                            isExpanded: true,
+                            dropdownColor: AppColors.white,
+                            style: Styles.accentTextThemeBlack,
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppColors.gray,
+                            ),
+                            underline: ColoredBox(
+                              color: AppColors.transparent,
+                            ),
+                            elevation: 16,
+                            onChanged: (String? value) {
+                              bloc.replaceDropdownValueCity(
+                                value!,
+                              );
+                            },
+                            items:
+                                bloc.listCities.map<DropdownMenuItem<String>>(
+                              (City value) {
+                                return DropdownMenuItem<String>(
+                                  value: value.name,
+                                  child: Text(value.name),
+                                );
+                              },
+                            ).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextFormFieldBiuxWidget(
+                    controller: controllerDistance,
+                    text: AppStrings.distanceText,
+                    keyboardType: TextInputType.number,
+                    radiusCircular: 15,
+                    fontSize: 15,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return value;
+                      }
+                    },
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Image.asset(
+                        Images.kImageDistance,
+                        height: 15,
+                      ),
+                    ),
+                  ),
                   TextFormFieldBiuxWidget(
                     controller: controllerDateTime,
                     text: AppStrings.dateTimeText,
@@ -169,7 +251,7 @@ class RoadCreateScreen extends StatelessWidget {
                     text: AppStrings.descriptionRecomendationsText,
                     radiusCircular: 15,
                     fontSize: 15,
-                    maxLine: 6,
+                    maxLine: 4,
                     maxLength: 700,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -181,18 +263,6 @@ class RoadCreateScreen extends StatelessWidget {
                       right: 15,
                       top: 5,
                       bottom: 0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                    ),
-                    child: Text(
-                      controllerDescriptionRecomendations.text.length != 0
-                          ? '${controllerDescriptionRecomendations.text.length}/700'
-                          : '700',
-                      style: Styles.sizedBoxHintStyle.copyWith(fontSize: 15),
-                      textAlign: TextAlign.right,
                     ),
                   ),
                   Padding(
@@ -236,23 +306,21 @@ class RoadCreateScreen extends StatelessWidget {
               child: TextButton(
                 style: Styles().textButtonStyle,
                 onPressed: () async {
-                  if (!_formKey.currentState!.validate() &&
-                      bloc.rating != 0.0) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBarUtils.customSnackBar(
-                        content: AppStrings.validationCreateRoadText,
-                        backgroundColor: AppColors.redAccent,
-                      ),
-                    );
-                  } else {
+                  double distance = 0.0;
+                  if (_formKey.currentState!.validate() &&
+                      bloc.rating != 0.0 &&
+                      RegExp(AppStrings.validatorNumber)
+                          .hasMatch(controllerDistance.text)) {
+                    distance = double.parse(controllerDistance.text);
                     final road = Road(
-                      cityId: '1',
+                      cityId: bloc.dropdownValueCity.id,
                       dateTime: controllerDateTime.text,
                       description: controllerDescriptionRecomendations.text,
                       name: controllerRouteName.text,
                       pointmeeting: controllerMeetingPoint.text,
                       geocalizationPoint: controllerGeolocationPoint.text,
                       routeLevel: bloc.rating,
+                      distance: distance,
                       group: bloc.group,
                     );
                     final result = await bloc.createRoad(road);
@@ -268,6 +336,18 @@ class RoadCreateScreen extends StatelessWidget {
                     if (result) {
                       Navigator.of(context).pop();
                     }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBarUtils.customSnackBar(
+                        content: !_formKey.currentState!.validate()
+                            ? AppStrings.validationCreateRoadText
+                            : !RegExp(AppStrings.validatorNumber)
+                                    .hasMatch(controllerDistance.text)
+                                ? AppStrings.advertDistance
+                                : '',
+                        backgroundColor: AppColors.redAccent,
+                      ),
+                    );
                   }
                 },
                 child: Text(
