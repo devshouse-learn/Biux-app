@@ -364,8 +364,8 @@ class RoadsList extends StatelessWidget {
                                   ),
                                   minWidth: 80,
                                   height: 40,
-                                  child: RaisedButton(
-                                      color: AppColors.white,
+                                  child: ElevatedButton(
+                                      //color: AppColors.white,
                                       child: Text(AppStrings.outText,
                                           style: Styles.textLightBlack),
                                       onPressed: () {
@@ -386,8 +386,8 @@ class RoadsList extends StatelessWidget {
                                   ),
                                   minWidth: 80,
                                   height: 40,
-                                  child: RaisedButton(
-                                      color: AppColors.darkBlue,
+                                  child: ElevatedButton(
+                                      //color: AppColors.darkBlue,
                                       child: Text(AppStrings.joinMe,
                                           style: Styles.containerTextName),
                                       onPressed: () {
@@ -413,8 +413,8 @@ class RoadsList extends StatelessWidget {
                                 ),
                                 minWidth: 80,
                                 height: 40,
-                                child: RaisedButton(
-                                    color: AppColors.strongCyan,
+                                child: ElevatedButton(
+                                    //color: AppColors.strongCyan,
                                     child: Text(AppStrings.seeMoreText,
                                         style: Styles.containerTextName),
                                     onPressed: () {}),

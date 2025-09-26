@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+
 final analytics = FirebaseAnalytics.instance;
 
 /*static String  = '';*/
@@ -20,7 +21,7 @@ class Analitycs {
   static void sendSignUp(String userId) async {
     await analytics.logEvent(
       name: SIGN_UP,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userId,
       },
     );
@@ -29,7 +30,7 @@ class Analitycs {
   static void login(String userName) async {
     await analytics.logEvent(
       name: SIGN_UP,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
       },
     );
@@ -44,7 +45,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: VIEW_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'roadName': roadName,
         'userId': userId,
@@ -64,7 +65,7 @@ class Analitycs {
     String meeting,
     int participants,
   ) async {
-    await analytics.logEvent(name: JOIN_RODADA, parameters: <String, dynamic>{
+    await analytics.logEvent(name: JOIN_RODADA, parameters: <String, Object>{
       'km': km,
       'level': level,
       'userName': userName,
@@ -88,7 +89,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: LEAVE_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'km': km,
         'level': level,
         'userName': userName,
@@ -105,7 +106,7 @@ class Analitycs {
     String userName,
     String userId,
   ) async {
-    await analytics.logEvent(name: EDIT_USER, parameters: <String, dynamic>{
+    await analytics.logEvent(name: EDIT_USER, parameters: <String, Object>{
       'userName': userName,
       'userId': userId,
     });
@@ -120,7 +121,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: CREATE_GROUP,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'userId': userId,
         'groupName': groupName,
@@ -141,7 +142,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: CREATE_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'userId': userId,
         'roadName': roadName,
@@ -161,7 +162,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: POST_HISTORY,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'userId': userId,
         'type': type,
@@ -177,7 +178,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: LIKE_HISTORY,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'userId': userId,
         'image': image,
@@ -194,7 +195,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: DELETE_HISTORY,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'userId': userId,
         'image': image,
@@ -216,7 +217,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: SHARE_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'userId': userId,
         'roadName': roadName,
@@ -243,7 +244,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: SHARE_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'userId': userId,
         'roadName': roadName,

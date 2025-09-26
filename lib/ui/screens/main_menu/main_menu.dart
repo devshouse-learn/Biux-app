@@ -7,9 +7,9 @@ import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/ui/screens/group/group_list/group_list_screen.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
 import 'package:biux/ui/screens/map/map_screen.dart';
+import 'package:biux/ui/screens/roads/roads_list/roads_list_screen.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_screen.dart';
-import 'package:biux/ui/screens/roads/roads_list/roads_list_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -184,11 +184,11 @@ class _MainMenuDrawer extends StatelessWidget {
             ),
             Container(
               margin: EdgeInsets.only(left: 30, right: 30),
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                color: AppColors.white,
+              child: TextButton(
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.circular(10.0),
+                // ),
+                // color: AppColors.white,
                 child: Text(
                   AppStrings.viewProfile,
                   style: Styles.containerTextGroup,

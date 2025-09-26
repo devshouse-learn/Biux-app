@@ -1,9 +1,10 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:biux/config/strings.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'dart:math';
-import 'package:flutter_share/flutter_share.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ShareUtils {
   Future<void> shareFile({
@@ -11,12 +12,12 @@ class ShareUtils {
     required String text,
     required String filePath,
   }) async {
-    final imagePath = await urlToFile(filePath);
-    await FlutterShare.shareFile(
+    final imagePath = await XFile(filePath);
+    SharePlus.instance.share(ShareParams(
       title: title,
       text: text,
-      filePath: imagePath.path,
-    );
+      files: [imagePath],
+    ));
   }
 
   Future<File> urlToFile(String imageUrl) async {
@@ -24,7 +25,10 @@ class ShareUtils {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
     File file = File(
-      ('$tempPath' + '${AppStrings.storyText}' + (rng.nextInt(100)).toString()) + '.jpg',
+      ('$tempPath' +
+              '${AppStrings.storyText}' +
+              (rng.nextInt(100)).toString()) +
+          '.jpg',
     );
     var url = Uri.parse(imageUrl);
     http.Response response = await http.get(

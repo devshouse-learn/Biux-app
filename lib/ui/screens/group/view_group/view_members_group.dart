@@ -82,8 +82,8 @@ class ViewMembersGroup extends StatelessWidget {
                                   ),
                                   minWidth: 80,
                                   height: 40,
-                                  child: RaisedButton(
-                                    color: AppColors.darkBlue,
+                                  child: ElevatedButton(
+                                    //color: AppColors.darkBlue,
                                     child: Text(
                                       AppStrings.follow,
                                       style: Styles.containerTextName,
@@ -102,8 +102,8 @@ class ViewMembersGroup extends StatelessWidget {
                                   ),
                                   minWidth: 80,
                                   height: 40,
-                                  child: RaisedButton(
-                                    color: AppColors.white,
+                                  child: ElevatedButton(
+                                    //color: AppColors.white,
                                     child: Text(
                                       AppStrings.deletedText,
                                       style: Styles.textLightBlack,

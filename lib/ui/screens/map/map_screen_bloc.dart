@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/city.dart';
@@ -24,7 +25,8 @@ class MapScreenBloc extends ChangeNotifier {
   List<City> listCities = [];
   List<Marker> markerSites = [];
   Map<PolylineId, Polyline> polylines = {};
-  PolylinePoints polylinePoints = PolylinePoints();
+  PolylinePoints polylinePoints =
+      PolylinePoints(apiKey: AppStrings.googleAPiKey);
   final FocusNode focusNodeCity = FocusNode();
   bool serviceEnabled = false;
   CameraPosition currentLocation = CameraPosition(
@@ -126,16 +128,17 @@ class MapScreenBloc extends ChangeNotifier {
   Future<void> getRoute(LatLng origen, LatLng destino) async {
     List<LatLng> polylineCoordinates = [];
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      AppStrings.googleAPiKey,
-      PointLatLng(
-        origen.latitude,
-        origen.longitude,
-      ),
-      PointLatLng(
-        destino.latitude,
-        destino.longitude,
-      ),
-    );
+        request: PolylineRequest(
+            origin: PointLatLng(
+              origen.latitude,
+              origen.longitude,
+            ),
+            destination: PointLatLng(
+              destino.latitude,
+              destino.longitude,
+            ),
+            mode: TravelMode.bicycling));
+
     if (result.points.isNotEmpty) {
       result.points.forEach(
         (

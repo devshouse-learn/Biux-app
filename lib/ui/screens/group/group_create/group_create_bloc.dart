@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
@@ -6,11 +7,11 @@ import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
 import 'package:biux/data/repositories/groups/groups_firebase_repository.dart';
 import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/utils/bytes_utils.dart';
 import 'package:biux/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
+//import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../../../../../data/models/group.dart';
 
 class GroupCreateBloc extends ChangeNotifier {

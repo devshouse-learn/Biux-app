@@ -1,7 +1,7 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
-import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/user.dart';
 import 'package:biux/ui/screens/login/login.dart';
 import 'package:flutter/material.dart';
@@ -104,12 +104,10 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                     Padding(
                       padding: const EdgeInsets.only(top: 65),
                       child: Stack(
-
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(top: 50),
                             child: Stack(
-
                               //   alignment: Alignment.center,
                               children: [
                                 Center(
@@ -169,8 +167,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                                   20.0,
                                                   15.0,
                                                 ),
-                                                hintText:
-                                                    AppStrings.enterGmail,
+                                                hintText: AppStrings.enterGmail,
                                                 errorBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
                                                     color: AppColors.gray,
@@ -280,7 +277,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                           style: Styles.advertisingTitle,
                                         ),
                                       );
-                                      _scaffolState.currentState!
+                                      ScaffoldMessenger.of(context)
                                           .showSnackBar(snackBar);
                                     });
                                   } else {
@@ -297,7 +294,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                         style: Styles.advertisingTitle,
                                       ),
                                     );
-                                    _scaffolState.currentState!
+                                    ScaffoldMessenger.of(context)
                                         .showSnackBar(snackBar);
                                     Future.delayed(
                                       Duration(seconds: 3),
@@ -328,7 +325,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                       style: Styles.advertisingTitle,
                                     ),
                                   );
-                                  _scaffolState.currentState!
+                                  ScaffoldMessenger.of(context)
                                       .showSnackBar(snackBar);
                                 }
                               },
@@ -348,7 +345,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
   }
 
   void testAlert(BuildContext context) {
-    Scaffold.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: AppColors.red,
         content: Text(

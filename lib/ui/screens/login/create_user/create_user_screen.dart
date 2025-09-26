@@ -1,15 +1,14 @@
 import 'dart:io';
+
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/router/router_path.dart';
-import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/config/styles.dart';
+import 'package:biux/data/models/analitics.dart';
 import 'package:biux/data/models/city.dart';
 import 'package:biux/data/models/response.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/data/models/analitics.dart';
-import 'package:biux/data/repositories/authentication_repository.dart';
-import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:biux/ui/screens/login/create_user/create_user_bloc.dart';
 import 'package:biux/ui/widgets/loading_widget.dart';
 import 'package:biux/ui/widgets/textField_widget.dart';
@@ -31,13 +30,15 @@ class CreateUserScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
   Future getImageFromGallery(CreateUserBloc bloc) async {
-    ImagePicker imagePicker = ImagePicker();
-    PickedFile pickedFile;
-    pickedFile = (await imagePicker.getImage(
+    final ImagePicker picker = ImagePicker();
+
+    // pickImage devuelve un XFile?
+    final XFile? pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
-    ))!;
-    File image = File(pickedFile.path);
-    if (image != null) {
+    );
+
+    if (pickedFile != null) {
+      final File image = File(pickedFile.path);
       bloc.replaceImage(image);
     }
   }

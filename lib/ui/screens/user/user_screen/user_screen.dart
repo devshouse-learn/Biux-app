@@ -259,8 +259,8 @@ class _button extends StatelessWidget {
             ),
             minWidth: 160,
             height: 50,
-            child: RaisedButton(
-              color: AppColors.white,
+            child: ElevatedButton(
+              //color: AppColors.white,
               child: Text(
                 AppStrings.editProfile,
                 style: Styles.containerFollowing,

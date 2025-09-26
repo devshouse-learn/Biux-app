@@ -1,12 +1,13 @@
+import 'dart:io';
+
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/story.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
-import 'dart:io';
 import 'package:biux/data/repositories/stories/stories_repository_abstract.dart';
 import 'package:biux/utils/bytes_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
+//import 'package:flutter_native_image/flutter_native_image.dart';
 
 class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   static final collection = 'stories';
@@ -53,7 +54,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       final result = await firestore
           .collection(collection)
           .orderBy(
-            'creationDate', 
+            'creationDate',
             descending: true,
           )
           .get();
@@ -112,19 +113,19 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   }
 
   Future<File> compressImage(File image, String bytes) async {
-    final compressImage = await FlutterNativeImage.compressImage(
-      image.path,
-      quality: 80,
-      targetWidth:
-          bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.megaBytes
-              ? 800
-              : 900,
-      targetHeight:
-          bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.megaBytes
-              ? 800
-              : 900,
-    );
-    return compressImage;
+    // final compressImage = await FlutterNativeImage.compressImage(
+    //   image.path,
+    //   quality: 80,
+    //   targetWidth:
+    //       bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.megaBytes
+    //           ? 800
+    //           : 900,
+    //   targetHeight:
+    //       bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.megaBytes
+    //           ? 800
+    //           : 900,
+    // );
+    return image;
   }
 
   Future<bool> updateStory({required String id, required Story story}) async {

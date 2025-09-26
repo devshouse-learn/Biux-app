@@ -16,6 +16,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
+
 import '../../../../../../data/models/group.dart';
 
 class ViewGroupScreen extends StatelessWidget {
@@ -177,8 +178,8 @@ class _HigherViewGroup extends StatelessWidget {
             ),
             minWidth: 140,
             height: 50,
-            child: RaisedButton(
-              color: AppColors.white,
+            child: ElevatedButton(
+              //color: AppColors.white,
               child: Text(
                 AppStrings.editGroup,
                 style: Styles.containerTextGroup,

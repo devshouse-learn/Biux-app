@@ -4,10 +4,10 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/road.dart';
 import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
+import 'package:biux/utils/strings_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
-import 'package:biux/utils/strings_utils.dart';
 
 class ViewRoadsGroup extends StatelessWidget {
   const ViewRoadsGroup({Key? key}) : super(key: key);
@@ -62,7 +62,7 @@ class ViewRoadsGroup extends StatelessWidget {
   }
 }
 
- class _DateSection extends StatelessWidget {
+class _DateSection extends StatelessWidget {
   Road road;
   _DateSection({Key? key, required this.road}) : super(key: key);
 
@@ -258,8 +258,8 @@ class _ButtonSection extends StatelessWidget {
               ),
               minWidth: 80,
               height: 40,
-              child: RaisedButton(
-                  color: AppColors.white,
+              child: ElevatedButton(
+                  //color: AppColors.white,
                   child: Text(AppStrings.outText, style: Styles.textLightBlack),
                   onPressed: () {
                     bloc.onTapOutRoads(road);
@@ -273,8 +273,8 @@ class _ButtonSection extends StatelessWidget {
               ),
               minWidth: 80,
               height: 40,
-              child: RaisedButton(
-                  color: AppColors.darkBlue,
+              child: ElevatedButton(
+                  // color: AppColors.darkBlue,
                   child:
                       Text(AppStrings.joinMe, style: Styles.containerTextName),
                   onPressed: () {
@@ -294,8 +294,8 @@ class _ButtonSection extends StatelessWidget {
             ),
             minWidth: 80,
             height: 40,
-            child: RaisedButton(
-                color: AppColors.strongCyan,
+            child: ElevatedButton(
+                //color: AppColors.strongCyan,
                 child: Text(AppStrings.seeMoreText,
                     style: Styles.containerTextName),
                 onPressed: () {}),

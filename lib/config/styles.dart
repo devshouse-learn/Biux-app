@@ -578,7 +578,7 @@ class Styles {
     fontWeight: FontWeight.w100,
   );
   final ButtonStyle textButtonStyle = ElevatedButton.styleFrom(
-    primary: AppColors.strongCyan,
+    // primary: AppColors.strongCyan,
     padding: EdgeInsets.symmetric(horizontal: 20),
     maximumSize: Size(200, 50),
     shape: const RoundedRectangleBorder(
@@ -589,7 +589,7 @@ class Styles {
   );
 
   final ButtonStyle textButtonStrongCyanStyle = ElevatedButton.styleFrom(
-      primary: AppColors.strongCyan,
+      //primary: AppColors.strongCyan,
       padding: EdgeInsets.all(0),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(
@@ -598,7 +598,7 @@ class Styles {
       ));
 
   final ButtonStyle textButtonWhiteStyle = ElevatedButton.styleFrom(
-    primary: AppColors.white2,
+    // primary: AppColors.white2,
     padding: EdgeInsets.symmetric(horizontal: 0),
     maximumSize: Size(64, 50),
     shape: const RoundedRectangleBorder(
@@ -644,7 +644,7 @@ class Styles {
   );
 
   final ButtonStyle buttonStyleConfirmation = ElevatedButton.styleFrom(
-    primary: AppColors.strongCyan,
+    // primary: AppColors.strongCyan,
     padding: EdgeInsets.symmetric(horizontal: 20),
     maximumSize: Size(250, 50),
     shape: const RoundedRectangleBorder(
@@ -655,7 +655,7 @@ class Styles {
   );
 
   final ButtonStyle buttonStyleCancel = ElevatedButton.styleFrom(
-    primary: AppColors.white,
+    //  primary: AppColors.white,
     padding: EdgeInsets.symmetric(horizontal: 0),
     maximumSize: Size(64, 50),
     shape: const RoundedRectangleBorder(

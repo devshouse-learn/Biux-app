@@ -173,7 +173,7 @@ class _CarouselImages extends StatefulWidget {
 }
 
 class _CarouselImagesState extends State<_CarouselImages> {
-  final CarouselController _controller = CarouselController();
+  final CarouselSliderController _controller = CarouselSliderController();
   int current = 0;
   bool _visible = false;
   Story storyUpdate = Story();
@@ -363,8 +363,14 @@ class _CarouselImagesState extends State<_CarouselImages> {
                         widget.story.tags
                             .map((e) => '#$e')
                             .toString()
-                            .replaceAll(')', '',)
-                            .replaceAll('(', '',),
+                            .replaceAll(
+                              ')',
+                              '',
+                            )
+                            .replaceAll(
+                              '(',
+                              '',
+                            ),
                     textAlign: TextAlign.left,
                     preDataText: widget.story.user.userName,
                     preDataTextStyle: Styles.numberBlack,

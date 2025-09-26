@@ -1,21 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
 import 'package:biux/config/router/router_path.dart';
-import 'package:biux/config/styles.dart';
 import 'package:biux/config/strings.dart';
+import 'package:biux/config/styles.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/local_storage/local_storage.dart';
-import 'package:biux/data/models/response.dart';
-import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
-import 'package:biux/data/repositories/users/user_firebase_repository.dart';
-import 'package:biux/data/models/user.dart';
 import 'package:biux/data/models/analitics.dart';
 import 'package:biux/data/models/city.dart';
+import 'package:biux/data/models/response.dart';
+import 'package:biux/data/models/user.dart';
 import 'package:biux/data/repositories/authentication_repository.dart';
+import 'package:biux/data/repositories/cities/cities_firebase_repository.dart';
+import 'package:biux/data/repositories/users/user_firebase_repository.dart';
 import 'package:biux/ui/screens/login/recover_password.dart';
 import 'package:biux/ui/widgets/loading_widget.dart';
 import 'package:biux/ui/widgets/textField_widget.dart';
@@ -373,7 +374,7 @@ class _LoginPageState extends State<LoginPage> {
                                           style: Styles.advertisingTitle,
                                         ),
                                       );
-                                      _scaffolState.currentState!
+                                      ScaffoldMessenger.of(context)
                                           .showSnackBar(snackBar);
                                     },
                                   );
@@ -624,15 +625,15 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 50,
                           width: 180,
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                15.0,
-                              ),
-                            ),
-                            color: _darkTheme == true
-                                ? AppColors.greyishNavyBlue
-                                : AppColors.strongCyan,
+                          child: TextButton(
+                            // shape: RoundedRectangleBorder(
+                            //   borderRadius: BorderRadius.circular(
+                            //     15.0,
+                            //   ),
+                            // ),
+                            // color: _darkTheme == true
+                            //     ? AppColors.greyishNavyBlue
+                            //     : AppColors.strongCyan,
                             child: Text(
                               AppStrings.createUser,
                               style: _darkTheme == true
@@ -830,14 +831,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Center(
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                    side: BorderSide(
-                      width: 3,
-                      color: AppColors.greyishNavyBlue,
-                    ),
-                  ),
+                child: ElevatedButton(
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(20.0),
+                  //   side: BorderSide(
+                  //     width: 3,
+                  //     color: AppColors.greyishNavyBlue,
+                  //   ),
+                  // ),
                   onPressed: () async {
                     final valUser = await UserFirebaseRepository()
                         .getValidationUserName(newUserController.text);
@@ -931,14 +932,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Center(
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                    side: BorderSide(
-                      width: 3,
-                      color: AppColors.greyishNavyBlue,
-                    ),
-                  ),
+                child: TextButton(
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(20.0),
+                  //   side: BorderSide(
+                  //     width: 3,
+                  //     color: AppColors.greyishNavyBlue,
+                  //   ),
+                  // ),
                   onPressed: () async {
                     final valUser = await UserFirebaseRepository()
                         .getValidationUserName(newUser2Controller.text);
@@ -996,7 +997,7 @@ class _LoginPageState extends State<LoginPage> {
     Future.delayed(
       Duration.zero,
       () {
-        _scaffolState.currentState!.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(

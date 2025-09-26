@@ -7,8 +7,8 @@ import 'package:biux/utils/snackbar_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 class AuthenticationRepository {
@@ -27,14 +27,14 @@ class AuthenticationRepository {
   static Future<User> signInWithGoogle({required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+
     final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
+        await GoogleSignIn.instance.authenticate();
     if (googleSignInAccount != null) {
       final GoogleSignInAuthentication googleSignInAuthentication =
           await googleSignInAccount.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
+        accessToken: googleSignInAuthentication.idToken,
         idToken: googleSignInAuthentication.idToken,
       );
       try {
@@ -142,8 +142,8 @@ class AuthenticationRepository {
     required LoginResult result,
   }) async {
     try {
-      final OAuthCredential credential =
-          FacebookAuthProvider.credential(result.accessToken!.token);
+      final OAuthCredential credential = FacebookAuthProvider.credential(
+          result.accessToken?.tokenString ?? '');
       final user = await FirebaseAuth.instance.signInWithCredential(credential);
       return user;
     } catch (e) {
@@ -157,7 +157,7 @@ class AuthenticationRepository {
       final graphResponse = await http.get(
         Uri.parse(
           AppStrings.urlFacebookLogin(
-            token: accessToken.token,
+            token: accessToken.tokenString,
           ),
         ),
       );

@@ -13,6 +13,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:provider/provider.dart';
 
 class StoryCreateScreen extends StatelessWidget {
@@ -400,7 +401,7 @@ class _AppbarCreateStory extends StatelessWidget
 class _CarouselImagesSelected extends StatelessWidget {
   _CarouselImagesSelected({Key? key}) : super(key: key);
 
-  final CarouselController _controller = CarouselController();
+  final CarouselSliderController _controller = CarouselSliderController();
   final ImagePicker _picker = ImagePicker();
 
   void _takePhoto({required StoryCreateBloc bloc}) async {
@@ -412,6 +413,7 @@ class _CarouselImagesSelected extends StatelessWidget {
       final entity = await PhotoManager.editor.saveImage(
         fileBytes,
         title: pickedFile.name,
+        filename: pickedFile.name,
       );
       bloc.addEntity(entity: entity!);
       bloc.addImageSeleted(image: entity);

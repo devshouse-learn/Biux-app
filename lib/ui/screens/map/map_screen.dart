@@ -505,7 +505,7 @@ class _WidgetCarousel extends StatefulWidget {
 
 class _WidgetCarouselState extends State<_WidgetCarousel> {
   int current = 0;
-  final CarouselController imageController = CarouselController();
+  final CarouselSliderController imageController = CarouselSliderController();
 
   void changeImage(int? index) async {
     current = index!;

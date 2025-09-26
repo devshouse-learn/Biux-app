@@ -14,7 +14,7 @@ class Analitycs {
   static void sendSignUp(String userId) async {
     await analytics.logEvent(
       name: SIGN_UP,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userId,
       },
     );
@@ -23,7 +23,7 @@ class Analitycs {
   static void login(String userName) async {
     await analytics.logEvent(
       name: SIGN_UP,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
       },
     );
@@ -37,7 +37,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: VIEW_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'roadName': roadName,
         'userId': userId,
@@ -54,7 +54,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: ONPRESS_EMPRESA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'name': name,
         'whatsapp': whatsapp,
         'city': city,
@@ -72,7 +72,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: VIEW_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'advertisingName': advertisingName,
         'userId': userId,
@@ -90,7 +90,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: VIEW_PUBLICIDAD,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'userName': userName,
         'advertisingName': advertisingName,
         'userId': userId,
@@ -109,7 +109,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: JOIN_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'km': km,
         'level': level,
         'userName': userName,
@@ -130,7 +130,7 @@ class Analitycs {
   ) async {
     await analytics.logEvent(
       name: LEAVE_RODADA,
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'km': km,
         'level': level,
         'userName': userName,
