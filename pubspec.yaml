@@ -77,8 +77,8 @@ dependencies:
   firebase_messaging:
   fab_circular_menu: ^1.0.2
   spincircle_bottom_bar: ^2.0.0
-  cloud_firestore: ^6.0.1
-  firebase_core: ^4.1.0
+  cloud_firestore: ^6.0.2
+  firebase_core: ^4.1.1
   flare_flutter: ^3.0.2
   fluttericon: ^2.0.0
   #flutter_geocoder: ^0.2.2-nullsafety
