@@ -18,6 +18,7 @@ class TexFieldWidget extends StatefulWidget {
     this.obscureText,
     this.saved,
     this.enabled,
+    this.autofillHints,
   }) : super(key: key);
   final String text;
   final Widget icon;
@@ -32,6 +33,7 @@ class TexFieldWidget extends StatefulWidget {
   final TextInputType? keyboardType;
   final int? maxLength;
   final bool? enabled;
+  final Iterable<String>? autofillHints;
 
   @override
   _TexFieldWidgetState createState() => _TexFieldWidgetState();
@@ -58,6 +60,7 @@ class _TexFieldWidgetState extends State<TexFieldWidget> {
             maxLength: widget.maxLength,
             focusNode: widget.focusNode,
             style: Styles.textLightBlack,
+            autofillHints: widget.autofillHints,
             controller: widget.nameController,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(

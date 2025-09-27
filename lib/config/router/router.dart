@@ -12,10 +12,10 @@ import 'package:biux/ui/screens/group/view_group/view_group_bloc.dart';
 import 'package:biux/ui/screens/group/view_group/view_group_screen.dart';
 import 'package:biux/ui/screens/login/create_user/create_user_bloc.dart';
 import 'package:biux/ui/screens/login/create_user/create_user_screen.dart';
-import 'package:biux/ui/screens/login/login.dart';
 import 'package:biux/ui/screens/login/login_bloc.dart';
 import 'package:biux/ui/screens/main_menu/main_menu.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
+import 'package:biux/ui/screens/map/map_screen.dart';
 import 'package:biux/ui/screens/map/map_screen_bloc.dart';
 import 'package:biux/ui/screens/roads/road_create/map_road/map_road_bloc.dart';
 import 'package:biux/ui/screens/roads/road_create/map_road/map_road_screen.dart';
@@ -32,10 +32,11 @@ import 'package:biux/ui/screens/user/edit_user_screen/edit_user_screen.dart';
 import 'package:biux/ui/screens/user/edit_user_screen/edit_user_screen_bloc.dart';
 import 'package:biux/ui/screens/user/user_screen/user_screen.dart';
 import 'package:biux/ui/screens/user/user_screen/user_screen_bloc.dart';
-import 'package:biux/ui/screens/map/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
+import '../../ui/screens/login/login_phone.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   final args = settings.arguments;
@@ -45,7 +46,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         settings: settings,
         builder: ChangeNotifierProvider(
           create: (_) => LoginBloc(),
-          child: LoginPage(),
+          child: LoginPhonePage(),
         ),
       );
     case AppRoutes.splashRoute:
@@ -179,7 +180,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           child: MapScreen(),
         ),
       );
-      case AppRoutes.myGroupsRoute:
+    case AppRoutes.myGroupsRoute:
       return _buildRoute(
         settings: settings,
         builder: ChangeNotifierProvider(

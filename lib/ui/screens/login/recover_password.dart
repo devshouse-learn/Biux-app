@@ -3,7 +3,6 @@ import 'package:biux/config/images.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/styles.dart';
 import 'package:biux/data/models/user.dart';
-import 'package:biux/ui/screens/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -298,15 +297,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                         .showSnackBar(snackBar);
                                     Future.delayed(
                                       Duration(seconds: 3),
-                                      () async {
-                                        Navigator.push(
-                                          context,
-                                          new MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                LoginPage(),
-                                          ),
-                                        );
-                                      },
+                                      () async {},
                                     );
                                     // await UserRepository()
                                     //     .sendEmail(emailList.userName);

@@ -5,6 +5,8 @@ import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/local_storage/local_storage.dart';
+import 'package:biux/data/repositories/auth/auth_repository.dart';
+import 'package:biux/providers/auth_provider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -34,14 +36,23 @@ void main() async {
   );
   await LocalStorage().init();
   runApp(
-    ChangeNotifierProvider<ThemeNotifier>(
-      create: (_) =>
-          ThemeNotifier(lightTheme //darkModeOn ? darkTheme : lightTheme,
-              ),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MyApp(),
-      ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(
+            authRepository: AuthRepository(
+              baseUrl: 'https://n8n.oktavia.me/webhook',
+            ),
+          ),
+        ),
+        ChangeNotifierProvider<ThemeNotifier>(
+          create: (_) =>
+              ThemeNotifier(lightTheme //darkModeOn ? darkTheme : lightTheme,
+                  ),
+        ),
+        // Otros providers que puedas tener
+      ],
+      child: MyApp(),
     ),
   );
 }
