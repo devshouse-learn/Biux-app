@@ -36,21 +36,21 @@ class MainMenu extends StatelessWidget {
             return _AppBar();
           },
         ),
-        actions: [
-          Selector<MainMenuBloc, int>(
-            selector: (_, bloc) => bloc.pageIndex,
-            builder: (context, value, child) {
-              return _ActionButton();
-            },
-          ),
-        ],
+        // actions: [
+        //   Selector<MainMenuBloc, int>(
+        //     selector: (_, bloc) => bloc.pageIndex,
+        //     builder: (context, value, child) {
+        //       return _ActionButton();
+        //     },
+        //   ),
+        // ],
       ),
-      drawer: Selector<MainMenuBloc, int>(
-        selector: (_, bloc) => bloc.pageIndex,
-        builder: (context, value, child) {
-          return _MainMenuDrawer();
-        },
-      ),
+      // drawer: Selector<MainMenuBloc, int>(
+      //   selector: (_, bloc) => bloc.pageIndex,
+      //   builder: (context, value, child) {
+      //     return _MainMenuDrawer();
+      //   },
+      // ),
       bottomNavigationBar: Selector<MainMenuBloc, int>(
           selector: (_, bloc) => bloc.pageIndex,
           builder: (context, value, child) {
@@ -77,22 +77,22 @@ class _AppBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        if (bloc.pageIndex == 0)
-          Text(
-            '${AppStrings.storyText} ',
-          )
-        else if (bloc.pageIndex == 1)
-          Text(
-            '${AppStrings.rolled} ',
-          )
-        else if (bloc.pageIndex == 2)
-          Text(
-            '${AppStrings.gruposText} ',
-          )
-        else if (bloc.pageIndex == 3)
-          Text(
-            '${AppStrings.map} ',
-          ),
+        // if (bloc.pageIndex == 0)
+        //   Text(
+        //     '${AppStrings.storyText} ',
+        //   )
+        // else if (bloc.pageIndex == 1)
+        //   Text(
+        //     '${AppStrings.rolled} ',
+        //   )
+        // else if (bloc.pageIndex == 2)
+        //   Text(
+        //     '${AppStrings.gruposText} ',
+        //   )
+        // else if (bloc.pageIndex == 3)
+        //   Text(
+        //     '${AppStrings.map} ',
+        //   ),
         Text(
           AppStrings.APP_NAME.toUpperCase(),
           style: Styles.mainMenuTextBiux,
@@ -144,7 +144,7 @@ class _MainMenuDrawer extends StatelessWidget {
       color: AppColors.greyishNavyBlue,
       width: 300,
       child: Drawer(
-        backgroundColor: AppColors.darkBlue,
+        backgroundColor: AppColors.white,
         child: ListView(
           children: <Widget>[
             Container(

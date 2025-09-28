@@ -552,6 +552,7 @@ class Styles {
     fontSize: 25,
     fontFamily: "Poppins",
     fontWeight: FontWeight.bold,
+    color: AppColors.white,
   );
   static const containerTextName = TextStyle(
     color: AppColors.white,

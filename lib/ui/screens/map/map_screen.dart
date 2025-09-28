@@ -1,739 +1,412 @@
 import 'package:biux/config/colors.dart';
-import 'package:biux/config/images.dart';
-import 'package:biux/config/strings.dart';
-import 'package:biux/config/styles.dart';
-import 'package:biux/data/models/city.dart';
-import 'package:biux/data/models/sites.dart';
-import 'package:biux/ui/screens/map/map_screen_bloc.dart';
-import 'package:biux/ui/widgets/button_facebook_widget.dart';
-import 'package:biux/ui/widgets/button_instagram_widget.dart';
-import 'package:biux/ui/widgets/button_whatsapp_widget.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:biux/providers/map_provider.dart';
+import 'package:biux/providers/meeting_point_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class MapScreen extends StatelessWidget {
-  MapScreen({Key? key}) : super(key: key);
+import '../../../data/models/route.dart';
+
+class MapScreen extends StatefulWidget {
+  @override
+  _MapScreenState createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen>
+    with SingleTickerProviderStateMixin {
+  static const CameraPosition _defaultLocation = CameraPosition(
+    target: LatLng(4.4389, -75.2322),
+    zoom: 13,
+  );
+
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
+  String? _previousSelectedPointId;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleSelectedPointChange(String? currentSelectedPointId) {
+    if (currentSelectedPointId != _previousSelectedPointId) {
+      if (currentSelectedPointId != null) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+      _previousSelectedPointId = currentSelectedPointId;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.watch<MapScreenBloc>();
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          SingleChildScrollView(
-            physics: bloc.focusNodeCity.hasFocus
-                ? AlwaysScrollableScrollPhysics()
-                : NeverScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                Selector<MapScreenBloc, bool?>(
-                    selector: (_, bloc) => bloc.serviceEnabled,
-                    builder: (context, serviceEnabled, child) {
-                      return _WidgetSearchCity();
-                    }),
-                if (bloc.focusNodeCity.hasFocus)
-                  Selector<MapScreenBloc, bool?>(
-                      selector: (_, bloc) => bloc.serviceEnabled,
-                      builder: (context, serviceEnabled, child) {
-                        return _ListCity(
-                          listCities: bloc.listCities,
-                        );
-                      })
-                else ...[
-                  if (bloc.serviceEnabled)
-                    Selector<MapScreenBloc, CameraPosition?>(
-                        selector: (_, bloc) => bloc.currentLocation,
-                        builder: (context, currentLocation, child) {
-                          return _MainMapEnabled();
-                        })
-                  else
-                    Selector<MapScreenBloc, LocationData?>(
-                        selector: (_, bloc) => bloc.result,
-                        builder: (context, result, child) {
-                          return _MainMapDisabled();
-                        })
-                ]
+      body: Consumer2<MapProvider, MeetingPointProvider>(
+        builder: (context, mapProvider, meetingPointProvider, _) {
+          if (meetingPointProvider.meetingPoints.isNotEmpty) {
+            mapProvider.updateMeetingPoints(meetingPointProvider.meetingPoints);
+          }
+
+          // Controlar animación cuando cambia el punto seleccionado
+          _handleSelectedPointChange(mapProvider.selectedPoint?.id);
+
+          return Stack(
+            children: [
+              MapView(
+                initialPosition: _defaultLocation,
+                mapProvider: mapProvider,
+              ),
+              if (mapProvider.isLoading || meetingPointProvider.isLoading)
+                const LoadingIndicator(),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: SlideTransition(
+                  position: _offsetAnimation,
+                  child: mapProvider.selectedPoint != null
+                      ? MeetingPointDetailsCard(
+                          mapProvider: mapProvider,
+                          controller: _controller,
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class MapView extends StatelessWidget {
+  final CameraPosition initialPosition;
+  final MapProvider mapProvider;
+
+  const MapView({
+    Key? key,
+    required this.initialPosition,
+    required this.mapProvider,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GoogleMap(
+      initialCameraPosition: initialPosition,
+      markers: mapProvider.markers,
+      polylines: mapProvider.polylines,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: true,
+      zoomControlsEnabled: false,
+      onMapCreated: mapProvider.onMapCreated,
+      onTap: (_) => mapProvider.selectMeetingPoint(null),
+    );
+  }
+}
+
+class LoadingIndicator extends StatelessWidget {
+  const LoadingIndicator({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(AppColors.strongCyan),
+      ),
+    );
+  }
+}
+
+class MeetingPointDetailsCard extends StatelessWidget {
+  final MapProvider mapProvider;
+  final AnimationController controller;
+
+  const MeetingPointDetailsCard({
+    Key? key,
+    required this.mapProvider,
+    required this.controller,
+  }) : super(key: key);
+
+  Future<void> _openGoogleMaps() async {
+    final point = mapProvider.selectedPoint!;
+    final url =
+        'https://www.google.com/maps/dir/?api=1&destination=${point.latitude},${point.longitude}&travelmode=driving';
+
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.transparent,
+      child: InkWell(
+        onTap: () {}, // Previene que los toques pasen al mapa
+        child: Container(
+          margin: EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.black.withOpacity(0.2),
+                blurRadius: 8,
+                offset: Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DetailsHeader(mapProvider: mapProvider),
+              SizedBox(height: 8),
+              Text(
+                mapProvider.selectedPoint!.description,
+                style: TextStyle(color: AppColors.grey),
+              ),
+              SizedBox(height: 16),
+              // Botón de navegación
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _openGoogleMaps,
+                  icon: Icon(Icons.navigation, color: AppColors.white),
+                  label: Text(
+                    'Ir al punto de encuentro',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.strongCyan,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              if (mapProvider.selectedPoint!.routes.isNotEmpty) ...[
+                SizedBox(height: 16),
+                Text(
+                  'Rutas disponibles:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                RoutesList(routes: mapProvider.selectedPoint!.routes),
               ],
-            ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MainMapEnabled extends StatelessWidget {
-  _MainMapEnabled({Key? key}) : super(key: key);
-  List image = [];
-
-  @override
-  Widget build(BuildContext context) {
-    final bloc = context.watch<MapScreenBloc>();
-    var size = MediaQuery.of(context).size;
-    return SizedBox(
-      height: size.height * 0.730,
-      child: GoogleMap(
-        mapToolbarEnabled: false,
-        zoomControlsEnabled: false,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        mapType: MapType.normal,
-        initialCameraPosition: bloc.currentLocation,
-        onMapCreated: (
-          GoogleMapController controller,
-        ) {
-          bloc.controller.complete(
-            controller,
-          );
-        },
-        markers: bloc.sites
-            .map((site) => Marker(
-                markerId: MarkerId(
-                  site.id,
-                ),
-                position: LatLng(
-                  site.latitude,
-                  site.longitude,
-                ),
-                icon: site.iconBytes!,
-                onTap: () async {
-                  _showDialogDescrpition(
-                    context: context,
-                    onTapMarkRoute: () {
-                      bloc.getRoute(
-                        LatLng(
-                          bloc.result.latitude!,
-                          bloc.result.longitude!,
-                        ),
-                        LatLng(
-                          site.latitude,
-                          site.longitude,
-                        ),
-                      );
-                    },
-                    site: site,
-                    serviceEnabled: bloc.serviceEnabled,
-                    onTapPermissions: bloc.onTapPermissions,
-                  );
-                }))
-            .toSet(),
-        polylines: Set<Polyline>.of(
-          bloc.polylines.values,
         ),
       ),
     );
   }
 }
 
-class _MainMapDisabled extends StatelessWidget {
-  _MainMapDisabled({Key? key}) : super(key: key);
-  List image = [];
+class DetailsHeader extends StatelessWidget {
+  final MapProvider mapProvider;
+
+  const DetailsHeader({
+    Key? key,
+    required this.mapProvider,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.watch<MapScreenBloc>();
-    var size = MediaQuery.of(context).size;
-    return SizedBox(
-      height: size.height * 0.730,
-      child: GoogleMap(
-        onCameraMove: (value) {
-          bloc.onTapService();
-        },
-        mapToolbarEnabled: false,
-        zoomControlsEnabled: false,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        mapType: MapType.normal,
-        initialCameraPosition: bloc.currentLocation,
-        onMapCreated: (
-          GoogleMapController controller,
-        ) {
-          bloc.controller.complete(
-            controller,
-          );
-        },
-        markers: bloc.sites
-            .map((site) => Marker(
-                markerId: MarkerId(
-                  site.id,
-                ),
-                position: LatLng(
-                  site.latitude,
-                  site.longitude,
-                ),
-                icon: site.iconBytes!,
-                onTap: () async {
-                  _showDialogDescrpition(
-                    context: context,
-                    onTapMarkRoute: () {
-                      bloc.onTapService();
-                    },
-                    site: site,
-                    serviceEnabled: bloc.serviceEnabled,
-                    onTapPermissions: bloc.onTapPermissions,
-                  );
-                }))
-            .toSet(),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            mapProvider.selectedPoint!.name,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () => mapProvider.selectMeetingPoint(null),
+        ),
+      ],
+    );
+  }
+}
+
+class RoutesList extends StatelessWidget {
+  final List<BiuxRoute> routes;
+
+  const RoutesList({
+    Key? key,
+    required this.routes,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: routes.length,
+        itemBuilder: (context, index) => RouteCard(route: routes[index]),
       ),
     );
   }
 }
 
-void _showDialogDescrpition({
-  required Sites site,
-  required Function onTapMarkRoute,
-  required BuildContext context,
-  required bool serviceEnabled,
-  required VoidCallback onTapPermissions,
-}) async {
-  return await showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return AlertDialog(
-        backgroundColor: AppColors.transparent,
-        alignment: Alignment.center,
-        contentPadding: EdgeInsets.zero,
-        content: DecoratedBox(
-          decoration: ShapeDecoration(
-            color: AppColors.transparent,
-            shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: AppColors.white,
-                    width: double.infinity,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                ) +
-                Border(
-                  bottom: BorderSide(
-                    width: 20,
-                    color: AppColors.transparent,
-                  ),
-                  top: BorderSide(
-                    width: 10,
-                    color: AppColors.transparent,
-                  ),
-                ) +
-                Border.symmetric(
-                  vertical: BorderSide(
-                    width: 5,
-                    color: AppColors.transparent,
-                  ),
-                ) +
-                Border.symmetric(
-                  vertical: BorderSide(
-                    width: 5,
-                    color: AppColors.transparent,
-                  ),
-                ) +
-                Border(
-                  top: BorderSide(
-                    width: 20,
-                    color: AppColors.transparent,
-                  ),
-                ),
-          ),
+class RouteCard extends StatelessWidget {
+  final BiuxRoute route;
+
+  const RouteCard({
+    Key? key,
+    required this.route,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mapProvider = Provider.of<MapProvider>(context);
+    final isSelected = mapProvider.selectedRoute?.id == route.id;
+
+    return Card(
+      margin: EdgeInsets.only(right: 8),
+      color:
+          isSelected ? AppColors.strongCyan.withOpacity(0.1) : AppColors.white,
+      child: InkWell(
+        onTap: () {
+          if (isSelected) {
+            mapProvider
+                .selectRoute(null); // Deseleccionar si ya está seleccionada
+          } else {
+            mapProvider.selectRoute(route); // Seleccionar esta ruta
+          }
+        },
+        borderRadius: BorderRadius.circular(4),
+        child: Container(
+          width: 200,
+          padding: EdgeInsets.all(12),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Expanded(
-                    child: const SizedBox(),
-                  ),
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.white,
-                        width: 4,
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          site.icon,
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.circular(
-                        100.0,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: ClipOval(
-                        child: Material(
-                          color: AppColors.strongCyan,
-                          child: InkWell(
-                            splashColor: AppColors.strongCyan,
-                            onTap: () => Navigator.of(context).pop(),
-                            child: SizedBox(
-                              width: 25,
-                              height: 25,
-                              child: Icon(
-                                Icons.close,
-                                color: AppColors.white,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                child: Text(
-                  site.description,
-                  style: Styles.sizedBoxHintStyle,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              _WidgetCarousel(
-                imageSliders: site.files,
-              ),
-              _buttonSocialNetworks(
-                site: site,
-              ),
-              Center(
-                child: SizedBox(
-                  width: 130,
-                  child: TextButton(
-                    style: Styles().textButtonStyle,
-                    onPressed: () {
-                      if (serviceEnabled) {
-                        onTapMarkRoute();
-                        Navigator.pop(context);
-                      } else {
-                        Navigator.pop(context);
-                        showDialogPermissions(
-                          context: context,
-                          onTap: onTapPermissions,
-                        );
-                      }
-                    },
                     child: Text(
-                      AppStrings.HowGet,
-                      style: Styles.containerImage,
+                      route.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.strongCyan,
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-void showDialogPermissions({
-  required BuildContext context,
-  required VoidCallback onTap,
-}) async {
-  return await showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return AlertDialog(
-        backgroundColor: AppColors.transparent,
-        alignment: Alignment.center,
-        contentPadding: EdgeInsets.zero,
-        content: DecoratedBox(
-          decoration: ShapeDecoration(
-            color: AppColors.transparent,
-            shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: AppColors.white,
-                    width: double.infinity,
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(
-                      20,
+                  if (isSelected)
+                    Icon(
+                      Icons.route,
+                      color: AppColors.strongCyan,
+                      size: 20,
                     ),
-                  ),
-                ) +
-                Border(
-                  bottom: BorderSide(
-                    width: 20,
-                    color: AppColors.transparent,
-                  ),
-                ) +
-                Border.symmetric(
-                  vertical: BorderSide(
-                    width: 5,
-                    color: AppColors.transparent,
-                  ),
-                ) +
-                Border.symmetric(
-                  vertical: BorderSide(
-                    width: 5,
-                    color: AppColors.transparent,
-                  ),
-                ) +
-                Border(
-                  top: BorderSide(
-                    width: 20,
-                    color: AppColors.transparent,
-                  ),
-                ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(
-                height: 25,
+                ],
               ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                margin: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 10,
-                ),
-                child: Text(
-                  AppStrings.permissionsText,
-                ),
+              SizedBox(height: 4),
+              Text(
+                route.description,
+                style: TextStyle(fontSize: 12),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(
-                height: 25,
-              ),
+              Spacer(),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: 110,
-                    child: TextButton(
-                      style: Styles().textButtonWhiteStyle,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        AppStrings.cancelText,
-                        style: Styles.containerImage.copyWith(
-                          color: AppColors.black,
-                        ),
+                  RouteLevelBadge(level: route.level),
+                  if (!isSelected)
+                    Text(
+                      'Toca para ver ruta',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.grey,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 110,
-                    child: TextButton(
-                      style: Styles().textButtonStyle,
-                      onPressed: () {
-                        onTap();
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        AppStrings.confirm,
-                        style: Styles.containerImage,
+                  if (isSelected)
+                    Text(
+                      'Ruta mostrada',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppColors.strongCyan,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
                 ],
               ),
             ],
           ),
         ),
-      );
-    },
-  );
-}
-
-class _buttonSocialNetworks extends StatelessWidget {
-  Sites site;
-  _buttonSocialNetworks({Key? key, required this.site}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 10,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          if (site.instagram.isNotEmpty)
-            ButtonInstagramWidget(
-              linkinstagram: site.instagram,
-            ),
-          const SizedBox(
-            width: 20,
-          ),
-          if (site.whatsapp.isNotEmpty)
-            ButtonWhatsappWidget(
-              whatsapp: site.whatsapp,
-              name: site.name,
-            ),
-          const SizedBox(
-            width: 20,
-          ),
-          if (site.facebook.isNotEmpty)
-            ButtonFacebookWidget(
-              linkFacebook: site.facebook,
-            ),
-        ],
       ),
     );
   }
 }
 
-class _WidgetCarousel extends StatefulWidget {
-  List<String> imageSliders;
-  _WidgetCarousel({Key? key, required this.imageSliders}) : super(key: key);
+class RouteLevelBadge extends StatelessWidget {
+  final String level;
 
-  @override
-  State<_WidgetCarousel> createState() => _WidgetCarouselState();
-}
-
-class _WidgetCarouselState extends State<_WidgetCarousel> {
-  int current = 0;
-  final CarouselSliderController imageController = CarouselSliderController();
-
-  void changeImage(int? index) async {
-    current = index!;
-    setState(() {});
-  }
+  const RouteLevelBadge({
+    Key? key,
+    required this.level,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 300,
-      width: 300,
-      child: Column(
-        children: [
-          CarouselSlider(
-            items: widget.imageSliders
-                .map((e) => Container(
-                      margin: EdgeInsets.only(
-                        left: 40,
-                        right: 40,
-                        bottom: 10,
-                        top: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          20,
-                        ),
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            e,
-                          ),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ))
-                .toList(),
-            carouselController: imageController,
-            options: CarouselOptions(
-              aspectRatio: 50,
-              enableInfiniteScroll: false,
-              viewportFraction: 1.0,
-              initialPage: 0,
-              enlargeCenterPage: false,
-              height: 250,
-              onPageChanged: (index, reason) {
-                changeImage(
-                  index,
-                );
-              },
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: widget.imageSliders.asMap().entries.map(
-              (entry) {
-                return GestureDetector(
-                  onTap: () => imageController.animateToPage(
-                    entry.key,
-                  ),
-                  child: Container(
-                    width: 10.0,
-                    height: 10.0,
-                    margin: EdgeInsets.symmetric(
-                      vertical: 5.0,
-                      horizontal: 4.0,
-                    ),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.black,
-                      ),
-                      color: (current == entry.key
-                          ? AppColors.strongCyan
-                          : AppColors.darkBlue),
-                    ),
-                  ),
-                );
-              },
-            ).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _WidgetSearchCity extends StatelessWidget {
-  _WidgetSearchCity({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final bloc = context.watch<MapScreenBloc>();
-    return Container(
-      width: 350,
-      margin: EdgeInsets.all(
-        10,
-      ),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          20,
+    return Flexible(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 6,
+          vertical: 4,
         ),
-        border: Border.all(
-          color: AppColors.gray,
-          width: 1,
+        decoration: BoxDecoration(
+          color: AppColors.strongCyan.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
         ),
-      ),
-      child: TextFormField(
-        controller: bloc.cityController,
-        onTap: bloc.setState,
-        style: Styles.TextCityList,
-        focusNode: bloc.focusNodeCity,
-        onChanged: (value) {
-          bloc.filterCities();
-        },
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(
-            10.0,
-            15.0,
-            20.0,
-            15.0,
+        child: Text(
+          'Nivel: $level',
+          style: TextStyle(
+            color: AppColors.strongCyan,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
           ),
-          border: InputBorder.none,
-          hintText: AppStrings.searchCitie,
-          hintStyle: Styles.TextSearch,
-          prefixIcon: Image.asset(
-            Images.kImageLocationGrey,
-            height: 10,
-            scale: 3.0,
-          ),
-          suffixIcon: bloc.focusNodeCity.hasFocus
-              ? IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: AppColors.gray,
-                  ),
-                  onPressed: () {
-                    bloc.cityController.clear();
-                    bloc.getCities();
-                    bloc.focusNodeCity.unfocus();
-                    bloc.setState();
-                  })
-              : SizedBox(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-      ),
-    );
-  }
-}
-
-class _ListCity extends StatelessWidget {
-  List<City> listCities = [];
-  _ListCity({Key? key, required this.listCities}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final bloc = context.watch<MapScreenBloc>();
-    return Container(
-      child: Column(
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.only(
-              left: 25,
-            ),
-            horizontalTitleGap: 0,
-            minLeadingWidth: 36,
-            iconColor: AppColors.black,
-            leading: Image.asset(
-              Images.kImageLocation2,
-              height: 20,
-            ),
-            title: Text(
-              AppStrings.currentLocation,
-              style: Styles.TextCityList,
-            ),
-            onTap: () {
-              if (bloc.serviceEnabled) {
-                bloc.onTapMyLocation();
-              } else if (!bloc.serviceEnabled &&
-                  bloc.validate == AppStrings.deniedText) {
-                bloc.onTapService();
-              } else if (bloc.validate == AppStrings.deniedForeverText) {
-                showDialogPermissions(
-                  context: context,
-                  onTap: bloc.onTapPermissions,
-                );
-              }
-            },
-          ),
-          Divider(
-            color: AppColors.gray,
-            height: 1,
-          ),
-          SingleChildScrollView(
-            child: Wrap(
-              children: listCities
-                  .map(
-                    (city) => Column(
-                      children: [
-                        ListTile(
-                          contentPadding: EdgeInsets.only(
-                            left: 60,
-                          ),
-                          title: Text(
-                            city.name,
-                            style: Styles.TextCityList,
-                          ),
-                          onTap: () {
-                            bloc.onTapCities(
-                              city.name,
-                              double.parse(
-                                city.latitude,
-                              ),
-                              double.parse(
-                                city.longitude,
-                              ),
-                            );
-                          },
-                        ),
-                        Divider(
-                          color: AppColors.gray,
-                          height: 1,
-                        ),
-                      ],
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-        ],
       ),
     );
   }

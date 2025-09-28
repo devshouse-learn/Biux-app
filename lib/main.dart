@@ -7,6 +7,8 @@ import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/repositories/auth/auth_repository.dart';
 import 'package:biux/providers/auth_provider.dart';
+import 'package:biux/providers/map_provider.dart';
+import 'package:biux/providers/meeting_point_provider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -16,6 +18,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'config/router/router.dart' as router;
+import 'data/repositories/meeting_point_repository.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -49,6 +52,14 @@ void main() async {
           create: (_) =>
               ThemeNotifier(lightTheme //darkModeOn ? darkTheme : lightTheme,
                   ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MeetingPointProvider(
+            repository: MeetingPointRepository(),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MapProvider(),
         ),
         // Otros providers que puedas tener
       ],
