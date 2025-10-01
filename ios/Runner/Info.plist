@@ -43,5 +43,16 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Queremos acceder a tu galería para que puedas guardar y compartir tus rutas y fotos de ciclismo.</string>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Usamos tu ubicación para registrar y mostrar tus recorridos en bicicleta en tiempo real.</string>
+
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Necesitamos acceso continuo a tu ubicación para rastrear tus rutas incluso cuando la app está en segundo plano.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Usamos la cámara para tomar fotos de tus recorridos y momentos en tus rutas en bici.</string>
+
 </dict>
 </plist>
