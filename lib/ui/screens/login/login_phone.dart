@@ -1,8 +1,9 @@
 import 'package:biux/config/colors.dart' hide Colors;
 import 'package:biux/config/images.dart';
-import 'package:biux/config/router/router_path.dart';
+import 'package:biux/config/router/app_routes.dart';
 import 'package:biux/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LoginPhonePage extends StatefulWidget {
@@ -69,11 +70,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                   // Manejar estados de autenticación
                   if (auth.state == AuthState.authenticated) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        AppRoutes.mainMenuRoute,
-                        (route) => false,
-                      );
+                      context.go(AppRoutes.map);
                     });
                   }
 
