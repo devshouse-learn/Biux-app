@@ -3,8 +3,10 @@ import 'dart:ui' as ui;
 import 'package:biux/config/images.dart';
 import 'package:biux/data/models/meeting_point.dart';
 import 'package:biux/data/services/directions_service.dart';
+import 'package:biux/providers/location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../data/models/route.dart';
@@ -17,6 +19,7 @@ class MapState {
   final BiuxRoute? selectedRoute;
   final bool isLoading;
   final LatLng defaultLocation;
+  final LatLng? userLocation;
 
   MapState({
     required this.markers,
@@ -27,6 +30,7 @@ class MapState {
     this.isLoading = false,
     // Coordenadas de Ibagué por defecto
     this.defaultLocation = const LatLng(4.4389, -75.2322),
+    this.userLocation,
   });
 
   MapState copyWith({
@@ -39,6 +43,8 @@ class MapState {
     bool clearSelectedRoute = false,
     bool? isLoading,
     LatLng? defaultLocation,
+    LatLng? userLocation,
+    bool clearUserLocation = false,
   }) {
     return MapState(
       markers: markers ?? this.markers,
@@ -50,6 +56,8 @@ class MapState {
           clearSelectedRoute ? null : (selectedRoute ?? this.selectedRoute),
       isLoading: isLoading ?? this.isLoading,
       defaultLocation: defaultLocation ?? this.defaultLocation,
+      userLocation:
+          clearUserLocation ? null : (userLocation ?? this.userLocation),
     );
   }
 }
@@ -62,6 +70,8 @@ class MapProvider extends ChangeNotifier {
     isLoading: false,
   );
   BitmapDescriptor? _meetingPointIcon;
+  LocationProvider? _locationProvider;
+  bool _locationRequested = false;
 
   MapState get state => _state;
   Set<Marker> get markers => _state.markers;
@@ -69,6 +79,11 @@ class MapProvider extends ChangeNotifier {
   MeetingPoint? get selectedPoint => _state.selectedPoint;
   BiuxRoute? get selectedRoute => _state.selectedRoute;
   bool get isLoading => _state.isLoading;
+  LatLng? get userLocation => _state.userLocation;
+
+  void setLocationProvider(LocationProvider locationProvider) {
+    _locationProvider = locationProvider;
+  }
 
   Future<void> _loadMeetingPointIcon() async {
     if (_meetingPointIcon != null) return;
@@ -132,13 +147,61 @@ class MapProvider extends ChangeNotifier {
   void onMapCreated(GoogleMapController controller) async {
     _mapController = controller;
     await _loadMeetingPointIcon();
+
+    // Intentar obtener ubicación del usuario si ya tiene permisos
+    if (_locationProvider != null && !_locationRequested) {
+      _locationRequested = true;
+      await _tryGetUserLocation();
+    }
+
+    // Centrar en la ubicación del usuario si está disponible, sino en Ibagué
+    LatLng initialLocation = _state.userLocation ?? _state.defaultLocation;
     _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(
-        _state.defaultLocation,
-        13,
-      ),
+      CameraUpdate.newLatLngZoom(initialLocation, 13),
     );
+
     notifyListeners();
+  }
+
+  /// Solicita permisos de ubicación cuando el usuario explícitamente lo requiere
+  Future<void> requestUserLocation() async {
+    if (_locationProvider == null) return;
+
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
+    Position? position = await _locationProvider!.getCurrentLocation();
+
+    if (position != null) {
+      LatLng userLatLng = LatLng(position.latitude, position.longitude);
+      _state = _state.copyWith(
+        userLocation: userLatLng,
+        isLoading: false,
+      );
+
+      // Centrar mapa en la ubicación del usuario
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(userLatLng, 15),
+      );
+    } else {
+      _state = _state.copyWith(isLoading: false);
+    }
+
+    notifyListeners();
+  }
+
+  /// Intenta obtener ubicación sin solicitar permisos si no los tiene
+  Future<void> _tryGetUserLocation() async {
+    if (_locationProvider == null) return;
+
+    Position? position = await _locationProvider!.getLocationForMap();
+
+    if (position != null) {
+      _state = _state.copyWith(
+        userLocation: LatLng(position.latitude, position.longitude),
+      );
+      notifyListeners();
+    }
   }
 
   void updateMeetingPoints(List<MeetingPoint> points) async {

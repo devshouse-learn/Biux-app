@@ -1,12 +1,13 @@
 import 'dart:core';
 
-import 'package:biux/config/router/router_path.dart';
+import 'package:biux/config/router/app_router.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/repositories/auth/auth_repository.dart';
 import 'package:biux/providers/auth_provider.dart';
+import 'package:biux/providers/location_provider.dart';
 import 'package:biux/providers/map_provider.dart';
 import 'package:biux/providers/meeting_point_provider.dart';
 import 'package:biux/providers/user_provider.dart';
@@ -16,9 +17,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import "package:flutter/services.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'config/router/router.dart' as router;
 import 'data/repositories/meeting_point_repository.dart';
 import 'firebase_options.dart';
 
@@ -63,6 +64,9 @@ void main() async {
           create: (_) => MapProvider(),
         ),
         ChangeNotifierProvider(
+          create: (_) => LocationProvider(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => UserProvider(),
         ),
         // Otros providers que puedas tener
@@ -74,6 +78,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -81,26 +86,24 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    return MaterialApp(
+
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [
-        const Locale(AppStrings.en, AppStrings.us),
-      ],
-      navigatorObservers: [
-        FirebaseAnalyticsObserver(analytics: analytics),
+      supportedLocales: const [
+        Locale(AppStrings.en, AppStrings.us),
       ],
       title: AppStrings.APP_NAME,
       theme: themeNotifier.getTheme(),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
       ),
-      initialRoute: AppRoutes.splashRoute,
-      onGenerateRoute: router.generateRoute,
+      // Configuración de Go Router
+      routerConfig: AppRouter.createRouter(),
     );
   }
 }

@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/colors.dart';
+import '../../config/router/app_routes.dart';
+import '../../providers/meeting_point_provider.dart';
 import '../../providers/user_provider.dart';
-import '../screens/user/profile_screen.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -126,7 +128,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   title: Text('Mapa'),
                   onTap: () {
                     Navigator.pop(context);
-                    // Ya estamos en el mapa, no hacer nada más
+                    context.go(AppRoutes.map);
                   },
                 ),
                 ListTile(
@@ -134,10 +136,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   title: Text('Mi Perfil'),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfileScreen()),
-                    );
+                    context.go(AppRoutes.profile);
                   },
                 ),
                 ListTile(
@@ -199,7 +198,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       title: Text('Cerrar Sesión',
                           style: TextStyle(color: AppColors.red)),
                       onTap: () {
-                        Navigator.pop(context);
+                        // NO cerrar el drawer aquí - se cierra después del logout
                         _showLogoutDialog(context, userProvider);
                       },
                     );
@@ -221,9 +220,49 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
+  // Método de logout más directo y robusto
+  Future<void> _performLogout(BuildContext context) async {
+    try {
+      print('🔄 Iniciando logout...');
+
+      // 1. Detener listeners de Firestore inmediatamente
+      try {
+        final meetingPointProvider =
+            Provider.of<MeetingPointProvider>(context, listen: false);
+        meetingPointProvider.stopListening();
+        print('✅ MeetingPointProvider detenido');
+      } catch (e) {
+        print('⚠️ Error deteniendo MeetingPointProvider: $e');
+      }
+
+      // 2. Limpiar UserProvider primero
+      try {
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        await userProvider.signOut();
+        print('✅ UserProvider limpiado');
+      } catch (e) {
+        print('⚠️ Error en UserProvider signOut: $e');
+      }
+
+      // 3. Limpiar Firebase Auth (esto triggers el refreshListenable del router)
+      await FirebaseAuth.instance.signOut();
+      print('✅ Firebase Auth limpiado');
+
+      // 4. Esperar un momento para que el router detecte el cambio
+      await Future.delayed(Duration(milliseconds: 300));
+      print('✅ Logout completado');
+
+      return; // Éxito
+    } catch (e) {
+      print('❌ Error durante logout: $e');
+      throw e; // Re-lanzar para manejo en UI
+    }
+  }
+
   void _showLogoutDialog(BuildContext context, UserProvider userProvider) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Row(
@@ -239,16 +278,94 @@ class _AppDrawerState extends State<AppDrawer> {
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text('Cancelar'),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: () async {
+                // Capturar el contexto del widget antes de cualquier operación asíncrona
+                final widgetContext = context;
+
+                // Cerrar diálogo de confirmación
                 Navigator.of(dialogContext).pop();
-                await userProvider.signOut();
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/login', (route) => false);
+
+                // Verificar que el contexto sigue siendo válido antes de mostrar el loading
+                if (!widgetContext.mounted) {
+                  print('❌ Contexto inválido, abortando logout');
+                  return;
+                }
+
+                // Mostrar diálogo de loading usando el contexto capturado
+                showDialog(
+                  context: widgetContext,
+                  barrierDismissible: false,
+                  builder: (BuildContext loadingContext) {
+                    return WillPopScope(
+                      onWillPop: () async => false,
+                      child: AlertDialog(
+                        content: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.strongCyan),
+                            ),
+                            SizedBox(width: 16),
+                            Text('Cerrando sesión...'),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+
+                try {
+                  print('🔄 Iniciando logout desde drawer...');
+
+                  // Detener la escucha del MeetingPointProvider si existe
+                  try {
+                    final meetingPointProvider =
+                        Provider.of<MeetingPointProvider>(widgetContext,
+                            listen: false);
+                    meetingPointProvider.stopListening();
+                    print('✅ MeetingPointProvider detenido');
+                  } catch (e) {
+                    print('⚠️ Error deteniendo MeetingPointProvider: $e');
+                  }
+
+                  // Limpiar UserProvider primero
+                  await userProvider.signOut();
+                  print('✅ UserProvider limpiado');
+
+                  // Limpiar Firebase Auth (esto activa el refreshListenable del router)
+                  await FirebaseAuth.instance.signOut();
+                  print('✅ Firebase Auth limpiado');
+
+                  // Esperar un momento para que el router detecte el cambio
+                  await Future.delayed(Duration(milliseconds: 300));
+                  print('✅ Logout completado');
+
+                  // NO hacer pop del loading dialog - el router redirigirá automáticamente
+                  // y eso cerrará todos los diálogos abiertos
+                  print(
+                      '✅ Logout completado, esperando redirección automática del router');
+                } catch (e) {
+                  print('❌ Error en logout desde drawer: $e');
+
+                  // Solo en caso de error, cerrar loading dialog y mostrar error
+                  if (widgetContext.mounted) {
+                    Navigator.of(widgetContext).pop();
+
+                    // Mostrar error
+                    ScaffoldMessenger.of(widgetContext).showSnackBar(
+                      SnackBar(
+                        content:
+                            Text('Error al cerrar sesión: ${e.toString()}'),
+                        backgroundColor: AppColors.red,
+                      ),
+                    );
+                  }
+                }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-              child: Text('Cerrar Sesión',
-                  style: TextStyle(color: AppColors.white)),
+              child:
+                  Text('Cerrar Sesión', style: TextStyle(color: AppColors.red)),
             ),
           ],
         );

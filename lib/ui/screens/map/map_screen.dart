@@ -1,6 +1,8 @@
 import 'package:biux/config/colors.dart';
+import 'package:biux/providers/location_provider.dart';
 import 'package:biux/providers/map_provider.dart';
 import 'package:biux/providers/meeting_point_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -13,60 +15,41 @@ class MapScreen extends StatefulWidget {
   _MapScreenState createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen>
-    with SingleTickerProviderStateMixin {
+class _MapScreenState extends State<MapScreen> {
   static const CameraPosition _defaultLocation = CameraPosition(
     target: LatLng(4.4389, -75.2322),
     zoom: 13,
   );
 
-  late AnimationController _controller;
-  late Animation<Offset> _offsetAnimation;
-  String? _previousSelectedPointId;
-
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleSelectedPointChange(String? currentSelectedPointId) {
-    if (currentSelectedPointId != _previousSelectedPointId) {
-      if (currentSelectedPointId != null) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
+    // Iniciar la escucha de puntos de encuentro cuando el usuario está autenticado
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final meetingPointProvider =
+            Provider.of<MeetingPointProvider>(context, listen: false);
+        meetingPointProvider.startListening();
       }
-      _previousSelectedPointId = currentSelectedPointId;
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<MapProvider, MeetingPointProvider>(
-      builder: (context, mapProvider, meetingPointProvider, _) {
-        if (meetingPointProvider.meetingPoints.isNotEmpty) {
+    return Consumer3<MapProvider, MeetingPointProvider, LocationProvider>(
+      builder:
+          (context, mapProvider, meetingPointProvider, locationProvider, _) {
+        // Conectar LocationProvider con MapProvider una vez
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          mapProvider.setLocationProvider(locationProvider);
+        });
+
+        // Cargar puntos de encuentro - verificar que el provider no sea null
+        if (meetingPointProvider != null &&
+            meetingPointProvider.meetingPoints.isNotEmpty) {
           mapProvider.updateMeetingPoints(meetingPointProvider.meetingPoints);
         }
-
-        // Controlar animación cuando cambia el punto seleccionado
-        _handleSelectedPointChange(mapProvider.selectedPoint?.id);
 
         return Stack(
           children: [
@@ -74,22 +57,57 @@ class _MapScreenState extends State<MapScreen>
               initialPosition: _defaultLocation,
               mapProvider: mapProvider,
             ),
-            if (mapProvider.isLoading || meetingPointProvider.isLoading)
-              const LoadingIndicator(),
+
+            // Botón flotante para solicitar ubicación
             Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: SlideTransition(
-                position: _offsetAnimation,
-                child: mapProvider.selectedPoint != null
-                    ? MeetingPointDetailsCard(
-                        mapProvider: mapProvider,
-                        controller: _controller,
+              top: 16,
+              right: 16,
+              child: FloatingActionButton(
+                heroTag: "location_btn",
+                mini: true,
+                backgroundColor: AppColors.strongCyan,
+                foregroundColor: AppColors.white,
+                onPressed: () async {
+                  await mapProvider.requestUserLocation();
+
+                  if (locationProvider.error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(locationProvider.error!),
+                        backgroundColor: AppColors.red,
+                      ),
+                    );
+                  }
+                },
+                child: locationProvider.isLoading
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.white),
+                        ),
                       )
-                    : const SizedBox.shrink(),
+                    : Icon(Icons.my_location),
               ),
             ),
+
+            if (mapProvider.isLoading ||
+                (meetingPointProvider != null &&
+                    meetingPointProvider.isLoading))
+              const LoadingIndicator(),
+
+            // Card de detalles del punto de encuentro
+            if (mapProvider.selectedPoint != null)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: MeetingPointDetailsCard(
+                  mapProvider: mapProvider,
+                ),
+              ),
           ],
         );
       },
@@ -137,12 +155,10 @@ class LoadingIndicator extends StatelessWidget {
 
 class MeetingPointDetailsCard extends StatelessWidget {
   final MapProvider mapProvider;
-  final AnimationController controller;
 
   const MeetingPointDetailsCard({
     Key? key,
     required this.mapProvider,
-    required this.controller,
   }) : super(key: key);
 
   Future<void> _openGoogleMaps() async {
