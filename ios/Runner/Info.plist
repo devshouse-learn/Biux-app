@@ -54,5 +54,13 @@
     <key>NSCameraUsageDescription</key>
     <string>Usamos la cámara para tomar fotos de tus recorridos y momentos en tus rutas en bici.</string>
 
+	<!-- Configuración para evitar preguntas de encriptación en TestFlight -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
+	<!-- Configuración adicional de encriptación (opcional pero recomendada) -->
+	<key>ITSEncryptionExportComplianceCode</key>
+	<string>NO</string>
+
 </dict>
 </plist>
