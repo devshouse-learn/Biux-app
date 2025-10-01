@@ -59,42 +59,40 @@ class _MapScreenState extends State<MapScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer2<MapProvider, MeetingPointProvider>(
-        builder: (context, mapProvider, meetingPointProvider, _) {
-          if (meetingPointProvider.meetingPoints.isNotEmpty) {
-            mapProvider.updateMeetingPoints(meetingPointProvider.meetingPoints);
-          }
+    return Consumer2<MapProvider, MeetingPointProvider>(
+      builder: (context, mapProvider, meetingPointProvider, _) {
+        if (meetingPointProvider.meetingPoints.isNotEmpty) {
+          mapProvider.updateMeetingPoints(meetingPointProvider.meetingPoints);
+        }
 
-          // Controlar animación cuando cambia el punto seleccionado
-          _handleSelectedPointChange(mapProvider.selectedPoint?.id);
+        // Controlar animación cuando cambia el punto seleccionado
+        _handleSelectedPointChange(mapProvider.selectedPoint?.id);
 
-          return Stack(
-            children: [
-              MapView(
-                initialPosition: _defaultLocation,
-                mapProvider: mapProvider,
+        return Stack(
+          children: [
+            MapView(
+              initialPosition: _defaultLocation,
+              mapProvider: mapProvider,
+            ),
+            if (mapProvider.isLoading || meetingPointProvider.isLoading)
+              const LoadingIndicator(),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: SlideTransition(
+                position: _offsetAnimation,
+                child: mapProvider.selectedPoint != null
+                    ? MeetingPointDetailsCard(
+                        mapProvider: mapProvider,
+                        controller: _controller,
+                      )
+                    : const SizedBox.shrink(),
               ),
-              if (mapProvider.isLoading || meetingPointProvider.isLoading)
-                const LoadingIndicator(),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: SlideTransition(
-                  position: _offsetAnimation,
-                  child: mapProvider.selectedPoint != null
-                      ? MeetingPointDetailsCard(
-                          mapProvider: mapProvider,
-                          controller: _controller,
-                        )
-                      : const SizedBox.shrink(),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

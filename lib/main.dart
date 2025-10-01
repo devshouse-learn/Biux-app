@@ -9,6 +9,7 @@ import 'package:biux/data/repositories/auth/auth_repository.dart';
 import 'package:biux/providers/auth_provider.dart';
 import 'package:biux/providers/map_provider.dart';
 import 'package:biux/providers/meeting_point_provider.dart';
+import 'package:biux/providers/user_provider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -60,6 +61,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => MapProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
         ),
         // Otros providers que puedas tener
       ],
