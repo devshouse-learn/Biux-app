@@ -2,6 +2,7 @@ import 'package:biux/config/colors.dart';
 import 'package:biux/config/router/router_path.dart';
 import 'package:biux/config/strings.dart';
 import 'package:biux/data/models/group.dart';
+import 'package:biux/providers/ride_provider.dart';
 import 'package:biux/ui/screens/group/group_create/group_create_bloc.dart';
 import 'package:biux/ui/screens/group/group_create/group_create_screen.dart';
 import 'package:biux/ui/screens/group/group_list/group_list_screen.dart';
@@ -101,7 +102,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
               create: (_) => StoryViewBloc(),
             ),
             ChangeNotifierProvider(
-              create: (_) => RoadsListScreenBloc(),
+              create: (_) => RideProvider(), // Para las rodadas
+            ),
+            ChangeNotifierProvider(
+              create: (_) =>
+                  RoadsListScreenBloc(), // Mantener temporalmente para evitar errores
             ),
             ChangeNotifierProvider(
               create: (_) => GroupListScreenBloc(),

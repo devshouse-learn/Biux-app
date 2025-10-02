@@ -12,6 +12,7 @@ import 'package:biux/providers/group_provider.dart';
 import 'package:biux/providers/location_provider.dart';
 import 'package:biux/providers/map_provider.dart';
 import 'package:biux/providers/meeting_point_provider.dart';
+import 'package:biux/providers/ride_provider.dart';
 import 'package:biux/providers/user_provider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -71,6 +72,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => CityProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RideProvider(),
         ),
       ],
       child: MyApp(),

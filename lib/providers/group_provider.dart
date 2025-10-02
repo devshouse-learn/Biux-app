@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../data/models/group_model.dart';
+import '../data/models/ride_model.dart';
 import '../data/models/user_model.dart';
 import '../data/repositories/group_repository.dart';
+import '../data/repositories/ride_repository.dart';
 import '../data/repositories/user_repository.dart';
 
 enum GroupMembershipStatus { admin, member, pending, notMember }
@@ -12,6 +14,7 @@ enum GroupMembershipStatus { admin, member, pending, notMember }
 class GroupProvider extends ChangeNotifier {
   final GroupRepository _repository = GroupRepository();
   final UserRepository _userRepository = UserRepository();
+  final RideRepository _rideRepository = RideRepository();
   final ImagePicker _imagePicker = ImagePicker();
 
   // Estado
@@ -436,6 +439,19 @@ class GroupProvider extends ChangeNotifier {
       print('Error seleccionando imagen: $e');
       _setError('Error al seleccionar imagen: ${e.toString()}');
       return null;
+    }
+  }
+
+  // Método para obtener las rodadas de un grupo
+  Future<List<RideModel>> getRidesByGroup(GroupModel group) async {
+    try {
+      // Usar el método getGroupRides que ya existe en el repositorio
+      // Como retorna un Stream, tomamos el primer valor
+      final stream = _rideRepository.getGroupRides(group.id);
+      return await stream.first;
+    } catch (e) {
+      print('Error obteniendo rodadas del grupo: $e');
+      return [];
     }
   }
 

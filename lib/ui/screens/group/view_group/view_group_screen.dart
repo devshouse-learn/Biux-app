@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../data/models/group_model.dart';
+import '../../../../data/models/ride_model.dart';
 import '../../../../providers/group_provider.dart';
 
 class ViewGroupScreen extends StatefulWidget {
@@ -40,7 +41,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       // Dispose del controller anterior si existe
       _tabController?.dispose();
 
-      final tabCount = isAdmin ? 3 : 2;
+      // Ahora siempre son 4 tabs: Info, Miembros, Rodadas, y Solicitudes (solo para admin)
+      final tabCount = isAdmin ? 4 : 3;
       _tabController = TabController(length: tabCount, vsync: this);
       _lastAdminStatus = isAdmin;
     }
@@ -116,7 +118,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                                 child: Icon(
                                   Icons.group,
                                   size: 80,
-                                  color: AppColors.white.withOpacity(0.5),
+                                  color: AppColors.white.withValues(alpha: 0.5),
                                 ),
                               );
                             },
@@ -126,7 +128,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                             child: Icon(
                               Icons.group,
                               size: 80,
-                              color: AppColors.white.withOpacity(0.5),
+                              color: AppColors.white.withValues(alpha: 0.5),
                             ),
                           ),
                   ),
@@ -144,6 +146,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       tabs: [
                         Tab(text: 'Info'),
                         Tab(text: 'Miembros (${group.memberCount})'),
+                        Tab(text: 'Rodadas'),
                         if (isAdmin)
                           Tab(
                               text:
@@ -159,6 +162,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
               children: [
                 _buildInfoTab(group, provider),
                 _buildMembersTab(group, provider),
+                _buildRidesTab(group, provider),
                 if (isAdmin) _buildRequestsTab(group, provider),
               ],
             ),
@@ -283,13 +287,130 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 trailing: member['isAdmin']
                     ? Chip(
                         label: Text('Admin'),
-                        backgroundColor: AppColors.green.withOpacity(0.1),
+                        backgroundColor: AppColors.green.withValues(alpha: 0.1),
                         labelStyle: TextStyle(color: AppColors.green),
                       )
                     : null,
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  Widget _buildRidesTab(GroupModel group, GroupProvider provider) {
+    return FutureBuilder<List<RideModel>>(
+      future: provider.getRidesByGroup(group),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.directions_bike,
+                  size: 80,
+                  color: AppColors.grey600,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No hay rodadas en este grupo',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.grey600,
+                  ),
+                ),
+                SizedBox(height: 16),
+                if (group.isAdmin(provider.currentUserId ?? ''))
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // Navegar a crear rodada
+                      context.go('/rides/create/${group.id}');
+                    },
+                    icon: Icon(Icons.add),
+                    label: Text('Crear Primera Rodada'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.blackPearl,
+                      foregroundColor: AppColors.white,
+                    ),
+                  ),
+              ],
+            ),
+          );
+        }
+
+        final rides = snapshot.data!;
+        return Column(
+          children: [
+            // Botón para crear rodada (solo para admins)
+            if (group.isAdmin(provider.currentUserId ?? ''))
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      context.go('/rides/create/${group.id}');
+                    },
+                    icon: Icon(Icons.add),
+                    label: Text('Crear Rodada'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.blackPearl,
+                      foregroundColor: AppColors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+            // Lista de rodadas
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                itemCount: rides.length,
+                itemBuilder: (context, index) {
+                  final ride = rides[index];
+                  return Card(
+                    margin: EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: _getDifficultyColor(ride.difficulty),
+                        child: Icon(
+                          Icons.directions_bike,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      title: Text(
+                        ride.name,
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Fecha: ${_formatDateTime(ride.dateTime)}'),
+                          Text('Distancia: ${ride.kilometers} km'),
+                          Text(
+                              'Dificultad: ${_getDifficultyName(ride.difficulty)}'),
+                          Text('Participantes: ${ride.participants.length}'),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        onPressed: () {
+                          // Navegar a la pantalla de detalles de la rodada
+                          context.go('/rides/${ride.id}');
+                        },
+                        icon: Icon(Icons.arrow_forward),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       },
     );
@@ -574,8 +695,47 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
   }
 
+  // Nuevo método para formatear fecha y hora juntas
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} - ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  // Método para obtener color según dificultad
+  Color _getDifficultyColor(DifficultyLevel difficulty) {
+    switch (difficulty) {
+      case DifficultyLevel.easy:
+        return AppColors.green;
+      case DifficultyLevel.medium:
+        return AppColors.vividOrange;
+      case DifficultyLevel.hard:
+        return AppColors.red;
+      case DifficultyLevel.expert:
+        return AppColors.blackPearl;
+    }
+  }
+
+  // Método para obtener nombre de dificultad
+  String _getDifficultyName(DifficultyLevel difficulty) {
+    switch (difficulty) {
+      case DifficultyLevel.easy:
+        return 'Fácil';
+      case DifficultyLevel.medium:
+        return 'Medio';
+      case DifficultyLevel.hard:
+        return 'Difícil';
+      case DifficultyLevel.expert:
+        return 'Experto';
+    }
+  }
+
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final hours = time.hour.toString().padLeft(2, '0');
+    final minutes = time.minute.toString().padLeft(2, '0');
+    return '$hours:$minutes';
   }
 
   @override

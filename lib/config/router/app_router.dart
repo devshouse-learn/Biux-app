@@ -7,6 +7,7 @@ import '../../providers/group_provider.dart';
 import '../../providers/location_provider.dart';
 import '../../providers/map_provider.dart';
 import '../../providers/meeting_point_provider.dart';
+import '../../providers/ride_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../ui/screens/group/edit_group/edit_group_screen.dart';
 import '../../ui/screens/group/group_create/group_create_screen.dart';
@@ -17,6 +18,9 @@ import '../../ui/screens/login/create_user/create_user_screen.dart';
 import '../../ui/screens/login/login_phone.dart';
 import '../../ui/screens/main_shell.dart';
 import '../../ui/screens/map/map_screen.dart';
+import '../../ui/screens/ride/create_ride/ride_create_screen.dart';
+import '../../ui/screens/ride/detail_ride/ride_detail_screen.dart';
+import '../../ui/screens/ride/list_rides/ride_list_screen.dart';
 import '../../ui/screens/roads/road_create/map_road/map_road_screen.dart';
 import '../../ui/screens/roads/road_create/road_create_screen.dart';
 import '../../ui/screens/roads/roads_list/roads_list_screen.dart';
@@ -125,6 +129,7 @@ final GoRouter _router = GoRouter(
                 value: context.read<MeetingPointProvider>()),
             ChangeNotifierProvider.value(value: context.read<UserProvider>()),
             ChangeNotifierProvider.value(value: context.read<GroupProvider>()),
+            ChangeNotifierProvider.value(value: context.read<RideProvider>()),
           ],
           child: MainShell(child: child),
         );
@@ -231,7 +236,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // Rutas/Caminos
+        // Rutas/Caminos (esta ruta permanece para rutas reales)
         GoRoute(
           path: AppRoutes.roadsList,
           name: AppRoutes.roadsListName,
@@ -251,6 +256,33 @@ final GoRouter _router = GoRouter(
               name: AppRoutes.roadMapName,
               builder: (context, state) {
                 return MapRoadsLocation();
+              },
+            ),
+          ],
+        ),
+
+        // Rodadas (Rides) - esta es la ruta correcta para la pestaña de rodadas
+        GoRoute(
+          path: '/rides',
+          name: 'ridesList',
+          builder: (context, state) => RideListScreen(),
+          routes: [
+            // Crear rodada
+            GoRoute(
+              path: 'create/:groupId',
+              name: 'rideCreate',
+              builder: (context, state) {
+                final groupId = state.pathParameters['groupId']!;
+                return RideCreateScreen(groupId: groupId);
+              },
+            ),
+            // Ver detalles de rodada
+            GoRoute(
+              path: ':rideId',
+              name: 'rideDetail',
+              builder: (context, state) {
+                final rideId = state.pathParameters['rideId']!;
+                return RideDetailScreen(rideId: rideId);
               },
             ),
           ],

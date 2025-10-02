@@ -6,7 +6,7 @@ import 'package:biux/config/styles.dart';
 import 'package:biux/ui/screens/group/group_list/group_list_screen.dart';
 import 'package:biux/ui/screens/main_menu/main_menu_bloc.dart';
 import 'package:biux/ui/screens/map/map_screen.dart';
-import 'package:biux/ui/screens/roads/roads_list/roads_list_screen.dart';
+import 'package:biux/ui/screens/ride/list_rides/ride_list_screen.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_bloc.dart';
 import 'package:biux/ui/screens/story/story_view/story_view_screen.dart';
 import 'package:biux/ui/widgets/app_drawer.dart';
@@ -19,7 +19,7 @@ class MainMenu extends StatelessWidget {
 
   final List<Widget> children = [
     StoryViewScreen(),
-    RoadsListScreen(),
+    RideListScreen(),
     GroupListScreen(),
     MapScreen(),
   ];
