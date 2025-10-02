@@ -12,14 +12,14 @@ class ViewGroupScreen extends StatefulWidget {
 }
 
 class _ViewGroupScreenState extends State<ViewGroupScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+    with TickerProviderStateMixin {
+  TabController? _tabController;
   String? groupId;
+  bool? _lastAdminStatus;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
 
     // Obtener el groupId de la URL
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -32,6 +32,18 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
         }
       }
     });
+  }
+
+  void _initializeTabController(bool isAdmin) {
+    // Solo reinicializar si el estado de admin cambió o si es la primera vez
+    if (_lastAdminStatus != isAdmin || _tabController == null) {
+      // Dispose del controller anterior si existe
+      _tabController?.dispose();
+
+      final tabCount = isAdmin ? 3 : 2;
+      _tabController = TabController(length: tabCount, vsync: this);
+      _lastAdminStatus = isAdmin;
+    }
   }
 
   @override
@@ -53,7 +65,6 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           if (group == null) {
             return Scaffold(
               appBar: AppBar(
-                title: Text('Grupo no encontrado'),
                 backgroundColor: AppColors.blackPearl,
                 foregroundColor: AppColors.white,
               ),
@@ -61,13 +72,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error, size: 64, color: AppColors.grey600),
+                    Icon(Icons.error, size: 64, color: AppColors.red),
                     SizedBox(height: 16),
                     Text('Grupo no encontrado'),
                     SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => context.pop(),
-                      child: Text('Volver'),
+                      onPressed: () => context.go('/groups'),
+                      child: Text('Volver a Grupos'),
                     ),
                   ],
                 ),
@@ -75,26 +86,43 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             );
           }
 
-          final userStatus = provider.getUserStatus(group);
+          final isAdmin = group.isAdmin(provider.currentUserId ?? '');
+          _initializeTabController(isAdmin);
 
           return NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
+                // App Bar con imagen de portada
                 SliverAppBar(
                   expandedHeight: 200,
-                  floating: false,
                   pinned: true,
                   backgroundColor: AppColors.blackPearl,
                   foregroundColor: AppColors.white,
                   flexibleSpace: FlexibleSpaceBar(
-                    title: Text(group.name),
+                    title: Text(
+                      group.name,
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     background: group.coverUrl != null
                         ? Image.network(
                             group.coverUrl!,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.blackPearl,
+                                child: Icon(
+                                  Icons.group,
+                                  size: 80,
+                                  color: AppColors.white.withOpacity(0.5),
+                                ),
+                              );
+                            },
                           )
                         : Container(
-                            color: AppColors.blackPearl.withOpacity(0.8),
+                            color: AppColors.blackPearl,
                             child: Icon(
                               Icons.group,
                               size: 80,
@@ -103,121 +131,35 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                           ),
                   ),
                 ),
-              ];
-            },
-            body: Column(
-              children: [
-                // Información del grupo
-                Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundColor: AppColors.blackPearl,
-                            backgroundImage: group.logoUrl != null
-                                ? NetworkImage(group.logoUrl!)
-                                : null,
-                            child: group.logoUrl == null
-                                ? Icon(Icons.group,
-                                    color: AppColors.white, size: 30)
-                                : null,
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  group.name,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  '${group.memberCount} miembros',
-                                  style: TextStyle(
-                                    color: AppColors.grey600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                if (group.pendingRequestCount > 0 &&
-                                    userStatus == GroupMembershipStatus.admin)
-                                  Text(
-                                    '${group.pendingRequestCount} solicitudes pendientes',
-                                    style: TextStyle(
-                                      color: AppColors.vividOrange,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          _buildUserStatusChip(userStatus),
-                        ],
-                      ),
 
-                      SizedBox(height: 16),
-
-                      Text(
-                        'Descripción',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        group.description,
-                        style: TextStyle(
-                          color: AppColors.grey200,
-                          fontSize: 14,
-                        ),
-                      ),
-
-                      SizedBox(height: 16),
-
-                      // Botones de acción
-                      _buildActionButtons(group, userStatus, provider),
-                    ],
-                  ),
-                ),
-
-                // Tabs
-                if (userStatus == GroupMembershipStatus.member ||
-                    userStatus == GroupMembershipStatus.admin) ...[
-                  Container(
-                    color: AppColors.grey200,
-                    child: TabBar(
+                // Tab Bar
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverTabBarDelegate(
+                    TabBar(
                       controller: _tabController,
+                      indicatorColor: AppColors.strongCyan,
                       labelColor: AppColors.blackPearl,
                       unselectedLabelColor: AppColors.grey600,
-                      indicatorColor: AppColors.blackPearl,
                       tabs: [
+                        Tab(text: 'Info'),
                         Tab(text: 'Miembros (${group.memberCount})'),
-                        if (userStatus == GroupMembershipStatus.admin)
+                        if (isAdmin)
                           Tab(
                               text:
                                   'Solicitudes (${group.pendingRequestCount})'),
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildMembersTab(group),
-                        if (userStatus == GroupMembershipStatus.admin)
-                          _buildRequestsTab(group, provider),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
+              ];
+            },
+            body: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildInfoTab(group, provider),
+                _buildMembersTab(group, provider),
+                if (isAdmin) _buildRequestsTab(group, provider),
               ],
             ),
           );
@@ -226,55 +168,231 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
   }
 
-  Widget _buildUserStatusChip(GroupMembershipStatus status) {
-    Color color;
-    String text;
-    IconData icon;
+  Widget _buildInfoTab(GroupModel group, GroupProvider provider) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Logo y información básica
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: AppColors.blackPearl,
+                backgroundImage:
+                    group.logoUrl != null ? NetworkImage(group.logoUrl!) : null,
+                child: group.logoUrl == null
+                    ? Icon(Icons.group, size: 40, color: AppColors.white)
+                    : null,
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      group.name,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '${group.memberCount} miembros',
+                      style: TextStyle(
+                        color: AppColors.grey600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Creado el ${_formatDate(group.createdAt)}',
+                      style: TextStyle(
+                        color: AppColors.grey600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
 
-    switch (status) {
-      case GroupMembershipStatus.admin:
-        color = AppColors.green;
-        text = 'Administrador';
-        icon = Icons.admin_panel_settings;
-        break;
-      case GroupMembershipStatus.member:
-        color = AppColors.blue;
-        text = 'Miembro';
-        icon = Icons.check_circle;
-        break;
-      case GroupMembershipStatus.pending:
-        color = AppColors.vividOrange;
-        text = 'Solicitud Pendiente';
-        icon = Icons.schedule;
-        break;
-      case GroupMembershipStatus.notMember:
-        return SizedBox.shrink();
-    }
+          SizedBox(height: 24),
 
-    return Chip(
-      avatar: Icon(icon, color: color, size: 16),
-      label: Text(
-        text,
-        style: TextStyle(color: color, fontSize: 12),
+          // Descripción
+          Text(
+            'Descripción',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            group.description,
+            style: TextStyle(fontSize: 16),
+          ),
+
+          SizedBox(height: 32),
+
+          // Botones de acción
+          _buildActionButtons(group, provider),
+        ],
       ),
-      backgroundColor: color.withOpacity(0.1),
-      side: BorderSide(color: color.withOpacity(0.3)),
     );
   }
 
-  Widget _buildActionButtons(
-      GroupModel group, GroupMembershipStatus status, GroupProvider provider) {
-    switch (status) {
+  Widget _buildMembersTab(GroupModel group, GroupProvider provider) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: provider.getMembersWithNames(group),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Text('No hay miembros en este grupo'),
+          );
+        }
+
+        final members = snapshot.data!;
+        return ListView.builder(
+          padding: EdgeInsets.all(16),
+          itemCount: members.length,
+          itemBuilder: (context, index) {
+            final member = members[index];
+            return Card(
+              margin: EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: member['userPhoto'] != null
+                      ? NetworkImage(member['userPhoto'])
+                      : null,
+                  child:
+                      member['userPhoto'] == null ? Icon(Icons.person) : null,
+                ),
+                title: Text(
+                  member['userName'],
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+                subtitle: Text(member['phoneNumber']),
+                trailing: member['isAdmin']
+                    ? Chip(
+                        label: Text('Admin'),
+                        backgroundColor: AppColors.green.withOpacity(0.1),
+                        labelStyle: TextStyle(color: AppColors.green),
+                      )
+                    : null,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildRequestsTab(GroupModel group, GroupProvider provider) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: provider.getPendingRequestsWithNames(group),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.inbox_outlined,
+                  size: 80,
+                  color: AppColors.grey600,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No hay solicitudes pendientes',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.grey600,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final requests = snapshot.data!;
+        return ListView.builder(
+          padding: EdgeInsets.all(16),
+          itemCount: requests.length,
+          itemBuilder: (context, index) {
+            final request = requests[index];
+            return Card(
+              margin: EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: request['userPhoto'] != null
+                      ? NetworkImage(request['userPhoto'])
+                      : null,
+                  child:
+                      request['userPhoto'] == null ? Icon(Icons.person) : null,
+                ),
+                title: Text(
+                  request['userName'],
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+                subtitle: Text(request['phoneNumber']),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () => _approveRequest(
+                        group.id,
+                        request['userId'],
+                        request['userName'],
+                        provider,
+                      ),
+                      icon: Icon(Icons.check, color: AppColors.green),
+                      tooltip: 'Aprobar',
+                    ),
+                    IconButton(
+                      onPressed: () => _rejectRequest(
+                        group.id,
+                        request['userId'],
+                        request['userName'],
+                        provider,
+                      ),
+                      icon: Icon(Icons.close, color: AppColors.red),
+                      tooltip: 'Rechazar',
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButtons(GroupModel group, GroupProvider provider) {
+    final userStatus = provider.getUserStatus(group);
+
+    switch (userStatus) {
       case GroupMembershipStatus.admin:
-        return Row(
+        return Column(
           children: [
-            Expanded(
+            SizedBox(
+              width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Implementar edición de grupo
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Función en desarrollo')),
-                  );
+                  // Navegar a la pantalla de edición de grupo
+                  context.go('/groups/${group.id}/edit');
                 },
                 icon: Icon(Icons.edit),
                 label: Text('Editar Grupo'),
@@ -288,162 +406,136 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
         );
 
       case GroupMembershipStatus.member:
-        return Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () => _showLeaveGroupDialog(group.id, provider),
-                icon: Icon(Icons.exit_to_app),
-                label: Text('Salir del Grupo'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.red,
-                  foregroundColor: AppColors.white,
-                ),
-              ),
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () => _showLeaveGroupDialog(group, provider),
+            icon: Icon(Icons.exit_to_app),
+            label: Text('Salir del Grupo'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.red,
+              foregroundColor: AppColors.white,
             ),
-          ],
+          ),
         );
 
       case GroupMembershipStatus.pending:
-        return Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () => _cancelJoinRequest(group.id, provider),
-                icon: Icon(Icons.cancel),
-                label: Text('Cancelar Solicitud'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.vividOrange,
-                  foregroundColor: AppColors.white,
-                ),
-              ),
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () => _cancelRequest(group.id, provider),
+            icon: Icon(Icons.cancel),
+            label: Text('Cancelar Solicitud'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.vividOrange,
+              foregroundColor: AppColors.white,
             ),
-          ],
+          ),
         );
 
       case GroupMembershipStatus.notMember:
-        return Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () => _requestJoinGroup(group.id, provider),
-                icon: Icon(Icons.group_add),
-                label: Text('Solicitar Ingreso'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blackPearl,
-                  foregroundColor: AppColors.white,
-                ),
-              ),
-            ),
-          ],
-        );
-    }
-  }
-
-  Widget _buildMembersTab(GroupModel group) {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: group.memberIds.length,
-      itemBuilder: (context, index) {
-        final memberId = group.memberIds[index];
-        final isAdmin = group.adminId == memberId;
-
-        return Card(
-          margin: EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            leading: CircleAvatar(
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () => _requestJoinGroup(group.id, provider),
+            icon: Icon(Icons.group_add),
+            label: Text('Solicitar Unirse'),
+            style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.blackPearl,
-              child: Icon(Icons.person, color: AppColors.white),
+              foregroundColor: AppColors.white,
             ),
-            title: Text(memberId), // TODO: Obtener nombre real del usuario
-            subtitle: isAdmin ? Text('Administrador') : null,
-            trailing: isAdmin
-                ? Icon(Icons.admin_panel_settings, color: AppColors.green)
-                : null,
           ),
         );
-      },
-    );
-  }
-
-  Widget _buildRequestsTab(GroupModel group, GroupProvider provider) {
-    if (group.pendingRequestIds.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.inbox, size: 64, color: AppColors.grey600),
-            SizedBox(height: 16),
-            Text(
-              'No hay solicitudes pendientes',
-              style: TextStyle(
-                fontSize: 18,
-                color: AppColors.grey600,
-              ),
-            ),
-          ],
-        ),
-      );
     }
-
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: group.pendingRequestIds.length,
-      itemBuilder: (context, index) {
-        final requesterId = group.pendingRequestIds[index];
-
-        return Card(
-          margin: EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: AppColors.vividOrange,
-              child: Icon(Icons.person_add, color: AppColors.white),
-            ),
-            title: Text(requesterId), // TODO: Obtener nombre real del usuario
-            subtitle: Text('Solicitud de ingreso'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () =>
-                      _approveRequest(group.id, requesterId, provider),
-                  icon: Icon(Icons.check, color: AppColors.green),
-                  tooltip: 'Aprobar',
-                ),
-                IconButton(
-                  onPressed: () =>
-                      _rejectRequest(group.id, requesterId, provider),
-                  icon: Icon(Icons.close, color: AppColors.red),
-                  tooltip: 'Rechazar',
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
-  void _requestJoinGroup(String groupId, GroupProvider provider) async {
-    final success = await provider.requestJoinGroup(groupId);
+  void _approveRequest(String groupId, String userId, String userName,
+      GroupProvider provider) async {
+    final success = await provider.approveJoinRequest(groupId, userId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Solicitud enviada correctamente'),
+          content: Text('$userName ha sido aceptado en el grupo'),
           backgroundColor: AppColors.green,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(provider.error ?? 'Error al enviar solicitud'),
+          content: Text('Error al aprobar la solicitud'),
           backgroundColor: AppColors.red,
         ),
       );
     }
   }
 
-  void _cancelJoinRequest(String groupId, GroupProvider provider) async {
+  void _rejectRequest(String groupId, String userId, String userName,
+      GroupProvider provider) async {
+    final success = await provider.rejectJoinRequest(groupId, userId);
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Solicitud de $userName rechazada'),
+          backgroundColor: AppColors.vividOrange,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al rechazar la solicitud'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+    }
+  }
+
+  void _requestJoinGroup(String groupId, GroupProvider provider) async {
+    final result = await provider.requestJoinGroup(groupId);
+
+    if (result['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Solicitud enviada correctamente'),
+          backgroundColor: AppColors.green,
+        ),
+      );
+    } else if (result['requiresProfile'] == true) {
+      _showProfileRequiredDialog(
+          result['error'] ?? 'Debes completar tu perfil');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['error'] ?? 'Error al enviar solicitud'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+    }
+  }
+
+  void _showProfileRequiredDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Completar Perfil'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.go('/profile');
+            },
+            child: Text('Ir al Perfil'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _cancelRequest(String groupId, GroupProvider provider) async {
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -455,23 +547,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     }
   }
 
-  void _showLeaveGroupDialog(String groupId, GroupProvider provider) {
+  void _showLeaveGroupDialog(GroupModel group, GroupProvider provider) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Salir del grupo'),
-        content: Text('¿Estás seguro de que quieres salir de este grupo?'),
+        title: Text('Salir del Grupo'),
+        content: Text('¿Estás seguro que deseas salir de "${group.name}"?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(context).pop(),
             child: Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
-              final success = await provider.leaveGroup(groupId);
+              Navigator.of(context).pop();
+              final success = await provider.leaveGroup(group.id);
               if (success) {
-                context.pop(); // Volver a la lista de grupos
+                context.go('/groups');
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
@@ -482,35 +574,39 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
   }
 
-  void _approveRequest(
-      String groupId, String userId, GroupProvider provider) async {
-    final success = await provider.approveJoinRequest(groupId, userId);
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Solicitud aprobada'),
-          backgroundColor: AppColors.green,
-        ),
-      );
-    }
-  }
-
-  void _rejectRequest(
-      String groupId, String userId, GroupProvider provider) async {
-    final success = await provider.rejectJoinRequest(groupId, userId);
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Solicitud rechazada'),
-          backgroundColor: AppColors.red,
-        ),
-      );
-    }
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     super.dispose();
+  }
+}
+
+class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+
+  _SliverTabBarDelegate(this.tabBar);
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: AppColors.white,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
+    return false;
   }
 }

@@ -7,6 +7,7 @@ class GroupModel {
   final String? logoUrl;
   final String? coverUrl;
   final String adminId;
+  final String cityId; // NUEVO CAMPO PARA CIUDAD
   final List<String> memberIds;
   final List<String> pendingRequestIds;
   final DateTime createdAt;
@@ -20,6 +21,7 @@ class GroupModel {
     this.logoUrl,
     this.coverUrl,
     required this.adminId,
+    required this.cityId, // REQUERIDO
     required this.memberIds,
     required this.pendingRequestIds,
     required this.createdAt,
@@ -36,6 +38,7 @@ class GroupModel {
       logoUrl: data['logoUrl'],
       coverUrl: data['coverUrl'],
       adminId: data['adminId'] ?? '',
+      cityId: data['cityId'] ?? '', // NUEVO CAMPO
       memberIds: List<String>.from(data['memberIds'] ?? []),
       pendingRequestIds: List<String>.from(data['pendingRequestIds'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -51,6 +54,7 @@ class GroupModel {
       'logoUrl': logoUrl,
       'coverUrl': coverUrl,
       'adminId': adminId,
+      'cityId': cityId, // NUEVO CAMPO
       'memberIds': memberIds,
       'pendingRequestIds': pendingRequestIds,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -66,6 +70,7 @@ class GroupModel {
     String? logoUrl,
     String? coverUrl,
     String? adminId,
+    String? cityId, // NUEVO CAMPO
     List<String>? memberIds,
     List<String>? pendingRequestIds,
     DateTime? createdAt,
@@ -79,6 +84,7 @@ class GroupModel {
       logoUrl: logoUrl ?? this.logoUrl,
       coverUrl: coverUrl ?? this.coverUrl,
       adminId: adminId ?? this.adminId,
+      cityId: cityId ?? this.cityId, // NUEVO CAMPO
       memberIds: memberIds ?? this.memberIds,
       pendingRequestIds: pendingRequestIds ?? this.pendingRequestIds,
       createdAt: createdAt ?? this.createdAt,

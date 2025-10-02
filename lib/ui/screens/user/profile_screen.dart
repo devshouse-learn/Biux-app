@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -268,6 +269,97 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         );
       },
     );
+  }
+
+  // Función temporal para actualizar ciudades con departamentos
+  Future<void> _updateCitiesWithDepartments() async {
+    // Mostrar diálogo de loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.strongCyan),
+              ),
+              SizedBox(width: 16),
+              Text('Actualizando ciudades...'),
+            ],
+          ),
+        );
+      },
+    );
+
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final citiesRef = firestore.collection('cities');
+
+      print('🏙️ Actualizando ciudades con departamentos...');
+
+      // Mapeo de ciudades con sus departamentos
+      final cityDepartments = {
+        'Ibagué': 'Tolima',
+        'Bogotá': 'Cundinamarca',
+        'Medellín': 'Antioquia',
+        'Cali': 'Valle del Cauca',
+        'Barranquilla': 'Atlántico',
+        'Cartagena': 'Bolívar',
+        'Bucaramanga': 'Santander',
+        'Pereira': 'Risaralda',
+        'Santa Marta': 'Magdalena',
+        'Manizales': 'Caldas',
+      };
+
+      // Obtener todas las ciudades
+      final snapshot = await citiesRef.get();
+      int updatedCount = 0;
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final cityName = data['name'] as String?;
+
+        if (cityName != null && cityDepartments.containsKey(cityName)) {
+          await doc.reference.update({
+            'department': cityDepartments[cityName]!,
+            'isCapital': true, // Todas son capitales
+          });
+          updatedCount++;
+          print('   ✅ Actualizada: $cityName - ${cityDepartments[cityName]}');
+        }
+      }
+
+      print('✅ Ciudades actualizadas correctamente: $updatedCount ciudades');
+
+      // Cerrar diálogo de loading
+      Navigator.of(context).pop();
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              '✅ Ciudades actualizadas exitosamente ($updatedCount ciudades)'),
+          backgroundColor: AppColors.green,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      print('❌ Error: $e');
+
+      // Cerrar diálogo de loading
+      Navigator.of(context).pop();
+
+      // Mostrar error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Error al actualizar ciudades: $e'),
+          backgroundColor: AppColors.red,
+          duration: Duration(seconds: 5),
+        ),
+      );
+    }
   }
 
   @override

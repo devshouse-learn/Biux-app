@@ -6,8 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/colors.dart';
+import '../../../../data/models/city_model.dart';
+import '../../../../providers/city_provider.dart';
 import '../../../../providers/group_provider.dart';
-
 
 class GroupCreateScreen extends StatefulWidget {
   @override
@@ -21,6 +22,35 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
 
   XFile? _logoFile;
   XFile? _coverFile;
+  CityModel? _selectedCity;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeCities();
+    });
+  }
+
+  void _initializeCities() async {
+    final cityProvider = Provider.of<CityProvider>(context, listen: false);
+
+    // Inicializar ciudades si no están cargadas
+    if (cityProvider.cities.isEmpty) {
+      await cityProvider.initializeCities();
+    }
+
+    // Seleccionar Ibagué por defecto
+    if (cityProvider.cities.isNotEmpty) {
+      final ibague = cityProvider.cities.firstWhere(
+        (city) => city.name == 'Ibagué',
+        orElse: () => cityProvider.cities.first,
+      );
+      setState(() {
+        _selectedCity = ibague;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +60,8 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
         backgroundColor: AppColors.blackPearl,
         foregroundColor: AppColors.white,
       ),
-      body: Consumer<GroupProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<GroupProvider, CityProvider>(
+        builder: (context, groupProvider, cityProvider, child) {
           return Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -40,151 +70,231 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Imagen de portada
-                  _buildCoverImageSection(provider),
-
+                  _buildCoverImageSection(groupProvider),
                   SizedBox(height: 24),
 
                   // Logo del grupo
-                  _buildLogoSection(provider),
-
+                  _buildLogoSection(groupProvider),
                   SizedBox(height: 24),
+
+                  // Selector de ciudad
+                  _buildCitySelector(cityProvider),
+                  SizedBox(height: 16),
 
                   // Nombre del grupo
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      labelText: 'Nombre del grupo *',
-                      hintText: 'Ej: Ciclistas de Ibagué',
+                      labelText: 'Nombre del grupo',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       prefixIcon: Icon(Icons.group),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'El nombre es obligatorio';
+                        return 'El nombre del grupo es requerido';
                       }
                       if (value.trim().length < 3) {
                         return 'El nombre debe tener al menos 3 caracteres';
                       }
-                      if (value.trim().length > 50) {
-                        return 'El nombre no puede exceder 50 caracteres';
-                      }
                       return null;
                     },
-                    textInputAction: TextInputAction.next,
                   ),
-
                   SizedBox(height: 16),
 
-                  // Descripción del grupo
+                  // Descripción
                   TextFormField(
                     controller: _descriptionController,
+                    maxLines: 4,
                     decoration: InputDecoration(
-                      labelText: 'Descripción *',
-                      hintText:
-                          'Describe el propósito y actividades del grupo...',
+                      labelText: 'Descripción',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       prefixIcon: Icon(Icons.description),
+                      alignLabelWithHint: true,
                     ),
-                    maxLines: 4,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'La descripción es obligatoria';
+                        return 'La descripción es requerida';
                       }
                       if (value.trim().length < 10) {
                         return 'La descripción debe tener al menos 10 caracteres';
                       }
-                      if (value.trim().length > 500) {
-                        return 'La descripción no puede exceder 500 caracteres';
-                      }
                       return null;
                     },
-                    textInputAction: TextInputAction.done,
                   ),
-
                   SizedBox(height: 32),
 
-                  // Información adicional
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.blue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                      border:
-                          Border.all(color: AppColors.blue.withOpacity(0.3)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.info_outline, color: AppColors.blue),
-                            SizedBox(width: 8),
-                            Text(
-                              'Información importante',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.blue,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          '• Como creador, serás el administrador del grupo\n'
-                          '• Podrás aprobar o rechazar solicitudes de ingreso\n'
-                          '• Las imágenes son opcionales pero recomendadas\n'
-                          '• El grupo será público y visible para todos',
-                          style: TextStyle(
-                            color: AppColors.blue,
-                            fontSize: 14,
+                  // Botón de crear
+                  if (groupProvider.isLoading)
+                    Center(child: CircularProgressIndicator())
+                  else
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _createGroup,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.blackPearl,
+                          foregroundColor: AppColors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 32),
-
-                  // Botón crear
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      onPressed: provider.isLoading ? null : _createGroup,
-                      icon: provider.isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.white),
-                              ),
-                            )
-                          : Icon(Icons.add),
-                      label: Text(
-                        provider.isLoading ? 'Creando grupo...' : 'Crear Grupo',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.blackPearl,
-                        foregroundColor: AppColors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        child: Text(
+                          'Crear Grupo',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+
+                  if (groupProvider.error != null) ...[
+                    SizedBox(height: 16),
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border:
+                            Border.all(color: AppColors.red.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error, color: AppColors.red),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              groupProvider.error!,
+                              style: TextStyle(color: AppColors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildCitySelector(CityProvider cityProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Ciudad',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => _showCityPicker(cityProvider),
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.grey600),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.location_city, color: AppColors.blackPearl),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _selectedCity != null
+                        ? (_selectedCity!.department.isNotEmpty
+                            ? '${_selectedCity!.name}, ${_selectedCity!.department}'
+                            : _selectedCity!.name)
+                        : 'Selecciona una ciudad',
+                    style: TextStyle(
+                      color: _selectedCity != null
+                          ? AppColors.black87
+                          : AppColors.grey600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Icon(Icons.arrow_drop_down, color: AppColors.grey600),
+              ],
+            ),
+          ),
+        ),
+        if (_selectedCity == null)
+          Padding(
+            padding: EdgeInsets.only(top: 8, left: 12),
+            child: Text(
+              'La ciudad es requerida',
+              style: TextStyle(
+                color: AppColors.red,
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _showCityPicker(CityProvider cityProvider) {
+    if (cityProvider.cities.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cargando ciudades...'),
+          backgroundColor: AppColors.vividOrange,
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Seleccionar Ciudad'),
+          content: Container(
+            width: double.maxFinite,
+            height: 300,
+            child: ListView.builder(
+              itemCount: cityProvider.cities.length,
+              itemBuilder: (context, index) {
+                final city = cityProvider.cities[index];
+                return ListTile(
+                  leading: city.name == 'Ibagué'
+                      ? Icon(Icons.star, color: AppColors.vividOrange)
+                      : Icon(Icons.location_city),
+                  title: Text(city.name),
+                  subtitle:
+                      city.department.isNotEmpty ? Text(city.department) : null,
+                  selected: _selectedCity?.id == city.id,
+                  onTap: () {
+                    setState(() {
+                      _selectedCity = city;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancelar'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -418,11 +528,22 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
       return;
     }
 
+    if (_selectedCity == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor selecciona una ciudad'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+      return;
+    }
+
     final provider = context.read<GroupProvider>();
 
     final success = await provider.createGroup(
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
+      cityId: _selectedCity!.id, // AGREGAR EL PARÁMETRO CITYID REQUERIDO
       logoFile: _logoFile,
       coverFile: _coverFile,
     );

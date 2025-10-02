@@ -7,6 +7,7 @@ import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/repositories/auth/auth_repository.dart';
 import 'package:biux/providers/auth_provider.dart' as app_auth;
+import 'package:biux/providers/city_provider.dart';
 import 'package:biux/providers/group_provider.dart';
 import 'package:biux/providers/location_provider.dart';
 import 'package:biux/providers/map_provider.dart';
@@ -67,6 +68,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => GroupProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CityProvider(),
         ),
       ],
       child: MyApp(),

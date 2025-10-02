@@ -6,96 +6,74 @@ import '../../../../config/colors.dart';
 import '../../../../data/models/group_model.dart';
 import '../../../../providers/group_provider.dart';
 
-
 class GroupListScreen extends StatefulWidget {
   @override
   _GroupListScreenState createState() => _GroupListScreenState();
 }
 
 class _GroupListScreenState extends State<GroupListScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  bool _isSearching = false;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GroupProvider>().loadAllGroups();
+      _initializeCitiesAndGroups();
     });
+  }
+
+  void _initializeCitiesAndGroups() async {
+    final groupProvider = Provider.of<GroupProvider>(context, listen: false);
+
+    // Cargar todos los grupos sin filtrar por ciudad
+    groupProvider.loadAllGroups();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _isSearching ? _buildSearchField() : Text('Grupos'),
+        title: Text('Grupos'),
         backgroundColor: AppColors.blackPearl,
         foregroundColor: AppColors.white,
-        actions: [
-          IconButton(
-            icon: Icon(_isSearching ? Icons.close : Icons.search),
-            onPressed: () {
-              setState(() {
-                _isSearching = !_isSearching;
-                if (!_isSearching) {
-                  _searchController.clear();
-                  context.read<GroupProvider>().clearSearchResults();
-                }
-              });
-            },
-          ),
-        ],
       ),
-      body: Consumer<GroupProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          // Lista de grupos (sin selector de ciudades)
+          Expanded(
+            child: Consumer<GroupProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
 
-          final groups = _isSearching && _searchController.text.isNotEmpty
-              ? provider.searchResults
-              : provider.allGroups;
+                final groups = provider.allGroups;
 
-          if (groups.isEmpty) {
-            return _buildEmptyState();
-          }
+                if (groups.isEmpty) {
+                  return _buildEmptyState();
+                }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              provider.loadAllGroups();
-            },
-            child: ListView.builder(
-              padding: EdgeInsets.all(16),
-              itemCount: groups.length,
-              itemBuilder: (context, index) {
-                final group = groups[index];
-                return _buildGroupCard(group, provider);
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    provider.loadAllGroups();
+                  },
+                  child: ListView.builder(
+                    padding: EdgeInsets.all(16),
+                    itemCount: groups.length,
+                    itemBuilder: (context, index) {
+                      final group = groups[index];
+                      return _buildGroupCard(group, provider);
+                    },
+                  ),
+                );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.go('/groups/create'),
         backgroundColor: AppColors.blackPearl,
         child: Icon(Icons.add, color: AppColors.white),
       ),
-    );
-  }
-
-  Widget _buildSearchField() {
-    return TextField(
-      controller: _searchController,
-      autofocus: true,
-      style: TextStyle(color: AppColors.white),
-      decoration: InputDecoration(
-        hintText: 'Buscar grupos...',
-        hintStyle: TextStyle(color: AppColors.white.withOpacity(0.7)),
-        border: InputBorder.none,
-      ),
-      onChanged: (query) {
-        context.read<GroupProvider>().searchGroups(query);
-      },
     );
   }
 
@@ -111,9 +89,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
           ),
           SizedBox(height: 16),
           Text(
-            _isSearching
-                ? 'No se encontraron grupos'
-                : 'No hay grupos disponibles',
+            'No hay grupos disponibles',
             style: TextStyle(
               fontSize: 18,
               color: AppColors.grey600,
@@ -121,25 +97,21 @@ class _GroupListScreenState extends State<GroupListScreen> {
           ),
           SizedBox(height: 8),
           Text(
-            _isSearching
-                ? 'Intenta con otros términos de búsqueda'
-                : 'Sé el primero en crear un grupo',
+            'Sé el primero en crear un grupo',
             style: TextStyle(
               color: AppColors.grey600,
             ),
           ),
-          if (!_isSearching) ...[
-            SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => context.go('/groups/create'),
-              icon: Icon(Icons.add),
-              label: Text('Crear Grupo'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blackPearl,
-                foregroundColor: AppColors.white,
-              ),
+          SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () => context.go('/groups/create'),
+            icon: Icon(Icons.add),
+            label: Text('Crear Grupo'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.blackPearl,
+              foregroundColor: AppColors.white,
             ),
-          ],
+          ),
         ],
       ),
     );
@@ -232,7 +204,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
                 Text(
                   group.description,
                   style: TextStyle(
-                    color: AppColors.grey200,
+                    color: AppColors
+                        .grey600, // CAMBIADO DE grey200 A grey600 PARA MEJOR VISIBILIDAD
                     fontSize: 14,
                   ),
                   maxLines: 2,
@@ -331,8 +304,10 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   void _requestJoinGroup(String groupId, GroupProvider provider) async {
-    final success = await provider.requestJoinGroup(groupId);
-    if (success) {
+    // El nuevo método devuelve un Map con información detallada
+    final result = await provider.requestJoinGroup(groupId);
+
+    if (result['success'] == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Solicitud enviada correctamente'),
@@ -340,13 +315,70 @@ class _GroupListScreenState extends State<GroupListScreen> {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(provider.error ?? 'Error al enviar solicitud'),
-          backgroundColor: AppColors.red,
-        ),
-      );
+      // Verificar si requiere completar el perfil
+      if (result['requiresProfile'] == true) {
+        _showProfileRequiredDialog(
+            result['error'] ?? 'Debes completar tu perfil');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? 'Error al enviar solicitud'),
+            backgroundColor: AppColors.red,
+          ),
+        );
+      }
     }
+  }
+
+  void _showProfileRequiredDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.person_outline, color: AppColors.vividOrange),
+              SizedBox(width: 8),
+              Text('Completar Perfil'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(message),
+              SizedBox(height: 12),
+              Text(
+                'Para unirte a grupos, los administradores necesitan saber quién eres.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.grey600,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                // Redirigir al perfil para completar el nombre
+                context.go('/profile');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.blackPearl,
+                foregroundColor: AppColors.white,
+              ),
+              child: Text('Ir al Perfil'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _cancelJoinRequest(String groupId, GroupProvider provider) async {
@@ -366,11 +398,5 @@ class _GroupListScreenState extends State<GroupListScreen> {
         ),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 }

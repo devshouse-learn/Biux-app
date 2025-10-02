@@ -16,6 +16,7 @@ class GroupRepository {
     required String name,
     required String description,
     required String adminId,
+    required String cityId, // NUEVO PARÁMETRO REQUERIDO
     XFile? logoFile,
     XFile? coverFile,
   }) async {
@@ -42,29 +43,90 @@ class GroupRepository {
         logoUrl: logoUrl,
         coverUrl: coverUrl,
         adminId: adminId,
+        cityId: cityId, // NUEVO CAMPO
         memberIds: [adminId], // El admin se agrega automáticamente como miembro
         pendingRequestIds: [],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        isActive: true, // Asegurar que se establece como activo
       );
 
       await docRef.set(group.toFirestore());
+
+      // Log para debug
+      print('✅ Grupo creado exitosamente: ${docRef.id}');
+      print('📋 Datos del grupo: ${group.toFirestore()}');
+
       return docRef.id;
     } catch (e) {
-      print('Error creando grupo: $e');
+      print('❌ Error creando grupo: $e');
       return null;
     }
   }
 
-  // Obtener todos los grupos activos
-  Stream<List<GroupModel>> getGroups() {
+  // NUEVO: Obtener grupos por ciudad
+  Stream<List<GroupModel>> getGroupsByCity(String cityId) {
+    print('🔍 Obteniendo grupos de la ciudad: $cityId');
+
     return _firestore
         .collection(_collection)
         .where('isActive', isEqualTo: true)
-        .orderBy('createdAt', descending: true)
+        .where('cityId', isEqualTo: cityId)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList());
+        .map((snapshot) {
+      print('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
+
+      final groups = snapshot.docs
+          .map((doc) {
+            try {
+              return GroupModel.fromFirestore(doc);
+            } catch (e) {
+              print('❌ Error parseando grupo ${doc.id}: $e');
+              return null;
+            }
+          })
+          .where((group) => group != null)
+          .cast<GroupModel>()
+          .toList();
+
+      // Ordenar por fecha en memoria
+      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      print('✅ Grupos procesados correctamente: ${groups.length}');
+      return groups;
+    });
+  }
+
+  // Obtener todos los grupos activos - MANTENER PARA COMPATIBILIDAD
+  Stream<List<GroupModel>> getGroups() {
+    print('🔍 Obteniendo todos los grupos...');
+
+    return _firestore
+        .collection(_collection)
+        .where('isActive', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      print('📊 Grupos encontrados: ${snapshot.docs.length}');
+
+      final groups = snapshot.docs
+          .map((doc) {
+            try {
+              return GroupModel.fromFirestore(doc);
+            } catch (e) {
+              print('❌ Error parseando grupo ${doc.id}: $e');
+              return null;
+            }
+          })
+          .where((group) => group != null)
+          .cast<GroupModel>()
+          .toList();
+
+      // Ordenar por fecha en memoria
+      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      print('✅ Grupos procesados correctamente: ${groups.length}');
+      return groups;
+    });
   }
 
   // Obtener grupos donde el usuario es miembro
@@ -73,10 +135,13 @@ class GroupRepository {
         .collection(_collection)
         .where('memberIds', arrayContains: userId)
         .where('isActive', isEqualTo: true)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList());
+        .map((snapshot) {
+      final groups =
+          snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList();
+      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return groups;
+    });
   }
 
   // Obtener grupos administrados por el usuario
@@ -85,10 +150,13 @@ class GroupRepository {
         .collection(_collection)
         .where('adminId', isEqualTo: userId)
         .where('isActive', isEqualTo: true)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList());
+        .map((snapshot) {
+      final groups =
+          snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList();
+      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return groups;
+    });
   }
 
   // Obtener un grupo específico

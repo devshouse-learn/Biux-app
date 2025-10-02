@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../data/models/group_model.dart';
+import '../data/models/user_model.dart';
 import '../data/repositories/group_repository.dart';
+import '../data/repositories/user_repository.dart';
+
+enum GroupMembershipStatus { admin, member, pending, notMember }
 
 class GroupProvider extends ChangeNotifier {
   final GroupRepository _repository = GroupRepository();
+  final UserRepository _userRepository = UserRepository();
   final ImagePicker _imagePicker = ImagePicker();
 
   // Estado
@@ -17,6 +22,7 @@ class GroupProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   GroupModel? _selectedGroup;
+  Map<String, UserModel> _userCache = {}; // Cache de usuarios
 
   // Getters
   List<GroupModel> get allGroups => _allGroups;
@@ -61,6 +67,7 @@ class GroupProvider extends ChangeNotifier {
   Future<bool> createGroup({
     required String name,
     required String description,
+    required String cityId, // NUEVO PARÁMETRO REQUERIDO
     XFile? logoFile,
     XFile? coverFile,
   }) async {
@@ -74,6 +81,7 @@ class GroupProvider extends ChangeNotifier {
         name: name,
         description: description,
         adminId: currentUserId!,
+        cityId: cityId, // PASAR CIUDAD AL REPOSITORIO
         logoFile: logoFile,
         coverFile: coverFile,
       );
@@ -87,39 +95,117 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Seleccionar grupo
-  Future<void> selectGroup(String groupId) async {
-    _setLoading(true);
-    try {
-      _selectedGroup = await _repository.getGroup(groupId);
-    } catch (e) {
-      _setError('Error al cargar el grupo: ${e.toString()}');
-    }
-    _setLoading(false);
+  // NUEVO: Cargar grupos por ciudad
+  void loadGroupsByCity(String cityId) {
+    _repository.getGroupsByCity(cityId).listen((groups) {
+      _allGroups = groups;
+      notifyListeners();
+    });
   }
 
-  // Solicitar unirse a grupo
-  Future<bool> requestJoinGroup(String groupId) async {
+  // NUEVO: Editar grupo (solo para administradores)
+  Future<bool> editGroup({
+    required String groupId,
+    String? name,
+    String? description,
+    XFile? logoFile,
+    XFile? coverFile,
+  }) async {
     if (currentUserId == null) return false;
 
     _setLoading(true);
     _clearError();
 
     try {
-      final success =
-          await _repository.requestJoinGroup(groupId, currentUserId!);
+      final success = await _repository.updateGroup(
+        groupId: groupId,
+        name: name,
+        description: description,
+        logoFile: logoFile,
+        coverFile: coverFile,
+      );
+
       if (success) {
         // Actualizar el grupo seleccionado si está cargado
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
         }
       }
+
       _setLoading(false);
       return success;
     } catch (e) {
-      _setError('Error al solicitar ingreso: ${e.toString()}');
+      _setError('Error al editar el grupo: ${e.toString()}');
       _setLoading(false);
       return false;
+    }
+  }
+
+  // Seleccionar grupo
+  Future<void> selectGroup(String groupId) async {
+    _setLoading(true);
+    try {
+      _selectedGroup = await _repository.getGroup(groupId);
+
+      // Cargar información de usuarios para mostrar nombres
+      if (_selectedGroup != null) {
+        await _loadUsersForGroup(_selectedGroup!);
+      }
+    } catch (e) {
+      _setError('Error al cargar el grupo: ${e.toString()}');
+    }
+    _setLoading(false);
+  }
+
+  // Solicitar unirse a grupo CON VALIDACIÓN DE NOMBRE
+  Future<Map<String, dynamic>> requestJoinGroup(String groupId) async {
+    if (currentUserId == null) {
+      return {'success': false, 'error': 'Usuario no autenticado'};
+    }
+
+    _setLoading(true);
+    _clearError();
+
+    try {
+      // 1. VALIDAR QUE EL USUARIO TENGA NOMBRE
+      final currentUser = await _userRepository.getUserById(currentUserId!);
+
+      if (currentUser == null) {
+        _setLoading(false);
+        return {
+          'success': false,
+          'error': 'Usuario no encontrado',
+          'requiresProfile': true
+        };
+      }
+
+      if (currentUser.name == null || currentUser.name!.trim().isEmpty) {
+        _setLoading(false);
+        return {
+          'success': false,
+          'error':
+              'Debes completar tu nombre en el perfil antes de unirte a grupos',
+          'requiresProfile': true
+        };
+      }
+
+      // 2. Si tiene nombre, proceder con la solicitud
+      final success =
+          await _repository.requestJoinGroup(groupId, currentUserId!);
+
+      if (success) {
+        // Actualizar el grupo seleccionado si está cargado
+        if (_selectedGroup?.id == groupId) {
+          await selectGroup(groupId);
+        }
+      }
+
+      _setLoading(false);
+      return {'success': success};
+    } catch (e) {
+      _setError('Error al solicitar ingreso: ${e.toString()}');
+      _setLoading(false);
+      return {'success': false, 'error': e.toString()};
     }
   }
 
@@ -205,6 +291,13 @@ class GroupProvider extends ChangeNotifier {
 
     try {
       final success = await _repository.leaveGroup(groupId, currentUserId!);
+      if (success) {
+        // Actualizar listas
+        loadUserGroups();
+        if (_selectedGroup?.id == groupId) {
+          await selectGroup(groupId);
+        }
+      }
       _setLoading(false);
       return success;
     } catch (e) {
@@ -216,39 +309,26 @@ class GroupProvider extends ChangeNotifier {
 
   // Buscar grupos
   Future<void> searchGroups(String query) async {
-    if (query.isEmpty) {
+    if (query.trim().isEmpty) {
       _searchResults = [];
       notifyListeners();
       return;
     }
 
-    _setLoading(true);
-    _clearError();
-
     try {
       _searchResults = await _repository.searchGroups(query);
+      notifyListeners();
     } catch (e) {
-      _setError('Error en la búsqueda: ${e.toString()}');
-    }
-    _setLoading(false);
-  }
-
-  // Seleccionar imagen
-  Future<XFile?> pickImage(ImageSource source) async {
-    try {
-      return await _imagePicker.pickImage(
-        source: source,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 80,
-      );
-    } catch (e) {
-      _setError('Error al seleccionar imagen: ${e.toString()}');
-      return null;
+      print('Error buscando grupos: $e');
     }
   }
 
-  // Obtener estado del usuario en un grupo
+  void clearSearchResults() {
+    _searchResults = [];
+    notifyListeners();
+  }
+
+  // Obtener estado de membresía del usuario
   GroupMembershipStatus getUserStatus(GroupModel group) {
     if (currentUserId == null) return GroupMembershipStatus.notMember;
 
@@ -263,7 +343,103 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Métodos auxiliares
+  // NUEVOS MÉTODOS PARA MANEJAR INFORMACIÓN DE USUARIOS
+
+  // Obtener información de usuario (con cache)
+  Future<UserModel?> getUserInfo(String userId) async {
+    // Verificar cache primero
+    if (_userCache.containsKey(userId)) {
+      return _userCache[userId];
+    }
+
+    try {
+      final user = await _userRepository.getUserById(userId);
+      if (user != null) {
+        _userCache[userId] = user; // Guardar en cache
+      }
+      return user;
+    } catch (e) {
+      print('Error obteniendo usuario $userId: $e');
+      return null;
+    }
+  }
+
+  // Obtener nombres de usuarios para solicitudes pendientes
+  Future<List<Map<String, dynamic>>> getPendingRequestsWithNames(
+      GroupModel group) async {
+    List<Map<String, dynamic>> requests = [];
+
+    for (String userId in group.pendingRequestIds) {
+      final user = await getUserInfo(userId);
+      requests.add({
+        'userId': userId,
+        'userName': user?.name ?? 'Usuario sin nombre',
+        'userPhoto': user?.photoUrl,
+        'phoneNumber': user?.phoneNumber ?? 'Sin teléfono',
+      });
+    }
+
+    return requests;
+  }
+
+  // Obtener nombres de miembros del grupo
+  Future<List<Map<String, dynamic>>> getMembersWithNames(
+      GroupModel group) async {
+    List<Map<String, dynamic>> members = [];
+
+    for (String userId in group.memberIds) {
+      final user = await getUserInfo(userId);
+      members.add({
+        'userId': userId,
+        'userName': user?.name ?? 'Usuario sin nombre',
+        'userPhoto': user?.photoUrl,
+        'phoneNumber': user?.phoneNumber ?? 'Sin teléfono',
+        'isAdmin': group.isAdmin(userId),
+      });
+    }
+
+    return members;
+  }
+
+  // Cargar usuarios para un grupo específico
+  Future<void> _loadUsersForGroup(GroupModel group) async {
+    // Cargar admin
+    await getUserInfo(group.adminId);
+
+    // Cargar miembros
+    for (String memberId in group.memberIds) {
+      await getUserInfo(memberId);
+    }
+
+    // Cargar solicitudes pendientes
+    for (String requestId in group.pendingRequestIds) {
+      await getUserInfo(requestId);
+    }
+  }
+
+  // Limpiar cache de usuarios
+  void clearUserCache() {
+    _userCache.clear();
+  }
+
+  // MÉTODO PARA SELECCIONAR IMÁGENES
+  Future<XFile?> pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 80,
+      );
+      return image;
+    } catch (e) {
+      print('Error seleccionando imagen: $e');
+      _setError('Error al seleccionar imagen: ${e.toString()}');
+      return null;
+    }
+  }
+
+  // Métodos privados
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -276,27 +452,6 @@ class GroupProvider extends ChangeNotifier {
 
   void _clearError() {
     _error = null;
-  }
-
-  void clearSelectedGroup() {
-    _selectedGroup = null;
     notifyListeners();
   }
-
-  void clearSearchResults() {
-    _searchResults = [];
-    notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-}
-
-enum GroupMembershipStatus {
-  admin,
-  member,
-  pending,
-  notMember,
 }

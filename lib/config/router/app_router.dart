@@ -8,6 +8,7 @@ import '../../providers/location_provider.dart';
 import '../../providers/map_provider.dart';
 import '../../providers/meeting_point_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../ui/screens/group/edit_group/edit_group_screen.dart';
 import '../../ui/screens/group/group_create/group_create_screen.dart';
 import '../../ui/screens/group/group_list/group_list_screen.dart';
 import '../../ui/screens/group/my_groups/my_groups_screen.dart';
@@ -183,6 +184,17 @@ final GoRouter _router = GoRouter(
               builder: (context, state) {
                 return ViewGroupScreen();
               },
+              routes: [
+                // NUEVA RUTA: Editar grupo
+                GoRoute(
+                  path: 'edit',
+                  name: 'editGroup',
+                  builder: (context, state) {
+                    final groupId = state.pathParameters['groupId']!;
+                    return EditGroupScreen(groupId: groupId);
+                  },
+                ),
+              ],
             ),
           ],
         ),
