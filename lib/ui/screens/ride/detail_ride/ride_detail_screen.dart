@@ -37,7 +37,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           if (rideProvider.isLoading) {
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: AppColors.blackPearl,
+                backgroundColor: AppColors.darkBlue,
                 foregroundColor: AppColors.white,
               ),
               body: Center(child: CircularProgressIndicator()),
@@ -48,7 +48,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           if (ride == null) {
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: AppColors.blackPearl,
+                backgroundColor: AppColors.darkBlue,
                 foregroundColor: AppColors.white,
               ),
               body: Center(
@@ -79,7 +79,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 SliverAppBar(
                   expandedHeight: 200,
                   pinned: true,
-                  backgroundColor: AppColors.blackPearl,
+                  backgroundColor: AppColors.darkBlue,
                   foregroundColor: AppColors.white,
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
@@ -96,7 +96,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                           end: Alignment.bottomCenter,
                           colors: [
                             _getDifficultyColor(ride.difficulty),
-                            AppColors.blackPearl,
+                            AppColors.darkBlue,
                           ],
                         ),
                       ),
@@ -117,37 +117,49 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Información del grupo organizador
+                  GroupInfoWidget(ride: ride),
+                  SizedBox(height: 16),
+
                   // Información básica
-                  _buildBasicInfo(ride),
+                  BasicInfoWidget(ride: ride),
                   SizedBox(height: 24),
 
                   // Punto de encuentro
                   if (meetingPoint != null)
-                    _buildMeetingPointInfo(meetingPoint),
+                    MeetingPointInfoWidget(meetingPoint: meetingPoint),
                   SizedBox(height: 24),
 
                   // Instrucciones
-                  _buildInfoSection(
-                    'Instrucciones',
-                    ride.instructions,
-                    Icons.info_outline,
+                  InfoSectionWidget(
+                    title: 'Instrucciones',
+                    content: ride.instructions,
+                    icon: Icons.info_outline,
                   ),
                   SizedBox(height: 16),
 
                   // Recomendaciones
-                  _buildInfoSection(
-                    'Recomendaciones',
-                    ride.recommendations,
-                    Icons.lightbulb_outline,
+                  InfoSectionWidget(
+                    title: 'Recomendaciones',
+                    content: ride.recommendations,
+                    icon: Icons.lightbulb_outline,
                   ),
                   SizedBox(height: 24),
 
                   // Participantes
-                  _buildParticipantsSection(ride, rideProvider),
+                  ParticipantsSectionWidget(ride: ride),
                   SizedBox(height: 32),
 
                   // Botones de acción
-                  _buildActionButtons(ride, rideProvider),
+                  ActionButtonsWidget(
+                    ride: ride,
+                    onJoinRide: () => _joinRide(ride.id, rideProvider),
+                    onMaybeJoinRide: () =>
+                        _maybeJoinRide(ride.id, rideProvider),
+                    onLeaveRide: () => _leaveRide(ride.id, rideProvider),
+                    onCancelRide: () =>
+                        _showCancelDialog(ride.id, rideProvider),
+                  ),
                 ],
               ),
             ),
@@ -157,7 +169,245 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     );
   }
 
-  Widget _buildBasicInfo(RideModel ride) {
+  Color _getDifficultyColor(DifficultyLevel difficulty) {
+    switch (difficulty) {
+      case DifficultyLevel.easy:
+        return AppColors.green;
+      case DifficultyLevel.medium:
+        return AppColors.yellow;
+      case DifficultyLevel.hard:
+        return AppColors.red;
+      case DifficultyLevel.expert:
+        return AppColors.purple;
+    }
+  }
+
+  void _joinRide(String rideId, RideProvider provider) async {
+    final success = await provider.joinRide(rideId);
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('¡Genial! Te has unido a la rodada'),
+          backgroundColor: AppColors.green,
+        ),
+      );
+    }
+  }
+
+  void _maybeJoinRide(String rideId, RideProvider provider) async {
+    final success = await provider.maybeJoinRide(rideId);
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Marcado como "tal vez voy"'),
+          backgroundColor: AppColors.yellow,
+        ),
+      );
+    }
+  }
+
+  void _leaveRide(String rideId, RideProvider provider) async {
+    final success = await provider.leaveRide(rideId);
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Has salido de la rodada'),
+          backgroundColor: AppColors.gray,
+        ),
+      );
+    }
+  }
+
+  void _showCancelDialog(String rideId, RideProvider provider) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Cancelar Rodada'),
+        content: Text(
+            '¿Estás seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text('No'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              final success = await provider.cancelRide(rideId);
+              if (success && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Rodada cancelada'),
+                    backgroundColor: AppColors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
+            child:
+                Text('Sí, cancelar', style: TextStyle(color: AppColors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GroupInfoWidget extends StatelessWidget {
+  final RideModel ride;
+
+  const GroupInfoWidget({Key? key, required this.ride}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<RideProvider>(
+      builder: (context, provider, child) {
+        return FutureBuilder<Map<String, dynamic>?>(
+          future: provider.getGroupInfo(ride.groupId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Card(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: AppColors.gray,
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.darkBlue,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        'Cargando información del grupo...',
+                        style: TextStyle(color: AppColors.gray),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            final groupInfo = snapshot.data;
+            if (groupInfo == null) {
+              return Card(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: AppColors.gray,
+                        child: Icon(Icons.group, color: AppColors.gray),
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        'Grupo no encontrado',
+                        style: TextStyle(color: AppColors.gray),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return Card(
+                child: InkWell(
+              onTap: () {
+                context.go('/groups/${groupInfo['id']}');
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: AppColors.darkBlue,
+                      backgroundImage: groupInfo['imageUrl'] != null
+                          ? NetworkImage(groupInfo['imageUrl'])
+                          : null,
+                      child: groupInfo['imageUrl'] == null
+                          ? Icon(
+                              Icons.group,
+                              color: AppColors.white,
+                              size: 28,
+                            )
+                          : null,
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.group,
+                                size: 16,
+                                color: AppColors.gray,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Organizada por',
+                                style: TextStyle(
+                                  color: AppColors.gray,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            groupInfo['name'],
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.darkBlue,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (groupInfo['memberCount'] > 0) ...[
+                            SizedBox(height: 2),
+                            Text(
+                              '${groupInfo['memberCount']} miembros',
+                              style: TextStyle(
+                                color: AppColors.gray,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: AppColors.gray,
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ));
+          },
+        );
+      },
+    );
+  }
+}
+
+class BasicInfoWidget extends StatelessWidget {
+  final RideModel ride;
+
+  const BasicInfoWidget({Key? key, required this.ride}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -172,33 +422,27 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               ),
             ),
             SizedBox(height: 16),
-
-            // Fecha y hora
-            _buildInfoRow(
-              Icons.calendar_today,
-              'Fecha y hora',
-              _formatDateTime(ride.dateTime),
+            InfoRowWidget(
+              icon: Icons.calendar_today,
+              label: 'Fecha y hora',
+              value: _formatDateTime(ride.dateTime),
             ),
             SizedBox(height: 12),
-
-            // Distancia
-            _buildInfoRow(
-              Icons.straighten,
-              'Distancia',
-              '${ride.kilometers} km',
+            InfoRowWidget(
+              icon: Icons.straighten,
+              label: 'Distancia',
+              value: '${ride.kilometers} km',
             ),
             SizedBox(height: 12),
-
-            // Dificultad
             Row(
               children: [
-                Icon(Icons.trending_up, color: AppColors.grey600),
+                Icon(Icons.trending_up, color: AppColors.gray),
                 SizedBox(width: 12),
                 Text(
                   'Dificultad: ',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    color: AppColors.grey600,
+                    color: AppColors.gray,
                   ),
                 ),
                 Container(
@@ -219,12 +463,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               ],
             ),
             SizedBox(height: 12),
-
-            // Estado
-            _buildInfoRow(
-              Icons.flag,
-              'Estado',
-              _getStatusName(ride.status),
+            InfoRowWidget(
+              icon: Icons.flag,
+              label: 'Estado',
+              value: _getStatusName(ride.status),
             ),
           ],
         ),
@@ -232,7 +474,80 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     );
   }
 
-  Widget _buildMeetingPointInfo(MeetingPoint meetingPoint) {
+  String _formatDateTime(DateTime dateTime) {
+    final weekdays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    final months = [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre'
+    ];
+
+    final weekday = weekdays[dateTime.weekday - 1];
+    final day = dateTime.day;
+    final month = months[dateTime.month - 1];
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+
+    return '$weekday, $day de $month - $hour:$minute';
+  }
+
+  Color _getDifficultyColor(DifficultyLevel difficulty) {
+    switch (difficulty) {
+      case DifficultyLevel.easy:
+        return AppColors.green;
+      case DifficultyLevel.medium:
+        return AppColors.yellow;
+      case DifficultyLevel.hard:
+        return AppColors.red;
+      case DifficultyLevel.expert:
+        return AppColors.purple;
+    }
+  }
+
+  String _getDifficultyName(DifficultyLevel difficulty) {
+    switch (difficulty) {
+      case DifficultyLevel.easy:
+        return 'Fácil';
+      case DifficultyLevel.medium:
+        return 'Medio';
+      case DifficultyLevel.hard:
+        return 'Difícil';
+      case DifficultyLevel.expert:
+        return 'Experto';
+    }
+  }
+
+  String _getStatusName(RideStatus status) {
+    switch (status) {
+      case RideStatus.upcoming:
+        return 'Próxima';
+      case RideStatus.ongoing:
+        return 'En curso';
+      case RideStatus.completed:
+        return 'Completada';
+      case RideStatus.cancelled:
+        return 'Cancelada';
+    }
+  }
+}
+
+class MeetingPointInfoWidget extends StatelessWidget {
+  final MeetingPoint meetingPoint;
+
+  const MeetingPointInfoWidget({Key? key, required this.meetingPoint})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -247,10 +562,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               ),
             ),
             SizedBox(height: 16),
-            _buildInfoRow(
-              Icons.location_on,
-              meetingPoint.name,
-              meetingPoint.description,
+            InfoRowWidget(
+              icon: Icons.location_on,
+              label: meetingPoint.name,
+              value: meetingPoint.description,
             ),
             SizedBox(height: 12),
             ElevatedButton.icon(
@@ -258,7 +573,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               icon: Icon(Icons.map),
               label: Text('Ver en mapa'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.strongCyan,
+                backgroundColor: AppColors.darkBlue,
                 foregroundColor: AppColors.white,
               ),
             ),
@@ -267,8 +582,22 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       ),
     );
   }
+}
 
-  Widget _buildInfoSection(String title, String content, IconData icon) {
+class InfoSectionWidget extends StatelessWidget {
+  final String title;
+  final String content;
+  final IconData icon;
+
+  const InfoSectionWidget({
+    Key? key,
+    required this.title,
+    required this.content,
+    required this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -277,7 +606,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: AppColors.grey600),
+                Icon(icon, color: AppColors.gray),
                 SizedBox(width: 8),
                 Text(
                   title,
@@ -298,8 +627,16 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       ),
     );
   }
+}
 
-  Widget _buildParticipantsSection(RideModel ride, RideProvider provider) {
+class ParticipantsSectionWidget extends StatelessWidget {
+  final RideModel ride;
+
+  const ParticipantsSectionWidget({Key? key, required this.ride})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -314,37 +651,34 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               ),
             ),
             SizedBox(height: 16),
-
-            // Estadísticas
             Row(
               children: [
                 Expanded(
-                  child: _buildParticipantStat(
-                    'Confirmados',
-                    ride.participants.length,
-                    AppColors.green,
-                    Icons.check_circle,
+                  child: ParticipantStatWidget(
+                    label: 'Confirmados',
+                    count: ride.participants.length,
+                    color: AppColors.green,
+                    icon: Icons.check_circle,
                   ),
                 ),
                 SizedBox(width: 16),
                 Expanded(
-                  child: _buildParticipantStat(
-                    'Tal vez',
-                    ride.maybeParticipants.length,
-                    AppColors.vividOrange,
-                    Icons.help,
+                  child: ParticipantStatWidget(
+                    label: 'Tal vez',
+                    count: ride.maybeParticipants.length,
+                    color: AppColors.yellow,
+                    icon: Icons.help,
                   ),
                 ),
               ],
             ),
-
             if (ride.participants.isEmpty &&
                 ride.maybeParticipants.isEmpty) ...[
               SizedBox(height: 16),
               Text(
                 'Aún no hay participantes registrados',
                 style: TextStyle(
-                  color: AppColors.grey600,
+                  color: AppColors.gray,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -354,9 +688,24 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       ),
     );
   }
+}
 
-  Widget _buildParticipantStat(
-      String label, int count, Color color, IconData icon) {
+class ParticipantStatWidget extends StatelessWidget {
+  final String label;
+  final int count;
+  final Color color;
+  final IconData icon;
+
+  const ParticipantStatWidget({
+    Key? key,
+    required this.label,
+    required this.count,
+    required this.color,
+    required this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -387,89 +736,80 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       ),
     );
   }
+}
 
-  Widget _buildActionButtons(RideModel ride, RideProvider provider) {
-    final currentUserId = provider.currentUserId;
-    if (currentUserId == null) return SizedBox.shrink();
+class ActionButtonsWidget extends StatelessWidget {
+  final RideModel ride;
+  final VoidCallback onJoinRide;
+  final VoidCallback onMaybeJoinRide;
+  final VoidCallback onLeaveRide;
+  final VoidCallback onCancelRide;
 
-    final isParticipating = ride.participants.contains(currentUserId);
-    final isMaybeParticipating = ride.maybeParticipants.contains(currentUserId);
-    final isCreator = ride.createdBy == currentUserId;
+  const ActionButtonsWidget({
+    Key? key,
+    required this.ride,
+    required this.onJoinRide,
+    required this.onMaybeJoinRide,
+    required this.onLeaveRide,
+    required this.onCancelRide,
+  }) : super(key: key);
 
-    // No mostrar botones si la rodada ya pasó
-    final isPastRide = ride.dateTime.isBefore(DateTime.now()) ||
-        ride.status == RideStatus.completed ||
-        ride.status == RideStatus.cancelled;
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<RideProvider>(
+      builder: (context, provider, child) {
+        final currentUserId = provider.currentUserId;
+        if (currentUserId == null) return SizedBox.shrink();
 
-    return Column(
-      children: [
-        // Botones de participación
-        if (!isPastRide) ...[
-          if (!isParticipating && !isMaybeParticipating) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _joinRide(ride.id, provider),
-                    icon: Icon(Icons.directions_bike),
-                    label: Text('Voy a ir'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.green,
-                      foregroundColor: AppColors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
+        final isParticipating = ride.participants.contains(currentUserId);
+        final isMaybeParticipating =
+            ride.maybeParticipants.contains(currentUserId);
+        final isCreator = ride.createdBy == currentUserId;
+
+        final isPastRide = ride.dateTime.isBefore(DateTime.now()) ||
+            ride.status == RideStatus.completed ||
+            ride.status == RideStatus.cancelled;
+
+        return Column(
+          children: [
+            if (!isPastRide) ...[
+              if (!isParticipating && !isMaybeParticipating) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: onJoinRide,
+                        icon: Icon(Icons.directions_bike),
+                        label: Text('Voy a ir'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.green,
+                          foregroundColor: AppColors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _maybeJoinRide(ride.id, provider),
-                    icon: Icon(Icons.help_outline),
-                    label: Text('Tal vez voy'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.vividOrange,
-                      foregroundColor: AppColors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: onMaybeJoinRide,
+                        icon: Icon(Icons.help_outline),
+                        label: Text('Tal vez voy'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.yellow,
+                          foregroundColor: AppColors.black,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ] else if (isParticipating) ...[
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () => _leaveRide(ride.id, provider),
-                icon: Icon(Icons.cancel),
-                label: Text('No voy a ir'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.red,
-                  foregroundColor: AppColors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
-            ),
-          ] else if (isMaybeParticipating) ...[
-            Row(
-              children: [
-                Expanded(
+              ] else if (isParticipating) ...[
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () => _joinRide(ride.id, provider),
-                    icon: Icon(Icons.check),
-                    label: Text('Confirmar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.green,
-                      foregroundColor: AppColors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => _leaveRide(ride.id, provider),
-                    icon: Icon(Icons.close),
-                    label: Text('No voy'),
+                    onPressed: onLeaveRide,
+                    icon: Icon(Icons.cancel),
+                    label: Text('No voy a ir'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.red,
                       foregroundColor: AppColors.white,
@@ -477,19 +817,44 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     ),
                   ),
                 ),
+              ] else if (isMaybeParticipating) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: onJoinRide,
+                        icon: Icon(Icons.check),
+                        label: Text('Confirmar'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.green,
+                          foregroundColor: AppColors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: onLeaveRide,
+                        icon: Icon(Icons.close),
+                        label: Text('No voy'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.red,
+                          foregroundColor: AppColors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            ),
-          ],
-        ],
-
-        // Botones de administración (solo para el creador)
-        if (isCreator && !isPastRide) ...[
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
+            ],
+            if (isCreator && !isPastRide) ...[
+              SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => _showCancelDialog(ride.id, provider),
+                  onPressed: onCancelRide,
                   icon: Icon(Icons.cancel_outlined),
                   label: Text('Cancelar rodada'),
                   style: OutlinedButton.styleFrom(
@@ -500,22 +865,36 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 ),
               ),
             ],
-          ),
-        ],
-      ],
+          ],
+        );
+      },
     );
   }
+}
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+class InfoRowWidget extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const InfoRowWidget({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.value,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.grey600),
+        Icon(icon, color: AppColors.gray),
         SizedBox(width: 12),
         Text(
           '$label: ',
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: AppColors.grey600,
+            color: AppColors.gray,
           ),
         ),
         Expanded(
@@ -525,140 +904,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Color _getDifficultyColor(DifficultyLevel difficulty) {
-    switch (difficulty) {
-      case DifficultyLevel.easy:
-        return AppColors.green;
-      case DifficultyLevel.medium:
-        return AppColors.vividOrange;
-      case DifficultyLevel.hard:
-        return AppColors.red;
-      case DifficultyLevel.expert:
-        return AppColors.blackPearl;
-    }
-  }
-
-  String _getDifficultyName(DifficultyLevel difficulty) {
-    switch (difficulty) {
-      case DifficultyLevel.easy:
-        return 'Fácil';
-      case DifficultyLevel.medium:
-        return 'Medio';
-      case DifficultyLevel.hard:
-        return 'Difícil';
-      case DifficultyLevel.expert:
-        return 'Experto';
-    }
-  }
-
-  String _getStatusName(RideStatus status) {
-    switch (status) {
-      case RideStatus.upcoming:
-        return 'Próxima';
-      case RideStatus.ongoing:
-        return 'En curso';
-      case RideStatus.completed:
-        return 'Completada';
-      case RideStatus.cancelled:
-        return 'Cancelada';
-    }
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    final weekdays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    final months = [
-      'Enero',
-      'Febrero',
-      'Marzo',
-      'Abril',
-      'Mayo',
-      'Junio',
-      'Julio',
-      'Agosto',
-      'Septiembre',
-      'Octubre',
-      'Noviembre',
-      'Diciembre'
-    ];
-
-    final weekday = weekdays[dateTime.weekday - 1];
-    final day = dateTime.day;
-    final month = months[dateTime.month - 1];
-    final hour = dateTime.hour.toString().padLeft(2, '0');
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-
-    return '$weekday, $day de $month - $hour:$minute';
-  }
-
-  void _joinRide(String rideId, RideProvider provider) async {
-    final success = await provider.joinRide(rideId);
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('¡Genial! Te has unido a la rodada'),
-          backgroundColor: AppColors.green,
-        ),
-      );
-    }
-  }
-
-  void _maybeJoinRide(String rideId, RideProvider provider) async {
-    final success = await provider.maybeJoinRide(rideId);
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Marcado como "tal vez voy"'),
-          backgroundColor: AppColors.vividOrange,
-        ),
-      );
-    }
-  }
-
-  void _leaveRide(String rideId, RideProvider provider) async {
-    final success = await provider.leaveRide(rideId);
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Has salido de la rodada'),
-          backgroundColor: AppColors.grey600,
-        ),
-      );
-    }
-  }
-
-  void _showCancelDialog(String rideId, RideProvider provider) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Cancelar Rodada'),
-        content: Text(
-            '¿Estás seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('No'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              final success = await provider.cancelRide(rideId);
-              if (success) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Rodada cancelada'),
-                    backgroundColor: AppColors.red,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child: Text('Sí, cancelar'),
-          ),
-        ],
-      ),
     );
   }
 }

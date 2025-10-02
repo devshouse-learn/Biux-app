@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/colors.dart';
@@ -70,24 +71,57 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
           }
 
           if (rideProvider.rides.isEmpty) {
-            return const Center(
-              child: Text(
-                'No hay rodadas disponibles',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.grey,
-                ),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.directions_bike_outlined,
+                    size: 80,
+                    color: AppColors.grey600,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No hay rodadas disponibles',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: AppColors.grey600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Únete a un grupo para participar en rodadas',
+                    style: TextStyle(
+                      color: AppColors.grey600,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => context.go('/groups'),
+                    icon: const Icon(Icons.group),
+                    label: const Text('Ver Grupos'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.darkBlue,
+                      foregroundColor: AppColors.white,
+                    ),
+                  ),
+                ],
               ),
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: rideProvider.rides.length,
-            itemBuilder: (context, index) {
-              final ride = rideProvider.rides[index];
-              return _RideCard(ride: ride);
+          return RefreshIndicator(
+            onRefresh: () async {
+              await rideProvider.loadAllRides();
             },
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: rideProvider.rides.length,
+              itemBuilder: (context, index) {
+                final ride = rideProvider.rides[index];
+                return _RideCard(ride: ride);
+              },
+            ),
           );
         },
       ),
@@ -103,120 +137,142 @@ class _RideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
         onTap: () {
-          // Navegar a los detalles de la rodada
-          // context.go('/ride/${ride.id}');
+          // Navegar al detalle de la rodada
+          context.go('/rides/${ride.id}');
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
+              // Avatar con ícono de dificultad
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: _getDifficultyColor(ride.difficulty),
+                child: const Icon(
+                  Icons.directions_bike,
+                  color: AppColors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Contenido principal
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Título de la rodada
+                    Text(
                       ride.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.black,
+                        color: AppColors.darkBlue,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                    const SizedBox(height: 4),
+                    // Fecha y hora
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 14,
+                          color: AppColors.grey600,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _formatDateTime(ride.dateTime),
+                          style: const TextStyle(
+                            color: AppColors.grey600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                    decoration: BoxDecoration(
-                      color: _getDifficultyColor(ride.difficulty),
-                      borderRadius: BorderRadius.circular(12),
+                    const SizedBox(height: 4),
+                    // Distancia
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.straighten,
+                          size: 14,
+                          color: AppColors.grey600,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${ride.kilometers.toStringAsFixed(1)} km',
+                          style: const TextStyle(
+                            color: AppColors.grey600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      _getDifficultyText(ride.difficulty),
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    const SizedBox(height: 4),
+                    // Dificultad
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.trending_up,
+                          size: 14,
+                          color: AppColors.grey600,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Dificultad: ${_getDifficultyText(ride.difficulty)}',
+                          style: const TextStyle(
+                            color: AppColors.grey600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.schedule,
-                    size: 16,
-                    color: AppColors.grey,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatDateTime(ride.dateTime),
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                      fontSize: 14,
+                    const SizedBox(height: 4),
+                    // Participantes
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.people,
+                          size: 14,
+                          color: AppColors.grey600,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${ride.participants.length} participantes',
+                          style: const TextStyle(
+                            color: AppColors.grey600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        if (ride.maybeParticipants.isNotEmpty) ...[
+                          Text(
+                            ' • ${ride.maybeParticipants.length} tal vez',
+                            style: const TextStyle(
+                              color: AppColors.grey600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.people,
-                    size: 16,
-                    color: AppColors.grey,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${ride.participants.length} participantes',
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.route,
-                    size: 16,
-                    color: AppColors.grey,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${ride.kilometers.toStringAsFixed(1)} km',
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              if (ride.instructions.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  ride.instructions,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.black87,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  ],
                 ),
-              ],
+              ),
+              // Flecha para indicar que es clickeable
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: AppColors.grey600,
+                size: 16,
+              ),
             ],
           ),
         ),
@@ -251,6 +307,32 @@ class _RideCard extends StatelessWidget {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    final now = DateTime.now();
+    final difference = dateTime.difference(now);
+
+    if (difference.inDays == 0) {
+      if (dateTime.day == now.day) {
+        return 'Hoy ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+      }
+    } else if (difference.inDays == 1) {
+      return 'Mañana ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    }
+
+    final months = [
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic'
+    ];
+
+    return '${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }

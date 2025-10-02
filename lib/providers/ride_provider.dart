@@ -377,4 +377,27 @@ class RideProvider extends ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  // Obtener información del grupo de una rodada
+  Future<Map<String, dynamic>?> getGroupInfo(String groupId) async {
+    try {
+      final groupDoc = await _firestore.collection('groups').doc(groupId).get();
+
+      if (!groupDoc.exists) {
+        return null;
+      }
+
+      final groupData = groupDoc.data()!;
+      return {
+        'id': groupDoc.id,
+        'name': groupData['name'] ?? 'Grupo sin nombre',
+        'description': groupData['description'] ?? '',
+        'memberCount': groupData['memberCount'] ?? 0,
+        'imageUrl': groupData['imageUrl'],
+      };
+    } catch (e) {
+      print('Error al cargar información del grupo: $e');
+      return null;
+    }
+  }
 }
