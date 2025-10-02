@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/group_provider.dart';
 import '../../providers/location_provider.dart';
 import '../../providers/map_provider.dart';
 import '../../providers/meeting_point_provider.dart';
@@ -27,238 +28,246 @@ import '../../ui/screens/user/user_screen/user_screen.dart';
 import 'app_routes.dart';
 import 'auth_notifier.dart';
 
-class AppRouter {
-  static final GlobalKey<NavigatorState> _rootNavigatorKey =
-      GlobalKey<NavigatorState>();
-  static final AuthNotifier _authNotifier = AuthNotifier();
+// Variables globales que persisten durante hot reload
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+final AuthNotifier _authNotifier = AuthNotifier();
 
-  static GoRouter createRouter() {
-    return GoRouter(
-      navigatorKey: _rootNavigatorKey,
-      initialLocation: AppRoutes.splash,
-      debugLogDiagnostics: true,
-      redirect: _guard,
-      refreshListenable: _authNotifier,
+// Guard de autenticación (función global)
+String? _guard(BuildContext context, GoRouterState state) {
+  final bool isLoggedIn = _authNotifier.isLoggedIn;
+  final User? user = _authNotifier.user;
+  final String location = state.uri.toString();
+
+  print(
+      '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}');
+
+  // Si está en la ruta root '/', decidir dónde ir según autenticación
+  if (location == '/') {
+    if (isLoggedIn) {
+      print('📍 Usuario logueado en root, redirigiendo al mapa');
+      return AppRoutes.map;
+    } else {
+      print('📍 Usuario no logueado en root, redirigiendo al login');
+      return AppRoutes.login;
+    }
+  }
+
+  // Rutas públicas (no requieren autenticación)
+  final List<String> publicRoutes = [
+    AppRoutes.splash,
+    AppRoutes.login,
+    AppRoutes.createUser,
+  ];
+
+  final bool isPublicRoute = publicRoutes.contains(location);
+
+  // Si está en una ruta pública
+  if (isPublicRoute) {
+    // Si está logueado y trata de ir al login, redirigir al mapa
+    if (isLoggedIn && location == AppRoutes.login) {
+      print('📍 Usuario logueado intentando ir al login, redirigiendo al mapa');
+      return AppRoutes.map;
+    }
+    // Permitir acceso a rutas públicas
+    return null;
+  }
+
+  // Para rutas privadas, verificar autenticación
+  if (!isLoggedIn) {
+    print('🚫 Usuario no autenticado, redirigiendo al login');
+    return AppRoutes.login;
+  }
+
+  // Usuario autenticado accediendo a ruta privada
+  print('✅ Usuario autenticado, permitiendo acceso');
+  return null;
+}
+
+// GoRouter global que persiste durante hot reload
+final GoRouter _router = GoRouter(
+  navigatorKey: _rootNavigatorKey,
+  initialLocation: AppRoutes.splash,
+  debugLogDiagnostics: false,
+  redirect: _guard,
+  refreshListenable: _authNotifier,
+  routes: [
+    // Ruta de splash
+    GoRoute(
+      path: AppRoutes.splash,
+      name: AppRoutes.splashName,
+      builder: (context, state) => const SplashScreen(),
+    ),
+
+    // Ruta de login
+    GoRoute(
+      path: AppRoutes.login,
+      name: AppRoutes.loginName,
+      builder: (context, state) => LoginPhonePage(),
+    ),
+
+    // Ruta de crear usuario
+    GoRoute(
+      path: AppRoutes.createUser,
+      name: AppRoutes.createUserName,
+      builder: (context, state) => CreateUserScreen(),
+    ),
+
+    // Shell principal que envuelve todas las pantallas con AppBar y BottomNavigationBar
+    ShellRoute(
+      builder: (context, state, child) {
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider.value(value: context.read<MapProvider>()),
+            ChangeNotifierProvider.value(
+                value: context.read<LocationProvider>()),
+            ChangeNotifierProvider.value(
+                value: context.read<MeetingPointProvider>()),
+            ChangeNotifierProvider.value(value: context.read<UserProvider>()),
+            ChangeNotifierProvider.value(value: context.read<GroupProvider>()),
+          ],
+          child: MainShell(child: child),
+        );
+      },
       routes: [
-        // Ruta de splash
+        // Menu principal - redirigir al mapa
         GoRoute(
-          path: AppRoutes.splash,
-          name: AppRoutes.splashName,
-          builder: (context, state) => SplashScreen(),
+          path: AppRoutes.mainMenu,
+          name: AppRoutes.mainMenuName,
+          redirect: (context, state) => AppRoutes.map,
         ),
 
-        // Ruta de login
+        // Mapa
         GoRoute(
-          path: AppRoutes.login,
-          name: AppRoutes.loginName,
-          builder: (context, state) => LoginPhonePage(),
+          path: AppRoutes.map,
+          name: AppRoutes.mapName,
+          builder: (context, state) => MapScreen(),
         ),
 
-        // Ruta de crear usuario
+        // Perfil
         GoRoute(
-          path: AppRoutes.createUser,
-          name: AppRoutes.createUserName,
-          builder: (context, state) => CreateUserScreen(),
+          path: AppRoutes.profile,
+          name: AppRoutes.profileName,
+          builder: (context, state) => ProfileScreen(),
         ),
 
-        // Shell principal que envuelve todas las pantallas con AppBar y BottomNavigationBar
-        ShellRoute(
-          builder: (context, state, child) {
-            return MultiProvider(
-              providers: [
-                ChangeNotifierProvider.value(
-                    value: context.read<MapProvider>()),
-                ChangeNotifierProvider.value(
-                    value: context.read<LocationProvider>()),
-                ChangeNotifierProvider.value(
-                    value: context.read<MeetingPointProvider>()),
-                ChangeNotifierProvider.value(
-                    value: context.read<UserProvider>()),
-              ],
-              child: MainShell(child: child),
-            );
-          },
+        // Editar usuario
+        GoRoute(
+          path: AppRoutes.editUser,
+          name: AppRoutes.editUserName,
+          builder: (context, state) => UserEditScreen(),
+        ),
+
+        // Pantalla de usuario
+        GoRoute(
+          path: '/user',
+          name: 'userScreen',
+          builder: (context, state) => UserScreen(),
+        ),
+
+        // Grupos
+        GoRoute(
+          path: AppRoutes.groupList,
+          name: AppRoutes.groupListName,
+          builder: (context, state) => GroupListScreen(),
           routes: [
-            // Menu principal - redirigir al mapa
+            // Crear grupo
             GoRoute(
-              path: AppRoutes.mainMenu,
-              name: AppRoutes.mainMenuName,
-              redirect: (context, state) => AppRoutes.map,
+              path: 'create',
+              name: AppRoutes.groupCreateName,
+              builder: (context, state) => GroupCreateScreen(),
             ),
-
-            // Mapa
+            // Ver grupo específico
             GoRoute(
-              path: AppRoutes.map,
-              name: AppRoutes.mapName,
-              builder: (context, state) => MapScreen(),
+              path: ':groupId',
+              name: AppRoutes.viewGroupName,
+              builder: (context, state) {
+                return ViewGroupScreen();
+              },
             ),
+          ],
+        ),
 
-            // Perfil
+        // Mis grupos
+        GoRoute(
+          path: AppRoutes.myGroups,
+          name: AppRoutes.myGroupsName,
+          builder: (context, state) => MyGroupsScreen(),
+        ),
+
+        // Historias
+        GoRoute(
+          path: '/stories',
+          name: 'stories',
+          builder: (context, state) => const Scaffold(
+            body: Center(child: Text('Historias - Próximamente')),
+          ),
+          routes: [
+            // Crear historia
             GoRoute(
-              path: AppRoutes.profile,
-              name: AppRoutes.profileName,
-              builder: (context, state) => ProfileScreen(),
+              path: 'create',
+              name: AppRoutes.storyCreateName,
+              builder: (context, state) => StoryCreateScreen(),
             ),
-
-            // Editar usuario
+            // Ver historia específica
             GoRoute(
-              path: AppRoutes.editUser,
-              name: AppRoutes.editUserName,
-              builder: (context, state) => UserEditScreen(),
+              path: ':storyId',
+              name: AppRoutes.viewStoryName,
+              builder: (context, state) {
+                return StoryViewScreen();
+              },
             ),
+          ],
+        ),
 
-            // Pantalla de usuario
+        // Rutas/Caminos
+        GoRoute(
+          path: AppRoutes.roadsList,
+          name: AppRoutes.roadsListName,
+          builder: (context, state) => RoadsListScreen(),
+          routes: [
+            // Crear ruta
             GoRoute(
-              path: '/user',
-              name: 'userScreen',
-              builder: (context, state) => UserScreen(),
+              path: 'create/:groupId',
+              name: AppRoutes.roadCreateName,
+              builder: (context, state) {
+                return RoadCreateScreen();
+              },
             ),
-
-            // Grupos
+            // Mapa de ruta
             GoRoute(
-              path: AppRoutes.groupList,
-              name: AppRoutes.groupListName,
-              builder: (context, state) => GroupListScreen(),
-              routes: [
-                // Crear grupo
-                GoRoute(
-                  path: 'create',
-                  name: AppRoutes.groupCreateName,
-                  builder: (context, state) => GroupCreateScreen(),
-                ),
-                // Ver grupo específico
-                GoRoute(
-                  path: ':groupId',
-                  name: AppRoutes.viewGroupName,
-                  builder: (context, state) {
-                    return ViewGroupScreen();
-                  },
-                ),
-              ],
-            ),
-
-            // Mis grupos
-            GoRoute(
-              path: AppRoutes.myGroups,
-              name: AppRoutes.myGroupsName,
-              builder: (context, state) => MyGroupsScreen(),
-            ),
-
-            // Historias
-            GoRoute(
-              path: '/stories',
-              name: 'stories',
-              builder: (context, state) => const Scaffold(
-                body: Center(child: Text('Historias - Próximamente')),
-              ),
-              routes: [
-                // Crear historia
-                GoRoute(
-                  path: 'create',
-                  name: AppRoutes.storyCreateName,
-                  builder: (context, state) => StoryCreateScreen(),
-                ),
-                // Ver historia específica
-                GoRoute(
-                  path: ':storyId',
-                  name: AppRoutes.viewStoryName,
-                  builder: (context, state) {
-                    return StoryViewScreen();
-                  },
-                ),
-              ],
-            ),
-
-            // Rutas/Caminos
-            GoRoute(
-              path: AppRoutes.roadsList,
-              name: AppRoutes.roadsListName,
-              builder: (context, state) => RoadsListScreen(),
-              routes: [
-                // Crear ruta
-                GoRoute(
-                  path: 'create/:groupId',
-                  name: AppRoutes.roadCreateName,
-                  builder: (context, state) {
-                    return RoadCreateScreen();
-                  },
-                ),
-                // Mapa de ruta
-                GoRoute(
-                  path: 'map',
-                  name: AppRoutes.roadMapName,
-                  builder: (context, state) {
-                    return MapRoadsLocation();
-                  },
-                ),
-              ],
+              path: 'map',
+              name: AppRoutes.roadMapName,
+              builder: (context, state) {
+                return MapRoadsLocation();
+              },
             ),
           ],
         ),
       ],
-      errorBuilder: (context, state) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('Error: ${state.error}'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => context.go(AppRoutes.splash),
-                child: const Text('Ir al inicio'),
-              ),
-            ],
+    ),
+  ],
+  errorBuilder: (context, state) => Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error, size: 64, color: Colors.red),
+          const SizedBox(height: 16),
+          Text('Error: ${state.error}'),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => context.go(AppRoutes.splash),
+            child: const Text('Ir al inicio'),
           ),
-        ),
+        ],
       ),
-    );
-  }
+    ),
+  ),
+);
 
-  // Guard de autenticación
-  static String? _guard(BuildContext context, GoRouterState state) {
-    // Usar el AuthNotifier para obtener el estado de autenticación
-    final bool isLoggedIn = _authNotifier.isLoggedIn;
-    final User? user = _authNotifier.user;
+class AppRouter {
+  static GoRouter get router => _router;
 
-    final String location = state.uri.toString();
-    print(
-        '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}');
-
-    // Rutas públicas (no requieren autenticación)
-    final List<String> publicRoutes = [
-      AppRoutes.splash,
-      AppRoutes.login,
-      AppRoutes.createUser,
-    ];
-
-    final bool isPublicRoute = publicRoutes.contains(location);
-
-    // Si está en una ruta pública
-    if (isPublicRoute) {
-      // Si está logueado y trata de ir al login, redirigir al mapa
-      if (isLoggedIn && location == AppRoutes.login) {
-        print(
-            '📍 Usuario logueado intentando ir al login, redirigiendo al mapa');
-        return AppRoutes.map;
-      }
-      // Permitir acceso a rutas públicas
-      return null;
-    }
-
-    // Para rutas privadas, verificar autenticación
-    if (!isLoggedIn) {
-      print('🚫 Usuario no autenticado, redirigiendo al login');
-      return AppRoutes.login;
-    }
-
-    // Usuario autenticado accediendo a ruta privada
-    print('✅ Usuario autenticado, permitiendo acceso');
-    return null;
-  }
-
-  // Método para limpiar el notificador cuando la app se cierre
   static void dispose() {
     _authNotifier.dispose();
   }

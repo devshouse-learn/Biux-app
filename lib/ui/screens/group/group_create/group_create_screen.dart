@@ -1,273 +1,454 @@
 import 'dart:io';
 
-import 'package:biux/config/colors.dart';
-import 'package:biux/config/images.dart';
-import 'package:biux/config/strings.dart';
-import 'package:biux/config/styles.dart';
-import 'package:biux/ui/screens/group/group_create/group_create_bloc.dart';
-import 'package:biux/ui/widgets/logo_biux_widget.dart';
-import 'package:biux/ui/widgets/text_form_field_biux_widget.dart';
-import 'package:biux/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class GroupCreateScreen extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffolState = GlobalKey<ScaffoldState>();
+import '../../../../config/colors.dart';
+import '../../../../providers/group_provider.dart';
+
+
+class GroupCreateScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    final bloc = context.read<GroupCreateBloc>();
-    return Scaffold(
-      key: _scaffolState,
-      backgroundColor: AppColors.white,
-      body: Form(
-          key: _formKey,
-          child: ListView(children: <Widget>[
-            Stack(
-              children: [
-                _FormGroupWidget(form: _formKey),
-                Selector<GroupCreateBloc, File?>(
-                    selector: (_, bloc) => bloc.imageLogo,
-                    builder: (context, imageLogo, child) {
-                      return LogoBiuxWidget(
-                        getImage: () => bloc.getImageLogo,
-                        imageLogo: imageLogo,
-                        left: 130,
-                        top: 20,
-                      );
-                    }),
-              ],
-            )
-          ])),
-    );
-  }
+  _GroupCreateScreenState createState() => _GroupCreateScreenState();
 }
 
-class _FormGroupWidget extends StatelessWidget {
-  GlobalKey<FormState> form;
-  _FormGroupWidget({Key? key, required this.form}) : super(key: key);
+class _GroupCreateScreenState extends State<GroupCreateScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  XFile? _logoFile;
+  XFile? _coverFile;
+
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<GroupCreateBloc>();
-    return Padding(
-      padding: const EdgeInsets.only(top: 80),
-      child: Center(
-        child: Container(
-          height: 600,
-          width: 350,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          child: Card(
-            color: AppColors.white,
-            shadowColor: AppColors.gray,
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Crear Grupo'),
+        backgroundColor: AppColors.blackPearl,
+        foregroundColor: AppColors.white,
+      ),
+      body: Consumer<GroupProvider>(
+        builder: (context, provider, child) {
+          return Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Imagen de portada
+                  _buildCoverImageSection(provider),
+
+                  SizedBox(height: 24),
+
+                  // Logo del grupo
+                  _buildLogoSection(provider),
+
+                  SizedBox(height: 24),
+
+                  // Nombre del grupo
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre del grupo *',
+                      hintText: 'Ej: Ciclistas de Ibagué',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      prefixIcon: Icon(Icons.group),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'El nombre es obligatorio';
+                      }
+                      if (value.trim().length < 3) {
+                        return 'El nombre debe tener al menos 3 caracteres';
+                      }
+                      if (value.trim().length > 50) {
+                        return 'El nombre no puede exceder 50 caracteres';
+                      }
+                      return null;
+                    },
+                    textInputAction: TextInputAction.next,
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Descripción del grupo
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: 'Descripción *',
+                      hintText:
+                          'Describe el propósito y actividades del grupo...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      prefixIcon: Icon(Icons.description),
+                    ),
+                    maxLines: 4,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'La descripción es obligatoria';
+                      }
+                      if (value.trim().length < 10) {
+                        return 'La descripción debe tener al menos 10 caracteres';
+                      }
+                      if (value.trim().length > 500) {
+                        return 'La descripción no puede exceder 500 caracteres';
+                      }
+                      return null;
+                    },
+                    textInputAction: TextInputAction.done,
+                  ),
+
+                  SizedBox(height: 32),
+
+                  // Información adicional
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border:
+                          Border.all(color: AppColors.blue.withOpacity(0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.info_outline, color: AppColors.blue),
+                            SizedBox(width: 8),
+                            Text(
+                              'Información importante',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          '• Como creador, serás el administrador del grupo\n'
+                          '• Podrás aprobar o rechazar solicitudes de ingreso\n'
+                          '• Las imágenes son opcionales pero recomendadas\n'
+                          '• El grupo será público y visible para todos',
+                          style: TextStyle(
+                            color: AppColors.blue,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 32),
+
+                  // Botón crear
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      onPressed: provider.isLoading ? null : _createGroup,
+                      icon: provider.isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.white),
+                              ),
+                            )
+                          : Icon(Icons.add),
+                      label: Text(
+                        provider.isLoading ? 'Creando grupo...' : 'Crear Grupo',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.blackPearl,
+                        foregroundColor: AppColors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Column(children: <Widget>[
-              Padding(padding: EdgeInsets.only(top: 70)),
-              TextFormFieldBiuxWidget(
-                controller: bloc.nameController,
-                text: AppStrings.groupNameText,
-                image: Image.asset(Images.kImageSocial,
-                    scale: 4, color: AppColors.gray),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return '';
-                  }
-                  return null;
-                },
-              ),
-              TextFormFieldBiuxWidget(
-                controller: bloc.facebookController,
-                text: AppStrings.linkFacebook,
-                image: Image.asset(
-                  Images.kImageIconFacebook,
-                  height: 1,
-                  scale: 4,
-                  color: AppColors.gray,
-                ),
-              ),
-              TextFormFieldBiuxWidget(
-                controller: bloc.whatsappController,
-                text: AppStrings.WhatsappText,
-                image: Image.asset(
-                  Images.kImageIconWhatsapp,
-                  scale: 4,
-                  color: AppColors.gray,
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return '';
-                  }
-                  return null;
-                },
-              ),
-              TextFormFieldBiuxWidget(
-                controller: bloc.instagramController,
-                text: AppStrings.instagramText,
-                image: Image.asset(
-                  Images.kImageIconInstagram,
-                  scale: 4,
-                  color: AppColors.gray,
-                ),
-              ),
-              SizedBox(
-                height: 120,
-                child: TextFormFieldBiuxWidget(
-                  maxLine: 5,
-                  controller: bloc.descripcionController,
-                  text: AppStrings.descriptionText,
-                  radiusCircular: 15,
-                  maxLength: 300,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return '';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              _SelectorPublic(),
-              _BotonSend(
-                form: form,
-              )
-            ]),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
-}
 
-class _SelectorPublic extends StatelessWidget {
-  _SelectorPublic({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final bloc = context.watch<GroupCreateBloc>();
-    return Padding(
-      padding: const EdgeInsets.only(left: 30),
-      child: Row(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              bloc.onTapValidator(AppStrings.public);
-            },
-            child: Row(children: <Widget>[
-              if (bloc.publicValidator == true)
-                Image.asset(
-                  Images.kSelectedBlackImage,
-                  scale: 4,
-                )
-              else
-                Image.asset(
-                  Images.kDeselectedBlackImage,
-                  scale: 4,
-                ),
-              const SizedBox(
-                width: 5,
-              ),
-              Text(
-                AppStrings.public,
-                style: Styles.containerTextGroup,
-              )
-            ]),
+  Widget _buildCoverImageSection(GroupProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Imagen de portada (opcional)',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(
-            width: 30,
+        ),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => _selectCoverImage(provider),
+          child: Container(
+            height: 150,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.grey200,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.grey200, width: 1),
+            ),
+            child: _coverFile != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      File(_coverFile!.path),
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_photo_alternate,
+                        size: 40,
+                        color: AppColors.grey600,
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Toca para agregar portada',
+                        style: TextStyle(color: AppColors.grey600),
+                      ),
+                    ],
+                  ),
           ),
-          GestureDetector(
-            onTap: () {
-              bloc.onTapValidator(AppStrings.private);
-            },
-            child: Row(children: <Widget>[
-              if (bloc.publicValidator == false)
-                Image.asset(
-                  Images.kSelectedBlackImage,
-                  scale: 4,
-                )
-              else
-                Image.asset(
-                  Images.kDeselectedBlackImage,
-                  scale: 4,
-                ),
-              const SizedBox(
-                width: 5,
+        ),
+        if (_coverFile != null) ...[
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _coverFile = null;
+                  });
+                },
+                icon: Icon(Icons.delete, color: AppColors.red),
+                label: Text('Quitar', style: TextStyle(color: AppColors.red)),
               ),
-              Text(
-                AppStrings.private,
-                style: Styles.containerTextGroup,
-              )
-            ]),
+            ],
           ),
         ],
+      ],
+    );
+  }
+
+  Widget _buildLogoSection(GroupProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Logo del grupo (opcional)',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () => _selectLogoImage(provider),
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.grey200,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.grey200, width: 1),
+                ),
+                child: _logoFile != null
+                    ? ClipOval(
+                        child: Image.file(
+                          File(_logoFile!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Icon(
+                        Icons.add_a_photo,
+                        size: 30,
+                        color: AppColors.grey600,
+                      ),
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _logoFile != null ? 'Logo seleccionado' : 'Sin logo',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Toca el círculo para agregar un logo',
+                    style: TextStyle(
+                      color: AppColors.grey600,
+                      fontSize: 12,
+                    ),
+                  ),
+                  if (_logoFile != null) ...[
+                    SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _logoFile = null;
+                        });
+                      },
+                      icon: Icon(Icons.delete, color: AppColors.red, size: 16),
+                      label: Text('Quitar',
+                          style: TextStyle(color: AppColors.red)),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _selectCoverImage(GroupProvider provider) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.photo_camera),
+              title: Text('Cámara'),
+              onTap: () async {
+                Navigator.pop(context);
+                final file = await provider.pickImage(ImageSource.camera);
+                if (file != null) {
+                  setState(() {
+                    _coverFile = file;
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Galería'),
+              onTap: () async {
+                Navigator.pop(context);
+                final file = await provider.pickImage(ImageSource.gallery);
+                if (file != null) {
+                  setState(() {
+                    _coverFile = file;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
-class _BotonSend extends StatelessWidget {
-  GlobalKey<FormState> form;
-  _BotonSend({Key? key, required this.form}) : super(key: key);
+  void _selectLogoImage(GroupProvider provider) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.photo_camera),
+              title: Text('Cámara'),
+              onTap: () async {
+                Navigator.pop(context);
+                final file = await provider.pickImage(ImageSource.camera);
+                if (file != null) {
+                  setState(() {
+                    _logoFile = file;
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Galería'),
+              onTap: () async {
+                Navigator.pop(context);
+                final file = await provider.pickImage(ImageSource.gallery);
+                if (file != null) {
+                  setState(() {
+                    _logoFile = file;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _createGroup() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final provider = context.read<GroupProvider>();
+
+    final success = await provider.createGroup(
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      logoFile: _logoFile,
+      coverFile: _coverFile,
+    );
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Grupo creado exitosamente'),
+          backgroundColor: AppColors.green,
+        ),
+      );
+      context.pop(); // Volver a la lista de grupos
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(provider.error ?? 'Error al crear el grupo'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
-    final bloc = context.watch<GroupCreateBloc>();
-    return Column(
-      children: <Widget>[
-        ButtonTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-          ),
-          minWidth: 220,
-          height: 40,
-          child: ElevatedButton(
-              //color: AppColors.white,
-              child: Text(AppStrings.cancelText, style: Styles.textLightBlack),
-              onPressed: () {
-                bloc.onTapPop(context);
-              }),
-        ),
-        ButtonTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-          ),
-          minWidth: 220,
-          height: 40,
-          child: ElevatedButton(
-              // color: AppColors.strongCyan,
-              child:
-                  Text(AppStrings.create, style: Styles.daysRoadListDateTime),
-              onPressed: () {
-                if (form.currentState!.validate() &&
-                    bloc.imageLogo != null &&
-                    bloc.publicValidator != null)
-                  bloc.uploadGroup(context);
-                else
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBarUtils.customSnackBar(
-                        content: bloc.imageLogo == null
-                            ? AppStrings.missingLogo
-                            : bloc.nameController.text.isEmpty
-                                ? AppStrings.missingNameGroup
-                                : bloc.whatsappController.text.isEmpty
-                                    ? AppStrings.missingWhatssap
-                                    : bloc.whatsappController.text.length != 10
-                                        ? AppStrings.missingWhatssapLength
-                                        : bloc.descripcionController.text
-                                                .isEmpty
-                                            ? AppStrings.missingDescription
-                                            : bloc.publicValidator == null
-                                                ? AppStrings
-                                                    .missingValidatorPublic
-                                                : '',
-                        backgroundColor: AppColors.red),
-                  );
-              }),
-        )
-      ],
-    );
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 }

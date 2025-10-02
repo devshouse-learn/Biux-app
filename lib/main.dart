@@ -6,7 +6,8 @@ import 'package:biux/config/themes/theme.dart';
 import 'package:biux/config/themes/theme_notifier.dart';
 import 'package:biux/data/local_storage/local_storage.dart';
 import 'package:biux/data/repositories/auth/auth_repository.dart';
-import 'package:biux/providers/auth_provider.dart';
+import 'package:biux/providers/auth_provider.dart' as app_auth;
+import 'package:biux/providers/group_provider.dart';
 import 'package:biux/providers/location_provider.dart';
 import 'package:biux/providers/map_provider.dart';
 import 'package:biux/providers/meeting_point_provider.dart';
@@ -17,7 +18,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import "package:flutter/services.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'data/repositories/meeting_point_repository.dart';
@@ -33,8 +33,6 @@ void main() async {
     //   version: AppStrings.version,
     // );
   }
-  final map = <String, int>{};
-  WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -44,16 +42,14 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(
+          create: (_) => app_auth.AuthProvider(
             authRepository: AuthRepository(
               baseUrl: 'https://n8n.oktavia.me/webhook',
             ),
           ),
         ),
         ChangeNotifierProvider<ThemeNotifier>(
-          create: (_) =>
-              ThemeNotifier(lightTheme //darkModeOn ? darkTheme : lightTheme,
-                  ),
+          create: (_) => ThemeNotifier(lightTheme),
         ),
         ChangeNotifierProvider(
           create: (_) => MeetingPointProvider(
@@ -69,7 +65,9 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => UserProvider(),
         ),
-        // Otros providers que puedas tener
+        ChangeNotifierProvider(
+          create: (_) => GroupProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -102,8 +100,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
       ),
-      // Configuración de Go Router
-      routerConfig: AppRouter.createRouter(),
+      routerConfig: AppRouter.router,
     );
   }
 }

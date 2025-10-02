@@ -1,7 +1,5 @@
 import 'package:biux/config/colors.dart';
 import 'package:biux/config/images.dart';
-import 'package:biux/config/router/app_routes.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,14 +43,9 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateAfterDelay() {
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        final currentUser = FirebaseAuth.instance.currentUser;
-        final isLoggedIn = currentUser != null;
-
-        if (isLoggedIn) {
-          context.go(AppRoutes.map);
-        } else {
-          context.go(AppRoutes.login);
-        }
+        // El guard del router se encargará de decidir hacia dónde ir
+        // basado en el estado de autenticación de Firebase
+        context.go('/');
       }
     });
   }

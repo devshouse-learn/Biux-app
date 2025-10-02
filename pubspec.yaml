@@ -100,11 +100,32 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.1
 
-flutter_icons:
-  android: true
+flutter_launcher_icons:
+  android: "launcher_icon"
   ios: true
   image_path: "img/biux_logo_background_blue.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+
+  # Configuración específica para Android con iconos adaptativos
+  adaptive_icon_background: "#16242D"  # Color blackPearl del AppBar
+  adaptive_icon_foreground: "img/biux_logo_letters_white.png"  # Logo blanco para contraste
+
+  # Configuración específica para diferentes densidades Android
+  android_12:
+    adaptive_icon_background: "#16242D"
+    adaptive_icon_foreground: "img/biux_logo_letters_white.png"
+
+flutter_native_splash:
+  color: "#16242D"  # Color blackPearl del AppBar
+  image: img/biux_logo_background_white.png
+  android_12:
+    image: img/biux_logo_background_white.png
+    color: "#16242D"
+  ios: true
+  android: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
