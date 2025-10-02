@@ -105,7 +105,7 @@ class _MainShellState extends State<MainShell> {
         break;
       case 1:
         // Rutas/Roads
-        context.go(AppRoutes.roadsList);
+        context.go('/rides');
         break;
       case 2:
         // Grupos
