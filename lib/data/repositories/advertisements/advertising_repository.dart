@@ -13,7 +13,7 @@ class AdvertisingRepository {
       Uri.parse(url),
     );
     var responseData = json.decode(response.body);
-    List roadsJson = responseData["data"];
+    // List roadsJson = responseData["data"];
     // List<Advertising> roads = roadsJson
     //     .map((roadsJson) => Advertising.fromJsonMap(roadsJson))
     //     .toList();

@@ -1,6 +1,3 @@
-import 'package:biux/data/models/group.dart';
-import 'package:biux/data/models/user.dart';
-
 class Member {
   bool approved;
   String id;

@@ -1,7 +1,5 @@
 import 'package:biux/data/models/trademark_bike.dart';
 import 'package:biux/data/models/type_bike.dart';
-import 'package:biux/data/models/user.dart';
-
 class Bike {
   String? measurement;
   String? storeBuy;

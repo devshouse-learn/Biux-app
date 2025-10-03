@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:biux/data/models/bike.dart';
 import 'package:biux/data/repositories/bikes/bike_repository_abstract.dart';
-import 'package:biux/utils/firebase_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '../../../config/strings.dart';
+import 'package:biux/core/config/strings.dart';
 
 class BikeFirebaseRepository extends BikeRepositoryAbstract {
   static final collection = 'bikes';

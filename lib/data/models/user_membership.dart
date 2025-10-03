@@ -1,5 +1,5 @@
 import 'package:biux/data/models/membership.dart';
-import 'package:biux/data/models/user.dart';
+import 'package:biux/features/users/data/models/user.dart';
 
 class UserMembership {
   bool? stateMembership;

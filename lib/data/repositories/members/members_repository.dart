@@ -50,8 +50,7 @@ class MembersRepository {
     if (uriResponse.statusCode == 200) {
       final data = json.decode(uriResponse.body);
 
-      bool approved = data["approved"];
-
+      // bool approved = data["approved"];
       // LocalStorage().saveApproved(approved);
 
       return true;

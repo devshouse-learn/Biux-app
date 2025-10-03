@@ -86,7 +86,7 @@ class BikeRepository {
         ),
       },
     );
-    Response response = await dio.patch(
+    await dio.patch(
       'https://biux-prod.ibacrea.com/api/v1/bicicletas/$id/subirFotos',
       data: formData,
     );

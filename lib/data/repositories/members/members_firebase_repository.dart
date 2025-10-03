@@ -1,9 +1,8 @@
-import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 import 'package:biux/data/repositories/members/members_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../config/strings.dart';
+import 'package:biux/core/config/strings.dart';
 
 class MembersFirebaseRepository extends MembersRepositoryAbstract {
   static final subcollection = 'members';

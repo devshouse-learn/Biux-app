@@ -1,6 +1,4 @@
 
-import 'package:biux/data/models/bike.dart';
-
 class StoleBikes {
   String? bikeId;
   String? description;

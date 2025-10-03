@@ -2,7 +2,7 @@ import 'package:biux/data/models/stole_bikes.dart';
 import 'package:biux/data/repositories/stoles_bikes/stole_bikes_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../config/strings.dart';
+import 'package:biux/core/config/strings.dart';
 
 class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
   static final collection = 'stoleBikes';

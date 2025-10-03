@@ -1,19 +1,27 @@
 import 'dart:core';
 
-import 'package:biux/config/router/app_router.dart';
-import 'package:biux/config/strings.dart';
-import 'package:biux/config/themes/theme.dart';
-import 'package:biux/config/themes/theme_notifier.dart';
-import 'package:biux/data/local_storage/local_storage.dart';
-import 'package:biux/data/repositories/auth/auth_repository.dart';
-import 'package:biux/providers/auth_provider.dart' as app_auth;
-import 'package:biux/providers/city_provider.dart';
-import 'package:biux/providers/group_provider.dart';
-import 'package:biux/providers/location_provider.dart';
-import 'package:biux/providers/map_provider.dart';
-import 'package:biux/providers/meeting_point_provider.dart';
-import 'package:biux/providers/ride_provider.dart';
-import 'package:biux/providers/user_provider.dart';
+// Core imports
+import 'package:biux/core/config/router/app_router.dart';
+import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/config/themes/theme.dart';
+import 'package:biux/core/config/themes/theme_notifier.dart';
+
+// Features imports
+import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
+import 'package:biux/features/authentication/presentation/providers/auth_provider.dart' as app_auth;
+import 'package:biux/features/cities/presentation/providers/city_provider.dart';
+import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/features/maps/data/repositories/meeting_point_repository.dart';
+import 'package:biux/features/maps/presentation/providers/location_provider.dart';
+import 'package:biux/features/maps/presentation/providers/map_provider.dart';
+import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
+import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
+
+// Shared imports
+import 'package:biux/shared/services/local_storage.dart';
+
+// External packages
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -22,7 +30,6 @@ import "package:flutter/services.dart";
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-import 'data/repositories/meeting_point_repository.dart';
 import 'firebase_options.dart';
 
 void main() async {

@@ -2,8 +2,6 @@ import 'package:biux/data/models/situation_accident.dart';
 import 'package:biux/data/repositories/accidents/accident_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../models/bike.dart';
-
 class AccidentFirebaseRepository extends AccidentRepositoryAbstract {
   static final collection = 'users';
   final FirebaseFirestore firestore = FirebaseFirestore.instance;

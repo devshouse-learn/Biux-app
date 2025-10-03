@@ -1,4 +1,3 @@
-import 'package:biux/data/models/group.dart';
 import 'package:biux/data/models/member.dart';
 
 abstract class MembersRepositoryAbstract {
