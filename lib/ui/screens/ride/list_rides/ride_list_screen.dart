@@ -227,6 +227,54 @@ class _RideListScreenState extends State<RideListScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Información del grupo organizador
+                if (widget.groupId ==
+                    null) // Solo mostrar si no estamos en un grupo específico
+                  FutureBuilder<Map<String, dynamic>?>(
+                    future: provider.getGroupInfo(ride.groupId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData &&
+                          snapshot.data != null) {
+                        final groupInfo = snapshot.data!;
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundImage: groupInfo['logoUrl'] != null &&
+                                        groupInfo['logoUrl']
+                                            .toString()
+                                            .isNotEmpty
+                                    ? NetworkImage(groupInfo['logoUrl'])
+                                    : null,
+                                backgroundColor: AppColors.blackPearl,
+                                child: groupInfo['logoUrl'] == null ||
+                                        groupInfo['logoUrl'].toString().isEmpty
+                                    ? Icon(Icons.group,
+                                        size: 16, color: AppColors.white)
+                                    : null,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Organizado por ${groupInfo['name']}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.blackPearl,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return SizedBox.shrink();
+                    },
+                  ),
+
                 // Fecha y hora
                 Row(
                   children: [

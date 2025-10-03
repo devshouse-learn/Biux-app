@@ -394,6 +394,7 @@ class RideProvider extends ChangeNotifier {
         'description': groupData['description'] ?? '',
         'memberCount': groupData['memberCount'] ?? 0,
         'imageUrl': groupData['imageUrl'],
+        'logoUrl': groupData['logoUrl'],
       };
     } catch (e) {
       print('Error al cargar información del grupo: $e');
