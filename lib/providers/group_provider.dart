@@ -38,6 +38,12 @@ class GroupProvider extends ChangeNotifier {
 
   String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
+  // NUEVO: Verificar si el usuario ya es admin de algún grupo
+  bool get isAdminOfAnyGroup => _adminGroups.isNotEmpty;
+
+  // NUEVO: Verificar si el usuario puede crear un grupo (no es admin de ninguno)
+  bool get canCreateGroup => !isAdminOfAnyGroup;
+
   // Cargar todos los grupos
   void loadAllGroups() {
     _repository.getGroups().listen((groups) {

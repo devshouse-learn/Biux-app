@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../config/colors.dart';
 import '../../../../data/models/ride_model.dart';
+import '../../../../providers/group_provider.dart';
 import '../../../../providers/ride_provider.dart';
 
 class RideListScreen extends StatefulWidget {
@@ -21,6 +22,8 @@ class _RideListScreenState extends State<RideListScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<RideProvider>(context, listen: false);
+      final groupProvider = Provider.of<GroupProvider>(context, listen: false);
+
       if (widget.groupId != null) {
         // Cargar rodadas de un grupo específico
         provider.loadGroupRides(widget.groupId!);
@@ -28,6 +31,10 @@ class _RideListScreenState extends State<RideListScreen> {
         // Cargar todas las rodadas de todos los grupos
         provider.loadAllRides();
       }
+
+      // Cargar los grupos de admin del usuario siempre (tanto para grupo específico como general)
+      // Esto evita recargas innecesarias al presionar el botón +
+      groupProvider.loadAdminGroups();
     });
   }
 
@@ -70,70 +77,105 @@ class _RideListScreenState extends State<RideListScreen> {
           );
         },
       ),
-      // Solo mostrar el FloatingActionButton si estamos viendo las rodadas de un grupo específico
-      floatingActionButton: widget.groupId != null
-          ? FloatingActionButton(
+      floatingActionButton: Consumer<GroupProvider>(
+        builder: (context, groupProvider, child) {
+          // Si estamos viendo las rodadas de un grupo específico
+          if (widget.groupId != null) {
+            return FloatingActionButton(
               onPressed: () => context.push('/rides/create/${widget.groupId}'),
               backgroundColor: AppColors.blackPearl,
               child: Icon(Icons.add, color: AppColors.white),
-            )
-          : null,
+              tooltip: 'Crear Rodada',
+            );
+          }
+
+          // Si estamos en el listado general y el usuario es admin de algún grupo
+          if (groupProvider.adminGroups.isNotEmpty) {
+            return FloatingActionButton(
+              onPressed: () => _showCreateRideDialog(context, groupProvider),
+              backgroundColor: AppColors.blackPearl,
+              child: Icon(Icons.add, color: AppColors.white),
+              tooltip: 'Crear Rodada',
+            );
+          }
+
+          return SizedBox.shrink();
+        },
+      ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.directions_bike_outlined,
-            size: 80,
-            color: AppColors.grey600,
-          ),
-          SizedBox(height: 16),
-          Text(
-            widget.groupId != null
-                ? 'No hay rodadas en este grupo'
-                : 'No hay rodadas programadas',
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.grey600,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            widget.groupId != null
-                ? 'Sé el primero en organizar una rodada en este grupo'
-                : 'Únete a un grupo para participar en rodadas',
-            style: TextStyle(
-              color: AppColors.grey600,
-            ),
-          ),
-          SizedBox(height: 24),
-          // Solo mostrar el botón si hay un grupo específico
-          if (widget.groupId != null)
-            ElevatedButton.icon(
-              onPressed: () => context.push('/rides/create/${widget.groupId}'),
-              icon: Icon(Icons.add),
-              label: Text('Crear Rodada'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blackPearl,
-                foregroundColor: AppColors.white,
+    return Consumer<GroupProvider>(
+      builder: (context, groupProvider, child) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.directions_bike_outlined,
+                size: 80,
+                color: AppColors.grey600,
               ),
-            )
-          else
-            ElevatedButton.icon(
-              onPressed: () => context.go('/groups'),
-              icon: Icon(Icons.group),
-              label: Text('Ver Grupos'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blackPearl,
-                foregroundColor: AppColors.white,
+              SizedBox(height: 16),
+              Text(
+                widget.groupId != null
+                    ? 'No hay rodadas en este grupo'
+                    : 'No hay rodadas programadas',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: AppColors.grey600,
+                ),
               ),
-            ),
-        ],
-      ),
+              SizedBox(height: 8),
+              Text(
+                widget.groupId != null
+                    ? 'Sé el primero en organizar una rodada en este grupo'
+                    : groupProvider.adminGroups.isNotEmpty
+                        ? 'Organiza la primera rodada para tu grupo'
+                        : 'Únete a un grupo para participar en rodadas',
+                style: TextStyle(
+                  color: AppColors.grey600,
+                ),
+              ),
+              SizedBox(height: 24),
+              // Botón en estado vacío
+              if (widget.groupId != null)
+                ElevatedButton.icon(
+                  onPressed: () =>
+                      context.push('/rides/create/${widget.groupId}'),
+                  icon: Icon(Icons.add),
+                  label: Text('Crear Rodada'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.blackPearl,
+                    foregroundColor: AppColors.white,
+                  ),
+                )
+              else if (groupProvider.adminGroups.isNotEmpty)
+                ElevatedButton.icon(
+                  onPressed: () =>
+                      _showCreateRideDialog(context, groupProvider),
+                  icon: Icon(Icons.add),
+                  label: Text('Crear Rodada'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.blackPearl,
+                    foregroundColor: AppColors.white,
+                  ),
+                )
+              else
+                ElevatedButton.icon(
+                  onPressed: () => context.go('/groups'),
+                  icon: Icon(Icons.group),
+                  label: Text('Ver Grupos'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.blackPearl,
+                    foregroundColor: AppColors.white,
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -537,5 +579,84 @@ class _RideListScreenState extends State<RideListScreen> {
         ),
       );
     }
+  }
+
+  void _showCreateRideDialog(
+      BuildContext context, GroupProvider groupProvider) {
+    // Si solo es admin de un grupo, ir directamente a crear rodada
+    if (groupProvider.adminGroups.length == 1) {
+      final group = groupProvider.adminGroups.first;
+      context.push('/rides/create/${group.id}');
+      return;
+    }
+
+    // Si es admin de múltiples grupos, mostrar selector
+    showDialog(
+      context: context,
+      builder: (context) {
+        String? selectedGroupId;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Crear nueva rodada'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Selecciona el grupo con el que deseas crear la rodada:',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 16),
+                  // Lista de grupos administrados por el usuario
+                  Column(
+                    children: groupProvider.adminGroups.map((group) {
+                      return RadioListTile<String>(
+                        title: Text(group.name),
+                        value: group.id,
+                        groupValue: selectedGroupId,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGroupId = value;
+                          });
+                        },
+                        activeColor: AppColors.blackPearl,
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedGroupId != null) {
+                      // Navegar a la pantalla de creación de rodada con el ID del grupo seleccionado
+                      context.push('/rides/create/$selectedGroupId');
+                      Navigator.of(context).pop();
+                    } else {
+                      // Mostrar un mensaje de error si no se ha seleccionado ningún grupo
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Por favor, selecciona un grupo'),
+                          backgroundColor: AppColors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: Text('Continuar'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.blackPearl,
+                    foregroundColor: AppColors.white,
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }

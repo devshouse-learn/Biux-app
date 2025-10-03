@@ -25,13 +25,15 @@ class _GroupListScreenState extends State<GroupListScreen> {
 
     // Cargar todos los grupos sin filtrar por ciudad
     groupProvider.loadAllGroups();
+    // Cargar también los grupos de admin del usuario para verificar restricción
+    groupProvider.loadAdminGroups();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Grupos'),
+        title: const Text('Grupos'),
         backgroundColor: AppColors.blackPearl,
         foregroundColor: AppColors.white,
       ),
@@ -42,13 +44,13 @@ class _GroupListScreenState extends State<GroupListScreen> {
             child: Consumer<GroupProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final groups = provider.allGroups;
 
                 if (groups.isEmpty) {
-                  return _buildEmptyState();
+                  return _buildEmptyState(provider);
                 }
 
                 return RefreshIndicator(
@@ -56,7 +58,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                     provider.loadAllGroups();
                   },
                   child: ListView.builder(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     itemCount: groups.length,
                     itemBuilder: (context, index) {
                       final group = groups[index];
@@ -69,15 +71,24 @@ class _GroupListScreenState extends State<GroupListScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/groups/create'),
-        backgroundColor: AppColors.blackPearl,
-        child: Icon(Icons.add, color: AppColors.white),
+      floatingActionButton: Consumer<GroupProvider>(
+        builder: (context, provider, child) {
+          // Solo mostrar el FAB si el usuario no es admin de ningún grupo
+          if (provider.canCreateGroup) {
+            return FloatingActionButton(
+              onPressed: () => context.go('/groups/create'),
+              backgroundColor: AppColors.blackPearl,
+              child: const Icon(Icons.add, color: AppColors.white),
+              tooltip: 'Crear Grupo',
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(GroupProvider provider) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -87,7 +98,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
             size: 80,
             color: AppColors.grey600,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'No hay grupos disponibles',
             style: TextStyle(
@@ -95,178 +106,203 @@ class _GroupListScreenState extends State<GroupListScreen> {
               color: AppColors.grey600,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            'Sé el primero en crear un grupo',
+            provider.canCreateGroup
+                ? 'Sé el primero en crear un grupo'
+                : 'Explora grupos para unirte',
             style: TextStyle(
               color: AppColors.grey600,
             ),
           ),
-          SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => context.go('/groups/create'),
-            icon: Icon(Icons.add),
-            label: Text('Crear Grupo'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blackPearl,
-              foregroundColor: AppColors.white,
+          const SizedBox(height: 24),
+          if (provider.canCreateGroup)
+            ElevatedButton.icon(
+              onPressed: () => context.go('/groups/create'),
+              icon: const Icon(Icons.add),
+              label: const Text('Crear Grupo'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.blackPearl,
+                foregroundColor: AppColors.white,
+              ),
             ),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildGroupCard(GroupModel group, GroupProvider provider) {
-    final userStatus = provider.getUserStatus(group);
+    final status = provider.getUserStatus(group);
 
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagen de portada
-          if (group.coverUrl != null)
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.network(
-                group.coverUrl!,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 150,
-                    color: AppColors.grey200,
-                    child: Icon(Icons.image, color: AppColors.grey600),
-                  );
-                },
+      child: InkWell(
+        onTap: () => context.push('/groups/${group.id}'),
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Imagen de portada
+            if (group.coverUrl != null)
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
+                child: Image.network(
+                  group.coverUrl!,
+                  height: 150,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 150,
+                      color: AppColors.grey200,
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: AppColors.grey600,
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      // Logo del grupo
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: AppColors.grey200,
+                        ),
+                        child: group.logoUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child: Image.network(
+                                  group.logoUrl!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.group,
+                                      color: AppColors.grey600,
+                                    );
+                                  },
+                                ),
+                              )
+                            : const Icon(
+                                Icons.group,
+                                color: AppColors.grey600,
+                              ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Información del grupo
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              group.name,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${group.memberIds.length} miembros',
+                              style: TextStyle(
+                                color: AppColors.grey600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Estado del usuario en el grupo
+                      _buildStatusChip(status),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Descripción
+                  Text(
+                    group.description,
+                    style: TextStyle(
+                      color: AppColors.grey600,
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Botón de acción si no es miembro
+                  if (status == GroupMembershipStatus.notMember ||
+                      status == GroupMembershipStatus.pending)
+                    _buildActionButton(group, status, provider),
+                ],
               ),
             ),
-
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header con logo y nombre
-                Row(
-                  children: [
-                    // Logo del grupo
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: AppColors.blackPearl,
-                      backgroundImage: group.logoUrl != null
-                          ? NetworkImage(group.logoUrl!)
-                          : null,
-                      child: group.logoUrl == null
-                          ? Icon(Icons.group, color: AppColors.white)
-                          : null,
-                    ),
-                    SizedBox(width: 12),
-
-                    // Información del grupo
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            group.name,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '${group.memberCount} miembros',
-                            style: TextStyle(
-                              color: AppColors.grey600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Estado del usuario
-                    _buildUserStatusChip(userStatus),
-                  ],
-                ),
-
-                SizedBox(height: 12),
-
-                // Descripción
-                Text(
-                  group.description,
-                  style: TextStyle(
-                    color: AppColors
-                        .grey600, // CAMBIADO DE grey200 A grey600 PARA MEJOR VISIBILIDAD
-                    fontSize: 14,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                SizedBox(height: 16),
-
-                // Botones de acción
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () => context.go('/groups/${group.id}'),
-                      icon: Icon(Icons.info_outline),
-                      label: Text('Ver Detalles'),
-                    ),
-                    _buildActionButton(group, userStatus, provider),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildUserStatusChip(GroupMembershipStatus status) {
-    Color color;
+  Widget _buildStatusChip(GroupMembershipStatus status) {
     String text;
-    IconData icon;
+    Color color;
 
     switch (status) {
       case GroupMembershipStatus.admin:
-        color = AppColors.green;
         text = 'Admin';
-        icon = Icons.admin_panel_settings;
+        color = AppColors.green;
         break;
       case GroupMembershipStatus.member:
-        color = AppColors.blue;
         text = 'Miembro';
-        icon = Icons.check_circle;
+        color = AppColors.blackPearl;
         break;
       case GroupMembershipStatus.pending:
-        color = AppColors.vividOrange;
         text = 'Pendiente';
-        icon = Icons.schedule;
+        color = AppColors.yellow;
         break;
       case GroupMembershipStatus.notMember:
-        return SizedBox.shrink();
+        text = 'Unirse';
+        color = AppColors.grey600;
+        break;
     }
 
-    return Chip(
-      avatar: Icon(icon, color: color, size: 16),
-      label: Text(
-        text,
-        style: TextStyle(color: color, fontSize: 12),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color, width: 1),
       ),
-      backgroundColor: color.withOpacity(0.1),
-      side: BorderSide(color: color.withOpacity(0.3)),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
@@ -275,29 +311,29 @@ class _GroupListScreenState extends State<GroupListScreen> {
     switch (status) {
       case GroupMembershipStatus.admin:
       case GroupMembershipStatus.member:
-        return SizedBox.shrink(); // Sin botón, ya son miembros
+        return const SizedBox.shrink(); // Sin botón, ya son miembros
 
       case GroupMembershipStatus.pending:
         return ElevatedButton.icon(
           onPressed: () => _cancelJoinRequest(group.id, provider),
-          icon: Icon(Icons.cancel, size: 16),
-          label: Text('Cancelar'),
+          icon: const Icon(Icons.cancel, size: 16),
+          label: const Text('Cancelar'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.vividOrange,
+            backgroundColor: AppColors.red,
             foregroundColor: AppColors.white,
-            minimumSize: Size(100, 32),
+            minimumSize: const Size(100, 32),
           ),
         );
 
       case GroupMembershipStatus.notMember:
         return ElevatedButton.icon(
           onPressed: () => _requestJoinGroup(group.id, provider),
-          icon: Icon(Icons.group_add, size: 16),
-          label: Text('Unirse'),
+          icon: const Icon(Icons.group_add, size: 16),
+          label: const Text('Unirse'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.blackPearl,
             foregroundColor: AppColors.white,
-            minimumSize: Size(100, 32),
+            minimumSize: const Size(100, 32),
           ),
         );
     }
@@ -309,7 +345,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
 
     if (result['success'] == true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Solicitud enviada correctamente'),
           backgroundColor: AppColors.green,
         ),
@@ -336,9 +372,9 @@ class _GroupListScreenState extends State<GroupListScreen> {
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Row(
+          title: const Row(
             children: [
-              Icon(Icons.person_outline, color: AppColors.vividOrange),
+              Icon(Icons.person_outline, color: AppColors.red),
               SizedBox(width: 8),
               Text('Completar Perfil'),
             ],
@@ -348,8 +384,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(message),
-              SizedBox(height: 12),
-              Text(
+              const SizedBox(height: 12),
+              const Text(
                 'Para unirte a grupos, los administradores necesitan saber quién eres.',
                 style: TextStyle(
                   fontSize: 14,
@@ -361,7 +397,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -373,7 +409,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                 backgroundColor: AppColors.blackPearl,
                 foregroundColor: AppColors.white,
               ),
-              child: Text('Ir al Perfil'),
+              child: const Text('Ir al Perfil'),
             ),
           ],
         );
@@ -385,7 +421,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Solicitud cancelada'),
           backgroundColor: AppColors.green,
         ),

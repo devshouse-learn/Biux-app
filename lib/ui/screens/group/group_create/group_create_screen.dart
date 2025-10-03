@@ -29,6 +29,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeCities();
+      _checkAdminStatus();
     });
   }
 
@@ -52,475 +53,433 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
     }
   }
 
+  void _checkAdminStatus() {
+    final groupProvider = Provider.of<GroupProvider>(context, listen: false);
+    groupProvider.loadAdminGroups();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        title: Text('Crear Grupo'),
-        backgroundColor: AppColors.blackPearl,
-        foregroundColor: AppColors.white,
+        title: const Text(
+          'Crear Grupo',
+          style: TextStyle(color: AppColors.white),
+        ),
+        backgroundColor: AppColors.darkBlue,
+        iconTheme: const IconThemeData(color: AppColors.white),
       ),
-      body: Consumer2<GroupProvider, CityProvider>(
-        builder: (context, groupProvider, cityProvider, child) {
-          return Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Imagen de portada
-                  _buildCoverImageSection(groupProvider),
-                  SizedBox(height: 24),
+      body: Consumer<GroupProvider>(
+        builder: (context, groupProvider, child) {
+          // Verificar si el usuario ya es admin de un grupo
+          if (groupProvider.isAdminOfAnyGroup) {
+            return _buildAlreadyAdminView(groupProvider);
+          }
 
-                  // Logo del grupo
-                  _buildLogoSection(groupProvider),
-                  SizedBox(height: 24),
-
-                  // Selector de ciudad
-                  _buildCitySelector(cityProvider),
-                  SizedBox(height: 16),
-
-                  // Nombre del grupo
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Nombre del grupo',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      prefixIcon: Icon(Icons.group),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'El nombre del grupo es requerido';
-                      }
-                      if (value.trim().length < 3) {
-                        return 'El nombre debe tener al menos 3 caracteres';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 16),
-
-                  // Descripción
-                  TextFormField(
-                    controller: _descriptionController,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      labelText: 'Descripción',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      prefixIcon: Icon(Icons.description),
-                      alignLabelWithHint: true,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'La descripción es requerida';
-                      }
-                      if (value.trim().length < 10) {
-                        return 'La descripción debe tener al menos 10 caracteres';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 32),
-
-                  // Botón de crear
-                  if (groupProvider.isLoading)
-                    Center(child: CircularProgressIndicator())
-                  else
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _createGroup,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blackPearl,
-                          foregroundColor: AppColors.white,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'Crear Grupo',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  if (groupProvider.error != null) ...[
-                    SizedBox(height: 16),
-                    Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: AppColors.red.withOpacity(0.3)),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error, color: AppColors.red),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              groupProvider.error!,
-                              style: TextStyle(color: AppColors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          );
+          return _buildCreateGroupForm(groupProvider);
         },
       ),
     );
   }
 
-  Widget _buildCitySelector(CityProvider cityProvider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Ciudad',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => _showCityPicker(cityProvider),
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.grey600),
-              borderRadius: BorderRadius.circular(12),
+  Widget _buildAlreadyAdminView(GroupProvider groupProvider) {
+    final adminGroup = groupProvider.adminGroups.first;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.admin_panel_settings,
+              size: 80,
+              color: AppColors.darkBlue,
             ),
-            child: Row(
-              children: [
-                Icon(Icons.location_city, color: AppColors.blackPearl),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _selectedCity != null
-                        ? (_selectedCity!.department.isNotEmpty
-                            ? '${_selectedCity!.name}, ${_selectedCity!.department}'
-                            : _selectedCity!.name)
-                        : 'Selecciona una ciudad',
-                    style: TextStyle(
-                      color: _selectedCity != null
-                          ? AppColors.black87
-                          : AppColors.grey600,
-                      fontSize: 16,
+            const SizedBox(height: 24),
+            Text(
+              'Ya eres administrador de un grupo',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.blackPearl,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    if (adminGroup.logoUrl != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          adminGroup.logoUrl!,
+                          height: 60,
+                          width: 60,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    else
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.darkBlue,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.group,
+                          color: AppColors.white,
+                          size: 30,
+                        ),
+                      ),
+                    const SizedBox(height: 12),
+                    Text(
+                      adminGroup.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${adminGroup.memberIds.length} miembros',
+                      style: TextStyle(
+                        color: AppColors.grey600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
-                Icon(Icons.arrow_drop_down, color: AppColors.grey600),
-              ],
-            ),
-          ),
-        ),
-        if (_selectedCity == null)
-          Padding(
-            padding: EdgeInsets.only(top: 8, left: 12),
-            child: Text(
-              'La ciudad es requerida',
-              style: TextStyle(
-                color: AppColors.red,
-                fontSize: 12,
               ),
             ),
-          ),
-      ],
+            const SizedBox(height: 24),
+            Text(
+              'Solo puedes ser administrador de un grupo a la vez. Para crear un nuevo grupo, primero debes transferir la administración del grupo actual a otro miembro.',
+              style: TextStyle(
+                color: AppColors.grey600,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => context.push('/groups/${adminGroup.id}'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.darkBlue,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Text('Ver Mi Grupo'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => context.pop(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.darkBlue,
+                      side: const BorderSide(color: AppColors.darkBlue),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Text('Volver'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  void _showCityPicker(CityProvider cityProvider) {
-    if (cityProvider.cities.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Cargando ciudades...'),
-          backgroundColor: AppColors.vividOrange,
-        ),
-      );
-      return;
-    }
+  Widget _buildCreateGroupForm(GroupProvider groupProvider) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Logo del grupo
+            Center(
+              child: GestureDetector(
+                onTap: () => _pickImage(isLogo: true),
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey200,
+                    borderRadius: BorderRadius.circular(60),
+                    border: Border.all(
+                      color: AppColors.darkBlue,
+                      width: 2,
+                    ),
+                  ),
+                  child: _logoFile != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(58),
+                          child: Image.file(
+                            File(_logoFile!.path),
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.add_photo_alternate,
+                          size: 50,
+                          color: AppColors.darkBlue,
+                        ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Center(
+              child: Text(
+                'Logo del grupo (opcional)',
+                style: TextStyle(
+                  color: AppColors.grey600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Seleccionar Ciudad'),
-          content: Container(
-            width: double.maxFinite,
-            height: 300,
-            child: ListView.builder(
-              itemCount: cityProvider.cities.length,
-              itemBuilder: (context, index) {
-                final city = cityProvider.cities[index];
-                return ListTile(
-                  leading: city.name == 'Ibagué'
-                      ? Icon(Icons.star, color: AppColors.vividOrange)
-                      : Icon(Icons.location_city),
-                  title: Text(city.name),
-                  subtitle:
-                      city.department.isNotEmpty ? Text(city.department) : null,
-                  selected: _selectedCity?.id == city.id,
-                  onTap: () {
+            // Nombre del grupo
+            TextFormField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: 'Nombre del grupo',
+                labelStyle: TextStyle(color: AppColors.grey600),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.darkBlue),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'El nombre del grupo es requerido';
+                }
+                if (value.trim().length < 3) {
+                  return 'El nombre debe tener al menos 3 caracteres';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Selector de ciudad
+            Consumer<CityProvider>(
+              builder: (context, cityProvider, child) {
+                if (cityProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return DropdownButtonFormField<CityModel>(
+                  value: _selectedCity,
+                  decoration: InputDecoration(
+                    labelText: 'Ciudad',
+                    labelStyle: TextStyle(color: AppColors.grey600),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppColors.darkBlue),
+                    ),
+                  ),
+                  items: cityProvider.cities.map((city) {
+                    return DropdownMenuItem<CityModel>(
+                      value: city,
+                      child: Text(city.name),
+                    );
+                  }).toList(),
+                  onChanged: (CityModel? newValue) {
                     setState(() {
-                      _selectedCity = city;
+                      _selectedCity = newValue;
                     });
-                    Navigator.of(context).pop();
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Selecciona una ciudad';
+                    }
+                    return null;
                   },
                 );
               },
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancelar'),
+            const SizedBox(height: 16),
+
+            // Descripción
+            TextFormField(
+              controller: _descriptionController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                labelText: 'Descripción',
+                labelStyle: TextStyle(color: AppColors.grey600),
+                alignLabelWithHint: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.darkBlue),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'La descripción es requerida';
+                }
+                if (value.trim().length < 10) {
+                  return 'La descripción debe tener al menos 10 caracteres';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+
+            // Imagen de portada
+            const Text(
+              'Imagen de portada (opcional)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () => _pickImage(isLogo: false),
+              child: Container(
+                width: double.infinity,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: AppColors.grey200,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppColors.grey600,
+                    width: 1,
+                  ),
+                ),
+                child: _coverFile != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(7),
+                        child: Image.file(
+                          File(_coverFile!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_photo_alternate,
+                            size: 50,
+                            color: AppColors.grey600,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Toca para agregar imagen de portada',
+                            style: TextStyle(
+                              color: AppColors.grey600,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // Botón crear
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: groupProvider.isLoading ? null : _createGroup,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.darkBlue,
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: groupProvider.isLoading
+                    ? const CircularProgressIndicator(
+                        color: AppColors.white,
+                      )
+                    : const Text(
+                        'Crear Grupo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _pickImage({required bool isLogo}) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Seleccionar ${isLogo ? 'logo' : 'imagen de portada'}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Cámara'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _getImage(ImageSource.camera, isLogo: isLogo);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Galería'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _getImage(ImageSource.gallery, isLogo: isLogo);
+                },
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  Widget _buildCoverImageSection(GroupProvider provider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Imagen de portada (opcional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => _selectCoverImage(provider),
-          child: Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.grey200,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.grey200, width: 1),
-            ),
-            child: _coverFile != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      File(_coverFile!.path),
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate,
-                        size: 40,
-                        color: AppColors.grey600,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Toca para agregar portada',
-                        style: TextStyle(color: AppColors.grey600),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-        if (_coverFile != null) ...[
-          SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton.icon(
-                onPressed: () {
-                  setState(() {
-                    _coverFile = null;
-                  });
-                },
-                icon: Icon(Icons.delete, color: AppColors.red),
-                label: Text('Quitar', style: TextStyle(color: AppColors.red)),
-              ),
-            ],
-          ),
-        ],
-      ],
-    );
-  }
+  void _getImage(ImageSource source, {required bool isLogo}) async {
+    final groupProvider = Provider.of<GroupProvider>(context, listen: false);
+    final XFile? image = await groupProvider.pickImage(source);
 
-  Widget _buildLogoSection(GroupProvider provider) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Logo del grupo (opcional)',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 8),
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () => _selectLogoImage(provider),
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.grey200,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.grey200, width: 1),
-                ),
-                child: _logoFile != null
-                    ? ClipOval(
-                        child: Image.file(
-                          File(_logoFile!.path),
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Icon(
-                        Icons.add_a_photo,
-                        size: 30,
-                        color: AppColors.grey600,
-                      ),
-              ),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _logoFile != null ? 'Logo seleccionado' : 'Sin logo',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Toca el círculo para agregar un logo',
-                    style: TextStyle(
-                      color: AppColors.grey600,
-                      fontSize: 12,
-                    ),
-                  ),
-                  if (_logoFile != null) ...[
-                    SizedBox(height: 8),
-                    TextButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _logoFile = null;
-                        });
-                      },
-                      icon: Icon(Icons.delete, color: AppColors.red, size: 16),
-                      label: Text('Quitar',
-                          style: TextStyle(color: AppColors.red)),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  void _selectCoverImage(GroupProvider provider) async {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.photo_camera),
-              title: Text('Cámara'),
-              onTap: () async {
-                Navigator.pop(context);
-                final file = await provider.pickImage(ImageSource.camera);
-                if (file != null) {
-                  setState(() {
-                    _coverFile = file;
-                  });
-                }
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library),
-              title: Text('Galería'),
-              onTap: () async {
-                Navigator.pop(context);
-                final file = await provider.pickImage(ImageSource.gallery);
-                if (file != null) {
-                  setState(() {
-                    _coverFile = file;
-                  });
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _selectLogoImage(GroupProvider provider) async {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.photo_camera),
-              title: Text('Cámara'),
-              onTap: () async {
-                Navigator.pop(context);
-                final file = await provider.pickImage(ImageSource.camera);
-                if (file != null) {
-                  setState(() {
-                    _logoFile = file;
-                  });
-                }
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library),
-              title: Text('Galería'),
-              onTap: () async {
-                Navigator.pop(context);
-                final file = await provider.pickImage(ImageSource.gallery);
-                if (file != null) {
-                  setState(() {
-                    _logoFile = file;
-                  });
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+    if (image != null) {
+      setState(() {
+        if (isLogo) {
+          _logoFile = image;
+        } else {
+          _coverFile = image;
+        }
+      });
+    }
   }
 
   void _createGroup() async {
@@ -530,36 +489,47 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
 
     if (_selectedCity == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Por favor selecciona una ciudad'),
+        const SnackBar(
+          content: Text('Selecciona una ciudad'),
           backgroundColor: AppColors.red,
         ),
       );
       return;
     }
 
-    final provider = context.read<GroupProvider>();
+    final groupProvider = Provider.of<GroupProvider>(context, listen: false);
 
-    final success = await provider.createGroup(
+    // Verificar una vez más que no sea admin de otro grupo
+    if (groupProvider.isAdminOfAnyGroup) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ya eres administrador de otro grupo'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+      return;
+    }
+
+    final success = await groupProvider.createGroup(
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
-      cityId: _selectedCity!.id, // AGREGAR EL PARÁMETRO CITYID REQUERIDO
+      cityId: _selectedCity!.id,
       logoFile: _logoFile,
       coverFile: _coverFile,
     );
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Grupo creado exitosamente'),
           backgroundColor: AppColors.green,
         ),
       );
-      context.pop(); // Volver a la lista de grupos
+      context.pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(provider.error ?? 'Error al crear el grupo'),
+          content: Text(groupProvider.error ?? 'Error al crear el grupo'),
           backgroundColor: AppColors.red,
         ),
       );
