@@ -128,10 +128,8 @@ class BiuxUser {
     var cleanUser = <String, dynamic>{};
     userJson.forEach(
       (key, value) {
-        if (value != null) {
-          cleanUser.putIfAbsent(key, () => value);
-        }
-      },
+        cleanUser.putIfAbsent(key, () => value);
+            },
     );
     return cleanUser;
   }

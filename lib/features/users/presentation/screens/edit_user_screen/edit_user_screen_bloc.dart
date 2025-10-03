@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -64,10 +64,8 @@ class EditUserScreenBloc extends ChangeNotifier {
       pickedFile.path,
     );
 
-    if (image != null) {
-      imageNew = image;
-    }
-    notifyListeners();
+    imageNew = image;
+      notifyListeners();
     return image;
   }
 

@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:biux/core/config/colors.dart';
 import 'package:biux/core/config/strings.dart';

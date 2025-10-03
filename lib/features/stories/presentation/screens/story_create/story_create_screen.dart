@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/config/colors.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
@@ -408,14 +408,14 @@ class _CarouselImagesSelected extends StatelessWidget {
     XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
     );
-    if (pickedFile != null && pickedFile.path != null) {
+    if (pickedFile != null) {
       final fileBytes = await pickedFile.readAsBytes();
       final entity = await PhotoManager.editor.saveImage(
         fileBytes,
         title: pickedFile.name,
         filename: pickedFile.name,
       );
-      bloc.addEntity(entity: entity!);
+      bloc.addEntity(entity: entity);
       bloc.addImageSeleted(image: entity);
     }
   }

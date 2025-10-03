@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -290,7 +290,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 }
 
                 return DropdownButtonFormField<CityModel>(
-                  value: _selectedCity,
+                  initialValue: _selectedCity,
                   decoration: InputDecoration(
                     labelText: 'Ciudad',
                     labelStyle: TextStyle(color: AppColors.grey600),

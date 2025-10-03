@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
+import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -484,7 +484,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         enabled: false,
                         controller: TextEditingController(
                             text: widget.userProvider.user?.phoneNumber
-                                        ?.isNotEmpty ==
+                                        .isNotEmpty ==
                                     true
                                 ? widget.userProvider.user!.phoneNumber
                                 : widget.formatPhoneFunction(

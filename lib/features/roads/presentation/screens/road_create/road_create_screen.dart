@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:biux/core/config/colors.dart';
 import 'package:biux/core/config/images.dart';
@@ -76,6 +75,7 @@ class RoadCreateScreen extends StatelessWidget {
                       if (value!.isEmpty) {
                         return value;
                       }
+                      return null;
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
@@ -94,6 +94,7 @@ class RoadCreateScreen extends StatelessWidget {
                       if (value!.isEmpty) {
                         return value;
                       }
+                      return null;
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
@@ -113,6 +114,7 @@ class RoadCreateScreen extends StatelessWidget {
                       if (value!.isEmpty) {
                         return value;
                       }
+                      return null;
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
@@ -202,6 +204,7 @@ class RoadCreateScreen extends StatelessWidget {
                       if (value!.isEmpty) {
                         return value;
                       }
+                      return null;
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
@@ -221,6 +224,7 @@ class RoadCreateScreen extends StatelessWidget {
                       if (value!.isEmpty) {
                         return value;
                       }
+                      return null;
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
@@ -257,6 +261,7 @@ class RoadCreateScreen extends StatelessWidget {
                       if (value!.isEmpty) {
                         return value;
                       }
+                      return null;
                     },
                     padding: const EdgeInsets.only(
                       left: 15,

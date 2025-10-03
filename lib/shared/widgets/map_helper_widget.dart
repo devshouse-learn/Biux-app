@@ -18,19 +18,16 @@ class MapHelper {
     String url, {
     required int targetWidth,
   }) async {
-    assert(url != null);
 
     final File markerImageFile = await DefaultCacheManager().getSingleFile(url);
 
     Uint8List markerImageBytes = await markerImageFile.readAsBytes();
 
-    if (targetWidth != null) {
-      markerImageBytes = await _resizeImageBytes(
-        markerImageBytes,
-        targetWidth,
-      );
-    }
-    return BitmapDescriptor.fromBytes(markerImageBytes);
+    markerImageBytes = await _resizeImageBytes(
+      markerImageBytes,
+      targetWidth,
+    );
+      return BitmapDescriptor.fromBytes(markerImageBytes);
   }
 
   static Future<BitmapDescriptor> _getClusterMarker(
@@ -39,9 +36,6 @@ class MapHelper {
     Color textColor,
     int width,
   ) async {
-    assert(clusterSize != null);
-    assert(clusterColor != null);
-    assert(width != null);
 
     final PictureRecorder pictureRecorder = PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
@@ -91,8 +85,6 @@ class MapHelper {
     Uint8List imageBytes,
     int targetWidth,
   ) async {
-    assert(imageBytes != null);
-    assert(targetWidth != null);
     final Codec imageCodec = await instantiateImageCodec(
       imageBytes,
       targetWidth: targetWidth,
@@ -109,9 +101,6 @@ class MapHelper {
     int minZoom,
     int maxZoom,
   ) async {
-    assert(markers != null);
-    assert(minZoom != null);
-    assert(maxZoom != null);
 
     return Fluster<MapMarker>(
       minZoom: minZoom,
@@ -143,12 +132,6 @@ class MapHelper {
     Color clusterTextColor,
     int clusterWidth,
   ) {
-    assert(currentZoom != null);
-    assert(clusterColor != null);
-    assert(clusterTextColor != null);
-    assert(clusterWidth != null);
-
-    if (clusterManager == null) return Future.value([]);
 
     return Future.wait(clusterManager.clusters(
         [-180, -85, 180, 85], currentZoom.toInt()).map((mapMarker) async {

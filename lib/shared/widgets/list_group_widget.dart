@@ -175,7 +175,7 @@ class GroupList extends StatelessWidget {
                           child: ElevatedButtonTheme(
                             data: ElevatedButtonThemeData(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(
@@ -184,7 +184,7 @@ class GroupList extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                padding: MaterialStateProperty.all(
+                                padding: WidgetStateProperty.all(
                                   EdgeInsets.only(
                                     left: 10,
                                     right: 10,
@@ -195,7 +195,7 @@ class GroupList extends StatelessWidget {
                             child: ElevatedButton(
                               style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.all<Color>(
+                                    WidgetStateProperty.all<Color>(
                                   AppColors.darkBlue,
                                 ),
                               ),
@@ -229,7 +229,7 @@ class GroupList extends StatelessWidget {
                           child: ElevatedButtonTheme(
                             data: ElevatedButtonThemeData(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(
@@ -238,7 +238,7 @@ class GroupList extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                padding: MaterialStateProperty.all(
+                                padding: WidgetStateProperty.all(
                                   EdgeInsets.only(
                                     left: 10,
                                     right: 10,
@@ -249,7 +249,7 @@ class GroupList extends StatelessWidget {
                             child: ElevatedButton(
                               style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.all<Color>(
+                                    WidgetStateProperty.all<Color>(
                                   AppColors.darkBlue,
                                 ),
                               ),
@@ -293,7 +293,7 @@ class GroupList extends StatelessWidget {
                           child: ElevatedButtonTheme(
                             data: ElevatedButtonThemeData(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(
@@ -302,7 +302,7 @@ class GroupList extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                padding: MaterialStateProperty.all(
+                                padding: WidgetStateProperty.all(
                                   EdgeInsets.only(
                                     left: 10,
                                     right: 10,
@@ -313,7 +313,7 @@ class GroupList extends StatelessWidget {
                             child: ElevatedButton(
                               style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.all<Color>(
+                                    WidgetStateProperty.all<Color>(
                                   AppColors.white,
                                 ),
                               ),

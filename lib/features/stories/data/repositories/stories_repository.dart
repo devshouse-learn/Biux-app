@@ -47,6 +47,7 @@ class StoriesRepository {
         return storyVoid;
       }
     } catch (e) {}
+    return null;
   }
 
   Future reactionStory(

@@ -98,6 +98,7 @@ class _FormGroupWidget extends StatelessWidget {
                   if (value!.isEmpty) {
                     return value;
                   }
+                  return null;
                 },
               ),
               TextFormFieldBiuxWidget(
@@ -139,6 +140,7 @@ class _FormGroupWidget extends StatelessWidget {
                   if (value!.isEmpty) {
                     return value;
                   }
+                  return null;
                 },
               ),
               _WidgetSearchCity(),
@@ -154,6 +156,7 @@ class _FormGroupWidget extends StatelessWidget {
                     if (value!.isEmpty) {
                       return value;
                     }
+                    return null;
                   },
                 ),
               ),
@@ -180,7 +183,7 @@ class _BotonSend extends StatelessWidget {
         ElevatedButtonTheme(
             data: ElevatedButtonThemeData(
               style: ButtonStyle(
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(
@@ -189,7 +192,7 @@ class _BotonSend extends StatelessWidget {
                     ),
                   ),
                 ),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                   EdgeInsets.only(
                     left: 80,
                     right: 80,
@@ -199,7 +202,7 @@ class _BotonSend extends StatelessWidget {
             ),
             child: ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
+                backgroundColor: WidgetStateProperty.all<Color>(
                   AppColors.white,
                 ),
               ),
@@ -214,7 +217,7 @@ class _BotonSend extends StatelessWidget {
         ElevatedButtonTheme(
             data: ElevatedButtonThemeData(
               style: ButtonStyle(
-                shape: MaterialStateProperty.all(
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(
@@ -223,7 +226,7 @@ class _BotonSend extends StatelessWidget {
                     ),
                   ),
                 ),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                   EdgeInsets.only(
                     left: 70,
                     right: 70,
@@ -233,7 +236,7 @@ class _BotonSend extends StatelessWidget {
             ),
             child: ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
+                backgroundColor: WidgetStateProperty.all<Color>(
                   AppColors.strongCyan,
                 ),
               ),
