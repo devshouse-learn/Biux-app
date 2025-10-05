@@ -272,7 +272,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
     switch (status) {
       case GroupMembershipStatus.admin:
         text = 'Admin';
-        color = AppColors.green;
+        color = AppColors.softGreen;
         break;
       case GroupMembershipStatus.member:
         text = 'Miembro';

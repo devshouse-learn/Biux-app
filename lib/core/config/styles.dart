@@ -225,7 +225,7 @@ class Styles {
     fontWeight: FontWeight.bold,
   );
   static const gestureDetectorNumberParticipants = TextStyle(
-    color: AppColors.green,
+    color: AppColors.softGreen,
     letterSpacing: 0.2,
     fontWeight: FontWeight.bold,
   );

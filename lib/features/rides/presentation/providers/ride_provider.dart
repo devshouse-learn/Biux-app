@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
 enum RideParticipationStatus {
   notParticipating,
   participating,
@@ -392,9 +391,9 @@ class RideProvider extends ChangeNotifier {
         'id': groupDoc.id,
         'name': groupData['name'] ?? 'Grupo sin nombre',
         'description': groupData['description'] ?? '',
-        'memberCount': groupData['memberCount'] ?? 0,
-        'imageUrl': groupData['imageUrl'],
-        'logoUrl': groupData['logoUrl'],
+        'memberCount': groupData['numberMembers'] ?? 0,
+        'imageUrl': groupData['logo'] ?? groupData['logoUrl'],
+        'logoUrl': groupData['logo'] ?? groupData['logoUrl'],
       };
     } catch (e) {
       print('Error al cargar información del grupo: $e');

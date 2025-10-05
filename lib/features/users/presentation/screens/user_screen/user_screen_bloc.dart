@@ -1,5 +1,5 @@
 ﻿import 'package:biux/core/config/router/router_path.dart';
-import 'package:biux/data/models/competitor_road.dart';
+import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/roads/data/repositories/roads_firebase_repository.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/stories/data/repositories/stories_firebase_repository.dart';

@@ -1,13 +1,13 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:biux/core/config/colors.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
-import 'package:biux/data/models/analitics.dart';
+// import 'package:biux/data/models/analitics.dart'; // TODO: Migrate analytics
 import 'package:biux/features/cities/data/models/city.dart';
-import 'package:biux/data/models/response.dart';
+import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'create_user_bloc.dart';
 import 'package:biux/shared/widgets/loading_widget.dart';
@@ -563,7 +563,7 @@ class CreateUserScreen extends StatelessWidget {
               ),
             );
             String id = response.message;
-            Analitycs.sendSignUp(id);
+            // Analitycs.sendSignUp(id); // TODO: Migrate analytics
             await bloc.uploadPhoto(id);
             Future.delayed(
               Duration(seconds: 3),

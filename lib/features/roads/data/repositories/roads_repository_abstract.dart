@@ -1,5 +1,5 @@
-import 'dart:io';
-import 'package:biux/data/models/competitor_road.dart';
+﻿import 'dart:io';
+import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 
 abstract class RoadsRepositoryAbstract {

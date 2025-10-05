@@ -1,10 +1,10 @@
-import 'package:biux/core/config/router/router_path.dart';
+﻿import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/features/groups/data/models/group.dart';
-import 'package:biux/data/models/member.dart';
+import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/groups/data/repositories/groups_firebase_repository.dart';
-import 'package:biux/data/repositories/members/members_firebase_repository.dart';
+import 'package:biux/features/members/data/repositories/members_firebase_repository.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
 

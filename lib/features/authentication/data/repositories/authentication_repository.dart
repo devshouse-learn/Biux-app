@@ -1,6 +1,6 @@
-import 'package:biux/core/config/strings.dart';
+﻿import 'package:biux/core/config/strings.dart';
 import 'package:biux/shared/services/local_storage.dart';
-import 'package:biux/data/models/response.dart';
+import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';

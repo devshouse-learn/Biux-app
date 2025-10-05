@@ -1,10 +1,10 @@
-import 'package:biux/core/config/colors.dart';
+﻿import 'package:biux/core/config/colors.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/groups/data/models/group.dart';
-import 'package:biux/data/models/member.dart';
+import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:flutter/material.dart';
 

@@ -1,5 +1,5 @@
-import 'dart:io';
-import 'package:biux/data/models/competitor_road.dart';
+﻿import 'dart:io';
+import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:dio/dio.dart';
@@ -46,7 +46,7 @@ class RoadsRepository {
         filePhoto.path,
       ),
     });
-    Response response = await dio.patch(
+    await dio.patch(
       'https://biux-prod.ibacrea.com/api/v1/rodadas/$id',
       data: formData,
     );
@@ -136,8 +136,8 @@ class RoadsRepository {
       },
     );
     if (uriResponse.statusCode == 200) {
-      final data = json.decode(uriResponse.body);
-      int id = data["id"];
+      // final data = json.decode(uriResponse.body);
+      // int id = data["id"]; // TODO: Use when implementing road join logic
       // LocalStorage().saveJoinRoad(id.toString());
 
       return;
@@ -189,7 +189,7 @@ class RoadsRepository {
       // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
-    var body = jsonEncode(competitorRoad.toJson());
+    // var body = jsonEncode(competitorRoad.toJson()); // TODO: Use when implementing request body
 
     var url = '$URLParticipant/${competitorRoad.userId}';
     final http.Response response = await http.delete(

@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 
 import 'package:biux/core/config/colors.dart';
 
-
 class RideDetailScreen extends StatefulWidget {
   final String rideId;
 
@@ -173,11 +172,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.green;
+        return AppColors.mutedGreen;
       case DifficultyLevel.medium:
-        return AppColors.yellow;
+        return AppColors.softOrange;
       case DifficultyLevel.hard:
-        return AppColors.red;
+        return AppColors.mutedRed;
       case DifficultyLevel.expert:
         return AppColors.purple;
     }
@@ -189,7 +188,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('¡Genial! Te has unido a la rodada'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.softGreen,
         ),
       );
     }
@@ -504,11 +503,11 @@ class BasicInfoWidget extends StatelessWidget {
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.green;
+        return AppColors.mutedGreen;
       case DifficultyLevel.medium:
-        return AppColors.yellow;
+        return AppColors.softOrange;
       case DifficultyLevel.hard:
-        return AppColors.red;
+        return AppColors.mutedRed;
       case DifficultyLevel.expert:
         return AppColors.purple;
     }
@@ -658,7 +657,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
                   child: ParticipantStatWidget(
                     label: 'Confirmados',
                     count: ride.participants.length,
-                    color: AppColors.green,
+                    color: AppColors.softGreen,
                     icon: Icons.check_circle,
                   ),
                 ),
@@ -667,7 +666,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
                   child: ParticipantStatWidget(
                     label: 'Tal vez',
                     count: ride.maybeParticipants.length,
-                    color: AppColors.yellow,
+                    color: AppColors.softOrange,
                     icon: Icons.help,
                   ),
                 ),
@@ -783,7 +782,7 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.directions_bike),
                         label: Text('Voy a ir'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.green,
+                          backgroundColor: AppColors.softGreen,
                           foregroundColor: AppColors.white,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
@@ -796,8 +795,8 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.help_outline),
                         label: Text('Tal vez voy'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.yellow,
-                          foregroundColor: AppColors.black,
+                          backgroundColor: AppColors.softOrange,
+                          foregroundColor: AppColors.white,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
                       ),
@@ -812,7 +811,7 @@ class ActionButtonsWidget extends StatelessWidget {
                     icon: Icon(Icons.cancel),
                     label: Text('No voy a ir'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.red,
+                      backgroundColor: AppColors.mutedRed,
                       foregroundColor: AppColors.white,
                       padding: EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -827,7 +826,7 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.check),
                         label: Text('Confirmar'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.green,
+                          backgroundColor: AppColors.softGreen,
                           foregroundColor: AppColors.white,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
@@ -840,7 +839,7 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.close),
                         label: Text('No voy'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.red,
+                          backgroundColor: AppColors.mutedRed,
                           foregroundColor: AppColors.white,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),

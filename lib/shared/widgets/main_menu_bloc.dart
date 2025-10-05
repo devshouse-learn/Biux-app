@@ -1,6 +1,6 @@
 ﻿import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/features/users/data/models/user.dart';
-import 'package:biux/data/models/user_membership.dart';
+import 'package:biux/features/members/data/models/user_membership.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
 ﻿import 'package:biux/features/groups/data/models/group.dart';
-import 'package:biux/data/models/member.dart';
+import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/features/roads/data/repositories/roads_firebase_repository.dart';
 import 'package:biux/features/stories/data/models/story.dart';
@@ -7,7 +7,7 @@ import 'package:biux/features/stories/data/repositories/stories_firebase_reposit
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/groups/data/repositories/groups_firebase_repository.dart';
-import 'package:biux/data/repositories/members/members_firebase_repository.dart';
+import 'package:biux/features/members/data/repositories/members_firebase_repository.dart';
 
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +49,8 @@ class ViewGroupBloc extends ChangeNotifier {
   Future<void> getGroup(String groupId) async {
     final dataGroup =
         await GroupsFirebaseRepository().getSpecificGroup(groupId);
-    final dataMembers = await MembersFirebaseRepository().getMyMembersGroup(groupId);
+    final dataMembers =
+        await MembersFirebaseRepository().getMyMembersGroup(groupId);
     member = dataMembers;
     group = dataGroup;
     notifyListeners();
@@ -86,14 +87,14 @@ class ViewGroupBloc extends ChangeNotifier {
     road.competitorRoad = road.competitorRoad
         .where((competitor) => competitor.id != user.id)
         .toList();
-    final validator = await RoadsFirebaseRepository().onTapRoad(road);
+    await RoadsFirebaseRepository().onTapRoad(road);
     notifyListeners();
   }
 
   Future<void> onTapJoinRoads(Road road) async {
     road.numberParticipants = road.numberParticipants + 1;
     road.competitorRoad.add(BiuxUser(id: user.id, fullName: user.fullName));
-    final validator = await RoadsFirebaseRepository().onTapRoad(road);
+    await RoadsFirebaseRepository().onTapRoad(road);
     notifyListeners();
   }
 }

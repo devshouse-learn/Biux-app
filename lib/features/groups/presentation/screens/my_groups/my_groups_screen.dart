@@ -236,14 +236,12 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     if (group.isAdmin(provider.currentUserId ?? ''))
                       Chip(
                         label: Text('Admin', style: TextStyle(fontSize: 10)),
-                        backgroundColor: AppColors.green.withOpacity(0.1),
-                        side: BorderSide(color: AppColors.green),
+                        backgroundColor: AppColors.softGreen.withOpacity(0.1),
+                        side: BorderSide(color: AppColors.softGreen),
                       ),
                   ],
                 ),
-
                 SizedBox(height: 12),
-
                 Text(
                   group.description,
                   style: TextStyle(
@@ -253,9 +251,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-
                 SizedBox(height: 12),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -266,7 +262,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     if (!group.isAdmin(provider.currentUserId ?? ''))
                       TextButton(
                         onPressed: () => _showLeaveGroupDialog(group, provider),
-                        child: Text('Salir', style: TextStyle(color: AppColors.red)),
+                        child: Text('Salir',
+                            style: TextStyle(color: AppColors.red)),
                       ),
                   ],
                 ),
@@ -284,7 +281,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.green.withOpacity(0.3), width: 1),
+        side: BorderSide(color: AppColors.softGreen.withOpacity(0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,18 +291,19 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.green.withOpacity(0.1),
+              color: AppColors.softGreen.withOpacity(0.1),
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.admin_panel_settings, color: AppColors.green, size: 16),
+                Icon(Icons.admin_panel_settings,
+                    color: AppColors.softGreen, size: 16),
                 SizedBox(width: 4),
                 Text(
                   'ADMINISTRADOR',
                   style: TextStyle(
-                    color: AppColors.green,
+                    color: AppColors.softGreen,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
@@ -373,7 +371,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     ),
                     if (group.pendingRequestCount > 0)
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppColors.vividOrange,
                           borderRadius: BorderRadius.circular(12),
@@ -389,9 +388,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                       ),
                   ],
                 ),
-
                 SizedBox(height: 12),
-
                 Text(
                   group.description,
                   style: TextStyle(
@@ -401,7 +398,6 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-
                 if (group.pendingRequestCount > 0) ...[
                   SizedBox(height: 12),
                   Container(
@@ -412,7 +408,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.notifications, color: AppColors.vividOrange, size: 16),
+                        Icon(Icons.notifications,
+                            color: AppColors.vividOrange, size: 16),
                         SizedBox(width: 8),
                         Text(
                           '${group.pendingRequestCount} solicitudes pendientes',
@@ -426,9 +423,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     ),
                   ),
                 ],
-
                 SizedBox(height: 12),
-
                 Row(
                   children: [
                     Expanded(
@@ -456,7 +451,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Salir del grupo'),
-        content: Text('¿Estás seguro de que quieres salir del grupo "${group.name}"?'),
+        content: Text(
+            '¿Estás seguro de que quieres salir del grupo "${group.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -470,7 +466,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Has salido del grupo'),
-                    backgroundColor: AppColors.green,
+                    backgroundColor: AppColors.softGreen,
                   ),
                 );
               } else {

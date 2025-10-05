@@ -1,5 +1,5 @@
-import 'package:biux/features/cities/data/models/city.dart';
-import 'package:biux/data/models/situation_accident.dart';
+﻿import 'package:biux/features/cities/data/models/city.dart';
+import 'package:biux/features/accidents/data/models/situation_accident.dart';
 
 class BiuxUser {
   final String id;

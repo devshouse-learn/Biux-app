@@ -1,8 +1,8 @@
-import 'package:biux/core/config/colors.dart';
+﻿import 'package:biux/core/config/colors.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
-import 'package:biux/data/models/competitor_road.dart';
+import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/screens/user_screen/user_screen_bloc.dart';

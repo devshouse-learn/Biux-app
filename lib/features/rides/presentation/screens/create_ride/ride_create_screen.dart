@@ -367,7 +367,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
               Color color;
               switch (difficulty) {
                 case DifficultyLevel.easy:
-                  color = AppColors.green;
+                  color = AppColors.softGreen;
                   break;
                 case DifficultyLevel.medium:
                   color = AppColors.vividOrange;

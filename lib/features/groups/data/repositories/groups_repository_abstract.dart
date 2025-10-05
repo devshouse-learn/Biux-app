@@ -1,7 +1,7 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:biux/features/groups/data/models/group.dart';
-import 'package:biux/data/models/member.dart';
+import 'package:biux/features/members/data/models/member.dart';
 
 abstract class GroupsRepositoryAbstract {
   Future<List<Group>> getGroups();

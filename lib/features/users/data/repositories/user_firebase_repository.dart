@@ -1,7 +1,7 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:biux/core/config/strings.dart';
-import 'package:biux/data/models/response.dart';
-import 'package:biux/data/models/user_membership.dart';
+import 'package:biux/core/models/common/response.dart';
+import 'package:biux/features/members/data/models/user_membership.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'dart:io';
 import 'package:biux/core/utils/firebase_utils.dart';

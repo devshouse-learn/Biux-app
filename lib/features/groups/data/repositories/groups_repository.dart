@@ -1,7 +1,7 @@
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'package:biux/features/groups/data/models/group.dart';
-import 'package:biux/data/models/member.dart';
+import 'package:biux/features/members/data/models/member.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -34,7 +34,7 @@ class GroupsRepository {
       ),
     });
 
-    Response response = await dio.patch('$URL_BASE/$id', data: formData);
+    await dio.patch('$URL_BASE/$id', data: formData);
 
     //return response.data;
   }
@@ -51,7 +51,7 @@ class GroupsRepository {
       ),
     });
 
-    Response response = await dio.patch('$URL_BASE/$id', data: formData);
+    await dio.patch('$URL_BASE/$id', data: formData);
 
     //return response.data;
   }
@@ -81,8 +81,9 @@ class GroupsRepository {
     Map responseData = json.decode(response.body);
     List groupsJson = responseData["data"];
 
-    List<Group> groups =
-        groupsJson.map((groupsJson) => Group.fromJson(json: groupsJson)).toList();
+    List<Group> groups = groupsJson
+        .map((groupsJson) => Group.fromJson(json: groupsJson))
+        .toList();
 
     if (response.statusCode == 200) {
       return groups;

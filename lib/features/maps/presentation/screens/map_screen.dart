@@ -183,7 +183,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withOpacity(0.2),
+                color: AppColors.black.withValues(alpha: 0.2),
                 blurRadius: 8,
                 offset: Offset(0, -2),
               ),
@@ -311,8 +311,9 @@ class RouteCard extends StatelessWidget {
 
     return Card(
       margin: EdgeInsets.only(right: 8),
-      color:
-          isSelected ? AppColors.strongCyan.withOpacity(0.1) : AppColors.white,
+      color: isSelected
+          ? AppColors.lightCyan.withValues(alpha: 0.1)
+          : AppColors.white,
       child: InkWell(
         onTap: () {
           if (isSelected) {
@@ -405,13 +406,13 @@ class RouteLevelBadge extends StatelessWidget {
           vertical: 4,
         ),
         decoration: BoxDecoration(
-          color: AppColors.strongCyan.withOpacity(0.1),
+          color: AppColors.lightCyan.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
           'Nivel: $level',
           style: TextStyle(
-            color: AppColors.strongCyan,
+            color: AppColors.lightCyan,
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),

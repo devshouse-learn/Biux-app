@@ -100,6 +100,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   pinned: true,
                   backgroundColor: AppColors.blackPearl,
                   foregroundColor: AppColors.white,
+                  actions: _buildAppBarActions(group, provider),
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
                       group.name,
@@ -283,12 +284,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   member['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
-                subtitle: Text(member['phoneNumber']),
+                subtitle: Text('Miembro del grupo'),
                 trailing: member['isAdmin']
                     ? Chip(
                         label: Text('Admin'),
-                        backgroundColor: AppColors.green.withValues(alpha: 0.1),
-                        labelStyle: TextStyle(color: AppColors.green),
+                        backgroundColor:
+                            AppColors.softGreen.withValues(alpha: 0.1),
+                        labelStyle: TextStyle(color: AppColors.softGreen),
                       )
                     : null,
               ),
@@ -467,7 +469,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   request['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
-                subtitle: Text(request['phoneNumber']),
+                subtitle: Text('Solicitud pendiente'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -478,7 +480,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         request['userName'],
                         provider,
                       ),
-                      icon: Icon(Icons.check, color: AppColors.green),
+                      icon: Icon(Icons.check, color: AppColors.softGreen),
                       tooltip: 'Aprobar',
                     ),
                     IconButton(
@@ -501,42 +503,145 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
   }
 
+  List<Widget> _buildAppBarActions(GroupModel group, GroupProvider provider) {
+    final userStatus = provider.getUserStatus(group);
+    List<Widget> actions = [];
+
+    switch (userStatus) {
+      case GroupMembershipStatus.admin:
+        actions.add(
+          IconButton(
+            onPressed: () => context.go('/groups/${group.id}/edit'),
+            icon: Icon(Icons.edit),
+            tooltip: 'Editar Grupo',
+          ),
+        );
+        break;
+      case GroupMembershipStatus.member:
+        actions.add(
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'leave') {
+                _showLeaveGroupDialog(group, provider);
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'leave',
+                child: Row(
+                  children: [
+                    Icon(Icons.exit_to_app, color: AppColors.red),
+                    SizedBox(width: 8),
+                    Text('Salir del grupo'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+        break;
+      case GroupMembershipStatus.pending:
+        actions.add(
+          IconButton(
+            onPressed: () => _cancelRequest(group.id, provider),
+            icon: Icon(Icons.cancel),
+            tooltip: 'Cancelar Solicitud',
+          ),
+        );
+        break;
+      case GroupMembershipStatus.notMember:
+        actions.add(
+          IconButton(
+            onPressed: () => _requestJoinGroup(group.id, provider),
+            icon: Icon(Icons.group_add),
+            tooltip: 'Solicitar Unirse',
+          ),
+        );
+        break;
+    }
+
+    return actions;
+  }
+
   Widget _buildActionButtons(GroupModel group, GroupProvider provider) {
     final userStatus = provider.getUserStatus(group);
 
     switch (userStatus) {
       case GroupMembershipStatus.admin:
-        return Column(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // Navegar a la pantalla de edición de grupo
-                  context.go('/groups/${group.id}/edit');
-                },
-                icon: Icon(Icons.edit),
-                label: Text('Editar Grupo'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blackPearl,
-                  foregroundColor: AppColors.white,
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.softGreen.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border:
+                Border.all(color: AppColors.softGreen.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.admin_panel_settings, color: AppColors.softGreen),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Eres administrador',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.softGreen,
+                      ),
+                    ),
+                    Text(
+                      'Puedes editar el grupo desde el menú superior',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.grey600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
 
       case GroupMembershipStatus.member:
-        return SizedBox(
+        return Container(
           width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () => _showLeaveGroupDialog(group, provider),
-            icon: Icon(Icons.exit_to_app),
-            label: Text('Salir del Grupo'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.red,
-              foregroundColor: AppColors.white,
-            ),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.lightCyan.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border:
+                Border.all(color: AppColors.lightCyan.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.check_circle, color: AppColors.lightCyan),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ya eres miembro',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.lightCyan,
+                      ),
+                    ),
+                    Text(
+                      'Puedes salir del grupo desde el menú superior',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.grey600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
 
@@ -704,7 +809,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.green;
+        return AppColors.softGreen;
       case DifficultyLevel.medium:
         return AppColors.vividOrange;
       case DifficultyLevel.hard:
@@ -732,11 +837,11 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  String _formatTime(TimeOfDay time) {
-    final hours = time.hour.toString().padLeft(2, '0');
-    final minutes = time.minute.toString().padLeft(2, '0');
-    return '$hours:$minutes';
-  }
+  // String _formatTime(TimeOfDay time) {
+  //   final hours = time.hour.toString().padLeft(2, '0');
+  //   final minutes = time.minute.toString().padLeft(2, '0');
+  //   return '$hours:$minutes';
+  // }
 
   @override
   void dispose() {

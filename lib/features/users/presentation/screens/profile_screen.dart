@@ -101,7 +101,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           content: Text(success
               ? 'Perfil actualizado correctamente'
               : widget.userProvider.error ?? 'Error al actualizar perfil'),
-          backgroundColor: success ? AppColors.green : AppColors.red,
+          backgroundColor: success ? AppColors.softGreen : AppColors.mutedRed,
         ),
       );
     }
@@ -116,7 +116,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           content: Text(success
               ? 'Imagen subida correctamente'
               : 'Error al subir la imagen'),
-          backgroundColor: success ? AppColors.green : AppColors.red,
+          backgroundColor: success ? AppColors.softGreen : AppColors.mutedRed,
         ),
       );
     }
@@ -341,7 +341,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         SnackBar(
           content: Text(
               '✅ Ciudades actualizadas exitosamente ($updatedCount ciudades)'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.softGreen,
           duration: Duration(seconds: 3),
         ),
       );

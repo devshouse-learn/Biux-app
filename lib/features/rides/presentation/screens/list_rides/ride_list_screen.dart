@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/config/colors.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 
-
 class RideListScreen extends StatefulWidget {
   final String? groupId; // Ahora es opcional
 
@@ -189,197 +188,209 @@ class _RideListScreenState extends State<RideListScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header con estado y dificultad
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: _getStatusColor(ride.status).withOpacity(0.1),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        ride.name,
+      child: InkWell(
+        onTap: () => context.push('/rides/${ride.id}'),
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header con estado y dificultad
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _getStatusColor(ride.status).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                ride.name,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: AppColors.grey600,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _getDifficultyColor(ride.difficulty),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                ride.difficultyDisplayName,
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              '${ride.kilometers} km',
+                              style: TextStyle(
+                                color: AppColors.grey600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isCreator)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.gold,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'Organizador',
                         style: TextStyle(
-                          fontSize: 18,
+                          color: AppColors.white,
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: _getDifficultyColor(ride.difficulty),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              ride.difficultyDisplayName,
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            '${ride.kilometers} km',
-                            style: TextStyle(
-                              color: AppColors.grey600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                if (isCreator)
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.gold,
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
-                      'Organizador',
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Información del grupo organizador
-                if (widget.groupId ==
-                    null) // Solo mostrar si no estamos en un grupo específico
-                  FutureBuilder<Map<String, dynamic>?>(
-                    future: provider.getGroupInfo(ride.groupId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done &&
-                          snapshot.hasData &&
-                          snapshot.data != null) {
-                        final groupInfo = snapshot.data!;
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 12),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundImage: groupInfo['logoUrl'] != null &&
-                                        groupInfo['logoUrl']
-                                            .toString()
-                                            .isNotEmpty
-                                    ? NetworkImage(groupInfo['logoUrl'])
-                                    : null,
-                                backgroundColor: AppColors.blackPearl,
-                                child: groupInfo['logoUrl'] == null ||
-                                        groupInfo['logoUrl'].toString().isEmpty
-                                    ? Icon(Icons.group,
-                                        size: 16, color: AppColors.white)
-                                    : null,
-                              ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Organizado por ${groupInfo['name']}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.blackPearl,
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Información del grupo organizador
+                  if (widget.groupId ==
+                      null) // Solo mostrar si no estamos en un grupo específico
+                    FutureBuilder<Map<String, dynamic>?>(
+                      future: provider.getGroupInfo(ride.groupId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done &&
+                            snapshot.hasData &&
+                            snapshot.data != null) {
+                          final groupInfo = snapshot.data!;
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 16,
+                                  backgroundImage:
+                                      groupInfo['logoUrl'] != null &&
+                                              groupInfo['logoUrl']
+                                                  .toString()
+                                                  .isNotEmpty
+                                          ? NetworkImage(groupInfo['logoUrl'])
+                                          : null,
+                                  backgroundColor: AppColors.blackPearl,
+                                  child: groupInfo['logoUrl'] == null ||
+                                          groupInfo['logoUrl']
+                                              .toString()
+                                              .isEmpty
+                                      ? Icon(Icons.group,
+                                          size: 16, color: AppColors.white)
+                                      : null,
+                                ),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Organizado por ${groupInfo['name']}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.blackPearl,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return SizedBox.shrink();
-                    },
-                  ),
-
-                // Fecha y hora
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today,
-                        size: 16, color: AppColors.grey600),
-                    SizedBox(width: 8),
-                    Text(
-                      _formatDateTime(ride.dateTime),
-                      style: TextStyle(
-                        color: AppColors.grey600,
-                        fontSize: 14,
-                      ),
+                              ],
+                            ),
+                          );
+                        }
+                        return SizedBox.shrink();
+                      },
                     ),
-                  ],
-                ),
-                SizedBox(height: 8),
 
-                // Participantes
-                Row(
-                  children: [
-                    Icon(Icons.group, size: 16, color: AppColors.grey600),
-                    SizedBox(width: 8),
-                    Text(
-                      '${ride.participantCount} confirmados',
-                      style: TextStyle(
-                        color: AppColors.grey600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    if (ride.maybeParticipantCount > 0) ...[
-                      Text(' • ', style: TextStyle(color: AppColors.grey600)),
+                  // Fecha y hora
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today,
+                          size: 16, color: AppColors.grey600),
+                      SizedBox(width: 8),
                       Text(
-                        '${ride.maybeParticipantCount} tal vez',
+                        _formatDateTime(ride.dateTime),
                         style: TextStyle(
-                          color: AppColors.vividOrange,
+                          color: AppColors.grey600,
                           fontSize: 14,
                         ),
                       ),
                     ],
-                  ],
-                ),
-                SizedBox(height: 12),
+                  ),
+                  SizedBox(height: 8),
 
-                // Estado de participación del usuario
-                _buildParticipationChip(participationStatus),
-                SizedBox(height: 16),
+                  // Participantes
+                  Row(
+                    children: [
+                      Icon(Icons.group, size: 16, color: AppColors.grey600),
+                      SizedBox(width: 8),
+                      Text(
+                        '${ride.participantCount} confirmados',
+                        style: TextStyle(
+                          color: AppColors.grey600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      if (ride.maybeParticipantCount > 0) ...[
+                        Text(' • ', style: TextStyle(color: AppColors.grey600)),
+                        Text(
+                          '${ride.maybeParticipantCount} tal vez',
+                          style: TextStyle(
+                            color: AppColors.vividOrange,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  SizedBox(height: 12),
 
-                // Botones de acción
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () => context.push('/rides/${ride.id}'),
-                      icon: Icon(Icons.info_outline),
-                      label: Text('Ver Detalles'),
-                    ),
-                    _buildActionButton(ride, participationStatus, provider),
-                  ],
-                ),
-              ],
+                  // Estado de participación del usuario
+                  _buildParticipationChip(participationStatus),
+                  SizedBox(height: 16),
+
+                  // Botones de acción
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child:
+                        _buildActionButton(ride, participationStatus, provider),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -391,12 +402,12 @@ class _RideListScreenState extends State<RideListScreen> {
 
     switch (status) {
       case RideParticipationStatus.participating:
-        color = AppColors.green;
+        color = AppColors.softGreen;
         text = 'Voy a ir';
         icon = Icons.check_circle;
         break;
       case RideParticipationStatus.maybeParticipating:
-        color = AppColors.vividOrange;
+        color = AppColors.softOrange;
         text = 'Tal vez voy';
         icon = Icons.help;
         break;
@@ -410,8 +421,8 @@ class _RideListScreenState extends State<RideListScreen> {
         text,
         style: TextStyle(color: color, fontSize: 12),
       ),
-      backgroundColor: color.withOpacity(0.1),
-      side: BorderSide(color: color.withOpacity(0.3)),
+      backgroundColor: color.withValues(alpha: 0.1),
+      side: BorderSide(color: color.withValues(alpha: 0.3)),
     );
   }
 
@@ -431,9 +442,10 @@ class _RideListScreenState extends State<RideListScreen> {
           icon: Icon(Icons.cancel, size: 16),
           label: Text('No voy'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.red,
+            backgroundColor: AppColors.mutedRed,
             foregroundColor: AppColors.white,
-            minimumSize: Size(100, 32),
+            minimumSize: Size(75, 32),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           ),
         );
 
@@ -446,20 +458,22 @@ class _RideListScreenState extends State<RideListScreen> {
               icon: Icon(Icons.check, size: 16),
               label: Text('Confirmar'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
+                backgroundColor: AppColors.softGreen,
                 foregroundColor: AppColors.white,
-                minimumSize: Size(80, 32),
+                minimumSize: Size(75, 32),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
             ),
             SizedBox(width: 8),
             ElevatedButton.icon(
               onPressed: () => _leaveRide(ride.id, provider),
               icon: Icon(Icons.close, size: 16),
-              label: Text('No voy'),
+              label: Text('No'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.red,
+                backgroundColor: AppColors.mutedRed,
                 foregroundColor: AppColors.white,
-                minimumSize: Size(70, 32),
+                minimumSize: Size(75, 32),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
             ),
           ],
@@ -474,9 +488,10 @@ class _RideListScreenState extends State<RideListScreen> {
               icon: Icon(Icons.directions_bike, size: 16),
               label: Text('Voy'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
+                backgroundColor: AppColors.softGreen,
                 foregroundColor: AppColors.white,
-                minimumSize: Size(80, 32),
+                minimumSize: Size(75, 32),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
             ),
             SizedBox(width: 8),
@@ -485,9 +500,10 @@ class _RideListScreenState extends State<RideListScreen> {
               icon: Icon(Icons.help_outline, size: 16),
               label: Text('Tal vez'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.vividOrange,
+                backgroundColor: AppColors.softOrange,
                 foregroundColor: AppColors.white,
-                minimumSize: Size(80, 32),
+                minimumSize: Size(75, 32),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
             ),
           ],
@@ -500,22 +516,22 @@ class _RideListScreenState extends State<RideListScreen> {
       case RideStatus.upcoming:
         return AppColors.blue;
       case RideStatus.ongoing:
-        return AppColors.green;
+        return AppColors.softGreen;
       case RideStatus.completed:
         return AppColors.grey600;
       case RideStatus.cancelled:
-        return AppColors.red;
+        return AppColors.mutedRed;
     }
   }
 
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.green;
+        return AppColors.mutedGreen;
       case DifficultyLevel.medium:
-        return AppColors.vividOrange;
+        return AppColors.softOrange;
       case DifficultyLevel.hard:
-        return AppColors.red;
+        return AppColors.mutedRed;
       case DifficultyLevel.expert:
         return AppColors.purple;
     }
@@ -551,7 +567,7 @@ class _RideListScreenState extends State<RideListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('¡Genial! Te has unido a la rodada'),
-          backgroundColor: AppColors.green,
+          backgroundColor: AppColors.softGreen,
         ),
       );
     }

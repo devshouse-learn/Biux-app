@@ -1,6 +1,6 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:biux/features/users/data/models/user.dart';
-import 'package:biux/data/models/user_membership.dart';
+import 'package:biux/features/members/data/models/user_membership.dart';
 
 abstract class UserRepositoryAbstract {
   Future<List<BiuxUser>> getUsers(int limit, int offset);

@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import 'package:biux/core/config/colors.dart';
 
-
 class RoadsListScreen extends StatefulWidget {
   const RoadsListScreen({Key? key}) : super(key: key);
 
@@ -284,7 +283,7 @@ class _RideCard extends StatelessWidget {
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.green;
+        return AppColors.softGreen;
       case DifficultyLevel.medium:
         return AppColors.amber;
       case DifficultyLevel.hard:

@@ -64,6 +64,15 @@ class AppColors {
   static const profileCoverGroup = Color(0x8F000000);
   static const darkNavy = Color(0xFF111F2C);
   static const blackPearl = Color(0xFF16242D);
+
+  // Colores más suaves y armoniosos
+  static const softGreen =
+      Color(0xFF4CAF50); // Verde más suave para confirmaciones
+  static const mutedGreen =
+      Color(0xFF66BB6A); // Verde aún más suave para badges
+  static const softOrange = Color(0xFFFF9800); // Naranja suave para "tal vez"
+  static const mutedRed = Color(0xFFE57373); // Rojo suave para "no voy"
+  static const lightCyan = Color(0xFF80CBC4); // Cyan claro para badges de nivel
 }
 
 Map<int, Color> color = {
