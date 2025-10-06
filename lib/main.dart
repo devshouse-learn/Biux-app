@@ -18,6 +18,7 @@ import 'package:biux/features/maps/presentation/providers/map_provider.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
@@ -83,6 +84,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => RideProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ExperienceProvider(),
         ),
       ],
       child: MyApp(),

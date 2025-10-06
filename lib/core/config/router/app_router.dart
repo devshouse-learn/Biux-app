@@ -13,6 +13,9 @@ import '../../../features/rides/presentation/providers/ride_provider.dart';
 import '../../../features/users/presentation/providers/user_provider.dart';
 
 // Feature imports (screens)
+import '../../../features/experiences/presentation/screens/experiences_list_screen.dart';
+import '../../../features/experiences/presentation/screens/create_experience_screen.dart';
+import '../../../features/experiences/domain/entities/experience_entity.dart';
 import '../../../features/groups/presentation/screens/edit_group/edit_group_screen.dart';
 import '../../../features/groups/presentation/screens/group_create/group_create_screen.dart';
 import '../../../features/groups/presentation/screens/group_list/group_list_screen.dart';
@@ -27,7 +30,7 @@ import '../../../features/rides/presentation/screens/list_rides/ride_list_screen
 import '../../../features/roads/presentation/screens/road_create/map_road/map_road_screen.dart';
 import '../../../features/roads/presentation/screens/road_create/road_create_screen.dart';
 import '../../../features/roads/presentation/screens/roads_list/roads_list_screen.dart';
-import '../../../features/stories/presentation/screens/story_create/story_create_screen.dart';
+
 import '../../../features/stories/presentation/screens/story_view/story_view_screen.dart';
 import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
 import '../../../features/users/presentation/screens/profile_screen.dart';
@@ -51,7 +54,8 @@ String? _guard(BuildContext context, GoRouterState state) {
   final String location = state.uri.toString();
 
   print(
-      '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}');
+    '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
+  );
 
   // Si está en la ruta root '/', decidir dónde ir según autenticación
   if (location == '/') {
@@ -131,9 +135,11 @@ final GoRouter _router = GoRouter(
           providers: [
             ChangeNotifierProvider.value(value: context.read<MapProvider>()),
             ChangeNotifierProvider.value(
-                value: context.read<LocationProvider>()),
+              value: context.read<LocationProvider>(),
+            ),
             ChangeNotifierProvider.value(
-                value: context.read<MeetingPointProvider>()),
+              value: context.read<MeetingPointProvider>(),
+            ),
             ChangeNotifierProvider.value(value: context.read<UserProvider>()),
             ChangeNotifierProvider.value(value: context.read<GroupProvider>()),
             ChangeNotifierProvider.value(value: context.read<RideProvider>()),
@@ -218,19 +224,30 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => MyGroupsScreen(),
         ),
 
-        // Historias
+        // Experiencias (antes Historias)
         GoRoute(
           path: '/stories',
           name: 'stories',
-          builder: (context, state) => const Scaffold(
-            body: Center(child: Text('Historias - Próximamente')),
-          ),
+          builder: (context, state) => const ExperiencesListScreen(),
           routes: [
-            // Crear historia
+            // Crear experiencia
             GoRoute(
               path: 'create',
               name: AppRoutes.storyCreateName,
-              builder: (context, state) => StoryCreateScreen(),
+              builder: (context, state) {
+                // Determinar tipo de experiencia desde parámetros
+                final typeParam = state.uri.queryParameters['type'];
+                final rideId = state.uri.queryParameters['rideId'];
+                final experienceType =
+                    typeParam == 'ride'
+                        ? ExperienceType.ride
+                        : ExperienceType.general;
+
+                return CreateExperienceScreen(
+                  experienceType: experienceType,
+                  rideId: rideId,
+                );
+              },
             ),
             // Ver historia específica
             GoRoute(
@@ -297,23 +314,24 @@ final GoRouter _router = GoRouter(
       ],
     ),
   ],
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error, size: 64, color: ColorTokens.error50),
-          const SizedBox(height: 16),
-          Text('Error: ${state.error}'),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => context.go(AppRoutes.splash),
-            child: const Text('Ir al inicio'),
+  errorBuilder:
+      (context, state) => Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: ColorTokens.error50),
+              const SizedBox(height: 16),
+              Text('Error: ${state.error}'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.go(AppRoutes.splash),
+                child: const Text('Ir al inicio'),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-  ),
 );
 
 class AppRouter {
