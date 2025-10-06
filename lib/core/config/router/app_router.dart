@@ -60,8 +60,8 @@ String? _guard(BuildContext context, GoRouterState state) {
   // Si está en la ruta root '/', decidir dónde ir según autenticación
   if (location == '/') {
     if (isLoggedIn) {
-      print('📍 Usuario logueado en root, redirigiendo al mapa');
-      return AppRoutes.map;
+      print('📍 Usuario logueado en root, redirigiendo a experiencias');
+      return '/stories';
     } else {
       print('📍 Usuario no logueado en root, redirigiendo al login');
       return AppRoutes.login;
@@ -79,10 +79,12 @@ String? _guard(BuildContext context, GoRouterState state) {
 
   // Si está en una ruta pública
   if (isPublicRoute) {
-    // Si está logueado y trata de ir al login, redirigir al mapa
+    // Si está logueado y trata de ir al login, redirigir a experiencias
     if (isLoggedIn && location == AppRoutes.login) {
-      print('📍 Usuario logueado intentando ir al login, redirigiendo al mapa');
-      return AppRoutes.map;
+      print(
+        '📍 Usuario logueado intentando ir al login, redirigiendo a experiencias',
+      );
+      return '/stories';
     }
     // Permitir acceso a rutas públicas
     return null;
@@ -148,11 +150,11 @@ final GoRouter _router = GoRouter(
         );
       },
       routes: [
-        // Menu principal - redirigir al mapa
+        // Menu principal - redirigir a experiencias
         GoRoute(
           path: AppRoutes.mainMenu,
           name: AppRoutes.mainMenuName,
-          redirect: (context, state) => AppRoutes.map,
+          redirect: (context, state) => '/stories',
         ),
 
         // Mapa
@@ -238,10 +240,9 @@ final GoRouter _router = GoRouter(
                 // Determinar tipo de experiencia desde parámetros
                 final typeParam = state.uri.queryParameters['type'];
                 final rideId = state.uri.queryParameters['rideId'];
-                final experienceType =
-                    typeParam == 'ride'
-                        ? ExperienceType.ride
-                        : ExperienceType.general;
+                final experienceType = typeParam == 'ride'
+                    ? ExperienceType.ride
+                    : ExperienceType.general;
 
                 return CreateExperienceScreen(
                   experienceType: experienceType,
@@ -314,24 +315,23 @@ final GoRouter _router = GoRouter(
       ],
     ),
   ],
-  errorBuilder:
-      (context, state) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error, size: 64, color: ColorTokens.error50),
-              const SizedBox(height: 16),
-              Text('Error: ${state.error}'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => context.go(AppRoutes.splash),
-                child: const Text('Ir al inicio'),
-              ),
-            ],
+  errorBuilder: (context, state) => Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error, size: 64, color: ColorTokens.error50),
+          const SizedBox(height: 16),
+          Text('Error: ${state.error}'),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => context.go(AppRoutes.splash),
+            child: const Text('Ir al inicio'),
           ),
-        ),
+        ],
       ),
+    ),
+  ),
 );
 
 class AppRouter {
