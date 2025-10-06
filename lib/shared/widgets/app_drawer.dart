@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:biux/core/design_system/design_system.dart';
 import '../../core/config/router/app_routes.dart';
 import '../../features/maps/presentation/providers/meeting_point_provider.dart';
 import '../../features/users/presentation/providers/user_provider.dart';
+import '../../debug/profile_image_debug_screen.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -97,6 +97,12 @@ class _AppDrawerState extends State<AppDrawer> {
               final user = userProvider.user;
               final currentUser = FirebaseAuth.instance.currentUser;
 
+              // Debug: Imprimir información del usuario
+              print('🐛 DEBUG - Usuario en drawer:');
+              print('   - user: ${user?.name ?? 'null'}');
+              print('   - photoUrl: ${user?.photoUrl ?? 'null'}');
+              print('   - currentUser: ${currentUser?.uid ?? 'null'}');
+
               return UserAccountsDrawerHeader(
                 accountName: Text(
                   user?.name ?? 'Usuario',
@@ -106,29 +112,51 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                 ),
                 accountEmail: Text(
-                  user?.email ?? currentUser?.phoneNumber ?? 'Sin email',
+                  (user?.email ?? currentUser?.phoneNumber ?? 'Sin email') +
+                      ' ${user?.photoUrl != null ? '📸' : '🚫'}',
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                   ), // Texto blanco
                 ),
-                currentAccountPicture: CircleAvatar(
-                  backgroundColor: ColorTokens.neutral100,
-                  backgroundImage:
-                      user?.photoUrl != null && user!.photoUrl!.isNotEmpty
-                          ? CachedNetworkImageProvider(
-                            user.photoUrl!,
-                            cacheManager: OptimizedCacheManager.avatarInstance,
-                          )
-                          : null,
-                  child:
-                      user?.photoUrl == null || user?.photoUrl?.isEmpty == true
-                          ? Icon(
+                currentAccountPicture:
+                    user?.photoUrl != null && user!.photoUrl!.isNotEmpty
+                        ? CachedNetworkImage(
+                          imageUrl: user.photoUrl!,
+                          imageBuilder:
+                              (context, imageProvider) => CircleAvatar(
+                                backgroundColor: ColorTokens.neutral100,
+                                backgroundImage: imageProvider,
+                              ),
+                          placeholder:
+                              (context, url) => CircleAvatar(
+                                backgroundColor: ColorTokens.neutral100,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    ColorTokens.primary50,
+                                  ),
+                                ),
+                              ),
+                          errorWidget: (context, url, error) {
+                            print('🐛 Error cargando imagen de perfil: $error');
+                            return CircleAvatar(
+                              backgroundColor: ColorTokens.neutral100,
+                              child: Icon(
+                                Icons.person,
+                                size: 40,
+                                color: ColorTokens.neutral60,
+                              ),
+                            );
+                          },
+                        )
+                        : CircleAvatar(
+                          backgroundColor: ColorTokens.neutral100,
+                          child: Icon(
                             Icons.person,
                             size: 40,
                             color: ColorTokens.neutral60,
-                          )
-                          : null,
-                ),
+                          ),
+                        ),
                 decoration: BoxDecoration(color: ColorTokens.primary30),
               );
             },
@@ -207,6 +235,22 @@ class _AppDrawerState extends State<AppDrawer> {
                     );
                   },
                 ),
+
+                // Debug temporal para imagen de perfil
+                ListTile(
+                  leading: Icon(Icons.bug_report, color: ColorTokens.error50),
+                  title: Text('Debug: Imagen Perfil'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileImageDebugWidget(),
+                      ),
+                    );
+                  },
+                ),
+
                 ListTile(
                   leading: Icon(
                     Icons.help_outline,

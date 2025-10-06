@@ -15,11 +15,15 @@ class UserService {
 
   Future<UserModel?> getUserData(String uid) async {
     try {
+      print('🐛 DEBUG - Obteniendo datos del usuario: $uid');
       DocumentSnapshot doc =
           await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
-        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+        final data = doc.data() as Map<String, dynamic>;
+        print('🐛 DEBUG - Datos obtenidos: $data');
+        return UserModel.fromMap(data);
       }
+      print('🐛 DEBUG - Documento de usuario no existe');
       return null;
     } catch (e) {
       print('Error obteniendo datos del usuario: $e');
@@ -107,10 +111,7 @@ class UserService {
       DocumentSnapshot doc =
           await _firestore.collection('users').doc(uid).get();
       if (!doc.exists) {
-        UserModel newUser = UserModel(
-          uid: uid,
-          phoneNumber: phoneNumber,
-        );
+        UserModel newUser = UserModel(uid: uid, phoneNumber: phoneNumber);
         await _firestore.collection('users').doc(uid).set(newUser.toMap());
       }
       return true;

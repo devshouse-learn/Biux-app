@@ -19,7 +19,9 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
     super.initState();
     // Cargar experiencias al inicializar
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExperienceProvider>().loadUserExperiences('current_user'); // TODO: Obtener user ID real
+      context.read<ExperienceProvider>().loadUserExperiences(
+        'current_user',
+      ); // TODO: Obtener user ID real
     });
   }
 

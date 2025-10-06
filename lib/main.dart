@@ -45,49 +45,31 @@ void main() async {
     // );
   }
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await LocalStorage().init();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => app_auth.AuthProvider(
-            authRepository: AuthRepository(
-              baseUrl: 'https://n8n.oktavia.me/webhook',
-            ),
-          ),
+          create:
+              (_) => app_auth.AuthProvider(
+                authRepository: AuthRepository(
+                  baseUrl: 'https://n8n.oktavia.me/webhook',
+                ),
+              ),
         ),
-        ChangeNotifierProvider<ThemeNotifier>(
-          create: (_) => ThemeNotifier(),
-        ),
+        ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(
-          create: (_) => MeetingPointProvider(
-            repository: MeetingPointRepository(),
-          ),
+          create:
+              (_) => MeetingPointProvider(repository: MeetingPointRepository()),
         ),
-        ChangeNotifierProvider(
-          create: (_) => MapProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => LocationProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => UserProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => GroupProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => CityProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => RideProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => ExperienceProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => MapProvider()),
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => GroupProvider()),
+        ChangeNotifierProvider(create: (_) => CityProvider()),
+        ChangeNotifierProvider(create: (_) => RideProvider()),
+        ChangeNotifierProvider(create: (_) => ExperienceProvider()),
       ],
       child: MyApp(),
     ),
@@ -112,9 +94,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale(AppStrings.en, AppStrings.us),
-      ],
+      supportedLocales: const [Locale(AppStrings.en, AppStrings.us)],
       title: AppStrings.APP_NAME,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

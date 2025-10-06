@@ -335,9 +335,7 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
     final sizeMB = (originalSizeBytes / (1024 * 1024)).toStringAsFixed(1);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          'Imagen de ${sizeMB}MB será comprimida automáticamente para reducir costos',
-        ),
+        content: Text('Subiendo imagen'),
         backgroundColor: ColorTokens.primary50,
         duration: Duration(seconds: 3),
       ),

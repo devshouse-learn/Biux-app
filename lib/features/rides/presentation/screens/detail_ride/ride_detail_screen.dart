@@ -127,7 +127,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   GroupInfoWidget(ride: ride),
                   SizedBox(height: 16),
 
-                  // Información b�sica
+                  // Información básica
                   BasicInfoWidget(ride: ride),
                   SizedBox(height: 24),
 
@@ -255,7 +255,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   backgroundColor: ColorTokens.error50,
                 ),
                 child: Text(
-                  'S�, cancelar',
+                  'Sí, cancelar',
                   style: TextStyle(color: ColorTokens.neutral100),
                 ),
               ),
@@ -536,7 +536,7 @@ class BasicInfoWidget extends StatelessWidget {
   String _getStatusName(RideStatus status) {
     switch (status) {
       case RideStatus.upcoming:
-        return 'Pr�xima';
+        return 'Próxima';
       case RideStatus.ongoing:
         return 'En curso';
       case RideStatus.completed:

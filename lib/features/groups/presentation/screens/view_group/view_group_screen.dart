@@ -184,7 +184,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Logo y informaci�n b�sica
+          // Logo y información básica
           Row(
             children: [
               group.logoUrl != null

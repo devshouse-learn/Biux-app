@@ -127,10 +127,10 @@ class _RideListScreenState extends State<RideListScreen> {
               SizedBox(height: 8),
               Text(
                 widget.groupId != null
-                    ? 'S� el primero en organizar una rodada en este grupo'
+                    ? 'Sé el primero en organizar una rodada en este grupo'
                     : groupProvider.adminGroups.isNotEmpty
                     ? 'Organiza la primera rodada para tu grupo'
-                    : '�nete a un grupo para participar en rodadas',
+                    : 'Únete a un grupo para participar en rodadas',
                 style: TextStyle(color: ColorTokens.neutral60),
               ),
               SizedBox(height: 24),

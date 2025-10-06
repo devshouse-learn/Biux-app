@@ -8,7 +8,7 @@ class ExperienceProvider extends ChangeNotifier {
   final ExperienceRepository _repository;
 
   ExperienceProvider({ExperienceRepository? repository})
-      : _repository = repository ?? ExperienceRepositoryImpl();
+    : _repository = repository ?? ExperienceRepositoryImpl();
 
   // Estado
   List<ExperienceEntity> _experiences = [];
@@ -29,7 +29,7 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       _setLoading(true);
       _error = null;
-      
+
       final experiences = await _repository.getUserExperiences(userId);
       _setUserExperiences(experiences);
     } catch (e) {
@@ -44,7 +44,7 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       _setLoading(true);
       _error = null;
-      
+
       final experiences = await _repository.getRideExperiences(rideId);
       _setRideExperiences(experiences);
     } catch (e) {
@@ -59,7 +59,7 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       _setLoading(true);
       _error = null;
-      
+
       final experiences = await _repository.getFollowingExperiences(userId);
       _setExperiences(experiences);
     } catch (e) {
@@ -74,9 +74,9 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       _setLoading(true);
       _error = null;
-      
+
       final newExperience = await _repository.createExperience(request);
-      
+
       // Recargar experiencias después de crear una nueva
       _refreshAfterCreate(newExperience);
       return true;
@@ -93,9 +93,9 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       _setLoading(true);
       _error = null;
-      
+
       await _repository.deleteExperience(experienceId);
-      
+
       // Remover de las listas locales
       _removeExperienceFromLists(experienceId);
       return true;
@@ -184,15 +184,15 @@ class ExperienceProvider extends ChangeNotifier {
   void _refreshAfterCreate(ExperienceEntity newExperience) {
     // Agregar a la lista general
     _experiences = [newExperience, ..._experiences];
-    
+
     // Agregar a experiencias de usuario si corresponde
     _userExperiences = [newExperience, ..._userExperiences];
-    
+
     // Agregar a experiencias de rodada si corresponde
     if (newExperience.rideId != null) {
       _rideExperiences = [newExperience, ..._rideExperiences];
     }
-    
+
     notifyListeners();
   }
 

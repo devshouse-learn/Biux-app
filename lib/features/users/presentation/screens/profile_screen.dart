@@ -1,6 +1,7 @@
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -57,7 +58,6 @@ class ProfileScreenContent extends StatefulWidget {
 class _ProfileScreenContentState extends State<ProfileScreenContent> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  String? _avatarUrl;
 
   @override
   void initState() {
@@ -310,8 +310,47 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     // Foto de perfil optimizada
                     OptimizedImagePicker(
                       currentImageUrl: widget.userProvider.user?.photoUrl,
-                      onImageSelected:
-                          (url) => setState(() => _avatarUrl = url),
+                      onImageSelected: (url) async {
+                        if (url != null) {
+                          // Actualizar la URL en Firestore directamente
+                          try {
+                            final currentUser =
+                                FirebaseAuth.instance.currentUser;
+                            if (currentUser != null) {
+                              // Actualizar en Firestore
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(currentUser.uid)
+                                  .update({'photoUrl': url});
+
+                              // Recargar los datos del usuario en el provider
+                              await widget.userProvider.loadUserData();
+
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Imagen de perfil actualizada',
+                                    ),
+                                    backgroundColor: ColorTokens.success40,
+                                  ),
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Error actualizando imagen: $e',
+                                  ),
+                                  backgroundColor: ColorTokens.error50,
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
                       imageType: 'avatar',
                       entityId:
                           FirebaseAuth.instance.currentUser?.uid ?? 'temp_user',
