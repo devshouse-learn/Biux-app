@@ -1,5 +1,5 @@
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/core/config/strings.dart';
@@ -32,9 +32,9 @@ class RoadCreateScreen extends StatelessWidget {
     final sizeScreen = MediaQuery.of(context).size;
     final bloc = context.watch<RoadCreateBloc>();
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
-        backgroundColor: AppColors.blackPearl,
+        backgroundColor: ColorTokens.primary30,
         centerTitle: true,
         title: Text(
           AppStrings.createRoadText,
@@ -48,11 +48,11 @@ class RoadCreateScreen extends StatelessWidget {
             width: sizeScreen.width * 0.8,
             height: sizeScreen.height * 0.8,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: ColorTokens.neutral100,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.grey.withOpacity(0.5),
+                  color: ColorTokens.neutral60.withValues(alpha: 0.5),
                   spreadRadius: 5,
                   blurRadius: 7,
                   offset: Offset(0, 3),
@@ -146,7 +146,7 @@ class RoadCreateScreen extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: AppColors.gray,
+                        color: ColorTokens.neutral60,
                       ),
                       borderRadius: BorderRadius.all(
                         Radius.circular(15),
@@ -165,14 +165,14 @@ class RoadCreateScreen extends StatelessWidget {
                           child: DropdownButton<String>(
                             value: bloc.dropdownValueCity.name,
                             isExpanded: true,
-                            dropdownColor: AppColors.white,
+                            dropdownColor: ColorTokens.neutral100,
                             style: Styles.accentTextThemeBlack,
                             icon: const Icon(
                               Icons.keyboard_arrow_down,
-                              color: AppColors.gray,
+                              color: ColorTokens.neutral60,
                             ),
                             underline: ColoredBox(
-                              color: AppColors.transparent,
+                              color: ColorTokens.transparent,
                             ),
                             elevation: 16,
                             onChanged: (String? value) {
@@ -290,8 +290,8 @@ class RoadCreateScreen extends StatelessWidget {
                           rating: bloc.rating,
                           size: 24,
                           halfFilledIconData: Icons.blur_on,
-                          borderColor: AppColors.strongCyan,
-                          color: AppColors.strongCyan,
+                          borderColor: ColorTokens.secondary50,
+                          color: ColorTokens.secondary50,
                           spacing: 0.0,
                           onRatingChanged: (rating) =>
                               bloc.changeRating(rating),
@@ -335,7 +335,7 @@ class RoadCreateScreen extends StatelessWidget {
                             ? AppStrings.succesCreateRoadText
                             : AppStrings.errorCreateRoadText,
                         backgroundColor:
-                            result ? AppColors.strongCyan : AppColors.redAccent,
+                            result ? ColorTokens.secondary50 : ColorTokens.error50,
                       ),
                     );
                     if (result) {
@@ -350,7 +350,7 @@ class RoadCreateScreen extends StatelessWidget {
                                     .hasMatch(controllerDistance.text)
                                 ? AppStrings.advertDistance
                                 : '',
-                        backgroundColor: AppColors.redAccent,
+                        backgroundColor: ColorTokens.error50,
                       ),
                     );
                   }
@@ -367,3 +367,10 @@ class RoadCreateScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+

@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 class DirectionsService {
   static const String _baseUrl =
       'https://maps.googleapis.com/maps/api/directions/json';
-  // TODO: Agregar tu API Key de Google Maps aquí
   static const String _apiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
 
   static Future<List<LatLng>?> getDirections({

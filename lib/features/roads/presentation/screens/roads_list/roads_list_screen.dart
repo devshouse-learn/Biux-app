@@ -1,10 +1,10 @@
-﻿import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 class RoadsListScreen extends StatefulWidget {
   const RoadsListScreen({Key? key}) : super(key: key);
@@ -25,22 +25,20 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         title: const Text(
           'Rodadas',
-          style: TextStyle(color: AppColors.white),
+          style: TextStyle(color: ColorTokens.neutral100),
         ),
-        backgroundColor: AppColors.darkBlue,
-        iconTheme: const IconThemeData(color: AppColors.white),
+        backgroundColor: ColorTokens.primary30,
+        iconTheme: const IconThemeData(color: ColorTokens.neutral100),
       ),
       body: Consumer<RideProvider>(
         builder: (context, rideProvider, child) {
           if (rideProvider.isLoading) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.darkBlue,
-              ),
+              child: CircularProgressIndicator(color: ColorTokens.primary30),
             );
           }
 
@@ -51,18 +49,18 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                 children: [
                   Text(
                     'Error: ${rideProvider.error}',
-                    style: const TextStyle(color: AppColors.red),
+                    style: const TextStyle(color: ColorTokens.error50),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => rideProvider.loadAllRides(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.darkBlue,
+                      backgroundColor: ColorTokens.primary30,
                     ),
                     child: const Text(
                       'Reintentar',
-                      style: TextStyle(color: AppColors.white),
+                      style: TextStyle(color: ColorTokens.neutral100),
                     ),
                   ),
                 ],
@@ -78,22 +76,20 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                   Icon(
                     Icons.directions_bike_outlined,
                     size: 80,
-                    color: AppColors.grey600,
+                    color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No hay rodadas disponibles',
                     style: TextStyle(
                       fontSize: 18,
-                      color: AppColors.grey600,
+                      color: ColorTokens.neutral60,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Únete a un grupo para participar en rodadas',
-                    style: TextStyle(
-                      color: AppColors.grey600,
-                    ),
+                    '�nete a un grupo para participar en rodadas',
+                    style: TextStyle(color: ColorTokens.neutral60),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
@@ -101,8 +97,8 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                     icon: const Icon(Icons.group),
                     label: const Text('Ver Grupos'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.darkBlue,
-                      foregroundColor: AppColors.white,
+                      backgroundColor: ColorTokens.primary30,
+                      foregroundColor: ColorTokens.neutral100,
                     ),
                   ),
                 ],
@@ -139,9 +135,7 @@ class _RideCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
           // Navegar al detalle de la rodada
@@ -152,13 +146,13 @@ class _RideCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Avatar con ícono de dificultad
+              // Avatar con �cono de dificultad
               CircleAvatar(
                 radius: 30,
                 backgroundColor: _getDifficultyColor(ride.difficulty),
                 child: const Icon(
                   Icons.directions_bike,
-                  color: AppColors.white,
+                  color: ColorTokens.neutral100,
                   size: 28,
                 ),
               ),
@@ -174,7 +168,7 @@ class _RideCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.darkBlue,
+                        color: ColorTokens.primary30,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -186,13 +180,13 @@ class _RideCard extends StatelessWidget {
                         const Icon(
                           Icons.calendar_today,
                           size: 14,
-                          color: AppColors.grey600,
+                          color: ColorTokens.neutral60,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           _formatDateTime(ride.dateTime),
                           style: const TextStyle(
-                            color: AppColors.grey600,
+                            color: ColorTokens.neutral60,
                             fontSize: 14,
                           ),
                         ),
@@ -205,13 +199,13 @@ class _RideCard extends StatelessWidget {
                         const Icon(
                           Icons.straighten,
                           size: 14,
-                          color: AppColors.grey600,
+                          color: ColorTokens.neutral60,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${ride.kilometers.toStringAsFixed(1)} km',
                           style: const TextStyle(
-                            color: AppColors.grey600,
+                            color: ColorTokens.neutral60,
                             fontSize: 14,
                           ),
                         ),
@@ -224,13 +218,13 @@ class _RideCard extends StatelessWidget {
                         const Icon(
                           Icons.trending_up,
                           size: 14,
-                          color: AppColors.grey600,
+                          color: ColorTokens.neutral60,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'Dificultad: ${_getDifficultyText(ride.difficulty)}',
                           style: const TextStyle(
-                            color: AppColors.grey600,
+                            color: ColorTokens.neutral60,
                             fontSize: 14,
                           ),
                         ),
@@ -243,21 +237,21 @@ class _RideCard extends StatelessWidget {
                         const Icon(
                           Icons.people,
                           size: 14,
-                          color: AppColors.grey600,
+                          color: ColorTokens.neutral60,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '${ride.participants.length} participantes',
                           style: const TextStyle(
-                            color: AppColors.grey600,
+                            color: ColorTokens.neutral60,
                             fontSize: 14,
                           ),
                         ),
                         if (ride.maybeParticipants.isNotEmpty) ...[
                           Text(
-                            ' • ${ride.maybeParticipants.length} tal vez',
+                            '  ${ride.maybeParticipants.length} tal vez',
                             style: const TextStyle(
-                              color: AppColors.grey600,
+                              color: ColorTokens.neutral60,
                               fontSize: 14,
                             ),
                           ),
@@ -270,7 +264,7 @@ class _RideCard extends StatelessWidget {
               // Flecha para indicar que es clickeable
               const Icon(
                 Icons.arrow_forward_ios,
-                color: AppColors.grey600,
+                color: ColorTokens.neutral60,
                 size: 16,
               ),
             ],
@@ -283,13 +277,13 @@ class _RideCard extends StatelessWidget {
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.softGreen;
+        return ColorTokens.success40;
       case DifficultyLevel.medium:
-        return AppColors.amber;
+        return ColorTokens.warning50;
       case DifficultyLevel.hard:
-        return AppColors.red;
+        return ColorTokens.error50;
       case DifficultyLevel.expert:
-        return AppColors.purple;
+        return ColorTokens.primary60;
     }
   }
 
@@ -315,7 +309,7 @@ class _RideCard extends StatelessWidget {
         return 'Hoy ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
       }
     } else if (difference.inDays == 1) {
-      return 'Mañana ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+      return 'Ma�ana ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     }
 
     final months = [
@@ -330,7 +324,7 @@ class _RideCard extends StatelessWidget {
       'Sep',
       'Oct',
       'Nov',
-      'Dic'
+      'Dic',
     ];
 
     return '${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';

@@ -2,8 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../core/config/colors.dart';
+import 'package:biux/core/design_system/design_system.dart';
 import '../../core/config/router/app_routes.dart';
 import '../../features/maps/presentation/providers/meeting_point_provider.dart';
 import '../../features/users/presentation/providers/user_provider.dart';
@@ -64,8 +67,9 @@ class _AppDrawerState extends State<AppDrawer> {
 
             // Si después de cargar aún no existe, crear el usuario con teléfono formateado
             if (userProvider.user == null && mounted) {
-              String formattedPhone =
-                  _getFormattedPhoneFromUID(currentUser.uid);
+              String formattedPhone = _getFormattedPhoneFromUID(
+                currentUser.uid,
+              );
               await userProvider.createUserIfNotExists(
                 currentUser.uid,
                 formattedPhone,
@@ -83,7 +87,8 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: AppColors.white, // Drawer con fondo blanco
+      backgroundColor:
+          Theme.of(context).scaffoldBackgroundColor, // Respeta el tema
       child: Column(
         children: [
           // Header del drawer con información del usuario
@@ -97,27 +102,34 @@ class _AppDrawerState extends State<AppDrawer> {
                   user?.name ?? 'Usuario',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.white, // Texto blanco
+                    color: ColorTokens.neutral100, // Texto blanco
                   ),
                 ),
                 accountEmail: Text(
                   user?.email ?? currentUser?.phoneNumber ?? 'Sin email',
-                  style: TextStyle(color: AppColors.white), // Texto blanco
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                  ), // Texto blanco
                 ),
                 currentAccountPicture: CircleAvatar(
-                  backgroundColor: AppColors.white,
+                  backgroundColor: ColorTokens.neutral100,
                   backgroundImage:
                       user?.photoUrl != null && user!.photoUrl!.isNotEmpty
-                          ? NetworkImage(user.photoUrl!)
+                          ? CachedNetworkImageProvider(
+                            user.photoUrl!,
+                            cacheManager: OptimizedCacheManager.avatarInstance,
+                          )
                           : null,
-                  child: user?.photoUrl == null ||
-                          user?.photoUrl?.isEmpty == true
-                      ? Icon(Icons.person, size: 40, color: AppColors.grey600)
-                      : null,
+                  child:
+                      user?.photoUrl == null || user?.photoUrl?.isEmpty == true
+                          ? Icon(
+                            Icons.person,
+                            size: 40,
+                            color: ColorTokens.neutral60,
+                          )
+                          : null,
                 ),
-                decoration: BoxDecoration(
-                  color: AppColors.blackPearl,
-                ),
+                decoration: BoxDecoration(color: ColorTokens.primary30),
               );
             },
           ),
@@ -128,7 +140,10 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: EdgeInsets.zero,
               children: [
                 ListTile(
-                  leading: Icon(Icons.map, color: AppColors.blackPearl),
+                  leading: Icon(
+                    Icons.map,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
                   title: Text('Mapa'),
                   onTap: () {
                     Navigator.pop(context);
@@ -136,7 +151,10 @@ class _AppDrawerState extends State<AppDrawer> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.person, color: AppColors.blackPearl),
+                  leading: Icon(
+                    Icons.person,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
                   title: Text('Mi Perfil'),
                   onTap: () {
                     Navigator.pop(context);
@@ -144,8 +162,10 @@ class _AppDrawerState extends State<AppDrawer> {
                   },
                 ),
                 ListTile(
-                  leading:
-                      Icon(Icons.directions_bike, color: AppColors.blackPearl),
+                  leading: Icon(
+                    Icons.directions_bike,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
                   title: Text('Mis Rutas'),
                   onTap: () {
                     Navigator.pop(context);
@@ -155,7 +175,10 @@ class _AppDrawerState extends State<AppDrawer> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.group, color: AppColors.blackPearl),
+                  leading: Icon(
+                    Icons.group,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
                   title: Text('Grupos'),
                   onTap: () {
                     Navigator.pop(context);
@@ -163,7 +186,10 @@ class _AppDrawerState extends State<AppDrawer> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.group_work, color: AppColors.blackPearl),
+                  leading: Icon(
+                    Icons.group_work,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
                   title: Text('Mis Grupos'),
                   onTap: () {
                     Navigator.pop(context);
@@ -172,7 +198,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
                 Divider(),
                 ListTile(
-                  leading: Icon(Icons.settings, color: AppColors.grey600),
+                  leading: Icon(Icons.settings, color: ColorTokens.neutral60),
                   title: Text('Configuración'),
                   onTap: () {
                     Navigator.pop(context);
@@ -182,7 +208,10 @@ class _AppDrawerState extends State<AppDrawer> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.help_outline, color: AppColors.grey600),
+                  leading: Icon(
+                    Icons.help_outline,
+                    color: ColorTokens.neutral60,
+                  ),
                   title: Text('Ayuda'),
                   onTap: () {
                     Navigator.pop(context);
@@ -204,9 +233,11 @@ class _AppDrawerState extends State<AppDrawer> {
                 Consumer<UserProvider>(
                   builder: (context, userProvider, child) {
                     return ListTile(
-                      leading: Icon(Icons.logout, color: AppColors.red),
-                      title: Text('Cerrar Sesión',
-                          style: TextStyle(color: AppColors.red)),
+                      leading: Icon(Icons.logout, color: ColorTokens.error50),
+                      title: Text(
+                        'Cerrar Sesión',
+                        style: TextStyle(color: ColorTokens.error50),
+                      ),
                       onTap: () => _showLogoutDialog(context),
                     );
                   },
@@ -214,10 +245,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 SizedBox(height: 8),
                 Text(
                   'BiUX v1.0.0',
-                  style: TextStyle(
-                    color: AppColors.grey600,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: ColorTokens.neutral60, fontSize: 12),
                 ),
               ],
             ),
@@ -235,7 +263,7 @@ class _AppDrawerState extends State<AppDrawer> {
         return AlertDialog(
           title: Row(
             children: [
-              Icon(Icons.logout, color: AppColors.red),
+              Icon(Icons.logout, color: ColorTokens.error50),
               SizedBox(width: 8),
               Text('Cerrar Sesión'),
             ],
@@ -251,8 +279,10 @@ class _AppDrawerState extends State<AppDrawer> {
                 Navigator.of(dialogContext).pop();
                 await _performLogout(context);
               },
-              child:
-                  Text('Cerrar Sesión', style: TextStyle(color: AppColors.red)),
+              child: Text(
+                'Cerrar Sesión',
+                style: TextStyle(color: ColorTokens.error50),
+              ),
             ),
           ],
         );
@@ -276,8 +306,9 @@ class _AppDrawerState extends State<AppDrawer> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.strongCyan),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      ColorTokens.secondary50,
+                    ),
                   ),
                   SizedBox(width: 16),
                   Text('Cerrando sesión...'),
@@ -290,8 +321,10 @@ class _AppDrawerState extends State<AppDrawer> {
 
       // Detener listeners de Firestore
       try {
-        final meetingPointProvider =
-            Provider.of<MeetingPointProvider>(context, listen: false);
+        final meetingPointProvider = Provider.of<MeetingPointProvider>(
+          context,
+          listen: false,
+        );
         meetingPointProvider.stopListening();
         print('✅ MeetingPointProvider detenido');
       } catch (e) {
@@ -325,7 +358,7 @@ class _AppDrawerState extends State<AppDrawer> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error al cerrar sesión: ${e.toString()}'),
-            backgroundColor: AppColors.red,
+            backgroundColor: ColorTokens.error50,
           ),
         );
       }

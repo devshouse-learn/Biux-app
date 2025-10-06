@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/utils/launch_social_networks_utils.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class ButtonFacebookWidget extends StatelessWidget {
             image: new AssetImage(facebookLogo),
             scale: 3,
           ),
-          color: AppColors.white,
+          color: ColorTokens.neutral100,
           borderRadius: BorderRadius.circular(15),
         ),
         height: height,
@@ -35,3 +35,5 @@ class ButtonFacebookWidget extends StatelessWidget {
     );
   }
 }
+
+

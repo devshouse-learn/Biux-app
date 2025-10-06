@@ -1,18 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum DifficultyLevel {
-  easy,
-  medium,
-  hard,
-  expert,
-}
+enum DifficultyLevel { easy, medium, hard, expert }
 
-enum RideStatus {
-  upcoming,
-  ongoing,
-  completed,
-  cancelled,
-}
+enum RideStatus { upcoming, ongoing, completed, cancelled }
 
 class RideModel {
   final String id;
@@ -29,6 +19,7 @@ class RideModel {
   final RideStatus status;
   final List<String> participants;
   final List<String> maybeParticipants;
+  final String? imageUrl; // Imagen opcional de la rodada
 
   const RideModel({
     required this.id,
@@ -45,6 +36,7 @@ class RideModel {
     required this.status,
     required this.participants,
     required this.maybeParticipants,
+    this.imageUrl, // Opcional
   });
 
   factory RideModel.fromFirestore(Map<String, dynamic> data, String id) {
@@ -69,6 +61,7 @@ class RideModel {
       ),
       participants: List<String>.from(data['participants'] ?? []),
       maybeParticipants: List<String>.from(data['maybeParticipants'] ?? []),
+      imageUrl: data['imageUrl'] as String?, // Puede ser null
     );
   }
 
@@ -87,6 +80,7 @@ class RideModel {
       'status': status.name,
       'participants': participants,
       'maybeParticipants': maybeParticipants,
+      if (imageUrl != null) 'imageUrl': imageUrl, // Solo incluir si no es null
     };
   }
 
@@ -132,6 +126,7 @@ class RideModel {
     RideStatus? status,
     List<String>? participants,
     List<String>? maybeParticipants,
+    String? imageUrl,
   }) {
     return RideModel(
       id: id ?? this.id,
@@ -148,6 +143,7 @@ class RideModel {
       status: status ?? this.status,
       participants: participants ?? this.participants,
       maybeParticipants: maybeParticipants ?? this.maybeParticipants,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 

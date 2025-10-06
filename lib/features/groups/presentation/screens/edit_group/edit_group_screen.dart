@@ -1,13 +1,14 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 
 class EditGroupScreen extends StatefulWidget {
   final String groupId;
@@ -31,7 +32,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
   @override
   void initState() {
     super.initState();
-    // Mover la carga del grupo después del build para evitar setState durante build
+    // Mover la carga del grupo despu�s del build para evitar setState durante build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadGroup();
     });
@@ -59,8 +60,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text('Editar Grupo'),
-          backgroundColor: AppColors.blackPearl,
-          foregroundColor: AppColors.white,
+          backgroundColor: ColorTokens.primary30,
+          foregroundColor: ColorTokens.neutral100,
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -70,14 +71,14 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text('Editar Grupo'),
-          backgroundColor: AppColors.blackPearl,
-          foregroundColor: AppColors.white,
+          backgroundColor: ColorTokens.primary30,
+          foregroundColor: ColorTokens.neutral100,
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error, size: 64, color: AppColors.red),
+              Icon(Icons.error, size: 64, color: ColorTokens.error50),
               SizedBox(height: 16),
               Text('Grupo no encontrado'),
               SizedBox(height: 16),
@@ -94,15 +95,15 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Grupo'),
-        backgroundColor: AppColors.blackPearl,
-        foregroundColor: AppColors.white,
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
         actions: [
           TextButton(
             onPressed: _saveChanges,
             child: Text(
               'Guardar',
               style: TextStyle(
-                color: AppColors.white,
+                color: ColorTokens.neutral100,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -162,10 +163,10 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'La descripción es requerida';
+                        return 'La Descripción es requerida';
                       }
                       if (value.trim().length < 10) {
-                        return 'La descripción debe tener al menos 10 caracteres';
+                        return 'La Descripción debe tener al menos 10 caracteres';
                       }
                       return null;
                     },
@@ -181,8 +182,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                       child: ElevatedButton(
                         onPressed: _saveChanges,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blackPearl,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: ColorTokens.primary30,
+                          foregroundColor: ColorTokens.neutral100,
                           padding: EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -203,19 +204,20 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                     Container(
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.red.withOpacity(0.1),
+                        color: ColorTokens.error50.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: AppColors.red.withOpacity(0.3)),
+                        border: Border.all(
+                          color: ColorTokens.error50.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error, color: AppColors.red),
+                          Icon(Icons.error, color: ColorTokens.error50),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               provider.error!,
-                              style: TextStyle(color: AppColors.red),
+                              style: TextStyle(color: ColorTokens.error50),
                             ),
                           ),
                         ],
@@ -237,35 +239,29 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
       children: [
         Text(
           'Imagen de portada',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
         Container(
           height: 200,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppColors.grey200,
+            color: ColorTokens.neutral90,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.grey200),
+            border: Border.all(color: ColorTokens.neutral90),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: _coverFile != null
-                ? Image.file(
-                    File(_coverFile!.path),
-                    fit: BoxFit.cover,
-                  )
-                : _group?.coverUrl != null
-                    ? Image.network(
-                        _group!.coverUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return _buildImagePlaceholder();
-                        },
-                      )
+            child:
+                _coverFile != null
+                    ? Image.file(File(_coverFile!.path), fit: BoxFit.cover)
+                    : _group?.coverUrl != null
+                    ? OptimizedNetworkImage(
+                      imageUrl: _group!.coverUrl!,
+                      imageType: 'cover',
+                      fit: BoxFit.cover,
+                      errorWidget: _buildImagePlaceholder(),
+                    )
                     : _buildImagePlaceholder(),
           ),
         ),
@@ -277,8 +273,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
               icon: Icon(Icons.camera_alt, size: 16),
               label: Text('Cámara'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.strongCyan,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.secondary50,
+                foregroundColor: ColorTokens.neutral100,
               ),
             ),
             SizedBox(width: 8),
@@ -287,8 +283,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
               icon: Icon(Icons.photo_library, size: 16),
               label: Text('Galería'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.strongCyan,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.secondary50,
+                foregroundColor: ColorTokens.neutral100,
               ),
             ),
           ],
@@ -303,10 +299,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
       children: [
         Text(
           'Logo del grupo',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
         Center(
@@ -314,33 +307,32 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: AppColors.grey200,
+              color: ColorTokens.neutral90,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.grey200),
+              border: Border.all(color: ColorTokens.neutral90),
             ),
             child: ClipOval(
-              child: _logoFile != null
-                  ? Image.file(
-                      File(_logoFile!.path),
-                      fit: BoxFit.cover,
-                    )
-                  : _group?.logoUrl != null
-                      ? Image.network(
-                          _group!.logoUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              Icons.group,
-                              size: 50,
-                              color: AppColors.grey600,
-                            );
-                          },
-                        )
-                      : Icon(
+              child:
+                  _logoFile != null
+                      ? Image.file(File(_logoFile!.path), fit: BoxFit.cover)
+                      : _group?.logoUrl != null
+                      ? OptimizedNetworkImage(
+                        imageUrl: _group!.logoUrl!,
+                        width: 100,
+                        height: 100,
+                        imageType: 'avatar',
+                        fit: BoxFit.cover,
+                        errorWidget: Icon(
                           Icons.group,
                           size: 50,
-                          color: AppColors.grey600,
+                          color: ColorTokens.neutral60,
                         ),
+                      )
+                      : Icon(
+                        Icons.group,
+                        size: 50,
+                        color: ColorTokens.neutral60,
+                      ),
             ),
           ),
         ),
@@ -353,8 +345,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
               icon: Icon(Icons.camera_alt, size: 16),
               label: Text('Cámara'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.strongCyan,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.secondary50,
+                foregroundColor: ColorTokens.neutral100,
               ),
             ),
             SizedBox(width: 8),
@@ -363,8 +355,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
               icon: Icon(Icons.photo_library, size: 16),
               label: Text('Galería'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.strongCyan,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.secondary50,
+                foregroundColor: ColorTokens.neutral100,
               ),
             ),
           ],
@@ -378,18 +370,11 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.image,
-            size: 50,
-            color: AppColors.grey600,
-          ),
+          Icon(Icons.image, size: 50, color: ColorTokens.neutral60),
           SizedBox(height: 8),
           Text(
             'Toca para agregar imagen',
-            style: TextStyle(
-              color: AppColors.grey600,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
           ),
         ],
       ),
@@ -428,7 +413,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Grupo actualizado exitosamente'),
-          backgroundColor: AppColors.green,
+          backgroundColor: ColorTokens.success50,
         ),
       );
       context.pop(); // Volver a la pantalla anterior

@@ -103,14 +103,14 @@ class RoadsListScreenBloc extends ChangeNotifier {
     road.competitorRoad = road.competitorRoad
         .where((competitor) => competitor.id != user.id)
         .toList();
-    final validator = await RoadsFirebaseRepository().onTapRoad(road);
+    await RoadsFirebaseRepository().onTapRoad(road);
     notifyListeners();
   }
 
   Future<void> onTapJoinRoads(Road road) async {
     road.numberParticipants = road.numberParticipants + 1;
     road.competitorRoad.add(BiuxUser(id: user.id, fullName: user.fullName));
-    final validator = await RoadsFirebaseRepository().onTapRoad(road);
+    await RoadsFirebaseRepository().onTapRoad(road);
     notifyListeners();
   }
 }

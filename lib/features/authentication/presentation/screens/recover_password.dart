@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
@@ -45,7 +45,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
         key: _formKey,
         child: Scaffold(
           key: _scaffolState,
-          backgroundColor: AppColors.darkBlue,
+          backgroundColor: ColorTokens.primary30,
           body: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -76,7 +76,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                 child: Icon(
                                   Icons.arrow_back_outlined,
                                   size: 30,
-                                  color: AppColors.white,
+                                  color: ColorTokens.neutral100,
                                 ),
                                 onTap: () {
                                   Navigator.of(context).pop();
@@ -112,7 +112,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                     height: 300,
                                     width: 370,
                                     child: Card(
-                                      color: AppColors.white,
+                                      color: ColorTokens.neutral100,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(16.0),
@@ -144,13 +144,13 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                               decoration: InputDecoration(
                                                 prefixIcon: Icon(
                                                   Icons.email,
-                                                  color: AppColors.gray,
+                                                  color: ColorTokens.neutral60,
                                                 ),
-                                                fillColor: AppColors.white,
+                                                fillColor: ColorTokens.neutral100,
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: AppColors.gray,
+                                                    color: ColorTokens.neutral60,
                                                     width: 1,
                                                   ),
                                                   borderRadius:
@@ -167,7 +167,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                                 hintText: AppStrings.enterGmail,
                                                 errorBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: AppColors.gray,
+                                                    color: ColorTokens.neutral60,
                                                   ),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
@@ -175,7 +175,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                                 focusedErrorBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: AppColors.gray,
+                                                    color: ColorTokens.neutral60,
                                                   ),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
@@ -183,7 +183,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                                 focusedBorder:
                                                     OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: AppColors.gray,
+                                                    color: ColorTokens.neutral60,
                                                   ),
                                                   borderRadius:
                                                       BorderRadius.all(
@@ -229,14 +229,14 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                             BorderRadius.circular(60.0),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: AppColors.white,
+                                            color: ColorTokens.neutral100,
                                             spreadRadius: 10,
                                           )
                                         ]),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: AppColors.strongCyan,
+                                        color: ColorTokens.secondary50,
                                       ),
                                       height: 70,
                                       width: 70,
@@ -245,7 +245,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                           new Center(
                                             child: new Icon(
                                               Icons.arrow_forward,
-                                              color: AppColors.white,
+                                              color: ColorTokens.neutral100,
                                               size: 40,
                                             ),
                                           ),
@@ -270,7 +270,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                             topRight: Radius.circular(40),
                                           ),
                                         ),
-                                        backgroundColor: AppColors.red,
+                                        backgroundColor: ColorTokens.error50,
                                         content: Text(
                                           AppStrings.emailNotExist,
                                           style: Styles.advertisingTitle,
@@ -287,7 +287,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                           topRight: Radius.circular(40),
                                         ),
                                       ),
-                                      backgroundColor: AppColors.strongCyan,
+                                      backgroundColor: ColorTokens.secondary50,
                                       content: Text(
                                         AppStrings.checkYourEmail,
                                         style: Styles.advertisingTitle,
@@ -310,7 +310,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                         topRight: Radius.circular(40),
                                       ),
                                     ),
-                                    backgroundColor: AppColors.red,
+                                    backgroundColor: ColorTokens.error50,
                                     content: Text(
                                       AppStrings.enterGmail2,
                                       style: Styles.advertisingTitle,
@@ -338,7 +338,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
   void testAlert(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.red,
+        backgroundColor: ColorTokens.error50,
         content: Text(
           AppStrings.checkYourEmail2,
           style: Styles.advertisingTitle,
@@ -347,3 +347,5 @@ class _RecoverPasswordState extends State<RecoverPassword> {
     );
   }
 }
+
+

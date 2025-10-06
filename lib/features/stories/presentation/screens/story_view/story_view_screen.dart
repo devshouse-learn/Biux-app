@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
@@ -8,7 +8,10 @@ import 'package:biux/core/utils/share_utils.dart';
 import 'package:biux/core/utils/strings_utils.dart';
 import 'package:biux/features/stories/presentation/screens/story_view/story_view_bloc.dart';
 import 'package:biux/shared/widgets/search_bar_widget.dart';
+import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,15 +24,11 @@ class StoryViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.watch<StoryViewBloc>();
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: ColorTokens.neutral100,
       body: ListView(
         children: [
           SearchBarWidget(),
-          ...bloc.listStory
-              .map((e) => _StoryWidget(
-                    story: e,
-                  ))
-              .toList()
+          ...bloc.listStory.map((e) => _StoryWidget(story: e)).toList(),
         ],
       ),
     );
@@ -38,10 +37,7 @@ class StoryViewScreen extends StatelessWidget {
 
 class _StoryWidget extends StatelessWidget {
   final Story story;
-  const _StoryWidget({
-    Key? key,
-    required this.story,
-  }) : super(key: key);
+  const _StoryWidget({Key? key, required this.story}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +49,10 @@ class _StoryWidget extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(top: 30),
             width: sizeScreen.width * 0.8,
-            child: _CarouselImages(
-              story: story,
-            ),
+            child: _CarouselImages(story: story),
           ),
         ),
-        _PhotoUserStory(
-          story: story,
-        ),
+        _PhotoUserStory(story: story),
       ],
     );
   }
@@ -68,10 +60,7 @@ class _StoryWidget extends StatelessWidget {
 
 class _PhotoUserStory extends StatelessWidget {
   final Story story;
-  const _PhotoUserStory({
-    Key? key,
-    required this.story,
-  }) : super(key: key);
+  const _PhotoUserStory({Key? key, required this.story}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -80,17 +69,14 @@ class _PhotoUserStory extends StatelessWidget {
       child: Container(
         width: 80,
         height: 80,
-        margin: EdgeInsets.only(
-          left: sizeScreen.width * 0.1,
-          top: 10,
-        ),
+        margin: EdgeInsets.only(left: sizeScreen.width * 0.1, top: 10),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: AppColors.white,
-            width: 4,
-          ),
+          border: Border.all(color: ColorTokens.neutral100, width: 4),
           image: DecorationImage(
-            image: NetworkImage(story.user.photo),
+            image: CachedNetworkImageProvider(
+              story.user.photo,
+              cacheManager: OptimizedCacheManager.avatarInstance,
+            ),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(100.0),
@@ -103,16 +89,14 @@ class _PhotoUserStory extends StatelessWidget {
 class _ButtonLikesStory extends StatelessWidget {
   final Story story;
   final VoidCallback? onTap;
-  _ButtonLikesStory({
-    Key? key,
-    required this.story,
-    required this.onTap,
-  }) : super(key: key);
+  _ButtonLikesStory({Key? key, required this.story, required this.onTap})
+    : super(key: key);
   final idUser = AuthenticationRepository().getUserId;
-  bool exists = false;
+
   @override
   Widget build(BuildContext context) {
     final sizeScreen = MediaQuery.of(context).size;
+    bool exists = false;
     for (var element in story.listReactions) {
       if (element.id == idUser) {
         exists = true;
@@ -125,11 +109,9 @@ class _ButtonLikesStory extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(10),
           width: sizeScreen.width * 0.25,
-          margin: EdgeInsets.only(
-            top: sizeScreen.height * 0.35,
-          ),
+          margin: EdgeInsets.only(top: sizeScreen.height * 0.35),
           decoration: BoxDecoration(
-            color: exists ? AppColors.darkNavy : AppColors.strongCyan,
+            color: exists ? ColorTokens.primary30 : ColorTokens.secondary50,
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(30),
               topLeft: Radius.circular(30),
@@ -145,17 +127,10 @@ class _ButtonLikesStory extends StatelessWidget {
                     story.listReactions.length.toString(),
                     style: Styles.accentTextThemeWhite,
                   ),
-                  Image.asset(
-                    Images.kBikeLikesImage,
-                    height: 25,
-                    width: 25,
-                  ),
+                  Image.asset(Images.kBikeLikesImage, height: 25, width: 25),
                 ],
               ),
-              Text(
-                AppStrings.likes,
-                style: Styles.accentTextThemeWhite,
-              ),
+              Text(AppStrings.likes, style: Styles.accentTextThemeWhite),
             ],
           ),
         ),
@@ -187,13 +162,14 @@ class _CarouselImagesState extends State<_CarouselImages> {
   Widget build(BuildContext context) {
     final sizeScreen = MediaQuery.of(context).size;
     final bloc = context.watch<StoryViewBloc>();
-    final List<Widget> imageSliders = widget.story.files
+    widget.story.files
         .map(
           (item) => Container(
             child: Stack(
               children: <Widget>[
-                Image.network(
-                  item,
+                OptimizedNetworkImage(
+                  imageUrl: item,
+                  imageType: 'general',
                   width: sizeScreen.width * 0.8,
                   fit: BoxFit.cover,
                 ),
@@ -214,7 +190,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 left: 50,
                 right: 10,
               ),
-              color: AppColors.strongCyan,
+              color: ColorTokens.secondary50,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -232,16 +208,14 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => ShareUtils().shareFile(
-                      filePath: widget.story.fileUrl1,
-                      text:
-                          '${widget.story.user.userName}${AppStrings.textShareStory}',
-                      title: AppStrings.titleShareStory,
-                    ),
-                    child: Image.asset(
-                      Images.kImageShare,
-                      height: 20,
-                    ),
+                    onTap:
+                        () => ShareUtils().shareFile(
+                          filePath: widget.story.fileUrl1,
+                          text:
+                              '${widget.story.user.userName}${AppStrings.textShareStory}',
+                          title: AppStrings.titleShareStory,
+                        ),
+                    child: Image.asset(Images.kImageShare, height: 20),
                   ),
                 ],
               ),
@@ -250,29 +224,36 @@ class _CarouselImagesState extends State<_CarouselImages> {
               alignment: Alignment.topRight,
               children: [
                 CarouselSlider(
-                  items: widget.story.files
-                      .map(
-                        (e) => GestureDetector(
-                          child: Container(
-                            width: 315,
-                            child: Image.network(
-                              e,
-                              fit: BoxFit.cover,
+                  items:
+                      widget.story.files
+                          .map(
+                            (e) => GestureDetector(
+                              child: Container(
+                                width: 315,
+                                child: OptimizedNetworkImage(
+                                  imageUrl: e,
+                                  imageType: 'general',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              onTap: () {
+                                final imageProvider =
+                                    CachedNetworkImageProvider(
+                                      e,
+                                      cacheManager:
+                                          OptimizedCacheManager.instance,
+                                    );
+                                showImageViewer(
+                                  context,
+                                  imageProvider,
+                                  backgroundColor: ColorTokens.neutral40,
+                                  useSafeArea: true,
+                                  immersive: false,
+                                );
+                              },
                             ),
-                          ),
-                          onTap: () {
-                            final imageProvider = Image.network(e).image;
-                            showImageViewer(
-                              context,
-                              imageProvider,
-                              backgroundColor: AppColors.black45,
-                              useSafeArea: true,
-                              immersive: false,
-                            );
-                          },
-                        ),
-                      )
-                      .toList(),
+                          )
+                          .toList(),
                   carouselController: _controller,
                   options: CarouselOptions(
                     enableInfiniteScroll: false,
@@ -294,12 +275,9 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     child: Container(
                       height: sizeScreen.height * 0.35,
                       width: sizeScreen.width * 0.8,
-                      color: AppColors.darkNavy.withOpacity(0.7),
+                      color: ColorTokens.primary30.withValues(alpha: 0.7),
                       child: Center(
-                        child: Image.asset(
-                          Images.kBikeLikesImage,
-                          height: 25,
-                        ),
+                        child: Image.asset(Images.kBikeLikesImage, height: 25),
                       ),
                     ),
                   ),
@@ -313,13 +291,13 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 right: 10,
               ),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: ColorTokens.neutral100,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(35),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.grey.withOpacity(0.5),
+                    color: ColorTokens.neutral60.withValues(alpha: 0.5),
                     spreadRadius: 5,
                     blurRadius: 7,
                     offset: Offset(0, 3),
@@ -332,30 +310,28 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: widget.story.files.asMap().entries.map(
-                      (entry) {
-                        return GestureDetector(
-                          onTap: () => _controller.animateToPage(entry.key),
-                          child: Container(
-                            width: 10.0,
-                            height: 10.0,
-                            margin: EdgeInsets.symmetric(
-                              vertical: 5.0,
-                              horizontal: 4.0,
-                            ),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.black,
+                    children:
+                        widget.story.files.asMap().entries.map((entry) {
+                          return GestureDetector(
+                            onTap: () => _controller.animateToPage(entry.key),
+                            child: Container(
+                              width: 10.0,
+                              height: 10.0,
+                              margin: EdgeInsets.symmetric(
+                                vertical: 5.0,
+                                horizontal: 4.0,
                               ),
-                              color: (current == entry.key
-                                  ? AppColors.strongCyan
-                                  : AppColors.darkBlue),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: ColorTokens.neutral0),
+                                color:
+                                    (current == entry.key
+                                        ? ColorTokens.secondary50
+                                        : ColorTokens.primary30),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ).toList(),
+                          );
+                        }).toList(),
                   ),
                   ReadMoreText(
                     widget.story.description +
@@ -363,14 +339,8 @@ class _CarouselImagesState extends State<_CarouselImages> {
                         widget.story.tags
                             .map((e) => '#$e')
                             .toString()
-                            .replaceAll(
-                              ')',
-                              '',
-                            )
-                            .replaceAll(
-                              '(',
-                              '',
-                            ),
+                            .replaceAll(')', '')
+                            .replaceAll('(', ''),
                     textAlign: TextAlign.left,
                     preDataText: widget.story.user.userName,
                     preDataTextStyle: Styles.numberBlack,
@@ -394,16 +364,14 @@ class _CarouselImagesState extends State<_CarouselImages> {
               idUser: AuthenticationRepository().getUserId,
               story: widget.story,
             );
-            setState(
-              () {
-                _visible = true;
-                Future.delayed(Duration(seconds: 1), () {
-                  setState(() {
-                    _visible = false;
-                  });
+            setState(() {
+              _visible = true;
+              Future.delayed(Duration(seconds: 1), () {
+                setState(() {
+                  _visible = false;
                 });
-              },
-            );
+              });
+            });
           },
         ),
       ],

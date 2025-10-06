@@ -18,7 +18,7 @@ Future<void> resetAndInsertCities() async {
 
   print('🗑️ Eliminando ciudades existentes...');
 
-  // 1. Borrar todas las ciudades existentes
+  // 1. Borrar todas las ciudades existentes  
   final snapshot = await citiesRef.get();
   for (final doc in snapshot.docs) {
     await doc.reference.delete();

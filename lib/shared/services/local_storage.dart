@@ -19,37 +19,6 @@ class LocalStorage {
     await _prefs.clear();
   }
 
-  Future<bool> _checkValue(String key) async {
-    bool present = _prefs.containsKey(key);
-    return present;
-  }
-
-  Future<void> _removeValue(String key) async {
-    await _prefs.remove(key);
-  }
-
-  bool _getBool(String key) {
-    return _prefs.getBool(key) ?? false;
-  }
-
-  Future<void> _setBool({
-    required String key,
-    required bool value,
-  }) async {
-    await _prefs.setBool(key, value);
-  }
-
-  int _getInt(String key) {
-    return _prefs.getInt(key) ?? -404;
-  }
-
-  Future<void> _setInt({
-    required String key,
-    required int value,
-  }) async {
-    await _prefs.setInt(key, value);
-  }
-
   String _getString(String key) {
     return _prefs.getString(key) ?? AppStrings.notFoundKey;
   }

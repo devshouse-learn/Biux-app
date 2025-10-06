@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/groups/presentation/screens/group_list/group_list_screen_bloc.dart';
@@ -22,7 +22,7 @@ class SearchBarWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: AppColors.gray,
+          color: ColorTokens.neutral60,
           width: 1,
         ),
       ),
@@ -46,13 +46,13 @@ class SearchBarWidget extends StatelessWidget {
           hintStyle: Styles.TextSearch,
           prefixIcon: Icon(
             Icons.search,
-            color: AppColors.gray,
+            color: ColorTokens.neutral60,
           ),
           suffixIcon: bloc.focusNodeGrupo.hasFocus
               ? IconButton(
                   icon: Icon(
                     Icons.close,
-                    color: AppColors.gray,
+                    color: ColorTokens.neutral60,
                   ),
                   onPressed: () {
                     bloc.searchGroupController.clear();
@@ -67,3 +67,5 @@ class SearchBarWidget extends StatelessWidget {
     );
   }
 }
+
+

@@ -1,6 +1,6 @@
-﻿import 'dart:io';
+import 'dart:io';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/core/config/strings.dart';
@@ -47,7 +47,7 @@ class CreateUserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.watch<CreateUserBloc>();
     return Scaffold(
-      backgroundColor: AppColors.darkBlue,
+      backgroundColor: ColorTokens.primary30,
       body: ListView(
         children: [
           Form(
@@ -113,7 +113,7 @@ class CreateUserScreen extends StatelessWidget {
                               horizontal: 10,
                             ),
                             child: Card(
-                              color: AppColors.white,
+                              color: ColorTokens.neutral100,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
                                   16.0,
@@ -131,7 +131,7 @@ class CreateUserScreen extends StatelessWidget {
                                     text: AppStrings.nameText,
                                     icon: Icon(
                                       Icons.person_outline,
-                                      color: AppColors.gray,
+                                      color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
                                       if (value!.isEmpty) {
@@ -144,14 +144,14 @@ class CreateUserScreen extends StatelessWidget {
                                     obscureText: false,
                                     color: bloc.validateColor1 ==
                                             AppStrings.validatedText
-                                        ? AppColors.red
-                                        : AppColors.black,
+                                        ? ColorTokens.error50
+                                        : ColorTokens.neutral0,
                                     focusNode: FocusNode(),
                                     nameController: userNameController,
                                     text: AppStrings.nameUserText,
                                     icon: Icon(
                                       Icons.pedal_bike_outlined,
-                                      color: AppColors.gray,
+                                      color: ColorTokens.neutral60,
                                     ),
                                     onChanged: (String value) async {},
                                     validator: (value) {
@@ -167,12 +167,12 @@ class CreateUserScreen extends StatelessWidget {
                                     nameController: emailController,
                                     color: bloc.validateColor2 ==
                                             AppStrings.validatedText
-                                        ? AppColors.red
-                                        : AppColors.black,
+                                        ? ColorTokens.error50
+                                        : ColorTokens.neutral0,
                                     text: AppStrings.correoText,
                                     icon: Icon(
                                       Icons.email,
-                                      color: AppColors.gray,
+                                      color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
                                       if (!value!
@@ -198,7 +198,7 @@ class CreateUserScreen extends StatelessWidget {
                                     text: AppStrings.phoneText,
                                     icon: Icon(
                                       Icons.phone_outlined,
-                                      color: AppColors.gray,
+                                      color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
                                       if (value!.isEmpty) {
@@ -221,7 +221,7 @@ class CreateUserScreen extends StatelessWidget {
                                     ),
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: AppColors.gray,
+                                        color: ColorTokens.neutral60,
                                       ),
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(15),
@@ -231,7 +231,7 @@ class CreateUserScreen extends StatelessWidget {
                                       children: [
                                         Icon(
                                           Icons.room,
-                                          color: AppColors.gray,
+                                          color: ColorTokens.neutral60,
                                         ),
                                         SizedBox(
                                           width: 10,
@@ -240,14 +240,14 @@ class CreateUserScreen extends StatelessWidget {
                                           child: DropdownButton<String>(
                                             value: bloc.dropdownValueCity,
                                             isExpanded: true,
-                                            dropdownColor: AppColors.white,
+                                            dropdownColor: ColorTokens.neutral100,
                                             style: Styles.accentTextThemeBlack,
                                             icon: const Icon(
                                               Icons.keyboard_arrow_down,
-                                              color: AppColors.gray,
+                                              color: ColorTokens.neutral60,
                                             ),
                                             underline: ColoredBox(
-                                              color: AppColors.transparent,
+                                              color: ColorTokens.transparent,
                                             ),
                                             elevation: 16,
                                             onChanged: (String? value) {
@@ -275,7 +275,7 @@ class CreateUserScreen extends StatelessWidget {
                                     text: AppStrings.passwordText,
                                     icon: Icon(
                                       Icons.lock_outline,
-                                      color: AppColors.gray,
+                                      color: ColorTokens.neutral60,
                                     ),
                                     iconButton: IconButton(
                                       icon: Icon(
@@ -283,7 +283,7 @@ class CreateUserScreen extends StatelessWidget {
                                             ? Icons.visibility
                                             : Icons.visibility_off,
                                       ),
-                                      color: AppColors.strongCyan,
+                                      color: ColorTokens.secondary50,
                                       onPressed: () => bloc.toggle(),
                                     ),
                                     obscureText: bloc.obscureText,
@@ -300,7 +300,7 @@ class CreateUserScreen extends StatelessWidget {
                                     text: AppStrings.repeatPassword,
                                     icon: Icon(
                                       Icons.lock_outline,
-                                      color: AppColors.gray,
+                                      color: ColorTokens.neutral60,
                                     ),
                                     obscureText: bloc.obscureText,
                                     validator: (value) {
@@ -315,7 +315,7 @@ class CreateUserScreen extends StatelessWidget {
                                   ),
                                   Theme(
                                     data: ThemeData(
-                                      unselectedWidgetColor: AppColors.black,
+                                      unselectedWidgetColor: ColorTokens.neutral0,
                                     ),
                                     child: CheckboxListTile(
                                       title: Text(
@@ -323,14 +323,14 @@ class CreateUserScreen extends StatelessWidget {
                                             .toUpperCase(),
                                         style:
                                             Styles.rowGestureDetector.copyWith(
-                                          color: AppColors.black,
+                                          color: ColorTokens.neutral0,
                                         ),
                                       ),
                                       value: bloc.isChecked,
                                       onChanged: (newValue) {
                                         bloc.changeChecked(newValue!);
                                       },
-                                      activeColor: AppColors.strongCyan,
+                                      activeColor: ColorTokens.secondary50,
                                       controlAffinity:
                                           ListTileControlAffinity.leading,
                                     ),
@@ -355,7 +355,7 @@ class CreateUserScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(60.0),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.white,
+                                      color: ColorTokens.neutral100,
                                       spreadRadius: 10,
                                     )
                                   ],
@@ -363,7 +363,7 @@ class CreateUserScreen extends StatelessWidget {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: AppColors.strongCyan,
+                                    color: ColorTokens.secondary50,
                                   ),
                                   height: 60,
                                   width: 60,
@@ -372,7 +372,7 @@ class CreateUserScreen extends StatelessWidget {
                                       Center(
                                         child: Icon(
                                           Icons.arrow_forward,
-                                          color: AppColors.white,
+                                          color: ColorTokens.neutral100,
                                           size: 30,
                                         ),
                                       ),
@@ -418,14 +418,14 @@ class CreateUserScreen extends StatelessWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
                                   content: AppStrings.validationCreateRoadText,
-                                  backgroundColor: AppColors.redAccent,
+                                  backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             } else if (bloc.image.path == '') {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
                                   content: AppStrings.textErrorImageProfile,
-                                  backgroundColor: AppColors.redAccent,
+                                  backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             } else {
@@ -433,7 +433,7 @@ class CreateUserScreen extends StatelessWidget {
                                 SnackBarUtils.customSnackBar(
                                   content:
                                       AppStrings.errorConfirmTermsConditions,
-                                  backgroundColor: AppColors.redAccent,
+                                  backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             }
@@ -451,7 +451,7 @@ class CreateUserScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(60.0),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.white,
+                                    color: ColorTokens.neutral100,
                                     spreadRadius: 5,
                                   ),
                                 ],
@@ -459,7 +459,7 @@ class CreateUserScreen extends StatelessWidget {
                               child: Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppColors.strongCyan,
+                                  color: ColorTokens.secondary50,
                                 ),
                                 height: 100,
                                 width: 100,
@@ -514,14 +514,14 @@ class CreateUserScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(60.0),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.white,
+                                      color: ColorTokens.neutral100,
                                       spreadRadius: 6,
                                     ),
                                   ],
                                 ),
                                 child: Icon(
                                   Icons.camera_alt_outlined,
-                                  color: AppColors.strongCyan,
+                                  color: ColorTokens.secondary50,
                                   size: 19,
                                 ),
                               ),
@@ -583,7 +583,7 @@ class CreateUserScreen extends StatelessWidget {
                 content: AppStrings.messageRegisteredGmail(
                   message: response.message,
                 ),
-                backgroundColor: AppColors.redAccent,
+                backgroundColor: ColorTokens.error50,
               ),
             );
           }
@@ -594,7 +594,7 @@ class CreateUserScreen extends StatelessWidget {
               content: AppStrings.messageRegisteredGmail(
                 message: emailController.text,
               ),
-              backgroundColor: AppColors.redAccent,
+              backgroundColor: ColorTokens.error50,
             ),
           );
         }
@@ -606,7 +606,7 @@ class CreateUserScreen extends StatelessWidget {
             content: AppStrings.messageRegisteredUser(
               message: userNameController.text,
             ),
-            backgroundColor: AppColors.redAccent,
+            backgroundColor: ColorTokens.error50,
           ),
         );
       }
@@ -615,3 +615,5 @@ class CreateUserScreen extends StatelessWidget {
     }
   }
 }
+
+

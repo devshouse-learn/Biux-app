@@ -3,12 +3,13 @@ import 'dart:core';
 // Core imports
 import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
-import 'package:biux/core/config/themes/theme.dart';
-import 'package:biux/core/config/themes/theme_notifier.dart';
+import 'package:biux/core/design_system/theme_notifier.dart';
+import 'package:biux/core/design_system/app_theme.dart';
 
 // Features imports
 import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
-import 'package:biux/features/authentication/presentation/providers/auth_provider.dart' as app_auth;
+import 'package:biux/features/authentication/presentation/providers/auth_provider.dart'
+    as app_auth;
 import 'package:biux/features/cities/presentation/providers/city_provider.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/maps/data/repositories/meeting_point_repository.dart';
@@ -58,7 +59,7 @@ void main() async {
           ),
         ),
         ChangeNotifierProvider<ThemeNotifier>(
-          create: (_) => ThemeNotifier(lightTheme),
+          create: (_) => ThemeNotifier(),
         ),
         ChangeNotifierProvider(
           create: (_) => MeetingPointProvider(
@@ -111,10 +112,9 @@ class MyApp extends StatelessWidget {
         Locale(AppStrings.en, AppStrings.us),
       ],
       title: AppStrings.APP_NAME,
-      theme: themeNotifier.getTheme(),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeNotifier.themeMode,
       routerConfig: AppRouter.router,
     );
   }

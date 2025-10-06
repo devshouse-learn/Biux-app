@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:fluster/fluster.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +53,7 @@ class MapHelper {
     );
 
     CircleAvatar(
-      backgroundColor: AppColors.amber,
+      backgroundColor: ColorTokens.warning50,
       maxRadius: radius,
     );
 
@@ -147,3 +147,5 @@ class MapHelper {
     }).toList());
   }
 }
+
+

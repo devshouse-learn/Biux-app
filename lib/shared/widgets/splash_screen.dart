@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.greyishNavyBlue2,
+      backgroundColor: ColorTokens.primary60,
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -72,3 +72,5 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 }
+
+

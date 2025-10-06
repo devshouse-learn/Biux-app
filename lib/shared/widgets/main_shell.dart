@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/design_system.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
@@ -6,6 +6,7 @@ import 'package:biux/core/config/styles.dart';
 import 'app_drawer.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:go_router/go_router.dart';
 
 class MainShell extends StatefulWidget {
@@ -24,8 +25,8 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.blackPearl,
-        foregroundColor: AppColors.white,
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
         title: Text(
           AppStrings.APP_NAME.toUpperCase(),
           style: Styles.mainMenuTextBiux,
@@ -38,31 +39,39 @@ class _MainShellState extends State<MainShell> {
       drawer: AppDrawer(),
       bottomNavigationBar: CurvedNavigationBar(
         height: 65,
-        backgroundColor: AppColors.white2,
-        color: AppColors.darkBlue,
-        buttonBackgroundColor: AppColors.white,
+        backgroundColor: ColorTokens.neutral95,
+        color: ColorTokens.primary40,
+        buttonBackgroundColor: ColorTokens.neutral100,
         index: _selectedIndex,
         items: <Widget>[
           Image.asset(
             Images.kImageGallery,
-            color: _selectedIndex == 0 ? AppColors.darkBlue : AppColors.white,
+            color: _selectedIndex == 0
+                ? ColorTokens.primary40
+                : ColorTokens.neutral100,
             height: 30,
           ),
           Container(
             child: Icon(
               Icons.directions_bike,
-              color: _selectedIndex == 1 ? AppColors.darkBlue : AppColors.white,
+              color: _selectedIndex == 1
+                  ? ColorTokens.primary40
+                  : ColorTokens.neutral100,
               size: 30,
             ),
           ),
           Image.asset(
             Images.kImageSocial,
-            color: _selectedIndex == 2 ? AppColors.darkBlue : AppColors.white,
+            color: _selectedIndex == 2
+                ? ColorTokens.primary40
+                : ColorTokens.neutral100,
             height: 30,
           ),
           Image.asset(
             Images.kImageLocation,
-            color: _selectedIndex == 3 ? AppColors.darkBlue : AppColors.white,
+            color: _selectedIndex == 3
+                ? ColorTokens.primary40
+                : ColorTokens.neutral100,
             height: 30,
           ),
         ],

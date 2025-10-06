@@ -1,5 +1,6 @@
-﻿import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   void _initializeTabController(bool isAdmin) {
-    // Solo reinicializar si el estado de admin cambió o si es la primera vez
+    // Solo reinicializar si el estado de admin cambi� o si es la primera vez
     if (_lastAdminStatus != isAdmin || _tabController == null) {
       // Dispose del controller anterior si existe
       _tabController?.dispose();
@@ -56,8 +57,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           if (provider.isLoading) {
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: AppColors.blackPearl,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
               ),
               body: Center(child: CircularProgressIndicator()),
             );
@@ -67,14 +68,14 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           if (group == null) {
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: AppColors.blackPearl,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
               ),
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error, size: 64, color: AppColors.red),
+                    Icon(Icons.error, size: 64, color: ColorTokens.error50),
                     SizedBox(height: 16),
                     Text('Grupo no encontrado'),
                     SizedBox(height: 16),
@@ -98,40 +99,44 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 SliverAppBar(
                   expandedHeight: 200,
                   pinned: true,
-                  backgroundColor: AppColors.blackPearl,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: ColorTokens.primary30,
+                  foregroundColor: ColorTokens.neutral100,
                   actions: _buildAppBarActions(group, provider),
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
                       group.name,
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: ColorTokens.neutral100,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    background: group.coverUrl != null
-                        ? Image.network(
-                            group.coverUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: AppColors.blackPearl,
+                    background:
+                        group.coverUrl != null
+                            ? OptimizedNetworkImage(
+                              imageUrl: group.coverUrl!,
+                              imageType: 'cover',
+                              fit: BoxFit.cover,
+                              errorWidget: Container(
+                                color: ColorTokens.primary30,
                                 child: Icon(
                                   Icons.group,
                                   size: 80,
-                                  color: AppColors.white.withValues(alpha: 0.5),
+                                  color: ColorTokens.neutral100.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
-                              );
-                            },
-                          )
-                        : Container(
-                            color: AppColors.blackPearl,
-                            child: Icon(
-                              Icons.group,
-                              size: 80,
-                              color: AppColors.white.withValues(alpha: 0.5),
+                              ),
+                            )
+                            : Container(
+                              color: ColorTokens.primary30,
+                              child: Icon(
+                                Icons.group,
+                                size: 80,
+                                color: ColorTokens.neutral100.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
                             ),
-                          ),
                   ),
                 ),
 
@@ -141,17 +146,17 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   delegate: _SliverTabBarDelegate(
                     TabBar(
                       controller: _tabController,
-                      indicatorColor: AppColors.strongCyan,
-                      labelColor: AppColors.blackPearl,
-                      unselectedLabelColor: AppColors.grey600,
+                      indicatorColor: ColorTokens.secondary50,
+                      labelColor: ColorTokens.primary30,
+                      unselectedLabelColor: ColorTokens.neutral60,
                       tabs: [
                         Tab(text: 'Info'),
                         Tab(text: 'Miembros (${group.memberCount})'),
                         Tab(text: 'Rodadas'),
                         if (isAdmin)
                           Tab(
-                              text:
-                                  'Solicitudes (${group.pendingRequestCount})'),
+                            text: 'Solicitudes (${group.pendingRequestCount})',
+                          ),
                       ],
                     ),
                   ),
@@ -179,18 +184,37 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Logo y información básica
+          // Logo y informaci�n b�sica
           Row(
             children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: AppColors.blackPearl,
-                backgroundImage:
-                    group.logoUrl != null ? NetworkImage(group.logoUrl!) : null,
-                child: group.logoUrl == null
-                    ? Icon(Icons.group, size: 40, color: AppColors.white)
-                    : null,
-              ),
+              group.logoUrl != null
+                  ? ClipOval(
+                    child: OptimizedNetworkImage(
+                      imageUrl: group.logoUrl!,
+                      width: 80,
+                      height: 80,
+                      imageType: 'avatar',
+                      fit: BoxFit.cover,
+                      errorWidget: CircleAvatar(
+                        radius: 40,
+                        backgroundColor: ColorTokens.primary30,
+                        child: Icon(
+                          Icons.group,
+                          size: 40,
+                          color: ColorTokens.neutral100,
+                        ),
+                      ),
+                    ),
+                  )
+                  : CircleAvatar(
+                    radius: 40,
+                    backgroundColor: ColorTokens.primary30,
+                    child: Icon(
+                      Icons.group,
+                      size: 40,
+                      color: ColorTokens.neutral100,
+                    ),
+                  ),
               SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -198,26 +222,18 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   children: [
                     Text(
                       group.name,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 4),
                     Text(
                       '${group.memberCount} miembros',
-                      style: TextStyle(
-                        color: AppColors.grey600,
-                        fontSize: 16,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Creado el ${_formatDate(group.createdAt)}',
-                      style: TextStyle(
-                        color: AppColors.grey600,
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
@@ -230,20 +246,14 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           // Descripción
           Text(
             'Descripción',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
-          Text(
-            group.description,
-            style: TextStyle(fontSize: 16),
-          ),
+          Text(group.description, style: TextStyle(fontSize: 16)),
 
           SizedBox(height: 32),
 
-          // Botones de acción
+          // Botones de acci�n
           _buildActionButtons(group, provider),
         ],
       ),
@@ -259,9 +269,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(
-            child: Text('No hay miembros en este grupo'),
-          );
+          return Center(child: Text('No hay miembros en este grupo'));
         }
 
         final members = snapshot.data!;
@@ -273,26 +281,36 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             return Card(
               margin: EdgeInsets.only(bottom: 8),
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: member['userPhoto'] != null
-                      ? NetworkImage(member['userPhoto'])
-                      : null,
-                  child:
-                      member['userPhoto'] == null ? Icon(Icons.person) : null,
-                ),
+                leading:
+                    member['userPhoto'] != null
+                        ? ClipOval(
+                          child: OptimizedNetworkImage(
+                            imageUrl: member['userPhoto'],
+                            width: 40,
+                            height: 40,
+                            imageType: 'avatar',
+                            fit: BoxFit.cover,
+                            errorWidget: CircleAvatar(
+                              child: Icon(Icons.person),
+                            ),
+                          ),
+                        )
+                        : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
                   member['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text('Miembro del grupo'),
-                trailing: member['isAdmin']
-                    ? Chip(
-                        label: Text('Admin'),
-                        backgroundColor:
-                            AppColors.softGreen.withValues(alpha: 0.1),
-                        labelStyle: TextStyle(color: AppColors.softGreen),
-                      )
-                    : null,
+                trailing:
+                    member['isAdmin']
+                        ? Chip(
+                          label: Text('Admin'),
+                          backgroundColor: ColorTokens.success50.withValues(
+                            alpha: 0.1,
+                          ),
+                          labelStyle: TextStyle(color: ColorTokens.success50),
+                        )
+                        : null,
               ),
             );
           },
@@ -317,15 +335,12 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 Icon(
                   Icons.directions_bike,
                   size: 80,
-                  color: AppColors.grey600,
+                  color: ColorTokens.neutral60,
                 ),
                 SizedBox(height: 16),
                 Text(
                   'No hay rodadas en este grupo',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.grey600,
-                  ),
+                  style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
                 ),
                 SizedBox(height: 16),
                 if (group.isAdmin(provider.currentUserId ?? ''))
@@ -337,8 +352,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     icon: Icon(Icons.add),
                     label: Text('Crear Primera Rodada'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blackPearl,
-                      foregroundColor: AppColors.white,
+                      backgroundColor: ColorTokens.primary30,
+                      foregroundColor: ColorTokens.neutral100,
                     ),
                   ),
               ],
@@ -349,7 +364,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
         final rides = snapshot.data!;
         return Column(
           children: [
-            // Botón para crear rodada (solo para admins)
+            // Bot�n para crear rodada (solo para admins)
             if (group.isAdmin(provider.currentUserId ?? ''))
               Padding(
                 padding: EdgeInsets.all(16),
@@ -362,8 +377,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     icon: Icon(Icons.add),
                     label: Text('Crear Rodada'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blackPearl,
-                      foregroundColor: AppColors.white,
+                      backgroundColor: ColorTokens.primary30,
+                      foregroundColor: ColorTokens.neutral100,
                     ),
                   ),
                 ),
@@ -383,7 +398,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         backgroundColor: _getDifficultyColor(ride.difficulty),
                         child: Icon(
                           Icons.directions_bike,
-                          color: AppColors.white,
+                          color: ColorTokens.neutral100,
                         ),
                       ),
                       title: Text(
@@ -396,7 +411,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                           Text('Fecha: ${_formatDateTime(ride.dateTime)}'),
                           Text('Distancia: ${ride.kilometers} km'),
                           Text(
-                              'Dificultad: ${_getDifficultyName(ride.difficulty)}'),
+                            'Dificultad: ${_getDifficultyName(ride.difficulty)}',
+                          ),
                           Text('Participantes: ${ride.participants.length}'),
                         ],
                       ),
@@ -434,15 +450,12 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 Icon(
                   Icons.inbox_outlined,
                   size: 80,
-                  color: AppColors.grey600,
+                  color: ColorTokens.neutral60,
                 ),
                 SizedBox(height: 16),
                 Text(
                   'No hay solicitudes pendientes',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.grey600,
-                  ),
+                  style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
                 ),
               ],
             ),
@@ -458,13 +471,21 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             return Card(
               margin: EdgeInsets.only(bottom: 8),
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: request['userPhoto'] != null
-                      ? NetworkImage(request['userPhoto'])
-                      : null,
-                  child:
-                      request['userPhoto'] == null ? Icon(Icons.person) : null,
-                ),
+                leading:
+                    request['userPhoto'] != null
+                        ? ClipOval(
+                          child: OptimizedNetworkImage(
+                            imageUrl: request['userPhoto'],
+                            width: 40,
+                            height: 40,
+                            imageType: 'avatar',
+                            fit: BoxFit.cover,
+                            errorWidget: CircleAvatar(
+                              child: Icon(Icons.person),
+                            ),
+                          ),
+                        )
+                        : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
                   request['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
@@ -474,23 +495,25 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      onPressed: () => _approveRequest(
-                        group.id,
-                        request['userId'],
-                        request['userName'],
-                        provider,
-                      ),
-                      icon: Icon(Icons.check, color: AppColors.softGreen),
+                      onPressed:
+                          () => _approveRequest(
+                            group.id,
+                            request['userId'],
+                            request['userName'],
+                            provider,
+                          ),
+                      icon: Icon(Icons.check, color: ColorTokens.success50),
                       tooltip: 'Aprobar',
                     ),
                     IconButton(
-                      onPressed: () => _rejectRequest(
-                        group.id,
-                        request['userId'],
-                        request['userName'],
-                        provider,
-                      ),
-                      icon: Icon(Icons.close, color: AppColors.red),
+                      onPressed:
+                          () => _rejectRequest(
+                            group.id,
+                            request['userId'],
+                            request['userName'],
+                            provider,
+                          ),
+                      icon: Icon(Icons.close, color: ColorTokens.error50),
                       tooltip: 'Rechazar',
                     ),
                   ],
@@ -525,18 +548,19 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 _showLeaveGroupDialog(group, provider);
               }
             },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<String>(
-                value: 'leave',
-                child: Row(
-                  children: [
-                    Icon(Icons.exit_to_app, color: AppColors.red),
-                    SizedBox(width: 8),
-                    Text('Salir del grupo'),
-                  ],
-                ),
-              ),
-            ],
+            itemBuilder:
+                (BuildContext context) => [
+                  PopupMenuItem<String>(
+                    value: 'leave',
+                    child: Row(
+                      children: [
+                        Icon(Icons.exit_to_app, color: ColorTokens.error50),
+                        SizedBox(width: 8),
+                        Text('Salir del grupo'),
+                      ],
+                    ),
+                  ),
+                ],
           ),
         );
         break;
@@ -572,14 +596,15 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.softGreen.withValues(alpha: 0.1),
+            color: ColorTokens.success50.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border:
-                Border.all(color: AppColors.softGreen.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: ColorTokens.success50.withValues(alpha: 0.3),
+            ),
           ),
           child: Row(
             children: [
-              Icon(Icons.admin_panel_settings, color: AppColors.softGreen),
+              Icon(Icons.admin_panel_settings, color: ColorTokens.success50),
               SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -589,14 +614,14 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       'Eres administrador',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.softGreen,
+                        color: ColorTokens.success50,
                       ),
                     ),
                     Text(
-                      'Puedes editar el grupo desde el menú superior',
+                      'Puedes editar el grupo desde el men� superior',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.grey600,
+                        color: ColorTokens.neutral60,
                       ),
                     ),
                   ],
@@ -611,14 +636,15 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.lightCyan.withValues(alpha: 0.1),
+            color: ColorTokens.secondary50.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border:
-                Border.all(color: AppColors.lightCyan.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: ColorTokens.secondary50.withValues(alpha: 0.3),
+            ),
           ),
           child: Row(
             children: [
-              Icon(Icons.check_circle, color: AppColors.lightCyan),
+              Icon(Icons.check_circle, color: ColorTokens.secondary50),
               SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -628,14 +654,14 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       'Ya eres miembro',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.lightCyan,
+                        color: ColorTokens.secondary50,
                       ),
                     ),
                     Text(
-                      'Puedes salir del grupo desde el menú superior',
+                      'Puedes salir del grupo desde el men� superior',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.grey600,
+                        color: ColorTokens.neutral60,
                       ),
                     ),
                   ],
@@ -653,8 +679,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             icon: Icon(Icons.cancel),
             label: Text('Cancelar Solicitud'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.vividOrange,
-              foregroundColor: AppColors.white,
+              backgroundColor: ColorTokens.warning50,
+              foregroundColor: ColorTokens.neutral100,
             ),
           ),
         );
@@ -667,49 +693,57 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             icon: Icon(Icons.group_add),
             label: Text('Solicitar Unirse'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blackPearl,
-              foregroundColor: AppColors.white,
+              backgroundColor: ColorTokens.primary30,
+              foregroundColor: ColorTokens.neutral100,
             ),
           ),
         );
     }
   }
 
-  void _approveRequest(String groupId, String userId, String userName,
-      GroupProvider provider) async {
+  void _approveRequest(
+    String groupId,
+    String userId,
+    String userName,
+    GroupProvider provider,
+  ) async {
     final success = await provider.approveJoinRequest(groupId, userId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$userName ha sido aceptado en el grupo'),
-          backgroundColor: AppColors.green,
+          backgroundColor: ColorTokens.success50,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al aprobar la solicitud'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
     }
   }
 
-  void _rejectRequest(String groupId, String userId, String userName,
-      GroupProvider provider) async {
+  void _rejectRequest(
+    String groupId,
+    String userId,
+    String userName,
+    GroupProvider provider,
+  ) async {
     final success = await provider.rejectJoinRequest(groupId, userId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Solicitud de $userName rechazada'),
-          backgroundColor: AppColors.vividOrange,
+          backgroundColor: ColorTokens.warning50,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al rechazar la solicitud'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
     }
@@ -722,17 +756,18 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Solicitud enviada correctamente'),
-          backgroundColor: AppColors.green,
+          backgroundColor: ColorTokens.success50,
         ),
       );
     } else if (result['requiresProfile'] == true) {
       _showProfileRequiredDialog(
-          result['error'] ?? 'Debes completar tu perfil');
+        result['error'] ?? 'Debes completar tu perfil',
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['error'] ?? 'Error al enviar solicitud'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
     }
@@ -741,23 +776,24 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   void _showProfileRequiredDialog(String message) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Completar Perfil'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancelar'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Completar Perfil'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.go('/profile');
+                },
+                child: Text('Ir al Perfil'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.go('/profile');
-            },
-            child: Text('Ir al Perfil'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -767,7 +803,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Solicitud cancelada'),
-          backgroundColor: AppColors.green,
+          backgroundColor: ColorTokens.success50,
         ),
       );
     }
@@ -776,58 +812,61 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   void _showLeaveGroupDialog(GroupModel group, GroupProvider provider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Salir del Grupo'),
-        content: Text('¿Estás seguro que deseas salir de "${group.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancelar'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Salir del Grupo'),
+            content: Text('�Est�s seguro que deseas salir de "${group.name}"?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  final success = await provider.leaveGroup(group.id);
+                  if (success) {
+                    context.go('/groups');
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorTokens.error50,
+                ),
+                child: Text('Salir'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              final success = await provider.leaveGroup(group.id);
-              if (success) {
-                context.go('/groups');
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child: Text('Salir'),
-          ),
-        ],
-      ),
     );
   }
 
-  // Nuevo método para formatear fecha y hora juntas
+  // Nuevo m�todo para formatear fecha y hora juntas
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} - ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  // Método para obtener color según dificultad
+  // M�todo para obtener color seg�n dificultad
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.softGreen;
+        return ColorTokens.success50;
       case DifficultyLevel.medium:
-        return AppColors.vividOrange;
+        return ColorTokens.warning50;
       case DifficultyLevel.hard:
-        return AppColors.red;
+        return ColorTokens.error50;
       case DifficultyLevel.expert:
-        return AppColors.blackPearl;
+        return ColorTokens.primary30;
     }
   }
 
-  // Método para obtener nombre de dificultad
+  // M�todo para obtener nombre de dificultad
   String _getDifficultyName(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return 'Fácil';
+        return 'F�cil';
       case DifficultyLevel.medium:
         return 'Medio';
       case DifficultyLevel.hard:
-        return 'Difícil';
+        return 'Dif�cil';
       case DifficultyLevel.expert:
         return 'Experto';
     }
@@ -863,11 +902,11 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: AppColors.white,
-      child: tabBar,
-    );
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(color: ColorTokens.neutral100, child: tabBar);
   }
 
   @override

@@ -1,5 +1,5 @@
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/roads/presentation/screens/road_create/map_road/map_road_bloc.dart';
@@ -14,7 +14,7 @@ class MapRoadsLocation extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: AppColors.blackPearl,
+        backgroundColor: ColorTokens.primary30,
         title: Text(
           AppStrings.meetingPointText,
           style: Styles.mainMenuTextBiux,
@@ -65,3 +65,6 @@ class MapRoadsLocation extends StatelessWidget {
     );
   }
 }
+
+
+

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -75,7 +75,7 @@ class GroupCreateBloc extends ChangeNotifier {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBarUtils.customSnackBar(
           content: AppStrings.groupCreatedText,
-          backgroundColor: AppColors.strongCyan),
+          backgroundColor: ColorTokens.secondary50),
     );
     onTapPop(context);
     Navigator.pushNamed(context, AppRoutes.viewGroupRoute, arguments: {
@@ -98,3 +98,5 @@ class GroupCreateBloc extends ChangeNotifier {
     return publicValidator;
   }
 }
+
+

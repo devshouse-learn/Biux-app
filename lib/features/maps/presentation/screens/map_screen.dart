@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/maps/presentation/providers/location_provider.dart';
 import 'package:biux/features/maps/presentation/providers/map_provider.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
@@ -64,8 +64,8 @@ class _MapScreenState extends State<MapScreen> {
               child: FloatingActionButton(
                 heroTag: "location_btn",
                 mini: true,
-                backgroundColor: AppColors.strongCyan,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.secondary50,
+                foregroundColor: ColorTokens.neutral100,
                 onPressed: () async {
                   await mapProvider.requestUserLocation();
 
@@ -73,7 +73,7 @@ class _MapScreenState extends State<MapScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(locationProvider.error!),
-                        backgroundColor: AppColors.red,
+                        backgroundColor: ColorTokens.error50,
                       ),
                     );
                   }
@@ -85,7 +85,7 @@ class _MapScreenState extends State<MapScreen> {
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor:
-                              AlwaysStoppedAnimation<Color>(AppColors.white),
+                              AlwaysStoppedAnimation<Color>(ColorTokens.neutral100),
                         ),
                       )
                     : Icon(Icons.my_location),
@@ -144,7 +144,7 @@ class LoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(AppColors.strongCyan),
+        valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.secondary50),
       ),
     );
   }
@@ -172,18 +172,18 @@ class MeetingPointDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.transparent,
+      color: ColorTokens.transparent,
       child: InkWell(
         onTap: () {}, // Previene que los toques pasen al mapa
         child: Container(
           margin: EdgeInsets.all(16),
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: ColorTokens.neutral100,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.2),
+                color: ColorTokens.neutral0.withValues(alpha: 0.2),
                 blurRadius: 8,
                 offset: Offset(0, -2),
               ),
@@ -197,7 +197,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
               SizedBox(height: 8),
               Text(
                 mapProvider.selectedPoint!.description,
-                style: TextStyle(color: AppColors.grey),
+                style: TextStyle(color: ColorTokens.neutral60),
               ),
               SizedBox(height: 16),
               // Botón de navegación
@@ -205,16 +205,16 @@ class MeetingPointDetailsCard extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _openGoogleMaps,
-                  icon: Icon(Icons.navigation, color: AppColors.white),
+                  icon: Icon(Icons.navigation, color: ColorTokens.neutral100),
                   label: Text(
                     'Ir al punto de encuentro',
                     style: TextStyle(
-                      color: AppColors.white,
+                      color: ColorTokens.neutral100,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.strongCyan,
+                    backgroundColor: ColorTokens.secondary50,
                     padding: EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -312,8 +312,8 @@ class RouteCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.only(right: 8),
       color: isSelected
-          ? AppColors.lightCyan.withValues(alpha: 0.1)
-          : AppColors.white,
+          ? ColorTokens.info40.withValues(alpha: 0.1)
+          : ColorTokens.neutral100,
       child: InkWell(
         onTap: () {
           if (isSelected) {
@@ -337,14 +337,14 @@ class RouteCard extends StatelessWidget {
                       route.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.strongCyan,
+                        color: ColorTokens.secondary50,
                       ),
                     ),
                   ),
                   if (isSelected)
                     Icon(
                       Icons.route,
-                      color: AppColors.strongCyan,
+                      color: ColorTokens.secondary50,
                       size: 20,
                     ),
                 ],
@@ -366,7 +366,7 @@ class RouteCard extends StatelessWidget {
                       'Toca para ver ruta',
                       style: TextStyle(
                         fontSize: 10,
-                        color: AppColors.grey,
+                        color: ColorTokens.neutral60,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -375,7 +375,7 @@ class RouteCard extends StatelessWidget {
                       'Ruta mostrada',
                       style: TextStyle(
                         fontSize: 10,
-                        color: AppColors.strongCyan,
+                        color: ColorTokens.secondary50,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -406,13 +406,13 @@ class RouteLevelBadge extends StatelessWidget {
           vertical: 4,
         ),
         decoration: BoxDecoration(
-          color: AppColors.lightCyan.withValues(alpha: 0.2),
+          color: ColorTokens.info40.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
           'Nivel: $level',
           style: TextStyle(
-            color: AppColors.lightCyan,
+            color: ColorTokens.info40,
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
@@ -423,3 +423,7 @@ class RouteLevelBadge extends StatelessWidget {
     );
   }
 }
+
+
+
+

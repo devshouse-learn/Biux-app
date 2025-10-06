@@ -116,7 +116,7 @@ class MapProvider extends ChangeNotifier {
 
     // Agregar sombra
     final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.3)
+      ..color = Colors.black.withValues(alpha: 0.3)
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
     canvas.drawCircle(
       Offset(targetSize / 2, targetSize / 2),
@@ -449,3 +449,5 @@ class MapProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+
+

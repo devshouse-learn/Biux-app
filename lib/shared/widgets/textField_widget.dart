@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +15,7 @@ class TexFieldWidget extends StatefulWidget {
     this.keyboardType,
     this.maxLength,
     this.iconButton,
-    this.obscureText,
+    this.obscureText = true,
     this.saved,
     this.enabled,
     this.autofillHints,
@@ -23,7 +23,7 @@ class TexFieldWidget extends StatefulWidget {
   final String text;
   final Widget icon;
   final IconButton? iconButton;
-  bool? obscureText = true;
+  final bool? obscureText;
   final TextEditingController nameController;
   final FocusNode focusNode;
   final ValueChanged<String>? onChanged;
@@ -43,16 +43,9 @@ class _TexFieldWidgetState extends State<TexFieldWidget> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: Theme.of(context).copyWith(
-        primaryColor: AppColors.strongCyan,
-      ),
+      data: Theme.of(context).copyWith(primaryColor: ColorTokens.secondary50),
       child: Padding(
-        padding: const EdgeInsets.only(
-          left: 15,
-          right: 15,
-          top: 5,
-          bottom: 5,
-        ),
+        padding: const EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 5),
         child: SizedBox(
           child: TextFormField(
             enabled: widget.enabled,
@@ -65,50 +58,31 @@ class _TexFieldWidgetState extends State<TexFieldWidget> {
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               errorStyle: TextStyle(fontSize: 1, height: 0),
-              fillColor: AppColors.white,
+              fillColor: ColorTokens.neutral100,
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.gray,
-                  width: 1,
-                ),
+                borderSide: BorderSide(color: ColorTokens.neutral60, width: 1),
                 borderRadius: BorderRadius.circular(15),
               ),
               disabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.gray,
-                  width: 1,
-                ),
+                borderSide: BorderSide(color: ColorTokens.neutral60, width: 1),
                 borderRadius: BorderRadius.circular(15),
               ),
               filled: true,
-              contentPadding: EdgeInsets.fromLTRB(
-                10.0,
-                15.0,
-                20.0,
-                15.0,
-              ),
+              contentPadding: EdgeInsets.fromLTRB(10.0, 15.0, 20.0, 15.0),
               hintText: widget.text,
               errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.red,
-                ),
+                borderSide: BorderSide(color: ColorTokens.error50),
                 borderRadius: BorderRadius.circular(15),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.red,
-                ),
+                borderSide: BorderSide(color: ColorTokens.error50),
                 borderRadius: BorderRadius.circular(15),
               ),
               prefixIcon: widget.icon,
               suffixIcon: widget.iconButton,
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.gray,
-                ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(45),
-                ),
+                borderSide: BorderSide(color: ColorTokens.neutral60),
+                borderRadius: BorderRadius.all(Radius.circular(45)),
               ),
               hintStyle: Styles.sizedBoxHintStyle,
             ),

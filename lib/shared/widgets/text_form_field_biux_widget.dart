@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -67,17 +67,17 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             errorStyle: TextStyle(fontSize: 1, height: 0),
-            fillColor: AppColors.white,
+            fillColor: ColorTokens.neutral100,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppColors.gray,
+                color: ColorTokens.neutral60,
                 width: 0.5,
               ),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             disabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppColors.gray,
+                color: ColorTokens.neutral60,
                 width: 0.5,
               ),
               borderRadius: BorderRadius.circular(radiusCircular),
@@ -99,21 +99,21 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
                 : BoxConstraints(),
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppColors.red,
+                color: ColorTokens.error50,
                 width: 0.5,
               ),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppColors.red,
+                color: ColorTokens.error50,
                 width: 0.5,
               ),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppColors.gray,
+                color: ColorTokens.neutral60,
                 width: 0.5,
               ),
               borderRadius: BorderRadius.all(
@@ -137,3 +137,5 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
     );
   }
 }
+
+

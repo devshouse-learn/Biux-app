@@ -137,7 +137,6 @@ class RoadsRepository {
     );
     if (uriResponse.statusCode == 200) {
       // final data = json.decode(uriResponse.body);
-      // int id = data["id"]; // TODO: Use when implementing road join logic
       // LocalStorage().saveJoinRoad(id.toString());
 
       return;
@@ -156,7 +155,7 @@ class RoadsRepository {
         },
       );
       if (uriResponse.statusCode == 200) {
-        final data = json.decode(uriResponse.body);
+        json.decode(uriResponse.body);
         return "se elimino con exito";
       } else {}
       // return Rodada.fromJson(json.decode(response.body));

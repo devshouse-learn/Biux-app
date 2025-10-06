@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/utils/launch_social_networks_utils.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class ButtonWhatsappWidget extends StatelessWidget {
           image: DecorationImage(
             image: new AssetImage(whatsappLogo),
           ),
-          color: AppColors.white,
+          color: ColorTokens.neutral100,
           borderRadius: BorderRadius.circular(radiusCircular),
         ),
         height: height,
@@ -37,3 +37,5 @@ class ButtonWhatsappWidget extends StatelessWidget {
     );
   }
 }
+
+

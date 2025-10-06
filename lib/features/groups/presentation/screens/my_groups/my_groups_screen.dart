@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MyGroupsScreen extends StatefulWidget {
   @override
@@ -31,17 +34,14 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text('Mis Grupos'),
-        backgroundColor: AppColors.blackPearl,
-        foregroundColor: AppColors.white,
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.white,
-          unselectedLabelColor: AppColors.white.withOpacity(0.7),
-          indicatorColor: AppColors.white,
-          tabs: [
-            Tab(text: 'Miembro'),
-            Tab(text: 'Administrados'),
-          ],
+          labelColor: ColorTokens.neutral100,
+          unselectedLabelColor: ColorTokens.neutral100.withValues(alpha: 0.7),
+          indicatorColor: ColorTokens.neutral100,
+          tabs: [Tab(text: 'Miembro'), Tab(text: 'Administrados')],
         ),
       ),
       body: Consumer<GroupProvider>(
@@ -57,8 +57,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.go('/groups/create'),
-        backgroundColor: AppColors.blackPearl,
-        child: Icon(Icons.add, color: AppColors.white),
+        backgroundColor: ColorTokens.primary30,
+        child: Icon(Icons.add, color: ColorTokens.neutral100),
         tooltip: 'Crear nuevo grupo',
       ),
     );
@@ -135,28 +135,25 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 80, color: AppColors.grey600),
+          Icon(icon, size: 80, color: ColorTokens.neutral60),
           SizedBox(height: 16),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.grey600,
-            ),
+            style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Text(
             subtitle,
-            style: TextStyle(color: AppColors.grey600),
+            style: TextStyle(color: ColorTokens.neutral60),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
           ElevatedButton(
             onPressed: onAction,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blackPearl,
-              foregroundColor: AppColors.white,
+              backgroundColor: ColorTokens.primary30,
+              foregroundColor: ColorTokens.neutral100,
             ),
             child: Text(actionText),
           ),
@@ -169,9 +166,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
     return Card(
       margin: EdgeInsets.only(bottom: 16),
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -179,18 +174,17 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
           if (group.coverUrl != null)
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.network(
-                group.coverUrl!,
+              child: OptimizedNetworkImage(
+                imageUrl: group.coverUrl!,
                 height: 120,
                 width: double.infinity,
+                imageType: 'cover',
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 120,
-                    color: AppColors.grey200,
-                    child: Icon(Icons.image, color: AppColors.grey600),
-                  );
-                },
+                errorWidget: Container(
+                  height: 120,
+                  color: ColorTokens.neutral20,
+                  child: Icon(Icons.image, color: ColorTokens.neutral60),
+                ),
               ),
             ),
 
@@ -203,13 +197,22 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: AppColors.blackPearl,
-                      backgroundImage: group.logoUrl != null
-                          ? NetworkImage(group.logoUrl!)
-                          : null,
-                      child: group.logoUrl == null
-                          ? Icon(Icons.group, color: AppColors.white, size: 20)
-                          : null,
+                      backgroundColor: ColorTokens.primary30,
+                      backgroundImage:
+                          group.logoUrl != null
+                              ? CachedNetworkImageProvider(
+                                group.logoUrl!,
+                                cacheManager: OptimizedCacheManager.instance,
+                              )
+                              : null,
+                      child:
+                          group.logoUrl == null
+                              ? Icon(
+                                Icons.group,
+                                color: ColorTokens.neutral100,
+                                size: 20,
+                              )
+                              : null,
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -226,7 +229,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                           Text(
                             '${group.memberCount} miembros',
                             style: TextStyle(
-                              color: AppColors.grey600,
+                              color: ColorTokens.neutral60,
                               fontSize: 12,
                             ),
                           ),
@@ -236,18 +239,17 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     if (group.isAdmin(provider.currentUserId ?? ''))
                       Chip(
                         label: Text('Admin', style: TextStyle(fontSize: 10)),
-                        backgroundColor: AppColors.softGreen.withOpacity(0.1),
-                        side: BorderSide(color: AppColors.softGreen),
+                        backgroundColor: ColorTokens.success40.withValues(
+                          alpha: 0.1,
+                        ),
+                        side: BorderSide(color: ColorTokens.success40),
                       ),
                   ],
                 ),
                 SizedBox(height: 12),
                 Text(
                   group.description,
-                  style: TextStyle(
-                    color: AppColors.grey200,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: ColorTokens.neutral20, fontSize: 14),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -262,8 +264,10 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     if (!group.isAdmin(provider.currentUserId ?? ''))
                       TextButton(
                         onPressed: () => _showLeaveGroupDialog(group, provider),
-                        child: Text('Salir',
-                            style: TextStyle(color: AppColors.red)),
+                        child: Text(
+                          'Salir',
+                          style: TextStyle(color: ColorTokens.error50),
+                        ),
                       ),
                   ],
                 ),
@@ -281,7 +285,10 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.softGreen.withOpacity(0.3), width: 1),
+        side: BorderSide(
+          color: ColorTokens.success40.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,19 +298,22 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.softGreen.withOpacity(0.1),
+              color: ColorTokens.success40.withValues(alpha: 0.1),
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.admin_panel_settings,
-                    color: AppColors.softGreen, size: 16),
+                Icon(
+                  Icons.admin_panel_settings,
+                  color: ColorTokens.success40,
+                  size: 16,
+                ),
                 SizedBox(width: 4),
                 Text(
                   'ADMINISTRADOR',
                   style: TextStyle(
-                    color: AppColors.softGreen,
+                    color: ColorTokens.success40,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
@@ -315,18 +325,12 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
           // Imagen de portada
           if (group.coverUrl != null)
             ClipRRect(
-              child: Image.network(
-                group.coverUrl!,
+              child: OptimizedNetworkImage(
+                imageUrl: group.coverUrl!,
+                imageType: 'cover',
                 height: 120,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 120,
-                    color: AppColors.grey200,
-                    child: Icon(Icons.image, color: AppColors.grey600),
-                  );
-                },
               ),
             ),
 
@@ -339,13 +343,22 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: AppColors.blackPearl,
-                      backgroundImage: group.logoUrl != null
-                          ? NetworkImage(group.logoUrl!)
-                          : null,
-                      child: group.logoUrl == null
-                          ? Icon(Icons.group, color: AppColors.white, size: 20)
-                          : null,
+                      backgroundColor: ColorTokens.primary30,
+                      backgroundImage:
+                          group.logoUrl != null
+                              ? CachedNetworkImageProvider(
+                                group.logoUrl!,
+                                cacheManager: OptimizedCacheManager.instance,
+                              )
+                              : null,
+                      child:
+                          group.logoUrl == null
+                              ? Icon(
+                                Icons.group,
+                                color: ColorTokens.neutral100,
+                                size: 20,
+                              )
+                              : null,
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -362,7 +375,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                           Text(
                             '${group.memberCount} miembros',
                             style: TextStyle(
-                              color: AppColors.grey600,
+                              color: ColorTokens.neutral60,
                               fontSize: 12,
                             ),
                           ),
@@ -371,16 +384,18 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     ),
                     if (group.pendingRequestCount > 0)
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppColors.vividOrange,
+                          color: ColorTokens.warning50,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           '${group.pendingRequestCount}',
                           style: TextStyle(
-                            color: AppColors.white,
+                            color: ColorTokens.neutral100,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -391,10 +406,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                 SizedBox(height: 12),
                 Text(
                   group.description,
-                  style: TextStyle(
-                    color: AppColors.grey200,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: ColorTokens.neutral20, fontSize: 14),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -403,18 +415,21 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                   Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.vividOrange.withOpacity(0.1),
+                      color: ColorTokens.warning50.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.notifications,
-                            color: AppColors.vividOrange, size: 16),
+                        Icon(
+                          Icons.notifications,
+                          color: ColorTokens.warning50,
+                          size: 16,
+                        ),
                         SizedBox(width: 8),
                         Text(
                           '${group.pendingRequestCount} solicitudes pendientes',
                           style: TextStyle(
-                            color: AppColors.vividOrange,
+                            color: ColorTokens.warning50,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -430,8 +445,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                       child: ElevatedButton(
                         onPressed: () => context.go('/groups/${group.id}'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blackPearl,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: ColorTokens.primary30,
+                          foregroundColor: ColorTokens.neutral100,
                         ),
                         child: Text('Gestionar'),
                       ),
@@ -449,40 +464,46 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   void _showLeaveGroupDialog(GroupModel group, GroupProvider provider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Salir del grupo'),
-        content: Text(
-            '¿Estás seguro de que quieres salir del grupo "${group.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Salir del grupo'),
+            content: Text(
+              '¿Estás seguro de que quieres salir del grupo "${group.name}"?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final success = await provider.leaveGroup(group.id);
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Has salido del grupo'),
+                        backgroundColor: ColorTokens.success40,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          provider.error ?? 'Error al salir del grupo',
+                        ),
+                        backgroundColor: ColorTokens.error50,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorTokens.error50,
+                ),
+                child: Text('Salir'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              final success = await provider.leaveGroup(group.id);
-              if (success) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Has salido del grupo'),
-                    backgroundColor: AppColors.softGreen,
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(provider.error ?? 'Error al salir del grupo'),
-                    backgroundColor: AppColors.red,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child: Text('Salir'),
-          ),
-        ],
-      ),
     );
   }
 

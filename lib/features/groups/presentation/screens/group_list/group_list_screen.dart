@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 
 class GroupListScreen extends StatefulWidget {
   @override
@@ -34,8 +35,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Grupos'),
-        backgroundColor: AppColors.blackPearl,
-        foregroundColor: AppColors.white,
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
       ),
       body: Column(
         children: [
@@ -77,8 +78,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
           if (provider.canCreateGroup) {
             return FloatingActionButton(
               onPressed: () => context.go('/groups/create'),
-              backgroundColor: AppColors.blackPearl,
-              child: const Icon(Icons.add, color: AppColors.white),
+              backgroundColor: ColorTokens.primary30,
+              child: const Icon(Icons.add, color: ColorTokens.neutral100),
               tooltip: 'Crear Grupo',
             );
           }
@@ -93,27 +94,18 @@ class _GroupListScreenState extends State<GroupListScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.group_outlined,
-            size: 80,
-            color: AppColors.grey600,
-          ),
+          Icon(Icons.group_outlined, size: 80, color: ColorTokens.neutral60),
           const SizedBox(height: 16),
           Text(
             'No hay grupos disponibles',
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.grey600,
-            ),
+            style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
           ),
           const SizedBox(height: 8),
           Text(
             provider.canCreateGroup
                 ? 'Sé el primero en crear un grupo'
                 : 'Explora grupos para unirte',
-            style: TextStyle(
-              color: AppColors.grey600,
-            ),
+            style: TextStyle(color: ColorTokens.neutral60),
           ),
           const SizedBox(height: 24),
           if (provider.canCreateGroup)
@@ -122,8 +114,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
               icon: const Icon(Icons.add),
               label: const Text('Crear Grupo'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blackPearl,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
               ),
             ),
         ],
@@ -137,9 +129,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => context.push('/groups/${group.id}'),
         borderRadius: BorderRadius.circular(12),
@@ -149,24 +139,24 @@ class _GroupListScreenState extends State<GroupListScreen> {
             // Imagen de portada
             if (group.coverUrl != null)
               ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Image.network(
-                  group.coverUrl!,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
+                child: OptimizedNetworkImage(
+                  imageUrl: group.coverUrl!,
                   height: 150,
                   width: double.infinity,
+                  imageType: 'cover',
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 150,
-                      color: AppColors.grey200,
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 50,
-                        color: AppColors.grey600,
-                      ),
-                    );
-                  },
+                  errorWidget: Container(
+                    height: 150,
+                    color: ColorTokens.neutral20,
+                    child: const Icon(
+                      Icons.image_not_supported,
+                      size: 50,
+                      color: ColorTokens.neutral60,
+                    ),
+                  ),
                 ),
               ),
 
@@ -183,26 +173,28 @@ class _GroupListScreenState extends State<GroupListScreen> {
                         height: 50,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
-                          color: AppColors.grey200,
+                          color: ColorTokens.neutral20,
                         ),
-                        child: group.logoUrl != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(25),
-                                child: Image.network(
-                                  group.logoUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(
+                        child:
+                            group.logoUrl != null
+                                ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: OptimizedNetworkImage(
+                                    imageUrl: group.logoUrl!,
+                                    width: 50,
+                                    height: 50,
+                                    imageType: 'avatar',
+                                    fit: BoxFit.cover,
+                                    errorWidget: const Icon(
                                       Icons.group,
-                                      color: AppColors.grey600,
-                                    );
-                                  },
+                                      color: ColorTokens.neutral60,
+                                    ),
+                                  ),
+                                )
+                                : const Icon(
+                                  Icons.group,
+                                  color: ColorTokens.neutral60,
                                 ),
-                              )
-                            : const Icon(
-                                Icons.group,
-                                color: AppColors.grey600,
-                              ),
                       ),
                       const SizedBox(width: 12),
 
@@ -224,7 +216,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                             Text(
                               '${group.memberIds.length} miembros',
                               style: TextStyle(
-                                color: AppColors.grey600,
+                                color: ColorTokens.neutral60,
                                 fontSize: 14,
                               ),
                             ),
@@ -243,7 +235,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                   Text(
                     group.description,
                     style: TextStyle(
-                      color: AppColors.grey600,
+                      color: ColorTokens.neutral60,
                       fontSize: 14,
                     ),
                     maxLines: 2,
@@ -267,38 +259,48 @@ class _GroupListScreenState extends State<GroupListScreen> {
 
   Widget _buildStatusChip(GroupMembershipStatus status) {
     String text;
-    Color color;
+    Color backgroundColor;
+    Color textColor;
+    Color borderColor;
 
     switch (status) {
       case GroupMembershipStatus.admin:
         text = 'Admin';
-        color = AppColors.softGreen;
+        backgroundColor = ColorTokens.success40;
+        textColor = ColorTokens.neutral100;
+        borderColor = ColorTokens.success40;
         break;
       case GroupMembershipStatus.member:
         text = 'Miembro';
-        color = AppColors.blackPearl;
+        backgroundColor = ColorTokens.primary30;
+        textColor = ColorTokens.neutral100;
+        borderColor = ColorTokens.primary30;
         break;
       case GroupMembershipStatus.pending:
         text = 'Pendiente';
-        color = AppColors.yellow;
+        backgroundColor = ColorTokens.warning50;
+        textColor = ColorTokens.neutral100;
+        borderColor = ColorTokens.warning50;
         break;
       case GroupMembershipStatus.notMember:
         text = 'Unirse';
-        color = AppColors.grey600;
+        backgroundColor = ColorTokens.neutral60;
+        textColor = ColorTokens.neutral100;
+        borderColor = ColorTokens.neutral60;
         break;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color, width: 1),
+        border: Border.all(color: borderColor, width: 1),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: color,
+          color: textColor,
           fontSize: 12,
           fontWeight: FontWeight.bold,
         ),
@@ -307,7 +309,10 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   Widget _buildActionButton(
-      GroupModel group, GroupMembershipStatus status, GroupProvider provider) {
+    GroupModel group,
+    GroupMembershipStatus status,
+    GroupProvider provider,
+  ) {
     switch (status) {
       case GroupMembershipStatus.admin:
       case GroupMembershipStatus.member:
@@ -319,8 +324,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
           icon: const Icon(Icons.cancel, size: 16),
           label: const Text('Cancelar'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.red,
-            foregroundColor: AppColors.white,
+            backgroundColor: ColorTokens.error50,
+            foregroundColor: ColorTokens.neutral100,
             minimumSize: const Size(100, 32),
           ),
         );
@@ -331,8 +336,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
           icon: const Icon(Icons.group_add, size: 16),
           label: const Text('Unirse'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.blackPearl,
-            foregroundColor: AppColors.white,
+            backgroundColor: ColorTokens.primary30,
+            foregroundColor: ColorTokens.neutral100,
             minimumSize: const Size(100, 32),
           ),
         );
@@ -347,19 +352,20 @@ class _GroupListScreenState extends State<GroupListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Solicitud enviada correctamente'),
-          backgroundColor: AppColors.green,
+          backgroundColor: ColorTokens.success50,
         ),
       );
     } else {
       // Verificar si requiere completar el perfil
       if (result['requiresProfile'] == true) {
         _showProfileRequiredDialog(
-            result['error'] ?? 'Debes completar tu perfil');
+          result['error'] ?? 'Debes completar tu perfil',
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['error'] ?? 'Error al enviar solicitud'),
-            backgroundColor: AppColors.red,
+            backgroundColor: ColorTokens.error50,
           ),
         );
       }
@@ -374,7 +380,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
         return AlertDialog(
           title: const Row(
             children: [
-              Icon(Icons.person_outline, color: AppColors.red),
+              Icon(Icons.person_outline, color: ColorTokens.error50),
               SizedBox(width: 8),
               Text('Completar Perfil'),
             ],
@@ -387,10 +393,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
               const SizedBox(height: 12),
               const Text(
                 'Para unirte a grupos, los administradores necesitan saber quién eres.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.grey600,
-                ),
+                style: TextStyle(fontSize: 14, color: ColorTokens.neutral60),
               ),
             ],
           ),
@@ -406,8 +409,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
                 context.go('/profile');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blackPearl,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
               ),
               child: const Text('Ir al Perfil'),
             ),
@@ -423,14 +426,14 @@ class _GroupListScreenState extends State<GroupListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Solicitud cancelada'),
-          backgroundColor: AppColors.green,
+          backgroundColor: ColorTokens.success50,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(provider.error ?? 'Error al cancelar solicitud'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
     }

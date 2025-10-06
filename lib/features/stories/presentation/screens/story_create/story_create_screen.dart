@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
@@ -97,7 +97,7 @@ class _GallerySectionState extends State<GallerySection> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
           content: AppStrings.permissionNotAccessibleCreateStory,
-          backgroundColor: AppColors.darkBlue,
+          backgroundColor: ColorTokens.primary30,
         ),
       );
       return;
@@ -119,7 +119,7 @@ class _GallerySectionState extends State<GallerySection> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
           content: AppStrings.pathsNotFoundCreateStory,
-          backgroundColor: AppColors.darkBlue,
+          backgroundColor: ColorTokens.primary30,
         ),
       );
       return;
@@ -223,7 +223,7 @@ class _GallerySectionState extends State<GallerySection> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
                     content: AppStrings.warnignNoMoreImages,
-                    backgroundColor: AppColors.darkBlue,
+                    backgroundColor: ColorTokens.primary30,
                   ),
                 );
               }
@@ -333,7 +333,7 @@ class _AppbarCreateStory extends StatelessWidget
   Widget build(BuildContext context) {
     final bloc = context.watch<StoryCreateBloc>();
     return AppBar(
-      backgroundColor: AppColors.darkBlue,
+      backgroundColor: ColorTokens.primary30,
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back,
@@ -379,7 +379,7 @@ class _AppbarCreateStory extends StatelessWidget
                           ? AppStrings.textSuccessfulCreateStory
                           : AppStrings.textErrorCreateStory,
                       backgroundColor:
-                          result ? AppColors.strongCyan : AppColors.redAccent,
+                          result ? ColorTokens.secondary50 : ColorTokens.error50,
                     ),
                   );
                   if (result) {
@@ -466,7 +466,7 @@ class _CarouselImagesSelected extends StatelessWidget {
               ),
             ),
             ColoredBox(
-              color: AppColors.white,
+              color: ColorTokens.neutral100,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -486,11 +486,11 @@ class _CarouselImagesSelected extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: AppColors.black,
+                                color: ColorTokens.neutral0,
                               ),
                               color: (bloc.current == entry.key
-                                  ? AppColors.strongCyan
-                                  : AppColors.darkBlue),
+                                  ? ColorTokens.secondary50
+                                  : ColorTokens.primary30),
                             ),
                           ),
                         );
@@ -512,9 +512,9 @@ class _CarouselImagesSelected extends StatelessWidget {
                         ),
                         if (bloc.imgList.length < 3)
                           CircleAvatar(
-                            backgroundColor: AppColors.darkBlue,
+                            backgroundColor: ColorTokens.primary30,
                             child: IconButton(
-                              color: AppColors.white,
+                              color: ColorTokens.neutral100,
                               onPressed: () async {
                                 _takePhoto(bloc: bloc);
                               },
@@ -554,7 +554,7 @@ void showDialogCreateStory({
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: AppColors.white,
+            backgroundColor: ColorTokens.neutral100,
             contentPadding: EdgeInsets.zero,
             insetPadding: EdgeInsets.zero,
             alignment: Alignment.bottomCenter,
@@ -660,3 +660,5 @@ void showDialogCreateStory({
     },
   );
 }
+
+

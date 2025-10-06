@@ -1,12 +1,13 @@
-﻿import 'package:biux/features/maps/data/models/meeting_point.dart';
+import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 class RideDetailScreen extends StatefulWidget {
   final String rideId;
@@ -22,10 +23,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<RideProvider>(context, listen: false)
-          .selectRideById(widget.rideId);
-      Provider.of<MeetingPointProvider>(context, listen: false)
-          .startListening();
+      Provider.of<RideProvider>(
+        context,
+        listen: false,
+      ).selectRideById(widget.rideId);
+      Provider.of<MeetingPointProvider>(
+        context,
+        listen: false,
+      ).startListening();
     });
   }
 
@@ -37,8 +42,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           if (rideProvider.isLoading) {
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: AppColors.darkBlue,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
               ),
               body: Center(child: CircularProgressIndicator()),
             );
@@ -48,14 +53,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           if (ride == null) {
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: AppColors.darkBlue,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
               ),
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error, size: 64, color: AppColors.red),
+                    Icon(Icons.error, size: 64, color: ColorTokens.error50),
                     SizedBox(height: 16),
                     Text('Rodada no encontrada'),
                     SizedBox(height: 16),
@@ -69,9 +74,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             );
           }
 
-          final meetingPoint = meetingPointProvider.meetingPoints
-              .where((mp) => mp.id == ride.meetingPointId)
-              .firstOrNull;
+          final meetingPoint =
+              meetingPointProvider.meetingPoints
+                  .where((mp) => mp.id == ride.meetingPointId)
+                  .firstOrNull;
 
           return NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -79,13 +85,13 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 SliverAppBar(
                   expandedHeight: 200,
                   pinned: true,
-                  backgroundColor: AppColors.darkBlue,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: ColorTokens.primary30,
+                  foregroundColor: ColorTokens.neutral100,
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
                       ride.name,
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: ColorTokens.neutral100,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -96,7 +102,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                           end: Alignment.bottomCenter,
                           colors: [
                             _getDifficultyColor(ride.difficulty),
-                            AppColors.darkBlue,
+                            ColorTokens.primary30,
                           ],
                         ),
                       ),
@@ -104,7 +110,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         child: Icon(
                           Icons.directions_bike,
                           size: 80,
-                          color: AppColors.white.withValues(alpha: 0.3),
+                          color: ColorTokens.neutral100.withValues(alpha: 0.3),
                         ),
                       ),
                     ),
@@ -121,7 +127,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   GroupInfoWidget(ride: ride),
                   SizedBox(height: 16),
 
-                  // Información básica
+                  // Información b�sica
                   BasicInfoWidget(ride: ride),
                   SizedBox(height: 24),
 
@@ -154,11 +160,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   ActionButtonsWidget(
                     ride: ride,
                     onJoinRide: () => _joinRide(ride.id, rideProvider),
-                    onMaybeJoinRide: () =>
-                        _maybeJoinRide(ride.id, rideProvider),
+                    onMaybeJoinRide:
+                        () => _maybeJoinRide(ride.id, rideProvider),
                     onLeaveRide: () => _leaveRide(ride.id, rideProvider),
-                    onCancelRide: () =>
-                        _showCancelDialog(ride.id, rideProvider),
+                    onCancelRide:
+                        () => _showCancelDialog(ride.id, rideProvider),
                   ),
                 ],
               ),
@@ -172,13 +178,13 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.mutedGreen;
+        return ColorTokens.success50;
       case DifficultyLevel.medium:
-        return AppColors.softOrange;
+        return ColorTokens.warning50;
       case DifficultyLevel.hard:
-        return AppColors.mutedRed;
+        return ColorTokens.error50;
       case DifficultyLevel.expert:
-        return AppColors.purple;
+        return ColorTokens.primary60;
     }
   }
 
@@ -187,8 +193,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('¡Genial! Te has unido a la rodada'),
-          backgroundColor: AppColors.softGreen,
+          content: Text('�Genial! Te has unido a la rodada'),
+          backgroundColor: ColorTokens.success40,
         ),
       );
     }
@@ -200,7 +206,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Marcado como "tal vez voy"'),
-          backgroundColor: AppColors.yellow,
+          backgroundColor: ColorTokens.warning50,
         ),
       );
     }
@@ -212,7 +218,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Has salido de la rodada'),
-          backgroundColor: AppColors.gray,
+          backgroundColor: ColorTokens.neutral60,
         ),
       );
     }
@@ -221,34 +227,40 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   void _showCancelDialog(String rideId, RideProvider provider) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('Cancelar Rodada'),
-        content: Text(
-            '¿Estás seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text('No'),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text('Cancelar Rodada'),
+            content: Text(
+              '�Est�s seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text('No'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(dialogContext).pop();
+                  final success = await provider.cancelRide(rideId);
+                  if (success && mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Rodada cancelada'),
+                        backgroundColor: ColorTokens.error50,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorTokens.error50,
+                ),
+                child: Text(
+                  'S�, cancelar',
+                  style: TextStyle(color: ColorTokens.neutral100),
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.of(dialogContext).pop();
-              final success = await provider.cancelRide(rideId);
-              if (success && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Rodada cancelada'),
-                    backgroundColor: AppColors.red,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child:
-                Text('Sí, cancelar', style: TextStyle(color: AppColors.white)),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -272,20 +284,20 @@ class GroupInfoWidget extends StatelessWidget {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: AppColors.gray,
+                        backgroundColor: ColorTokens.neutral60,
                         child: SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: AppColors.darkBlue,
+                            color: ColorTokens.primary30,
                           ),
                         ),
                       ),
                       SizedBox(width: 12),
                       Text(
-                        'Cargando información del grupo...',
-                        style: TextStyle(color: AppColors.gray),
+                        'Cargando Información del grupo...',
+                        style: TextStyle(color: ColorTokens.neutral60),
                       ),
                     ],
                   ),
@@ -301,13 +313,13 @@ class GroupInfoWidget extends StatelessWidget {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: AppColors.gray,
-                        child: Icon(Icons.group, color: AppColors.gray),
+                        backgroundColor: ColorTokens.neutral60,
+                        child: Icon(Icons.group, color: ColorTokens.neutral60),
                       ),
                       SizedBox(width: 12),
                       Text(
                         'Grupo no encontrado',
-                        style: TextStyle(color: AppColors.gray),
+                        style: TextStyle(color: ColorTokens.neutral60),
                       ),
                     ],
                   ),
@@ -316,84 +328,82 @@ class GroupInfoWidget extends StatelessWidget {
             }
 
             return Card(
-                child: InkWell(
-              onTap: () {
-                context.go('/groups/${groupInfo['id']}');
-              },
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: AppColors.darkBlue,
-                      backgroundImage: groupInfo['imageUrl'] != null
-                          ? NetworkImage(groupInfo['imageUrl'])
-                          : null,
-                      child: groupInfo['imageUrl'] == null
-                          ? Icon(
+              child: InkWell(
+                onTap: () {
+                  context.go('/groups/${groupInfo['id']}');
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      groupInfo['imageUrl'] != null
+                          ? ClipOval(
+                            child: OptimizedNetworkImage(
+                              imageUrl: groupInfo['imageUrl'],
+                              width: 50,
+                              height: 50,
+                              imageType:
+                                  'avatar', // Cache de larga duración para logos
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                          : CircleAvatar(
+                            radius: 25,
+                            backgroundColor: ColorTokens.primary30,
+                            child: Icon(
                               Icons.group,
-                              color: AppColors.white,
+                              color: ColorTokens.neutral100,
                               size: 28,
-                            )
-                          : null,
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.group,
-                                size: 16,
-                                color: AppColors.gray,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                'Organizada por',
-                                style: TextStyle(
-                                  color: AppColors.gray,
-                                  fontSize: 12,
+                            ),
+                          ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.group,
+                                  size: 16,
+                                  color: ColorTokens.neutral60,
                                 ),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Organizada por',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              groupInfo['name'],
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (groupInfo['memberCount'] > 0) ...[
+                              SizedBox(height: 2),
+                              Text(
+                                '${groupInfo['memberCount']} miembros',
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            groupInfo['name'],
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.darkBlue,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (groupInfo['memberCount'] > 0) ...[
-                            SizedBox(height: 2),
-                            Text(
-                              '${groupInfo['memberCount']} miembros',
-                              style: TextStyle(
-                                color: AppColors.gray,
-                                fontSize: 12,
-                              ),
-                            ),
                           ],
-                        ],
+                        ),
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: AppColors.gray,
-                      size: 16,
-                    ),
-                  ],
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: ColorTokens.neutral60,
+                        size: 16,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ));
+            );
           },
         );
       },
@@ -416,10 +426,7 @@ class BasicInfoWidget extends StatelessWidget {
           children: [
             Text(
               'Información de la rodada',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             InfoRowWidget(
@@ -436,13 +443,13 @@ class BasicInfoWidget extends StatelessWidget {
             SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.trending_up, color: AppColors.gray),
+                Icon(Icons.trending_up, color: ColorTokens.neutral60),
                 SizedBox(width: 12),
                 Text(
                   'Dificultad: ',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    color: AppColors.gray,
+                    color: ColorTokens.neutral60,
                   ),
                 ),
                 Container(
@@ -454,7 +461,7 @@ class BasicInfoWidget extends StatelessWidget {
                   child: Text(
                     _getDifficultyName(ride.difficulty),
                     style: TextStyle(
-                      color: AppColors.white,
+                      color: ColorTokens.neutral100,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -475,7 +482,7 @@ class BasicInfoWidget extends StatelessWidget {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    final weekdays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    final weekdays = ['Lun', 'Mar', 'Mi�', 'Jue', 'Vie', 'S�b', 'Dom'];
     final months = [
       'Enero',
       'Febrero',
@@ -488,7 +495,7 @@ class BasicInfoWidget extends StatelessWidget {
       'Septiembre',
       'Octubre',
       'Noviembre',
-      'Diciembre'
+      'Diciembre',
     ];
 
     final weekday = weekdays[dateTime.weekday - 1];
@@ -503,13 +510,13 @@ class BasicInfoWidget extends StatelessWidget {
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.mutedGreen;
+        return ColorTokens.success50;
       case DifficultyLevel.medium:
-        return AppColors.softOrange;
+        return ColorTokens.warning50;
       case DifficultyLevel.hard:
-        return AppColors.mutedRed;
+        return ColorTokens.error50;
       case DifficultyLevel.expert:
-        return AppColors.purple;
+        return ColorTokens.primary60;
     }
   }
 
@@ -529,7 +536,7 @@ class BasicInfoWidget extends StatelessWidget {
   String _getStatusName(RideStatus status) {
     switch (status) {
       case RideStatus.upcoming:
-        return 'Próxima';
+        return 'Pr�xima';
       case RideStatus.ongoing:
         return 'En curso';
       case RideStatus.completed:
@@ -544,7 +551,7 @@ class MeetingPointInfoWidget extends StatelessWidget {
   final MeetingPoint meetingPoint;
 
   const MeetingPointInfoWidget({Key? key, required this.meetingPoint})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -556,10 +563,7 @@ class MeetingPointInfoWidget extends StatelessWidget {
           children: [
             Text(
               'Punto de encuentro',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             InfoRowWidget(
@@ -573,8 +577,8 @@ class MeetingPointInfoWidget extends StatelessWidget {
               icon: Icon(Icons.map),
               label: Text('Ver en mapa'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.darkBlue,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
               ),
             ),
           ],
@@ -606,22 +610,16 @@ class InfoSectionWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: AppColors.gray),
+                Icon(icon, color: ColorTokens.neutral60),
                 SizedBox(width: 8),
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             SizedBox(height: 12),
-            Text(
-              content,
-              style: TextStyle(fontSize: 16),
-            ),
+            Text(content, style: TextStyle(fontSize: 16)),
           ],
         ),
       ),
@@ -633,7 +631,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
   final RideModel ride;
 
   const ParticipantsSectionWidget({Key? key, required this.ride})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -645,10 +643,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
           children: [
             Text(
               'Participantes',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             Row(
@@ -657,7 +652,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
                   child: ParticipantStatWidget(
                     label: 'Confirmados',
                     count: ride.participants.length,
-                    color: AppColors.softGreen,
+                    color: ColorTokens.success40,
                     icon: Icons.check_circle,
                   ),
                 ),
@@ -666,7 +661,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
                   child: ParticipantStatWidget(
                     label: 'Tal vez',
                     count: ride.maybeParticipants.length,
-                    color: AppColors.softOrange,
+                    color: ColorTokens.warning50,
                     icon: Icons.help,
                   ),
                 ),
@@ -676,9 +671,9 @@ class ParticipantsSectionWidget extends StatelessWidget {
                 ride.maybeParticipants.isEmpty) ...[
               SizedBox(height: 16),
               Text(
-                'Aún no hay participantes registrados',
+                'A�n no hay participantes registrados',
                 style: TextStyle(
-                  color: AppColors.gray,
+                  color: ColorTokens.neutral60,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -725,13 +720,7 @@ class ParticipantStatWidget extends StatelessWidget {
               color: color,
             ),
           ),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 12,
-            ),
-          ),
+          Text(label, style: TextStyle(color: color, fontSize: 12)),
         ],
       ),
     );
@@ -762,11 +751,13 @@ class ActionButtonsWidget extends StatelessWidget {
         if (currentUserId == null) return SizedBox.shrink();
 
         final isParticipating = ride.participants.contains(currentUserId);
-        final isMaybeParticipating =
-            ride.maybeParticipants.contains(currentUserId);
+        final isMaybeParticipating = ride.maybeParticipants.contains(
+          currentUserId,
+        );
         final isCreator = ride.createdBy == currentUserId;
 
-        final isPastRide = ride.dateTime.isBefore(DateTime.now()) ||
+        final isPastRide =
+            ride.dateTime.isBefore(DateTime.now()) ||
             ride.status == RideStatus.completed ||
             ride.status == RideStatus.cancelled;
 
@@ -782,8 +773,8 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.directions_bike),
                         label: Text('Voy a ir'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.softGreen,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: ColorTokens.success40,
+                          foregroundColor: ColorTokens.neutral100,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
                       ),
@@ -795,8 +786,8 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.help_outline),
                         label: Text('Tal vez voy'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.softOrange,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: ColorTokens.warning50,
+                          foregroundColor: ColorTokens.neutral100,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
                       ),
@@ -811,8 +802,8 @@ class ActionButtonsWidget extends StatelessWidget {
                     icon: Icon(Icons.cancel),
                     label: Text('No voy a ir'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.mutedRed,
-                      foregroundColor: AppColors.white,
+                      backgroundColor: ColorTokens.error50,
+                      foregroundColor: ColorTokens.neutral100,
                       padding: EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
@@ -826,8 +817,8 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.check),
                         label: Text('Confirmar'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.softGreen,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: ColorTokens.success40,
+                          foregroundColor: ColorTokens.neutral100,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
                       ),
@@ -839,8 +830,8 @@ class ActionButtonsWidget extends StatelessWidget {
                         icon: Icon(Icons.close),
                         label: Text('No voy'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.mutedRed,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: ColorTokens.error50,
+                          foregroundColor: ColorTokens.neutral100,
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
                       ),
@@ -858,8 +849,8 @@ class ActionButtonsWidget extends StatelessWidget {
                   icon: Icon(Icons.cancel_outlined),
                   label: Text('Cancelar rodada'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.red,
-                    side: BorderSide(color: AppColors.red),
+                    foregroundColor: ColorTokens.error50,
+                    side: BorderSide(color: ColorTokens.error50),
                     padding: EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
@@ -888,21 +879,16 @@ class InfoRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.gray),
+        Icon(icon, color: ColorTokens.neutral60),
         SizedBox(width: 12),
         Text(
           '$label: ',
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            color: AppColors.gray,
+            color: ColorTokens.neutral60,
           ),
         ),
-        Expanded(
-          child: Text(
-            value,
-            style: TextStyle(fontSize: 16),
-          ),
-        ),
+        Expanded(child: Text(value, style: TextStyle(fontSize: 16))),
       ],
     );
   }

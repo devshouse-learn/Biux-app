@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +26,7 @@ class TagsStoryWidget extends StatelessWidget {
             vertical: 5,
           ),
           decoration: BoxDecoration(
-            color: AppColors.darkBlue,
+            color: ColorTokens.primary30,
             borderRadius: BorderRadius.all(
               Radius.circular(
                 10,
@@ -42,10 +42,10 @@ class TagsStoryWidget extends StatelessWidget {
           onTap: onPressed,
           child: ClipOval(
             child: ColoredBox(
-              color: AppColors.red,
+              color: ColorTokens.error50,
               child: Icon(
                 Icons.close,
-                color: AppColors.white,
+                color: ColorTokens.neutral100,
                 size: 18,
               ),
             ),
@@ -55,3 +55,5 @@ class TagsStoryWidget extends StatelessWidget {
     );
   }
 }
+
+

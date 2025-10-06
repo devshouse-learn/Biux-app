@@ -1,12 +1,13 @@
-﻿import 'package:biux/features/maps/data/models/meeting_point.dart';
+import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 class RideCreateScreen extends StatefulWidget {
   final String groupId;
@@ -28,14 +29,17 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
   TimeOfDay? _selectedTime;
   DifficultyLevel _selectedDifficulty = DifficultyLevel.easy;
   MeetingPoint? _selectedMeetingPoint;
+  String? _rideImageUrl;
 
   @override
   void initState() {
     super.initState();
     // Cargar puntos de encuentro
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<MeetingPointProvider>(context, listen: false)
-          .startListening();
+      Provider.of<MeetingPointProvider>(
+        context,
+        listen: false,
+      ).startListening();
     });
   }
 
@@ -44,8 +48,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Crear Rodada'),
-        backgroundColor: AppColors.blackPearl,
-        foregroundColor: AppColors.white,
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
       ),
       body: Consumer2<RideProvider, MeetingPointProvider>(
         builder: (context, rideProvider, meetingPointProvider, child) {
@@ -101,15 +105,16 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       prefixIcon: Icon(Icons.straighten),
                       suffixText: 'km',
                     ),
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Los kilómetros son requeridos';
+                        return 'Los Kilómetros son requeridos';
                       }
                       final km = double.tryParse(value);
                       if (km == null || km <= 0) {
-                        return 'Ingresa un valor válido';
+                        return 'Ingresa un valor v�lido';
                       }
                       return null;
                     },
@@ -160,6 +165,56 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       return null;
                     },
                   ),
+                  SizedBox(height: 16),
+
+                  // Imagen de la rodada
+                  Text(
+                    'Imagen de la rodada (opcional)',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  OptimizedImagePicker(
+                    width: double.infinity,
+                    height: 200,
+                    borderRadius: BorderRadius.circular(12),
+                    imageType: 'ride',
+                    onImageSelected: (String? imageUrl) {
+                      setState(() {
+                        _rideImageUrl = imageUrl;
+                      });
+                    },
+                    placeholder: Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: ColorTokens.neutral60,
+                          width: 2,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        color: ColorTokens.neutral10,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.image_outlined,
+                            size: 48,
+                            color: ColorTokens.neutral40,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Agregar imagen',
+                            style: TextStyle(
+                              color: ColorTokens.neutral40,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 32),
 
                   // Botón de crear
@@ -171,8 +226,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       child: ElevatedButton(
                         onPressed: _createRide,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blackPearl,
-                          foregroundColor: AppColors.white,
+                          backgroundColor: ColorTokens.primary30,
+                          foregroundColor: ColorTokens.neutral100,
                           padding: EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -193,19 +248,20 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     Container(
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.red.withOpacity(0.1),
+                        color: ColorTokens.error50.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: AppColors.red.withOpacity(0.3)),
+                        border: Border.all(
+                          color: ColorTokens.error50.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error, color: AppColors.red),
+                          Icon(Icons.error, color: ColorTokens.error50),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               rideProvider.error!,
-                              style: TextStyle(color: AppColors.red),
+                              style: TextStyle(color: ColorTokens.error50),
                             ),
                           ),
                         ],
@@ -227,10 +283,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       children: [
         Text(
           'Punto de encuentro',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
         GestureDetector(
@@ -239,26 +292,27 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.grey600),
+              border: Border.all(color: ColorTokens.neutral60),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               children: [
-                Icon(Icons.location_on, color: AppColors.blackPearl),
+                Icon(Icons.location_on, color: ColorTokens.primary30),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     _selectedMeetingPoint?.name ??
                         'Selecciona un punto de encuentro',
                     style: TextStyle(
-                      color: _selectedMeetingPoint != null
-                          ? AppColors.black87
-                          : AppColors.grey600,
+                      color:
+                          _selectedMeetingPoint != null
+                              ? ColorTokens.neutral20
+                              : ColorTokens.neutral60,
                       fontSize: 16,
                     ),
                   ),
                 ),
-                Icon(Icons.arrow_drop_down, color: AppColors.grey600),
+                Icon(Icons.arrow_drop_down, color: ColorTokens.neutral60),
               ],
             ),
           ),
@@ -268,10 +322,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
             padding: EdgeInsets.only(top: 8, left: 12),
             child: Text(
               'El punto de encuentro es requerido',
-              style: TextStyle(
-                color: AppColors.red,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: ColorTokens.error50, fontSize: 12),
             ),
           ),
       ],
@@ -285,21 +336,22 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grey600),
+          border: Border.all(color: ColorTokens.neutral60),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_today, color: AppColors.blackPearl),
+            Icon(Icons.calendar_today, color: ColorTokens.primary30),
             SizedBox(width: 12),
             Text(
               _selectedDate != null
                   ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
                   : 'Selecciona la fecha',
               style: TextStyle(
-                color: _selectedDate != null
-                    ? AppColors.black87
-                    : AppColors.grey600,
+                color:
+                    _selectedDate != null
+                        ? ColorTokens.neutral20
+                        : ColorTokens.neutral60,
                 fontSize: 16,
               ),
             ),
@@ -316,21 +368,22 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grey600),
+          border: Border.all(color: ColorTokens.neutral60),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(Icons.access_time, color: AppColors.blackPearl),
+            Icon(Icons.access_time, color: ColorTokens.primary30),
             SizedBox(width: 12),
             Text(
               _selectedTime != null
                   ? '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
                   : 'Selecciona la hora',
               style: TextStyle(
-                color: _selectedTime != null
-                    ? AppColors.black87
-                    : AppColors.grey600,
+                color:
+                    _selectedTime != null
+                        ? ColorTokens.neutral20
+                        : ColorTokens.neutral60,
                 fontSize: 16,
               ),
             ),
@@ -346,58 +399,56 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       children: [
         Text(
           'Nivel de dificultad',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
         Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.grey600),
+            border: Border.all(color: ColorTokens.neutral60),
             borderRadius: BorderRadius.circular(12),
           ),
           child: DropdownButton<DifficultyLevel>(
             value: _selectedDifficulty,
             isExpanded: true,
             underline: SizedBox.shrink(),
-            items: DifficultyLevel.values.map((difficulty) {
-              Color color;
-              switch (difficulty) {
-                case DifficultyLevel.easy:
-                  color = AppColors.softGreen;
-                  break;
-                case DifficultyLevel.medium:
-                  color = AppColors.vividOrange;
-                  break;
-                case DifficultyLevel.hard:
-                  color = AppColors.red;
-                  break;
-                case DifficultyLevel.expert:
-                  color = AppColors.purple;
-                  break;
-              }
+            items:
+                DifficultyLevel.values.map((difficulty) {
+                  Color color;
+                  switch (difficulty) {
+                    case DifficultyLevel.easy:
+                      color = ColorTokens.success40;
+                      break;
+                    case DifficultyLevel.medium:
+                      color = ColorTokens.warning60;
+                      break;
+                    case DifficultyLevel.hard:
+                      color = ColorTokens.error50;
+                      break;
+                    case DifficultyLevel.expert:
+                      color = ColorTokens.secondary60;
+                      break;
+                  }
 
-              return DropdownMenuItem(
-                value: difficulty,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                      ),
+                  return DropdownMenuItem(
+                    value: difficulty,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(_getDifficultyName(difficulty)),
+                      ],
                     ),
-                    SizedBox(width: 8),
-                    Text(_getDifficultyName(difficulty)),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
             onChanged: (value) {
               if (value != null) {
                 setState(() {
@@ -429,7 +480,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Cargando puntos de encuentro...'),
-          backgroundColor: AppColors.vividOrange,
+          backgroundColor: ColorTokens.warning60,
         ),
       );
       return;
@@ -448,11 +499,15 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
               itemBuilder: (context, index) {
                 final meetingPoint = provider.meetingPoints[index];
                 return ListTile(
-                  leading: Icon(Icons.location_on, color: AppColors.strongCyan),
+                  leading: Icon(
+                    Icons.location_on,
+                    color: ColorTokens.secondary50,
+                  ),
                   title: Text(meetingPoint.name),
-                  subtitle: meetingPoint.description.isNotEmpty
-                      ? Text(meetingPoint.description)
-                      : null,
+                  subtitle:
+                      meetingPoint.description.isNotEmpty
+                          ? Text(meetingPoint.description)
+                          : null,
                   selected: _selectedMeetingPoint?.id == meetingPoint.id,
                   onTap: () {
                     setState(() {
@@ -508,7 +563,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Por favor selecciona un punto de encuentro'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
       return;
@@ -518,7 +573,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Por favor selecciona la fecha'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
       return;
@@ -528,7 +583,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Por favor selecciona la hora'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
       return;
@@ -546,7 +601,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('La fecha y hora deben ser en el futuro'),
-          backgroundColor: AppColors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
       return;
@@ -563,13 +618,14 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       kilometers: double.parse(_kilometersController.text),
       instructions: _instructionsController.text.trim(),
       recommendations: _recommendationsController.text.trim(),
+      imageUrl: _rideImageUrl, // Incluir imagen si fue seleccionada
     );
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Rodada creada exitosamente'),
-          backgroundColor: AppColors.green,
+          backgroundColor: ColorTokens.success50,
         ),
       );
       context.pop();

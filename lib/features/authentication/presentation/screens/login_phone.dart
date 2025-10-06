@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart' hide Colors;
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/authentication/presentation/providers/auth_provider.dart';
@@ -53,7 +53,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBlue,
+      backgroundColor: ColorTokens.primary30,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -105,33 +105,37 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         enabled: auth.state != AuthState.loading,
                         decoration: InputDecoration(
                           labelText: 'Teléfono',
-                          labelStyle: TextStyle(color: AppColors.white),
+                          labelStyle: TextStyle(color: ColorTokens.neutral100),
                           prefixIcon:
-                              Icon(Icons.phone, color: AppColors.strongCyan),
+                              Icon(Icons.phone, color: ColorTokens.secondary50),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
+                          fillColor: Colors.white.withValues(alpha: 0.1),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(color: AppColors.white),
+                            borderSide:
+                                BorderSide(color: ColorTokens.neutral100),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(color: AppColors.white),
+                            borderSide:
+                                BorderSide(color: ColorTokens.neutral100),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(color: AppColors.strongCyan),
+                            borderSide:
+                                BorderSide(color: ColorTokens.secondary50),
                           ),
                         ),
-                        style: TextStyle(color: AppColors.white),
+                        style: TextStyle(color: ColorTokens.neutral100),
                       ),
                       SizedBox(height: 20),
                       if (auth.state == AuthState.loading)
-                        CircularProgressIndicator(color: AppColors.strongCyan)
+                        CircularProgressIndicator(
+                            color: ColorTokens.secondary50)
                       else if (auth.state != AuthState.codeSent)
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.strongCyan,
+                            backgroundColor: ColorTokens.secondary50,
                             minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
@@ -140,7 +144,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           onPressed: _handleSendCode,
                           child: Text('Enviar código',
                               style: TextStyle(
-                                  color: AppColors.white,
+                                  color: ColorTokens.neutral100,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold)),
                         ),
@@ -159,7 +163,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                                 maxLength: 1,
                                 enabled: auth.state != AuthState.loading,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: AppColors.white),
+                                style: TextStyle(color: ColorTokens.neutral100),
                                 onChanged: (value) {
                                   if (value.isNotEmpty && i < 5) {
                                     FocusScope.of(context)
@@ -172,21 +176,22 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                                 decoration: InputDecoration(
                                   counterText: '',
                                   filled: true,
-                                  fillColor: Colors.white.withOpacity(0.1),
+                                  fillColor:
+                                      Colors.white.withValues(alpha: 0.1),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide:
-                                        BorderSide(color: AppColors.white),
+                                    borderSide: BorderSide(
+                                        color: ColorTokens.neutral100),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide:
-                                        BorderSide(color: AppColors.white),
+                                    borderSide: BorderSide(
+                                        color: ColorTokens.neutral100),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide:
-                                        BorderSide(color: AppColors.strongCyan),
+                                    borderSide: BorderSide(
+                                        color: ColorTokens.secondary50),
                                   ),
                                 ),
                               ),
@@ -196,7 +201,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         SizedBox(height: 20),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.strongCyan,
+                            backgroundColor: ColorTokens.secondary50,
                             minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
@@ -207,7 +212,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                               : null,
                           child: Text('Validar código',
                               style: TextStyle(
-                                  color: AppColors.white,
+                                  color: ColorTokens.neutral100,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold)),
                         ),
@@ -215,8 +220,8 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: auth.canResendCode
-                                ? AppColors.strongCyan
-                                : AppColors.gray,
+                                ? ColorTokens.secondary50
+                                : ColorTokens.neutral60,
                             minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
@@ -229,12 +234,13 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           child: auth.canResendCode
                               ? Text('Reenviar código',
                                   style: TextStyle(
-                                      color: AppColors.white,
+                                      color: ColorTokens.neutral100,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold))
                               : Text('Reenviar en ${auth.resendSeconds} s',
                                   style: TextStyle(
-                                      color: AppColors.white, fontSize: 16)),
+                                      color: ColorTokens.neutral100,
+                                      fontSize: 16)),
                         ),
                       ],
                     ],

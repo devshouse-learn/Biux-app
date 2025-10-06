@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 // Feature imports (providers)
 import '../../../features/groups/presentation/providers/group_provider.dart';
@@ -301,7 +302,7 @@ final GoRouter _router = GoRouter(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error, size: 64, color: Colors.red),
+          const Icon(Icons.error, size: 64, color: ColorTokens.error50),
           const SizedBox(height: 16),
           Text('Error: ${state.error}'),
           const SizedBox(height: 16),

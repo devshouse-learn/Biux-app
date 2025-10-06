@@ -64,7 +64,7 @@ class StoriesRepository {
           // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
         });
     if (uriResponse.statusCode == 200) {
-      final data = json.decode(uriResponse.body);
+      json.decode(uriResponse.body);
       // int id = datal["id"];
       return "Bien";
     } else if (uriResponse.statusCode != 200) {
@@ -86,7 +86,7 @@ class StoriesRepository {
         ),
       },
     );
-    Response response = await dio.patch(
+    await dio.patch(
       'https://biux-prod.ibacrea.com/api/v1/historias-item/$id/subir-fotos',
       data: formData,
     );

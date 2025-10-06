@@ -199,7 +199,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         email: biuxUser,
         password: password,
       );
-      final user = userCredential.user;
+      userCredential.user;
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -282,7 +282,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   Future uploadProfileCover(String id, File fileProfileCover) async {
     try {
       FirebaseUtils firebaseUtils = FirebaseUtils();
-      final url = firebaseUtils.uploadImage(
+      firebaseUtils.uploadImage(
         image: fileProfileCover,
         nameImage: 'ProfileCover',
         imageFolder: 'ProfileCover',

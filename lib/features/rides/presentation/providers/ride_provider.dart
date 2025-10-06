@@ -48,14 +48,16 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot = await _firestore
-          .collection('rides')
-          .orderBy('dateTime', descending: false)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('rides')
+              .orderBy('dateTime', descending: false)
+              .get();
 
-      _rides = querySnapshot.docs
-          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-          .toList();
+      _rides =
+          querySnapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList();
 
       _setLoading(false);
     } catch (e) {
@@ -70,15 +72,17 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot = await _firestore
-          .collection('rides')
-          .where('groupId', isEqualTo: groupId)
-          .orderBy('dateTime', descending: false)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('rides')
+              .where('groupId', isEqualTo: groupId)
+              .orderBy('dateTime', descending: false)
+              .get();
 
-      _rides = querySnapshot.docs
-          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-          .toList();
+      _rides =
+          querySnapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList();
 
       _setLoading(false);
     } catch (e) {
@@ -98,15 +102,17 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot = await _firestore
-          .collection('rides')
-          .where('participants', arrayContains: currentUserId)
-          .orderBy('dateTime', descending: false)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('rides')
+              .where('participants', arrayContains: currentUserId)
+              .orderBy('dateTime', descending: false)
+              .get();
 
-      _userRides = querySnapshot.docs
-          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-          .toList();
+      _userRides =
+          querySnapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList();
 
       _setLoading(false);
     } catch (e) {
@@ -125,6 +131,7 @@ class RideProvider extends ChangeNotifier {
     required double kilometers,
     required String instructions,
     required String recommendations,
+    String? imageUrl, // Imagen opcional de la rodada
   }) async {
     if (currentUserId == null) {
       _setError('Usuario no autenticado');
@@ -149,6 +156,7 @@ class RideProvider extends ChangeNotifier {
         'status': RideStatus.upcoming.name,
         'participants': <String>[],
         'maybeParticipants': <String>[],
+        if (imageUrl != null) 'imageUrl': imageUrl, // Solo agregar si existe
       };
 
       await _firestore.collection('rides').add(rideData);
@@ -243,15 +251,17 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot = await _firestore
-          .collection('rides')
-          .where('groupId', isEqualTo: groupId)
-          .orderBy('dateTime', descending: false)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection('rides')
+              .where('groupId', isEqualTo: groupId)
+              .orderBy('dateTime', descending: false)
+              .get();
 
-      _rides = querySnapshot.docs
-          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-          .toList();
+      _rides =
+          querySnapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList();
 
       _setLoading(false);
     } catch (e) {
@@ -334,9 +344,7 @@ class RideProvider extends ChangeNotifier {
       }
 
       // Actualizar el estado de la rodada a cancelado
-      await rideRef.update({
-        'status': RideStatus.cancelled.name,
-      });
+      await rideRef.update({'status': RideStatus.cancelled.name});
 
       // Actualizar la rodada seleccionada si es la misma
       if (_selectedRide?.id == rideId) {

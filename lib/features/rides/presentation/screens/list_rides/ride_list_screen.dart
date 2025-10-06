@@ -1,9 +1,10 @@
-﻿import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 
 class RideListScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _RideListScreenState extends State<RideListScreen> {
       }
 
       // Cargar los grupos de admin del usuario siempre (tanto para grupo específico como general)
-      // Esto evita recargas innecesarias al presionar el botón +
+      // Esto evita recargas innecesarias al presionar el Botón +
       groupProvider.loadAdminGroups();
     });
   }
@@ -42,8 +43,8 @@ class _RideListScreenState extends State<RideListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Rodadas'),
-        backgroundColor: AppColors.blackPearl,
-        foregroundColor: AppColors.white,
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
       ),
       body: Consumer<RideProvider>(
         builder: (context, provider, child) {
@@ -82,18 +83,18 @@ class _RideListScreenState extends State<RideListScreen> {
           if (widget.groupId != null) {
             return FloatingActionButton(
               onPressed: () => context.push('/rides/create/${widget.groupId}'),
-              backgroundColor: AppColors.blackPearl,
-              child: Icon(Icons.add, color: AppColors.white),
+              backgroundColor: ColorTokens.primary30,
+              child: Icon(Icons.add, color: ColorTokens.neutral100),
               tooltip: 'Crear Rodada',
             );
           }
 
-          // Si estamos en el listado general y el usuario es admin de algún grupo
+          // Si estamos en el listado general y el usuario es admin de alg�n grupo
           if (groupProvider.adminGroups.isNotEmpty) {
             return FloatingActionButton(
               onPressed: () => _showCreateRideDialog(context, groupProvider),
-              backgroundColor: AppColors.blackPearl,
-              child: Icon(Icons.add, color: AppColors.white),
+              backgroundColor: ColorTokens.primary30,
+              child: Icon(Icons.add, color: ColorTokens.neutral100),
               tooltip: 'Crear Rodada',
             );
           }
@@ -114,51 +115,46 @@ class _RideListScreenState extends State<RideListScreen> {
               Icon(
                 Icons.directions_bike_outlined,
                 size: 80,
-                color: AppColors.grey600,
+                color: ColorTokens.neutral60,
               ),
               SizedBox(height: 16),
               Text(
                 widget.groupId != null
                     ? 'No hay rodadas en este grupo'
                     : 'No hay rodadas programadas',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: AppColors.grey600,
-                ),
+                style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
               ),
               SizedBox(height: 8),
               Text(
                 widget.groupId != null
-                    ? 'Sé el primero en organizar una rodada en este grupo'
+                    ? 'S� el primero en organizar una rodada en este grupo'
                     : groupProvider.adminGroups.isNotEmpty
-                        ? 'Organiza la primera rodada para tu grupo'
-                        : 'Únete a un grupo para participar en rodadas',
-                style: TextStyle(
-                  color: AppColors.grey600,
-                ),
+                    ? 'Organiza la primera rodada para tu grupo'
+                    : '�nete a un grupo para participar en rodadas',
+                style: TextStyle(color: ColorTokens.neutral60),
               ),
               SizedBox(height: 24),
-              // Botón en estado vacío
+              // Botón en estado vac�o
               if (widget.groupId != null)
                 ElevatedButton.icon(
-                  onPressed: () =>
-                      context.push('/rides/create/${widget.groupId}'),
+                  onPressed:
+                      () => context.push('/rides/create/${widget.groupId}'),
                   icon: Icon(Icons.add),
                   label: Text('Crear Rodada'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.blackPearl,
-                    foregroundColor: AppColors.white,
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: ColorTokens.neutral100,
                   ),
                 )
               else if (groupProvider.adminGroups.isNotEmpty)
                 ElevatedButton.icon(
-                  onPressed: () =>
-                      _showCreateRideDialog(context, groupProvider),
+                  onPressed:
+                      () => _showCreateRideDialog(context, groupProvider),
                   icon: Icon(Icons.add),
                   label: Text('Crear Rodada'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.blackPearl,
-                    foregroundColor: AppColors.white,
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: ColorTokens.neutral100,
                   ),
                 )
               else
@@ -167,8 +163,8 @@ class _RideListScreenState extends State<RideListScreen> {
                   icon: Icon(Icons.group),
                   label: Text('Ver Grupos'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.blackPearl,
-                    foregroundColor: AppColors.white,
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: ColorTokens.neutral100,
                   ),
                 ),
             ],
@@ -185,9 +181,7 @@ class _RideListScreenState extends State<RideListScreen> {
     return Card(
       margin: EdgeInsets.only(bottom: 16),
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => context.push('/rides/${ride.id}'),
         borderRadius: BorderRadius.circular(12),
@@ -221,7 +215,7 @@ class _RideListScreenState extends State<RideListScreen> {
                             Icon(
                               Icons.arrow_forward_ios,
                               size: 16,
-                              color: AppColors.grey600,
+                              color: ColorTokens.neutral60,
                             ),
                           ],
                         ),
@@ -230,7 +224,9 @@ class _RideListScreenState extends State<RideListScreen> {
                           children: [
                             Container(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: _getDifficultyColor(ride.difficulty),
                                 borderRadius: BorderRadius.circular(12),
@@ -238,7 +234,7 @@ class _RideListScreenState extends State<RideListScreen> {
                               child: Text(
                                 ride.difficultyDisplayName,
                                 style: TextStyle(
-                                  color: AppColors.white,
+                                  color: ColorTokens.neutral100,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -248,7 +244,7 @@ class _RideListScreenState extends State<RideListScreen> {
                             Text(
                               '${ride.kilometers} km',
                               style: TextStyle(
-                                color: AppColors.grey600,
+                                color: ColorTokens.neutral60,
                                 fontSize: 14,
                               ),
                             ),
@@ -261,13 +257,13 @@ class _RideListScreenState extends State<RideListScreen> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.gold,
+                        color: ColorTokens.warning50,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         'Organizador',
                         style: TextStyle(
-                          color: AppColors.white,
+                          color: ColorTokens.neutral100,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
@@ -296,24 +292,29 @@ class _RideListScreenState extends State<RideListScreen> {
                             margin: EdgeInsets.only(bottom: 12),
                             child: Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 16,
-                                  backgroundImage:
-                                      groupInfo['logoUrl'] != null &&
-                                              groupInfo['logoUrl']
-                                                  .toString()
-                                                  .isNotEmpty
-                                          ? NetworkImage(groupInfo['logoUrl'])
-                                          : null,
-                                  backgroundColor: AppColors.blackPearl,
-                                  child: groupInfo['logoUrl'] == null ||
-                                          groupInfo['logoUrl']
-                                              .toString()
-                                              .isEmpty
-                                      ? Icon(Icons.group,
-                                          size: 16, color: AppColors.white)
-                                      : null,
-                                ),
+                                groupInfo['logoUrl'] != null &&
+                                        groupInfo['logoUrl']
+                                            .toString()
+                                            .isNotEmpty
+                                    ? ClipOval(
+                                      child: OptimizedNetworkImage(
+                                        imageUrl: groupInfo['logoUrl'],
+                                        width: 32,
+                                        height: 32,
+                                        imageType:
+                                            'avatar', // Cache de larga duración para logos
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                    : CircleAvatar(
+                                      radius: 16,
+                                      backgroundColor: ColorTokens.primary30,
+                                      child: Icon(
+                                        Icons.group,
+                                        size: 16,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
                                 SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -321,7 +322,10 @@ class _RideListScreenState extends State<RideListScreen> {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: AppColors.blackPearl,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium?.color,
                                     ),
                                   ),
                                 ),
@@ -336,13 +340,16 @@ class _RideListScreenState extends State<RideListScreen> {
                   // Fecha y hora
                   Row(
                     children: [
-                      Icon(Icons.calendar_today,
-                          size: 16, color: AppColors.grey600),
+                      Icon(
+                        Icons.calendar_today,
+                        size: 16,
+                        color: ColorTokens.neutral60,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         _formatDateTime(ride.dateTime),
                         style: TextStyle(
-                          color: AppColors.grey600,
+                          color: ColorTokens.neutral60,
                           fontSize: 14,
                         ),
                       ),
@@ -353,21 +360,24 @@ class _RideListScreenState extends State<RideListScreen> {
                   // Participantes
                   Row(
                     children: [
-                      Icon(Icons.group, size: 16, color: AppColors.grey600),
+                      Icon(Icons.group, size: 16, color: ColorTokens.neutral60),
                       SizedBox(width: 8),
                       Text(
                         '${ride.participantCount} confirmados',
                         style: TextStyle(
-                          color: AppColors.grey600,
+                          color: ColorTokens.neutral60,
                           fontSize: 14,
                         ),
                       ),
                       if (ride.maybeParticipantCount > 0) ...[
-                        Text(' • ', style: TextStyle(color: AppColors.grey600)),
+                        Text(
+                          ' ',
+                          style: TextStyle(color: ColorTokens.neutral60),
+                        ),
                         Text(
                           '${ride.maybeParticipantCount} tal vez',
                           style: TextStyle(
-                            color: AppColors.vividOrange,
+                            color: ColorTokens.warning60,
                             fontSize: 14,
                           ),
                         ),
@@ -383,8 +393,11 @@ class _RideListScreenState extends State<RideListScreen> {
                   // Botones de acción
                   Align(
                     alignment: Alignment.centerRight,
-                    child:
-                        _buildActionButton(ride, participationStatus, provider),
+                    child: _buildActionButton(
+                      ride,
+                      participationStatus,
+                      provider,
+                    ),
                   ),
                 ],
               ),
@@ -402,12 +415,12 @@ class _RideListScreenState extends State<RideListScreen> {
 
     switch (status) {
       case RideParticipationStatus.participating:
-        color = AppColors.softGreen;
+        color = ColorTokens.success40;
         text = 'Voy a ir';
         icon = Icons.check_circle;
         break;
       case RideParticipationStatus.maybeParticipating:
-        color = AppColors.softOrange;
+        color = ColorTokens.warning50;
         text = 'Tal vez voy';
         icon = Icons.help;
         break;
@@ -417,18 +430,18 @@ class _RideListScreenState extends State<RideListScreen> {
 
     return Chip(
       avatar: Icon(icon, color: color, size: 16),
-      label: Text(
-        text,
-        style: TextStyle(color: color, fontSize: 12),
-      ),
+      label: Text(text, style: TextStyle(color: color, fontSize: 12)),
       backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color.withValues(alpha: 0.3)),
     );
   }
 
   Widget _buildActionButton(
-      RideModel ride, RideParticipationStatus status, RideProvider provider) {
-    // No mostrar botones si la rodada ya pasó o está cancelada
+    RideModel ride,
+    RideParticipationStatus status,
+    RideProvider provider,
+  ) {
+    // No mostrar botones si la rodada ya pas� o est� cancelada
     if (ride.status == RideStatus.completed ||
         ride.status == RideStatus.cancelled ||
         ride.dateTime.isBefore(DateTime.now())) {
@@ -442,8 +455,8 @@ class _RideListScreenState extends State<RideListScreen> {
           icon: Icon(Icons.cancel, size: 16),
           label: Text('No voy'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.mutedRed,
-            foregroundColor: AppColors.white,
+            backgroundColor: ColorTokens.error50,
+            foregroundColor: ColorTokens.neutral100,
             minimumSize: Size(75, 32),
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           ),
@@ -458,8 +471,8 @@ class _RideListScreenState extends State<RideListScreen> {
               icon: Icon(Icons.check, size: 16),
               label: Text('Confirmar'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.softGreen,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.success40,
+                foregroundColor: ColorTokens.neutral100,
                 minimumSize: Size(75, 32),
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
@@ -470,8 +483,8 @@ class _RideListScreenState extends State<RideListScreen> {
               icon: Icon(Icons.close, size: 16),
               label: Text('No'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.mutedRed,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.error50,
+                foregroundColor: ColorTokens.neutral100,
                 minimumSize: Size(75, 32),
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
@@ -488,8 +501,8 @@ class _RideListScreenState extends State<RideListScreen> {
               icon: Icon(Icons.directions_bike, size: 16),
               label: Text('Voy'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.softGreen,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.success40,
+                foregroundColor: ColorTokens.neutral100,
                 minimumSize: Size(75, 32),
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
@@ -500,8 +513,8 @@ class _RideListScreenState extends State<RideListScreen> {
               icon: Icon(Icons.help_outline, size: 16),
               label: Text('Tal vez'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.softOrange,
-                foregroundColor: AppColors.white,
+                backgroundColor: ColorTokens.warning50,
+                foregroundColor: ColorTokens.neutral100,
                 minimumSize: Size(75, 32),
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
@@ -514,26 +527,26 @@ class _RideListScreenState extends State<RideListScreen> {
   Color _getStatusColor(RideStatus status) {
     switch (status) {
       case RideStatus.upcoming:
-        return AppColors.blue;
+        return ColorTokens.primary50;
       case RideStatus.ongoing:
-        return AppColors.softGreen;
+        return ColorTokens.success40;
       case RideStatus.completed:
-        return AppColors.grey600;
+        return ColorTokens.neutral60;
       case RideStatus.cancelled:
-        return AppColors.mutedRed;
+        return ColorTokens.error50;
     }
   }
 
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return AppColors.mutedGreen;
+        return ColorTokens.success50;
       case DifficultyLevel.medium:
-        return AppColors.softOrange;
+        return ColorTokens.warning50;
       case DifficultyLevel.hard:
-        return AppColors.mutedRed;
+        return ColorTokens.error50;
       case DifficultyLevel.expert:
-        return AppColors.purple;
+        return ColorTokens.secondary60;
     }
   }
 
@@ -550,7 +563,7 @@ class _RideListScreenState extends State<RideListScreen> {
       'Sep',
       'Oct',
       'Nov',
-      'Dic'
+      'Dic',
     ];
 
     final day = dateTime.day;
@@ -567,7 +580,7 @@ class _RideListScreenState extends State<RideListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('¡Genial! Te has unido a la rodada'),
-          backgroundColor: AppColors.softGreen,
+          backgroundColor: ColorTokens.success40,
         ),
       );
     }
@@ -579,7 +592,7 @@ class _RideListScreenState extends State<RideListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Marcado como "tal vez voy"'),
-          backgroundColor: AppColors.vividOrange,
+          backgroundColor: ColorTokens.warning60,
         ),
       );
     }
@@ -591,14 +604,16 @@ class _RideListScreenState extends State<RideListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Has salido de la rodada'),
-          backgroundColor: AppColors.grey600,
+          backgroundColor: ColorTokens.neutral60,
         ),
       );
     }
   }
 
   void _showCreateRideDialog(
-      BuildContext context, GroupProvider groupProvider) {
+    BuildContext context,
+    GroupProvider groupProvider,
+  ) {
     // Si solo es admin de un grupo, ir directamente a crear rodada
     if (groupProvider.adminGroups.length == 1) {
       final group = groupProvider.adminGroups.first;
@@ -606,7 +621,7 @@ class _RideListScreenState extends State<RideListScreen> {
       return;
     }
 
-    // Si es admin de múltiples grupos, mostrar selector
+    // Si es admin de m�ltiples grupos, mostrar selector
     showDialog(
       context: context,
       builder: (context) {
@@ -625,19 +640,20 @@ class _RideListScreenState extends State<RideListScreen> {
                   SizedBox(height: 16),
                   // Lista de grupos administrados por el usuario
                   Column(
-                    children: groupProvider.adminGroups.map((group) {
-                      return RadioListTile<String>(
-                        title: Text(group.name),
-                        value: group.id,
-                        groupValue: selectedGroupId,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedGroupId = value;
-                          });
-                        },
-                        activeColor: AppColors.blackPearl,
-                      );
-                    }).toList(),
+                    children:
+                        groupProvider.adminGroups.map((group) {
+                          return RadioListTile<String>(
+                            title: Text(group.name),
+                            value: group.id,
+                            groupValue: selectedGroupId,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedGroupId = value;
+                              });
+                            },
+                            activeColor: ColorTokens.primary30,
+                          );
+                        }).toList(),
                   ),
                 ],
               ),
@@ -649,23 +665,23 @@ class _RideListScreenState extends State<RideListScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (selectedGroupId != null) {
-                      // Navegar a la pantalla de creación de rodada con el ID del grupo seleccionado
+                      // Navegar a la pantalla de creaci�n de rodada con el ID del grupo seleccionado
                       context.push('/rides/create/$selectedGroupId');
                       Navigator.of(context).pop();
                     } else {
-                      // Mostrar un mensaje de error si no se ha seleccionado ningún grupo
+                      // Mostrar un mensaje de error si no se ha seleccionado ning�n grupo
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Por favor, selecciona un grupo'),
-                          backgroundColor: AppColors.red,
+                          backgroundColor: ColorTokens.error50,
                         ),
                       );
                     }
                   },
                   child: Text('Continuar'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.blackPearl,
-                    foregroundColor: AppColors.white,
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: ColorTokens.neutral100,
                   ),
                 ),
               ],

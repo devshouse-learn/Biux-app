@@ -1,4 +1,4 @@
-import 'package:biux/core/config/colors.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
@@ -17,7 +17,7 @@ class _LoadingState extends State<Loading> {
     return Container(
       height: height,
       width: width,
-      color: AppColors.black.withOpacity(0.7),
+      color: ColorTokens.neutral0.withValues(alpha: 0.7),
       child: Stack(
         children: [
           Center(
@@ -32,10 +32,10 @@ class _LoadingState extends State<Loading> {
               width: 90.0,
               child: LoadingIndicator(
                 indicatorType: Indicator.ballSpinFadeLoader,
-                colors: const [AppColors.white],
+                colors: const [ColorTokens.neutral100],
                 strokeWidth: 20,
-                backgroundColor: AppColors.transparent,
-                pathBackgroundColor: AppColors.transparent,
+                backgroundColor: ColorTokens.transparent,
+                pathBackgroundColor: ColorTokens.transparent,
               ),
             ),
           ),
@@ -44,3 +44,7 @@ class _LoadingState extends State<Loading> {
     );
   }
 }
+
+
+
+
