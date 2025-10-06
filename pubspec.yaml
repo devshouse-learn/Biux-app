@@ -96,12 +96,20 @@ dependencies:
   #flutter_native_image: ^0.0.6+1
   easy_image_viewer: ^1.5.1
   flutter_image_compress: ^2.3.0
+  video_player: ^2.8.1
+  flutter_riverpod: ^2.4.9
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.1
+  build_runner: ^2.4.7
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
 
 flutter_launcher_icons:
   android: "launcher_icon"

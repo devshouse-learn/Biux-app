@@ -307,6 +307,102 @@ class OptimizedStorageService {
     }
   }
 
+  /// Sube contenido de experiencias (imágenes y videos) con optimización específica
+  static Future<Map<String, String>?> uploadExperienceMedia({
+    required String userId,
+    required File mediaFile,
+    required String mediaType, // 'image' | 'video'
+    required String experienceType, // 'general' | 'ride'
+    String? experienceId,
+    VoidCallback? onProgress,
+  }) async {
+    try {
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final results = <String, String>{};
+
+      if (mediaType == 'image') {
+        // Para imágenes: compresión optimizada para experiencias
+        final compressedFile = await ImageCompressionService.compressImageFile(
+          mediaFile,
+        );
+        if (compressedFile == null) return null;
+
+        final fileName = 'exp_img_${timestamp}.jpg';
+        final ref = _storage.ref().child(
+          'experiences/$userId/images/$fileName',
+        );
+
+        final metadata = SettableMetadata(
+          contentType: 'image/jpeg',
+          cacheControl:
+              experienceType == 'ride'
+                  ? 'public, max-age=2592000' // 30 días para rodadas
+                  : 'public, max-age=604800', // 7 días para experiencias normales
+          customMetadata: {
+            'compressed': 'true',
+            'mediaType': 'image',
+            'experienceType': experienceType,
+            'duration': '15', // 15 segundos por defecto para imágenes
+            'userId': userId,
+            'experienceId': experienceId ?? '',
+          },
+        );
+
+        final uploadTask = ref.putFile(compressedFile, metadata);
+        final snapshot = await uploadTask;
+        final downloadUrl = await snapshot.ref.getDownloadURL();
+
+        results['url'] = _optimizeCdnUrl(downloadUrl);
+        results['type'] = 'image';
+        results['duration'] = '15';
+
+        await _cleanupTempFiles([compressedFile]);
+      } else if (mediaType == 'video') {
+        // Para videos: subida directa con metadatos optimizados
+        final fileName = 'exp_vid_${timestamp}.mp4';
+        final ref = _storage.ref().child(
+          'experiences/$userId/videos/$fileName',
+        );
+
+        final metadata = SettableMetadata(
+          contentType: 'video/mp4',
+          cacheControl:
+              experienceType == 'ride'
+                  ? 'public, max-age=2592000' // 30 días para rodadas
+                  : 'public, max-age=604800', // 7 días para experiencias normales
+          customMetadata: {
+            'mediaType': 'video',
+            'experienceType': experienceType,
+            'maxDuration': '30', // 30 segundos máximo
+            'userId': userId,
+            'experienceId': experienceId ?? '',
+          },
+        );
+
+        final uploadTask = ref.putFile(mediaFile, metadata);
+
+        // Monitorear progreso si se proporciona callback
+        if (onProgress != null) {
+          uploadTask.snapshotEvents.listen((snapshot) {
+            onProgress();
+          });
+        }
+
+        final snapshot = await uploadTask;
+        final downloadUrl = await snapshot.ref.getDownloadURL();
+
+        results['url'] = _optimizeCdnUrl(downloadUrl);
+        results['type'] = 'video';
+        results['duration'] = '30'; // Por defecto, se puede ajustar después
+      }
+
+      return results;
+    } catch (e) {
+      debugPrint('Error subiendo contenido de experiencia: $e');
+      return null;
+    }
+  }
+
   /// Calcula costo estimado mensual (aproximado)
   static double _calculateEstimatedCost(int bytes) {
     // Precios aproximados de Firebase Storage (pueden variar)
