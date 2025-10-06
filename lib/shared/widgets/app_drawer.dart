@@ -9,7 +9,6 @@ import 'package:biux/core/design_system/design_system.dart';
 import '../../core/config/router/app_routes.dart';
 import '../../features/maps/presentation/providers/meeting_point_provider.dart';
 import '../../features/users/presentation/providers/user_provider.dart';
-import '../../debug/profile_image_debug_screen.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -232,21 +231,6 @@ class _AppDrawerState extends State<AppDrawer> {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Funcionalidad próximamente')),
-                    );
-                  },
-                ),
-
-                // Debug temporal para imagen de perfil
-                ListTile(
-                  leading: Icon(Icons.bug_report, color: ColorTokens.error50),
-                  title: Text('Debug: Imagen Perfil'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfileImageDebugWidget(),
-                      ),
                     );
                   },
                 ),

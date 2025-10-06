@@ -2,6 +2,7 @@ import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/features/rides/presentation/widgets/ride_stories_widget.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -74,10 +75,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             );
           }
 
-          final meetingPoint =
-              meetingPointProvider.meetingPoints
-                  .where((mp) => mp.id == ride.meetingPointId)
-                  .firstOrNull;
+          final meetingPoint = meetingPointProvider.meetingPoints
+              .where((mp) => mp.id == ride.meetingPointId)
+              .firstOrNull;
 
           return NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -129,6 +129,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
 
                   // Información básica
                   BasicInfoWidget(ride: ride),
+                  SizedBox(height: 16),
+
+                  // Stories de la rodada - Sección tipo Instagram
+                  RideStoriesWidget(rideId: ride.id, rideName: ride.name),
                   SizedBox(height: 24),
 
                   // Punto de encuentro
@@ -160,11 +164,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   ActionButtonsWidget(
                     ride: ride,
                     onJoinRide: () => _joinRide(ride.id, rideProvider),
-                    onMaybeJoinRide:
-                        () => _maybeJoinRide(ride.id, rideProvider),
+                    onMaybeJoinRide: () =>
+                        _maybeJoinRide(ride.id, rideProvider),
                     onLeaveRide: () => _leaveRide(ride.id, rideProvider),
-                    onCancelRide:
-                        () => _showCancelDialog(ride.id, rideProvider),
+                    onCancelRide: () =>
+                        _showCancelDialog(ride.id, rideProvider),
                   ),
                 ],
               ),
@@ -227,40 +231,39 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   void _showCancelDialog(String rideId, RideProvider provider) {
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text('Cancelar Rodada'),
-            content: Text(
-              '�Est�s seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text('No'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(dialogContext).pop();
-                  final success = await provider.cancelRide(rideId);
-                  if (success && mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Rodada cancelada'),
-                        backgroundColor: ColorTokens.error50,
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorTokens.error50,
-                ),
-                child: Text(
-                  'Sí, cancelar',
-                  style: TextStyle(color: ColorTokens.neutral100),
-                ),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Cancelar Rodada'),
+        content: Text(
+          '�Est�s seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text('No'),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              final success = await provider.cancelRide(rideId);
+              if (success && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Rodada cancelada'),
+                    backgroundColor: ColorTokens.error50,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.error50,
+            ),
+            child: Text(
+              'Sí, cancelar',
+              style: TextStyle(color: ColorTokens.neutral100),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -339,24 +342,24 @@ class GroupInfoWidget extends StatelessWidget {
                     children: [
                       groupInfo['imageUrl'] != null
                           ? ClipOval(
-                            child: OptimizedNetworkImage(
-                              imageUrl: groupInfo['imageUrl'],
-                              width: 50,
-                              height: 50,
-                              imageType:
-                                  'avatar', // Cache de larga duración para logos
-                              fit: BoxFit.cover,
-                            ),
-                          )
+                              child: OptimizedNetworkImage(
+                                imageUrl: groupInfo['imageUrl'],
+                                width: 50,
+                                height: 50,
+                                imageType:
+                                    'avatar', // Cache de larga duración para logos
+                                fit: BoxFit.cover,
+                              ),
+                            )
                           : CircleAvatar(
-                            radius: 25,
-                            backgroundColor: ColorTokens.primary30,
-                            child: Icon(
-                              Icons.group,
-                              color: ColorTokens.neutral100,
-                              size: 28,
+                              radius: 25,
+                              backgroundColor: ColorTokens.primary30,
+                              child: Icon(
+                                Icons.group,
+                                color: ColorTokens.neutral100,
+                                size: 28,
+                              ),
                             ),
-                          ),
                       SizedBox(width: 16),
                       Expanded(
                         child: Column(

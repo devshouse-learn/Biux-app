@@ -1,7 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
-
-part 'experience_repository.freezed.dart';
 
 /// Repository abstracto para la gestión de experiencias
 abstract class ExperienceRepository {
@@ -39,24 +36,113 @@ abstract class ExperienceRepository {
 }
 
 /// Request para crear una nueva experiencia
-@freezed
-class CreateExperienceRequest with _$CreateExperienceRequest {
-  const factory CreateExperienceRequest({
-    required String description,
-    required List<String> tags,
-    required List<CreateMediaRequest> mediaFiles,
-    required ExperienceType type,
+class CreateExperienceRequest {
+  final String description;
+  final List<String> tags;
+  final List<CreateMediaRequest> mediaFiles;
+  final ExperienceType type;
+  final String? rideId;
+
+  const CreateExperienceRequest({
+    required this.description,
+    required this.tags,
+    required this.mediaFiles,
+    required this.type,
+    this.rideId,
+  });
+
+  /// Crear copia con campos modificados
+  CreateExperienceRequest copyWith({
+    String? description,
+    List<String>? tags,
+    List<CreateMediaRequest>? mediaFiles,
+    ExperienceType? type,
     String? rideId,
-  }) = _CreateExperienceRequest;
+  }) {
+    return CreateExperienceRequest(
+      description: description ?? this.description,
+      tags: tags ?? this.tags,
+      mediaFiles: mediaFiles ?? this.mediaFiles,
+      type: type ?? this.type,
+      rideId: rideId ?? this.rideId,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is CreateExperienceRequest &&
+        other.description == description &&
+        other.tags.toString() == tags.toString() &&
+        other.mediaFiles.toString() == mediaFiles.toString() &&
+        other.type == type &&
+        other.rideId == rideId;
+  }
+
+  @override
+  int get hashCode {
+    return description.hashCode ^
+        tags.hashCode ^
+        mediaFiles.hashCode ^
+        type.hashCode ^
+        rideId.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'CreateExperienceRequest(description: $description, tags: $tags, mediaFiles: $mediaFiles, type: $type, rideId: $rideId)';
+  }
 }
 
 /// Request para crear un archivo multimedia
-@freezed
-class CreateMediaRequest with _$CreateMediaRequest {
-  const factory CreateMediaRequest({
-    required String filePath,
-    required MediaType mediaType,
-    required int duration,
+class CreateMediaRequest {
+  final String filePath;
+  final MediaType mediaType;
+  final int duration;
+  final double? aspectRatio;
+
+  const CreateMediaRequest({
+    required this.filePath,
+    required this.mediaType,
+    required this.duration,
+    this.aspectRatio,
+  });
+
+  /// Crear copia con campos modificados
+  CreateMediaRequest copyWith({
+    String? filePath,
+    MediaType? mediaType,
+    int? duration,
     double? aspectRatio,
-  }) = _CreateMediaRequest;
+  }) {
+    return CreateMediaRequest(
+      filePath: filePath ?? this.filePath,
+      mediaType: mediaType ?? this.mediaType,
+      duration: duration ?? this.duration,
+      aspectRatio: aspectRatio ?? this.aspectRatio,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is CreateMediaRequest &&
+        other.filePath == filePath &&
+        other.mediaType == mediaType &&
+        other.duration == duration &&
+        other.aspectRatio == aspectRatio;
+  }
+
+  @override
+  int get hashCode {
+    return filePath.hashCode ^
+        mediaType.hashCode ^
+        duration.hashCode ^
+        aspectRatio.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'CreateMediaRequest(filePath: $filePath, mediaType: $mediaType, duration: $duration, aspectRatio: $aspectRatio)';
+  }
 }

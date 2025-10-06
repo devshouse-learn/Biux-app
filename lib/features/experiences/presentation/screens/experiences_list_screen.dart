@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -14,14 +16,23 @@ class ExperiencesListScreen extends StatefulWidget {
 }
 
 class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
+  /// Obtiene el ID del usuario actual autenticado
+  String? get _currentUserId {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.uid;
+  }
+
   @override
   void initState() {
     super.initState();
-    // Cargar experiencias al inicializar
+    // Cargar experiencias al inicializar (una sola vez para evitar loop)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExperienceProvider>().loadUserExperiences(
-        'current_user',
-      ); // TODO: Obtener user ID real
+      final userId = _currentUserId;
+      if (userId != null) {
+        context.read<ExperienceProvider>().loadUserExperiences(userId);
+      } else {
+        print('⚠️ Usuario no autenticado, no se pueden cargar experiencias');
+      }
     });
   }
 
@@ -69,11 +80,108 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
       return _buildErrorState(provider.error!, provider);
     }
 
-    if (provider.userExperiences.isEmpty) {
-      return _buildEmptyState();
-    }
+    // Separar stories de posts regulares
+    final allExperiences = provider.userExperiences;
 
-    return _buildExperiencesList(provider.userExperiences);
+    // Posts: TODAS las experiencias que NO son stories
+    // (Stories son: media presente Y descripción ≤50 caracteres)
+    final posts = allExperiences
+        .where(
+          (exp) =>
+              // No debe ser una story
+              !(exp.media.isNotEmpty && exp.description.length <= 50),
+        )
+        .toList();
+
+    // Layout tipo Instagram: Stories arriba, publicaciones abajo
+    return Column(
+      children: [
+        // Sección de Stories con indicador
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Indicador de Stories
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.play_circle_outline,
+                    color: ColorTokens.primary50,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Stories',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: ColorTokens.neutral80,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '(Videos + texto corto)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: ColorTokens.neutral60,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Widget de stories
+            const ExperiencesStoriesWidget(),
+          ],
+        ),
+
+        // Divisor con indicador de Posts
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            children: [
+              Container(height: 1, color: ColorTokens.neutral20),
+              const SizedBox(height: 12),
+              // Indicador de Posts
+              Row(
+                children: [
+                  Icon(
+                    Icons.article_outlined,
+                    color: ColorTokens.secondary50,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Posts',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: ColorTokens.neutral80,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '(Fotos + texto largo)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: ColorTokens.neutral60,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
+
+        // Lista de posts abajo o estado vacío
+        Expanded(
+          child: posts.isEmpty
+              ? _buildEmptyStateInLayout()
+              : _buildExperiencesList(posts),
+        ),
+      ],
+    );
   }
 
   Widget _buildErrorState(String error, ExperienceProvider provider) {
@@ -100,7 +208,12 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () {
-              provider.loadUserExperiences('current_user');
+              final userId = _currentUserId;
+              if (userId != null) {
+                provider.loadUserExperiences(userId);
+              } else {
+                print('⚠️ Usuario no autenticado, no se puede recargar');
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary50,
@@ -115,45 +228,27 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  /// Estado vacío cuando no hay posts pero sí hay stories
+  Widget _buildEmptyStateInLayout() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.photo_library_outlined, size: 64, color: Colors.grey[400]),
+          Icon(Icons.article_outlined, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            '¡Comparte tus experiencias!',
+            '¡Comparte tu primera publicación!',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.grey[700],
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Sube fotos y videos de tus rodadas\ny momentos especiales en bicicleta',
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              context.push('/stories/create');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.secondary50,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text(
-              'Crear primera experiencia',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
           ),
         ],
       ),
@@ -245,51 +340,74 @@ class _ExperienceCard extends StatelessWidget {
         aspectRatio: 16 / 9,
         child: Container(
           color: Colors.grey[200],
-          child:
-              media.mediaType == MediaType.image
-                  ? Image.network(
-                    media.url,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[300],
-                        child: const Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            color: Colors.grey,
-                            size: 48,
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                  : Stack(
-                    children: [
-                      if (media.thumbnailUrl != null)
-                        Image.network(
-                          media.thumbnailUrl!,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: Colors.black54,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                            size: 32,
-                          ),
+          child: media.mediaType == MediaType.image
+              ? Image.network(
+                  media.url,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey,
+                          size: 48,
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
+                )
+              : Stack(
+                  children: [
+                    if (media.thumbnailUrl != null)
+                      Image.network(
+                        media.thumbnailUrl!,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTags() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: experience.tags.map((tag) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: ColorTokens.primary50.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            '#$tag',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: ColorTokens.primary50,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -300,10 +418,9 @@ class _ExperienceCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color:
-                experience.type == ExperienceType.ride
-                    ? ColorTokens.secondary50.withOpacity(0.1)
-                    : ColorTokens.primary50.withOpacity(0.1),
+            color: experience.type == ExperienceType.ride
+                ? ColorTokens.secondary50.withOpacity(0.1)
+                : ColorTokens.primary50.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -311,10 +428,9 @@ class _ExperienceCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color:
-                  experience.type == ExperienceType.ride
-                      ? ColorTokens.secondary50
-                      : ColorTokens.primary50,
+              color: experience.type == ExperienceType.ride
+                  ? ColorTokens.secondary50
+                  : ColorTokens.primary50,
             ),
           ),
         ),
@@ -345,43 +461,18 @@ class _ExperienceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTags() {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 4,
-      children:
-          experience.tags.map((tag) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: ColorTokens.primary50.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '#$tag',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: ColorTokens.primary50,
-                ),
-              ),
-            );
-          }).toList(),
-    );
-  }
-
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
-    if (difference.inDays > 7) {
-      return '${date.day}/${date.month}/${date.year}';
-    } else if (difference.inDays > 0) {
-      return 'Hace ${difference.inDays} días';
+    if (difference.inDays > 0) {
+      return 'Hace ${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
     } else if (difference.inHours > 0) {
-      return 'Hace ${difference.inHours} horas';
+      return 'Hace ${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
+    } else if (difference.inMinutes > 0) {
+      return 'Hace ${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
     } else {
-      return 'Hace unos minutos';
+      return 'Ahora';
     }
   }
 }

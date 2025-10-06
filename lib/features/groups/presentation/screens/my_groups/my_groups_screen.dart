@@ -238,11 +238,16 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     ),
                     if (group.isAdmin(provider.currentUserId ?? ''))
                       Chip(
-                        label: Text('Admin', style: TextStyle(fontSize: 10)),
-                        backgroundColor: ColorTokens.success40.withValues(
-                          alpha: 0.1,
+                        label: Text(
+                          'Admin',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                        side: BorderSide(color: ColorTokens.success40),
+                        backgroundColor: ColorTokens.success40,
+                        side: BorderSide.none,
                       ),
                   ],
                 ),
@@ -298,22 +303,18 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: ColorTokens.success40.withValues(alpha: 0.1),
+              color: ColorTokens.success40,
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.admin_panel_settings,
-                  color: ColorTokens.success40,
-                  size: 16,
-                ),
+                Icon(Icons.admin_panel_settings, color: Colors.white, size: 16),
                 SizedBox(width: 4),
                 Text(
                   'ADMINISTRADOR',
                   style: TextStyle(
-                    color: ColorTokens.success40,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),

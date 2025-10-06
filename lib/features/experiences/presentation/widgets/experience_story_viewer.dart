@@ -287,14 +287,12 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       children: [
         CircleAvatar(
           radius: 20,
-          backgroundImage:
-              widget.experience.user.photo.isNotEmpty
-                  ? NetworkImage(widget.experience.user.photo)
-                  : null,
-          child:
-              widget.experience.user.photo.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white)
-                  : null,
+          backgroundImage: widget.experience.user.photo.isNotEmpty
+              ? NetworkImage(widget.experience.user.photo)
+              : null,
+          child: widget.experience.user.photo.isEmpty
+              ? const Icon(Icons.person, color: Colors.white)
+              : null,
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -339,10 +337,18 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildTouchAreas() {
     return Row(
       children: [
-        // Área izquierda para retroceder
+        // Área izquierda para story anterior (30% del ancho)
         Expanded(
+          flex: 3,
           child: GestureDetector(
-            onTap: _previousMedia,
+            onTap: () {
+              // Si estamos en el primer media de la story, ir a la story anterior
+              if (currentMediaIndex == 0) {
+                widget.onPrevious?.call();
+              } else {
+                _previousMedia();
+              }
+            },
             child: Container(
               color: Colors.transparent,
               height: double.infinity,
@@ -350,8 +356,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
           ),
         ),
 
-        // Área central para pausar/reanudar
+        // Área central para pausar/reanudar (40% del ancho)
         Expanded(
+          flex: 4,
           child: GestureDetector(
             onTap: _togglePause,
             child: Container(
@@ -361,10 +368,18 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
           ),
         ),
 
-        // Área derecha para avanzar
+        // Área derecha para siguiente story (30% del ancho)
         Expanded(
+          flex: 3,
           child: GestureDetector(
-            onTap: _nextMedia,
+            onTap: () {
+              // Si estamos en el último media de la story, ir a la siguiente story
+              if (currentMediaIndex == widget.experience.media.length - 1) {
+                widget.onNext?.call();
+              } else {
+                _nextMedia();
+              }
+            },
             child: Container(
               color: Colors.transparent,
               height: double.infinity,

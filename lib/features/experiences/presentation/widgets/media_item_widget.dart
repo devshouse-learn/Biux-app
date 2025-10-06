@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:biux/features/experiences/presentation/providers/experience_creator_provider.dart';
+import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 
 /// Widget para mostrar un item multimedia en la creación de experiencias
 class MediaItemWidget extends StatelessWidget {

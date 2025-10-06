@@ -1,30 +1,31 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 
-part 'experience_model.freezed.dart';
-part 'experience_model.g.dart';
-
 /// Modelo de datos para Experience con JSON serialization
-@freezed
-class ExperienceModel with _$ExperienceModel {
-  const factory ExperienceModel({
-    required String id,
-    required String description,
-    required List<String> tags,
-    required UserModel user,
-    required DateTime createdAt,
-    required List<ExperienceMediaModel> media,
-    required ExperienceType type,
-    String? rideId,
-    @Default(0) int views,
-    @Default([]) List<ExperienceReactionModel> reactions,
-  }) = _ExperienceModel;
+class ExperienceModel {
+  final String id;
+  final String description;
+  final List<String> tags;
+  final UserModel user;
+  final DateTime createdAt;
+  final List<ExperienceMediaModel> media;
+  final ExperienceType type;
+  final String? rideId;
+  final int views;
+  final List<ExperienceReactionModel> reactions;
 
-  factory ExperienceModel.fromJson(Map<String, dynamic> json) =>
-      _$ExperienceModelFromJson(json);
-
-  const ExperienceModel._();
+  const ExperienceModel({
+    required this.id,
+    required this.description,
+    required this.tags,
+    required this.user,
+    required this.createdAt,
+    required this.media,
+    required this.type,
+    this.rideId,
+    this.views = 0,
+    this.reactions = const [],
+  });
 
   /// Convertir a entidad de dominio
   ExperienceEntity toEntity() {
@@ -34,15 +35,14 @@ class ExperienceModel with _$ExperienceModel {
       tags: tags,
       user: user.toEntity(),
       createdAt: createdAt,
-      media: media.map((m) => m.toEntity()).toList(),
+      media: media.map((e) => e.toEntity()).toList(),
       type: type,
       rideId: rideId,
       views: views,
-      reactions: reactions.map((r) => r.toEntity()).toList(),
+      reactions: reactions.map((e) => e.toEntity()).toList(),
     );
   }
 
-  /// Crear desde entidad de dominio
   factory ExperienceModel.fromEntity(ExperienceEntity entity) {
     return ExperienceModel(
       id: entity.id,
@@ -50,44 +50,83 @@ class ExperienceModel with _$ExperienceModel {
       tags: entity.tags,
       user: UserModel.fromEntity(entity.user),
       createdAt: entity.createdAt,
-      media:
-          entity.media.map((m) => ExperienceMediaModel.fromEntity(m)).toList(),
+      media: entity.media
+          .map((e) => ExperienceMediaModel.fromEntity(e))
+          .toList(),
       type: entity.type,
       rideId: entity.rideId,
       views: entity.views,
-      reactions:
-          entity.reactions
-              .map((r) => ExperienceReactionModel.fromEntity(r))
-              .toList(),
+      reactions: entity.reactions
+          .map((e) => ExperienceReactionModel.fromEntity(e))
+          .toList(),
+    );
+  }
+
+  /// Convertir a JSON - esto es lo que necesitamos que funcione correctamente
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'description': description,
+      'tags': tags,
+      'user': user
+          .toJson(), // Aquí está la llamada automática al toJson de UserModel
+      'createdAt': createdAt.toIso8601String(),
+      'media': media.map((e) => e.toJson()).toList(),
+      'type': type.name,
+      'rideId': rideId,
+      'views': views,
+      'reactions': reactions.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  factory ExperienceModel.fromJson(Map<String, dynamic> json) {
+    return ExperienceModel(
+      id: json['id'] as String,
+      description: json['description'] as String,
+      tags: List<String>.from(json['tags'] as List),
+      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      media: (json['media'] as List)
+          .map((e) => ExperienceMediaModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      type: ExperienceType.values.firstWhere((e) => e.name == json['type']),
+      rideId: json['rideId'] as String?,
+      views: json['views'] as int? ?? 0,
+      reactions: (json['reactions'] as List? ?? [])
+          .map(
+            (e) => ExperienceReactionModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
     );
   }
 }
 
 /// Modelo para archivos multimedia
-@freezed
-class ExperienceMediaModel with _$ExperienceMediaModel {
-  const factory ExperienceMediaModel({
-    required String id,
-    required String url,
-    required MediaType mediaType,
-    required int duration,
-    double? aspectRatio,
-    String? thumbnailUrl,
-  }) = _ExperienceMediaModel;
+class ExperienceMediaModel {
+  final String id;
+  final String url;
+  final MediaType mediaType;
+  final int duration;
+  final double? aspectRatio;
+  final String? thumbnailUrl;
 
-  factory ExperienceMediaModel.fromJson(Map<String, dynamic> json) =>
-      _$ExperienceMediaModelFromJson(json);
-
-  const ExperienceMediaModel._();
+  const ExperienceMediaModel({
+    required this.id,
+    required this.url,
+    required this.mediaType,
+    required this.duration,
+    this.aspectRatio,
+    this.thumbnailUrl,
+  });
 
   ExperienceMediaEntity toEntity() {
     return ExperienceMediaEntity(
       id: id,
       url: url,
+      thumbnailUrl: thumbnailUrl,
       mediaType: mediaType,
       duration: duration,
       aspectRatio: aspectRatio,
-      thumbnailUrl: thumbnailUrl,
     );
   }
 
@@ -101,22 +140,45 @@ class ExperienceMediaModel with _$ExperienceMediaModel {
       thumbnailUrl: entity.thumbnailUrl,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'url': url,
+      'mediaType': mediaType.name,
+      'duration': duration,
+      'aspectRatio': aspectRatio,
+      'thumbnailUrl': thumbnailUrl,
+    };
+  }
+
+  factory ExperienceMediaModel.fromJson(Map<String, dynamic> json) {
+    return ExperienceMediaModel(
+      id: json['id'] as String,
+      url: json['url'] as String,
+      mediaType: MediaType.values.firstWhere(
+        (e) => e.name == json['mediaType'],
+      ),
+      duration: json['duration'] as int,
+      aspectRatio: json['aspectRatio'] as double?,
+      thumbnailUrl: json['thumbnailUrl'] as String?,
+    );
+  }
 }
 
 /// Modelo para reacciones
-@freezed
-class ExperienceReactionModel with _$ExperienceReactionModel {
-  const factory ExperienceReactionModel({
-    required String id,
-    required UserModel user,
-    required ReactionType type,
-    required DateTime createdAt,
-  }) = _ExperienceReactionModel;
+class ExperienceReactionModel {
+  final String id;
+  final UserModel user;
+  final ReactionType type;
+  final DateTime createdAt;
 
-  factory ExperienceReactionModel.fromJson(Map<String, dynamic> json) =>
-      _$ExperienceReactionModelFromJson(json);
-
-  const ExperienceReactionModel._();
+  const ExperienceReactionModel({
+    required this.id,
+    required this.user,
+    required this.type,
+    required this.createdAt,
+  });
 
   ExperienceReactionEntity toEntity() {
     return ExperienceReactionEntity(
@@ -135,23 +197,41 @@ class ExperienceReactionModel with _$ExperienceReactionModel {
       createdAt: entity.createdAt,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user': user.toJson(), // Aquí también se llama automáticamente
+      'type': type.name,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  factory ExperienceReactionModel.fromJson(Map<String, dynamic> json) {
+    return ExperienceReactionModel(
+      id: json['id'] as String,
+      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      type: ReactionType.values.firstWhere((e) => e.name == json['type']),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+  }
 }
 
-/// UserModel simplificado para las experiencias
-@freezed
-class UserModel with _$UserModel {
-  const factory UserModel({
-    required String id,
-    required String fullName,
-    required String userName,
-    required String email,
-    required String photo,
-  }) = _UserModel;
+/// Modelo para usuarios - compatible con UserEntity existente
+class UserModel {
+  final String id;
+  final String fullName;
+  final String userName;
+  final String email;
+  final String photo;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
-
-  const UserModel._();
+  const UserModel({
+    required this.id,
+    required this.fullName,
+    required this.userName,
+    required this.email,
+    required this.photo,
+  });
 
   UserEntity toEntity() {
     return UserEntity(
@@ -170,6 +250,27 @@ class UserModel with _$UserModel {
       userName: entity.userName,
       email: entity.email,
       photo: entity.photo,
+    );
+  }
+
+  /// Este es el método toJson que se necesita para la serialización anidada
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fullName': fullName,
+      'userName': userName,
+      'email': email,
+      'photo': photo,
+    };
+  }
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] as String,
+      fullName: json['fullName'] as String,
+      userName: json['userName'] as String,
+      email: json['email'] as String,
+      photo: json['photo'] as String,
     );
   }
 }

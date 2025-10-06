@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
@@ -7,41 +6,161 @@ import 'package:biux/features/experiences/domain/repositories/experience_reposit
 import 'package:biux/features/experiences/presentation/providers/experience_provider.dart';
 // import 'package:biux/shared/services/video_experience_service.dart'; // TODO: Implementar
 
-part 'experience_creator_provider.freezed.dart';
-
 /// Estado para la creación de experiencias
-@freezed
-class ExperienceCreatorState with _$ExperienceCreatorState {
-  const factory ExperienceCreatorState({
-    @Default([]) List<MediaItem> mediaItems,
-    @Default('') String description,
-    @Default([]) List<String> tags,
+class ExperienceCreatorState {
+  final List<MediaItem> mediaItems;
+  final String description;
+  final List<String> tags;
+  final ExperienceType? experienceType;
+  final String? rideId;
+  final bool isUploading;
+  final double uploadProgress;
+  final String? error;
+  final bool isRecording;
+  final VideoPlayerController? videoController;
+
+  const ExperienceCreatorState({
+    this.mediaItems = const [],
+    this.description = '',
+    this.tags = const [],
+    this.experienceType,
+    this.rideId,
+    this.isUploading = false,
+    this.uploadProgress = 0.0,
+    this.error,
+    this.isRecording = false,
+    this.videoController,
+  });
+
+  /// Crear copia con campos modificados
+  ExperienceCreatorState copyWith({
+    List<MediaItem>? mediaItems,
+    String? description,
+    List<String>? tags,
     ExperienceType? experienceType,
     String? rideId,
-    @Default(false) bool isUploading,
-    @Default(0.0) double uploadProgress,
+    bool? isUploading,
+    double? uploadProgress,
     String? error,
-    @Default(false) bool isRecording,
+    bool? isRecording,
     VideoPlayerController? videoController,
-  }) = _ExperienceCreatorState;
+  }) {
+    return ExperienceCreatorState(
+      mediaItems: mediaItems ?? this.mediaItems,
+      description: description ?? this.description,
+      tags: tags ?? this.tags,
+      experienceType: experienceType ?? this.experienceType,
+      rideId: rideId ?? this.rideId,
+      isUploading: isUploading ?? this.isUploading,
+      uploadProgress: uploadProgress ?? this.uploadProgress,
+      error: error ?? this.error,
+      isRecording: isRecording ?? this.isRecording,
+      videoController: videoController ?? this.videoController,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ExperienceCreatorState &&
+        other.mediaItems.toString() == mediaItems.toString() &&
+        other.description == description &&
+        other.tags.toString() == tags.toString() &&
+        other.experienceType == experienceType &&
+        other.rideId == rideId &&
+        other.isUploading == isUploading &&
+        other.uploadProgress == uploadProgress &&
+        other.error == error &&
+        other.isRecording == isRecording &&
+        other.videoController == videoController;
+  }
+
+  @override
+  int get hashCode {
+    return mediaItems.hashCode ^
+        description.hashCode ^
+        tags.hashCode ^
+        experienceType.hashCode ^
+        rideId.hashCode ^
+        isUploading.hashCode ^
+        uploadProgress.hashCode ^
+        error.hashCode ^
+        isRecording.hashCode ^
+        videoController.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'ExperienceCreatorState(mediaItems: $mediaItems, description: $description, tags: $tags, experienceType: $experienceType, rideId: $rideId, isUploading: $isUploading, uploadProgress: $uploadProgress, error: $error, isRecording: $isRecording, videoController: $videoController)';
+  }
 }
 
 /// Item multimedia para la experiencia
-@freezed
-class MediaItem with _$MediaItem {
-  const factory MediaItem({
-    required String filePath,
-    required MediaType mediaType,
-    required int duration,
+class MediaItem {
+  final String filePath;
+  final MediaType mediaType;
+  final int duration;
+  final double? aspectRatio;
+  final String? thumbnailPath;
+  final bool isProcessing;
+
+  const MediaItem({
+    required this.filePath,
+    required this.mediaType,
+    required this.duration,
+    this.aspectRatio,
+    this.thumbnailPath,
+    this.isProcessing = false,
+  });
+
+  /// Crear copia con campos modificados
+  MediaItem copyWith({
+    String? filePath,
+    MediaType? mediaType,
+    int? duration,
     double? aspectRatio,
     String? thumbnailPath,
-    @Default(false) bool isProcessing,
-  }) = _MediaItem;
-
-  const MediaItem._();
+    bool? isProcessing,
+  }) {
+    return MediaItem(
+      filePath: filePath ?? this.filePath,
+      mediaType: mediaType ?? this.mediaType,
+      duration: duration ?? this.duration,
+      aspectRatio: aspectRatio ?? this.aspectRatio,
+      thumbnailPath: thumbnailPath ?? this.thumbnailPath,
+      isProcessing: isProcessing ?? this.isProcessing,
+    );
+  }
 
   bool get isVideo => mediaType == MediaType.video;
   bool get isImage => mediaType == MediaType.image;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is MediaItem &&
+        other.filePath == filePath &&
+        other.mediaType == mediaType &&
+        other.duration == duration &&
+        other.aspectRatio == aspectRatio &&
+        other.thumbnailPath == thumbnailPath &&
+        other.isProcessing == isProcessing;
+  }
+
+  @override
+  int get hashCode {
+    return filePath.hashCode ^
+        mediaType.hashCode ^
+        duration.hashCode ^
+        aspectRatio.hashCode ^
+        thumbnailPath.hashCode ^
+        isProcessing.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'MediaItem(filePath: $filePath, mediaType: $mediaType, duration: $duration, aspectRatio: $aspectRatio, thumbnailPath: $thumbnailPath, isProcessing: $isProcessing)';
+  }
 }
 
 /// Provider para la creación de experiencias
@@ -50,17 +169,21 @@ final experienceCreatorProvider =
       ref,
     ) {
       final repository = ref.read(experienceRepositoryProvider);
-      return ExperienceCreatorNotifier(repository);
+      final experienceNotifier = ref.read(experienceProvider.notifier);
+      return ExperienceCreatorNotifier(repository, experienceNotifier);
     });
 
 /// Notifier para la creación de experiencias
 class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
-  final ExperienceRepository _repository;
+  // final ExperienceRepository _repository; // TODO: Usar si se necesita acceso directo al repository
+  final ExperienceNotifier _experienceNotifier;
   final ImagePicker _imagePicker = ImagePicker();
   // final VideoExperienceService _videoService = VideoExperienceService(); // TODO: Implementar
 
-  ExperienceCreatorNotifier(this._repository)
-    : super(const ExperienceCreatorState());
+  ExperienceCreatorNotifier(
+    ExperienceRepository repository,
+    this._experienceNotifier,
+  ) : super(const ExperienceCreatorState());
 
   /// Actualizar descripción
   void updateDescription(String description) {
@@ -182,12 +305,9 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     } catch (e) {
       // Remover item en caso de error
       state = state.copyWith(
-        mediaItems:
-            state.mediaItems
-                .where(
-                  (item) => !(item.filePath == videoPath && item.isProcessing),
-                )
-                .toList(),
+        mediaItems: state.mediaItems
+            .where((item) => !(item.filePath == videoPath && item.isProcessing))
+            .toList(),
         error: 'Error procesando video: $e',
       );
     }
@@ -231,17 +351,16 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
 
     try {
       // Convertir media items a CreateMediaRequest
-      final mediaRequests =
-          state.mediaItems
-              .map(
-                (item) => CreateMediaRequest(
-                  filePath: item.filePath,
-                  mediaType: item.mediaType,
-                  duration: item.duration,
-                  aspectRatio: item.aspectRatio,
-                ),
-              )
-              .toList();
+      final mediaRequests = state.mediaItems
+          .map(
+            (item) => CreateMediaRequest(
+              filePath: item.filePath,
+              mediaType: item.mediaType,
+              duration: item.duration,
+              aspectRatio: item.aspectRatio,
+            ),
+          )
+          .toList();
 
       // Crear request
       final request = CreateExperienceRequest(
@@ -252,8 +371,8 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
         rideId: state.rideId,
       );
 
-      // Crear experiencia
-      await _repository.createExperience(request);
+      // Crear experiencia usando el ExperienceNotifier para actualizar las listas
+      await _experienceNotifier.createExperience(request);
 
       // Limpiar estado después de éxito
       state = const ExperienceCreatorState();

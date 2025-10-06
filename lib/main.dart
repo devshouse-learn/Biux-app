@@ -19,6 +19,7 @@ import 'package:biux/features/maps/presentation/providers/meeting_point_provider
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
+import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
@@ -51,17 +52,16 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create:
-              (_) => app_auth.AuthProvider(
-                authRepository: AuthRepository(
-                  baseUrl: 'https://n8n.oktavia.me/webhook',
-                ),
-              ),
+          create: (_) => app_auth.AuthProvider(
+            authRepository: AuthRepository(
+              baseUrl: 'https://n8n.oktavia.me/webhook',
+            ),
+          ),
         ),
         ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(
-          create:
-              (_) => MeetingPointProvider(repository: MeetingPointRepository()),
+          create: (_) =>
+              MeetingPointProvider(repository: MeetingPointRepository()),
         ),
         ChangeNotifierProvider(create: (_) => MapProvider()),
         ChangeNotifierProvider(create: (_) => LocationProvider()),
@@ -70,6 +70,20 @@ void main() async {
         ChangeNotifierProvider(create: (_) => CityProvider()),
         ChangeNotifierProvider(create: (_) => RideProvider()),
         ChangeNotifierProvider(create: (_) => ExperienceProvider()),
+        ChangeNotifierProxyProvider<
+          ExperienceProvider,
+          ExperienceCreatorProvider
+        >(
+          create: (context) => ExperienceCreatorProvider(
+            experienceProvider: Provider.of<ExperienceProvider>(
+              context,
+              listen: false,
+            ),
+          ),
+          update: (context, experienceProvider, previous) =>
+              previous ??
+              ExperienceCreatorProvider(experienceProvider: experienceProvider),
+        ),
       ],
       child: MyApp(),
     ),

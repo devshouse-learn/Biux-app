@@ -1,10 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
-
-part 'experience_provider.freezed.dart';
 
 /// Provider del repository
 final experienceRepositoryProvider = Provider<ExperienceRepository>((ref) {
@@ -12,15 +9,62 @@ final experienceRepositoryProvider = Provider<ExperienceRepository>((ref) {
 });
 
 /// Estado para las experiencias
-@freezed
-class ExperienceState with _$ExperienceState {
-  const factory ExperienceState({
-    @Default([]) List<ExperienceEntity> experiences,
-    @Default([]) List<ExperienceEntity> userExperiences,
-    @Default([]) List<ExperienceEntity> rideExperiences,
-    @Default(false) bool isLoading,
+class ExperienceState {
+  final List<ExperienceEntity> experiences;
+  final List<ExperienceEntity> userExperiences;
+  final List<ExperienceEntity> rideExperiences;
+  final bool isLoading;
+  final String? error;
+
+  const ExperienceState({
+    this.experiences = const [],
+    this.userExperiences = const [],
+    this.rideExperiences = const [],
+    this.isLoading = false,
+    this.error,
+  });
+
+  /// Crear copia con campos modificados
+  ExperienceState copyWith({
+    List<ExperienceEntity>? experiences,
+    List<ExperienceEntity>? userExperiences,
+    List<ExperienceEntity>? rideExperiences,
+    bool? isLoading,
     String? error,
-  }) = _ExperienceState;
+  }) {
+    return ExperienceState(
+      experiences: experiences ?? this.experiences,
+      userExperiences: userExperiences ?? this.userExperiences,
+      rideExperiences: rideExperiences ?? this.rideExperiences,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ExperienceState &&
+        other.experiences.toString() == experiences.toString() &&
+        other.userExperiences.toString() == userExperiences.toString() &&
+        other.rideExperiences.toString() == rideExperiences.toString() &&
+        other.isLoading == isLoading &&
+        other.error == error;
+  }
+
+  @override
+  int get hashCode {
+    return experiences.hashCode ^
+        userExperiences.hashCode ^
+        rideExperiences.hashCode ^
+        isLoading.hashCode ^
+        error.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'ExperienceState(experiences: $experiences, userExperiences: $userExperiences, rideExperiences: $rideExperiences, isLoading: $isLoading, error: $error)';
+  }
 }
 
 /// Provider para gestionar las experiencias
@@ -104,12 +148,15 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
 
       // Remover de todas las listas
       state = state.copyWith(
-        experiences:
-            state.experiences.where((e) => e.id != experienceId).toList(),
-        userExperiences:
-            state.userExperiences.where((e) => e.id != experienceId).toList(),
-        rideExperiences:
-            state.rideExperiences.where((e) => e.id != experienceId).toList(),
+        experiences: state.experiences
+            .where((e) => e.id != experienceId)
+            .toList(),
+        userExperiences: state.userExperiences
+            .where((e) => e.id != experienceId)
+            .toList(),
+        rideExperiences: state.rideExperiences
+            .where((e) => e.id != experienceId)
+            .toList(),
       );
     } catch (e) {
       state = state.copyWith(error: e.toString());
