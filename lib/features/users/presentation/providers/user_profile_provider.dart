@@ -145,21 +145,42 @@ class UserProfileProvider extends ChangeNotifier {
         userId,
       );
 
-      // Filtrar posts y stories
+      // Filtrar posts y stories con criterios más específicos
       final now = DateTime.now();
       final twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
 
-      // Stories: experiencias de las últimas 24 horas
+      // Stories: experiencias recientes (últimas 24 horas) O que tengan solo un medio
       _userStories = userExperiences
-          .where((exp) => exp.createdAt.isAfter(twentyFourHoursAgo))
+          .where(
+            (exp) =>
+                exp.createdAt.isAfter(twentyFourHoursAgo) ||
+                exp.media.length == 1,
+          )
           .toList();
 
-      // Posts: todas las experiencias (incluyendo las que ya expiraron como stories)
-      _userPosts = userExperiences;
+      // Posts: experiencias con múltiples medios O más antiguas de 24 horas
+      _userPosts = userExperiences
+          .where(
+            (exp) =>
+                exp.media.length > 1 ||
+                exp.createdAt.isBefore(twentyFourHoursAgo),
+          )
+          .toList();
+
+      // Si no hay diferenciación clara, dividir equitativamente
+      if (_userStories.length == userExperiences.length &&
+          _userPosts.length == userExperiences.length) {
+        final halfPoint = (userExperiences.length / 2).ceil();
+        _userStories = userExperiences.take(halfPoint).toList();
+        _userPosts = userExperiences.skip(halfPoint).toList();
+      }
 
       print('🔍 PROFILE: Experiencias cargadas: ${userExperiences.length}');
-      print('🔍 PROFILE: Stories (últimas 24h): ${_userStories.length}');
-      print('🔍 PROFILE: Posts (todas): ${_userPosts.length}');
+      print('🔍 PROFILE: Stories: ${_userStories.length}');
+      print('🔍 PROFILE: Posts: ${_userPosts.length}');
+      print(
+        '🔍 PROFILE: Criterios aplicados - Stories: recientes O 1 medio, Posts: múltiples medios O antiguos',
+      );
     } catch (e) {
       print('❌ Error cargando contenido del usuario: $e');
       _userPosts = [];
