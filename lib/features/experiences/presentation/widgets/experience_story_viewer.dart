@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -283,40 +284,82 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   Widget _buildUserHeader() {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 20,
-          backgroundImage: widget.experience.user.photo.isNotEmpty
-              ? NetworkImage(widget.experience.user.photo)
-              : null,
-          child: widget.experience.user.photo.isEmpty
-              ? const Icon(Icons.person, color: Colors.white)
-              : null,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.experience.user.fullName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              if (widget.experience.isRideExperience)
-                const Text(
-                  'Rodada programada',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
-                ),
-            ],
+    final user = widget.experience.user;
+
+    // Log de la experiencia actual
+    print('=== BUILDING HEADER FOR EXPERIENCE ===');
+    print('Experience ID: ${widget.experience.id}');
+    print('Experience description: "${widget.experience.description}"');
+    print('Experience created: ${widget.experience.createdAt}');
+    print('Experience User Object: $user');
+    print('Experience User ID: "${user.id}"');
+    print('Experience User FullName: "${user.fullName}"');
+    print('Experience User UserName: "${user.userName}"');
+    print('Experience User Email: "${user.email}"');
+    print('Experience User Photo: "${user.photo}"');
+    print('FullName isEmpty: ${user.fullName.isEmpty}');
+    print('UserName isEmpty: ${user.userName.isEmpty}');
+    print('=====================================');
+
+    return GestureDetector(
+      onTap: () {
+        print('🔄 Header tapped - Navegando al perfil del usuario: ${user.id}');
+        if (user.id.isNotEmpty) {
+          context.push('/user-profile/${user.id}');
+        } else {
+          print('❌ Error: User ID está vacío');
+        }
+      },
+      child: Row(
+        children: [
+          // Avatar simple
+          CircleAvatar(
+            radius: 20,
+            backgroundImage: user.photo.isNotEmpty
+                ? NetworkImage(user.photo)
+                : null,
+            child: user.photo.isEmpty
+                ? const Icon(Icons.person, color: Colors.white)
+                : null,
+            backgroundColor: Colors.grey[600],
           ),
-        ),
-        if (isPaused) const Icon(Icons.pause, color: Colors.white, size: 24),
-      ],
+          const SizedBox(width: 12),
+          // Información directa del usuario
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.fullName.isNotEmpty
+                      ? user.fullName
+                      : (user.userName.isNotEmpty
+                            ? user.userName
+                            : 'Usuario sin datos'),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                if (user.userName.isNotEmpty)
+                  Text(
+                    '@${user.userName}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+              ],
+            ),
+          ),
+          // Tiempo
+          Text(
+            _getTimeAgo(widget.experience.createdAt),
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+          const SizedBox(width: 8),
+          // Icono para indicar que es clickeable
+          const Icon(Icons.arrow_forward_ios, color: Colors.white70, size: 16),
+          if (isPaused) const Icon(Icons.pause, color: Colors.white, size: 24),
+        ],
+      ),
     );
   }
 
@@ -388,6 +431,21 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         ),
       ],
     );
+  }
+
+  String _getTimeAgo(DateTime createdAt) {
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m';
+    } else {
+      return 'ahora';
+    }
   }
 
   @override

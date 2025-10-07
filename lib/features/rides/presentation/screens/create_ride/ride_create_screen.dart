@@ -114,7 +114,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       }
                       final km = double.tryParse(value);
                       if (km == null || km <= 0) {
-                        return 'Ingresa un valor v�lido';
+                        return 'Ingresa un valor válido';
                       }
                       return null;
                     },

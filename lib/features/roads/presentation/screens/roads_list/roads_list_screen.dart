@@ -88,7 +88,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '�nete a un grupo para participar en rodadas',
+                    'Únete a un grupo para participar en rodadas',
                     style: TextStyle(color: ColorTokens.neutral60),
                   ),
                   const SizedBox(height: 24),
@@ -146,7 +146,7 @@ class _RideCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Avatar con �cono de dificultad
+              // Avatar con ícono de dificultad
               CircleAvatar(
                 radius: 30,
                 backgroundColor: _getDifficultyColor(ride.difficulty),

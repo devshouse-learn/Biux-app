@@ -110,24 +110,12 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    background:
-                        group.coverUrl != null
-                            ? OptimizedNetworkImage(
-                              imageUrl: group.coverUrl!,
-                              imageType: 'cover',
-                              fit: BoxFit.cover,
-                              errorWidget: Container(
-                                color: ColorTokens.primary30,
-                                child: Icon(
-                                  Icons.group,
-                                  size: 80,
-                                  color: ColorTokens.neutral100.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                              ),
-                            )
-                            : Container(
+                    background: group.coverUrl != null
+                        ? OptimizedNetworkImage(
+                            imageUrl: group.coverUrl!,
+                            imageType: 'cover',
+                            fit: BoxFit.cover,
+                            errorWidget: Container(
                               color: ColorTokens.primary30,
                               child: Icon(
                                 Icons.group,
@@ -137,6 +125,17 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                                 ),
                               ),
                             ),
+                          )
+                        : Container(
+                            color: ColorTokens.primary30,
+                            child: Icon(
+                              Icons.group,
+                              size: 80,
+                              color: ColorTokens.neutral100.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
 
@@ -189,32 +188,32 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             children: [
               group.logoUrl != null
                   ? ClipOval(
-                    child: OptimizedNetworkImage(
-                      imageUrl: group.logoUrl!,
-                      width: 80,
-                      height: 80,
-                      imageType: 'avatar',
-                      fit: BoxFit.cover,
-                      errorWidget: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: ColorTokens.primary30,
-                        child: Icon(
-                          Icons.group,
-                          size: 40,
-                          color: ColorTokens.neutral100,
+                      child: OptimizedNetworkImage(
+                        imageUrl: group.logoUrl!,
+                        width: 80,
+                        height: 80,
+                        imageType: 'avatar',
+                        fit: BoxFit.cover,
+                        errorWidget: CircleAvatar(
+                          radius: 40,
+                          backgroundColor: ColorTokens.primary30,
+                          child: Icon(
+                            Icons.group,
+                            size: 40,
+                            color: ColorTokens.neutral100,
+                          ),
                         ),
                       ),
-                    ),
-                  )
+                    )
                   : CircleAvatar(
-                    radius: 40,
-                    backgroundColor: ColorTokens.primary30,
-                    child: Icon(
-                      Icons.group,
-                      size: 40,
-                      color: ColorTokens.neutral100,
+                      radius: 40,
+                      backgroundColor: ColorTokens.primary30,
+                      child: Icon(
+                        Icons.group,
+                        size: 40,
+                        color: ColorTokens.neutral100,
+                      ),
                     ),
-                  ),
               SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -281,36 +280,63 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             return Card(
               margin: EdgeInsets.only(bottom: 8),
               child: ListTile(
-                leading:
-                    member['userPhoto'] != null
-                        ? ClipOval(
-                          child: OptimizedNetworkImage(
-                            imageUrl: member['userPhoto'],
-                            width: 40,
-                            height: 40,
-                            imageType: 'avatar',
-                            fit: BoxFit.cover,
-                            errorWidget: CircleAvatar(
-                              child: Icon(Icons.person),
-                            ),
-                          ),
-                        )
-                        : CircleAvatar(child: Icon(Icons.person)),
+                leading: member['userPhoto'] != null
+                    ? ClipOval(
+                        child: OptimizedNetworkImage(
+                          imageUrl: member['userPhoto'],
+                          width: 40,
+                          height: 40,
+                          imageType: 'avatar',
+                          fit: BoxFit.cover,
+                          errorWidget: CircleAvatar(child: Icon(Icons.person)),
+                        ),
+                      )
+                    : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
                   member['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text('Miembro del grupo'),
-                trailing:
-                    member['isAdmin']
-                        ? Chip(
-                          label: Text('Admin'),
-                          backgroundColor: ColorTokens.success50.withValues(
-                            alpha: 0.1,
-                          ),
-                          labelStyle: TextStyle(color: ColorTokens.success50),
-                        )
-                        : null,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (member['isAdmin'])
+                      Chip(
+                        label: Text('Admin'),
+                        backgroundColor: ColorTokens.success50.withValues(
+                          alpha: 0.1,
+                        ),
+                        labelStyle: TextStyle(color: ColorTokens.success50),
+                      ),
+                    SizedBox(width: 8),
+                    Icon(Icons.chevron_right, color: ColorTokens.neutral60),
+                  ],
+                ),
+                onTap: () {
+                  // Debug de datos del miembro
+                  print('=== MIEMBRO CLICKEADO ===');
+                  print('Datos completos del miembro: $member');
+                  print('User ID: ${member['userId']}');
+                  print('User Name: ${member['userName']}');
+                  print('User Photo: ${member['userPhoto']}');
+                  print('Is Admin: ${member['isAdmin']}');
+                  print('========================');
+
+                  // Verificar que el userId no esté vacío
+                  final userId = member['userId'];
+                  if (userId != null && userId.toString().isNotEmpty) {
+                    print('🔄 Navegando al perfil: /user-profile/$userId');
+                    context.push('/user-profile/$userId');
+                  } else {
+                    print('❌ Error: userId está vacío o es null');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: ID de usuario no disponible'),
+                        backgroundColor: ColorTokens.error50,
+                      ),
+                    );
+                  }
+                },
               ),
             );
           },
@@ -471,21 +497,18 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             return Card(
               margin: EdgeInsets.only(bottom: 8),
               child: ListTile(
-                leading:
-                    request['userPhoto'] != null
-                        ? ClipOval(
-                          child: OptimizedNetworkImage(
-                            imageUrl: request['userPhoto'],
-                            width: 40,
-                            height: 40,
-                            imageType: 'avatar',
-                            fit: BoxFit.cover,
-                            errorWidget: CircleAvatar(
-                              child: Icon(Icons.person),
-                            ),
-                          ),
-                        )
-                        : CircleAvatar(child: Icon(Icons.person)),
+                leading: request['userPhoto'] != null
+                    ? ClipOval(
+                        child: OptimizedNetworkImage(
+                          imageUrl: request['userPhoto'],
+                          width: 40,
+                          height: 40,
+                          imageType: 'avatar',
+                          fit: BoxFit.cover,
+                          errorWidget: CircleAvatar(child: Icon(Icons.person)),
+                        ),
+                      )
+                    : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
                   request['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
@@ -495,24 +518,22 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      onPressed:
-                          () => _approveRequest(
-                            group.id,
-                            request['userId'],
-                            request['userName'],
-                            provider,
-                          ),
+                      onPressed: () => _approveRequest(
+                        group.id,
+                        request['userId'],
+                        request['userName'],
+                        provider,
+                      ),
                       icon: Icon(Icons.check, color: ColorTokens.success50),
                       tooltip: 'Aprobar',
                     ),
                     IconButton(
-                      onPressed:
-                          () => _rejectRequest(
-                            group.id,
-                            request['userId'],
-                            request['userName'],
-                            provider,
-                          ),
+                      onPressed: () => _rejectRequest(
+                        group.id,
+                        request['userId'],
+                        request['userName'],
+                        provider,
+                      ),
                       icon: Icon(Icons.close, color: ColorTokens.error50),
                       tooltip: 'Rechazar',
                     ),
@@ -548,19 +569,18 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 _showLeaveGroupDialog(group, provider);
               }
             },
-            itemBuilder:
-                (BuildContext context) => [
-                  PopupMenuItem<String>(
-                    value: 'leave',
-                    child: Row(
-                      children: [
-                        Icon(Icons.exit_to_app, color: ColorTokens.error50),
-                        SizedBox(width: 8),
-                        Text('Salir del grupo'),
-                      ],
-                    ),
-                  ),
-                ],
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'leave',
+                child: Row(
+                  children: [
+                    Icon(Icons.exit_to_app, color: ColorTokens.error50),
+                    SizedBox(width: 8),
+                    Text('Salir del grupo'),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
         break;
@@ -618,7 +638,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       ),
                     ),
                     Text(
-                      'Puedes editar el grupo desde el men� superior',
+                      'Puedes editar el grupo desde el menú superior',
                       style: TextStyle(
                         fontSize: 12,
                         color: ColorTokens.neutral60,
@@ -655,13 +675,6 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorTokens.secondary50,
-                      ),
-                    ),
-                    Text(
-                      'Puedes salir del grupo desde el men� superior',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: ColorTokens.neutral60,
                       ),
                     ),
                   ],
@@ -776,24 +789,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   void _showProfileRequiredDialog(String message) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Completar Perfil'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  context.go('/profile');
-                },
-                child: Text('Ir al Perfil'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text('Completar Perfil'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancelar'),
           ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.go('/profile');
+            },
+            child: Text('Ir al Perfil'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -812,30 +824,29 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   void _showLeaveGroupDialog(GroupModel group, GroupProvider provider) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Salir del Grupo'),
-            content: Text('�Est�s seguro que deseas salir de "${group.name}"?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  final success = await provider.leaveGroup(group.id);
-                  if (success) {
-                    context.go('/groups');
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorTokens.error50,
-                ),
-                child: Text('Salir'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text('Salir del Grupo'),
+        content: Text('¿Estás seguro que deseas salir de "${group.name}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancelar'),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              final success = await provider.leaveGroup(group.id);
+              if (success) {
+                context.go('/groups');
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.error50,
+            ),
+            child: Text('Salir'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -862,11 +873,11 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   String _getDifficultyName(DifficultyLevel difficulty) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return 'F�cil';
+        return 'Fácil';
       case DifficultyLevel.medium:
         return 'Medio';
       case DifficultyLevel.hard:
-        return 'Dif�cil';
+        return 'Difícil';
       case DifficultyLevel.expert:
         return 'Experto';
     }

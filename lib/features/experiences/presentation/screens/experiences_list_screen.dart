@@ -50,9 +50,17 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
         actions: [
           IconButton(
             onPressed: () {
+              context.push('/users/search');
+            },
+            icon: const Icon(Icons.search, color: Colors.white),
+            tooltip: 'Buscar usuarios',
+          ),
+          IconButton(
+            onPressed: () {
               context.push('/stories/create');
             },
             icon: const Icon(Icons.add, color: Colors.white),
+            tooltip: 'Crear experiencia',
           ),
         ],
       ),
@@ -291,6 +299,9 @@ class _ExperienceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header con información del autor del post
+          _buildAuthorHeader(context),
+
           // Media section
           if (experience.media.isNotEmpty) _buildMediaSection(),
 
@@ -474,5 +485,73 @@ class _ExperienceCard extends StatelessWidget {
     } else {
       return 'Ahora';
     }
+  }
+
+  Widget _buildAuthorHeader(BuildContext context) {
+    final user = experience.user;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: GestureDetector(
+        onTap: () {
+          print(
+            '🔄 Post author tapped - Navegando al perfil del usuario: ${user.id}',
+          );
+          if (user.id.isNotEmpty) {
+            context.push('/user-profile/${user.id}');
+          } else {
+            print('❌ Error: User ID está vacío');
+          }
+        },
+        child: Row(
+          children: [
+            // Avatar del autor
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: user.photo.isNotEmpty
+                  ? NetworkImage(user.photo)
+                  : null,
+              child: user.photo.isEmpty
+                  ? const Icon(Icons.person, color: Colors.white)
+                  : null,
+              backgroundColor: Colors.grey[400],
+            ),
+            const SizedBox(width: 12),
+            // Información del autor
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.fullName.isNotEmpty
+                        ? user.fullName
+                        : (user.userName.isNotEmpty
+                              ? user.userName
+                              : 'Usuario sin nombre'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: ColorTokens.neutral80,
+                    ),
+                  ),
+                  if (user.userName.isNotEmpty)
+                    Text(
+                      '@${user.userName}',
+                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                    ),
+                ],
+              ),
+            ),
+            // Tiempo de publicación
+            Text(
+              _formatDate(experience.createdAt),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.more_vert, color: Colors.grey[600], size: 20),
+          ],
+        ),
+      ),
+    );
   }
 }

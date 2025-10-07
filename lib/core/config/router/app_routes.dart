@@ -9,6 +9,8 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String editUser = '/edit-user';
   static const String createUser = '/create-user';
+  static const String userSearch = '/users/search';
+  static const String userProfile = '/user-profile/:userId';
 
   // Rutas de grupos
   static const String groupList = '/groups';
@@ -33,6 +35,8 @@ class AppRoutes {
   static const String profileName = 'profile';
   static const String editUserName = 'editUser';
   static const String createUserName = 'createUser';
+  static const String userSearchName = 'userSearch';
+  static const String userProfileName = 'userProfile';
   static const String groupListName = 'groupList';
   static const String groupCreateName = 'groupCreate';
   static const String viewGroupName = 'viewGroup';

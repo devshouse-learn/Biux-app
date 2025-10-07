@@ -301,7 +301,21 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
       // );
 
       // TODO: Implementar lógica de video correcta
-      state = state.copyWith(error: 'Funcionalidad de video en desarrollo');
+      // Por ahora, procesamos el video de forma básica
+      final basicVideoItem = MediaItem(
+        filePath: videoPath,
+        mediaType: MediaType.video,
+        duration: 30, // Duración por defecto
+        isProcessing: false,
+      );
+
+      // Reemplazar el item procesando con el item final
+      final updatedItems = state.mediaItems
+          .where((item) => !(item.filePath == videoPath && item.isProcessing))
+          .toList();
+      updatedItems.add(basicVideoItem);
+
+      state = state.copyWith(mediaItems: updatedItems);
     } catch (e) {
       // Remover item en caso de error
       state = state.copyWith(

@@ -35,13 +35,11 @@ class BiuxUser {
     this.email = '',
     this.dateBirth = '',
     this.facebook = '',
-    this.photo =
-        'https://rubibike.com/wp-content/uploads/2020/12/la_importacia_del_equipamiento_para_el_ciclista.jpg',
+    this.photo = '', // Removida URL por defecto
     this.token = '',
     this.modality = const [],
     this.password = '',
-    this.profileCover =
-        'https://rubibike.com/wp-content/uploads/2020/12/la_importacia_del_equipamiento_para_el_ciclista.jpg',
+    this.profileCover = '', // Removida URL por defecto
     this.followerS = 0,
     this.groupId = '',
     this.instagram = '',
@@ -55,48 +53,52 @@ class BiuxUser {
   factory BiuxUser.fromJsonMap(Map json) {
     return BiuxUser(
       id: json["id"] ?? '',
-      fullName: json["fullName"] ?? '',
+      fullName:
+          json["fullName"] ??
+          json["name"] ??
+          '', // Intentar primero fullName, luego name
       whatsapp: json["whatsapp"] ?? '',
       userName: json["userName"] ?? '',
       gender: json["gender"] ?? '',
-      cityId: City.fromJson(json: json["cityId"] ?? City()),
+      cityId: _parseCityId(json["cityId"]),
       token: json['token'] ?? '',
       email: json["email"] ?? '',
       dateBirth: json[" dateBirth"] ?? '',
       facebook: json["facebook"] ?? '',
-      photo: json["photo"] ??
-          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      photo:
+          json["photoUrl"] ??
+          json["photo"] ??
+          '', // Intentar primero photoUrl, luego photo
       password: json["password"] ?? '',
-      profileCover: json["profileCover"] ??
-          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      profileCover: json["profileCover"] ?? '', // Removida URL por defecto
       followerS: json["followerS"] ?? 0,
       instagram: json["instagram"] ?? '',
       premium: json["premium"] ?? false,
       followers: json["followers"] ?? {},
       following: json["following"] ?? {},
       groupId: json["groupId"] ?? '',
-      modality: json["modality"],
-      situationAccident: SituationAccident.fromJsonMap(
-        json["situationAccident"],
-      ),
+      modality: json["modality"] ?? [],
+      situationAccident: _parseSituationAccident(json["situationAccident"]),
       description: json["description"] ?? '',
     );
   }
   factory BiuxUser.fromMapStory(Map json) {
     return BiuxUser(
       id: json["id"],
-      fullName: json["fullName"],
+      fullName:
+          json["fullName"] ??
+          json["name"] ??
+          '', // Intentar primero fullName, luego name
       userName: json["userName"],
-      photo: json["photo"] ??
-          "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+      photo:
+          json["photoUrl"] ??
+          json["photo"] ??
+          '', // Intentar primero photoUrl, luego photo
     );
   }
 
   factory BiuxUser.fromMapRoad(Map json) {
-    return BiuxUser(
-      id: json["id"],
-      fullName: json["fullName"],
-    );
+    return BiuxUser(id: json["id"], fullName: json["fullName"]);
   }
 
   Map<String, dynamic> toJson() {
@@ -126,23 +128,59 @@ class BiuxUser {
     };
 
     var cleanUser = <String, dynamic>{};
-    userJson.forEach(
-      (key, value) {
-        cleanUser.putIfAbsent(key, () => value);
-            },
-    );
+    userJson.forEach((key, value) {
+      cleanUser.putIfAbsent(key, () => value);
+    });
     return cleanUser;
   }
 
   Map<String, dynamic> toMapStory() => {
-        "id": id,
-        'fullName': fullName,
-        "userName": userName,
-        "photo": photo,
-      };
+    "id": id,
+    'fullName': fullName,
+    'name': fullName, // Agregar ambos campos para compatibilidad
+    "userName": userName,
+    "photo": photo,
+  };
 
-  Map<String, dynamic> toMapRoad() => {
-        "id": id,
-        'fullName': fullName,
-      };
+  Map<String, dynamic> toMapRoad() => {"id": id, 'fullName': fullName};
+
+  // Método helper para parsear cityId que puede venir en diferentes formatos
+  static City _parseCityId(dynamic cityData) {
+    try {
+      if (cityData == null) {
+        return const City();
+      }
+
+      if (cityData is City) {
+        return cityData;
+      } else if (cityData is Map) {
+        return City.fromJson(json: cityData.cast<String, dynamic>());
+      } else if (cityData is String) {
+        return const City();
+      } else {
+        return const City();
+      }
+    } catch (e) {
+      return const City();
+    }
+  }
+
+  // Método helper para parsear situationAccident
+  static SituationAccident _parseSituationAccident(dynamic accidentData) {
+    try {
+      if (accidentData == null) {
+        return const SituationAccident();
+      }
+
+      if (accidentData is SituationAccident) {
+        return accidentData;
+      } else if (accidentData is Map) {
+        return SituationAccident.fromJsonMap(accidentData);
+      } else {
+        return const SituationAccident();
+      }
+    } catch (e) {
+      return const SituationAccident();
+    }
+  }
 }

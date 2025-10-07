@@ -197,7 +197,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('�Genial! Te has unido a la rodada'),
+          content: Text('¡Genial! Te has unido a la rodada'),
           backgroundColor: ColorTokens.success40,
         ),
       );
@@ -234,7 +234,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       builder: (dialogContext) => AlertDialog(
         title: Text('Cancelar Rodada'),
         content: Text(
-          '�Est�s seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.',
+          'Estás seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.',
         ),
         actions: [
           TextButton(
@@ -485,7 +485,7 @@ class BasicInfoWidget extends StatelessWidget {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    final weekdays = ['Lun', 'Mar', 'Mi�', 'Jue', 'Vie', 'S�b', 'Dom'];
+    final weekdays = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
     final months = [
       'Enero',
       'Febrero',
@@ -674,7 +674,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
                 ride.maybeParticipants.isEmpty) ...[
               SizedBox(height: 16),
               Text(
-                'A�n no hay participantes registrados',
+                'Aún no hay participantes registrados',
                 style: TextStyle(
                   color: ColorTokens.neutral60,
                   fontStyle: FontStyle.italic,

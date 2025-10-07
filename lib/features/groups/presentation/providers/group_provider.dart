@@ -184,7 +184,7 @@ class GroupProvider extends ChangeNotifier {
         return {
           'success': false,
           'error': 'Usuario no encontrado',
-          'requiresProfile': true
+          'requiresProfile': true,
         };
       }
 
@@ -194,13 +194,15 @@ class GroupProvider extends ChangeNotifier {
           'success': false,
           'error':
               'Debes completar tu nombre en el perfil antes de unirte a grupos',
-          'requiresProfile': true
+          'requiresProfile': true,
         };
       }
 
       // 2. Si tiene nombre, proceder con la solicitud
-      final success =
-          await _repository.requestJoinGroup(groupId, currentUserId!);
+      final success = await _repository.requestJoinGroup(
+        groupId,
+        currentUserId!,
+      );
 
       if (success) {
         // Actualizar el grupo seleccionado si está cargado
@@ -274,8 +276,10 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final success =
-          await _repository.cancelJoinRequest(groupId, currentUserId!);
+      final success = await _repository.cancelJoinRequest(
+        groupId,
+        currentUserId!,
+      );
       if (success) {
         // Actualizar el grupo seleccionado si está cargado
         if (_selectedGroup?.id == groupId) {
@@ -375,7 +379,8 @@ class GroupProvider extends ChangeNotifier {
 
   // Obtener nombres de usuarios para solicitudes pendientes
   Future<List<Map<String, dynamic>>> getPendingRequestsWithNames(
-      GroupModel group) async {
+    GroupModel group,
+  ) async {
     List<Map<String, dynamic>> requests = [];
 
     for (String userId in group.pendingRequestIds) {
@@ -393,11 +398,27 @@ class GroupProvider extends ChangeNotifier {
 
   // Obtener nombres de miembros del grupo
   Future<List<Map<String, dynamic>>> getMembersWithNames(
-      GroupModel group) async {
+    GroupModel group,
+  ) async {
     List<Map<String, dynamic>> members = [];
+
+    print('=== OBTENIENDO MIEMBROS DEL GRUPO ===');
+    print('Grupo: ${group.name}');
+    print('Admin ID: ${group.adminId}');
+    print('Member IDs: ${group.memberIds}');
+    print('====================================');
 
     for (String userId in group.memberIds) {
       final user = await getUserInfo(userId);
+
+      print('--- Procesando usuario $userId ---');
+      print('Usuario obtenido: $user');
+      print('Nombre: ${user?.name}');
+      print('Foto: ${user?.photoUrl}');
+      print('Teléfono: ${user?.phoneNumber}');
+      print('Es admin: ${group.isAdmin(userId)}');
+      print('--------------------------------');
+
       members.add({
         'userId': userId,
         'userName': user?.name ?? 'Usuario sin nombre',
@@ -406,6 +427,14 @@ class GroupProvider extends ChangeNotifier {
         'isAdmin': group.isAdmin(userId),
       });
     }
+
+    print('=== RESULTADO FINAL ===');
+    for (var member in members) {
+      print(
+        'Miembro: ${member['userName']} (${member['userId']}) - Admin: ${member['isAdmin']}',
+      );
+    }
+    print('======================');
 
     return members;
   }

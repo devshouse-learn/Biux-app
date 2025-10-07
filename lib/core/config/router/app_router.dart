@@ -35,6 +35,8 @@ import '../../../features/stories/presentation/screens/story_view/story_view_scr
 import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
 import '../../../features/users/presentation/screens/profile_screen.dart';
 import '../../../features/users/presentation/screens/user_screen/user_screen.dart';
+import '../../../features/users/presentation/screens/user_search_screen.dart';
+import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
 
 // Shared imports
 import '../../../shared/widgets/main_shell.dart';
@@ -183,6 +185,23 @@ final GoRouter _router = GoRouter(
           path: '/user',
           name: 'userScreen',
           builder: (context, state) => UserScreen(),
+        ),
+
+        // Buscar usuarios
+        GoRoute(
+          path: AppRoutes.userSearch,
+          name: AppRoutes.userSearchName,
+          builder: (context, state) => UserSearchScreen(),
+        ),
+
+        // Perfil de usuario específico
+        GoRoute(
+          path: AppRoutes.userProfile,
+          name: AppRoutes.userProfileName,
+          builder: (context, state) {
+            final userId = state.pathParameters['userId']!;
+            return PublicUserProfileScreen(userId: userId);
+          },
         ),
 
         // Grupos
