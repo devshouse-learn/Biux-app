@@ -36,9 +36,7 @@ class EditUserScreenBloc extends ChangeNotifier {
 
   Future<void> getUser() async {
     String? userId = AuthenticationRepository().getUserId;
-    final dataUser = await UserFirebaseRepository().getUserId(
-      userId,
-    );
+    final dataUser = await UserFirebaseRepository().getUserId(userId);
     final dataCity = await CitiesFirebaseRepository().getCityId(
       dataUser.cityId.name,
     );
@@ -59,14 +57,21 @@ class EditUserScreenBloc extends ChangeNotifier {
     XFile pickedFile;
     pickedFile = (await imagePicker.pickImage(
       source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 85,
     ))!;
-    File image = File(
-      pickedFile.path,
-    );
+    File image = File(pickedFile.path);
 
     imageNew = image;
-      notifyListeners();
+    notifyListeners();
     return image;
+  }
+
+  /// Nuevo método para manejar imagen ya procesada desde ProfileImagePicker
+  void setProcessedImage(File processedImage) {
+    imageNew = processedImage;
+    notifyListeners();
   }
 
   Future<void> onTapCities(String nameCity, String cityIdSelected) async {
@@ -87,8 +92,8 @@ class EditUserScreenBloc extends ChangeNotifier {
     listCities = dataFilterCities
         .where(
           (cities) => cities.name.toLowerCase().contains(
-                cityController.text.toLowerCase(),
-              ),
+            cityController.text.toLowerCase(),
+          ),
         )
         .toList();
     notifyListeners();
@@ -115,14 +120,9 @@ class EditUserScreenBloc extends ChangeNotifier {
       cityId: cityId,
       description: descripcionController.text,
     );
-    await UserFirebaseRepository().updateUser(
-      uploadUser,
-    );
+    await UserFirebaseRepository().updateUser(uploadUser);
     if (imageNew != null)
-      await UserFirebaseRepository().uploadPhoto(
-        user.id,
-        imageNew,
-      );
+      await UserFirebaseRepository().uploadPhoto(user.id, imageNew);
     notifyListeners();
   }
 }

@@ -58,7 +58,7 @@ class BiuxUser {
           json["name"] ??
           '', // Intentar primero fullName, luego name
       whatsapp: json["whatsapp"] ?? '',
-      userName: json["userName"] ?? '',
+      userName: json["username"] ?? json["userName"] ?? '',
       gender: json["gender"] ?? '',
       cityId: _parseCityId(json["cityId"]),
       token: json['token'] ?? '',
@@ -89,7 +89,7 @@ class BiuxUser {
           json["fullName"] ??
           json["name"] ??
           '', // Intentar primero fullName, luego name
-      userName: json["userName"],
+      userName: json["username"] ?? json["userName"] ?? '',
       photo:
           json["photoUrl"] ??
           json["photo"] ??

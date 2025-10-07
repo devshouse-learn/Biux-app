@@ -33,6 +33,7 @@ import '../../../features/roads/presentation/screens/roads_list/roads_list_scree
 
 import '../../../features/stories/presentation/screens/story_view/story_view_screen.dart';
 import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
+import '../../../features/users/presentation/screens/edit_username_screen.dart';
 import '../../../features/users/presentation/screens/profile_screen.dart';
 import '../../../features/users/presentation/screens/user_screen/user_screen.dart';
 import '../../../features/users/presentation/screens/user_search_screen.dart';
@@ -178,6 +179,13 @@ final GoRouter _router = GoRouter(
           path: AppRoutes.editUser,
           name: AppRoutes.editUserName,
           builder: (context, state) => UserEditScreen(),
+        ),
+
+        // Editar nombre de usuario
+        GoRoute(
+          path: '/edit-username',
+          name: 'editUsername',
+          builder: (context, state) => const EditUsernameScreen(),
         ),
 
         // Pantalla de usuario

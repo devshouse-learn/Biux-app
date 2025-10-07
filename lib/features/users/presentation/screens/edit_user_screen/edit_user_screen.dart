@@ -5,12 +5,14 @@ import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/users/presentation/screens/edit_user_screen/edit_user_screen_bloc.dart';
+import 'package:biux/features/users/presentation/widgets/profile_image_picker.dart';
 import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class UserEditScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -101,6 +103,67 @@ class _FormGroupWidget extends StatelessWidget {
                     height: 1,
                     scale: 4,
                     color: ColorTokens.neutral60,
+                  ),
+                ),
+                // Botón para editar username
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 5,
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      context.push('/edit-username');
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: ColorTokens.primary30),
+                        borderRadius: BorderRadius.circular(12),
+                        color: ColorTokens.primary30.withOpacity(0.1),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.edit,
+                            color: ColorTokens.primary50,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Editar nombre de usuario',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorTokens.primary60,
+                                  ),
+                                ),
+                                Text(
+                                  '@${bloc.nameUserController.text}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: ColorTokens.neutral60,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: ColorTokens.primary50,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 TextFormFieldBiuxWidget(
@@ -227,16 +290,15 @@ class _BotonSend extends StatelessWidget {
               } else
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
-                    content:
-                        bloc.nameController.text.isEmpty
-                            ? AppStrings.fullNameIsEmpty
-                            : bloc.numberController.text.isEmpty
-                            ? AppStrings.numberIsEmpty
-                            : bloc.cityController.text.isEmpty
-                            ? AppStrings.cityIsEmpty
-                            : bloc.descripcionController.text.isEmpty
-                            ? AppStrings.descritionIsEmpty
-                            : '',
+                    content: bloc.nameController.text.isEmpty
+                        ? AppStrings.fullNameIsEmpty
+                        : bloc.numberController.text.isEmpty
+                        ? AppStrings.numberIsEmpty
+                        : bloc.cityController.text.isEmpty
+                        ? AppStrings.cityIsEmpty
+                        : bloc.descripcionController.text.isEmpty
+                        ? AppStrings.descritionIsEmpty
+                        : '',
                     backgroundColor: ColorTokens.error50,
                   ),
                 );
@@ -254,85 +316,17 @@ class _LogoBiuxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<EditUserScreenBloc>();
-    return Stack(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(top: 10, left: 130),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(60.0),
-            boxShadow: [
-              BoxShadow(color: ColorTokens.neutral100, spreadRadius: 3),
-            ],
-          ),
-          child: GestureDetector(
-            onTap: bloc.getImageLogo,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ColorTokens.secondary50,
-              ),
-              height: 120,
-              width: 120,
-              child:
-                  bloc.imageNew == null
-                      ? Container(
-                        alignment: (Alignment(-1.0, 2.5)),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: ColorTokens.neutral100,
-                            width: 4,
-                          ),
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: CachedNetworkImageProvider(
-                              bloc.user.photo,
-                              cacheManager:
-                                  OptimizedCacheManager.avatarInstance,
-                            ),
-                          ),
-                          borderRadius: BorderRadius.all(
-                            const Radius.circular(80.0),
-                          ),
-                        ),
-                      )
-                      : Container(
-                        alignment: (Alignment(-1.0, 2.5)),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: FileImage(bloc.imageNew),
-                          ),
-                          borderRadius: BorderRadius.all(
-                            const Radius.circular(80.0),
-                          ),
-                        ),
-                      ),
-            ),
-          ),
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Center(
+        child: ProfileImagePicker(
+          size: 120,
+          currentImageUrl: bloc.user.photo,
+          onImageSelected: (File selectedImage) {
+            bloc.setProcessedImage(selectedImage);
+          },
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 100, left: 210),
-          child: GestureDetector(
-            child: Container(
-              height: 30,
-              width: 30,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(60.0),
-                color: ColorTokens.primary30,
-                boxShadow: [
-                  BoxShadow(blurRadius: 1.0, color: ColorTokens.neutral0),
-                ],
-              ),
-              child: const Icon(
-                Icons.add,
-                color: ColorTokens.neutral100,
-                size: 25,
-              ),
-            ),
-            onTap: bloc.getImageLogo,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -369,17 +363,16 @@ class _WidgetSearchCity extends StatelessWidget {
             height: 10,
             scale: 3.0,
           ),
-          suffixIcon:
-              bloc.focusNodeCity.hasFocus
-                  ? IconButton(
-                    icon: Icon(Icons.close, color: ColorTokens.neutral60),
-                    onPressed: () {
-                      bloc.getCities();
-                      bloc.focusNodeCity.unfocus();
-                      bloc.setState();
-                    },
-                  )
-                  : SizedBox(),
+          suffixIcon: bloc.focusNodeCity.hasFocus
+              ? IconButton(
+                  icon: Icon(Icons.close, color: ColorTokens.neutral60),
+                  onPressed: () {
+                    bloc.getCities();
+                    bloc.focusNodeCity.unfocus();
+                    bloc.setState();
+                  },
+                )
+              : SizedBox(),
         ),
       ),
     );
@@ -412,26 +405,22 @@ class _ListCity extends StatelessWidget {
           Divider(color: ColorTokens.neutral60, height: 1),
           SingleChildScrollView(
             child: Wrap(
-              children:
-                  listCities
-                      .map(
-                        (city) => Column(
-                          children: [
-                            ListTile(
-                              contentPadding: EdgeInsets.only(left: 60),
-                              title: Text(
-                                city.name,
-                                style: Styles.TextCityList,
-                              ),
-                              onTap: () {
-                                bloc.onTapCities(city.name, city.id);
-                              },
-                            ),
-                            Divider(color: ColorTokens.neutral60, height: 1),
-                          ],
+              children: listCities
+                  .map(
+                    (city) => Column(
+                      children: [
+                        ListTile(
+                          contentPadding: EdgeInsets.only(left: 60),
+                          title: Text(city.name, style: Styles.TextCityList),
+                          onTap: () {
+                            bloc.onTapCities(city.name, city.id);
+                          },
                         ),
-                      )
-                      .toList(),
+                        Divider(color: ColorTokens.neutral60, height: 1),
+                      ],
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ],

@@ -135,7 +135,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 // Header del perfil
                 SliverAppBar(
                   expandedHeight:
-                      380, // Incrementado de 300 a 380 para evitar overflow
+                      450, // Incrementado de 420 a 450 para eliminar el overflow
                   floating: false,
                   pinned: true,
                   backgroundColor: ColorTokens.primary30,
@@ -156,11 +156,12 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               const SizedBox(
                                 height: 40,
                               ), // Espacio para el AppBar
+                              const Spacer(flex: 1), // Espacio flexible arriba
                               // Foto de perfil
                               Container(
                                 width: 100,
@@ -301,6 +302,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
                               // Botón de seguir/siguiendo
                               _buildFollowButton(provider, user),
+                              const Spacer(flex: 1), // Espacio flexible abajo
                             ],
                           ),
                         ),

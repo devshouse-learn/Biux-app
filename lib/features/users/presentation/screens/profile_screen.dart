@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
@@ -104,8 +105,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 ? 'Perfil actualizado correctamente'
                 : widget.userProvider.error ?? 'Error al actualizar perfil',
           ),
-          backgroundColor:
-              success ? ColorTokens.success40 : ColorTokens.error50,
+          backgroundColor: success
+              ? ColorTokens.success40
+              : ColorTokens.error50,
         ),
       );
     }
@@ -248,8 +250,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             TextButton(
               onPressed: () async {
                 Navigator.of(dialogContext).pop();
-                bool success =
-                    await widget.userProvider.requestAccountDeletion();
+                bool success = await widget.userProvider
+                    .requestAccountDeletion();
 
                 if (mounted && success) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -284,259 +286,343 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           IconButton(icon: Icon(Icons.logout), onPressed: _showLogoutDialog),
         ],
       ),
-      body:
-          widget.userProvider.isLoading
-              ? Center(child: CircularProgressIndicator())
-              : widget.userProvider.user == null
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error, size: 64, color: ColorTokens.neutral60),
-                    SizedBox(height: 16),
-                    Text('Error cargando datos del perfil'),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => widget.userProvider.loadUserData(),
-                      child: Text('Reintentar'),
-                    ),
-                  ],
-                ),
-              )
-              : SingleChildScrollView(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    // Foto de perfil optimizada
-                    OptimizedImagePicker(
-                      currentImageUrl: widget.userProvider.user?.photoUrl,
-                      onImageSelected: (url) async {
-                        if (url != null) {
-                          // Actualizar la URL en Firestore directamente
-                          try {
-                            final currentUser =
-                                FirebaseAuth.instance.currentUser;
-                            if (currentUser != null) {
-                              // Actualizar en Firestore
-                              await FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(currentUser.uid)
-                                  .update({'photoUrl': url});
+      body: widget.userProvider.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : widget.userProvider.user == null
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error, size: 64, color: ColorTokens.neutral60),
+                  SizedBox(height: 16),
+                  Text('Error cargando datos del perfil'),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => widget.userProvider.loadUserData(),
+                    child: Text('Reintentar'),
+                  ),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Foto de perfil optimizada
+                  OptimizedImagePicker(
+                    currentImageUrl: widget.userProvider.user?.photoUrl,
+                    onImageSelected: (url) async {
+                      if (url != null) {
+                        // Actualizar la URL en Firestore directamente
+                        try {
+                          final currentUser = FirebaseAuth.instance.currentUser;
+                          if (currentUser != null) {
+                            // Actualizar en Firestore
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(currentUser.uid)
+                                .update({'photoUrl': url});
 
-                              // Recargar los datos del usuario en el provider
-                              await widget.userProvider.loadUserData();
+                            // Recargar los datos del usuario en el provider
+                            await widget.userProvider.loadUserData();
 
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Imagen de perfil actualizada',
-                                    ),
-                                    backgroundColor: ColorTokens.success40,
-                                  ),
-                                );
-                              }
-                            }
-                          } catch (e) {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(
-                                    'Error actualizando imagen: $e',
-                                  ),
-                                  backgroundColor: ColorTokens.error50,
+                                  content: Text('Imagen de perfil actualizada'),
+                                  backgroundColor: ColorTokens.success40,
                                 ),
                               );
                             }
                           }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error actualizando imagen: $e'),
+                                backgroundColor: ColorTokens.error50,
+                              ),
+                            );
+                          }
                         }
-                      },
-                      imageType: 'avatar',
-                      entityId:
-                          FirebaseAuth.instance.currentUser?.uid ?? 'temp_user',
+                      }
+                    },
+                    imageType: 'avatar',
+                    entityId:
+                        FirebaseAuth.instance.currentUser?.uid ?? 'temp_user',
+                    width: 120,
+                    height: 120,
+                    borderRadius: BorderRadius.circular(60),
+                    placeholder: Container(
                       width: 120,
                       height: 120,
-                      borderRadius: BorderRadius.circular(60),
-                      placeholder: Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ColorTokens.neutral20,
-                          boxShadow: [
-                            BoxShadow(
-                              color: ColorTokens.neutral60.withValues(
-                                alpha: 0.3,
-                              ),
-                              spreadRadius: 2,
-                              blurRadius: 8,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.camera_alt,
-                          size: 40,
-                          color: ColorTokens.neutral60,
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 8),
-                    Text(
-                      'Toca para cambiar foto',
-                      style: TextStyle(
-                        color: ColorTokens.neutral60,
-                        fontSize: 14,
-                      ),
-                    ),
-
-                    SizedBox(height: 32),
-
-                    // Campo nombre
-                    TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Nombre',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Campo email
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Teléfono (solo lectura)
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Teléfono',
-                        prefixIcon: Icon(Icons.phone),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      enabled: false,
-                      controller: TextEditingController(
-                        text:
-                            widget.userProvider.user?.phoneNumber.isNotEmpty ==
-                                    true
-                                ? widget.userProvider.user!.phoneNumber
-                                : widget.formatPhoneFunction(
-                                  FirebaseAuth.instance.currentUser?.uid ?? '',
-                                ),
-                      ),
-                    ),
-
-                    SizedBox(height: 32),
-
-                    // Botón actualizar
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _updateProfile,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorTokens.primary50,
-                          foregroundColor: ColorTokens.neutral100,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: ColorTokens.neutral20,
+                        boxShadow: [
+                          BoxShadow(
+                            color: ColorTokens.neutral60.withValues(alpha: 0.3),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: Offset(0, 3),
                           ),
-                        ),
-                        child: Text(
-                          'Actualizar Perfil',
-                          style: TextStyle(fontSize: 16),
-                        ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.camera_alt,
+                        size: 40,
+                        color: ColorTokens.neutral60,
                       ),
                     ),
+                  ),
 
-                    SizedBox(height: 24),
+                  SizedBox(height: 8),
+                  Text(
+                    'Toca para cambiar foto',
+                    style: TextStyle(
+                      color: ColorTokens.neutral60,
+                      fontSize: 14,
+                    ),
+                  ),
 
-                    // Estado de eliminación
-                    if (widget.userProvider.user?.isDeleting == true)
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: ColorTokens.warning50.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.warning, color: ColorTokens.warning50),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Cuenta en proceso de eliminación',
-                                    style: TextStyle(
-                                      color: ColorTokens.warning50,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  if (widget
-                                          .userProvider
-                                          .user
-                                          ?.deletionRequestDate !=
-                                      null)
-                                    Text(
-                                      'Solicitado: ${widget.userProvider.user!.deletionRequestDate!.day}/${widget.userProvider.user!.deletionRequestDate!.month}/${widget.userProvider.user!.deletionRequestDate!.year}',
-                                      style: TextStyle(
-                                        color: ColorTokens.warning50,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                  SizedBox(height: 24),
+
+                  // Username section
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.neutral10,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: ColorTokens.neutral30,
+                        width: 1,
                       ),
-
-                    SizedBox(height: 32),
-
-                    // Botón eliminar cuenta
-                    if (widget.userProvider.user?.isDeleting != true)
-                      TextButton(
-                        onPressed: _showDeleteAccountDialog,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
                             Icon(
-                              Icons.delete_forever,
-                              color: ColorTokens.error50,
+                              Icons.alternate_email,
+                              color: ColorTokens.primary50,
+                              size: 20,
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Eliminar Cuenta',
+                              'Username',
                               style: TextStyle(
-                                color: ColorTokens.error50,
+                                fontWeight: FontWeight.w600,
                                 fontSize: 16,
+                                color: ColorTokens.neutral90,
                               ),
                             ),
                           ],
                         ),
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.userProvider.user?.username != null &&
+                                        widget
+                                            .userProvider
+                                            .user!
+                                            .username!
+                                            .isNotEmpty
+                                    ? '@${widget.userProvider.user!.username}'
+                                    : 'No tienes username',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color:
+                                      widget.userProvider.user?.username !=
+                                              null &&
+                                          widget
+                                              .userProvider
+                                              .user!
+                                              .username!
+                                              .isNotEmpty
+                                      ? ColorTokens.neutral80
+                                      : ColorTokens.neutral60,
+                                  fontStyle:
+                                      widget.userProvider.user?.username ==
+                                              null ||
+                                          widget
+                                              .userProvider
+                                              .user!
+                                              .username!
+                                              .isEmpty
+                                      ? FontStyle.italic
+                                      : FontStyle.normal,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                await context.push('/edit-username');
+                                // Refrescar datos después de editar el username
+                                await widget.userProvider.loadUserData();
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                color: ColorTokens.primary50,
+                                size: 20,
+                              ),
+                              tooltip: 'Editar username',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 24),
+
+                  // Campo nombre
+                  TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre',
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                  ],
-                ),
+                    ),
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Campo email
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo Electrónico',
+                      prefixIcon: Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Teléfono (solo lectura)
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Teléfono',
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    enabled: false,
+                    controller: TextEditingController(
+                      text:
+                          widget.userProvider.user?.phoneNumber.isNotEmpty ==
+                              true
+                          ? widget.userProvider.user!.phoneNumber
+                          : widget.formatPhoneFunction(
+                              FirebaseAuth.instance.currentUser?.uid ?? '',
+                            ),
+                    ),
+                  ),
+
+                  SizedBox(height: 32),
+
+                  // Botón actualizar
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _updateProfile,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.primary50,
+                        foregroundColor: ColorTokens.neutral100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Actualizar Perfil',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 24),
+
+                  // Estado de eliminación
+                  if (widget.userProvider.user?.isDeleting == true)
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.warning50.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.warning, color: ColorTokens.warning50),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Cuenta en proceso de eliminación',
+                                  style: TextStyle(
+                                    color: ColorTokens.warning50,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if (widget
+                                        .userProvider
+                                        .user
+                                        ?.deletionRequestDate !=
+                                    null)
+                                  Text(
+                                    'Solicitado: ${widget.userProvider.user!.deletionRequestDate!.day}/${widget.userProvider.user!.deletionRequestDate!.month}/${widget.userProvider.user!.deletionRequestDate!.year}',
+                                    style: TextStyle(
+                                      color: ColorTokens.warning50,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  SizedBox(height: 32),
+
+                  // Botón eliminar cuenta
+                  if (widget.userProvider.user?.isDeleting != true)
+                    TextButton(
+                      onPressed: _showDeleteAccountDialog,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.delete_forever,
+                            color: ColorTokens.error50,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Eliminar Cuenta',
+                            style: TextStyle(
+                              color: ColorTokens.error50,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
+            ),
     );
   }
 

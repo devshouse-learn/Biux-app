@@ -1,10 +1,14 @@
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_profile_repository_impl.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
+import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
+import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   final UserProfileRepository _repository = UserProfileRepositoryImpl();
+  final ExperienceRepository _experienceRepository = ExperienceRepositoryImpl();
 
   // Estado de búsqueda
   List<BiuxUser> _searchResults = [];
@@ -134,12 +138,30 @@ class UserProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Simular carga de posts y stories
-      // Aquí conectarías con tu API real
-      _userPosts = [];
-      _userStories = [];
+      print('🔍 PROFILE: Cargando experiencias para usuario: $userId');
+
+      // Cargar experiencias reales del usuario
+      final userExperiences = await _experienceRepository.getUserExperiences(
+        userId,
+      );
+
+      // Filtrar posts y stories
+      final now = DateTime.now();
+      final twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
+
+      // Stories: experiencias de las últimas 24 horas
+      _userStories = userExperiences
+          .where((exp) => exp.createdAt.isAfter(twentyFourHoursAgo))
+          .toList();
+
+      // Posts: todas las experiencias (incluyendo las que ya expiraron como stories)
+      _userPosts = userExperiences;
+
+      print('🔍 PROFILE: Experiencias cargadas: ${userExperiences.length}');
+      print('🔍 PROFILE: Stories (últimas 24h): ${_userStories.length}');
+      print('🔍 PROFILE: Posts (todas): ${_userPosts.length}');
     } catch (e) {
-      print('Error cargando contenido del usuario: $e');
+      print('❌ Error cargando contenido del usuario: $e');
       _userPosts = [];
       _userStories = [];
     } finally {

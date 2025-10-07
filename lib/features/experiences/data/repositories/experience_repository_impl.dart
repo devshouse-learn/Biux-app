@@ -36,6 +36,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             firebaseUser.displayName ??
             'Usuario',
         userName:
+            _getStringValue(userData['username']) ??
             _getStringValue(userData['userName']) ??
             _generateUsername(firebaseUser.uid),
         email: firebaseUser.email ?? 'usuario@biux.com',

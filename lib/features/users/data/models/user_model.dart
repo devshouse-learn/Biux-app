@@ -4,6 +4,7 @@ class UserModel {
   final String? email;
   final String? photoUrl;
   final String phoneNumber;
+  final String? username;
   final bool isDeleting;
   final DateTime? deletionRequestDate;
 
@@ -13,6 +14,7 @@ class UserModel {
     this.email,
     this.photoUrl,
     required this.phoneNumber,
+    this.username,
     this.isDeleting = false,
     this.deletionRequestDate,
   });
@@ -24,6 +26,7 @@ class UserModel {
       'email': email,
       'photoUrl': photoUrl,
       'phoneNumber': phoneNumber,
+      'username': username,
       'isDeleting': isDeleting,
       'deletionRequestDate': deletionRequestDate?.toIso8601String(),
     };
@@ -36,6 +39,7 @@ class UserModel {
       email: map['email'],
       photoUrl: map['photoUrl'],
       phoneNumber: map['phoneNumber'],
+      username: map['username'],
       isDeleting: map['isDeleting'] ?? false,
       deletionRequestDate: map['deletionRequestDate'] != null
           ? DateTime.parse(map['deletionRequestDate'])
@@ -49,6 +53,7 @@ class UserModel {
     String? email,
     String? photoUrl,
     String? phoneNumber,
+    String? username,
     bool? isDeleting,
     DateTime? deletionRequestDate,
   }) {
@@ -58,6 +63,7 @@ class UserModel {
       email: email ?? this.email,
       photoUrl: photoUrl ?? this.photoUrl,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      username: username ?? this.username,
       isDeleting: isDeleting ?? this.isDeleting,
       deletionRequestDate: deletionRequestDate ?? this.deletionRequestDate,
     );
