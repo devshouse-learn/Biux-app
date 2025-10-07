@@ -42,6 +42,16 @@ class ExperienceEntity {
     return type == ExperienceType.ride && rideId != null;
   }
 
+  /// Verifica si debe mostrarse como Story (contenido visual y corto)
+  bool get isStoryFormat {
+    return media.isNotEmpty && description.length <= 50;
+  }
+
+  /// Verifica si debe mostrarse como Post regular (contenido más elaborado)
+  bool get isPostFormat {
+    return !isStoryFormat;
+  }
+
   /// Crear copia con campos modificados
   ExperienceEntity copyWith({
     String? id,

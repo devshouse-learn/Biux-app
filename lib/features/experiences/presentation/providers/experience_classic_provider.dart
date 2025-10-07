@@ -69,6 +69,52 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
+  /// Carga el feed personalizado que incluye:
+  /// - Los grupos que sigo
+  /// - Mis publicaciones
+  /// - Las publicaciones de los perfiles que sigo
+  Future<void> loadPersonalizedFeed(String userId) async {
+    try {
+      _setLoading(true);
+      _error = null;
+
+      print('🔍 FEED: Cargando feed personalizado para usuario: $userId');
+
+      // Cargar experiencias del usuario actual (mis publicaciones)
+      final myExperiences = await _repository.getUserExperiences(userId);
+      print('🔍 FEED: Mis experiencias cargadas: ${myExperiences.length}');
+
+      // Cargar experiencias de usuarios seguidos
+      final followingExperiences = await _repository.getFollowingExperiences(
+        userId,
+      );
+      print(
+        '🔍 FEED: Experiencias de seguidos cargadas: ${followingExperiences.length}',
+      );
+
+      // Combinar todas las experiencias y ordenar por fecha (más recientes primero)
+      final allExperiences = [...myExperiences, ...followingExperiences];
+      allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      print('🔍 FEED: Total experiencias en feed: ${allExperiences.length}');
+
+      // Debug: mostrar autores de las experiencias
+      for (int i = 0; i < allExperiences.length && i < 5; i++) {
+        final exp = allExperiences[i];
+        print(
+          '🔍 FEED: Experiencia ${i + 1}: Autor: "${exp.user.fullName}" (${exp.user.id})',
+        );
+      }
+
+      _setExperiences(allExperiences);
+    } catch (e) {
+      print('❌ FEED: Error cargando feed personalizado: $e');
+      _setError('Error cargando feed personalizado: ${e.toString()}');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   /// Crea una nueva experiencia
   Future<bool> createExperience(CreateExperienceRequest request) async {
     try {

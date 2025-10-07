@@ -115,16 +115,48 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   @override
   Future<List<ExperienceEntity>> getFollowingExperiences(String userId) async {
     try {
-      // Obtener lista de usuarios que sigue
+      print(
+        '🔍 REPO: Obteniendo experiencias de usuarios seguidos para: $userId',
+      );
+
+      // Primero intentar obtener de subcolección
       final followingSnapshot = await _firestore
           .collection('users')
           .doc(userId)
           .collection('following')
           .get();
 
-      final followingIds = followingSnapshot.docs.map((doc) => doc.id).toList();
+      List<String> followingIds = followingSnapshot.docs
+          .map((doc) => doc.id)
+          .toList();
+      print(
+        '🔍 REPO: Usuarios seguidos en subcolección: ${followingIds.length}',
+      );
+
+      // Si no hay en subcolección, intentar desde el documento principal
+      if (followingIds.isEmpty) {
+        print('🔍 REPO: Buscando en documento principal del usuario...');
+        final userDoc = await _firestore.collection('users').doc(userId).get();
+
+        if (userDoc.exists) {
+          final userData = userDoc.data()!;
+
+          // Verificar si hay campo "following" como Map
+          if (userData['following'] is Map) {
+            final followingMap = userData['following'] as Map;
+            followingIds = followingMap.keys.cast<String>().toList();
+            print(
+              '🔍 REPO: Usuarios seguidos en documento principal: ${followingIds.length}',
+            );
+            print('🔍 REPO: Following map: $followingMap');
+          }
+        }
+      }
+
+      print('🔍 REPO: Total IDs de usuarios seguidos: $followingIds');
 
       if (followingIds.isEmpty) {
+        print('⚠️ REPO: No hay usuarios seguidos, retornando lista vacía');
         return [];
       }
 
@@ -136,6 +168,10 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .limit(50)
           .get();
 
+      print(
+        '🔍 REPO: Experiencias de seguidos encontradas: ${snapshot.docs.length}',
+      );
+
       return snapshot.docs
           .map(
             (doc) => ExperienceModel.fromJson({
@@ -145,6 +181,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           )
           .toList();
     } catch (e) {
+      print('❌ REPO: Error obteniendo experiencias de seguidores: $e');
       throw Exception('Error obteniendo experiencias de seguidores: $e');
     }
   }

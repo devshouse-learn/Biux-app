@@ -109,21 +109,14 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
   List<ExperienceEntity> _getStoriesFromExperiences(
     ExperienceProvider provider,
   ) {
-    // Combinar todas las experiencias disponibles
-    final allExperiences = <ExperienceEntity>[];
+    // USAR SOLO las experiencias del feed personalizado (no duplicar)
+    final allExperiences =
+        provider.experiences; // Feed personalizado ya contiene todo
 
-    // Agregar experiencias del usuario
-    allExperiences.addAll(provider.userExperiences);
-
-    // Agregar experiencias generales (si las hay)
-    allExperiences.addAll(provider.experiences);
+    print('🔍 STORIES: Total experiencias en feed: ${allExperiences.length}');
 
     // Filtrar solo las que son realmente "stories" (contenido visual y corto)
-    final storyExperiences = allExperiences.where(
-      (exp) =>
-          // Stories: tienen media y descripción corta (o sin descripción)
-          exp.media.isNotEmpty && exp.description.length <= 50,
-    );
+    final storyExperiences = allExperiences.where((exp) => exp.isStoryFormat);
 
     // Eliminar duplicados y ordenar por fecha
     final uniqueExperiences = <String, ExperienceEntity>{};
@@ -133,6 +126,14 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 
     final stories = uniqueExperiences.values.toList();
     stories.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    print('🔍 STORIES: Stories filtradas: ${stories.length}');
+    for (int i = 0; i < stories.length && i < 3; i++) {
+      final story = stories[i];
+      print(
+        '🔍 STORY ${i + 1}: "${story.user.fullName}" - ${story.description.substring(0, story.description.length > 20 ? 20 : story.description.length)}...',
+      );
+    }
 
     // Limitar a las últimas 20 stories para performance
     return stories.take(20).toList();

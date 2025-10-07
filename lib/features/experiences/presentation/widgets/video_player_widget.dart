@@ -7,6 +7,8 @@ class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
   final VoidCallback? onFinished;
   final VoidCallback? onTap;
+  final VoidCallback?
+  onVideoReady; // Nuevo callback para cuando el video esté listo
   final bool autoPlay;
   final bool showControls;
   final bool isPlaying;
@@ -16,6 +18,7 @@ class VideoPlayerWidget extends StatefulWidget {
     required this.videoUrl,
     this.onFinished,
     this.onTap,
+    this.onVideoReady, // Agregar nuevo parámetro
     this.autoPlay = true,
     this.showControls = false,
     this.isPlaying = true,
@@ -90,6 +93,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         _isInitialized = true;
         _isLoading = false;
       });
+
+      // Notificar que el video está listo
+      widget.onVideoReady?.call();
 
       // Auto-reproducir si está habilitado
       if (widget.autoPlay && widget.isPlaying) {

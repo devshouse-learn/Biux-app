@@ -669,15 +669,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                                 : ColorTokens.neutral70,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Videos + texto corto',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: ColorTokens.neutral60,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
                       ],
                     ),
                   ),
@@ -725,15 +716,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                                 ? ColorTokens.secondary50
                                 : ColorTokens.neutral70,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Fotos + texto largo',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: ColorTokens.neutral60,
-                          ),
-                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),

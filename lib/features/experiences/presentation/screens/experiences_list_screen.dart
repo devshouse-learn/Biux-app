@@ -6,6 +6,8 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
+import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -25,13 +27,16 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
   @override
   void initState() {
     super.initState();
-    // Cargar experiencias al inicializar (una sola vez para evitar loop)
+    // Cargar feed personalizado al inicializar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userId = _currentUserId;
       if (userId != null) {
-        context.read<ExperienceProvider>().loadUserExperiences(userId);
+        // Cambiar a feed personalizado que incluye grupos, mis posts y posts de seguidos
+        context.read<ExperienceProvider>().loadPersonalizedFeed(userId);
+        // Cargar grupos que sigue el usuario
+        context.read<GroupProvider>().loadUserGroups();
       } else {
-        print('⚠️ Usuario no autenticado, no se pueden cargar experiencias');
+        print('⚠️ Usuario no autenticado, no se puede cargar el feed');
       }
     });
   }
@@ -42,7 +47,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
-          'Experiencias',
+          'Mi Feed',
           style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
         backgroundColor: ColorTokens.primary30,
@@ -88,56 +93,25 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
       return _buildErrorState(provider.error!, provider);
     }
 
-    // Separar stories de posts regulares
-    final allExperiences = provider.userExperiences;
+    // Separar CORRECTAMENTE stories de posts regulares
+    final allExperiences = provider.experiences; // Feed personalizado
 
-    // Posts: TODAS las experiencias que NO son stories
-    // (Stories son: media presente Y descripción ≤50 caracteres)
-    final posts = allExperiences
-        .where(
-          (exp) =>
-              // No debe ser una story
-              !(exp.media.isNotEmpty && exp.description.length <= 50),
-        )
-        .toList();
+    // POSTS: Experiencias que van en el feed principal vertical
+    // - Pueden o no tener media
+    // - Cualquier longitud de descripción
+    // - EXCLUYE las que ya se muestran como stories
+    final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
 
-    // Layout tipo Instagram: Stories arriba, publicaciones abajo
+    // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
     return Column(
       children: [
+        // Sección de Grupos que sigo (temporalmente comentado)
+        // _buildGroupsSection(),
+
         // Sección de Stories con indicador
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Indicador de Stories
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.play_circle_outline,
-                    color: ColorTokens.primary50,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Stories',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: ColorTokens.neutral80,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '(Videos + texto corto)',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: ColorTokens.neutral60,
-                    ),
-                  ),
-                ],
-              ),
-            ),
             // Widget de stories
             const ExperiencesStoriesWidget(),
           ],
@@ -146,40 +120,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
         // Divisor con indicador de Posts
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            children: [
-              Container(height: 1, color: ColorTokens.neutral20),
-              const SizedBox(height: 12),
-              // Indicador de Posts
-              Row(
-                children: [
-                  Icon(
-                    Icons.article_outlined,
-                    color: ColorTokens.secondary50,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Posts',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: ColorTokens.neutral80,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '(Fotos + texto largo)',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: ColorTokens.neutral60,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
+          child: Container(height: 1, color: ColorTokens.neutral20),
         ),
 
         // Lista de posts abajo o estado vacío
@@ -218,7 +159,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
             onPressed: () {
               final userId = _currentUserId;
               if (userId != null) {
-                provider.loadUserExperiences(userId);
+                provider.loadPersonalizedFeed(userId);
               } else {
                 print('⚠️ Usuario no autenticado, no se puede recargar');
               }

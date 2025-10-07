@@ -35,6 +35,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   int currentMediaIndex = 0;
   bool isPaused = false;
   bool isPressed = false;
+  bool isMediaReady =
+      false; // Nueva variable para controlar cuando el media está listo
 
   @override
   void initState() {
@@ -60,11 +62,40 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   void _startCurrentMedia() {
     if (currentMediaIndex >= widget.experience.media.length) return;
 
-    final currentMedia = widget.experience.media[currentMediaIndex];
-    final duration = Duration(seconds: currentMedia.duration);
+    setState(() {
+      isMediaReady = false; // Reset del estado de carga
+    });
 
+    final currentMedia = widget.experience.media[currentMediaIndex];
+
+    // Solo iniciar el progreso después de que el media esté listo
+    // Para imágenes, se inicia inmediatamente
+    // Para videos, se inicia cuando el VideoPlayerWidget notifique que está listo
+    if (currentMedia.mediaType == MediaType.image) {
+      _startProgressTimer(Duration(seconds: currentMedia.duration));
+    }
+    // Para videos, el timer se iniciará desde onVideoReady callback
+  }
+
+  void _startProgressTimer(Duration duration) {
     _progressController.duration = duration;
-    _progressController.forward();
+    setState(() {
+      isMediaReady = true;
+    });
+
+    if (!isPaused) {
+      _progressController.forward();
+    }
+  }
+
+  void _onVideoReady() {
+    // Callback para cuando el video esté listo para reproducirse
+    if (currentMediaIndex < widget.experience.media.length) {
+      final currentMedia = widget.experience.media[currentMediaIndex];
+      if (currentMedia.mediaType == MediaType.video) {
+        _startProgressTimer(Duration(seconds: currentMedia.duration));
+      }
+    }
   }
 
   void _nextMedia() {
@@ -96,10 +127,13 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       isPaused = !isPaused;
     });
 
-    if (isPaused) {
-      _progressController.stop();
-    } else {
-      _progressController.forward();
+    // Solo controlar el progreso si el media está listo
+    if (isMediaReady) {
+      if (isPaused) {
+        _progressController.stop();
+      } else {
+        _progressController.forward();
+      }
     }
   }
 
@@ -228,6 +262,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
           videoUrl: media.url,
           autoPlay: true,
           isPlaying: !isPaused,
+          onVideoReady:
+              _onVideoReady, // Agregar callback para cuando esté listo
           onFinished: () {
             // Cuando termine el video, avanzar al siguiente automáticamente
             if (widget.onNext != null) {
@@ -378,55 +414,69 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   Widget _buildTouchAreas() {
-    return Row(
+    final topPadding = MediaQuery.of(context).padding.top;
+    final closeButtonHeight = 60.0; // Altura reservada para el botón de cerrar
+
+    return Column(
       children: [
-        // Área izquierda para story anterior (30% del ancho)
-        Expanded(
-          flex: 3,
-          child: GestureDetector(
-            onTap: () {
-              // Si estamos en el primer media de la story, ir a la story anterior
-              if (currentMediaIndex == 0) {
-                widget.onPrevious?.call();
-              } else {
-                _previousMedia();
-              }
-            },
-            child: Container(
-              color: Colors.transparent,
-              height: double.infinity,
-            ),
-          ),
-        ),
+        // Espacio superior para el botón de cerrar (no interceptar toques aquí)
+        SizedBox(height: topPadding + closeButtonHeight),
 
-        // Área central para pausar/reanudar (40% del ancho)
+        // Áreas táctiles en el resto de la pantalla
         Expanded(
-          flex: 4,
-          child: GestureDetector(
-            onTap: _togglePause,
-            child: Container(
-              color: Colors.transparent,
-              height: double.infinity,
-            ),
-          ),
-        ),
+          child: Row(
+            children: [
+              // Área izquierda para story anterior (30% del ancho)
+              Expanded(
+                flex: 3,
+                child: GestureDetector(
+                  onTap: () {
+                    // Si estamos en el primer media de la story, ir a la story anterior
+                    if (currentMediaIndex == 0) {
+                      widget.onPrevious?.call();
+                    } else {
+                      _previousMedia();
+                    }
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    height: double.infinity,
+                  ),
+                ),
+              ),
 
-        // Área derecha para siguiente story (30% del ancho)
-        Expanded(
-          flex: 3,
-          child: GestureDetector(
-            onTap: () {
-              // Si estamos en el último media de la story, ir a la siguiente story
-              if (currentMediaIndex == widget.experience.media.length - 1) {
-                widget.onNext?.call();
-              } else {
-                _nextMedia();
-              }
-            },
-            child: Container(
-              color: Colors.transparent,
-              height: double.infinity,
-            ),
+              // Área central para pausar/reanudar (40% del ancho)
+              Expanded(
+                flex: 4,
+                child: GestureDetector(
+                  onTap: _togglePause,
+                  child: Container(
+                    color: Colors.transparent,
+                    height: double.infinity,
+                  ),
+                ),
+              ),
+
+              // Área derecha para siguiente story (30% del ancho)
+              Expanded(
+                flex: 3,
+                child: GestureDetector(
+                  onTap: () {
+                    // Si estamos en el último media de la story, ir a la siguiente story
+                    if (currentMediaIndex ==
+                        widget.experience.media.length - 1) {
+                      widget.onNext?.call();
+                    } else {
+                      _nextMedia();
+                    }
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    height: double.infinity,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
