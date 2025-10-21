@@ -22,6 +22,17 @@ import 'package:biux/features/users/presentation/providers/user_profile_provider
 import 'package:biux/features/users/presentation/providers/edit_username_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
+import 'package:biux/features/experiences/presentation/providers/story_groups_provider.dart';
+import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/features/experiences/domain/usecases/group_stories_by_user_usecase.dart';
+import 'package:biux/features/experiences/data/datasources/story_views_local_service.dart';
+import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
+import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
+import 'package:biux/features/bikes/domain/usecases/register_bike_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/get_user_bikes_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
 
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
@@ -84,7 +95,28 @@ void main() async {
         ChangeNotifierProvider(create: (_) => GroupProvider()),
         ChangeNotifierProvider(create: (_) => CityProvider()),
         ChangeNotifierProvider(create: (_) => RideProvider()),
+        ChangeNotifierProvider(
+          create: (_) {
+            final repository = BikeRepositoryImpl();
+            return BikeProvider(
+              registerBikeUseCase: RegisterBikeUseCase(repository),
+              getUserBikesUseCase: GetUserBikesUseCase(repository),
+              reportBikeTheftUseCase: ReportBikeTheftUseCase(repository),
+              transferBikeOwnershipUseCase: TransferBikeOwnershipUseCase(
+                repository,
+              ),
+              getPublicBikeInfoUseCase: GetPublicBikeInfoUseCase(repository),
+            );
+          },
+        ),
         ChangeNotifierProvider(create: (_) => ExperienceProvider()),
+        ChangeNotifierProvider(
+          create: (_) => StoryGroupsProvider(
+            ExperienceRepositoryImpl(),
+            GroupStoriesByUserUseCase(StoryViewsLocalService()),
+            StoryViewsLocalService(),
+          ),
+        ),
         ChangeNotifierProxyProvider<
           ExperienceProvider,
           ExperienceCreatorProvider

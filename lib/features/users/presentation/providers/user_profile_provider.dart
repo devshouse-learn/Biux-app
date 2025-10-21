@@ -3,7 +3,6 @@ import 'package:biux/features/users/data/repositories/user_profile_repository_im
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
-import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileProvider extends ChangeNotifier {

@@ -36,7 +36,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       for (var doc in [...nameQuery.docs, ...usernameQuery.docs]) {
         if (!userIds.contains(doc.id)) {
           userIds.add(doc.id);
-          final userData = doc.data() as Map<String, dynamic>;
+          final userData = doc.data();
           userData['id'] = doc.id;
           users.add(BiuxUser.fromJsonMap(userData));
         }

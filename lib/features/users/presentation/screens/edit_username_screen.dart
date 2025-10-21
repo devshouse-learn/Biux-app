@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/users/presentation/providers/edit_username_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 

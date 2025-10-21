@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
-import 'package:biux/features/experiences/presentation/widgets/story_viewer_screen.dart';
+import 'package:biux/features/experiences/presentation/providers/story_groups_provider.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 
-/// Widget para mostrar stories generales en la pantalla principal (tipo Instagram)
+/// Widget para mostrar stories agrupadas por usuario (tipo Instagram)
 /// Se muestra en la parte superior con scroll horizontal de círculos
 class ExperiencesStoriesWidget extends StatefulWidget {
   const ExperiencesStoriesWidget({super.key});
@@ -20,19 +21,36 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
   @override
   void initState() {
     super.initState();
-    // No cargar datos aquí - la pantalla padre ya lo hace
-    // Esto evita duplicar llamadas y el loop de recarga
+    // Cargar y agrupar historias al iniciar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadAndGroupStories();
+    });
+  }
+
+  Future<void> _loadAndGroupStories() async {
+    final storyGroupsProvider = context.read<StoryGroupsProvider>();
+    final experienceProvider = context.read<ExperienceProvider>();
+
+    // Obtener experiencias del feed personalizado
+    final allExperiences = experienceProvider.experiences;
+
+    // Filtrar solo las que son formato story (visuales y cortas)
+    final storyExperiences = allExperiences
+        .where((exp) => exp.isStoryFormat)
+        .toList();
+
+    // Agrupar por usuario y calcular vistas localmente
+    await storyGroupsProvider.groupExistingStories(storyExperiences);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ExperienceProvider>(
-      builder: (context, provider, child) {
-        // Filtrar solo las experiencias que queremos mostrar como stories
-        final stories = _getStoriesFromExperiences(provider);
+    return Consumer<StoryGroupsProvider>(
+      builder: (context, storyProvider, child) {
+        final storyGroups = storyProvider.storyGroups;
 
         return Container(
-          height: 120, // Aumentar altura para evitar overflow
+          height: 120,
           margin: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,14 +74,35 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
                         color: ColorTokens.neutral90,
                       ),
                     ),
+                    if (storyProvider.hasUnseenStories) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ColorTokens.error50,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '${storyProvider.totalUnseenCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
               const SizedBox(height: 12),
 
-              // Lista horizontal de stories
+              // Lista horizontal de grupos de stories
               Expanded(
-                child: provider.isLoading
+                child: storyProvider.isLoading
                     ? const Center(
                         child: SizedBox(
                           width: 20,
@@ -74,28 +113,16 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
                     : ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount:
-                            stories.length + 1, // +1 para el botón de agregar
+                        itemCount: storyGroups.length + 1, // +1 para agregar
                         itemBuilder: (context, index) {
                           if (index == 0) {
                             // Primer elemento: botón "Agregar Story"
                             return _AddStoryButton();
                           }
 
-                          // Elementos restantes: stories existentes
-                          final story = stories[index - 1];
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 12),
-                            child: _StoryCircle(
-                              story: story,
-                              onTap: () => _openStoryViewer(
-                                context,
-                                story,
-                                stories,
-                                index - 1,
-                              ),
-                            ),
-                          );
+                          // Elementos restantes: grupos de stories por usuario
+                          final group = storyGroups[index - 1];
+                          return _StoryGroupCircle(storyGroup: group);
                         },
                       ),
               ),
@@ -103,57 +130,6 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
           ),
         );
       },
-    );
-  }
-
-  List<ExperienceEntity> _getStoriesFromExperiences(
-    ExperienceProvider provider,
-  ) {
-    // USAR SOLO las experiencias del feed personalizado (no duplicar)
-    final allExperiences =
-        provider.experiences; // Feed personalizado ya contiene todo
-
-    print('🔍 STORIES: Total experiencias en feed: ${allExperiences.length}');
-
-    // Filtrar solo las que son realmente "stories" (contenido visual y corto)
-    final storyExperiences = allExperiences.where((exp) => exp.isStoryFormat);
-
-    // Eliminar duplicados y ordenar por fecha
-    final uniqueExperiences = <String, ExperienceEntity>{};
-    for (final experience in storyExperiences) {
-      uniqueExperiences[experience.id] = experience;
-    }
-
-    final stories = uniqueExperiences.values.toList();
-    stories.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-    print('🔍 STORIES: Stories filtradas: ${stories.length}');
-    for (int i = 0; i < stories.length && i < 3; i++) {
-      final story = stories[i];
-      print(
-        '🔍 STORY ${i + 1}: "${story.user.fullName}" - ${story.description.substring(0, story.description.length > 20 ? 20 : story.description.length)}...',
-      );
-    }
-
-    // Limitar a las últimas 20 stories para performance
-    return stories.take(20).toList();
-  }
-
-  void _openStoryViewer(
-    BuildContext context,
-    ExperienceEntity story,
-    List<ExperienceEntity> allStories,
-    int initialIndex,
-  ) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            StoryViewerScreen(stories: allStories, initialIndex: initialIndex),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        fullscreenDialog: true,
-      ),
     );
   }
 }
@@ -358,126 +334,96 @@ class _StoryOptionButton extends StatelessWidget {
   }
 }
 
-/// Círculo individual de story con borde colorido (tipo Instagram)
-class _StoryCircle extends StatelessWidget {
-  final ExperienceEntity story;
-  final VoidCallback onTap;
+/// Widget que muestra un círculo de historias agrupadas por usuario
+class _StoryGroupCircle extends StatelessWidget {
+  final UserStoryGroupEntity storyGroup;
 
-  const _StoryCircle({required this.story, required this.onTap});
+  const _StoryGroupCircle({required this.storyGroup});
 
   @override
   Widget build(BuildContext context) {
+    final hasUnseenStories = storyGroup.hasUnseenStories;
+
     return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
+      onTap: () {
+        // TODO: Navegar al visor de historias completo
+        // context.push(AppRoutes.storyViewer, extra: storyGroup);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Círculo con foto de perfil
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: hasUnseenStories
+                    ? const LinearGradient(
+                        colors: [
+                          Color(0xFFF58529), // Instagram orange
+                          Color(0xFFDD2A7B), // Instagram pink
+                          Color(0xFF8134AF), // Instagram purple
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                border: hasUnseenStories
+                    ? null
+                    : Border.all(color: Colors.grey.shade400, width: 2),
+              ),
+              padding: const EdgeInsets.all(3),
+              child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: story.type == ExperienceType.ride
-                        ? [
-                            ColorTokens.primary30,
-                            ColorTokens.primary60,
-                            ColorTokens.warning60,
-                          ]
-                        : [
-                            ColorTokens.success40,
-                            ColorTokens.secondary50,
-                            ColorTokens.primary30,
-                          ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Theme.of(context).scaffoldBackgroundColor,
                 ),
-                child: Container(
-                  margin: const EdgeInsets.all(3),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: story.user.photo.isNotEmpty
-                          ? null
-                          : ColorTokens.primary30.withValues(alpha: 0.1),
-                      image: story.user.photo.isNotEmpty
-                          ? DecorationImage(
-                              image: NetworkImage(story.user.photo),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    child: story.user.photo.isEmpty
-                        ? Center(
-                            child: Text(
-                              story.user.userName.isNotEmpty
-                                  ? story.user.userName[0].toUpperCase()
-                                  : story.user.fullName[0].toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: ColorTokens.primary30,
-                              ),
-                            ),
-                          )
-                        : null,
-                  ),
+                padding: const EdgeInsets.all(2),
+                child: ClipOval(
+                  child: storyGroup.userProfilePhoto.isNotEmpty
+                      ? Image.network(
+                          storyGroup.userProfilePhoto,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _buildDefaultAvatar();
+                          },
+                        )
+                      : _buildDefaultAvatar(),
                 ),
               ),
-              // Indicador de tipo de experiencia
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: 18,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: story.type == ExperienceType.ride
-                        ? ColorTokens.warning60
-                        : ColorTokens.success40,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: Icon(
-                    story.type == ExperienceType.ride
-                        ? Icons.directions_bike
-                        : story.hasVideo
-                        ? Icons.videocam
-                        : Icons.photo_camera,
-                    color: Colors.white,
-                    size: 10,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          SizedBox(
-            width: 60,
-            child: Text(
-              story.user.userName.isNotEmpty
-                  ? story.user.userName
-                  : story.user.fullName.split(' ').first,
-              style: TextStyle(
-                fontSize: 10,
-                color: ColorTokens.neutral80,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            // Nombre de usuario
+            SizedBox(
+              width: 70,
+              child: Text(
+                storyGroup.userName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildDefaultAvatar() {
+    return Container(
+      width: 60,
+      height: 60,
+      color: Colors.grey.shade300,
+      child: const Icon(Icons.person, size: 35, color: Colors.grey),
     );
   }
 }

@@ -39,6 +39,12 @@ import '../../../features/users/presentation/screens/user_screen/user_screen.dar
 import '../../../features/users/presentation/screens/user_search_screen.dart';
 import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
 
+// Bikes imports
+import '../../../features/bikes/presentation/screens/my_bikes_screen.dart';
+import '../../../features/bikes/presentation/screens/bike_registration_screen.dart';
+import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
+import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
+
 // Shared imports
 import '../../../shared/widgets/main_shell.dart';
 import '../../../shared/widgets/splash_screen.dart';
@@ -339,7 +345,51 @@ final GoRouter _router = GoRouter(
             ),
           ],
         ),
+
+        // Bicicletas
+        GoRoute(
+          path: AppRoutes.myBikes,
+          name: AppRoutes.myBikesName,
+          builder: (context, state) => const MyBikesScreen(),
+        ),
+
+        // Registro de bicicleta
+        GoRoute(
+          path: AppRoutes.bikeRegistration,
+          name: AppRoutes.bikeRegistrationName,
+          builder: (context, state) => const BikeRegistrationScreen(),
+        ),
+
+        // Detalle de bicicleta
+        GoRoute(
+          path: AppRoutes.bikeDetail,
+          name: AppRoutes.bikeDetailName,
+          builder: (context, state) {
+            final bikeId = state.pathParameters['bikeId']!;
+            return BikeDetailScreen(bikeId: bikeId);
+          },
+        ),
+
+        // Información pública de bicicleta (acceso por QR)
+        GoRoute(
+          path: AppRoutes.publicBikeInfo,
+          name: AppRoutes.publicBikeInfoName,
+          builder: (context, state) {
+            final qrCode = state.pathParameters['qrCode']!;
+            return PublicBikeInfoScreen(qrCode: qrCode);
+          },
+        ),
       ],
+    ),
+
+    // Rutas fuera del shell principal
+    GoRoute(
+      path: AppRoutes.publicBikeInfo,
+      name: '${AppRoutes.publicBikeInfoName}External',
+      builder: (context, state) {
+        final qrCode = state.pathParameters['qrCode']!;
+        return PublicBikeInfoScreen(qrCode: qrCode);
+      },
     ),
   ],
   errorBuilder: (context, state) => Scaffold(
@@ -390,4 +440,10 @@ extension AppRouterExtension on BuildContext {
   void goToRoadsList() => go(AppRoutes.roadsList);
   void goToCreateRoad(String groupId) =>
       go('${AppRoutes.roadsList}/create/$groupId');
+
+  // Navegación de bicicletas
+  void goToMyBikes() => go(AppRoutes.myBikes);
+  void goToBikeRegistration() => go(AppRoutes.bikeRegistration);
+  void goToBikeDetail(String bikeId) => go('/bikes/$bikeId');
+  void goToPublicBikeInfo(String qrCode) => go('/bikes/public/$qrCode');
 }

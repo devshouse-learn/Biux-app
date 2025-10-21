@@ -2,11 +2,15 @@ import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
-import 'package:biux/features/rides/presentation/widgets/ride_stories_widget.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/core/services/deep_link_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 
@@ -130,10 +134,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   // Información básica
                   BasicInfoWidget(ride: ride),
                   SizedBox(height: 16),
-
-                  // Stories de la rodada - Sección tipo Instagram
-                  RideStoriesWidget(rideId: ride.id, rideName: ride.name),
-                  SizedBox(height: 24),
 
                   // Punto de encuentro
                   if (meetingPoint != null)
@@ -766,6 +766,22 @@ class ActionButtonsWidget extends StatelessWidget {
 
         return Column(
           children: [
+            // Botón de compartir (siempre visible)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _shareRide(context, ride),
+                icon: Icon(Icons.share),
+                label: Text('Compartir rodada'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: ColorTokens.primary50,
+                  side: BorderSide(color: ColorTokens.primary50, width: 2),
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+
             if (!isPastRide) ...[
               if (!isParticipating && !isMaybeParticipating) ...[
                 Row(
@@ -863,6 +879,63 @@ class ActionButtonsWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _shareRide(BuildContext context, RideModel ride) async {
+    try {
+      // Obtener información del grupo
+      final provider = Provider.of<RideProvider>(context, listen: false);
+      final groupInfo = await provider.getGroupInfo(ride.groupId);
+      final groupName = groupInfo?['name'] ?? 'un grupo de ciclistas';
+
+      // Generar texto de compartir con deep link
+      final shareText = DeepLinkService.generateShareText(
+        rideName: ride.name,
+        rideId: ride.id,
+        groupName: groupName,
+      );
+
+      // Si hay imagen, compartirla con el texto
+      if (ride.imageUrl != null && ride.imageUrl!.isNotEmpty) {
+        try {
+          // Descargar la imagen temporalmente
+          final response = await http.get(Uri.parse(ride.imageUrl!));
+          if (response.statusCode == 200) {
+            final tempDir = await getTemporaryDirectory();
+            final file = File('${tempDir.path}/ride_${ride.id}.jpg');
+            await file.writeAsBytes(response.bodyBytes);
+
+            // Compartir con imagen
+            await Share.shareXFiles(
+              [XFile(file.path)],
+              text: shareText,
+              subject: '🚴 Rodada: ${ride.name}',
+            );
+
+            // Limpiar archivo temporal después de compartir
+            await file.delete();
+          } else {
+            // Si falla la descarga, compartir solo texto
+            await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+          }
+        } catch (e) {
+          // Si hay error con la imagen, compartir solo texto
+          print('Error compartiendo imagen: $e');
+          await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+        }
+      } else {
+        // Sin imagen, compartir solo texto
+        await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+      }
+    } catch (e) {
+      print('Error compartiendo rodada: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al compartir: $e'),
+          backgroundColor: ColorTokens.error50,
+        ),
+      );
+    }
   }
 }
 

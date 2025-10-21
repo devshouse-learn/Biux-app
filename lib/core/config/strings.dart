@@ -301,7 +301,8 @@ The navigation delegate is set to block navigation to the youtube website.
   static const messageJavaScript =
       'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";';
   static const messageCache = "Added a test entry to cache.";
-  static const evaluateJavaScript = 'caches.keys()'
+  static const evaluateJavaScript =
+      'caches.keys()'
       '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
       '.then((caches) => Toaster.postMessage(caches))';
   static const cacheCleared = "Cache cleared.";
@@ -626,11 +627,11 @@ The navigation delegate is set to block navigation to the youtube website.
   static String storytimeHaveCreated({
     required String number,
     required String time,
-  }) =>
-      "Hace $number $time";
-  static String whatsappMessage(
-          {required String whatsappNumber, required String name}) =>
-      'https://wa.me/+57$whatsappNumber/?text=Hola $name llegue de BIUX';
+  }) => "Hace $number $time";
+  static String whatsappMessage({
+    required String whatsappNumber,
+    required String name,
+  }) => 'https://wa.me/+57$whatsappNumber/?text=Hola $name llegue de BIUX';
   static String instagramMessage({required String nameInstagram}) =>
       "https://www.instagram.com/$nameInstagram/?hl=es-la";
   static String instagramMessage2({required String nameInstagram}) =>
@@ -645,23 +646,26 @@ The navigation delegate is set to block navigation to the youtube website.
       "El usuario $message ya se encuentra registrado";
   static String messageRegisteredFacebook({required String facebook}) =>
       "El facebook $facebook ya se encuentra registrado";
-  static String date(
-          {required String year, required String month, required String day}) =>
-      "$year - $month - $day";
+  static String date({
+    required String year,
+    required String month,
+    required String day,
+  }) => "$year - $month - $day";
   static String urlFacebookLogin({required String token}) =>
       "https://graph.facebook.com/v2.12/me?fields=id,name,link,email,location,first_name,last_name,picture.width(480)&access_token=$token";
   static String validationFacebook({required Map<String, dynamic> userdata}) =>
       "https://www.facebook.com/$userdata[first_name].$userdata[last_name]";
   static String loadurl({required String url}) => "data:text/html;base64,$url";
   static String file({required String png}) => "$png/flutter.png";
-  static String messageFile(
-          {required String description,
-          required String date,
-          required String roadName,
-          required String distance,
-          required String groupName,
-          required String cellphone,
-          required String pointmeeting}) =>
+  static String messageFile({
+    required String description,
+    required String date,
+    required String roadName,
+    required String distance,
+    required String groupName,
+    required String cellphone,
+    required String pointmeeting,
+  }) =>
       "$description\n\nHora: $date\nRuta: $roadName\nDistancia: $distance\nOrganiza: $groupName\nContacto: $cellphone\nPunto de encuentro: $pointmeeting\n\nEntérate de más rodadas como esta en BIUX.\nDESCARGALA YA!\n  \nhttps://play.google.com/store/apps/details?id=com.ibacrea.biux&hl=es&gl=US";
   static String joinGroup2({required String grupo}) =>
       "Ahora participas en el grupo $grupo";
@@ -673,11 +677,15 @@ The navigation delegate is set to block navigation to the youtube website.
       "Error - invalid activityFeed type: $type";
   static String storyItems({required String names}) =>
       " $names     Hace 12 horas";
-  static String shareStory(
-          {required String name, required String descripcion}) =>
+  static String shareStory({
+    required String name,
+    required String descripcion,
+  }) =>
       "\n\ $name: \n\   $descripcion\n\n\nEntérate de más Historias como esta en BIUX.\nDESCARGALA YA!\n  \nhttps://play.google.com/store/apps/details?id=com.ibacrea.biux&hl=es&gl=US";
-  static String dateStories(
-          {required String formato1, required String formato2}) =>
+  static String dateStories({
+    required String formato1,
+    required String formato2,
+  }) =>
       " Hace $formato1 >= 24 ? $formato2 : $formato1 $formato2 >= 2 ? dias : $formato2 >= 1 ? dia : horas";
   static String likeUser({required String userId}) => "likes.$userId";
   static String postIdFirebase({required String uuid}) => "post_$uuid.jpg";
@@ -699,4 +707,134 @@ The navigation delegate is set to block navigation to the youtube website.
   static numberFollowers({required int? followers}) => "  $followers seguidos";
   static nameComplete({required String name, required String surName}) =>
       "$name $surName";
+
+  // ========== SISTEMA DE BICICLETAS ==========
+
+  // Navegación y títulos principales
+  static const String myBikes = "Mis Bicis";
+  static const String registerBike = "Registrar Bicicleta";
+  static const String bikeDetail = "Ficha de la Bicicleta";
+  static const String publicBikeInfo = "Información de la Bicicleta";
+
+  // Formulario de registro - 4 pasos
+  static const String step1Title = "Datos Básicos";
+  static const String step2Title = "Fotos";
+  static const String step3Title = "Propiedad y Compra";
+  static const String step4Title = "¡Tu bici ya tiene identidad!";
+
+  // Campos obligatorios
+  static const String brandLabel = "Marca";
+  static const String brandHint = "Ej: Trek, Specialized, Giant";
+  static const String modelLabel = "Modelo";
+  static const String modelHint = "Ej: Domane, Stumpjumper";
+  static const String yearLabel = "Año";
+  static const String colorLabel = "Color";
+  static const String sizeLabel = "Talla";
+  static const String sizeHint = "Ej: M, 54cm, 29\"";
+  static const String bikeTypeLabel = "Tipo de Bicicleta";
+  static const String frameSerialLabel = "Número de Serie del Marco";
+  static const String frameSerialHint = "Serial grabado en el marco";
+  static const String frameSerialHelp =
+      "El número de serie está grabado en el marco. Sube una foto clara si puedes.";
+  static const String mainPhotoLabel = "Foto Principal";
+  static const String cityLabel = "Ciudad";
+
+  // Tipos de bicicleta
+  static const String bikeTypeMTB = "MTB";
+  static const String bikeTypeRoad = "Ruta";
+  static const String bikeTypeUrban = "Urbana";
+  static const String bikeTypeElectric = "Eléctrica";
+  static const String bikeTypeKids = "Infantil";
+  static const String bikeTypeOther = "Otro";
+
+  // Campos muy recomendados
+  static const String serialPhotoLabel = "Foto del Número de Serie";
+  static const String neighborhoodLabel = "Barrio";
+  static const String additionalPhotosLabel = "Fotos Adicionales";
+  static const String additionalPhotosHint = "2-4 fotos adicionales";
+
+  // Campos opcionales
+  static const String invoiceLabel = "Factura o Recibo";
+  static const String purchaseDateLabel = "Fecha de Compra";
+  static const String purchasePlaceLabel = "Lugar de Compra";
+  static const String featuredComponentsLabel = "Componentes Destacados";
+
+  // Estados de bicicleta
+  static const String statusActive = "Activa";
+  static const String statusStolen = "Robada";
+  static const String statusRecovered = "Recuperada";
+  static const String statusVerified = "Verificada";
+
+  // Acciones
+  static const String reportTheft = "Reportar Robo";
+  static const String markRecovered = "Marcar Recuperada";
+  static const String transferOwnership = "Transferir Propiedad";
+  static const String downloadQR = "Descargar QR";
+  static const String requestSticker = "Solicitar Sticker";
+  static const String reportSighting = "He visto esta bicicleta";
+  static const String verifyBike = "Verificar";
+
+  // Mensajes informativos
+  static const String bikeRegistrationSuccess =
+      "¡Tu bici ya tiene identidad en Biux! Descarga tu QR o solicita un sticker.";
+  static const String theftReportSuccess =
+      "Hemos alertado a la comunidad cercana. Revisa tu correo para el reporte.";
+  static String verifiedByStore(String storeName) =>
+      "Verificada por $storeName.";
+  static const String sightingReportSuccess =
+      "Gracias por avisar. El dueño ha sido notificado.";
+
+  // Formulario de reporte de robo
+  static const String theftReportTitle = "Reportar Robo";
+  static const String theftDateLabel = "Fecha del Robo";
+  static const String theftTimeLabel = "Hora del Robo";
+  static const String theftLocationLabel = "Lugar del Robo";
+  static const String theftDescriptionLabel = "Descripción del Robo";
+  static const String theftDescriptionHint =
+      "Describe las circunstancias del robo";
+  static const String policeReportLabel = "Número de Denuncia Policial";
+  static const String policeReportHint = "Opcional";
+
+  // Formulario de transferencia
+  static const String transferTitle = "Transferir Propiedad";
+  static const String transferToUserLabel = "Usuario Destino";
+  static const String transferToEmailLabel = "Email del Usuario";
+  static const String transferMessageLabel = "Mensaje";
+  static const String transferMessageHint = "Mensaje opcional para el usuario";
+
+  // Validaciones y errores
+  static const String fieldRequired = "Este campo es obligatorio";
+  static const String bikeInvalidEmail = "Email inválido";
+  static const String invalidYear = "Año inválido";
+  static const String photoRequired = "La foto es obligatoria";
+  static const String bikeNotFound = "Bicicleta no encontrada";
+  static const String unauthorized = "No tienes permisos para esta acción";
+  static const String bikeAlreadyStolen =
+      "Esta bicicleta ya está reportada como robada";
+  static const String cannotTransferStolen =
+      "No se puede transferir una bicicleta robada";
+
+  // Navegación del formulario
+  static const String next = "Siguiente";
+  static const String previous = "Anterior";
+  static const String finish = "Finalizar";
+  static const String bikeSave = "Guardar";
+  static const String cancel = "Cancelar";
+
+  // Ficha pública (QR)
+  static const String publicBikeTitle = "Bicicleta en Biux";
+  static const String contactOwner = "Contactar Propietario";
+  static const String reportSightingDescription =
+      "Si has visto esta bicicleta, ayuda a la comunidad reportando su ubicación";
+
+  // Estadísticas
+  static const String totalBikes = "Total";
+  static const String activeBikes = "Activas";
+  static const String stolenBikes = "Robadas";
+  static const String verifiedBikes = "Verificadas";
+
+  // Placeholders cuando no hay datos
+  static const String noBikesRegistered = "No tienes bicicletas registradas";
+  static const String noBikesFound = "No se encontraron bicicletas";
+  static const String registerFirstBike = "Registra tu primera bicicleta";
 }

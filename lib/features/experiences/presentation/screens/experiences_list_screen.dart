@@ -7,7 +7,6 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
-import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {

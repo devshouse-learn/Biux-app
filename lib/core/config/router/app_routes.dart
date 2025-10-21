@@ -27,6 +27,12 @@ class AppRoutes {
   static const String roadCreate = '/roads/create/:groupId';
   static const String roadMap = '/roads/map';
 
+  // Rutas de bicicletas
+  static const String myBikes = '/my-bikes';
+  static const String bikeRegistration = '/bikes/register';
+  static const String bikeDetail = '/bikes/:bikeId';
+  static const String publicBikeInfo = '/bikes/public/:qrCode';
+
   // Nombres de rutas para navegación
   static const String splashName = 'splash';
   static const String loginName = 'login';
@@ -46,4 +52,8 @@ class AppRoutes {
   static const String roadsListName = 'roadsList';
   static const String roadCreateName = 'roadCreate';
   static const String roadMapName = 'roadMap';
+  static const String myBikesName = 'myBikes';
+  static const String bikeRegistrationName = 'bikeRegistration';
+  static const String bikeDetailName = 'bikeDetail';
+  static const String publicBikeInfoName = 'publicBikeInfo';
 }

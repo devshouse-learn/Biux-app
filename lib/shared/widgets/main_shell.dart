@@ -19,7 +19,7 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  int _selectedIndex = 3; // Por defecto en Mapa
+  int _selectedIndex = 3; // Por defecto en Mis Bicis
 
   @override
   Widget build(BuildContext context) {
@@ -67,20 +67,17 @@ class _MainShellState extends State<MainShell> {
                 : ColorTokens.neutral100,
             height: 30,
           ),
-          Image.asset(
-            Images.kImageLocation,
+          Icon(
+            Icons.pedal_bike,
             color: _selectedIndex == 3
                 ? ColorTokens.primary40
                 : ColorTokens.neutral100,
-            height: 30,
+            size: 30,
           ),
         ],
         onTap: _onTabTapped,
       ),
-      body: Container(
-        height: double.infinity,
-        child: widget.child,
-      ),
+      body: Container(height: double.infinity, child: widget.child),
     );
   }
 
@@ -121,8 +118,8 @@ class _MainShellState extends State<MainShell> {
         context.go(AppRoutes.groupList);
         break;
       case 3:
-        // Mapa
-        context.go(AppRoutes.map);
+        // Mis Bicis
+        context.go(AppRoutes.myBikes);
         break;
     }
   }
@@ -149,7 +146,7 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 2;
       });
-    } else if (location == AppRoutes.map) {
+    } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
       setState(() {
         _selectedIndex = 3;
       });
