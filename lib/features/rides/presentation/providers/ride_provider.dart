@@ -1,4 +1,5 @@
 import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/shared/services/optimized_storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,16 +49,14 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot =
-          await _firestore
-              .collection('rides')
-              .orderBy('dateTime', descending: false)
-              .get();
+      final querySnapshot = await _firestore
+          .collection('rides')
+          .orderBy('dateTime', descending: false)
+          .get();
 
-      _rides =
-          querySnapshot.docs
-              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-              .toList();
+      _rides = querySnapshot.docs
+          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+          .toList();
 
       _setLoading(false);
     } catch (e) {
@@ -72,17 +71,15 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot =
-          await _firestore
-              .collection('rides')
-              .where('groupId', isEqualTo: groupId)
-              .orderBy('dateTime', descending: false)
-              .get();
+      final querySnapshot = await _firestore
+          .collection('rides')
+          .where('groupId', isEqualTo: groupId)
+          .orderBy('dateTime', descending: false)
+          .get();
 
-      _rides =
-          querySnapshot.docs
-              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-              .toList();
+      _rides = querySnapshot.docs
+          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+          .toList();
 
       _setLoading(false);
     } catch (e) {
@@ -102,17 +99,15 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot =
-          await _firestore
-              .collection('rides')
-              .where('participants', arrayContains: currentUserId)
-              .orderBy('dateTime', descending: false)
-              .get();
+      final querySnapshot = await _firestore
+          .collection('rides')
+          .where('participants', arrayContains: currentUserId)
+          .orderBy('dateTime', descending: false)
+          .get();
 
-      _userRides =
-          querySnapshot.docs
-              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-              .toList();
+      _userRides = querySnapshot.docs
+          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+          .toList();
 
       _setLoading(false);
     } catch (e) {
@@ -156,10 +151,36 @@ class RideProvider extends ChangeNotifier {
         'status': RideStatus.upcoming.name,
         'participants': <String>[],
         'maybeParticipants': <String>[],
-        if (imageUrl != null) 'imageUrl': imageUrl, // Solo agregar si existe
       };
 
-      await _firestore.collection('rides').add(rideData);
+      // Crear la rodada primero para obtener el ID
+      final docRef = await _firestore.collection('rides').add(rideData);
+      final rideId = docRef.id;
+
+      // Si hay imagen temporal, moverla al lugar correcto
+      if (imageUrl != null && imageUrl.contains('temp_')) {
+        try {
+          final finalImageUrl =
+              await OptimizedStorageService.moveTemporaryRideImage(
+                tempImageUrl: imageUrl,
+                rideId: rideId,
+              );
+
+          if (finalImageUrl != null) {
+            await docRef.update({'imageUrl': finalImageUrl});
+          } else {
+            print('Error moviendo imagen temporal, usando URL temporal');
+            await docRef.update({'imageUrl': imageUrl});
+          }
+        } catch (e) {
+          print('Error moviendo imagen temporal: $e');
+          // Continuar sin la imagen si hay error
+        }
+      } else if (imageUrl != null) {
+        // Imagen normal, actualizarla directamente
+        await docRef.update({'imageUrl': imageUrl});
+      }
+
       await loadAllRides();
 
       _setLoading(false);
@@ -251,17 +272,15 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final querySnapshot =
-          await _firestore
-              .collection('rides')
-              .where('groupId', isEqualTo: groupId)
-              .orderBy('dateTime', descending: false)
-              .get();
+      final querySnapshot = await _firestore
+          .collection('rides')
+          .where('groupId', isEqualTo: groupId)
+          .orderBy('dateTime', descending: false)
+          .get();
 
-      _rides =
-          querySnapshot.docs
-              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-              .toList();
+      _rides = querySnapshot.docs
+          .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+          .toList();
 
       _setLoading(false);
     } catch (e) {

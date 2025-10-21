@@ -286,8 +286,12 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
           break;
 
         case 'ride':
+          // Si no hay entityId (creación de ride), generar uno temporal
+          final rideId =
+              widget.entityId ??
+              'temp_${DateTime.now().millisecondsSinceEpoch}';
           uploadedUrl = await OptimizedStorageService.uploadRideImage(
-            rideId: widget.entityId!,
+            rideId: rideId,
             imageFile: imageFile,
             onProgress: () {
               setState(() {
@@ -332,7 +336,6 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
   }
 
   void _showCompressionInfo(int originalSizeBytes) {
-    final sizeMB = (originalSizeBytes / (1024 * 1024)).toStringAsFixed(1);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Subiendo imagen'),
@@ -397,23 +400,6 @@ class OptimizedNetworkImage extends StatelessWidget {
     this.borderRadius,
     this.imageType = 'default', // thumbnail, avatar, etc.
   });
-
-  /// Helper function para validar que un número sea finito y seguro para convertir a int
-  int? _safeRound(double? value) {
-    if (value == null) {
-      print('OptimizedNetworkImage - _safeRound: value is null');
-      return null;
-    }
-    if (!value.isFinite) {
-      print(
-        'OptimizedNetworkImage - _safeRound: value is infinite/NaN: $value',
-      );
-      return null;
-    }
-    final result = value.round();
-    print('OptimizedNetworkImage - _safeRound: $value -> $result');
-    return result;
-  }
 
   /// Calcula la resolución óptima para caché según el tipo de imagen
   int? _getOptimalCacheSize(double? displaySize, String imageType) {
@@ -533,11 +519,11 @@ class OptimizedNetworkImage extends StatelessWidget {
                   color: ColorTokens.neutral40,
                   size:
                       (width != null &&
-                              height != null &&
-                              width!.isFinite &&
-                              height!.isFinite)
-                          ? (width! < height! ? width! * 0.3 : height! * 0.3)
-                          : 24,
+                          height != null &&
+                          width!.isFinite &&
+                          height!.isFinite)
+                      ? (width! < height! ? width! * 0.3 : height! * 0.3)
+                      : 24,
                 ),
               );
         },

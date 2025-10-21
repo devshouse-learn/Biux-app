@@ -211,8 +211,9 @@ class OptimizedStorageService {
         customMetadata: {
           'compressed': 'true',
           'isStory': 'true',
-          'expiresAt':
-              DateTime.now().add(Duration(hours: 24)).toIso8601String(),
+          'expiresAt': DateTime.now()
+              .add(Duration(hours: 24))
+              .toIso8601String(),
         },
       );
 
@@ -334,10 +335,9 @@ class OptimizedStorageService {
 
         final metadata = SettableMetadata(
           contentType: 'image/jpeg',
-          cacheControl:
-              experienceType == 'ride'
-                  ? 'public, max-age=2592000' // 30 días para rodadas
-                  : 'public, max-age=604800', // 7 días para experiencias normales
+          cacheControl: experienceType == 'ride'
+              ? 'public, max-age=2592000' // 30 días para rodadas
+              : 'public, max-age=604800', // 7 días para experiencias normales
           customMetadata: {
             'compressed': 'true',
             'mediaType': 'image',
@@ -366,10 +366,9 @@ class OptimizedStorageService {
 
         final metadata = SettableMetadata(
           contentType: 'video/mp4',
-          cacheControl:
-              experienceType == 'ride'
-                  ? 'public, max-age=2592000' // 30 días para rodadas
-                  : 'public, max-age=604800', // 7 días para experiencias normales
+          cacheControl: experienceType == 'ride'
+              ? 'public, max-age=2592000' // 30 días para rodadas
+              : 'public, max-age=604800', // 7 días para experiencias normales
           customMetadata: {
             'mediaType': 'video',
             'experienceType': experienceType,
@@ -399,6 +398,54 @@ class OptimizedStorageService {
       return results;
     } catch (e) {
       debugPrint('Error subiendo contenido de experiencia: $e');
+      return null;
+    }
+  }
+
+  /// Mueve una imagen temporal a su ubicación final
+  static Future<String?> moveTemporaryRideImage({
+    required String tempImageUrl,
+    required String rideId,
+  }) async {
+    try {
+      // Obtener la referencia de la imagen temporal
+      final tempRef = _storage.refFromURL(tempImageUrl);
+
+      // Obtener los datos de la imagen temporal
+      final tempData = await tempRef.getData();
+      if (tempData == null) return null;
+
+      // Crear nueva referencia en la ubicación correcta
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = 'ride_${timestamp}.jpg';
+      final newRef = _storage.ref().child('rides/$rideId/images/$fileName');
+
+      final metadata = SettableMetadata(
+        contentType: 'image/jpeg',
+        cacheControl: 'public, max-age=2592000', // 30 días para rodadas
+        customMetadata: {
+          'compressed': 'true',
+          'rideId': rideId,
+          'uploadedAt': DateTime.now().toIso8601String(),
+          'movedFromTemp': 'true',
+        },
+      );
+
+      // Subir a la nueva ubicación
+      final uploadTask = newRef.putData(tempData, metadata);
+      final snapshot = await uploadTask;
+      final newDownloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Eliminar la imagen temporal
+      try {
+        await tempRef.delete();
+      } catch (e) {
+        debugPrint('Advertencia: No se pudo eliminar imagen temporal: $e');
+      }
+
+      return _optimizeCdnUrl(newDownloadUrl);
+    } catch (e) {
+      debugPrint('Error moviendo imagen temporal: $e');
       return null;
     }
   }

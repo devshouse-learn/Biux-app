@@ -76,6 +76,7 @@ dependencies:
   palette_generator: ^0.3.3+7
   page_view_sliding_indicator: ^0.0.4
   firebase_analytics: ^12.0.1
+  firebase_crashlytics: ^5.0.2
   firebase_messaging:
   fab_circular_menu: ^1.0.2
   spincircle_bottom_bar: ^2.0.0
