@@ -24,7 +24,7 @@ class StoryViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.watch<StoryViewBloc>();
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: ListView(
         children: [
           SearchBarWidget(),
@@ -71,7 +71,10 @@ class _PhotoUserStory extends StatelessWidget {
         height: 80,
         margin: EdgeInsets.only(left: sizeScreen.width * 0.1, top: 10),
         decoration: BoxDecoration(
-          border: Border.all(color: ColorTokens.neutral100, width: 4),
+          border: Border.all(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            width: 4,
+          ),
           image: DecorationImage(
             image: CachedNetworkImageProvider(
               story.user.photo,
@@ -190,31 +193,42 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 left: 50,
                 right: 10,
               ),
-              color: ColorTokens.secondary50,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Theme.of(context).colorScheme.surface
+                  : ColorTokens.secondary50,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Text(
                       '${widget.story.user.fullName}',
-                      style: Styles.advertisingTitleBlack,
+                      style: Styles.advertisingTitleBlack.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).textTheme.bodyLarge?.color
+                            : ColorTokens.neutral100,
+                      ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: Text(
                       widget.story.creationDate.timeHaveCreated,
-                      style: Styles.accentTextThemeWhite,
+                      style: Styles.accentTextThemeWhite.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.color?.withOpacity(0.7)
+                            : ColorTokens.neutral100,
+                      ),
                     ),
                   ),
                   GestureDetector(
-                    onTap:
-                        () => ShareUtils().shareFile(
-                          filePath: widget.story.fileUrl1,
-                          text:
-                              '${widget.story.user.userName}${AppStrings.textShareStory}',
-                          title: AppStrings.titleShareStory,
-                        ),
+                    onTap: () => ShareUtils().shareFile(
+                      filePath: widget.story.fileUrl1,
+                      text:
+                          '${widget.story.user.userName}${AppStrings.textShareStory}',
+                      title: AppStrings.titleShareStory,
+                    ),
                     child: Image.asset(Images.kImageShare, height: 20),
                   ),
                 ],
@@ -224,36 +238,35 @@ class _CarouselImagesState extends State<_CarouselImages> {
               alignment: Alignment.topRight,
               children: [
                 CarouselSlider(
-                  items:
-                      widget.story.files
-                          .map(
-                            (e) => GestureDetector(
-                              child: Container(
-                                width: 315,
-                                child: OptimizedNetworkImage(
-                                  imageUrl: e,
-                                  imageType: 'general',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              onTap: () {
-                                final imageProvider =
-                                    CachedNetworkImageProvider(
-                                      e,
-                                      cacheManager:
-                                          OptimizedCacheManager.instance,
-                                    );
-                                showImageViewer(
-                                  context,
-                                  imageProvider,
-                                  backgroundColor: ColorTokens.neutral40,
-                                  useSafeArea: true,
-                                  immersive: false,
-                                );
-                              },
+                  items: widget.story.files
+                      .map(
+                        (e) => GestureDetector(
+                          child: Container(
+                            width: 315,
+                            child: OptimizedNetworkImage(
+                              imageUrl: e,
+                              imageType: 'general',
+                              fit: BoxFit.cover,
                             ),
-                          )
-                          .toList(),
+                          ),
+                          onTap: () {
+                            final imageProvider = CachedNetworkImageProvider(
+                              e,
+                              cacheManager: OptimizedCacheManager.instance,
+                            );
+                            showImageViewer(
+                              context,
+                              imageProvider,
+                              backgroundColor: Theme.of(
+                                context,
+                              ).scaffoldBackgroundColor.withOpacity(0.9),
+                              useSafeArea: true,
+                              immersive: false,
+                            );
+                          },
+                        ),
+                      )
+                      .toList(),
                   carouselController: _controller,
                   options: CarouselOptions(
                     enableInfiniteScroll: false,
@@ -291,13 +304,13 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 right: 10,
               ),
               decoration: BoxDecoration(
-                color: ColorTokens.neutral100,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(35),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: ColorTokens.neutral60.withValues(alpha: 0.5),
+                    color: Theme.of(context).shadowColor.withOpacity(0.3),
                     spreadRadius: 5,
                     blurRadius: 7,
                     offset: Offset(0, 3),
@@ -310,28 +323,28 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children:
-                        widget.story.files.asMap().entries.map((entry) {
-                          return GestureDetector(
-                            onTap: () => _controller.animateToPage(entry.key),
-                            child: Container(
-                              width: 10.0,
-                              height: 10.0,
-                              margin: EdgeInsets.symmetric(
-                                vertical: 5.0,
-                                horizontal: 4.0,
-                              ),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: ColorTokens.neutral0),
-                                color:
-                                    (current == entry.key
-                                        ? ColorTokens.secondary50
-                                        : ColorTokens.primary30),
-                              ),
+                    children: widget.story.files.asMap().entries.map((entry) {
+                      return GestureDetector(
+                        onTap: () => _controller.animateToPage(entry.key),
+                        child: Container(
+                          width: 10.0,
+                          height: 10.0,
+                          margin: EdgeInsets.symmetric(
+                            vertical: 5.0,
+                            horizontal: 4.0,
+                          ),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
                             ),
-                          );
-                        }).toList(),
+                            color: (current == entry.key
+                                ? ColorTokens.secondary50
+                                : ColorTokens.primary30),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                   ReadMoreText(
                     widget.story.description +
@@ -343,14 +356,22 @@ class _CarouselImagesState extends State<_CarouselImages> {
                             .replaceAll('(', ''),
                     textAlign: TextAlign.left,
                     preDataText: widget.story.user.userName,
-                    preDataTextStyle: Styles.numberBlack,
+                    preDataTextStyle: Styles.numberBlack.copyWith(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                     trimLines: 2,
                     trimMode: TrimMode.Line,
                     trimCollapsedText: AppStrings.seeMore,
                     trimExpandedText: AppStrings.seeLess,
-                    moreStyle: Styles.moreStyle,
-                    lessStyle: Styles.moreStyle,
-                    style: Styles.joinMeTextBlack,
+                    moreStyle: Styles.moreStyle.copyWith(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    lessStyle: Styles.moreStyle.copyWith(
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                 ],
               ),

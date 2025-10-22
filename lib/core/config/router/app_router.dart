@@ -345,7 +345,12 @@ final GoRouter _router = GoRouter(
               name: 'rideDetail',
               builder: (context, state) {
                 final rideId = state.pathParameters['rideId']!;
-                return RideDetailScreen(rideId: rideId);
+                final extra = state.extra as Map<String, dynamic>?;
+                final openComments = extra?['openComments'] as bool? ?? false;
+                return RideDetailScreen(
+                  rideId: rideId,
+                  openComments: openComments,
+                );
               },
             ),
           ],

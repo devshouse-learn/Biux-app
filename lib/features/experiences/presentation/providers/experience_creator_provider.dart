@@ -18,6 +18,7 @@ class ExperienceCreatorState {
   final String? error;
   final bool isRecording;
   final VideoPlayerController? videoController;
+  final bool isTextOnly; // Post de solo texto (sin multimedia)
 
   const ExperienceCreatorState({
     this.mediaItems = const [],
@@ -30,6 +31,7 @@ class ExperienceCreatorState {
     this.error,
     this.isRecording = false,
     this.videoController,
+    this.isTextOnly = false,
   });
 
   /// Crear copia con campos modificados
@@ -44,6 +46,7 @@ class ExperienceCreatorState {
     String? error,
     bool? isRecording,
     VideoPlayerController? videoController,
+    bool? isTextOnly,
   }) {
     return ExperienceCreatorState(
       mediaItems: mediaItems ?? this.mediaItems,
@@ -56,6 +59,7 @@ class ExperienceCreatorState {
       error: error ?? this.error,
       isRecording: isRecording ?? this.isRecording,
       videoController: videoController ?? this.videoController,
+      isTextOnly: isTextOnly ?? this.isTextOnly,
     );
   }
 
@@ -196,8 +200,16 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
   }
 
   /// Establecer tipo de experiencia
-  void setExperienceType(ExperienceType type, {String? rideId}) {
-    state = state.copyWith(experienceType: type, rideId: rideId);
+  void setExperienceType(
+    ExperienceType type, {
+    String? rideId,
+    bool isTextOnly = false,
+  }) {
+    state = state.copyWith(
+      experienceType: type,
+      rideId: rideId,
+      isTextOnly: isTextOnly,
+    );
   }
 
   /// Agregar imagen desde galería
@@ -344,7 +356,8 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
 
   /// Crear experiencia
   Future<bool> createExperience() async {
-    if (state.mediaItems.isEmpty) {
+    // Solo validar multimedia si NO es post de solo texto
+    if (!state.isTextOnly && state.mediaItems.isEmpty) {
       state = state.copyWith(
         error: 'Debes agregar al menos una imagen o video',
       );

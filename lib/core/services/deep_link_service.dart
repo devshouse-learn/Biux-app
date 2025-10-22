@@ -9,7 +9,22 @@ class DeepLinkService {
 
   /// Genera un app link (HTTPS) para una rodada
   static String generateRideAppLink(String rideId) {
-    return 'https://biux.app/ride/$rideId';
+    return 'https://biux.devshouse.org/ride/$rideId';
+  }
+
+  /// Genera un app link (HTTPS) para un post
+  static String generatePostAppLink(String postId) {
+    return 'https://biux.devshouse.org/posts/$postId';
+  }
+
+  /// Genera un app link (HTTPS) para un grupo
+  static String generateGroupAppLink(String groupId) {
+    return 'https://biux.devshouse.org/group/$groupId';
+  }
+
+  /// Genera un app link (HTTPS) para un usuario
+  static String generateUserAppLink(String userId) {
+    return 'https://biux.devshouse.org/user/$userId';
   }
 
   /// Parsea un deep link y navega a la pantalla correspondiente
@@ -24,8 +39,8 @@ class DeepLinkService {
       return;
     }
 
-    // Manejar esquema https:// (App Links)
-    if (uri.scheme == 'https' && uri.host == 'biux.app') {
+    // Manejar esquema https:// (App Links) con dominio personalizado
+    if (uri.scheme == 'https' && uri.host == 'biux.devshouse.org') {
       _handleAppLink(uri, router);
       return;
     }
@@ -40,25 +55,80 @@ class DeepLinkService {
       if (segments.isNotEmpty) {
         final rideId = segments[0];
         print('🚴 Navegando a rodada: $rideId');
-        router.go('/rides/$rideId');
+        router.push('/rides/$rideId');
       }
+      return;
     }
-    // Aquí puedes agregar más esquemas:
+
+    // biux://posts/{postId}
+    if (uri.host == 'posts') {
+      final segments = uri.pathSegments;
+      if (segments.isNotEmpty) {
+        final postId = segments[0];
+        print('📝 Navegando a post: $postId');
+        // Navegar al feed y luego al post específico
+        router.push('/stories');
+      }
+      return;
+    }
+
     // biux://group/{groupId}
-    // biux://user/{userId}
-    // etc.
+    if (uri.host == 'group') {
+      final segments = uri.pathSegments;
+      if (segments.isNotEmpty) {
+        final groupId = segments[0];
+        print('👥 Navegando a grupo: $groupId');
+        router.push('/groups/$groupId');
+      }
+      return;
+    }
+
+    // biux://user/{userId} o biux://user-profile/{userId}
+    if (uri.host == 'user' || uri.host == 'user-profile') {
+      final segments = uri.pathSegments;
+      if (segments.isNotEmpty) {
+        final userId = segments[0];
+        print('👤 Navegando a perfil: $userId');
+        router.push('/user-profile/$userId');
+      }
+      return;
+    }
   }
 
   static void _handleAppLink(Uri uri, GoRouter router) {
     print('🔗 Manejando app link: ${uri.toString()}');
 
-    // https://biux.app/ride/{rideId}
+    // https://biux.devshouse.org/ride/{rideId}
     if (uri.path.startsWith('/ride/')) {
       final rideId = uri.pathSegments.last;
       print('🚴 Navegando a rodada desde app link: $rideId');
-      router.go('/rides/$rideId');
+      router.push('/rides/$rideId');
+      return;
     }
-    // Puedes agregar más rutas de app links aquí
+
+    // https://biux.devshouse.org/posts/{postId}
+    if (uri.path.startsWith('/posts/')) {
+      final postId = uri.pathSegments.last;
+      print('📝 Navegando a post desde app link: $postId');
+      router.push('/stories');
+      return;
+    }
+
+    // https://biux.devshouse.org/group/{groupId}
+    if (uri.path.startsWith('/group/')) {
+      final groupId = uri.pathSegments.last;
+      print('👥 Navegando a grupo desde app link: $groupId');
+      router.push('/groups/$groupId');
+      return;
+    }
+
+    // https://biux.devshouse.org/user/{userId}
+    if (uri.path.startsWith('/user/')) {
+      final userId = uri.pathSegments.last;
+      print('👤 Navegando a perfil desde app link: $userId');
+      router.push('/user-profile/$userId');
+      return;
+    }
   }
 
   /// Texto para compartir una rodada

@@ -11,11 +11,19 @@ import 'package:biux/core/design_system/color_tokens.dart';
 class CreateExperienceScreen extends StatefulWidget {
   final ExperienceType experienceType;
   final String? rideId;
+  final bool
+  isStoryMode; // true = solo historias (requiere imagen/video), false/null = modo completo
+  final bool isPostMode; // true = solo posts, false/null = modo completo
+  final bool
+  textOnly; // true = post solo texto (sin multimedia), false = permite multimedia
 
   const CreateExperienceScreen({
     super.key,
     required this.experienceType,
     this.rideId,
+    this.isStoryMode = false,
+    this.isPostMode = false,
+    this.textOnly = false,
   });
 
   @override
@@ -27,18 +35,28 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   final _tagsController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Nuevo: Tipo de contenido (Story o Post)
-  String _contentType = 'story'; // 'story' o 'post'
+  // Tipo de contenido (Story o Post)
+  late String _contentType;
 
   @override
   void initState() {
     super.initState();
+
+    // Establecer el tipo según el modo
+    if (widget.isStoryMode) {
+      _contentType = 'story';
+    } else if (widget.isPostMode) {
+      _contentType = 'post';
+    } else {
+      _contentType = 'story'; // Default
+    }
 
     // Inicializar el tipo de experiencia
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExperienceCreatorProvider>().setExperienceType(
         widget.experienceType,
         rideId: widget.rideId,
+        isTextOnly: widget.textOnly,
       );
     });
   }
@@ -58,7 +76,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           backgroundColor: ColorTokens.neutral10,
           appBar: AppBar(
             title: Text(
-              widget.experienceType == ExperienceType.ride
+              widget.isStoryMode
+                  ? 'Nueva Historia'
+                  : widget.isPostMode
+                  ? 'Nueva Publicación'
+                  : widget.experienceType == ExperienceType.ride
                   ? 'Nueva Experiencia de Rodada'
                   : 'Nueva Experiencia',
               style: const TextStyle(color: Colors.white),
@@ -116,15 +138,17 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Selector de tipo de contenido
-                        _buildContentTypeSelector(),
+                        // Selector de tipo de contenido (solo si no está en modo fijo)
+                        if (!widget.isStoryMode && !widget.isPostMode) ...[
+                          _buildContentTypeSelector(),
+                          const SizedBox(height: 24),
+                        ],
 
-                        const SizedBox(height: 24),
-
-                        // Selector de multimedia
-                        _buildMediaSection(provider),
-
-                        const SizedBox(height: 24),
+                        // Selector de multimedia (oculto para posts de solo texto)
+                        if (!widget.textOnly) ...[
+                          _buildMediaSection(provider),
+                          const SizedBox(height: 24),
+                        ],
 
                         // Descripción
                         _buildDescriptionSection(provider),
@@ -171,8 +195,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 Row(
                   children: [
                     Icon(
-                      widget.experienceType == ExperienceType.ride
-                          ? Icons.videocam
+                      _contentType == 'story'
+                          ? Icons.image
                           : Icons.photo_library,
                       color: isDark
                           ? ColorTokens.primary30
@@ -180,11 +204,13 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Multimedia',
+                      _contentType == 'story'
+                          ? 'Multimedia (Requerida)'
+                          : 'Multimedia (Opcional)',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
                     const Spacer(),
@@ -198,37 +224,70 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                   ],
                 ),
                 // Ayuda contextual para medios
-                if (_contentType == 'story')
-                  Container(
-                    margin: const EdgeInsets.only(top: 12),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: ColorTokens.primary50.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: ColorTokens.primary50.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.tips_and_updates,
-                          size: 14,
-                          color: ColorTokens.primary50,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            'Stories necesitan al menos un video (preferido) o imagen',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: ColorTokens.primary50,
-                            ),
-                          ),
-                        ),
-                      ],
+                Container(
+                  margin: const EdgeInsets.only(top: 12),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? (_contentType == 'story'
+                                  ? ColorTokens.primary50
+                                  : ColorTokens.secondary50)
+                              .withOpacity(0.15)
+                        : (_contentType == 'story'
+                                  ? ColorTokens.primary50
+                                  : ColorTokens.secondary50)
+                              .withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      width: 1.5,
+                      color: isDark
+                          ? (_contentType == 'story'
+                                    ? ColorTokens.primary30
+                                    : ColorTokens.secondary30)
+                                .withOpacity(0.6)
+                          : (_contentType == 'story'
+                                    ? ColorTokens.primary50
+                                    : ColorTokens.secondary50)
+                                .withOpacity(0.5),
                     ),
                   ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _contentType == 'story'
+                            ? Icons.timer_outlined
+                            : Icons.info_outline,
+                        size: 15,
+                        color: isDark
+                            ? (_contentType == 'story'
+                                  ? ColorTokens.primary30
+                                  : ColorTokens.secondary30)
+                            : (_contentType == 'story'
+                                  ? ColorTokens.primary60
+                                  : ColorTokens.secondary60),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          _contentType == 'story'
+                              ? 'Historia requiere imagen o video (máximo 30 segundos)'
+                              : 'Publicación: Opcional - Agrega fotos/videos o solo texto',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: isDark
+                                ? (_contentType == 'story'
+                                      ? ColorTokens.primary30
+                                      : ColorTokens.secondary30)
+                                : (_contentType == 'story'
+                                      ? ColorTokens.primary60
+                                      : ColorTokens.secondary60),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -258,21 +317,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: MediaSelectorWidget(
-                allowVideo:
-                    widget.experienceType == ExperienceType.ride ||
-                    _contentType == 'story',
+                // Stories y Posts permiten videos (máximo 30s para historias)
+                allowVideo: true,
                 onImageFromGallery: provider.addImageFromGallery,
                 onTakePhoto: provider.takePhoto,
-                onVideoFromGallery:
-                    widget.experienceType == ExperienceType.ride ||
-                        _contentType == 'story'
-                    ? provider.addVideoFromGallery
-                    : null,
-                onRecordVideo:
-                    widget.experienceType == ExperienceType.ride ||
-                        _contentType == 'story'
-                    ? provider.recordVideo
-                    : null,
+                onVideoFromGallery: provider.addVideoFromGallery,
+                onRecordVideo: provider.recordVideo,
               ),
             ),
         ],
@@ -298,18 +348,18 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           Row(
             children: [
               Icon(
-                Icons.description,
+                _contentType == 'story' ? Icons.short_text : Icons.description,
                 color: isDark ? ColorTokens.primary30 : ColorTokens.primary50,
               ),
               const SizedBox(width: 8),
               Text(
                 _contentType == 'story'
-                    ? 'Descripción (Story)'
-                    : 'Descripción (Post)',
+                    ? 'Texto de Historia'
+                    : 'Descripción de Publicación',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
             ],
@@ -319,14 +369,27 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _contentType == 'story'
-                  ? ColorTokens.primary50.withOpacity(0.1)
-                  : ColorTokens.secondary50.withOpacity(0.1),
+              color: isDark
+                  ? (_contentType == 'story'
+                            ? ColorTokens.primary50
+                            : ColorTokens.secondary50)
+                        .withOpacity(0.15)
+                  : (_contentType == 'story'
+                            ? ColorTokens.primary50
+                            : ColorTokens.secondary50)
+                        .withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: _contentType == 'story'
-                    ? ColorTokens.primary50.withOpacity(0.3)
-                    : ColorTokens.secondary50.withOpacity(0.3),
+                width: 1.5,
+                color: isDark
+                    ? (_contentType == 'story'
+                              ? ColorTokens.primary30
+                              : ColorTokens.secondary30)
+                          .withOpacity(0.6)
+                    : (_contentType == 'story'
+                              ? ColorTokens.primary50
+                              : ColorTokens.secondary50)
+                          .withOpacity(0.5),
               ),
             ),
             child: Row(
@@ -335,22 +398,31 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                   _contentType == 'story'
                       ? Icons.lightbulb_outline
                       : Icons.info_outline,
-                  size: 16,
-                  color: _contentType == 'story'
-                      ? ColorTokens.primary50
-                      : ColorTokens.secondary50,
+                  size: 17,
+                  color: isDark
+                      ? (_contentType == 'story'
+                            ? ColorTokens.primary30
+                            : ColorTokens.secondary30)
+                      : (_contentType == 'story'
+                            ? ColorTokens.primary60
+                            : ColorTokens.secondary60),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     _contentType == 'story'
-                        ? 'Para stories (videos): Mantén el texto corto (máximo 50 caracteres)'
-                        : 'Para posts (fotos): Puedes escribir tanto como quieras',
+                        ? 'Historia: Texto corto (máximo 100 caracteres)'
+                        : 'Publicación: Escribe lo que quieras compartir',
                     style: TextStyle(
                       fontSize: 12,
-                      color: _contentType == 'story'
-                          ? ColorTokens.primary50
-                          : ColorTokens.secondary50,
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? (_contentType == 'story'
+                                ? ColorTokens.primary30
+                                : ColorTokens.secondary30)
+                          : (_contentType == 'story'
+                                ? ColorTokens.primary60
+                                : ColorTokens.secondary60),
                     ),
                   ),
                 ),
@@ -360,15 +432,19 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           const SizedBox(height: 12),
           TextFormField(
             controller: _descriptionController,
-            maxLines: _contentType == 'story' ? 2 : 4,
-            maxLength: _contentType == 'story' ? 50 : 300,
-            style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+            maxLines: _contentType == 'story' ? 3 : 5,
+            maxLength: _contentType == 'story' ? 100 : 500,
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black87,
+              fontSize: 14,
+            ),
             decoration: InputDecoration(
               hintText: _contentType == 'story'
-                  ? 'Descripción corta para tu video story...'
-                  : 'Describe tu experiencia con fotos en detalle...',
+                  ? 'Escribe un texto corto para tu historia...'
+                  : 'Describe tu publicación en detalle...',
               hintStyle: TextStyle(
-                color: isDark ? Colors.grey[400] : Colors.grey[500],
+                color: isDark ? Colors.grey[300] : Colors.grey[600],
+                fontSize: 14,
               ),
               filled: true,
               fillColor: isDark ? Colors.grey[700] : Colors.grey[50],
@@ -510,7 +586,22 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          if (widget.experienceType == ExperienceType.ride) ...[
+          // Información según el tipo de contenido
+          if (widget.textOnly) ...[
+            _buildInfoItem(
+              '📝 Post de solo texto',
+              'No se requiere ni permite multimedia. Solo escribe tu publicación.',
+            ),
+          ] else if (_contentType == 'story') ...[
+            _buildInfoItem(
+              '⏱️ Historia efímera',
+              'Tu historia desaparecerá en 24 horas.',
+            ),
+            _buildInfoItem(
+              '📸 Multimedia requerida',
+              'Las historias requieren al menos una imagen o video (<30s).',
+            ),
+          ] else if (widget.experienceType == ExperienceType.ride) ...[
             _buildInfoItem(
               '📹 Videos de hasta 30 segundos',
               'Los videos se comprimirán automáticamente para optimizar la calidad y el tamaño.',
@@ -521,12 +612,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             ),
           ] else ...[
             _buildInfoItem(
-              '📸 Solo imágenes',
-              'Las experiencias generales no admiten videos.',
+              '📸 Multimedia opcional',
+              'Puedes agregar fotos/videos o publicar solo con texto.',
             ),
             _buildInfoItem(
-              '🖼️ Máximo 5 imágenes',
-              'Cada imagen se mostrará por 15 segundos en el visor.',
+              '� Máximo 5 elementos',
+              'Puedes agregar hasta 5 imágenes o videos en total.',
             ),
           ],
         ],
@@ -566,10 +657,22 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   }
 
   bool _canPublish(ExperienceCreatorProvider provider) {
-    return provider.mediaItems.isNotEmpty &&
-        provider.description.trim().isNotEmpty &&
-        !provider.isUploading &&
-        !provider.mediaItems.any((item) => item.isProcessing);
+    final hasDescription = provider.description.trim().isNotEmpty;
+    final hasMedia = provider.mediaItems.isNotEmpty;
+    final isProcessing = provider.mediaItems.any((item) => item.isProcessing);
+
+    // Posts de solo texto: NO requieren ni permiten multimedia
+    if (widget.textOnly) {
+      return hasDescription && !provider.isUploading && !isProcessing;
+    }
+
+    // Historias REQUIEREN multimedia (imagen o video)
+    if (_contentType == 'story' && !hasMedia) {
+      return false;
+    }
+
+    // Posts con multimedia: multimedia opcional
+    return hasDescription && !provider.isUploading && !isProcessing;
   }
 
   Future<void> _publishExperience() async {

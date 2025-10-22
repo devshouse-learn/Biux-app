@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
+import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -43,29 +45,23 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Mi Feed',
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: ColorTokens.primary30,
         elevation: 0,
         actions: [
           IconButton(
             onPressed: () {
               context.push('/users/search');
             },
-            icon: const Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search),
             tooltip: 'Buscar usuarios',
-          ),
-          IconButton(
-            onPressed: () {
-              context.push('/stories/create');
-            },
-            icon: const Icon(Icons.add, color: Colors.white),
-            tooltip: 'Crear experiencia',
           ),
         ],
       ),
@@ -75,10 +71,10 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/stories/create');
-        },
-        backgroundColor: ColorTokens.secondary50,
+        onPressed: () => _showCreatePostOptions(context),
+        backgroundColor:
+            theme.floatingActionButtonTheme.backgroundColor ??
+            theme.primaryColor,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -122,24 +118,33 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
   }
 
   Widget _buildErrorState(String error, ExperienceProvider provider) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+          Icon(
+            Icons.error_outline,
+            size: 64,
+            color: theme.iconTheme.color?.withOpacity(0.5),
+          ),
           const SizedBox(height: 16),
           Text(
             'Error al cargar experiencias',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+              color: theme.textTheme.bodyLarge?.color,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             error,
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: TextStyle(
+              fontSize: 14,
+              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -152,13 +157,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
                 print('⚠️ Usuario no autenticado, no se puede recargar');
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.primary50,
-            ),
-            child: const Text(
-              'Reintentar',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: const Text('Reintentar'),
           ),
         ],
       ),
@@ -167,24 +166,33 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
 
   /// Estado vacío cuando no hay posts pero sí hay stories
   Widget _buildEmptyStateInLayout() {
+    final theme = Theme.of(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.article_outlined, size: 64, color: Colors.grey[400]),
+          Icon(
+            Icons.article_outlined,
+            size: 64,
+            color: theme.iconTheme.color?.withOpacity(0.5),
+          ),
           const SizedBox(height: 16),
           Text(
             '¡Comparte tu primera publicación!',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+              color: theme.textTheme.bodyLarge?.color,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: TextStyle(
+              fontSize: 14,
+              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -202,6 +210,115 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
       },
     );
   }
+
+  /// Muestra opciones para crear POST (con multimedia o solo texto)
+  void _showCreatePostOptions(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor:
+          theme.bottomSheetTheme.backgroundColor ?? theme.cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle del bottom sheet
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: theme.dividerColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            Text(
+              'Crear Publicación',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: theme.textTheme.headlineMedium?.color,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Elige el tipo de post que quieres compartir',
+              style: TextStyle(
+                fontSize: 14,
+                color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Opciones de post
+            Column(
+              children: [
+                // Post con multimedia
+                _PostOptionTile(
+                  icon: Icons.photo_library,
+                  title: 'Post con Multimedia',
+                  subtitle: 'Fotos o videos',
+                  color: ColorTokens.secondary50,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _navigateToCreatePostWithMedia(context);
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                // Post solo texto
+                _PostOptionTile(
+                  icon: Icons.text_fields,
+                  title: 'Post de Texto',
+                  subtitle: 'Solo texto, sin multimedia',
+                  color: ColorTokens.primary30,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _navigateToCreateTextPost(context);
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _navigateToCreatePostWithMedia(BuildContext context) {
+    // Navegar a crear post CON multimedia (fotos/videos)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const CreateExperienceScreen(
+          experienceType: ExperienceType.general,
+          isPostMode: true,
+          textOnly: false, // Permite multimedia
+        ),
+      ),
+    );
+  }
+
+  void _navigateToCreateTextPost(BuildContext context) {
+    // Navegar a crear post SOLO texto (SIN multimedia)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const CreateExperienceScreen(
+          experienceType: ExperienceType.general,
+          isPostMode: true,
+          textOnly: true, // Bloquea multimedia
+        ),
+      ),
+    );
+  }
 }
 
 /// Widget para mostrar una experiencia individual en la lista
@@ -212,14 +329,16 @@ class _ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: theme.shadowColor.withOpacity(0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -232,7 +351,7 @@ class _ExperienceCard extends StatelessWidget {
           _buildAuthorHeader(context),
 
           // Media section
-          if (experience.media.isNotEmpty) _buildMediaSection(),
+          if (experience.media.isNotEmpty) _buildMediaSection(context),
 
           // Content section
           Padding(
@@ -246,7 +365,7 @@ class _ExperienceCard extends StatelessWidget {
                     experience.description,
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.grey[700],
+                      color: theme.textTheme.bodyMedium?.color,
                       height: 1.4,
                     ),
                   ),
@@ -287,7 +406,8 @@ class _ExperienceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMediaSection() {
+  Widget _buildMediaSection(BuildContext context) {
+    final theme = Theme.of(context);
     final media = experience.media.first;
 
     return ClipRRect(
@@ -298,18 +418,18 @@ class _ExperienceCard extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 16 / 9,
         child: Container(
-          color: Colors.grey[200],
+          color: theme.colorScheme.surfaceContainerHighest,
           child: media.mediaType == MediaType.image
               ? Image.network(
                   media.url,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
+                  errorBuilder: (ctx, error, stackTrace) {
                     return Container(
-                      color: Colors.grey[300],
-                      child: const Center(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      child: Center(
                         child: Icon(
                           Icons.image_not_supported,
-                          color: Colors.grey,
+                          color: theme.iconTheme.color?.withOpacity(0.5),
                           size: 48,
                         ),
                       ),
@@ -347,76 +467,177 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   Widget _buildTags() {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 4,
-      children: experience.tags.map((tag) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: ColorTokens.primary50.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            '#$tag',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: ColorTokens.primary50,
-            ),
-          ),
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: experience.tags.map((tag) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: theme.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '#$tag',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: theme.primaryColor,
+                ),
+              ),
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
     );
   }
 
   Widget _buildMetadata() {
-    return Row(
-      children: [
-        // Type indicator
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: experience.type == ExperienceType.ride
-                ? ColorTokens.secondary50.withOpacity(0.1)
-                : ColorTokens.primary50.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            experience.type == ExperienceType.ride ? 'Rodada' : 'General',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: experience.type == ExperienceType.ride
-                  ? ColorTokens.secondary50
-                  : ColorTokens.primary50,
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Row(
+          children: [
+            // Type indicator
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: theme.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                experience.type == ExperienceType.ride ? 'Rodada' : 'General',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: theme.primaryColor,
+                ),
+              ),
             ),
-          ),
-        ),
 
-        const SizedBox(width: 12),
+            const SizedBox(width: 12),
 
-        // Media count
-        if (experience.media.length > 1)
-          Row(
-            children: [
-              Icon(Icons.photo_library, size: 16, color: Colors.grey[600]),
-              const SizedBox(width: 4),
-              Text(
-                '${experience.media.length}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            // Media count
+            if (experience.media.length > 1) ...[
+              const SizedBox(width: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.photo_library,
+                    size: 16,
+                    color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${experience.media.length}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                    ),
+                  ),
+                ],
               ),
             ],
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildAuthorHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final user = experience.user;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          // Avatar y nombre del autor - con navegación al perfil
+          GestureDetector(
+            onTap: () {
+              print(
+                '🔄 Post author tapped - Navegando al perfil del usuario: ${user.id}',
+              );
+              if (user.id.isNotEmpty) {
+                context.push('/user-profile/${user.id}');
+              } else {
+                print('❌ Error: User ID está vacío');
+              }
+            },
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: user.photo.isNotEmpty
+                      ? NetworkImage(user.photo)
+                      : null,
+                  child: user.photo.isEmpty
+                      ? const Icon(Icons.person, color: Colors.white)
+                      : null,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.fullName.isNotEmpty
+                          ? user.fullName
+                          : (user.userName.isNotEmpty
+                                ? user.userName
+                                : 'Usuario sin nombre'),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        if (user.userName.isNotEmpty)
+                          Text(
+                            '@${user.userName}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: theme.textTheme.bodySmall?.color
+                                  ?.withOpacity(0.7),
+                            ),
+                          ),
+                        if (user.userName.isNotEmpty)
+                          Text(
+                            ' • ',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: theme.textTheme.bodySmall?.color
+                                  ?.withOpacity(0.7),
+                            ),
+                          ),
+                        Text(
+                          _formatDate(experience.createdAt),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: theme.textTheme.bodySmall?.color
+                                ?.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-
-        const Spacer(),
-
-        // Date
-        Text(
-          _formatDate(experience.createdAt),
-          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-        ),
-      ],
+          Expanded(child: SizedBox()),
+          // Botón de menú (3 puntos) - alineado a la derecha con padding
+          IconButton(
+            icon: Icon(Icons.more_vert, color: theme.iconTheme.color, size: 20),
+            onPressed: () => _showPostMenu(context),
+          ),
+        ],
+      ),
     );
   }
 
@@ -425,78 +646,245 @@ class _ExperienceCard extends StatelessWidget {
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return 'Hace ${difference.inDays} día${difference.inDays > 1 ? 's' : ''}';
+      return 'Hace ${difference.inDays}d';
     } else if (difference.inHours > 0) {
-      return 'Hace ${difference.inHours} hora${difference.inHours > 1 ? 's' : ''}';
+      return 'Hace ${difference.inHours}h';
     } else if (difference.inMinutes > 0) {
-      return 'Hace ${difference.inMinutes} minuto${difference.inMinutes > 1 ? 's' : ''}';
+      return 'Hace ${difference.inMinutes}m';
     } else {
       return 'Ahora';
     }
   }
 
-  Widget _buildAuthorHeader(BuildContext context) {
-    final user = experience.user;
+  void _showPostMenu(BuildContext context) {
+    final theme = Theme.of(context);
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final isOwner = currentUserId == experience.user.id;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: GestureDetector(
-        onTap: () {
-          print(
-            '🔄 Post author tapped - Navegando al perfil del usuario: ${user.id}',
-          );
-          if (user.id.isNotEmpty) {
-            context.push('/user-profile/${user.id}');
-          } else {
-            print('❌ Error: User ID está vacío');
-          }
-        },
+    showModalBottomSheet(
+      context: context,
+      backgroundColor:
+          theme.bottomSheetTheme.backgroundColor ?? theme.cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isOwner) ...[
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text(
+                  'Eliminar publicación',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmDelete(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.edit, color: theme.iconTheme.color),
+                title: Text(
+                  'Editar publicación',
+                  style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Función de editar próximamente'),
+                    ),
+                  );
+                },
+              ),
+            ] else ...[
+              ListTile(
+                leading: Icon(Icons.flag, color: theme.iconTheme.color),
+                title: Text(
+                  'Reportar publicación',
+                  style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Función de reportar próximamente'),
+                    ),
+                  );
+                },
+              ),
+            ],
+            ListTile(
+              leading: Icon(Icons.share, color: theme.iconTheme.color),
+              title: Text(
+                'Compartir',
+                style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _sharePost(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: theme.dialogBackgroundColor,
+        title: Text(
+          'Eliminar publicación',
+          style: TextStyle(color: theme.textTheme.titleLarge?.color),
+        ),
+        content: Text(
+          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
+          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deletePost(context);
+            },
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deletePost(BuildContext context) async {
+    try {
+      final provider = context.read<ExperienceProvider>();
+      await provider.deleteExperience(experience.id);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Publicación eliminada correctamente')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
+      }
+    }
+  }
+
+  void _sharePost(BuildContext context) async {
+    try {
+      // Construir el mensaje para compartir
+      final userName = experience.user.fullName.isNotEmpty
+          ? experience.user.fullName
+          : experience.user.userName;
+
+      String shareText = '🚴 ¡Mira esta publicación de $userName en Biux!\n\n';
+
+      if (experience.description.isNotEmpty) {
+        // Limitar la descripción a 150 caracteres
+        final description = experience.description.length > 150
+            ? '${experience.description.substring(0, 150)}...'
+            : experience.description;
+        shareText += '$description\n\n';
+      }
+
+      // Agregar deep link con dominio personalizado
+      shareText += 'https://biux.devshouse.org/posts/${experience.id}\n\n';
+      shareText += '📱 Si no tienes la app, descárgala para ver más';
+
+      // Usar Share.share del paquete share_plus
+      await Share.share(shareText, subject: 'Publicación de Biux');
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+      }
+    }
+  }
+}
+
+/// Widget para cada opción de post
+class _PostOptionTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _PostOptionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: color.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Row(
           children: [
-            // Avatar del autor
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: user.photo.isNotEmpty
-                  ? NetworkImage(user.photo)
-                  : null,
-              child: user.photo.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white)
-                  : null,
-              backgroundColor: Colors.grey[400],
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 28),
             ),
-            const SizedBox(width: 12),
-            // Información del autor
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.fullName.isNotEmpty
-                        ? user.fullName
-                        : (user.userName.isNotEmpty
-                              ? user.userName
-                              : 'Usuario sin nombre'),
-                    style: const TextStyle(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: ColorTokens.neutral80,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
-                  if (user.userName.isNotEmpty)
-                    Text(
-                      '@${user.userName}',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.color?.withOpacity(0.7),
                     ),
+                  ),
                 ],
               ),
             ),
-            // Tiempo de publicación
-            Text(
-              _formatDate(experience.createdAt),
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
             ),
-            const SizedBox(width: 8),
-            Icon(Icons.more_vert, color: Colors.grey[600], size: 20),
           ],
         ),
       ),

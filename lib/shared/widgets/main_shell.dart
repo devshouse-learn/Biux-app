@@ -52,9 +52,6 @@ class _MainShellState extends State<MainShell> {
           ),
 
           const SizedBox(width: 8),
-
-          // Botón de acción según la pestaña actual
-          _buildActionButton(),
         ],
       ),
       drawer: AppDrawer(),
@@ -100,24 +97,6 @@ class _MainShellState extends State<MainShell> {
       ),
       body: Container(height: double.infinity, child: widget.child),
     );
-  }
-
-  Widget _buildActionButton() {
-    if (_selectedIndex == 0) {
-      // Botón de agregar historia
-      return Container(
-        height: 32,
-        width: 32,
-        margin: EdgeInsets.only(right: 30),
-        child: GestureDetector(
-          onTap: () {
-            context.go('/stories/create');
-          },
-          child: Image.asset(Images.kImageAdd),
-        ),
-      );
-    }
-    return SizedBox.shrink();
   }
 
   void _onTabTapped(int index) {

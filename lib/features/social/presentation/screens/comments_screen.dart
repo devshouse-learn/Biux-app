@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../domain/repositories/comments_repository.dart';
-import '../providers/comments_provider.dart';
 import '../widgets/comments_list.dart';
 
 /// Pantalla de comentarios de un post
@@ -18,10 +16,7 @@ class PostCommentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comentarios'),
-        backgroundColor: const Color(0xFF16242D), // AppColors.blackPearl
-      ),
+      appBar: AppBar(title: const Text('Comentarios')),
       body: SafeArea(
         child: CommentsList(
           type: CommentableType.post,
@@ -49,10 +44,7 @@ class RideCommentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Comentarios'),
-        backgroundColor: const Color(0xFF16242D), // AppColors.blackPearl
-      ),
+      appBar: AppBar(title: const Text('Comentarios')),
       body: SafeArea(
         child: CommentsList(
           type: CommentableType.ride,

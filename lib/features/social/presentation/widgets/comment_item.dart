@@ -30,6 +30,8 @@ class CommentItem extends StatelessWidget {
     // Configurar locale español para timeago
     timeago.setLocaleMessages('es', timeago.EsMessages());
 
+    final theme = Theme.of(context);
+
     return Padding(
       padding: EdgeInsets.only(
         left: isReply ? 40.0 : 8.0,
@@ -84,7 +86,8 @@ class CommentItem extends StatelessWidget {
                           child: Text(
                             timeago.format(comment.createdAt, locale: 'es'),
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: theme.textTheme.bodySmall?.color
+                                  ?.withOpacity(0.6),
                               fontSize: 12,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -95,7 +98,8 @@ class CommentItem extends StatelessWidget {
                           Text(
                             ' (editado)',
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: theme.textTheme.bodySmall?.color
+                                  ?.withOpacity(0.6),
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                             ),
@@ -107,7 +111,11 @@ class CommentItem extends StatelessWidget {
                     Text(
                       comment.displayText,
                       style: TextStyle(
-                        color: comment.isDeleted ? Colors.grey : Colors.black,
+                        color: comment.isDeleted
+                            ? theme.textTheme.bodyMedium?.color?.withOpacity(
+                                0.5,
+                              )
+                            : theme.textTheme.bodyMedium?.color,
                         fontStyle: comment.isDeleted
                             ? FontStyle.italic
                             : FontStyle.normal,
@@ -148,6 +156,10 @@ class CommentItem extends StatelessWidget {
                                             await likesProvider.likeComment(
                                               commentId: comment.id,
                                               commentOwnerId: comment.userId,
+                                              contextTargetId:
+                                                  targetId, // ID del post/ride
+                                              contextType:
+                                                  type, // Tipo: post o ride
                                             );
                                           }
                                         },
@@ -161,7 +173,11 @@ class CommentItem extends StatelessWidget {
                                               size: 16,
                                               color: isLiked
                                                   ? Colors.red
-                                                  : Colors.grey,
+                                                  : theme
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.color
+                                                        ?.withOpacity(0.6),
                                             ),
                                             if (likesCount > 0) ...[
                                               const SizedBox(width: 4),

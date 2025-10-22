@@ -5,6 +5,7 @@ import '../../domain/entities/like_entity.dart';
 import '../../domain/repositories/likes_repository.dart';
 import '../../domain/repositories/notifications_repository.dart';
 import '../../domain/entities/notification_entity.dart';
+import '../../domain/repositories/comments_repository.dart';
 
 /// Provider para gestionar likes
 class LikesProvider extends ChangeNotifier {
@@ -86,8 +87,28 @@ class LikesProvider extends ChangeNotifier {
   bool _isProcessing = false;
   String? _error;
 
+  // Map para rastrear cooldown por targetId (tiempo de espera entre acciones)
+  final Map<String, DateTime> _cooldowns = {};
+
+  // Duración del cooldown (2 segundos)
+  static const Duration _cooldownDuration = Duration(seconds: 2);
+
   bool get isProcessing => _isProcessing;
   String? get error => _error;
+
+  /// Verifica si un target está en cooldown
+  bool _isInCooldown(String targetId) {
+    final lastAction = _cooldowns[targetId];
+    if (lastAction == null) return false;
+
+    final timeSinceLastAction = DateTime.now().difference(lastAction);
+    return timeSinceLastAction < _cooldownDuration;
+  }
+
+  /// Marca el tiempo de la última acción
+  void _setCooldown(String targetId) {
+    _cooldowns[targetId] = DateTime.now();
+  }
 
   /// Da like a un post
   Future<void> likePost({
@@ -114,13 +135,27 @@ class LikesProvider extends ChangeNotifier {
     required String commentId,
     required String commentOwnerId,
     String? commentPreview,
+    String? contextTargetId, // ID del post/ride donde está el comentario
+    CommentableType? contextType, // Tipo: post o ride
   }) async {
+    // Preparar metadata con el contexto del comentario
+    final metadata = <String, dynamic>{};
+    if (contextTargetId != null) {
+      metadata['contextTargetId'] = contextTargetId;
+    }
+    if (contextType != null) {
+      metadata['contextType'] = contextType == CommentableType.post
+          ? 'post'
+          : 'ride';
+    }
+
     await _toggleLike(
       type: LikeableType.comment,
       targetId: commentId,
       targetOwnerId: commentOwnerId,
       targetPreview: commentPreview,
       notificationType: NotificationType.likeComment,
+      metadata: metadata.isNotEmpty ? metadata : null,
     );
   }
 
@@ -168,8 +203,15 @@ class LikesProvider extends ChangeNotifier {
     String? targetPreview,
     DateTime? expiresAt,
     required NotificationType notificationType,
+    Map<String, dynamic>? metadata,
   }) async {
-    if (_isProcessing) return;
+    // Cooldown: verificar si está en periodo de espera
+    if (_isInCooldown(targetId)) {
+      debugPrint(
+        '⏳ Like en cooldown para $targetId, espera ${_cooldownDuration.inSeconds}s',
+      );
+      return;
+    }
 
     // Cargar datos del usuario si no están cargados
     await _loadUserData();
@@ -204,8 +246,12 @@ class LikesProvider extends ChangeNotifier {
           targetType: _getTargetType(type),
           targetId: targetId,
           targetPreview: targetPreview,
+          metadata: metadata, // Pasar metadata con contexto del post/ride
         );
       }
+
+      // Establecer cooldown después de completar exitosamente
+      _setCooldown(targetId);
 
       _isProcessing = false;
       notifyListeners();
@@ -221,7 +267,13 @@ class LikesProvider extends ChangeNotifier {
     required LikeableType type,
     required String targetId,
   }) async {
-    if (_isProcessing) return;
+    // Cooldown: verificar si está en periodo de espera
+    if (_isInCooldown(targetId)) {
+      debugPrint(
+        '⏳ Unlike en cooldown para $targetId, espera ${_cooldownDuration.inSeconds}s',
+      );
+      return;
+    }
 
     try {
       _isProcessing = true;
@@ -229,6 +281,9 @@ class LikesProvider extends ChangeNotifier {
       notifyListeners();
 
       await _repository.unlike(type: type, targetId: targetId, userId: userId);
+
+      // Establecer cooldown después de completar exitosamente
+      _setCooldown(targetId);
 
       _isProcessing = false;
       notifyListeners();

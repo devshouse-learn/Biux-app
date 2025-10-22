@@ -19,8 +19,13 @@ import 'package:biux/core/design_system/color_tokens.dart';
 
 class RideDetailScreen extends StatefulWidget {
   final String rideId;
+  final bool openComments;
 
-  const RideDetailScreen({Key? key, required this.rideId}) : super(key: key);
+  const RideDetailScreen({
+    Key? key,
+    required this.rideId,
+    this.openComments = false,
+  }) : super(key: key);
 
   @override
   _RideDetailScreenState createState() => _RideDetailScreenState();
@@ -39,7 +44,22 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         context,
         listen: false,
       ).startListening();
+
+      // Si viene desde notificación, abrir comentarios automáticamente
+      if (widget.openComments) {
+        _openComments();
+      }
     });
+  }
+
+  void _openComments() {
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
+    final ride = rideProvider.selectedRide;
+    if (ride != null) {
+      context.push(
+        '/rides/${widget.rideId}/comments?ownerId=${ride.createdBy}',
+      );
+    }
   }
 
   @override

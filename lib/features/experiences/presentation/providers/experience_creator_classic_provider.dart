@@ -70,6 +70,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   String? _error;
   bool _isRecording = false;
   VideoPlayerController? _videoController;
+  bool _isTextOnly = false; // Post de solo texto (sin multimedia)
 
   // Getters
   List<MediaItem> get mediaItems => _mediaItems;
@@ -82,6 +83,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   String? get error => _error;
   bool get isRecording => _isRecording;
   VideoPlayerController? get videoController => _videoController;
+  bool get isTextOnly => _isTextOnly;
 
   /// Actualizar descripción
   void updateDescription(String description) {
@@ -96,9 +98,14 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   }
 
   /// Establecer tipo de experiencia
-  void setExperienceType(ExperienceType type, {String? rideId}) {
+  void setExperienceType(
+    ExperienceType type, {
+    String? rideId,
+    bool isTextOnly = false,
+  }) {
     _experienceType = type;
     _rideId = rideId;
+    _isTextOnly = isTextOnly;
     notifyListeners();
   }
 
@@ -271,8 +278,16 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Crear experiencia
   Future<bool> createExperience() async {
-    if (_mediaItems.isEmpty || _description.trim().isEmpty) {
-      _error = 'Se requieren multimedia y descripción';
+    // Validar descripción
+    if (_description.trim().isEmpty) {
+      _error = 'La descripción es requerida';
+      notifyListeners();
+      return false;
+    }
+
+    // Validar multimedia solo si NO es post de solo texto
+    if (!_isTextOnly && _mediaItems.isEmpty) {
+      _error = 'Debes agregar al menos una imagen o video';
       notifyListeners();
       return false;
     }

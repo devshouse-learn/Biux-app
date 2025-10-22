@@ -29,6 +29,23 @@ class UserProfileProvider extends ChangeNotifier {
   bool _isLoadingContent = false;
   String? _error;
 
+  // Map para rastrear cooldown de follow/unfollow (tiempo de espera entre acciones)
+  final Map<String, DateTime> _followCooldowns = {};
+
+  // Duración del cooldown (3 segundos para follow/unfollow)
+  static const Duration _followCooldownDuration = Duration(seconds: 3);
+
+  // Helper methods para cooldown
+  bool _isInFollowCooldown(String userId) {
+    final lastAction = _followCooldowns[userId];
+    if (lastAction == null) return false;
+    return DateTime.now().difference(lastAction) < _followCooldownDuration;
+  }
+
+  void _setFollowCooldown(String userId) {
+    _followCooldowns[userId] = DateTime.now();
+  }
+
   // Getters
   List<BiuxUser> get searchResults => _searchResults;
   bool get isSearching => _isSearching;
@@ -192,6 +209,14 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Seguir usuario
   Future<bool> followUser(String userId) async {
+    // Cooldown: evitar múltiples clicks en el mismo usuario
+    if (_isInFollowCooldown(userId)) {
+      debugPrint(
+        '⏳ Follow en cooldown para $userId, espera ${_followCooldownDuration.inSeconds}s',
+      );
+      return false;
+    }
+
     try {
       final success = await _repository.followUser(userId);
       if (success) {
@@ -203,8 +228,12 @@ class UserProfileProvider extends ChangeNotifier {
             'followerS': _currentProfile!.followerS + 1,
           });
         }
+
+        // Establecer cooldown después de éxito
+        _setFollowCooldown(userId);
         notifyListeners();
       }
+
       return success;
     } catch (e) {
       print('Error siguiendo usuario: $e');
@@ -214,6 +243,14 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Dejar de seguir usuario
   Future<bool> unfollowUser(String userId) async {
+    // Cooldown: evitar múltiples clicks en el mismo usuario
+    if (_isInFollowCooldown(userId)) {
+      debugPrint(
+        '⏳ Unfollow en cooldown para $userId, espera ${_followCooldownDuration.inSeconds}s',
+      );
+      return false;
+    }
+
     try {
       final success = await _repository.unfollowUser(userId);
       if (success) {
@@ -225,8 +262,12 @@ class UserProfileProvider extends ChangeNotifier {
             'followerS': _currentProfile!.followerS - 1,
           });
         }
+
+        // Establecer cooldown después de éxito
+        _setFollowCooldown(userId);
         notifyListeners();
       }
+
       return success;
     } catch (e) {
       print('Error dejando de seguir usuario: $e');

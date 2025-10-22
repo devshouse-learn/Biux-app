@@ -179,21 +179,115 @@ class NotificationItem extends StatelessWidget {
       return;
     }
 
-    switch (notification.targetType!) {
-      case NotificationTargetType.post:
-        context.push('/posts/${notification.targetId}');
+    switch (notification.type) {
+      // LIKES - Navegar al contenido específico
+      case NotificationType.likePost:
+        // Para posts, ir directamente a los comentarios
+        final postOwnerId =
+            notification.metadata?['postOwnerId'] ?? notification.fromUserId;
+        context.push(
+          '/posts/${notification.targetId}/comments?ownerId=$postOwnerId',
+        );
         break;
-      case NotificationTargetType.ride:
+
+      case NotificationType.likeComment:
+        // Para likes en comentarios, usar el contexto guardado en metadata
+        final contextType = notification.metadata?['contextType'] as String?;
+        final contextTargetId =
+            notification.metadata?['contextTargetId'] as String?;
+
+        if (contextType == 'post' && contextTargetId != null) {
+          // Navegar a los comentarios del post
+          final postOwnerId =
+              notification.metadata?['postOwnerId'] ?? notification.fromUserId;
+          context.push('/posts/$contextTargetId/comments?ownerId=$postOwnerId');
+        } else if (contextType == 'ride' && contextTargetId != null) {
+          // Navegar al detalle de la rodada con comentarios abiertos
+          context.push(
+            '/rides/$contextTargetId',
+            extra: {'openComments': true},
+          );
+        } else {
+          // Fallback: usar targetType si no hay metadata
+          if (notification.targetType == NotificationTargetType.post) {
+            final postOwnerId =
+                notification.metadata?['postOwnerId'] ??
+                notification.fromUserId;
+            context.push(
+              '/posts/${notification.targetId}/comments?ownerId=$postOwnerId',
+            );
+          } else if (notification.targetType == NotificationTargetType.ride) {
+            context.push(
+              '/rides/${notification.targetId}',
+              extra: {'openComments': true},
+            );
+          }
+        }
+        break;
+
+      case NotificationType.likeStory:
+        // Las historias navegan al perfil del creador
+        context.push('/user-profile/${notification.fromUserId}');
+        break;
+
+      // COMENTARIOS - Navegar directamente a la sección de comentarios
+      case NotificationType.commentPost:
+        final postOwnerId1 =
+            notification.metadata?['postOwnerId'] ?? notification.fromUserId;
+        context.push(
+          '/posts/${notification.targetId}/comments?ownerId=$postOwnerId1',
+        );
+        break;
+
+      case NotificationType.commentRide:
+        context.push(
+          '/rides/${notification.targetId}',
+          extra: {'openComments': true},
+        );
+        break;
+
+      case NotificationType.replyComment:
+        // Para respuestas, ir directamente a comentarios
+        if (notification.targetType == NotificationTargetType.post) {
+          final postOwnerId2 =
+              notification.metadata?['postOwnerId'] ?? notification.fromUserId;
+          context.push(
+            '/posts/${notification.targetId}/comments?ownerId=$postOwnerId2',
+          );
+        } else if (notification.targetType == NotificationTargetType.ride) {
+          context.push(
+            '/rides/${notification.targetId}',
+            extra: {'openComments': true},
+          );
+        }
+        break;
+
+      // RODADAS - Navegar a detalle de rodada
+      case NotificationType.rideJoin:
         context.push('/rides/${notification.targetId}');
         break;
-      case NotificationTargetType.story:
-        // Historias normalmente se ven en un modal
+
+      // MENCIONES - Navegar según el contexto
+      case NotificationType.mention:
+        if (notification.targetType == NotificationTargetType.post) {
+          final postOwnerId3 =
+              notification.metadata?['postOwnerId'] ?? notification.fromUserId;
+          context.push(
+            '/posts/${notification.targetId}/comments?ownerId=$postOwnerId3',
+          );
+        } else if (notification.targetType == NotificationTargetType.ride) {
+          context.push(
+            '/rides/${notification.targetId}',
+            extra: {'openComments': true},
+          );
+        } else {
+          context.push('/user-profile/${notification.fromUserId}');
+        }
         break;
-      case NotificationTargetType.user:
-        context.push('/users/${notification.targetId}');
-        break;
-      case NotificationTargetType.comment:
-        // Navegar al post/ride que contiene el comentario
+
+      // SEGUIMIENTO - Navegar al perfil del usuario
+      case NotificationType.follow:
+        context.push('/user-profile/${notification.fromUserId}');
         break;
     }
   }

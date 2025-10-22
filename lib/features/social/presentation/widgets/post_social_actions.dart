@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import '../providers/likes_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../providers/comments_provider.dart';
 import '../widgets/like_button.dart';
 import '../../domain/repositories/likes_repository.dart';
@@ -23,6 +23,8 @@ class PostSocialActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
@@ -35,7 +37,7 @@ class PostSocialActions extends StatelessWidget {
             targetPreview: postPreview,
             showCount: true,
             activeColor: Colors.red,
-            inactiveColor: Colors.grey,
+            inactiveColor: theme.iconTheme.color ?? Colors.grey,
           ),
 
           const SizedBox(width: 16),
@@ -45,18 +47,8 @@ class PostSocialActions extends StatelessWidget {
 
           const Spacer(),
 
-          // Botón de compartir (opcional)
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              // TODO: Implementar compartir
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Función de compartir próximamente'),
-                ),
-              );
-            },
-          ),
+          // Botón de compartir
+          _ShareButton(postId: postId, postPreview: postPreview),
         ],
       ),
     );
@@ -116,6 +108,7 @@ class PostCommentsPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final commentsProvider = context.watch<CommentsProvider>();
 
     return StreamBuilder<List<dynamic>>(
@@ -148,14 +141,16 @@ class PostCommentsPreview extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: '${comment.userName} ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: theme.textTheme.bodyLarge?.color,
                         ),
                       ),
                       TextSpan(
                         text: comment.text,
-                        style: const TextStyle(color: Colors.black87),
+                        style: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
                       ),
                     ],
                   ),
@@ -175,8 +170,10 @@ class PostCommentsPreview extends StatelessWidget {
                   },
                   child: Text(
                     'Ver los ${comments.length} comentarios',
-                    style: const TextStyle(
-                      color: Color(0xFF16242D),
+                    style: TextStyle(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.lightBlue[300]
+                          : theme.primaryColor,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -202,14 +199,58 @@ class StoryLikeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return LikeButton(
       type: LikeableType.story,
       targetId: storyId,
       targetOwnerId: storyOwnerId,
       showCount: true,
       activeColor: Colors.pink,
-      inactiveColor: Colors.white,
+      inactiveColor: theme.brightness == Brightness.dark
+          ? Colors.white
+          : theme.iconTheme.color ?? Colors.grey,
       size: 32.0,
     );
+  }
+}
+
+/// Widget para compartir un post
+class _ShareButton extends StatelessWidget {
+  final String postId;
+  final String? postPreview;
+
+  const _ShareButton({required this.postId, this.postPreview});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.share),
+      onPressed: () => _sharePost(context),
+    );
+  }
+
+  void _sharePost(BuildContext context) async {
+    try {
+      // Construir el mensaje para compartir
+      String shareText = '🚴 ¡Mira esta publicación en Biux!\n\n';
+
+      if (postPreview != null && postPreview!.isNotEmpty) {
+        shareText += '$postPreview\n\n';
+      }
+
+      // Agregar deep link con dominio personalizado
+      shareText += 'https://biux.devshouse.org/posts/$postId\n\n';
+      shareText += '📱 Si no tienes la app, descárgala para ver más';
+
+      // Usar Share.share del paquete share_plus
+      await Share.share(shareText, subject: 'Publicación de Biux');
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+      }
+    }
   }
 }

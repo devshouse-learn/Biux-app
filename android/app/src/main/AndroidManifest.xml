@@ -28,25 +28,30 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             
-            <!-- Deep Links -->
+            <!-- Deep Links (biux://) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data
-                    android:scheme="biux"
-                    android:host="ride"/>
+                <!-- biux://ride/{id} -->
+                <data android:scheme="biux" android:host="ride"/>
+                <!-- biux://posts/{id} -->
+                <data android:scheme="biux" android:host="posts"/>
+                <!-- biux://group/{id} -->
+                <data android:scheme="biux" android:host="group"/>
+                <!-- biux://user/{id} -->
+                <data android:scheme="biux" android:host="user"/>
             </intent-filter>
             
-            <!-- App Links (HTTPS) -->
+            <!-- App Links (HTTPS) - Dominio personalizado biux.devshouse.org -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
                     android:scheme="https"
-                    android:host="biux.app"
-                    android:pathPrefix="/ride"/>
+                    android:host="biux.devshouse.org"/>
+                <!-- Soporta todas las rutas: /ride, /posts, /group, /user -->
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

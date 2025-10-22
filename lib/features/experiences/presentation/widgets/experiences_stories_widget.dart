@@ -88,6 +88,8 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 class _AddStoryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () => _showCreateStoryOptions(context),
       child: Container(
@@ -115,7 +117,7 @@ class _AddStoryButton extends StatelessWidget {
                 'Tu story',
                 style: TextStyle(
                   fontSize: 12,
-                  color: ColorTokens.neutral60,
+                  color: theme.textTheme.bodySmall?.color,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -130,9 +132,12 @@ class _AddStoryButton extends StatelessWidget {
   }
 
   void _showCreateStoryOptions(BuildContext context) {
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor:
+          theme.bottomSheetTheme.backgroundColor ?? theme.cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -145,6 +150,8 @@ class _AddStoryButton extends StatelessWidget {
 class _StoryOptionsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -156,7 +163,7 @@ class _StoryOptionsBottomSheet extends StatelessWidget {
             height: 4,
             margin: const EdgeInsets.only(bottom: 20),
             decoration: BoxDecoration(
-              color: ColorTokens.neutral30,
+              color: theme.dividerColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -166,44 +173,29 @@ class _StoryOptionsBottomSheet extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: ColorTokens.neutral90,
+              color: theme.textTheme.headlineMedium?.color,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Comparte tu experiencia en bicicleta',
-            style: TextStyle(fontSize: 14, color: ColorTokens.neutral60),
+            'Tu historia desaparecerá en 24 horas',
+            style: TextStyle(
+              fontSize: 14,
+              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+            ),
           ),
           const SizedBox(height: 24),
 
-          // Opciones de story
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // Video Story
-              _StoryOptionButton(
-                icon: Icons.videocam,
-                title: 'Video Story',
-                subtitle: 'Graba hasta 30s',
-                color: ColorTokens.primary30,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _navigateToCreateVideoStory(context);
-                },
-              ),
-
-              // Foto Story
-              _StoryOptionButton(
-                icon: Icons.photo_camera,
-                title: 'Foto Story',
-                subtitle: 'Comparte momentos',
-                color: ColorTokens.success40,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _navigateToCreatePhotoStory(context);
-                },
-              ),
-            ],
+          // Botón único para crear historia
+          _StoryOptionButton(
+            icon: Icons.edit_note,
+            title: 'Crear Historia',
+            subtitle: 'Texto corto que se puede agregar',
+            color: ColorTokens.primary30,
+            onTap: () {
+              Navigator.of(context).pop();
+              _navigateToCreateStory(context);
+            },
           ),
 
           const SizedBox(height: 20),
@@ -212,21 +204,13 @@ class _StoryOptionsBottomSheet extends StatelessWidget {
     );
   }
 
-  void _navigateToCreateVideoStory(BuildContext context) {
+  void _navigateToCreateStory(BuildContext context) {
+    // Navegar a la pantalla específica para crear historias (solo texto corto)
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const CreateExperienceScreen(
           experienceType: ExperienceType.general,
-        ),
-      ),
-    );
-  }
-
-  void _navigateToCreatePhotoStory(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CreateExperienceScreen(
-          experienceType: ExperienceType.general,
+          isStoryMode: true, // Nuevo parámetro para forzar modo historia
         ),
       ),
     );
@@ -251,6 +235,8 @@ class _StoryOptionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -275,13 +261,16 @@ class _StoryOptionButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: ColorTokens.neutral90,
+                color: theme.textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -299,6 +288,7 @@ class _StoryGroupCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final hasUnseenStories = storyGroup.hasUnseenStories;
 
     return GestureDetector(
@@ -330,7 +320,7 @@ class _StoryGroupCircle extends StatelessWidget {
                     : null,
                 border: hasUnseenStories
                     ? null
-                    : Border.all(color: Colors.grey.shade400, width: 2),
+                    : Border.all(color: theme.dividerColor, width: 2),
               ),
               padding: const EdgeInsets.all(3),
               child: Container(
@@ -346,11 +336,11 @@ class _StoryGroupCircle extends StatelessWidget {
                           width: 60,
                           height: 60,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return _buildDefaultAvatar();
+                          errorBuilder: (ctx, error, stackTrace) {
+                            return _buildDefaultAvatar(ctx);
                           },
                         )
-                      : _buildDefaultAvatar(),
+                      : _buildDefaultAvatar(context),
                 ),
               ),
             ),
@@ -363,9 +353,10 @@ class _StoryGroupCircle extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
+                  color: theme.textTheme.bodySmall?.color,
                 ),
               ),
             ),
@@ -375,12 +366,16 @@ class _StoryGroupCircle extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultAvatar() {
+  Widget _buildDefaultAvatar(BuildContext context) {
     return Container(
       width: 60,
       height: 60,
-      color: Colors.grey.shade300,
-      child: const Icon(Icons.person, size: 35, color: Colors.grey),
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Icon(
+        Icons.person,
+        size: 35,
+        color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+      ),
     );
   }
 
@@ -634,8 +629,10 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
           ),
         );
       } else {
-        return const Center(
-          child: CircularProgressIndicator(color: Colors.white),
+        return Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         );
       }
     } else {
@@ -645,10 +642,17 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
         fit: BoxFit.contain,
         width: double.infinity,
         height: double.infinity,
-        placeholder: (context, url) =>
-            const Center(child: CircularProgressIndicator(color: Colors.white)),
-        errorWidget: (context, url, error) => const Center(
-          child: Icon(Icons.error, color: Colors.white, size: 48),
+        placeholder: (context, url) => Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        errorWidget: (context, url, error) => Center(
+          child: Icon(
+            Icons.error,
+            color: Theme.of(context).colorScheme.error,
+            size: 48,
+          ),
         ),
         imageBuilder: (context, imageProvider) {
           // Iniciar el progreso cuando la imagen cargue completamente
@@ -678,10 +682,13 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final currentStory = _currentGroup.stories[_currentStoryIndex];
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: theme.brightness == Brightness.dark
+          ? Colors.black
+          : theme.scaffoldBackgroundColor,
       body: GestureDetector(
         onTapUp: (details) {
           // Solo ejecutar si no está pausado y fue un tap rápido (no long press)
@@ -703,12 +710,12 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
               child: currentStory.media.isNotEmpty
                   ? _buildMediaWidget(currentStory.media[0])
                   : Container(
-                      color: Colors.grey.shade800,
+                      color: theme.colorScheme.surface,
                       child: Center(
                         child: Text(
                           currentStory.description,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: theme.textTheme.bodyLarge?.color,
                             fontSize: 24,
                           ),
                           textAlign: TextAlign.center,

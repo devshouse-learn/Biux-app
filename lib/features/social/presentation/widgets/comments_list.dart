@@ -50,11 +50,15 @@ class CommentsList extends StatelessWidget {
             final comments = snapshot.data ?? [];
 
             if (comments.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.all(32.0),
+              return Padding(
+                padding: const EdgeInsets.all(32.0),
                 child: Text(
                   'No hay comentarios aún',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                  ),
                 ),
               );
             }
@@ -146,12 +150,18 @@ class _CommentTextFieldState extends State<_CommentTextField> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CommentsProvider>();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        border: Border(top: BorderSide(color: Colors.grey[300]!)),
+        color: isDark ? theme.colorScheme.surface : Colors.grey[100],
+        border: Border(
+          top: BorderSide(
+            color: isDark ? theme.dividerColor : Colors.grey[300]!,
+          ),
+        ),
       ),
       child: Row(
         children: [
@@ -171,7 +181,9 @@ class _CommentTextFieldState extends State<_CommentTextField> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: isDark
+                    ? theme.colorScheme.surfaceContainerHighest
+                    : Colors.white,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
@@ -190,7 +202,7 @@ class _CommentTextFieldState extends State<_CommentTextField> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.send),
-            color: Theme.of(context).primaryColor,
+            color: isDark ? Colors.lightBlue[300] : theme.primaryColor,
           ),
         ],
       ),

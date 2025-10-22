@@ -92,6 +92,23 @@ class CommentsProvider extends ChangeNotifier {
   bool _isDeleting = false;
   String? _error;
 
+  // Map para rastrear cooldown de comentarios (prevenir spam)
+  final Map<String, DateTime> _commentCooldowns = {};
+
+  // Duración del cooldown (5 segundos para comentarios - más largo para prevenir spam)
+  static const Duration _commentCooldownDuration = Duration(seconds: 5);
+
+  // Helper methods para cooldown
+  bool _isInCommentCooldown(String targetId) {
+    final lastAction = _commentCooldowns[targetId];
+    if (lastAction == null) return false;
+    return DateTime.now().difference(lastAction) < _commentCooldownDuration;
+  }
+
+  void _setCommentCooldown(String targetId) {
+    _commentCooldowns[targetId] = DateTime.now();
+  }
+
   bool get isPosting => _isPosting;
   bool get isEditing => _isEditing;
   bool get isDeleting => _isDeleting;
@@ -143,6 +160,17 @@ class CommentsProvider extends ChangeNotifier {
     String? parentCommentId,
     String? parentCommentOwnerId,
   }) async {
+    // Cooldown: prevenir spam de comentarios
+    if (_isInCommentCooldown(targetId)) {
+      debugPrint(
+        '⏳ Comentario en cooldown para $targetId, espera ${_commentCooldownDuration.inSeconds}s',
+      );
+      _error =
+          'Espera ${_commentCooldownDuration.inSeconds} segundos antes de comentar nuevamente';
+      notifyListeners();
+      return null;
+    }
+
     if (_isPosting) return null;
 
     // Cargar datos del usuario si no están cargados
@@ -219,6 +247,9 @@ class CommentsProvider extends ChangeNotifier {
 
       // Detectar menciones y notificar
       await _notifyMentions(text, targetId, type);
+
+      // Establecer cooldown después de éxito
+      _setCommentCooldown(targetId);
 
       _isPosting = false;
       notifyListeners();

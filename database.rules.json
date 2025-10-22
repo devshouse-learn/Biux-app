@@ -145,7 +145,7 @@
         "$postId": {
           ".read": "auth != null",
           "$commentId": {
-            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid)",
+            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid || (data.exists() && (newData.child('repliesCount').val() !== data.child('repliesCount').val() || newData.child('likesCount').val() !== data.child('likesCount').val()) && newData.child('userId').val() === data.child('userId').val() && newData.child('text').val() === data.child('text').val()))",
             ".validate": "newData.hasChildren(['id', 'userId', 'userName', 'text', 'createdAt']) && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
             "id": {
               ".validate": "newData.val() === $commentId"
@@ -154,7 +154,7 @@
               ".validate": "newData.isString() && (!data.exists() && newData.val() === auth.uid || data.exists() && newData.val() === data.val())"
             },
             "userName": {
-              ".validate": "newData.isString()"
+              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
             },
             "userPhoto": {
               ".validate": "!newData.exists() || newData.isString()"
@@ -199,7 +199,7 @@
         "$rideId": {
           ".read": "auth != null",
           "$commentId": {
-            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid)",
+            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid || (data.exists() && (newData.child('repliesCount').val() !== data.child('repliesCount').val() || newData.child('likesCount').val() !== data.child('likesCount').val()) && newData.child('userId').val() === data.child('userId').val() && newData.child('text').val() === data.child('text').val()))",
             ".validate": "newData.hasChildren(['id', 'userId', 'userName', 'text', 'createdAt']) && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
             "id": {
               ".validate": "newData.val() === $commentId"
@@ -208,7 +208,7 @@
               ".validate": "newData.isString() && (!data.exists() && newData.val() === auth.uid || data.exists() && newData.val() === data.val())"
             },
             "userName": {
-              ".validate": "newData.isString()"
+              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
             },
             "userPhoto": {
               ".validate": "!newData.exists() || newData.isString()"
