@@ -470,8 +470,7 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
     // Encontrar la primera historia no vista
     _currentStoryIndex = await _findFirstUnseenStoryIndex();
 
-    // Marcar la primera historia como vista
-    widget.onStoryViewed(_currentGroup.stories[_currentStoryIndex].id);
+    // NO marcar como vista aún - se marcará cuando el contenido se cargue
     await _initializeMedia();
   }
 
@@ -540,6 +539,9 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
         setState(() => _isVideoInitialized = true);
         _videoController!.play();
 
+        // Marcar como vista cuando el video esté listo y comience a reproducirse
+        widget.onStoryViewed(currentStory.id);
+
         // Listener para avanzar cuando termine el video
         _videoController!.addListener(() {
           if (_videoController!.value.position >=
@@ -564,7 +566,7 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
       setState(() {
         _currentStoryIndex++;
       });
-      widget.onStoryViewed(_currentGroup.stories[_currentStoryIndex].id);
+      // NO marcar como vista aún - se marcará cuando el contenido se cargue
       await _initializeMedia();
     } else if (_currentGroupIndex < widget.storyGroups.length - 1) {
       // Avanzar al siguiente usuario
@@ -593,7 +595,7 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
         _currentStoryIndex =
             widget.storyGroups[_currentGroupIndex].stories.length - 1;
       });
-      widget.onStoryViewed(_currentGroup.stories[_currentStoryIndex].id);
+      // NO marcar como vista aún - se marcará cuando el contenido se cargue
       await _initializeMedia();
     }
   }
@@ -661,6 +663,10 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
                 _progressController != null &&
                 !_progressController!.isAnimating &&
                 !_isPaused) {
+              // Marcar como vista cuando la imagen esté cargada y comience el progreso
+              final currentStory = _currentGroup.stories[_currentStoryIndex];
+              widget.onStoryViewed(currentStory.id);
+
               _progressController!.forward().then((_) {
                 if (mounted && !_isPaused) {
                   _nextStory();
