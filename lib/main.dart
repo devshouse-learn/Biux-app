@@ -20,6 +20,9 @@ import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/users/presentation/providers/edit_username_provider.dart';
+import 'package:biux/features/users/domain/repositories/user_repository.dart';
+import 'package:biux/features/users/data/repositories/user_repository_impl.dart';
+import 'package:biux/features/users/data/datasources/user_remote_datasource.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/story_groups_provider.dart';
@@ -93,6 +96,13 @@ void main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),
         ChangeNotifierProvider(create: (_) => EditUsernameProvider()),
+
+        // UserRepository - Necesario para obtener datos completos de usuarios
+        Provider<UserRepository>(
+          create: (_) =>
+              UserRepositoryImpl(remoteDataSource: UserRemoteDataSourceImpl()),
+        ),
+
         ChangeNotifierProvider(create: (_) => GroupProvider()),
         ChangeNotifierProvider(create: (_) => CityProvider()),
         ChangeNotifierProvider(create: (_) => RideProvider()),

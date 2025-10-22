@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/like_entity.dart';
 import '../../domain/repositories/likes_repository.dart';
 import '../../domain/repositories/notifications_repository.dart';
@@ -9,17 +11,77 @@ class LikesProvider extends ChangeNotifier {
   final LikesRepository _repository;
   final NotificationsRepository _notificationsRepository;
   final String userId;
-  final String userName;
-  final String? userPhoto;
+
+  // Variables para caché de datos del usuario
+  String? _cachedUserName;
+  String? _cachedUserPhoto;
+  bool _userDataLoaded = false;
 
   LikesProvider({
     required LikesRepository repository,
     required NotificationsRepository notificationsRepository,
     required this.userId,
-    required this.userName,
-    this.userPhoto,
   }) : _repository = repository,
        _notificationsRepository = notificationsRepository;
+
+  /// Obtiene los datos del usuario desde Firestore (se ejecuta una sola vez)
+  Future<void> _loadUserData() async {
+    if (_userDataLoaded) return;
+
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        _cachedUserName = 'Usuario';
+        _cachedUserPhoto = null;
+        _userDataLoaded = true;
+        return;
+      }
+
+      // Obtener datos desde Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      final userData = userDoc.data();
+
+      if (userData != null && userData.isNotEmpty) {
+        String? name = userData['name'];
+        String? username = userData['username'];
+        String? phoneNumber = userData['phoneNumber'];
+
+        _cachedUserName =
+            (name != null && name.trim().isNotEmpty ? name : null) ??
+            (username != null && username.trim().isNotEmpty
+                ? username
+                : null) ??
+            currentUser.displayName ??
+            (phoneNumber != null && phoneNumber.trim().isNotEmpty
+                ? phoneNumber.replaceAll('phone_', '').replaceAll('+57', '')
+                : null) ??
+            currentUser.email?.split('@').first ??
+            'Usuario';
+
+        _cachedUserPhoto = userData['photoUrl'] ?? userData['photo'];
+      } else {
+        _cachedUserName =
+            currentUser.displayName ??
+            currentUser.phoneNumber
+                ?.replaceAll('phone_', '')
+                .replaceAll('+57', '') ??
+            currentUser.email?.split('@').first ??
+            'Usuario';
+        _cachedUserPhoto = currentUser.photoURL;
+      }
+
+      _userDataLoaded = true;
+    } catch (e) {
+      debugPrint('⚠️ Error cargando datos de usuario en LikesProvider: $e');
+      _cachedUserName = 'Usuario';
+      _cachedUserPhoto = null;
+      _userDataLoaded = true;
+    }
+  }
 
   bool _isProcessing = false;
   String? _error;
@@ -67,6 +129,16 @@ class LikesProvider extends ChangeNotifier {
     await _unlike(type: LikeableType.comment, targetId: commentId);
   }
 
+  /// Observa si el usuario actual dio like a un comentario
+  Stream<bool> watchUserLikedComment({required String commentId}) {
+    return _repository.watchUserLiked(LikeableType.comment, commentId, userId);
+  }
+
+  /// Observa el conteo de likes de un comentario
+  Stream<int> watchCommentLikesCount({required String commentId}) {
+    return _repository.watchLikesCount(LikeableType.comment, commentId);
+  }
+
   /// Da like a una historia (expira en 24h)
   Future<void> likeStory({
     required String storyId,
@@ -99,6 +171,9 @@ class LikesProvider extends ChangeNotifier {
   }) async {
     if (_isProcessing) return;
 
+    // Cargar datos del usuario si no están cargados
+    await _loadUserData();
+
     try {
       _isProcessing = true;
       _error = null;
@@ -108,16 +183,16 @@ class LikesProvider extends ChangeNotifier {
         type: type,
         targetId: targetId,
         userId: userId,
-        userName: userName,
-        userPhoto: userPhoto,
+        userName: _cachedUserName ?? 'Usuario',
+        userPhoto: _cachedUserPhoto,
         expiresAt: expiresAt,
       );
 
       // Crear notificación solo si no es el propio usuario
       if (targetOwnerId != userId) {
         // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
-        final safeUserName = userName.trim().isNotEmpty
-            ? userName
+        final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
+            ? _cachedUserName!
             : userId.split('_').last; // Fallback: usar parte del userId
 
         await _notificationsRepository.createNotification(
@@ -125,7 +200,7 @@ class LikesProvider extends ChangeNotifier {
           type: notificationType,
           fromUserId: userId,
           fromUserName: safeUserName,
-          fromUserPhoto: userPhoto,
+          fromUserPhoto: _cachedUserPhoto,
           targetType: _getTargetType(type),
           targetId: targetId,
           targetPreview: targetPreview,

@@ -203,21 +203,163 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
+      // Obtener datos del usuario actual
+      // IMPORTANTE: Usar la colección 'users' (no 'usuarios')
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(currentUserId)
+          .get();
+      final userData = userDoc.data();
+
+      // 🔍 DEBUG: Ver exactamente qué datos tenemos
+      print('🔍 DEBUG joinRide - userData completo: $userData');
+      print('🔍 DEBUG joinRide - currentUserId: $currentUserId');
+      print(
+        '🔍 DEBUG joinRide - Firebase Auth displayName: ${_auth.currentUser?.displayName}',
+      );
+      print(
+        '🔍 DEBUG joinRide - Firebase Auth email: ${_auth.currentUser?.email}',
+      );
+      print(
+        '🔍 DEBUG joinRide - Firebase Auth phoneNumber: ${_auth.currentUser?.phoneNumber}',
+      );
+
+      // Crear metadata del participante con fallbacks
+      String userName = 'Usuario';
+      String? photoUrl;
+
+      if (userData != null && userData.isNotEmpty) {
+        // Intentar todos los campos posibles de Firestore
+        // IMPORTANTE: También revisar si el valor no es una cadena vacía
+        String? fullName = userData['fullName'];
+        String? userNameField = userData['userName'];
+        String? usernameField = userData['username'];
+        String? nameField = userData['name'];
+
+        // Buscar el primer campo que NO esté vacío
+        userName =
+            (fullName != null && fullName.trim().isNotEmpty
+                ? fullName
+                : null) ??
+            (userNameField != null && userNameField.trim().isNotEmpty
+                ? userNameField
+                : null) ??
+            (usernameField != null && usernameField.trim().isNotEmpty
+                ? usernameField
+                : null) ??
+            (nameField != null && nameField.trim().isNotEmpty
+                ? nameField
+                : null) ??
+            userData['full_name'] ??
+            userData['displayName'] ??
+            _auth.currentUser?.displayName ??
+            // Usar teléfono formateado como último recurso
+            (_auth.currentUser?.phoneNumber
+                    ?.replaceAll('phone_', '')
+                    .replaceAll('+57', '') ??
+                'Usuario');
+
+        photoUrl =
+            userData['photo'] ??
+            userData['photoUrl'] ??
+            userData['photo_url'] ??
+            userData['profilePicture'] ??
+            userData['avatar'] ??
+            _auth.currentUser?.photoURL;
+
+        print('🔍 DEBUG joinRide - userName seleccionado: "$userName"');
+        print('🔍 DEBUG joinRide - photoUrl seleccionado: "$photoUrl"');
+      } else {
+        // CRÍTICO: Si no existe el documento en Firestore, crearlo con datos básicos
+        print(
+          '⚠️ DEBUG joinRide - No se encontró documento de usuario en Firestore',
+        );
+        print('⚠️ Creando documento básico para el usuario...');
+
+        // Usar teléfono como nombre temporal si no hay displayName
+        userName =
+            _auth.currentUser?.displayName ??
+            _auth.currentUser?.phoneNumber
+                ?.replaceAll('phone_', '')
+                .replaceAll('+57', '') ??
+            _auth.currentUser?.email?.split('@').first ??
+            'Usuario';
+        photoUrl = _auth.currentUser?.photoURL;
+
+        // Crear documento básico en Firestore con la colección correcta
+        try {
+          await _firestore.collection('users').doc(currentUserId).set(
+            {
+              'fullName': userName,
+              'userName': userName,
+              'phoneNumber': _auth.currentUser?.phoneNumber ?? '',
+              'email': _auth.currentUser?.email ?? '',
+              'photo': photoUrl,
+              'createdAt': FieldValue.serverTimestamp(),
+            },
+            SetOptions(merge: true),
+          ); // merge: true para no sobrescribir si existe
+
+          print('✅ Documento de usuario creado/actualizado');
+        } catch (e) {
+          print('❌ Error creando documento de usuario: $e');
+        }
+      }
+
+      final participantMetadata = ParticipantMetadata(
+        userId: currentUserId!,
+        userName: userName,
+        photoUrl: photoUrl,
+      );
+
       final rideRef = _firestore.collection('rides').doc(rideId);
 
+      // Obtener rodada actual para actualizar metadata
+      final rideDoc = await rideRef.get();
+      final rideData = rideDoc.data();
+
+      if (rideData == null) {
+        _setError('Rodada no encontrada');
+        _setLoading(false);
+        return false;
+      }
+
+      // Actualizar listas de metadata
+      List<Map<String, dynamic>> participantsMetadata =
+          (rideData['participantsMetadata'] as List?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
+      List<Map<String, dynamic>> maybeParticipantsMetadata =
+          (rideData['maybeParticipantsMetadata'] as List?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
+
+      // Remover de ambas listas primero
+      participantsMetadata.removeWhere((m) => m['userId'] == currentUserId);
+      maybeParticipantsMetadata.removeWhere(
+        (m) => m['userId'] == currentUserId,
+      );
+
       if (maybe) {
+        maybeParticipantsMetadata.add(participantMetadata.toMap());
         await rideRef.update({
           'maybeParticipants': FieldValue.arrayUnion([currentUserId]),
           'participants': FieldValue.arrayRemove([currentUserId]),
+          'maybeParticipantsMetadata': maybeParticipantsMetadata,
+          'participantsMetadata': participantsMetadata,
         });
       } else {
+        participantsMetadata.add(participantMetadata.toMap());
         await rideRef.update({
           'participants': FieldValue.arrayUnion([currentUserId]),
           'maybeParticipants': FieldValue.arrayRemove([currentUserId]),
+          'participantsMetadata': participantsMetadata,
+          'maybeParticipantsMetadata': maybeParticipantsMetadata,
         });
       }
 
-      await loadAllRides();
+      // Recargar la rodada actual para actualizar la UI inmediatamente
+      await selectRideById(rideId);
       _setLoading(false);
       return true;
     } catch (e) {
@@ -239,12 +381,44 @@ class RideProvider extends ChangeNotifier {
       _setError(null);
 
       final rideRef = _firestore.collection('rides').doc(rideId);
-      await rideRef.update({
-        'participants': FieldValue.arrayRemove([currentUserId]),
-        'maybeParticipants': FieldValue.arrayRemove([currentUserId]),
-      });
 
-      await loadAllRides();
+      // Obtener rodada actual para actualizar metadata
+      final rideDoc = await rideRef.get();
+      final rideData = rideDoc.data();
+
+      if (rideData != null) {
+        // Actualizar listas de metadata
+        List<Map<String, dynamic>> participantsMetadata =
+            (rideData['participantsMetadata'] as List?)
+                ?.cast<Map<String, dynamic>>() ??
+            [];
+        List<Map<String, dynamic>> maybeParticipantsMetadata =
+            (rideData['maybeParticipantsMetadata'] as List?)
+                ?.cast<Map<String, dynamic>>() ??
+            [];
+
+        // Remover de ambas listas
+        participantsMetadata.removeWhere((m) => m['userId'] == currentUserId);
+        maybeParticipantsMetadata.removeWhere(
+          (m) => m['userId'] == currentUserId,
+        );
+
+        await rideRef.update({
+          'participants': FieldValue.arrayRemove([currentUserId]),
+          'maybeParticipants': FieldValue.arrayRemove([currentUserId]),
+          'participantsMetadata': participantsMetadata,
+          'maybeParticipantsMetadata': maybeParticipantsMetadata,
+        });
+      } else {
+        // Fallback si no hay data
+        await rideRef.update({
+          'participants': FieldValue.arrayRemove([currentUserId]),
+          'maybeParticipants': FieldValue.arrayRemove([currentUserId]),
+        });
+      }
+
+      // Recargar la rodada actual para actualizar la UI inmediatamente
+      await selectRideById(rideId);
       _setLoading(false);
       return true;
     } catch (e) {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/entities/comment_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 import '../providers/comments_provider.dart';
+import '../providers/likes_provider.dart';
 import 'user_avatar.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -41,11 +43,16 @@ class CommentItem extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar del usuario
-              UserAvatar(
-                userName: comment.userName,
-                photoUrl: comment.userPhoto,
-                radius: isReply ? 16 : 20,
+              // Avatar del usuario - clickeable para ir al perfil
+              GestureDetector(
+                onTap: () {
+                  context.push('/user-profile/${comment.userId}');
+                },
+                child: UserAvatar(
+                  userName: comment.userName,
+                  photoUrl: comment.userPhoto,
+                  radius: isReply ? 16 : 20,
+                ),
               ),
               const SizedBox(width: 8),
               // Contenido del comentario
@@ -53,19 +60,35 @@ class CommentItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Nombre y tiempo
+                    // Nombre y tiempo - nombre clickeable
                     Row(
                       children: [
-                        Text(
-                          comment.userName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () {
+                              context.push('/user-profile/${comment.userId}');
+                            },
+                            child: Text(
+                              comment.userName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          timeago.format(comment.createdAt, locale: 'es'),
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
+                        Flexible(
+                          child: Text(
+                            timeago.format(comment.createdAt, locale: 'es'),
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                         if (comment.isEdited)
@@ -95,23 +118,68 @@ class CommentItem extends StatelessWidget {
                     if (!comment.isDeleted)
                       Row(
                         children: [
-                          // Botón de like (puedes usar el LikeButton widget aquí)
-                          InkWell(
-                            onTap: () {
-                              // Implementar like de comentario
+                          // Botón de like con estado en tiempo real
+                          Consumer<LikesProvider>(
+                            builder: (context, likesProvider, _) {
+                              return StreamBuilder<bool>(
+                                stream: likesProvider.watchUserLikedComment(
+                                  commentId: comment.id,
+                                ),
+                                builder: (context, likeSnapshot) {
+                                  final isLiked = likeSnapshot.data ?? false;
+
+                                  return StreamBuilder<int>(
+                                    stream: likesProvider
+                                        .watchCommentLikesCount(
+                                          commentId: comment.id,
+                                        ),
+                                    builder: (context, countSnapshot) {
+                                      final likesCount =
+                                          countSnapshot.data ??
+                                          comment.likesCount;
+
+                                      return InkWell(
+                                        onTap: () async {
+                                          if (isLiked) {
+                                            await likesProvider.unlikeComment(
+                                              comment.id,
+                                            );
+                                          } else {
+                                            await likesProvider.likeComment(
+                                              commentId: comment.id,
+                                              commentOwnerId: comment.userId,
+                                            );
+                                          }
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              isLiked
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              size: 16,
+                                              color: isLiked
+                                                  ? Colors.red
+                                                  : Colors.grey,
+                                            ),
+                                            if (likesCount > 0) ...[
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                likesCount.toString(),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              );
                             },
-                            child: Row(
-                              children: [
-                                const Icon(Icons.favorite_border, size: 16),
-                                if (comment.likesCount > 0) ...[
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    comment.likesCount.toString(),
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ],
-                            ),
                           ),
                           const SizedBox(width: 16),
                           // Botón de responder
@@ -222,8 +290,91 @@ class CommentItem extends StatelessWidget {
   }
 
   void _showReplyField(BuildContext context) {
-    // Implementar campo de respuesta
-    // Puede ser un showModalBottomSheet o inline
+    final controller = TextEditingController();
+    final provider = context.read<CommentsProvider>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Responder a ${comment.userName}',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              maxLength: 500,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'Escribe tu respuesta...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (controller.text.trim().isEmpty) return;
+
+                    String? commentId;
+                    if (type == CommentableType.post) {
+                      commentId = await provider.commentOnPost(
+                        postId: targetId,
+                        postOwnerId: targetOwnerId,
+                        text: controller.text,
+                        parentCommentId: comment.id,
+                        parentCommentOwnerId: comment.userId,
+                      );
+                    } else if (type == CommentableType.ride) {
+                      commentId = await provider.commentOnRide(
+                        rideId: targetId,
+                        rideOwnerId: targetOwnerId,
+                        text: controller.text,
+                        parentCommentId: comment.id,
+                        parentCommentOwnerId: comment.userId,
+                      );
+                    }
+
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      if (commentId != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Respuesta publicada'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text('Responder'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showEditDialog(BuildContext context) {

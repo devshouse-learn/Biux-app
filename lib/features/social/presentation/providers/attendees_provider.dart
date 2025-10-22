@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/attendee_entity.dart';
 import '../../domain/repositories/attendees_repository.dart';
 import '../../domain/repositories/notifications_repository.dart';
@@ -11,11 +13,13 @@ class AttendeesProvider extends ChangeNotifier {
   final AttendeesRepository _repository;
   final NotificationsRepository _notificationsRepository;
   final AttendeesFirestoreAdapter _firestoreAdapter;
-  final UserRepository?
-  _userRepository; // ⚠️ Agregado para obtener datos completos del usuario
+  final UserRepository? _userRepository;
   final String userId;
-  final String userName;
-  final String? userPhoto;
+
+  // Variables para caché de datos del usuario
+  String? _cachedUserName;
+  String? _cachedUserPhoto;
+  bool _userDataLoaded = false;
 
   // Track de rodadas ya sincronizadas
   final Set<String> _syncedRides = {};
@@ -24,14 +28,71 @@ class AttendeesProvider extends ChangeNotifier {
     required AttendeesRepository repository,
     required NotificationsRepository notificationsRepository,
     AttendeesFirestoreAdapter? firestoreAdapter,
-    UserRepository? userRepository, // ⚠️ Nuevo parámetro opcional
+    UserRepository? userRepository,
     required this.userId,
-    required this.userName,
-    this.userPhoto,
   }) : _repository = repository,
        _notificationsRepository = notificationsRepository,
        _firestoreAdapter = firestoreAdapter ?? AttendeesFirestoreAdapter(),
        _userRepository = userRepository;
+
+  /// Obtiene los datos del usuario desde Firestore (se ejecuta una sola vez)
+  Future<void> _loadUserData() async {
+    if (_userDataLoaded) return;
+
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        _cachedUserName = 'Usuario';
+        _cachedUserPhoto = null;
+        _userDataLoaded = true;
+        return;
+      }
+
+      // Obtener datos desde Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      final userData = userDoc.data();
+
+      if (userData != null && userData.isNotEmpty) {
+        String? name = userData['name'];
+        String? username = userData['username'];
+        String? phoneNumber = userData['phoneNumber'];
+
+        _cachedUserName =
+            (name != null && name.trim().isNotEmpty ? name : null) ??
+            (username != null && username.trim().isNotEmpty
+                ? username
+                : null) ??
+            currentUser.displayName ??
+            (phoneNumber != null && phoneNumber.trim().isNotEmpty
+                ? phoneNumber.replaceAll('phone_', '').replaceAll('+57', '')
+                : null) ??
+            currentUser.email?.split('@').first ??
+            'Usuario';
+
+        _cachedUserPhoto = userData['photoUrl'] ?? userData['photo'];
+      } else {
+        _cachedUserName =
+            currentUser.displayName ??
+            currentUser.phoneNumber
+                ?.replaceAll('phone_', '')
+                .replaceAll('+57', '') ??
+            currentUser.email?.split('@').first ??
+            'Usuario';
+        _cachedUserPhoto = currentUser.photoURL;
+      }
+
+      _userDataLoaded = true;
+    } catch (e) {
+      debugPrint('⚠️ Error cargando datos de usuario en AttendeesProvider: $e');
+      _cachedUserName = 'Usuario';
+      _cachedUserPhoto = null;
+      _userDataLoaded = true;
+    }
+  }
 
   bool _isJoining = false;
   bool _isLeaving = false;
@@ -55,14 +116,17 @@ class AttendeesProvider extends ChangeNotifier {
   }) async {
     if (_isJoining) return;
 
+    // Cargar datos del usuario si no están cargados
+    await _loadUserData();
+
     try {
       _isJoining = true;
       _error = null;
       notifyListeners();
 
       // ⚠️ Obtener datos completos del usuario de Firestore si está disponible
-      String finalUserName = userName;
-      String? finalUserPhoto = userPhoto;
+      String finalUserName = _cachedUserName ?? 'Usuario';
+      String? finalUserPhoto = _cachedUserPhoto;
       String? finalFullName = fullName;
 
       if (_userRepository != null) {
@@ -70,10 +134,10 @@ class AttendeesProvider extends ChangeNotifier {
           final userEntity = await _userRepository.getUserById(userId);
           finalUserName = userEntity.userName.isNotEmpty
               ? userEntity.userName
-              : userName;
+              : _cachedUserName ?? 'Usuario';
           finalUserPhoto = userEntity.photo.isNotEmpty
               ? userEntity.photo
-              : userPhoto;
+              : _cachedUserPhoto;
           finalFullName =
               fullName ??
               (userEntity.fullName.isNotEmpty ? userEntity.fullName : null);
@@ -97,8 +161,8 @@ class AttendeesProvider extends ChangeNotifier {
       // Crear notificación solo si no es el propio usuario
       if (rideOwnerId != userId) {
         // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
-        final safeUserName = userName.trim().isNotEmpty
-            ? userName
+        final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
+            ? _cachedUserName!
             : userId.split('_').last; // Fallback: usar parte del userId
 
         await _notificationsRepository.createNotification(
@@ -106,7 +170,7 @@ class AttendeesProvider extends ChangeNotifier {
           type: NotificationType.rideJoin,
           fromUserId: userId,
           fromUserName: safeUserName,
-          fromUserPhoto: userPhoto,
+          fromUserPhoto: _cachedUserPhoto,
           targetType: NotificationTargetType.ride,
           targetId: rideId,
         );

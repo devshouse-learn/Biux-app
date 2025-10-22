@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
 // Domain
@@ -35,10 +36,6 @@ class SocialProvidersConfig {
     }
 
     final userId = currentUser.uid;
-    final userName = currentUser.displayName?.trim().isNotEmpty == true
-        ? currentUser.displayName!.trim()
-        : currentUser.email?.split('@').first ?? 'Usuario';
-    final userPhoto = currentUser.photoURL;
 
     // Crear repositorios
     final notificationsRepository = NotificationsRepositoryImpl();
@@ -64,8 +61,6 @@ class SocialProvidersConfig {
           repository: likesRepository,
           notificationsRepository: notificationsRepository,
           userId: userId,
-          userName: userName,
-          userPhoto: userPhoto,
         ),
       ),
 
@@ -75,8 +70,6 @@ class SocialProvidersConfig {
           repository: commentsRepository,
           notificationsRepository: notificationsRepository,
           userId: userId,
-          userName: userName,
-          userPhoto: userPhoto,
         ),
       ),
 
@@ -85,11 +78,8 @@ class SocialProvidersConfig {
         create: (_) => AttendeesProvider(
           repository: attendeesRepository,
           notificationsRepository: notificationsRepository,
-          userRepository:
-              userRepository, // ⚠️ Agregado para obtener datos completos
+          userRepository: userRepository,
           userId: userId,
-          userName: userName,
-          userPhoto: userPhoto,
         ),
       ),
     ];

@@ -2,6 +2,8 @@ import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/features/rides/presentation/widgets/ride_attendance_button.dart';
+import 'package:biux/features/rides/presentation/widgets/ride_attendees_list_optimized.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/services/deep_link_service.dart';
 import 'package:biux/features/social/presentation/widgets/ride_social_actions.dart';
@@ -157,31 +159,62 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   ),
                   SizedBox(height: 24),
 
-                  // Acciones sociales (Asistentes y Comentarios)
+                  // Acciones sociales (Comentarios)
                   RideSocialActions(
                     rideId: ride.id,
                     rideOwnerId: ride.createdBy,
                   ),
-                  SizedBox(height: 16),
-
-                  // Botón para unirse a la rodada
-                  RideJoinButton(rideId: ride.id, rideOwnerId: ride.createdBy),
                   SizedBox(height: 24),
 
-                  // Participantes
-                  ParticipantsSectionWidget(ride: ride),
-                  SizedBox(height: 32),
+                  // ⭐ BOTÓN DE ASISTENCIA - Primero (más visible)
+                  RideAttendanceButton(ride: ride),
+                  SizedBox(height: 24),
 
-                  // Botones de acción
-                  ActionButtonsWidget(
-                    ride: ride,
-                    onJoinRide: () => _joinRide(ride.id, rideProvider),
-                    onMaybeJoinRide: () =>
-                        _maybeJoinRide(ride.id, rideProvider),
-                    onLeaveRide: () => _leaveRide(ride.id, rideProvider),
-                    onCancelRide: () =>
-                        _showCancelDialog(ride.id, rideProvider),
+                  // Participantes (debajo del botón de asistencia)
+                  ParticipantsSectionWidget(ride: ride),
+                  SizedBox(height: 24),
+
+                  // Botón de compartir
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _shareRide(context, ride),
+                      icon: Icon(Icons.share),
+                      label: Text('Compartir rodada'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ColorTokens.primary50,
+                        side: BorderSide(
+                          color: ColorTokens.primary50,
+                          width: 2,
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
                   ),
+
+                  // Si es el creador, botón de cancelar
+                  if (ride.createdBy == rideProvider.currentUserId &&
+                      ride.status != RideStatus.cancelled &&
+                      ride.status != RideStatus.completed) ...[
+                    SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () =>
+                            _showCancelDialog(ride.id, rideProvider),
+                        icon: Icon(Icons.cancel),
+                        label: Text('Cancelar rodada'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: ColorTokens.error50,
+                          side: BorderSide(
+                            color: ColorTokens.error50,
+                            width: 2,
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -204,39 +237,62 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     }
   }
 
-  void _joinRide(String rideId, RideProvider provider) async {
-    final success = await provider.joinRide(rideId);
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('¡Genial! Te has unido a la rodada'),
-          backgroundColor: ColorTokens.success40,
-        ),
-      );
-    }
-  }
+  Future<void> _shareRide(BuildContext context, RideModel ride) async {
+    try {
+      // Obtener información del grupo
+      final provider = Provider.of<RideProvider>(context, listen: false);
+      final groupInfo = await provider.getGroupInfo(ride.groupId);
+      final groupName = groupInfo?['name'] ?? 'un grupo de ciclistas';
 
-  void _maybeJoinRide(String rideId, RideProvider provider) async {
-    final success = await provider.maybeJoinRide(rideId);
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Marcado como "tal vez voy"'),
-          backgroundColor: ColorTokens.warning50,
-        ),
+      // Generar texto de compartir con deep link
+      final shareText = DeepLinkService.generateShareText(
+        rideName: ride.name,
+        rideId: ride.id,
+        groupName: groupName,
       );
-    }
-  }
 
-  void _leaveRide(String rideId, RideProvider provider) async {
-    final success = await provider.leaveRide(rideId);
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Has salido de la rodada'),
-          backgroundColor: ColorTokens.neutral60,
-        ),
-      );
+      // Si hay imagen, compartirla con el texto
+      if (ride.imageUrl != null && ride.imageUrl!.isNotEmpty) {
+        try {
+          // Descargar la imagen temporalmente
+          final response = await http.get(Uri.parse(ride.imageUrl!));
+          if (response.statusCode == 200) {
+            final tempDir = await getTemporaryDirectory();
+            final file = File('${tempDir.path}/ride_${ride.id}.jpg');
+            await file.writeAsBytes(response.bodyBytes);
+
+            // Compartir con imagen
+            await Share.shareXFiles(
+              [XFile(file.path)],
+              text: shareText,
+              subject: '🚴 Rodada: ${ride.name}',
+            );
+
+            // Limpiar archivo temporal después de compartir
+            await file.delete();
+          } else {
+            // Si falla la descarga, compartir solo texto
+            await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+          }
+        } catch (e) {
+          // Si hay error con la imagen, compartir solo texto
+          print('Error compartiendo imagen: $e');
+          await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+        }
+      } else {
+        // Sin imagen, compartir solo texto
+        await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+      }
+    } catch (e) {
+      print('Error al compartir: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al compartir la rodada'),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
+      }
     }
   }
 
@@ -692,6 +748,14 @@ class ParticipantsSectionWidget extends StatelessWidget {
                   fontStyle: FontStyle.italic,
                 ),
               ),
+            ] else ...[
+              SizedBox(height: 16),
+              // Lista OPTIMIZADA de participantes usando metadata (sin consultas adicionales)
+              RideAttendeesListOptimized(
+                rideId: ride.id,
+                confirmedMetadata: ride.participantsMetadata,
+                maybeMetadata: ride.maybeParticipantsMetadata,
+              ),
             ],
           ],
         ),
@@ -739,215 +803,6 @@ class ParticipantStatWidget extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class ActionButtonsWidget extends StatelessWidget {
-  final RideModel ride;
-  final VoidCallback onJoinRide;
-  final VoidCallback onMaybeJoinRide;
-  final VoidCallback onLeaveRide;
-  final VoidCallback onCancelRide;
-
-  const ActionButtonsWidget({
-    Key? key,
-    required this.ride,
-    required this.onJoinRide,
-    required this.onMaybeJoinRide,
-    required this.onLeaveRide,
-    required this.onCancelRide,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<RideProvider>(
-      builder: (context, provider, child) {
-        final currentUserId = provider.currentUserId;
-        if (currentUserId == null) return SizedBox.shrink();
-
-        final isParticipating = ride.participants.contains(currentUserId);
-        final isMaybeParticipating = ride.maybeParticipants.contains(
-          currentUserId,
-        );
-        final isCreator = ride.createdBy == currentUserId;
-
-        final isPastRide =
-            ride.dateTime.isBefore(DateTime.now()) ||
-            ride.status == RideStatus.completed ||
-            ride.status == RideStatus.cancelled;
-
-        return Column(
-          children: [
-            // Botón de compartir (siempre visible)
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => _shareRide(context, ride),
-                icon: Icon(Icons.share),
-                label: Text('Compartir rodada'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: ColorTokens.primary50,
-                  side: BorderSide(color: ColorTokens.primary50, width: 2),
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-
-            if (!isPastRide) ...[
-              if (!isParticipating && !isMaybeParticipating) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: onJoinRide,
-                        icon: Icon(Icons.directions_bike),
-                        label: Text('Voy a ir'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorTokens.success40,
-                          foregroundColor: ColorTokens.neutral100,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: onMaybeJoinRide,
-                        icon: Icon(Icons.help_outline),
-                        label: Text('Tal vez voy'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorTokens.warning50,
-                          foregroundColor: ColorTokens.neutral100,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ] else if (isParticipating) ...[
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: onLeaveRide,
-                    icon: Icon(Icons.cancel),
-                    label: Text('No voy a ir'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorTokens.error50,
-                      foregroundColor: ColorTokens.neutral100,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
-                ),
-              ] else if (isMaybeParticipating) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: onJoinRide,
-                        icon: Icon(Icons.check),
-                        label: Text('Confirmar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorTokens.success40,
-                          foregroundColor: ColorTokens.neutral100,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: onLeaveRide,
-                        icon: Icon(Icons.close),
-                        label: Text('No voy'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorTokens.error50,
-                          foregroundColor: ColorTokens.neutral100,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-            if (isCreator && !isPastRide) ...[
-              SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: onCancelRide,
-                  icon: Icon(Icons.cancel_outlined),
-                  label: Text('Cancelar rodada'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: ColorTokens.error50,
-                    side: BorderSide(color: ColorTokens.error50),
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _shareRide(BuildContext context, RideModel ride) async {
-    try {
-      // Obtener información del grupo
-      final provider = Provider.of<RideProvider>(context, listen: false);
-      final groupInfo = await provider.getGroupInfo(ride.groupId);
-      final groupName = groupInfo?['name'] ?? 'un grupo de ciclistas';
-
-      // Generar texto de compartir con deep link
-      final shareText = DeepLinkService.generateShareText(
-        rideName: ride.name,
-        rideId: ride.id,
-        groupName: groupName,
-      );
-
-      // Si hay imagen, compartirla con el texto
-      if (ride.imageUrl != null && ride.imageUrl!.isNotEmpty) {
-        try {
-          // Descargar la imagen temporalmente
-          final response = await http.get(Uri.parse(ride.imageUrl!));
-          if (response.statusCode == 200) {
-            final tempDir = await getTemporaryDirectory();
-            final file = File('${tempDir.path}/ride_${ride.id}.jpg');
-            await file.writeAsBytes(response.bodyBytes);
-
-            // Compartir con imagen
-            await Share.shareXFiles(
-              [XFile(file.path)],
-              text: shareText,
-              subject: '🚴 Rodada: ${ride.name}',
-            );
-
-            // Limpiar archivo temporal después de compartir
-            await file.delete();
-          } else {
-            // Si falla la descarga, compartir solo texto
-            await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
-          }
-        } catch (e) {
-          // Si hay error con la imagen, compartir solo texto
-          print('Error compartiendo imagen: $e');
-          await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
-        }
-      } else {
-        // Sin imagen, compartir solo texto
-        await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
-      }
-    } catch (e) {
-      print('Error compartiendo rodada: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al compartir: $e'),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
-    }
   }
 }
 
