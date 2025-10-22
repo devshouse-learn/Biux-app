@@ -519,18 +519,20 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
 
     if (currentStory.media.isNotEmpty &&
         currentStory.media[0].mediaType == MediaType.video) {
-      // Descargar el video con caché
+      // Obtener el video del caché o descargarlo
       final videoUrl = currentStory.media[0].url;
-      final fileInfo = await DefaultCacheManager().getFileFromCache(videoUrl);
+
+      // Intentar obtener del caché primero
+      var fileInfo = await DefaultCacheManager().getFileFromCache(videoUrl);
 
       if (fileInfo == null) {
-        // Si no está en caché, descargarlo
-        await DefaultCacheManager().downloadFile(videoUrl);
+        // Si no está en caché, descargarlo y cachear
+        fileInfo = await DefaultCacheManager().downloadFile(videoUrl);
       }
 
-      // Inicializar el video player con la URL (ahora cacheada)
-      _videoController = VideoPlayerController.networkUrl(
-        Uri.parse(videoUrl),
+      // Inicializar el video player con el ARCHIVO LOCAL del caché
+      _videoController = VideoPlayerController.file(
+        fileInfo.file,
         videoPlayerOptions: VideoPlayerOptions(
           mixWithOthers: true,
           allowBackgroundPlayback: false,
@@ -554,13 +556,10 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
         });
       }
     } else {
-      // Para imágenes, usar timer
+      // Para imágenes, NO iniciar el progreso aún
+      // Se iniciará cuando la imagen termine de cargar
       _progressController!.duration = _imageDuration;
-      _progressController!.forward().then((_) {
-        if (mounted && !_isPaused) {
-          _nextStory();
-        }
-      });
+      // El progreso se iniciará desde _buildMediaWidget cuando la imagen cargue
     }
   }
 
@@ -640,7 +639,7 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
         );
       }
     } else {
-      // Imagen
+      // Imagen con callback cuando termine de cargar
       return CachedNetworkImage(
         imageUrl: media.url,
         fit: BoxFit.contain,
@@ -651,6 +650,28 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
         errorWidget: (context, url, error) => const Center(
           child: Icon(Icons.error, color: Colors.white, size: 48),
         ),
+        imageBuilder: (context, imageProvider) {
+          // Iniciar el progreso cuando la imagen cargue completamente
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted &&
+                _progressController != null &&
+                !_progressController!.isAnimating &&
+                !_isPaused) {
+              _progressController!.forward().then((_) {
+                if (mounted && !_isPaused) {
+                  _nextStory();
+                }
+              });
+            }
+          });
+
+          return Image(
+            image: imageProvider,
+            fit: BoxFit.contain,
+            width: double.infinity,
+            height: double.infinity,
+          );
+        },
       );
     }
   }

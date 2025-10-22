@@ -33,6 +33,7 @@ import 'package:biux/features/bikes/domain/usecases/get_user_bikes_usecase.dart'
 import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
+import 'package:biux/features/social/social_providers_config.dart';
 
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
@@ -131,6 +132,9 @@ void main() async {
               previous ??
               ExperienceCreatorProvider(experienceProvider: experienceProvider),
         ),
+
+        // Social Providers (Notificaciones, Likes, Comentarios, Asistentes)
+        ...SocialProvidersConfig.getProviders(),
       ],
       child: MyApp(),
     ),

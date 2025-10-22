@@ -8,6 +8,7 @@ import 'package:biux/features/bikes/domain/usecases/get_user_bikes_usecase.dart'
 import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
+import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/shared/services/optimized_storage_service.dart';
 
 /// Estados del provider de bicicletas
@@ -81,10 +82,16 @@ class BikeProvider extends ChangeNotifier {
   /// Obtiene todas las bicicletas del usuario
   Future<void> loadUserBikes(String userId) async {
     try {
+      print('🚴 BikeProvider: Cargando bicicletas para userId: "$userId"');
       _setState(BikeProviderState.loading);
       _userBikes = await _getUserBikesUseCase(userId);
+      print('🚴 BikeProvider: Se encontraron ${_userBikes.length} bicicletas');
+      if (_userBikes.isNotEmpty) {
+        print('🚴 Primera bici - ownerId: "${_userBikes.first.ownerId}"');
+      }
       _setState(BikeProviderState.loaded);
     } catch (e) {
+      print('❌ BikeProvider: Error cargando bicicletas: $e');
       _setState(BikeProviderState.error, error: e.toString());
     }
   }
@@ -140,39 +147,64 @@ class BikeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Valida el paso actual del formulario
-  bool validateCurrentStep() {
+  /// Valida el paso actual del formulario y devuelve el mensaje de error si falla
+  String? validateCurrentStepWithMessage() {
     switch (_currentStep) {
       case 0: // Datos básicos
+        if (_registrationData['brand']?.toString().trim().isEmpty ?? true) {
+          return 'Falta ingresar la marca de la bicicleta';
+        }
+        if (_registrationData['model']?.toString().trim().isEmpty ?? true) {
+          return 'Falta ingresar el modelo de la bicicleta';
+        }
+
         final year = _registrationData['year'];
         final currentYear = DateTime.now().year;
+        if (year == null || year is! int) {
+          return 'Falta seleccionar el año de la bicicleta';
+        }
+        if (year < 1900 || year > currentYear + 1) {
+          return 'El año debe estar entre 1900 y ${currentYear + 1}';
+        }
 
-        final isYearValid =
-            year != null &&
-            year is int &&
-            year >= 1900 &&
-            year <= currentYear + 1;
+        if (_registrationData['color']?.toString().trim().isEmpty ?? true) {
+          return 'Falta ingresar el color de la bicicleta';
+        }
+        if (_registrationData['size']?.toString().trim().isEmpty ?? true) {
+          return 'Falta ingresar la talla de la bicicleta';
+        }
+        if (_registrationData['type'] == null) {
+          return 'Falta seleccionar el tipo de bicicleta';
+        }
+        if (_registrationData['frameSerial']?.toString().trim().isEmpty ??
+            true) {
+          return 'Falta ingresar el número de serie del cuadro';
+        }
+        if (_registrationData['city']?.toString().trim().isEmpty ?? true) {
+          return 'Falta ingresar la ciudad';
+        }
+        return null; // Todos los campos están completos
 
-        return _registrationData['brand']?.toString().trim().isNotEmpty ==
-                true &&
-            _registrationData['model']?.toString().trim().isNotEmpty == true &&
-            isYearValid &&
-            _registrationData['color']?.toString().trim().isNotEmpty == true &&
-            _registrationData['size']?.toString().trim().isNotEmpty == true &&
-            _registrationData['type'] != null &&
-            _registrationData['frameSerial']?.toString().trim().isNotEmpty ==
-                true &&
-            _registrationData['city']?.toString().trim().isNotEmpty == true;
       case 1: // Fotos
-        return _registrationData['mainPhoto']?.toString().trim().isNotEmpty ==
-            true;
+        if (_registrationData['mainPhoto']?.toString().trim().isEmpty ?? true) {
+          return 'Falta agregar la foto principal de la bicicleta';
+        }
+        return null;
+
       case 2: // Propiedad/Compra (opcional)
-        return true; // Los campos de este paso son opcionales
+        return null; // Los campos de este paso son opcionales
+
       case 3: // Revisión y confirmación
-        return true;
+        return null;
+
       default:
-        return false;
+        return 'Paso inválido';
     }
+  }
+
+  /// Valida el paso actual del formulario (versión booleana)
+  bool validateCurrentStep() {
+    return validateCurrentStepWithMessage() == null;
   }
 
   /// Registra la bicicleta con los datos del formulario
@@ -405,5 +437,27 @@ class BikeProvider extends ChangeNotifier {
           bike.color.toLowerCase().contains(lowercaseQuery) ||
           bike.frameSerial.toLowerCase().contains(lowercaseQuery);
     }).toList();
+  }
+
+  /// MÉTODO TEMPORAL: Corrige bicicletas con ownerId placeholder
+  Future<int> fixPlaceholderBikes(String correctUserId) async {
+    try {
+      _setState(BikeProviderState.loading);
+
+      // Acceder directamente al repositorio
+      final repository = _getUserBikesUseCase.repository as BikeRepositoryImpl;
+      final updatedCount = await repository.fixPlaceholderOwnerIds(
+        correctUserId,
+      );
+
+      // Recargar las bicicletas después de la corrección
+      await loadUserBikes(correctUserId);
+
+      _setState(BikeProviderState.loaded);
+      return updatedCount;
+    } catch (e) {
+      _setState(BikeProviderState.error, error: e.toString());
+      return 0;
+    }
   }
 }

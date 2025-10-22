@@ -1,0 +1,208 @@
+import 'package:flutter/foundation.dart';
+import '../../domain/entities/attendee_entity.dart';
+import '../../domain/repositories/attendees_repository.dart';
+import '../../domain/repositories/notifications_repository.dart';
+import '../../domain/entities/notification_entity.dart';
+import '../../data/adapters/attendees_firestore_adapter.dart';
+import '../../../users/domain/repositories/user_repository.dart';
+
+/// Provider para gestionar asistentes a rodadas
+class AttendeesProvider extends ChangeNotifier {
+  final AttendeesRepository _repository;
+  final NotificationsRepository _notificationsRepository;
+  final AttendeesFirestoreAdapter _firestoreAdapter;
+  final UserRepository?
+  _userRepository; // ⚠️ Agregado para obtener datos completos del usuario
+  final String userId;
+  final String userName;
+  final String? userPhoto;
+
+  // Track de rodadas ya sincronizadas
+  final Set<String> _syncedRides = {};
+
+  AttendeesProvider({
+    required AttendeesRepository repository,
+    required NotificationsRepository notificationsRepository,
+    AttendeesFirestoreAdapter? firestoreAdapter,
+    UserRepository? userRepository, // ⚠️ Nuevo parámetro opcional
+    required this.userId,
+    required this.userName,
+    this.userPhoto,
+  }) : _repository = repository,
+       _notificationsRepository = notificationsRepository,
+       _firestoreAdapter = firestoreAdapter ?? AttendeesFirestoreAdapter(),
+       _userRepository = userRepository;
+
+  bool _isJoining = false;
+  bool _isLeaving = false;
+  bool _isUpdating = false;
+  String? _error;
+
+  bool get isJoining => _isJoining;
+  bool get isLeaving => _isLeaving;
+  bool get isUpdating => _isUpdating;
+  String? get error => _error;
+  bool get isBusy => _isJoining || _isLeaving || _isUpdating;
+
+  /// Unirse a una rodada
+  Future<void> joinRide({
+    required String rideId,
+    required String rideOwnerId,
+    String? fullName,
+    String? bikeType,
+    CyclingLevel? level,
+    AttendeeStatus status = AttendeeStatus.confirmed,
+  }) async {
+    if (_isJoining) return;
+
+    try {
+      _isJoining = true;
+      _error = null;
+      notifyListeners();
+
+      // ⚠️ Obtener datos completos del usuario de Firestore si está disponible
+      String finalUserName = userName;
+      String? finalUserPhoto = userPhoto;
+      String? finalFullName = fullName;
+
+      if (_userRepository != null) {
+        try {
+          final userEntity = await _userRepository.getUserById(userId);
+          finalUserName = userEntity.userName.isNotEmpty
+              ? userEntity.userName
+              : userName;
+          finalUserPhoto = userEntity.photo.isNotEmpty
+              ? userEntity.photo
+              : userPhoto;
+          finalFullName =
+              fullName ??
+              (userEntity.fullName.isNotEmpty ? userEntity.fullName : null);
+        } catch (e) {
+          // Si falla, usar los datos del provider
+          print('⚠️ No se pudieron obtener datos del usuario: $e');
+        }
+      }
+
+      await _repository.joinRide(
+        rideId: rideId,
+        userId: userId,
+        userName: finalUserName,
+        userPhoto: finalUserPhoto,
+        fullName: finalFullName,
+        bikeType: bikeType,
+        level: level,
+        status: status,
+      );
+
+      // Crear notificación solo si no es el propio usuario
+      if (rideOwnerId != userId) {
+        // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
+        final safeUserName = userName.trim().isNotEmpty
+            ? userName
+            : userId.split('_').last; // Fallback: usar parte del userId
+
+        await _notificationsRepository.createNotification(
+          userId: rideOwnerId,
+          type: NotificationType.rideJoin,
+          fromUserId: userId,
+          fromUserName: safeUserName,
+          fromUserPhoto: userPhoto,
+          targetType: NotificationTargetType.ride,
+          targetId: rideId,
+        );
+      }
+
+      _isJoining = false;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Error al unirse a la rodada: $e';
+      _isJoining = false;
+      notifyListeners();
+    }
+  }
+
+  /// Actualizar estado de asistencia
+  Future<void> updateStatus({
+    required String rideId,
+    required AttendeeStatus status,
+  }) async {
+    if (_isUpdating) return;
+
+    try {
+      _isUpdating = true;
+      _error = null;
+      notifyListeners();
+
+      await _repository.updateAttendanceStatus(
+        rideId: rideId,
+        userId: userId,
+        status: status,
+      );
+
+      _isUpdating = false;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Error al actualizar estado: $e';
+      _isUpdating = false;
+      notifyListeners();
+    }
+  }
+
+  /// Salir de una rodada
+  Future<void> leaveRide(String rideId) async {
+    if (_isLeaving) return;
+
+    try {
+      _isLeaving = true;
+      _error = null;
+      notifyListeners();
+
+      await _repository.leaveRide(rideId: rideId, userId: userId);
+
+      _isLeaving = false;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Error al salir de la rodada: $e';
+      _isLeaving = false;
+      notifyListeners();
+    }
+  }
+
+  /// Stream de asistentes
+  Stream<List<AttendeeEntity>> watchAttendees(String rideId) {
+    _ensureSync(rideId);
+    return _repository.watchAttendees(rideId);
+  }
+
+  /// Stream del contador de confirmados
+  Stream<int> watchConfirmedCount(String rideId) {
+    _ensureSync(rideId);
+    return _repository.watchConfirmedCount(rideId);
+  }
+
+  /// Stream para verificar si el usuario está asistiendo
+  Stream<bool> watchUserIsAttending(String rideId) {
+    _ensureSync(rideId);
+    return _repository.watchUserIsAttending(rideId, userId);
+  }
+
+  /// Stream del estado de asistencia del usuario
+  Stream<AttendeeStatus?> watchUserStatus(String rideId) {
+    _ensureSync(rideId);
+    return _repository.watchUserAttendanceStatus(rideId, userId);
+  }
+
+  /// Asegura que la sincronización esté activa para esta rodada
+  void _ensureSync(String rideId) {
+    if (!_syncedRides.contains(rideId)) {
+      _firestoreAdapter.startSyncForRide(rideId);
+      _syncedRides.add(rideId);
+    }
+  }
+
+  /// Limpia el error
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+}

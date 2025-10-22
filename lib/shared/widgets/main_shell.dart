@@ -3,11 +3,13 @@ import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'app_drawer.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class MainShell extends StatefulWidget {
   final Widget child;
@@ -32,6 +34,25 @@ class _MainShellState extends State<MainShell> {
           style: Styles.mainMenuTextBiux,
         ),
         actions: [
+          // Notificaciones con badge
+          Consumer<NotificationsProvider>(
+            builder: (context, provider, child) {
+              return IconButton(
+                icon: Badge(
+                  label: Text('${provider.unreadCount}'),
+                  isLabelVisible: provider.hasUnread,
+                  backgroundColor: Colors.red,
+                  child: const Icon(Icons.notifications),
+                ),
+                onPressed: () {
+                  context.push('/notifications');
+                },
+              );
+            },
+          ),
+
+          const SizedBox(width: 8),
+
           // Botón de acción según la pestaña actual
           _buildActionButton(),
         ],

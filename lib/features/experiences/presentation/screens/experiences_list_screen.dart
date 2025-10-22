@@ -7,6 +7,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -261,6 +262,25 @@ class _ExperienceCard extends StatelessWidget {
                 _buildMetadata(),
               ],
             ),
+          ),
+
+          // Divider
+          const Divider(height: 1),
+
+          // Acciones sociales (Likes y Comentarios)
+          PostSocialActions(
+            postId: experience.id,
+            postOwnerId: experience.user.id,
+            postPreview: experience.description.length > 50
+                ? experience.description.substring(0, 50)
+                : experience.description,
+          ),
+
+          // Vista previa de comentarios
+          PostCommentsPreview(
+            postId: experience.id,
+            postOwnerId: experience.user.id,
+            maxComments: 2,
           ),
         ],
       ),

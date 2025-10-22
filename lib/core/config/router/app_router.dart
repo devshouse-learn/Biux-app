@@ -45,6 +45,11 @@ import '../../../features/bikes/presentation/screens/bike_registration_screen.da
 import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
 import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
 
+// Social imports
+import '../../../features/social/presentation/screens/notifications_screen.dart';
+import '../../../features/social/presentation/screens/comments_screen.dart';
+import '../../../features/social/presentation/screens/attendees_screen.dart';
+
 // Shared imports
 import '../../../shared/widgets/main_shell.dart';
 import '../../../shared/widgets/splash_screen.dart';
@@ -379,6 +384,51 @@ final GoRouter _router = GoRouter(
             return PublicBikeInfoScreen(qrCode: qrCode);
           },
         ),
+
+        // ===== SOCIAL FEATURES =====
+
+        // Notificaciones
+        GoRoute(
+          path: '/notifications',
+          name: 'notifications',
+          builder: (context, state) => const NotificationsScreen(),
+        ),
+
+        // Comentarios de posts
+        GoRoute(
+          path: '/posts/:postId/comments',
+          name: 'postComments',
+          builder: (context, state) {
+            final postId = state.pathParameters['postId']!;
+            final ownerId = state.uri.queryParameters['ownerId']!;
+
+            return PostCommentsScreen(postId: postId, postOwnerId: ownerId);
+          },
+        ),
+
+        // Comentarios de rodadas
+        GoRoute(
+          path: '/rides/:rideId/comments',
+          name: 'rideComments',
+          builder: (context, state) {
+            final rideId = state.pathParameters['rideId']!;
+            final ownerId = state.uri.queryParameters['ownerId']!;
+
+            return RideCommentsScreen(rideId: rideId, rideOwnerId: ownerId);
+          },
+        ),
+
+        // Asistentes de rodadas
+        GoRoute(
+          path: '/rides/:rideId/attendees',
+          name: 'rideAttendees',
+          builder: (context, state) {
+            final rideId = state.pathParameters['rideId']!;
+            final ownerId = state.uri.queryParameters['ownerId']!;
+
+            return RideAttendeesScreen(rideId: rideId, rideOwnerId: ownerId);
+          },
+        ),
       ],
     ),
 
@@ -446,4 +496,13 @@ extension AppRouterExtension on BuildContext {
   void goToBikeRegistration() => go(AppRoutes.bikeRegistration);
   void goToBikeDetail(String bikeId) => go('/bikes/$bikeId');
   void goToPublicBikeInfo(String qrCode) => go('/bikes/public/$qrCode');
+
+  // Navegación social
+  void goToNotifications() => go('/notifications');
+  void goToPostComments(String postId, String ownerId) =>
+      go('/posts/$postId/comments?ownerId=$ownerId');
+  void goToRideComments(String rideId, String ownerId) =>
+      go('/rides/$rideId/comments?ownerId=$ownerId');
+  void goToRideAttendees(String rideId, String ownerId) =>
+      go('/rides/$rideId/attendees?ownerId=$ownerId');
 }

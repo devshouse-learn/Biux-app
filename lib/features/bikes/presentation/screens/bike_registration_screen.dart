@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
@@ -269,23 +270,12 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   Future<void> _handleNextStep(BikeProvider bikeProvider) async {
-    // Para el paso 0, validar también el formulario de Flutter
-    if (bikeProvider.currentStep == 0) {
-      // El step1 tiene su propio FormKey, así que usamos el provider
-      if (!bikeProvider.validateCurrentStep()) {
-        _showValidationError(
-          'Por favor completa todos los campos obligatorios. Verifica que el año esté entre 1900 y 2026.',
-        );
-        return;
-      }
-    } else {
-      // Validar el paso actual
-      if (!bikeProvider.validateCurrentStep()) {
-        _showValidationError(
-          'Por favor completa todos los campos obligatorios',
-        );
-        return;
-      }
+    // Validar el paso actual con mensaje específico
+    final validationError = bikeProvider.validateCurrentStepWithMessage();
+
+    if (validationError != null) {
+      _showValidationError(validationError);
+      return;
     }
 
     if (bikeProvider.currentStep < 3) {
@@ -310,8 +300,18 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   Future<void> _registerBike(BikeProvider bikeProvider) async {
-    // TODO: Obtener el userId del usuario autenticado
-    const userId = "current-user-id"; // Placeholder
+    // Obtener el userId del usuario autenticado
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes iniciar sesión para registrar una bicicleta'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     final bike = await bikeProvider.registerBike(userId);
 

@@ -38,17 +38,55 @@ class BikeRepositoryImpl implements BikeRepository {
   @override
   Future<List<BikeEntity>> getUserBikes(String userId) async {
     try {
+      print('📦 Repository: Buscando bicicletas con ownerId: "$userId"');
+
       final querySnapshot = await _firestore
           .collection(_bikesCollection)
           .where('ownerId', isEqualTo: userId)
           .orderBy('registrationDate', descending: true)
           .get();
 
+      print(
+        '📦 Repository: Query devolvió ${querySnapshot.docs.length} documentos',
+      );
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final firstDoc = querySnapshot.docs.first.data();
+        print('📦 Primer documento - ownerId: "${firstDoc['ownerId']}"');
+      }
+
+      // TEMPORAL: Verificar si hay bicis con ownerId "current-user-id"
+      final allBikesSnapshot = await _firestore
+          .collection(_bikesCollection)
+          .limit(20)
+          .get();
+
+      print('📦 Total de bicis en Firestore: ${allBikesSnapshot.docs.length}');
+
+      int placeholderCount = 0;
+      for (var doc in allBikesSnapshot.docs) {
+        final data = doc.data();
+        if (data['ownerId'] == 'current-user-id') {
+          placeholderCount++;
+          print(
+            '⚠️ Encontrada bici con placeholder - ID: ${doc.id}, Marca: ${data['brand']} ${data['model']}',
+          );
+        }
+      }
+
+      if (placeholderCount > 0) {
+        print(
+          '⚠️ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
+        );
+        print('💡 Estas bicis necesitan actualizar su ownerId a: "$userId"');
+      }
+
       return querySnapshot.docs
           .map((doc) => BikeModel.fromJson(doc.data()).toEntity())
           .toList();
     } catch (e) {
-      throw Exception('Error al obtener bicicletas: $e');
+      print('❌ Repository: Error obteniendo bicicletas: $e');
+      throw Exception('Error al obtener bicicletas del usuario: $e');
     }
   }
 
@@ -562,6 +600,35 @@ class BikeRepositoryImpl implements BikeRepository {
           .toList();
     } catch (e) {
       throw Exception('Error al buscar bicicletas: $e');
+    }
+  }
+
+  /// MÉTODO TEMPORAL: Corrige el ownerId de bicicletas con placeholder
+  Future<int> fixPlaceholderOwnerIds(String correctUserId) async {
+    try {
+      print('🔧 Iniciando corrección de ownerIds...');
+
+      final querySnapshot = await _firestore
+          .collection(_bikesCollection)
+          .where('ownerId', isEqualTo: 'current-user-id')
+          .get();
+
+      print(
+        '🔧 Encontradas ${querySnapshot.docs.length} bicis con placeholder',
+      );
+
+      int updatedCount = 0;
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.update({'ownerId': correctUserId});
+        updatedCount++;
+        print('✅ Actualizada bici ${doc.id} -> ownerId: "$correctUserId"');
+      }
+
+      print('🎉 Corrección completada: $updatedCount bicicletas actualizadas');
+      return updatedCount;
+    } catch (e) {
+      print('❌ Error corrigiendo ownerIds: $e');
+      throw Exception('Error al corregir ownerIds: $e');
     }
   }
 }

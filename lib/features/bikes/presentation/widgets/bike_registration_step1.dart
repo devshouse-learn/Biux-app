@@ -198,15 +198,20 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             TextFormFieldBiuxWidget(
               controller: _cityController,
               text: AppStrings.cityLabel,
+              keyboardType: TextInputType.text,
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'city',
-                  value,
+                  value.trim(),
                 );
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
+                  return 'Este campo es obligatorio';
+                }
+                // Validar que tenga al menos 2 caracteres
+                if (value.trim().length < 2) {
+                  return 'Ingresa un nombre de ciudad válido';
                 }
                 return null;
               },

@@ -4,6 +4,7 @@ import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/services/deep_link_service.dart';
+import 'package:biux/features/social/presentation/widgets/ride_social_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -154,6 +155,17 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     content: ride.recommendations,
                     icon: Icons.lightbulb_outline,
                   ),
+                  SizedBox(height: 24),
+
+                  // Acciones sociales (Asistentes y Comentarios)
+                  RideSocialActions(
+                    rideId: ride.id,
+                    rideOwnerId: ride.createdBy,
+                  ),
+                  SizedBox(height: 16),
+
+                  // Botón para unirse a la rodada
+                  RideJoinButton(rideId: ride.id, rideOwnerId: ride.createdBy),
                   SizedBox(height: 24),
 
                   // Participantes

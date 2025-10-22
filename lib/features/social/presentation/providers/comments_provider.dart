@@ -1,0 +1,311 @@
+import 'package:flutter/foundation.dart';
+import '../../domain/entities/comment_entity.dart';
+import '../../domain/repositories/comments_repository.dart';
+import '../../domain/repositories/notifications_repository.dart';
+import '../../domain/entities/notification_entity.dart';
+
+/// Provider para gestionar comentarios
+class CommentsProvider extends ChangeNotifier {
+  final CommentsRepository _repository;
+  final NotificationsRepository _notificationsRepository;
+  final String userId;
+  final String userName;
+  final String? userPhoto;
+
+  CommentsProvider({
+    required CommentsRepository repository,
+    required NotificationsRepository notificationsRepository,
+    required this.userId,
+    required this.userName,
+    this.userPhoto,
+  }) : _repository = repository,
+       _notificationsRepository = notificationsRepository;
+
+  bool _isPosting = false;
+  bool _isEditing = false;
+  bool _isDeleting = false;
+  String? _error;
+
+  bool get isPosting => _isPosting;
+  bool get isEditing => _isEditing;
+  bool get isDeleting => _isDeleting;
+  String? get error => _error;
+  bool get isBusy => _isPosting || _isEditing || _isDeleting;
+
+  /// Publica un comentario en un post
+  Future<String?> commentOnPost({
+    required String postId,
+    required String postOwnerId,
+    required String text,
+    String? parentCommentId,
+    String? parentCommentOwnerId,
+  }) async {
+    return _createComment(
+      type: CommentableType.post,
+      targetId: postId,
+      targetOwnerId: postOwnerId,
+      text: text,
+      parentCommentId: parentCommentId,
+      parentCommentOwnerId: parentCommentOwnerId,
+    );
+  }
+
+  /// Publica un comentario en una rodada
+  Future<String?> commentOnRide({
+    required String rideId,
+    required String rideOwnerId,
+    required String text,
+    String? parentCommentId,
+    String? parentCommentOwnerId,
+  }) async {
+    return _createComment(
+      type: CommentableType.ride,
+      targetId: rideId,
+      targetOwnerId: rideOwnerId,
+      text: text,
+      parentCommentId: parentCommentId,
+      parentCommentOwnerId: parentCommentOwnerId,
+    );
+  }
+
+  /// Crea un comentario (interno)
+  Future<String?> _createComment({
+    required CommentableType type,
+    required String targetId,
+    required String targetOwnerId,
+    required String text,
+    String? parentCommentId,
+    String? parentCommentOwnerId,
+  }) async {
+    if (_isPosting) return null;
+
+    // Validar longitud
+    if (text.trim().isEmpty) {
+      _error = 'El comentario no puede estar vacío';
+      notifyListeners();
+      return null;
+    }
+
+    if (text.length > 500) {
+      _error = 'El comentario no puede tener más de 500 caracteres';
+      notifyListeners();
+      return null;
+    }
+
+    try {
+      _isPosting = true;
+      _error = null;
+      notifyListeners();
+
+      // Debug: Log antes de crear comentario
+      debugPrint('📝 Intentando crear comentario...');
+      debugPrint('   Tipo: $type');
+      debugPrint('   TargetId: $targetId');
+      debugPrint('   UserId: $userId');
+
+      final commentId = await _repository.createComment(
+        type: type,
+        targetId: targetId,
+        userId: userId,
+        userName: userName,
+        userPhoto: userPhoto,
+        text: text.trim(),
+        parentCommentId: parentCommentId,
+      );
+
+      debugPrint('✅ Comentario creado: $commentId');
+
+      // Crear notificación
+      final isReply = parentCommentId != null;
+      final recipientId = isReply ? parentCommentOwnerId! : targetOwnerId;
+
+      // Solo notificar si no es el propio usuario
+      if (recipientId != userId) {
+        // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
+        final safeUserName = userName.trim().isNotEmpty
+            ? userName
+            : userId.split('_').last; // Fallback: usar parte del userId
+
+        await _notificationsRepository.createNotification(
+          userId: recipientId,
+          type: isReply
+              ? NotificationType.replyComment
+              : (type == CommentableType.post
+                    ? NotificationType.commentPost
+                    : NotificationType.commentRide),
+          fromUserId: userId,
+          fromUserName: safeUserName,
+          fromUserPhoto: userPhoto,
+          targetType: type == CommentableType.post
+              ? NotificationTargetType.post
+              : NotificationTargetType.ride,
+          targetId: targetId,
+          targetPreview: text.length > 50
+              ? '${text.substring(0, 50)}...'
+              : text,
+        );
+      }
+
+      // Detectar menciones y notificar
+      await _notifyMentions(text, targetId, type);
+
+      _isPosting = false;
+      notifyListeners();
+
+      return commentId;
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error al crear comentario: $e');
+      debugPrint('Stack trace: $stackTrace');
+
+      // Detectar tipo de error específico
+      if (e.toString().contains('MissingPluginException')) {
+        _error =
+            'Firebase DB no cargado. Reinicia la app (flutter run completo, NO hot reload)';
+      } else if (e.toString().contains('permission')) {
+        _error = 'Sin permisos. Verifica reglas de Firebase';
+      } else if (e.toString().contains('network')) {
+        _error = 'Sin conexión a internet';
+      } else {
+        _error = 'Error al publicar comentario: $e';
+      }
+
+      _isPosting = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  /// Edita un comentario
+  Future<void> editComment({
+    required CommentableType type,
+    required String targetId,
+    required String commentId,
+    required String newText,
+  }) async {
+    if (_isEditing) return;
+
+    if (newText.trim().isEmpty) {
+      _error = 'El comentario no puede estar vacío';
+      notifyListeners();
+      return;
+    }
+
+    if (newText.length > 500) {
+      _error = 'El comentario no puede tener más de 500 caracteres';
+      notifyListeners();
+      return;
+    }
+
+    try {
+      _isEditing = true;
+      _error = null;
+      notifyListeners();
+
+      await _repository.updateComment(
+        type: type,
+        targetId: targetId,
+        commentId: commentId,
+        userId: userId,
+        newText: newText.trim(),
+      );
+
+      _isEditing = false;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Error al editar comentario: $e';
+      _isEditing = false;
+      notifyListeners();
+    }
+  }
+
+  /// Elimina un comentario
+  Future<void> deleteComment({
+    required CommentableType type,
+    required String targetId,
+    required String commentId,
+  }) async {
+    if (_isDeleting) return;
+
+    try {
+      _isDeleting = true;
+      _error = null;
+      notifyListeners();
+
+      await _repository.deleteComment(
+        type: type,
+        targetId: targetId,
+        commentId: commentId,
+        userId: userId,
+      );
+
+      _isDeleting = false;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Error al eliminar comentario: $e';
+      _isDeleting = false;
+      notifyListeners();
+    }
+  }
+
+  /// Notifica a usuarios mencionados
+  Future<void> _notifyMentions(
+    String text,
+    String targetId,
+    CommentableType type,
+  ) async {
+    final regex = RegExp(r'@(\w+)');
+    final matches = regex.allMatches(text);
+
+    for (final match in matches) {
+      final mentionedUsername = match.group(1);
+      if (mentionedUsername == null || mentionedUsername == userName) continue;
+
+      // Aquí necesitarías obtener el userId del username mencionado
+      // Por ahora lo dejamos como comentario para implementar después
+      // final mentionedUserId = await _getUserIdByUsername(mentionedUsername);
+
+      // if (mentionedUserId != null) {
+      //   await _notificationsRepository.createNotification(
+      //     userId: mentionedUserId,
+      //     type: NotificationType.mention,
+      //     fromUserId: userId,
+      //     fromUserName: userName,
+      //     fromUserPhoto: userPhoto,
+      //     targetType: type == CommentableType.post
+      //         ? NotificationTargetType.post
+      //         : NotificationTargetType.ride,
+      //     targetId: targetId,
+      //     targetPreview: text.length > 50 ? '${text.substring(0, 50)}...' : text,
+      //   );
+      // }
+    }
+  }
+
+  /// Stream de comentarios
+  Stream<List<CommentEntity>> watchComments(
+    CommentableType type,
+    String targetId,
+  ) {
+    return _repository.watchComments(type, targetId);
+  }
+
+  /// Stream de respuestas
+  Stream<List<CommentEntity>> watchReplies(
+    CommentableType type,
+    String targetId,
+    String parentCommentId,
+  ) {
+    return _repository.watchReplies(type, targetId, parentCommentId);
+  }
+
+  /// Stream del contador de comentarios
+  Stream<int> watchCommentsCount(CommentableType type, String targetId) {
+    return _repository.watchCommentsCount(type, targetId);
+  }
+
+  /// Limpia el error
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+}

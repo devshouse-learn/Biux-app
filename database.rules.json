@@ -1,0 +1,295 @@
+{
+  "rules": {
+    "notifications": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        "$notificationId": {
+          ".write": "auth != null",
+          ".validate": "newData.hasChildren(['id', 'type', 'fromUserId', 'fromUserName', 'message', 'isRead', 'createdAt']) && newData.child('id').val() === $notificationId && newData.child('type').isString() && newData.child('fromUserId').isString() && newData.child('fromUserName').isString() && newData.child('message').isString() && newData.child('isRead').isBoolean() && newData.child('createdAt').isNumber()",
+          "id": {
+            ".validate": "newData.val() === $notificationId"
+          },
+          "type": {
+            ".validate": "newData.isString() && (newData.val() === 'like_post' || newData.val() === 'like_comment' || newData.val() === 'like_story' || newData.val() === 'comment_post' || newData.val() === 'comment_ride' || newData.val() === 'reply_comment' || newData.val() === 'ride_join' || newData.val() === 'mention' || newData.val() === 'follow')"
+          },
+          "fromUserId": {
+            ".validate": "newData.isString() && newData.val().length > 0"
+          },
+          "fromUserName": {
+            ".validate": "newData.isString() && newData.val().length > 0"
+          },
+          "fromUserPhoto": {
+            ".validate": "!newData.exists() || newData.isString()"
+          },
+          "targetType": {
+            ".validate": "!newData.exists() || newData.isString()"
+          },
+          "targetId": {
+            ".validate": "!newData.exists() || newData.isString()"
+          },
+          "targetPreview": {
+            ".validate": "!newData.exists() || newData.isString()"
+          },
+          "message": {
+            ".validate": "newData.isString() && newData.val().length > 0"
+          },
+          "isRead": {
+            ".validate": "newData.isBoolean() && ((!data.exists() && newData.val() === false) || (data.exists() && auth.uid === $userId))"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber() && newData.val() <= now"
+          },
+          "metadata": {
+            ".validate": "!newData.exists() || newData.hasChildren()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      },
+      "unread": {
+        "$userId": {
+          ".read": "auth != null",
+          ".write": "auth != null",
+          "count": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "lastUpdated": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "likes": {
+      "posts": {
+        "$postId": {
+          ".read": "auth != null",
+          "$userId": {
+            ".write": "auth != null && auth.uid === $userId",
+            ".validate": "newData.hasChildren(['userId', 'timestamp']) && newData.child('userId').val() === $userId",
+            "userId": {
+              ".validate": "newData.val() === $userId"
+            },
+            "userName": {
+              ".validate": "newData.isString()"
+            },
+            "userPhoto": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "timestamp": {
+              ".validate": "newData.isNumber() && newData.val() <= now"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "comments": {
+        "$commentId": {
+          ".read": "auth != null",
+          "$userId": {
+            ".write": "auth != null && auth.uid === $userId",
+            ".validate": "newData.hasChildren(['userId', 'timestamp']) && newData.child('userId').val() === $userId",
+            "userId": {
+              ".validate": "newData.val() === $userId"
+            },
+            "userName": {
+              ".validate": "newData.isString()"
+            },
+            "userPhoto": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "timestamp": {
+              ".validate": "newData.isNumber() && newData.val() <= now"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "stories": {
+        "$storyId": {
+          ".read": "auth != null",
+          "$userId": {
+            ".write": "auth != null && auth.uid === $userId",
+            ".validate": "newData.hasChildren(['userId', 'timestamp', 'expiresAt']) && newData.child('userId').val() === $userId && newData.child('expiresAt').val() <= newData.child('timestamp').val() + 86400000",
+            "userId": {
+              ".validate": "newData.val() === $userId"
+            },
+            "userName": {
+              ".validate": "newData.isString()"
+            },
+            "userPhoto": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "timestamp": {
+              ".validate": "newData.isNumber() && newData.val() <= now"
+            },
+            "expiresAt": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    },
+    "comments": {
+      "posts": {
+        "$postId": {
+          ".read": "auth != null",
+          "$commentId": {
+            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid)",
+            ".validate": "newData.hasChildren(['id', 'userId', 'userName', 'text', 'createdAt']) && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
+            "id": {
+              ".validate": "newData.val() === $commentId"
+            },
+            "userId": {
+              ".validate": "newData.isString() && (!data.exists() && newData.val() === auth.uid || data.exists() && newData.val() === data.val())"
+            },
+            "userName": {
+              ".validate": "newData.isString()"
+            },
+            "userPhoto": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "text": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber() && (!data.exists() && newData.val() <= now || data.exists() && newData.val() === data.val())"
+            },
+            "updatedAt": {
+              ".validate": "!newData.exists() || newData.isNumber()"
+            },
+            "likesCount": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+            },
+            "repliesCount": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+            },
+            "isEdited": {
+              ".validate": "!newData.exists() || newData.isBoolean()"
+            },
+            "isDeleted": {
+              ".validate": "!newData.exists() || newData.isBoolean()"
+            },
+            "parentCommentId": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "mentions": {
+              ".validate": "!newData.exists() || newData.hasChildren()",
+              "$mentionIndex": {
+                ".validate": "newData.isString()"
+              }
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      },
+      "rides": {
+        "$rideId": {
+          ".read": "auth != null",
+          "$commentId": {
+            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid)",
+            ".validate": "newData.hasChildren(['id', 'userId', 'userName', 'text', 'createdAt']) && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
+            "id": {
+              ".validate": "newData.val() === $commentId"
+            },
+            "userId": {
+              ".validate": "newData.isString() && (!data.exists() && newData.val() === auth.uid || data.exists() && newData.val() === data.val())"
+            },
+            "userName": {
+              ".validate": "newData.isString()"
+            },
+            "userPhoto": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "text": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber() && (!data.exists() && newData.val() <= now || data.exists() && newData.val() === data.val())"
+            },
+            "updatedAt": {
+              ".validate": "!newData.exists() || newData.isNumber()"
+            },
+            "likesCount": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+            },
+            "repliesCount": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+            },
+            "isEdited": {
+              ".validate": "!newData.exists() || newData.isBoolean()"
+            },
+            "isDeleted": {
+              ".validate": "!newData.exists() || newData.isBoolean()"
+            },
+            "parentCommentId": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "mentions": {
+              ".validate": "!newData.exists() || newData.hasChildren()",
+              "$mentionIndex": {
+                ".validate": "newData.isString()"
+              }
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    },
+    "rides": {
+      "attendees": {
+        "$rideId": {
+          ".read": "auth != null",
+          "$userId": {
+            ".write": "auth != null && auth.uid === $userId",
+            ".validate": "newData.hasChildren(['userId', 'userName', 'joinedAt', 'status']) && newData.child('userId').val() === $userId",
+            "userId": {
+              ".validate": "newData.val() === $userId"
+            },
+            "userName": {
+              ".validate": "newData.isString()"
+            },
+            "userPhoto": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "fullName": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "bikeType": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "level": {
+              ".validate": "!newData.exists() || (newData.isString() && (newData.val() === 'beginner' || newData.val() === 'intermediate' || newData.val() === 'advanced'))"
+            },
+            "joinedAt": {
+              ".validate": "newData.isNumber() && newData.val() <= now"
+            },
+            "status": {
+              ".validate": "newData.isString() && (newData.val() === 'confirmed' || newData.val() === 'maybe' || newData.val() === 'cancelled')"
+            },
+            "canEdit": {
+              ".validate": "!newData.exists() || newData.isBoolean()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

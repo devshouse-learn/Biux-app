@@ -4,6 +4,7 @@ import 'package:biux/features/experiences/domain/entities/experience_entity.dart
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/presentation/widgets/video_player_widget.dart';
+import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story
 /// Soporta reproducción automática de videos e imágenes con duración
@@ -221,6 +222,16 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 right: 10,
                 child: _buildDescription(),
               ),
+
+            // Botón de like para la historia
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 100,
+              left: 20,
+              child: StoryLikeButton(
+                storyId: widget.experience.id,
+                storyOwnerId: widget.experience.user.id,
+              ),
+            ),
 
             // Botón de cerrar
             Positioned(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
@@ -28,9 +29,22 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
 
   void _loadUserBikes() {
     final bikeProvider = context.read<BikeProvider>();
-    // TODO: Obtener el userId del usuario autenticado
-    const userId = "current-user-id"; // Placeholder
-    bikeProvider.loadUserBikes(userId);
+    // Obtener el userId del usuario autenticado
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    print('🔑 MyBikesScreen: Usuario autenticado - userId: "$userId"');
+
+    if (userId != null) {
+      bikeProvider.loadUserBikes(userId);
+    } else {
+      print('❌ MyBikesScreen: No hay usuario autenticado');
+      // Si no hay usuario autenticado, mostrar error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes iniciar sesión para ver tus bicicletas'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

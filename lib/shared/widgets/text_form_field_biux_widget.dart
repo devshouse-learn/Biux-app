@@ -66,66 +66,42 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
           controller: controller,
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
-            errorStyle: TextStyle(fontSize: 1, height: 0),
+            errorStyle: TextStyle(
+              fontSize: 12,
+              height: 1.0,
+              color: ColorTokens.error50,
+            ),
+            errorMaxLines: 2,
             fillColor: ColorTokens.neutral100,
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: ColorTokens.neutral60,
-                width: 0.5,
-              ),
+              borderSide: BorderSide(color: ColorTokens.neutral60, width: 0.5),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             disabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: ColorTokens.neutral60,
-                width: 0.5,
-              ),
+              borderSide: BorderSide(color: ColorTokens.neutral60, width: 0.5),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             filled: true,
-            contentPadding: EdgeInsets.fromLTRB(
-              10.0,
-              15.0,
-              20.0,
-              15.0,
-            ),
+            contentPadding: EdgeInsets.fromLTRB(10.0, 15.0, 20.0, 15.0),
             hintText: text,
             prefixIcon: prefixIcon,
             prefixIconConstraints: prefixIcon != null
-                ? BoxConstraints(
-                    minWidth: 40,
-                    minHeight: 40,
-                  )
+                ? BoxConstraints(minWidth: 40, minHeight: 40)
                 : BoxConstraints(),
             errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: ColorTokens.error50,
-                width: 0.5,
-              ),
+              borderSide: BorderSide(color: ColorTokens.error50, width: 0.5),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: ColorTokens.error50,
-                width: 0.5,
-              ),
+              borderSide: BorderSide(color: ColorTokens.error50, width: 0.5),
               borderRadius: BorderRadius.circular(radiusCircular),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: ColorTokens.neutral60,
-                width: 0.5,
-              ),
-              borderRadius: BorderRadius.all(
-                Radius.circular(radiusCircular),
-              ),
+              borderSide: BorderSide(color: ColorTokens.neutral60, width: 0.5),
+              borderRadius: BorderRadius.all(Radius.circular(radiusCircular)),
             ),
-            suffixIcon: onFieldSubmitted != null
-                ? addButton
-                : SizedBox(),
-            hintStyle: Styles.sizedBoxHintStyle.copyWith(
-              fontSize: fontSize,
-            ),
+            suffixIcon: onFieldSubmitted != null ? addButton : SizedBox(),
+            hintStyle: Styles.sizedBoxHintStyle.copyWith(fontSize: fontSize),
           ),
           onChanged: onChanged,
           validator: validator,
@@ -137,5 +113,3 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
     );
   }
 }
-
-

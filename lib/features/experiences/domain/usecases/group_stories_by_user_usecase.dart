@@ -41,8 +41,8 @@ class GroupStoriesByUserUseCase {
     for (final entry in groupedByUser.entries) {
       final userStories = entry.value;
 
-      // Ordenar historias del usuario por fecha (más reciente primero)
-      userStories.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      // Ordenar historias del usuario por fecha (más antiguas primero para orden cronológico)
+      userStories.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
       // Obtener IDs de las historias para verificar visualización
       final storyIds = userStories.map((s) => s.id).toList();
@@ -58,8 +58,8 @@ class GroupStoriesByUserUseCase {
 
       final hasUnseenStories = unseenCount > 0;
 
-      // Obtener la hora de la historia más reciente
-      final latestStoryTime = userStories.first.createdAt;
+      // Obtener la hora de la historia más reciente (ahora es la última porque ordenamos cronológicamente)
+      final latestStoryTime = userStories.last.createdAt;
 
       // Crear el grupo
       final group = UserStoryGroupEntity(
