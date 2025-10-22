@@ -229,6 +229,78 @@ class OptimizedStorageService {
     }
   }
 
+  /// Sube imagen de bicicleta con compresión optimizada
+  static Future<String?> uploadBikeImage({
+    required String userId,
+    required String bikeId,
+    required File imageFile,
+    required String imageType, // 'main' | 'serial' | 'additional' | 'invoice'
+    VoidCallback? onProgress,
+  }) async {
+    try {
+      // Comprimir según el tipo de imagen
+      File? compressedFile;
+      if (imageType == 'main') {
+        // Foto principal: alta calidad
+        compressedFile = await ImageCompressionService.compressImageFile(
+          imageFile,
+        );
+      } else if (imageType == 'serial') {
+        // Foto del número de serie: priorizar nitidez
+        compressedFile = await ImageCompressionService.compressImageFile(
+          imageFile,
+        );
+      } else if (imageType == 'invoice') {
+        // Factura: priorizar legibilidad
+        compressedFile = await ImageCompressionService.compressImageFile(
+          imageFile,
+        );
+      } else {
+        // Fotos adicionales: compresión estándar
+        compressedFile = await ImageCompressionService.compressImageFile(
+          imageFile,
+        );
+      }
+
+      if (compressedFile == null) return null;
+
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = '${imageType}_${timestamp}.jpg';
+      final ref = _storage.ref().child('bikes/$userId/$bikeId/$fileName');
+
+      final metadata = SettableMetadata(
+        contentType: 'image/jpeg',
+        cacheControl:
+            'public, max-age=31536000', // 1 año de caché (datos permanentes)
+        customMetadata: {
+          'compressed': 'true',
+          'userId': userId,
+          'bikeId': bikeId,
+          'imageType': imageType,
+          'uploadedAt': DateTime.now().toIso8601String(),
+        },
+      );
+
+      final uploadTask = ref.putFile(compressedFile, metadata);
+
+      // Monitorear progreso si se proporciona callback
+      if (onProgress != null) {
+        uploadTask.snapshotEvents.listen((snapshot) {
+          onProgress();
+        });
+      }
+
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      await _cleanupTempFiles([compressedFile]);
+      return _optimizeCdnUrl(downloadUrl);
+    } catch (e) {
+      debugPrint('Error subiendo imagen de bicicleta: $e');
+      return null;
+    }
+  }
+
   /// Optimiza URL para usar CDN de Firebase de manera más eficiente
   static String _optimizeCdnUrl(String originalUrl) {
     // Firebase Storage automáticamente usa CDN, pero podemos optimizar

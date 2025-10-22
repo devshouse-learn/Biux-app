@@ -576,9 +576,9 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
       // Avanzar al siguiente usuario
       setState(() {
         _currentGroupIndex++;
-        _currentStoryIndex = 0;
       });
-      await _initialize(); // Inicializar desde primera no vista del nuevo usuario
+      // Inicializar desde la primera historia no vista del nuevo usuario
+      await _initialize();
     } else {
       // No hay más historias, cerrar
       widget.onClose();

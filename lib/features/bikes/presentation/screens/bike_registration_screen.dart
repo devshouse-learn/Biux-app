@@ -315,6 +315,8 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
 
     final bike = await bikeProvider.registerBike(userId);
 
+    if (!mounted) return;
+
     if (bike != null) {
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
@@ -325,8 +327,13 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
         ),
       );
 
-      // Navegar a la ficha de la bicicleta registrada
-      context.go('/bikes/${bike.id}');
+      // Reiniciar formulario y navegar después del frame actual
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          bikeProvider.resetRegistrationForm();
+          context.go('/bikes/${bike.id}');
+        }
+      });
     } else {
       // Mostrar error
       ScaffoldMessenger.of(context).showSnackBar(

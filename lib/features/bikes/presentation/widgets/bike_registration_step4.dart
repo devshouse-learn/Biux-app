@@ -5,6 +5,7 @@ import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
+import 'package:biux/shared/widgets/photo_viewer.dart';
 
 /// Cuarto paso del registro: Generar QR y finalizar
 class BikeRegistrationStep4 extends StatelessWidget {
@@ -63,7 +64,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Resumen de la bicicleta
-              _buildBikeSummary(registrationData),
+              _buildBikeSummary(context, registrationData),
 
               const SizedBox(height: 24),
 
@@ -97,7 +98,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
     );
   }
 
-  Widget _buildBikeSummary(Map<String, dynamic> data) {
+  Widget _buildBikeSummary(BuildContext context, Map<String, dynamic> data) {
     final bikeType = data['type'] as BikeType?;
 
     return Container(
@@ -137,44 +138,10 @@ class BikeRegistrationStep4 extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Foto principal si existe
-          if (data['mainPhoto'] != null)
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: (data['mainPhoto'] as String).startsWith('http')
-                    ? Image.network(
-                        data['mainPhoto'],
-                        height: 120,
-                        width: 120,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 120,
-                            width: 120,
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.image),
-                          );
-                        },
-                      )
-                    : Image.file(
-                        File(data['mainPhoto']),
-                        height: 120,
-                        width: 120,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 120,
-                            width: 120,
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.image),
-                          );
-                        },
-                      ),
-              ),
-            ),
+          // Fotos
+          _buildPhotosSection(context, data),
 
-          if (data['mainPhoto'] != null) const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Información básica
           _buildInfoRow('Marca:', data['brand'] ?? ''),
@@ -218,6 +185,127 @@ class BikeRegistrationStep4 extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPhotosSection(BuildContext context, Map<String, dynamic> data) {
+    final mainPhoto = data['mainPhoto'] as String?;
+    final serialPhoto = data['serialPhoto'] as String?;
+    final additionalPhotos = data['additionalPhotos'] as List<dynamic>?;
+    final invoice = data['invoice'] as String?;
+
+    // Lista de todas las fotos disponibles
+    final photos = <Map<String, String>>[];
+
+    if (mainPhoto != null) {
+      photos.add({'path': mainPhoto, 'label': 'Principal'});
+    }
+    if (serialPhoto != null) {
+      photos.add({'path': serialPhoto, 'label': 'Nº Serie'});
+    }
+    if (additionalPhotos != null && additionalPhotos.isNotEmpty) {
+      for (int i = 0; i < additionalPhotos.length; i++) {
+        photos.add({'path': additionalPhotos[i], 'label': 'Foto ${i + 1}'});
+      }
+    }
+    if (invoice != null) {
+      photos.add({'path': invoice, 'label': 'Factura'});
+    }
+
+    if (photos.isEmpty) return const SizedBox.shrink();
+
+    // Extraer solo las rutas para el visor
+    final photoPaths = photos.map((p) => p['path']!).toList();
+    final photoLabels = photos.map((p) => p['label']!).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Fotos',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: ColorTokens.primary30,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(Icons.zoom_in, size: 16, color: ColorTokens.neutral60),
+            const SizedBox(width: 4),
+            Text(
+              'Toca cualquier foto para ampliar',
+              style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: photos.asMap().entries.map((entry) {
+            final index = entry.key;
+            final photo = entry.value;
+            return GestureDetector(
+              onTap: () {
+                context.openPhotoViewer(
+                  photoUrls: photoPaths,
+                  initialIndex: index,
+                  photoLabels: photoLabels,
+                );
+              },
+              child: _buildPhotoCard(photo['path']!, photo['label']!),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhotoCard(String photoPath, String label) {
+    final isUrl = photoPath.startsWith('http');
+
+    return Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: isUrl
+              ? Image.network(
+                  photoPath,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.image, color: Colors.grey),
+                    );
+                  },
+                )
+              : Image.file(
+                  File(photoPath),
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.image, color: Colors.grey),
+                    );
+                  },
+                ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: ColorTokens.neutral70),
+        ),
+      ],
     );
   }
 }

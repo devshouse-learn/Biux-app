@@ -6,6 +6,7 @@ import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
+import 'package:biux/shared/widgets/photo_viewer.dart';
 
 /// Pantalla de detalle de bicicleta con todas las acciones disponibles
 class BikeDetailScreen extends StatefulWidget {
@@ -80,6 +81,21 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildAppBar(BikeEntity bike) {
+    final photos = <String>[
+      bike.mainPhoto,
+      if (bike.serialPhoto != null) bike.serialPhoto!,
+      ...(bike.additionalPhotos ?? []),
+    ];
+
+    final photoLabels = <String>[
+      'Foto Principal',
+      if (bike.serialPhoto != null) 'Número de Serie',
+      ...List.generate(
+        (bike.additionalPhotos ?? []).length,
+        (i) => 'Foto Adicional ${i + 1}',
+      ),
+    ];
+
     return SliverAppBar(
       expandedHeight: 300,
       floating: false,
@@ -101,20 +117,59 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             ],
           ),
         ),
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            OptimizedNetworkImage(imageUrl: bike.mainPhoto, fit: BoxFit.cover),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.5)],
+        background: GestureDetector(
+          onTap: () {
+            context.openPhotoViewer(
+              photoUrls: photos,
+              initialIndex: 0,
+              photoLabels: photoLabels,
+            );
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              OptimizedNetworkImage(
+                imageUrl: bike.mainPhoto,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.5)],
+                  ),
                 ),
               ),
-            ),
-          ],
+              // Indicador de zoom en la esquina
+              Positioned(
+                bottom: 16,
+                right: 16,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.zoom_in, size: 20, color: Colors.white),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Toca para ampliar',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -297,10 +352,19 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildPhotosSection(BikeEntity bike) {
-    final photos = [
+    final photos = <String>[
       bike.mainPhoto,
       if (bike.serialPhoto != null) bike.serialPhoto!,
       ...(bike.additionalPhotos ?? []),
+    ];
+
+    final photoLabels = <String>[
+      'Foto Principal',
+      if (bike.serialPhoto != null) 'Número de Serie',
+      ...List.generate(
+        (bike.additionalPhotos ?? []).length,
+        (i) => 'Foto Adicional ${i + 1}',
+      ),
     ];
 
     if (photos.length <= 1) return const SizedBox.shrink();
@@ -310,13 +374,24 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Fotos',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: ColorTokens.primary30,
-            ),
+          Row(
+            children: [
+              const Text(
+                'Fotos',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: ColorTokens.primary30,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.zoom_in, size: 18, color: ColorTokens.neutral60),
+              const SizedBox(width: 4),
+              Text(
+                'Toca para ver en pantalla completa',
+                style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -327,13 +402,43 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               itemBuilder: (context, index) {
                 return Container(
                   margin: const EdgeInsets.only(right: 12),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: OptimizedNetworkImage(
-                      imageUrl: photos[index],
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
+                  child: GestureDetector(
+                    onTap: () {
+                      context.openPhotoViewer(
+                        photoUrls: photos,
+                        initialIndex: index,
+                        photoLabels: photoLabels,
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: OptimizedNetworkImage(
+                            imageUrl: photos[index],
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // Indicador de zoom
+                        Positioned(
+                          bottom: 4,
+                          right: 4,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.6),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.zoom_out_map,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );

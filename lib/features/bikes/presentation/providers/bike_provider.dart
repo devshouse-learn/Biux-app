@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
@@ -6,6 +8,7 @@ import 'package:biux/features/bikes/domain/usecases/get_user_bikes_usecase.dart'
 import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
+import 'package:biux/shared/services/optimized_storage_service.dart';
 
 /// Estados del provider de bicicletas
 enum BikeProviderState { initial, loading, loaded, error }
@@ -57,7 +60,10 @@ class BikeProvider extends ChangeNotifier {
   void _setState(BikeProviderState newState, {String? error}) {
     _state = newState;
     _errorMessage = error;
-    notifyListeners();
+    // Diferir la notificación para evitar llamadas durante el build
+    scheduleMicrotask(() {
+      notifyListeners();
+    });
   }
 
   void clearError() {
@@ -65,7 +71,9 @@ class BikeProvider extends ChangeNotifier {
     if (_state == BikeProviderState.error) {
       _state = BikeProviderState.loaded;
     }
-    notifyListeners();
+    scheduleMicrotask(() {
+      notifyListeners();
+    });
   }
 
   // ========== Gestión de bicicletas ==========
@@ -95,7 +103,10 @@ class BikeProvider extends ChangeNotifier {
   /// Selecciona una bicicleta como actual
   void selectBike(BikeEntity bike) {
     _currentBike = bike;
-    notifyListeners();
+    // Diferir la notificación para evitar llamadas durante el build
+    scheduleMicrotask(() {
+      notifyListeners();
+    });
   }
 
   // ========== Formulario de registro (4 pasos) ==========
@@ -169,6 +180,72 @@ class BikeProvider extends ChangeNotifier {
     try {
       _setState(BikeProviderState.loading);
 
+      // Generar un ID temporal para la bici (necesario para las rutas de Storage)
+      final tempBikeId = 'bike_${DateTime.now().millisecondsSinceEpoch}';
+
+      // Subir foto principal (obligatoria)
+      String? mainPhotoUrl;
+      final mainPhotoPath = _registrationData['mainPhoto']?.toString();
+      if (mainPhotoPath != null && mainPhotoPath.isNotEmpty) {
+        mainPhotoUrl = await OptimizedStorageService.uploadBikeImage(
+          userId: ownerId,
+          bikeId: tempBikeId,
+          imageFile: File(mainPhotoPath),
+          imageType: 'main',
+        );
+
+        if (mainPhotoUrl == null) {
+          throw Exception('Error al subir la foto principal de la bicicleta');
+        }
+      }
+
+      // Subir foto del número de serie (opcional)
+      String? serialPhotoUrl;
+      final serialPhotoPath = _registrationData['serialPhoto']?.toString();
+      if (serialPhotoPath != null && serialPhotoPath.isNotEmpty) {
+        serialPhotoUrl = await OptimizedStorageService.uploadBikeImage(
+          userId: ownerId,
+          bikeId: tempBikeId,
+          imageFile: File(serialPhotoPath),
+          imageType: 'serial',
+        );
+      }
+
+      // Subir fotos adicionales (opcional)
+      List<String>? additionalPhotoUrls;
+      final additionalPhotos =
+          _registrationData['additionalPhotos'] as List<String>?;
+      if (additionalPhotos != null && additionalPhotos.isNotEmpty) {
+        additionalPhotoUrls = [];
+        for (int i = 0; i < additionalPhotos.length; i++) {
+          final photoPath = additionalPhotos[i];
+          if (photoPath.isNotEmpty) {
+            final photoUrl = await OptimizedStorageService.uploadBikeImage(
+              userId: ownerId,
+              bikeId: tempBikeId,
+              imageFile: File(photoPath),
+              imageType: 'additional',
+            );
+            if (photoUrl != null) {
+              additionalPhotoUrls.add(photoUrl);
+            }
+          }
+        }
+      }
+
+      // Subir factura (opcional)
+      String? invoiceUrl;
+      final invoicePath = _registrationData['invoice']?.toString();
+      if (invoicePath != null && invoicePath.isNotEmpty) {
+        invoiceUrl = await OptimizedStorageService.uploadBikeImage(
+          userId: ownerId,
+          bikeId: tempBikeId,
+          imageFile: File(invoicePath),
+          imageType: 'invoice',
+        );
+      }
+
+      // Ahora registrar la bici con las URLs de las fotos
       final bike = await _registerBikeUseCase(
         ownerId: ownerId,
         brand: _registrationData['brand'],
@@ -178,12 +255,12 @@ class BikeProvider extends ChangeNotifier {
         size: _registrationData['size'],
         type: _registrationData['type'],
         frameSerial: _registrationData['frameSerial'],
-        mainPhoto: _registrationData['mainPhoto'],
+        mainPhoto: mainPhotoUrl!, // Ya está subida
         city: _registrationData['city'],
-        serialPhoto: _registrationData['serialPhoto'],
+        serialPhoto: serialPhotoUrl, // URL o null
         neighborhood: _registrationData['neighborhood'],
-        additionalPhotos: _registrationData['additionalPhotos'],
-        invoice: _registrationData['invoice'],
+        additionalPhotos: additionalPhotoUrls, // URLs o null
+        invoice: invoiceUrl, // URL o null
         purchaseDate: _registrationData['purchaseDate'],
         purchasePlace: _registrationData['purchasePlace'],
         featuredComponents: _registrationData['featuredComponents'],
@@ -192,9 +269,6 @@ class BikeProvider extends ChangeNotifier {
       // Añadir a la lista de bicicletas del usuario
       _userBikes.add(bike);
       _currentBike = bike;
-
-      // Reiniciar formulario
-      resetRegistrationForm();
 
       _setState(BikeProviderState.loaded);
       return bike;
