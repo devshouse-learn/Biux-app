@@ -133,10 +133,19 @@ class BikeProvider extends ChangeNotifier {
   bool validateCurrentStep() {
     switch (_currentStep) {
       case 0: // Datos básicos
+        final year = _registrationData['year'];
+        final currentYear = DateTime.now().year;
+
+        final isYearValid =
+            year != null &&
+            year is int &&
+            year >= 1900 &&
+            year <= currentYear + 1;
+
         return _registrationData['brand']?.toString().trim().isNotEmpty ==
                 true &&
             _registrationData['model']?.toString().trim().isNotEmpty == true &&
-            _registrationData['year'] != null &&
+            isYearValid &&
             _registrationData['color']?.toString().trim().isNotEmpty == true &&
             _registrationData['size']?.toString().trim().isNotEmpty == true &&
             _registrationData['type'] != null &&

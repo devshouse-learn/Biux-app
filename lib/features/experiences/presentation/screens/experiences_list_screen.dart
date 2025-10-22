@@ -108,19 +108,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
         // _buildGroupsSection(),
 
         // Sección de Stories con indicador
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Widget de stories
-            const ExperiencesStoriesWidget(),
-          ],
-        ),
-
-        // Divisor con indicador de Posts
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Container(height: 1, color: ColorTokens.neutral20),
-        ),
+        const ExperiencesStoriesWidget(),
 
         // Lista de posts abajo o estado vacío
         Expanded(

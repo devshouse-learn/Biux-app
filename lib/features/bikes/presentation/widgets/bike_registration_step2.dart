@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
@@ -148,13 +149,21 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
             child: currentPhoto != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      currentPhoto,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildPhotoPlaceholder(true);
-                      },
-                    ),
+                    child: currentPhoto.startsWith('http')
+                        ? Image.network(
+                            currentPhoto,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildPhotoPlaceholder(true);
+                            },
+                          )
+                        : Image.file(
+                            File(currentPhoto),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildPhotoPlaceholder(true);
+                            },
+                          ),
                   )
                 : _buildPhotoPlaceholder(false),
           ),
@@ -279,18 +288,31 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: Image.network(
-              photo,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.error),
-                );
-              },
-            ),
+            child: photo.startsWith('http')
+                ? Image.network(
+                    photo,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.error),
+                      );
+                    },
+                  )
+                : Image.file(
+                    File(photo),
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.error),
+                      );
+                    },
+                  ),
           ),
           Positioned(
             top: 4,
@@ -347,16 +369,18 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
   }
 
   Future<void> _pickImage(Function(String?) onPhotoSelected) async {
+    // Mostrar diálogo para seleccionar fuente
+    final source = await _showImageSourceDialog();
+    if (source == null) return;
+
     final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       maxWidth: 1024,
       maxHeight: 1024,
       imageQuality: 80,
     );
 
     if (image != null) {
-      // En una implementación real, aquí subirías la imagen a un servidor
-      // Por ahora, usamos la ruta local como placeholder
       onPhotoSelected(image.path);
     }
   }
@@ -364,8 +388,12 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
   Future<void> _pickAdditionalImage() async {
     if (_additionalPhotos.length >= 4) return;
 
+    // Mostrar diálogo para seleccionar fuente
+    final source = await _showImageSourceDialog();
+    if (source == null) return;
+
     final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       maxWidth: 1024,
       maxHeight: 1024,
       imageQuality: 80,
@@ -380,5 +408,44 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
         _additionalPhotos,
       );
     }
+  }
+
+  Future<ImageSource?> _showImageSourceDialog() async {
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_camera,
+                  color: ColorTokens.primary30,
+                ),
+                title: const Text('Tomar foto'),
+                onTap: () {
+                  Navigator.pop(context, ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_library,
+                  color: ColorTokens.primary30,
+                ),
+                title: const Text('Seleccionar de galería'),
+                onTap: () {
+                  Navigator.pop(context, ImageSource.gallery);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

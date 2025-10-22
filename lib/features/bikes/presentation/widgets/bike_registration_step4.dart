@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
@@ -21,35 +22,38 @@ class BikeRegistrationStep4 extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
 
-              // Mensaje de éxito
+              // Título de revisión
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.green[50],
+                  color: ColorTokens.primary95,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.green[200]!),
+                  border: Border.all(color: ColorTokens.primary80),
                 ),
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.check_circle,
-                      size: 64,
-                      color: Colors.green[600],
+                    const Icon(
+                      Icons.fact_check_outlined,
+                      size: 48,
+                      color: ColorTokens.primary30,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       AppStrings.step4Title,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[800],
+                        color: ColorTokens.primary30,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      AppStrings.bikeRegistrationSuccess,
-                      style: TextStyle(fontSize: 14, color: Colors.green[700]),
+                    const Text(
+                      AppStrings.step4Description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: ColorTokens.neutral30,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -63,13 +67,27 @@ class BikeRegistrationStep4 extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // QR Code
-              _buildQRSection(),
-
-              const SizedBox(height: 24),
-
-              // Acciones
-              _buildActionButtons(context),
+              // Nota informativa
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Al presionar "Finalizar" se registrará tu bicicleta y recibirás tu código QR.',
+                        style: TextStyle(fontSize: 13, color: Colors.blue[900]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
               const SizedBox(height: 32),
             ],
@@ -124,20 +142,35 @@ class BikeRegistrationStep4 extends StatelessWidget {
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  data['mainPhoto'],
-                  height: 120,
-                  width: 120,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 120,
-                      width: 120,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.image),
-                    );
-                  },
-                ),
+                child: (data['mainPhoto'] as String).startsWith('http')
+                    ? Image.network(
+                        data['mainPhoto'],
+                        height: 120,
+                        width: 120,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 120,
+                            width: 120,
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.image),
+                          );
+                        },
+                      )
+                    : Image.file(
+                        File(data['mainPhoto']),
+                        height: 120,
+                        width: 120,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 120,
+                            width: 120,
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.image),
+                          );
+                        },
+                      ),
               ),
             ),
 
@@ -184,152 +217,6 @@ class BikeRegistrationStep4 extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildQRSection() {
-    // Generar un QR temporal para la demostración
-    const tempQR = 'BIUX-BIKE-TEMP-QR-12345';
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: ColorTokens.neutral90),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Tu código QR único',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: ColorTokens.primary30,
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: ColorTokens.neutral90),
-            ),
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.qr_code, size: 80, color: ColorTokens.primary30),
-                  const SizedBox(height: 8),
-                  Text(
-                    'QR Code',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: ColorTokens.primary30,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 12),
-          Text(
-            'Código: $tempQR',
-            style: TextStyle(
-              fontSize: 12,
-              color: ColorTokens.neutral70,
-              fontFamily: 'monospace',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context) {
-    return Column(
-      children: [
-        // Botón principal: Descargar QR
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () => _downloadQR(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.primary30,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            icon: const Icon(Icons.download),
-            label: Text(
-              AppStrings.downloadQR,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        // Botón secundario: Solicitar sticker
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () => _requestSticker(context),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: ColorTokens.primary30,
-              side: const BorderSide(color: ColorTokens.primary30),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            icon: const Icon(Icons.local_shipping),
-            label: Text(
-              AppStrings.requestSticker,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _downloadQR(BuildContext context) {
-    // Implementar descarga del QR
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('QR descargado en la galería'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
-  void _requestSticker(BuildContext context) {
-    // Implementar solicitud de sticker
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Solicitud de sticker enviada'),
-        backgroundColor: Colors.blue,
       ),
     );
   }

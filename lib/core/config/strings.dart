@@ -720,14 +720,16 @@ The navigation delegate is set to block navigation to the youtube website.
   static const String step1Title = "Datos Básicos";
   static const String step2Title = "Fotos";
   static const String step3Title = "Propiedad y Compra";
-  static const String step4Title = "¡Tu bici ya tiene identidad!";
+  static const String step4Title = "Revisión y Confirmación";
+  static const String step4Description =
+      "Revisa que todos los datos sean correctos antes de finalizar el registro.";
 
   // Campos obligatorios
   static const String brandLabel = "Marca";
   static const String brandHint = "Ej: Trek, Specialized, Giant";
   static const String modelLabel = "Modelo";
   static const String modelHint = "Ej: Domane, Stumpjumper";
-  static const String yearLabel = "Año";
+  static const String yearLabel = "Año de Fabricación";
   static const String colorLabel = "Color";
   static const String sizeLabel = "Talla";
   static const String sizeHint = "Ej: M, 54cm, 29\"";
@@ -805,7 +807,7 @@ The navigation delegate is set to block navigation to the youtube website.
   // Validaciones y errores
   static const String fieldRequired = "Este campo es obligatorio";
   static const String bikeInvalidEmail = "Email inválido";
-  static const String invalidYear = "Año inválido";
+  static const String invalidYear = "Año inválido (1900-2026)";
   static const String photoRequired = "La foto es obligatoria";
   static const String bikeNotFound = "Bicicleta no encontrada";
   static const String unauthorized = "No tienes permisos para esta acción";

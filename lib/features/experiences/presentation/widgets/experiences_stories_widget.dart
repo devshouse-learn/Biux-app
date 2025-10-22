@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:video_player/video_player.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
@@ -50,84 +53,31 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
         final storyGroups = storyProvider.storyGroups;
 
         return Container(
-          height: 120,
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header de la sección
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.auto_stories,
-                      color: ColorTokens.primary30,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Stories',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: ColorTokens.neutral90,
-                      ),
-                    ),
-                    if (storyProvider.hasUnseenStories) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: ColorTokens.error50,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '${storyProvider.totalUnseenCount}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
+          height: 92,
+          margin: const EdgeInsets.only(top: 8, bottom: 4),
+          child: storyProvider.isLoading
+              ? const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: storyGroups.length + 1, // +1 para agregar
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      // Primer elemento: botón "Agregar Story"
+                      return _AddStoryButton();
+                    }
+
+                    // Elementos restantes: grupos de stories por usuario
+                    final group = storyGroups[index - 1];
+                    return _StoryGroupCircle(storyGroup: group);
+                  },
                 ),
-              ),
-              const SizedBox(height: 12),
-
-              // Lista horizontal de grupos de stories
-              Expanded(
-                child: storyProvider.isLoading
-                    ? const Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: storyGroups.length + 1, // +1 para agregar
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            // Primer elemento: botón "Agregar Story"
-                            return _AddStoryButton();
-                          }
-
-                          // Elementos restantes: grupos de stories por usuario
-                          final group = storyGroups[index - 1];
-                          return _StoryGroupCircle(storyGroup: group);
-                        },
-                      ),
-              ),
-            ],
-          ),
         );
       },
     );
@@ -140,34 +90,41 @@ class _AddStoryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => _showCreateStoryOptions(context),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [ColorTokens.primary30, ColorTokens.secondary50],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [ColorTokens.primary30, ColorTokens.secondary50],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: const Icon(Icons.add, color: Colors.white, size: 28),
+            ),
+            const SizedBox(height: 4),
+            SizedBox(
+              width: 70,
+              child: Text(
+                'Tu story',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: ColorTokens.neutral60,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            child: const Icon(Icons.add, color: Colors.white, size: 24),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Tu story',
-            style: TextStyle(
-              fontSize: 11,
-              color: ColorTokens.neutral60,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -346,8 +303,8 @@ class _StoryGroupCircle extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // TODO: Navegar al visor de historias completo
-        // context.push(AppRoutes.storyViewer, extra: storyGroup);
+        // Navegar al visor de historias de este usuario
+        _openStoryViewer(context);
       },
       child: Container(
         margin: const EdgeInsets.only(right: 12),
@@ -424,6 +381,462 @@ class _StoryGroupCircle extends StatelessWidget {
       height: 60,
       color: Colors.grey.shade300,
       child: const Icon(Icons.person, size: 35, color: Colors.grey),
+    );
+  }
+
+  void _openStoryViewer(BuildContext context) {
+    // Obtener el provider de story groups
+    final storyGroupsProvider = Provider.of<StoryGroupsProvider>(
+      context,
+      listen: false,
+    );
+
+    // Encontrar el índice del grupo actual
+    final allGroups = storyGroupsProvider.storyGroups;
+    final currentIndex = allGroups.indexWhere(
+      (g) => g.userId == storyGroup.userId,
+    );
+
+    // Mostrar las historias de este grupo en pantalla completa
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => _StoryGroupViewerScreen(
+          storyGroups: allGroups,
+          initialGroupIndex: currentIndex >= 0 ? currentIndex : 0,
+          onStoryViewed: (storyId) {
+            // Marcar historia como vista
+            storyGroupsProvider.markStoryAsViewed(storyId);
+          },
+          onClose: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// Pantalla temporal para visualizar historias de un grupo
+class _StoryGroupViewerScreen extends StatefulWidget {
+  final List<UserStoryGroupEntity> storyGroups;
+  final int initialGroupIndex;
+  final Function(String storyId) onStoryViewed;
+  final VoidCallback onClose;
+
+  const _StoryGroupViewerScreen({
+    required this.storyGroups,
+    required this.initialGroupIndex,
+    required this.onStoryViewed,
+    required this.onClose,
+  });
+
+  @override
+  State<_StoryGroupViewerScreen> createState() =>
+      _StoryGroupViewerScreenState();
+}
+
+class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
+    with SingleTickerProviderStateMixin {
+  late int _currentGroupIndex;
+  int _currentStoryIndex = 0;
+  bool _isPaused = false;
+  VideoPlayerController? _videoController;
+  bool _isVideoInitialized = false;
+  AnimationController? _progressController;
+
+  static const Duration _imageDuration = Duration(seconds: 5);
+
+  UserStoryGroupEntity get _currentGroup =>
+      widget.storyGroups[_currentGroupIndex];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentGroupIndex = widget.initialGroupIndex;
+    _progressController = AnimationController(vsync: this);
+
+    // Inicializar de manera asíncrona
+    _initialize();
+
+    // Timer para actualizar el progreso del video
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (mounted && _videoController != null && _isVideoInitialized) {
+        setState(() {});
+      }
+      return mounted;
+    });
+  }
+
+  /// Inicializa el visor encontrando la primera historia no vista
+  Future<void> _initialize() async {
+    if (_currentGroup.stories.isEmpty) return;
+
+    // Encontrar la primera historia no vista
+    _currentStoryIndex = await _findFirstUnseenStoryIndex();
+
+    // Marcar la primera historia como vista
+    widget.onStoryViewed(_currentGroup.stories[_currentStoryIndex].id);
+    await _initializeMedia();
+  }
+
+  /// Encuentra el índice de la primera historia no vista
+  /// Si todas están vistas, comienza desde la primera (índice 0)
+  Future<int> _findFirstUnseenStoryIndex() async {
+    final storyGroupsProvider = context.read<StoryGroupsProvider>();
+
+    for (int i = 0; i < _currentGroup.stories.length; i++) {
+      final storyId = _currentGroup.stories[i].id;
+      final isViewed = await storyGroupsProvider.isStoryViewed(storyId);
+
+      if (!isViewed) {
+        return i; // Primera historia no vista
+      }
+    }
+
+    // Si todas están vistas, comenzar desde la primera
+    return 0;
+  }
+
+  @override
+  void dispose() {
+    _progressController?.dispose();
+    _videoController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeMedia() async {
+    final currentStory = _currentGroup.stories[_currentStoryIndex];
+
+    // Detener progreso anterior
+    _progressController?.stop();
+    _progressController?.reset();
+
+    // Limpiar video anterior si existe
+    await _videoController?.dispose();
+    _videoController = null;
+    setState(() => _isVideoInitialized = false);
+
+    if (currentStory.media.isNotEmpty &&
+        currentStory.media[0].mediaType == MediaType.video) {
+      // Descargar el video con caché
+      final videoUrl = currentStory.media[0].url;
+      final fileInfo = await DefaultCacheManager().getFileFromCache(videoUrl);
+
+      if (fileInfo == null) {
+        // Si no está en caché, descargarlo
+        await DefaultCacheManager().downloadFile(videoUrl);
+      }
+
+      // Inicializar el video player con la URL (ahora cacheada)
+      _videoController = VideoPlayerController.networkUrl(
+        Uri.parse(videoUrl),
+        videoPlayerOptions: VideoPlayerOptions(
+          mixWithOthers: true,
+          allowBackgroundPlayback: false,
+        ),
+      );
+
+      await _videoController!.initialize();
+
+      if (mounted) {
+        setState(() => _isVideoInitialized = true);
+        _videoController!.play();
+
+        // Listener para avanzar cuando termine el video
+        _videoController!.addListener(() {
+          if (_videoController!.value.position >=
+              _videoController!.value.duration) {
+            if (!_isPaused) {
+              _nextStory();
+            }
+          }
+        });
+      }
+    } else {
+      // Para imágenes, usar timer
+      _progressController!.duration = _imageDuration;
+      _progressController!.forward().then((_) {
+        if (mounted && !_isPaused) {
+          _nextStory();
+        }
+      });
+    }
+  }
+
+  void _nextStory() async {
+    if (_currentStoryIndex < _currentGroup.stories.length - 1) {
+      // Avanzar a la siguiente historia del mismo usuario
+      setState(() {
+        _currentStoryIndex++;
+      });
+      widget.onStoryViewed(_currentGroup.stories[_currentStoryIndex].id);
+      await _initializeMedia();
+    } else if (_currentGroupIndex < widget.storyGroups.length - 1) {
+      // Avanzar al siguiente usuario
+      setState(() {
+        _currentGroupIndex++;
+        _currentStoryIndex = 0;
+      });
+      await _initialize(); // Inicializar desde primera no vista del nuevo usuario
+    } else {
+      // No hay más historias, cerrar
+      widget.onClose();
+    }
+  }
+
+  void _previousStory() async {
+    if (_currentStoryIndex > 0) {
+      // Retroceder a la historia anterior del mismo usuario
+      setState(() {
+        _currentStoryIndex--;
+      });
+      await _initializeMedia();
+    } else if (_currentGroupIndex > 0) {
+      // Retroceder al usuario anterior
+      setState(() {
+        _currentGroupIndex--;
+        _currentStoryIndex =
+            widget.storyGroups[_currentGroupIndex].stories.length - 1;
+      });
+      widget.onStoryViewed(_currentGroup.stories[_currentStoryIndex].id);
+      await _initializeMedia();
+    }
+  }
+
+  void _pause() {
+    setState(() => _isPaused = true);
+    _progressController?.stop();
+    _videoController?.pause();
+  }
+
+  void _resume() {
+    setState(() => _isPaused = false);
+
+    // Solo reanudar la animación si tiene duración configurada y no ha terminado
+    if (_progressController != null &&
+        _progressController!.duration != null &&
+        !_progressController!.isCompleted) {
+      _progressController!.forward();
+    }
+
+    if (_videoController != null && _isVideoInitialized) {
+      _videoController!.play();
+    }
+  }
+
+  Widget _buildMediaWidget(ExperienceMediaEntity media) {
+    if (media.mediaType == MediaType.video) {
+      if (_videoController != null && _isVideoInitialized) {
+        return Center(
+          child: AspectRatio(
+            aspectRatio: _videoController!.value.aspectRatio,
+            child: VideoPlayer(_videoController!),
+          ),
+        );
+      } else {
+        return const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        );
+      }
+    } else {
+      // Imagen
+      return CachedNetworkImage(
+        imageUrl: media.url,
+        fit: BoxFit.contain,
+        width: double.infinity,
+        height: double.infinity,
+        placeholder: (context, url) =>
+            const Center(child: CircularProgressIndicator(color: Colors.white)),
+        errorWidget: (context, url, error) => const Center(
+          child: Icon(Icons.error, color: Colors.white, size: 48),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentStory = _currentGroup.stories[_currentStoryIndex];
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        onTapUp: (details) {
+          // Solo ejecutar si no está pausado y fue un tap rápido (no long press)
+          if (!_isPaused) {
+            final screenWidth = MediaQuery.of(context).size.width;
+            if (details.globalPosition.dx < screenWidth / 2) {
+              _previousStory();
+            } else {
+              _nextStory();
+            }
+          }
+        },
+        onLongPressStart: (_) => _pause(),
+        onLongPressEnd: (_) => _resume(),
+        child: Stack(
+          children: [
+            // Imagen o video de la historia
+            Center(
+              child: currentStory.media.isNotEmpty
+                  ? _buildMediaWidget(currentStory.media[0])
+                  : Container(
+                      color: Colors.grey.shade800,
+                      child: Center(
+                        child: Text(
+                          currentStory.description,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+            ),
+
+            // Header con info del usuario y botón cerrar
+            SafeArea(
+              child: Column(
+                children: [
+                  // Indicadores de progreso
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: List.generate(_currentGroup.stories.length, (
+                        index,
+                      ) {
+                        return Expanded(
+                          child: Container(
+                            height: 3,
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            child: index < _currentStoryIndex
+                                ? Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                  )
+                                : index == _currentStoryIndex
+                                ? AnimatedBuilder(
+                                    animation: _progressController!,
+                                    builder: (context, child) {
+                                      double progress = 0.0;
+
+                                      if (_videoController != null &&
+                                          _isVideoInitialized) {
+                                        // Progreso basado en video
+                                        final position = _videoController!
+                                            .value
+                                            .position
+                                            .inMilliseconds;
+                                        final duration = _videoController!
+                                            .value
+                                            .duration
+                                            .inMilliseconds;
+                                        if (duration > 0) {
+                                          progress = position / duration;
+                                        }
+                                      } else {
+                                        // Progreso basado en animación para imágenes
+                                        progress = _progressController!.value;
+                                      }
+
+                                      return FractionallySizedBox(
+                                        alignment: Alignment.centerLeft,
+                                        widthFactor: progress.clamp(0.0, 1.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              2,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                  // Info del usuario
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage:
+                              _currentGroup.userProfilePhoto.isNotEmpty
+                              ? CachedNetworkImageProvider(
+                                  _currentGroup.userProfilePhoto,
+                                )
+                              : null,
+                          child: _currentGroup.userProfilePhoto.isEmpty
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _currentGroup.userName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: widget.onClose,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Descripción al fondo
+            if (currentStory.description.isNotEmpty)
+              Positioned(
+                bottom: 100,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    currentStory.description,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 8,
+                          color: Colors.black,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -269,10 +269,23 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   Future<void> _handleNextStep(BikeProvider bikeProvider) async {
-    // Validar el paso actual
-    if (!bikeProvider.validateCurrentStep()) {
-      _showValidationError();
-      return;
+    // Para el paso 0, validar también el formulario de Flutter
+    if (bikeProvider.currentStep == 0) {
+      // El step1 tiene su propio FormKey, así que usamos el provider
+      if (!bikeProvider.validateCurrentStep()) {
+        _showValidationError(
+          'Por favor completa todos los campos obligatorios. Verifica que el año esté entre 1900 y 2026.',
+        );
+        return;
+      }
+    } else {
+      // Validar el paso actual
+      if (!bikeProvider.validateCurrentStep()) {
+        _showValidationError(
+          'Por favor completa todos los campos obligatorios',
+        );
+        return;
+      }
     }
 
     if (bikeProvider.currentStep < 3) {
@@ -284,11 +297,14 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
     }
   }
 
-  void _showValidationError() {
+  void _showValidationError([String? message]) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Por favor completa todos los campos obligatorios'),
+      SnackBar(
+        content: Text(
+          message ?? 'Por favor completa todos los campos obligatorios',
+        ),
         backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
       ),
     );
   }

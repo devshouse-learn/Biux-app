@@ -18,13 +18,18 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   final _formKey = GlobalKey<FormState>();
   final _brandController = TextEditingController();
   final _modelController = TextEditingController();
-  final _yearController = TextEditingController();
   final _colorController = TextEditingController();
   final _sizeController = TextEditingController();
   final _frameSerialController = TextEditingController();
   final _cityController = TextEditingController();
 
   BikeType? _selectedType;
+  int? _selectedYear;
+
+  // Método público para validar el formulario
+  bool validateForm() {
+    return _formKey.currentState?.validate() ?? false;
+  }
 
   @override
   void initState() {
@@ -38,7 +43,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
 
     _brandController.text = data['brand'] ?? '';
     _modelController.text = data['model'] ?? '';
-    _yearController.text = data['year']?.toString() ?? '';
+    _selectedYear = data['year'];
     _colorController.text = data['color'] ?? '';
     _sizeController.text = data['size'] ?? '';
     _frameSerialController.text = data['frameSerial'] ?? '';
@@ -50,7 +55,6 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   void dispose() {
     _brandController.dispose();
     _modelController.dispose();
-    _yearController.dispose();
     _colorController.dispose();
     _sizeController.dispose();
     _frameSerialController.dispose();
@@ -109,31 +113,8 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
 
             const SizedBox(height: 16),
 
-            // Año
-            TextFormFieldBiuxWidget(
-              controller: _yearController,
-              text: AppStrings.yearLabel,
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                final year = int.tryParse(value);
-                context.read<BikeProvider>().updateRegistrationData(
-                  'year',
-                  year,
-                );
-              },
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
-                }
-                final year = int.tryParse(value);
-                if (year == null ||
-                    year < 1900 ||
-                    year > DateTime.now().year + 1) {
-                  return AppStrings.invalidYear;
-                }
-                return null;
-              },
-            ),
+            // Año (Selector)
+            _buildYearSelector(),
 
             const SizedBox(height: 16),
 
@@ -295,5 +276,164 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   bool _shouldShowValidation() {
     // Solo mostrar validación si se ha intentado avanzar
     return context.read<BikeProvider>().currentStep > 0;
+  }
+
+  Widget _buildYearSelector() {
+    final currentYear = DateTime.now().year;
+    final years = List.generate(
+      currentYear - 1899 + 1,
+      (index) => currentYear + 1 - index,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${AppStrings.yearLabel} *',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: ColorTokens.primary30,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => _showYearPicker(years),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _selectedYear == null
+                    ? ColorTokens.neutral70
+                    : ColorTokens.primary30,
+                width: _selectedYear == null ? 1 : 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  color: _selectedYear == null
+                      ? ColorTokens.neutral70
+                      : ColorTokens.primary30,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  _selectedYear?.toString() ??
+                      'Seleccionar año de la bicicleta',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: _selectedYear != null
+                        ? Colors.black87
+                        : ColorTokens.neutral70,
+                  ),
+                ),
+                const Spacer(),
+                Icon(Icons.arrow_drop_down, color: ColorTokens.neutral70),
+              ],
+            ),
+          ),
+        ),
+        if (_selectedYear == null && _shouldShowValidation())
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 12),
+            child: Text(
+              AppStrings.fieldRequired,
+              style: TextStyle(fontSize: 12, color: Colors.red[700]),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _showYearPicker(List<int> years) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          height: 400,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancelar'),
+                  ),
+                  const Text(
+                    'Selecciona el Año',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (_selectedYear != null) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text(
+                      'Listo',
+                      style: TextStyle(
+                        color: _selectedYear != null
+                            ? ColorTokens.primary30
+                            : ColorTokens.neutral70,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: years.length,
+                  itemBuilder: (context, index) {
+                    final year = years[index];
+                    final isSelected = year == _selectedYear;
+
+                    return ListTile(
+                      title: Text(
+                        year.toString(),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          color: isSelected
+                              ? ColorTokens.primary30
+                              : Colors.black87,
+                        ),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(
+                              Icons.check_circle,
+                              color: ColorTokens.primary30,
+                            )
+                          : null,
+                      onTap: () {
+                        setState(() {
+                          _selectedYear = year;
+                        });
+                        context.read<BikeProvider>().updateRegistrationData(
+                          'year',
+                          year,
+                        );
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

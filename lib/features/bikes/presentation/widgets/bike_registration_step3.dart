@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
@@ -16,6 +18,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
   final _neighborhoodController = TextEditingController();
   final _purchasePlaceController = TextEditingController();
   final _featuredComponentsController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
   DateTime? _selectedPurchaseDate;
   String? _invoicePhoto;
 
@@ -289,13 +292,21 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
             child: _invoicePhoto != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      _invoicePhoto!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildInvoicePlaceholder(true);
-                      },
-                    ),
+                    child: _invoicePhoto!.startsWith('http')
+                        ? Image.network(
+                            _invoicePhoto!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildInvoicePlaceholder(true);
+                            },
+                          )
+                        : Image.file(
+                            File(_invoicePhoto!),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildInvoicePlaceholder(true);
+                            },
+                          ),
                   )
                 : _buildInvoicePlaceholder(false),
           ),
@@ -386,14 +397,63 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
   }
 
   Future<void> _pickInvoiceImage() async {
-    // En una implementación real, aquí usarías ImagePicker
-    // Por ahora, simulamos la selección
-    setState(() {
-      _invoicePhoto = 'placeholder-invoice-path';
-    });
-    context.read<BikeProvider>().updateRegistrationData(
-      'invoice',
-      _invoicePhoto,
+    final source = await _showImageSourceDialog();
+    if (source == null) return;
+
+    final XFile? image = await _picker.pickImage(
+      source: source,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      setState(() {
+        _invoicePhoto = image.path;
+      });
+      context.read<BikeProvider>().updateRegistrationData(
+        'invoice',
+        image.path,
+      );
+    }
+  }
+
+  Future<ImageSource?> _showImageSourceDialog() async {
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_camera,
+                  color: ColorTokens.primary30,
+                ),
+                title: const Text('Tomar foto'),
+                onTap: () {
+                  Navigator.pop(context, ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_library,
+                  color: ColorTokens.primary30,
+                ),
+                title: const Text('Seleccionar de galería'),
+                onTap: () {
+                  Navigator.pop(context, ImageSource.gallery);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 }
