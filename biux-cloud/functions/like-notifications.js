@@ -182,6 +182,19 @@ exports.onLikeCommentCreated = onValueCreated(
         lastUpdated: Date.now(),
       });
 
+      // 5. Enviar notificación push
+      await sendPushNotification(
+        commentAuthorId,
+        `A ${userName} le gustó tu comentario`,
+        commentData.text?.substring(0, 100) || "Ver comentario",
+        {
+          type: "like_comment",
+          targetId: contextTargetId,
+          commentId: commentId,
+          fromUserId: userId,
+        },
+      );
+
       logger.info("✅ Notificación de like en comentario creada para:", commentAuthorId);
       return null;
     } catch (error) {

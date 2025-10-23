@@ -4,8 +4,9 @@ const admin = require("firebase-admin");
 // Initialize Firebase Admin
 admin.initializeApp();
 
-// Import notification function
+// Import notification functions
 const {onNotificationCreated} = require("./notifications");
+const {onNotificationCreated: onPushNotificationCreated} = require("./push-notifications");
 const {
   onCommentPostCreated,
   onCommentRideCreated,
@@ -19,8 +20,9 @@ const {
   onRideJoinCreated,
 } = require("./ride-notifications");
 
-// Export notification trigger
+// Export notification triggers
 exports.onNotificationCreated = onNotificationCreated;
+exports.onPushNotificationCreated = onPushNotificationCreated;
 
 // Export comment notification triggers
 exports.onCommentPostCreated = onCommentPostCreated;
