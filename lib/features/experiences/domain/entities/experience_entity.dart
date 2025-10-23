@@ -42,12 +42,26 @@ class ExperienceEntity {
     return type == ExperienceType.ride && rideId != null;
   }
 
-  /// Verifica si debe mostrarse como Story (contenido visual y corto)
+  /// Verifica si debe mostrarse como Story (contenido efímero en círculos arriba)
+  /// Stories son SOLO contenido muy breve y visual sin contexto elaborado
   bool get isStoryFormat {
-    return media.isNotEmpty && description.length <= 50;
+    // Las stories son contenido efímero tipo Instagram/Snapchat:
+    // - Tienen media (imagen o video)
+    // - Descripción MUY corta o vacía (<=20 chars después de trim)
+    // - NO son experiencias de rodadas (esas siempre son posts con contexto)
+    //
+    // Cualquier post con imagen/video Y texto descriptivo va al feed vertical
+    return media.isNotEmpty &&
+        description.trim().length <= 20 &&
+        type != ExperienceType.ride;
   }
 
-  /// Verifica si debe mostrarse como Post regular (contenido más elaborado)
+  /// Verifica si debe mostrarse como Post regular en feed vertical
+  /// Incluye:
+  /// - Posts de texto solo
+  /// - Posts con imágenes/videos (con o sin descripción larga)
+  /// - Posts de rodadas (siempre van al feed)
+  /// - Cualquier contenido con descripción >20 caracteres
   bool get isPostFormat {
     return !isStoryFormat;
   }

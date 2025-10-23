@@ -62,6 +62,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     }
   }
 
+  void _navigateToEdit(BuildContext context, RideModel ride) {
+    context.push('/groups/${ride.groupId}/rides/edit', extra: ride);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,6 +118,17 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   pinned: true,
                   backgroundColor: ColorTokens.primary30,
                   foregroundColor: ColorTokens.neutral100,
+                  actions: [
+                    // Botón de editar (solo para el creador)
+                    if (ride.createdBy == rideProvider.currentUserId &&
+                        ride.status != RideStatus.cancelled &&
+                        ride.status != RideStatus.completed)
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _navigateToEdit(context, ride),
+                        tooltip: 'Editar rodada',
+                      ),
+                  ],
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
                       ride.name,

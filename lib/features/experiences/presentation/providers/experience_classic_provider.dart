@@ -12,16 +12,25 @@ class ExperienceProvider extends ChangeNotifier {
 
   // Estado
   List<ExperienceEntity> _experiences = [];
+  List<ExperienceEntity> _allExperiences = []; // Todos los posts disponibles
   List<ExperienceEntity> _userExperiences = [];
   List<ExperienceEntity> _rideExperiences = [];
   bool _isLoading = false;
+  bool _isLoadingMore = false; // Para cargar más posts
+  bool _hasMorePosts = true; // Si hay más posts por cargar
   String? _error;
+  static const int _postsPerPage =
+      20; // Posts por página (aumentado para mejor UX)
+  static const int _initialPostsCount =
+      15; // Posts iniciales (suficientes para pantalla completa)
 
   // Getters
   List<ExperienceEntity> get experiences => _experiences;
   List<ExperienceEntity> get userExperiences => _userExperiences;
   List<ExperienceEntity> get rideExperiences => _rideExperiences;
   bool get isLoading => _isLoading;
+  bool get isLoadingMore => _isLoadingMore;
+  bool get hasMorePosts => _hasMorePosts;
   String? get error => _error;
 
   /// Carga experiencias de un usuario específico
@@ -77,6 +86,7 @@ class ExperienceProvider extends ChangeNotifier {
     try {
       _setLoading(true);
       _error = null;
+      _hasMorePosts = true; // Reset paginación
 
       print('🔍 FEED: Cargando feed personalizado para usuario: $userId');
 
@@ -106,12 +116,60 @@ class ExperienceProvider extends ChangeNotifier {
         );
       }
 
-      _setExperiences(allExperiences);
+      // Guardar todos los posts disponibles para paginación
+      _allExperiences = allExperiences;
+
+      // Cargar posts iniciales (suficientes para llenar pantalla)
+      final initialPosts = allExperiences.take(_initialPostsCount).toList();
+      _hasMorePosts = allExperiences.length > _initialPostsCount;
+
+      print(
+        '🔍 FEED: Cargando ${initialPosts.length} posts iniciales. Hay más: $_hasMorePosts',
+      );
+      _setExperiences(initialPosts);
     } catch (e) {
       print('❌ FEED: Error cargando feed personalizado: $e');
       _setError('Error cargando feed personalizado: ${e.toString()}');
     } finally {
       _setLoading(false);
+    }
+  }
+
+  /// Carga más posts para infinite scroll (paginación)
+  Future<void> loadMorePosts(String userId) async {
+    // Si ya está cargando más o no hay más posts, no hacer nada
+    if (_isLoadingMore || !_hasMorePosts || _isLoading) return;
+
+    try {
+      _isLoadingMore = true;
+      notifyListeners();
+
+      print('🔄 FEED: Cargando más posts... Actual: ${_experiences.length}');
+
+      // Obtener los siguientes posts de la lista completa ya cargada
+      final currentLength = _experiences.length;
+      final newPosts = _allExperiences
+          .skip(currentLength)
+          .take(_postsPerPage)
+          .toList();
+
+      if (newPosts.isEmpty) {
+        _hasMorePosts = false;
+        print('✅ FEED: No hay más posts para cargar');
+      } else {
+        _experiences.addAll(newPosts);
+        _hasMorePosts = _experiences.length < _allExperiences.length;
+        print(
+          '✅ FEED: ${newPosts.length} posts más cargados. Total: ${_experiences.length}/${_allExperiences.length}',
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      print('❌ FEED: Error cargando más posts: $e');
+      _setError('Error cargando más posts: ${e.toString()}');
+    } finally {
+      _isLoadingMore = false;
+      notifyListeners();
     }
   }
 
@@ -194,9 +252,12 @@ class ExperienceProvider extends ChangeNotifier {
   /// Reinicia el estado
   void reset() {
     _experiences = [];
+    _allExperiences = [];
     _userExperiences = [];
     _rideExperiences = [];
     _isLoading = false;
+    _isLoadingMore = false;
+    _hasMorePosts = true;
     _error = null;
     notifyListeners();
   }

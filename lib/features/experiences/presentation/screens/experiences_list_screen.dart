@@ -131,10 +131,15 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final allExperiences = provider.experiences; // Feed personalizado
 
     // POSTS: Experiencias que van en el feed principal vertical
-    // - Pueden o no tener media
+    // - Pueden tener media (SOLO FOTOS, sin videos)
     // - Cualquier longitud de descripción
     // - EXCLUYE las que ya se muestran como stories
-    final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
+    // - EXCLUYE posts con videos (temporalmente deshabilitados)
+    final posts = allExperiences
+        .where(
+          (exp) => exp.isPostFormat && !exp.hasVideo,
+        ) // Filtrar posts con video
+        .toList();
 
     // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
     return RefreshIndicator(
@@ -248,13 +253,43 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   Widget _buildExperiencesList(List<ExperienceEntity> experiences) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: experiences.length,
-      itemBuilder: (context, index) {
-        final experience = experiences[index];
-        return _ExperienceCard(experience: experience);
+    final provider = context.read<ExperienceProvider>();
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        // Detectar cuando el usuario llega al 80% del scroll
+        if (!provider.isLoadingMore &&
+            provider.hasMorePosts &&
+            scrollInfo.metrics.pixels >=
+                scrollInfo.metrics.maxScrollExtent * 0.8) {
+          final userId = _currentUserId;
+          if (userId != null) {
+            provider.loadMorePosts(userId);
+          }
+        }
+        return false;
       },
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: experiences.length + (provider.hasMorePosts ? 1 : 0),
+        itemBuilder: (context, index) {
+          // Mostrar post normal
+          if (index < experiences.length) {
+            final experience = experiences[index];
+            return _ExperienceCard(experience: experience);
+          }
+
+          // Mostrar indicador de carga al final
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: provider.isLoadingMore
+                  ? CircularProgressIndicator()
+                  : SizedBox.shrink(),
+            ),
+          );
+        },
+      ),
     );
   }
 

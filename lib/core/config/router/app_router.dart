@@ -27,11 +27,13 @@ import '../../../features/maps/presentation/screens/map_screen.dart';
 import '../../../features/rides/presentation/screens/create_ride/ride_create_screen.dart';
 import '../../../features/rides/presentation/screens/detail_ride/ride_detail_screen.dart';
 import '../../../features/rides/presentation/screens/list_rides/ride_list_screen.dart';
+import '../../../features/rides/data/models/ride_model.dart';
 import '../../../features/roads/presentation/screens/road_create/map_road/map_road_screen.dart';
 import '../../../features/roads/presentation/screens/road_create/road_create_screen.dart';
 import '../../../features/roads/presentation/screens/roads_list/roads_list_screen.dart';
 
 import '../../../features/stories/presentation/screens/story_view/story_view_screen.dart';
+import '../../../features/social/presentation/screens/post_detail_screen.dart';
 import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
 import '../../../features/users/presentation/screens/edit_username_screen.dart';
 import '../../../features/users/presentation/screens/profile_screen.dart';
@@ -255,6 +257,19 @@ final GoRouter _router = GoRouter(
                     return EditGroupScreen(groupId: groupId);
                   },
                 ),
+                // NUEVA RUTA: Editar rodada
+                GoRoute(
+                  path: 'rides/edit',
+                  name: 'rideEdit',
+                  builder: (context, state) {
+                    final groupId = state.pathParameters['groupId']!;
+                    final rideToEdit = state.extra as RideModel?;
+                    return RideCreateScreen(
+                      groupId: groupId,
+                      rideToEdit: rideToEdit,
+                    );
+                  },
+                ),
               ],
             ),
           ],
@@ -297,6 +312,15 @@ final GoRouter _router = GoRouter(
               name: AppRoutes.viewStoryName,
               builder: (context, state) {
                 return StoryViewScreen();
+              },
+            ),
+            // Ver detalle de post/experiencia
+            GoRoute(
+              path: 'post/:postId',
+              name: 'postDetail',
+              builder: (context, state) {
+                final postId = state.pathParameters['postId']!;
+                return PostDetailScreen(postId: postId);
               },
             ),
           ],

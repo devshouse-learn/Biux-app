@@ -317,12 +317,16 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: MediaSelectorWidget(
-                // Stories y Posts permiten videos (máximo 30s para historias)
-                allowVideo: true,
+                // Stories permiten videos (máximo 30s)
+                // Posts SOLO permiten fotos (sin videos)
+                allowVideo:
+                    widget.isStoryMode, // Solo stories pueden tener video
                 onImageFromGallery: provider.addImageFromGallery,
                 onTakePhoto: provider.takePhoto,
-                onVideoFromGallery: provider.addVideoFromGallery,
-                onRecordVideo: provider.recordVideo,
+                onVideoFromGallery: widget.isStoryMode
+                    ? provider.addVideoFromGallery
+                    : null,
+                onRecordVideo: widget.isStoryMode ? provider.recordVideo : null,
               ),
             ),
         ],

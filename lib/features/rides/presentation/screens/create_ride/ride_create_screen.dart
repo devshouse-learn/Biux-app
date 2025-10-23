@@ -11,8 +11,10 @@ import 'package:biux/core/design_system/color_tokens.dart';
 
 class RideCreateScreen extends StatefulWidget {
   final String groupId;
+  final RideModel? rideToEdit; // Rodada a editar (null = modo creación)
 
-  const RideCreateScreen({Key? key, required this.groupId}) : super(key: key);
+  const RideCreateScreen({Key? key, required this.groupId, this.rideToEdit})
+    : super(key: key);
 
   @override
   _RideCreateScreenState createState() => _RideCreateScreenState();
@@ -34,20 +36,56 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
   @override
   void initState() {
     super.initState();
+
     // Cargar puntos de encuentro
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<MeetingPointProvider>(
+      final meetingPointProvider = Provider.of<MeetingPointProvider>(
         context,
         listen: false,
-      ).startListening();
+      );
+      meetingPointProvider.startListening();
+
+      // Si es modo edición, pre-cargar los datos
+      if (widget.rideToEdit != null) {
+        _loadRideData(meetingPointProvider);
+      }
     });
+  }
+
+  void _loadRideData(MeetingPointProvider meetingPointProvider) {
+    final ride = widget.rideToEdit!;
+
+    // Cargar campos de texto
+    _nameController.text = ride.name;
+    _kilometersController.text = ride.kilometers.toString();
+    _instructionsController.text = ride.instructions;
+    _recommendationsController.text = ride.recommendations;
+
+    // Cargar fecha y hora
+    _selectedDate = ride.dateTime;
+    _selectedTime = TimeOfDay.fromDateTime(ride.dateTime);
+
+    // Cargar dificultad
+    _selectedDifficulty = ride.difficulty;
+
+    // Cargar punto de encuentro
+    _selectedMeetingPoint = meetingPointProvider.meetingPoints
+        .where((mp) => mp.id == ride.meetingPointId)
+        .firstOrNull;
+
+    // Cargar imagen URL
+    _rideImageUrl = ride.imageUrl;
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crear Rodada'),
+        title: Text(
+          widget.rideToEdit != null ? 'Editar Rodada' : 'Crear Rodada',
+        ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
       ),
@@ -178,6 +216,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     height: 200,
                     borderRadius: BorderRadius.circular(12),
                     imageType: 'ride',
+                    currentImageUrl:
+                        _rideImageUrl, // Pre-cargar imagen en modo edición
                     onImageSelected: (String? imageUrl) {
                       setState(() {
                         _rideImageUrl = imageUrl;
@@ -217,14 +257,14 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   ),
                   SizedBox(height: 32),
 
-                  // Botón de crear
+                  // Botón de crear/actualizar
                   if (rideProvider.isLoading)
                     Center(child: CircularProgressIndicator())
                   else
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _createRide,
+                        onPressed: _saveRide,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorTokens.primary30,
                           foregroundColor: ColorTokens.neutral100,
@@ -234,7 +274,9 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                           ),
                         ),
                         child: Text(
-                          'Crear Rodada',
+                          widget.rideToEdit != null
+                              ? 'Actualizar Rodada'
+                              : 'Crear Rodada',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -304,10 +346,9 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     _selectedMeetingPoint?.name ??
                         'Selecciona un punto de encuentro',
                     style: TextStyle(
-                      color:
-                          _selectedMeetingPoint != null
-                              ? ColorTokens.neutral20
-                              : ColorTokens.neutral60,
+                      color: _selectedMeetingPoint != null
+                          ? ColorTokens.neutral20
+                          : ColorTokens.neutral60,
                       fontSize: 16,
                     ),
                   ),
@@ -348,10 +389,9 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
                   : 'Selecciona la fecha',
               style: TextStyle(
-                color:
-                    _selectedDate != null
-                        ? ColorTokens.neutral20
-                        : ColorTokens.neutral60,
+                color: _selectedDate != null
+                    ? ColorTokens.neutral20
+                    : ColorTokens.neutral60,
                 fontSize: 16,
               ),
             ),
@@ -380,10 +420,9 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   ? '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
                   : 'Selecciona la hora',
               style: TextStyle(
-                color:
-                    _selectedTime != null
-                        ? ColorTokens.neutral20
-                        : ColorTokens.neutral60,
+                color: _selectedTime != null
+                    ? ColorTokens.neutral20
+                    : ColorTokens.neutral60,
                 fontSize: 16,
               ),
             ),
@@ -413,42 +452,41 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
             value: _selectedDifficulty,
             isExpanded: true,
             underline: SizedBox.shrink(),
-            items:
-                DifficultyLevel.values.map((difficulty) {
-                  Color color;
-                  switch (difficulty) {
-                    case DifficultyLevel.easy:
-                      color = ColorTokens.success40;
-                      break;
-                    case DifficultyLevel.medium:
-                      color = ColorTokens.warning60;
-                      break;
-                    case DifficultyLevel.hard:
-                      color = ColorTokens.error50;
-                      break;
-                    case DifficultyLevel.expert:
-                      color = ColorTokens.secondary60;
-                      break;
-                  }
+            items: DifficultyLevel.values.map((difficulty) {
+              Color color;
+              switch (difficulty) {
+                case DifficultyLevel.easy:
+                  color = ColorTokens.success40;
+                  break;
+                case DifficultyLevel.medium:
+                  color = ColorTokens.warning60;
+                  break;
+                case DifficultyLevel.hard:
+                  color = ColorTokens.error50;
+                  break;
+                case DifficultyLevel.expert:
+                  color = ColorTokens.secondary60;
+                  break;
+              }
 
-                  return DropdownMenuItem(
-                    value: difficulty,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: color,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(_getDifficultyName(difficulty)),
-                      ],
+              return DropdownMenuItem(
+                value: difficulty,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  );
-                }).toList(),
+                    SizedBox(width: 8),
+                    Text(_getDifficultyName(difficulty)),
+                  ],
+                ),
+              );
+            }).toList(),
             onChanged: (value) {
               if (value != null) {
                 setState(() {
@@ -504,10 +542,9 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     color: ColorTokens.secondary50,
                   ),
                   title: Text(meetingPoint.name),
-                  subtitle:
-                      meetingPoint.description.isNotEmpty
-                          ? Text(meetingPoint.description)
-                          : null,
+                  subtitle: meetingPoint.description.isNotEmpty
+                      ? Text(meetingPoint.description)
+                      : null,
                   selected: _selectedMeetingPoint?.id == meetingPoint.id,
                   onTap: () {
                     setState(() {
@@ -556,7 +593,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     }
   }
 
-  void _createRide() async {
+  void _saveRide() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedMeetingPoint == null) {
@@ -609,22 +646,43 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
     final provider = Provider.of<RideProvider>(context, listen: false);
 
-    final success = await provider.createRide(
-      name: _nameController.text.trim(),
-      groupId: widget.groupId,
-      meetingPointId: _selectedMeetingPoint!.id,
-      dateTime: dateTime,
-      difficulty: _selectedDifficulty,
-      kilometers: double.parse(_kilometersController.text),
-      instructions: _instructionsController.text.trim(),
-      recommendations: _recommendationsController.text.trim(),
-      imageUrl: _rideImageUrl, // Incluir imagen si fue seleccionada
-    );
+    final bool success;
+    if (widget.rideToEdit != null) {
+      // Modo edición
+      success = await provider.updateRide(
+        rideId: widget.rideToEdit!.id,
+        name: _nameController.text.trim(),
+        meetingPointId: _selectedMeetingPoint!.id,
+        dateTime: dateTime,
+        difficulty: _selectedDifficulty,
+        kilometers: double.parse(_kilometersController.text),
+        instructions: _instructionsController.text.trim(),
+        recommendations: _recommendationsController.text.trim(),
+        imageUrl: _rideImageUrl,
+      );
+    } else {
+      // Modo creación
+      success = await provider.createRide(
+        name: _nameController.text.trim(),
+        groupId: widget.groupId,
+        meetingPointId: _selectedMeetingPoint!.id,
+        dateTime: dateTime,
+        difficulty: _selectedDifficulty,
+        kilometers: double.parse(_kilometersController.text),
+        instructions: _instructionsController.text.trim(),
+        recommendations: _recommendationsController.text.trim(),
+        imageUrl: _rideImageUrl,
+      );
+    }
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Rodada creada exitosamente'),
+          content: Text(
+            widget.rideToEdit != null
+                ? 'Rodada actualizada exitosamente'
+                : 'Rodada creada exitosamente',
+          ),
           backgroundColor: ColorTokens.success50,
         ),
       );

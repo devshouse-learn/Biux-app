@@ -155,7 +155,14 @@ class LikesProvider extends ChangeNotifier {
     if (contextType != null && contextTargetId != null) {
       final typeStr = contextType == CommentableType.post ? 'post' : 'ride';
       finalTargetId = '${typeStr}_${contextTargetId}_$commentId';
+      print('🔍 DEBUG LIKE COMMENT - commentId: $commentId');
+      print('🔍 DEBUG LIKE COMMENT - contextTargetId: $contextTargetId');
+      print('🔍 DEBUG LIKE COMMENT - contextType: $contextType');
       print('🔍 DEBUG LIKE COMMENT - Constructed targetId: $finalTargetId');
+    } else {
+      print(
+        '⚠️ WARNING: likeComment called without context - targetId: $finalTargetId',
+      );
     }
 
     await _toggleLike(
@@ -186,13 +193,37 @@ class LikesProvider extends ChangeNotifier {
   }
 
   /// Observa si el usuario actual dio like a un comentario
-  Stream<bool> watchUserLikedComment({required String commentId}) {
-    return _repository.watchUserLiked(LikeableType.comment, commentId, userId);
+  Stream<bool> watchUserLikedComment({
+    required String commentId,
+    String? contextTargetId,
+    CommentableType? contextType,
+  }) {
+    // Construir targetId compuesto si se proporciona contexto
+    String finalTargetId = commentId;
+    if (contextType != null && contextTargetId != null) {
+      final typeStr = contextType == CommentableType.post ? 'post' : 'ride';
+      finalTargetId = '${typeStr}_${contextTargetId}_$commentId';
+    }
+    return _repository.watchUserLiked(
+      LikeableType.comment,
+      finalTargetId,
+      userId,
+    );
   }
 
   /// Observa el conteo de likes de un comentario
-  Stream<int> watchCommentLikesCount({required String commentId}) {
-    return _repository.watchLikesCount(LikeableType.comment, commentId);
+  Stream<int> watchCommentLikesCount({
+    required String commentId,
+    String? contextTargetId,
+    CommentableType? contextType,ww
+  }) {
+    // Construir targetId compuesto si se proporciona contexto
+    String finalTargetId = commentId;
+    if (contextType != null && contextTargetId != null) {
+      final typeStr = contextType == CommentableType.post ? 'post' : 'ride';
+      finalTargetId = '${typeStr}_${contextTargetId}_$commentId';
+    }
+    return _repository.watchLikesCount(LikeableType.comment, finalTargetId);
   }
 
   /// Da like a una historia (expira en 24h)
@@ -313,7 +344,13 @@ class LikesProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
+      print('🔍 DEBUG UNLIKE - targetId: $targetId');
+      print('🔍 DEBUG UNLIKE - userId: $userId');
+      print('🔍 DEBUG UNLIKE - type: $type');
+
       await _repository.unlike(type: type, targetId: targetId, userId: userId);
+
+      print('✅ Unlike completado exitosamente');
 
       // Establecer cooldown después de completar exitosamente
       _setCooldown(targetId);
@@ -321,6 +358,7 @@ class LikesProvider extends ChangeNotifier {
       _isProcessing = false;
       notifyListeners();
     } catch (e) {
+      print('❌ Error al quitar like: $e');
       _error = 'Error al quitar like: $e';
       _isProcessing = false;
       notifyListeners();

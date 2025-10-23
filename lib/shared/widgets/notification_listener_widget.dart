@@ -30,7 +30,11 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
       final isOpened = data['opened'] == true;
       if (!isOpened) {
         // Notificación recibida pero no tocada - mostrar snackbar
-        _showNotificationSnackbar(data);
+        try {
+          _showNotificationSnackbar(data);
+        } catch (e) {
+          print('⚠️ Error mostrando snackbar de notificación: $e');
+        }
       } else {
         // Notificación tocada - navegar
         _handleNotificationTap(data);
@@ -39,10 +43,19 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
   }
 
   void _showNotificationSnackbar(Map<String, dynamic> data) {
+    if (!mounted) return;
+
     final title = data['title'] ?? 'Nueva notificación';
     final body = data['body'] ?? '';
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    // Verificar que existe un ScaffoldMessenger
+    final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+    if (scaffoldMessenger == null) {
+      print('⚠️ No hay ScaffoldMessenger disponible para mostrar notificación');
+      return;
+    }
+
+    scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,70 +88,117 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
 
   void _handleNotificationTap(Map<String, dynamic> data) {
     final type = data['type'] as String?;
-    final relatedId = data['relatedId'] as String?;
+    final targetId = data['targetId'] as String?;
+    final targetType = data['targetType'] as String?;
 
-    print('🔔 Navegando por notificación - Type: $type, RelatedId: $relatedId');
+    print('🔔 Navegando por notificación');
+    print('   Type: $type');
+    print('   TargetId: $targetId');
+    print('   TargetType: $targetType');
 
-    // Si no hay tipo o no hay relatedId, ir a lista de notificaciones
+    // Si no hay tipo, ir a lista de notificaciones
     if (type == null) {
       context.push('/notifications');
       return;
     }
 
     switch (type) {
-      case 'like':
-      case 'comment':
-        // Navegar al post/experiencia
-        if (relatedId != null) {
-          context.push('/experiences/$relatedId');
+      // Likes en posts
+      case 'like_post':
+        if (targetId != null) {
+          context.push('/stories/post/$targetId');
         } else {
           context.push('/notifications');
         }
         break;
 
+      // Comentarios en posts
+      case 'comment_post':
+        if (targetId != null) {
+          context.push('/stories/post/$targetId');
+        } else {
+          context.push('/notifications');
+        }
+        break;
+
+      // Likes en comentarios (ir al post/ride donde está el comentario)
+      case 'like_comment':
+        if (targetId != null) {
+          // targetType puede ser 'post' o 'ride'
+          if (targetType == 'post') {
+            context.push('/stories/post/$targetId');
+          } else if (targetType == 'ride') {
+            context.push('/rides/$targetId');
+          } else {
+            context.push('/notifications');
+          }
+        } else {
+          context.push('/notifications');
+        }
+        break;
+
+      // Likes en rodadas
+      case 'like_ride':
+        if (targetId != null) {
+          context.push('/rides/$targetId');
+        } else {
+          context.push('/notifications');
+        }
+        break;
+
+      // Comentarios en rodadas
+      case 'comment_ride':
+        if (targetId != null) {
+          context.push('/rides/$targetId');
+        } else {
+          context.push('/notifications');
+        }
+        break;
+
+      // Seguir usuario
       case 'follow':
-        // Navegar al perfil del seguidor
-        final senderId = data['senderId'] as String?;
-        if (senderId != null) {
-          context.push('/users/$senderId');
+        final fromUserId = data['fromUserId'] as String?;
+        if (fromUserId != null) {
+          context.push('/users/$fromUserId');
         } else {
           context.push('/notifications');
         }
         break;
 
+      // Invitaciones y recordatorios de rodadas
       case 'ride_invitation':
       case 'ride_reminder':
-        // Navegar a la rodada
-        if (relatedId != null) {
-          context.push('/rides/$relatedId');
+      case 'ride_update':
+        if (targetId != null) {
+          context.push('/rides/$targetId');
         } else {
           context.push('/notifications');
         }
         break;
 
+      // Grupos
       case 'group_invitation':
       case 'group_update':
       case 'group_join_request':
-        // Navegar al grupo
-        if (relatedId != null) {
-          context.push('/groups/$relatedId');
+        if (targetId != null) {
+          context.push('/groups/$targetId');
         } else {
           context.push('/notifications');
         }
         break;
 
+      // Historias
       case 'story':
-        // Abrir historias del usuario
-        final senderId = data['senderId'] as String?;
-        if (senderId != null) {
-          context.push('/stories/$senderId');
+        final fromUserId = data['fromUserId'] as String?;
+        if (fromUserId != null) {
+          context.push('/stories/$fromUserId');
         } else {
           context.push('/notifications');
         }
         break;
 
+      // Notificaciones del sistema
       case 'system':
-        // Notificaciones del sistema - ir a notificaciones
         context.push('/notifications');
         break;
 

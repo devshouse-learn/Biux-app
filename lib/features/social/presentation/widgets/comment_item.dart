@@ -132,6 +132,8 @@ class CommentItem extends StatelessWidget {
                               return StreamBuilder<bool>(
                                 stream: likesProvider.watchUserLikedComment(
                                   commentId: comment.id,
+                                  contextTargetId: targetId,
+                                  contextType: type,
                                 ),
                                 builder: (context, likeSnapshot) {
                                   final isLiked = likeSnapshot.data ?? false;
@@ -140,6 +142,8 @@ class CommentItem extends StatelessWidget {
                                     stream: likesProvider
                                         .watchCommentLikesCount(
                                           commentId: comment.id,
+                                          contextTargetId: targetId,
+                                          contextType: type,
                                         ),
                                     builder: (context, countSnapshot) {
                                       final likesCount =

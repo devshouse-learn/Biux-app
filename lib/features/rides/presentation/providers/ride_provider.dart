@@ -56,7 +56,7 @@ class RideProvider extends ChangeNotifier {
           .collection('rides')
           .where(
             'dateTime',
-            isGreaterThanOrEqualTo: oneWeekAgo.toIso8601String(),
+            isGreaterThanOrEqualTo: Timestamp.fromDate(oneWeekAgo),
           )
           .orderBy('dateTime', descending: false)
           .get();
@@ -102,7 +102,7 @@ class RideProvider extends ChangeNotifier {
           .where('groupId', isEqualTo: groupId)
           .where(
             'dateTime',
-            isGreaterThanOrEqualTo: oneWeekAgo.toIso8601String(),
+            isGreaterThanOrEqualTo: Timestamp.fromDate(oneWeekAgo),
           )
           .orderBy('dateTime', descending: false)
           .get();
@@ -233,6 +233,120 @@ class RideProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _setError('Error al crear la rodada: $e');
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  // Actualizar una rodada existente
+  Future<bool> updateRide({
+    required String rideId,
+    required String name,
+    required String meetingPointId,
+    required DateTime dateTime,
+    required DifficultyLevel difficulty,
+    required double kilometers,
+    required String instructions,
+    required String recommendations,
+    String? imageUrl, // Nueva imagen (puede ser null para mantener la actual)
+    bool removeImage = false, // Flag para eliminar la imagen actual
+  }) async {
+    if (currentUserId == null) {
+      _setError('Usuario no autenticado');
+      return false;
+    }
+
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      // Verificar que el usuario es el creador de la rodada
+      final rideDoc = await _firestore.collection('rides').doc(rideId).get();
+      if (!rideDoc.exists) {
+        _setError('La rodada no existe');
+        _setLoading(false);
+        return false;
+      }
+
+      final rideData = rideDoc.data()!;
+      if (rideData['createdBy'] != currentUserId) {
+        _setError('No tienes permisos para editar esta rodada');
+        _setLoading(false);
+        return false;
+      }
+
+      // Preparar datos de actualización
+      final updateData = {
+        'name': name,
+        'meetingPointId': meetingPointId,
+        'dateTime': Timestamp.fromDate(dateTime),
+        'difficulty': difficulty.name,
+        'kilometers': kilometers,
+        'instructions': instructions,
+        'recommendations': recommendations,
+        'updatedAt': Timestamp.now(),
+      };
+
+      // Manejo de la imagen
+      final currentImageUrl = rideData['imageUrl'] as String?;
+
+      if (removeImage) {
+        // Eliminar imagen actual si existe
+        if (currentImageUrl != null) {
+          try {
+            await OptimizedStorageService.deleteImage(currentImageUrl);
+          } catch (e) {
+            print('Error eliminando imagen anterior: $e');
+          }
+        }
+        updateData['imageUrl'] = FieldValue.delete();
+      } else if (imageUrl != null && imageUrl != currentImageUrl) {
+        // Nueva imagen proporcionada
+        if (imageUrl.contains('temp_')) {
+          // Mover imagen temporal
+          try {
+            final finalImageUrl =
+                await OptimizedStorageService.moveTemporaryRideImage(
+                  tempImageUrl: imageUrl,
+                  rideId: rideId,
+                );
+
+            if (finalImageUrl != null) {
+              updateData['imageUrl'] = finalImageUrl;
+            } else {
+              updateData['imageUrl'] = imageUrl;
+            }
+          } catch (e) {
+            print('Error moviendo imagen temporal: $e');
+            updateData['imageUrl'] = imageUrl;
+          }
+        } else {
+          // Imagen normal
+          updateData['imageUrl'] = imageUrl;
+        }
+
+        // Eliminar imagen anterior si existe
+        if (currentImageUrl != null) {
+          try {
+            await OptimizedStorageService.deleteImage(currentImageUrl);
+          } catch (e) {
+            print('Error eliminando imagen anterior: $e');
+          }
+        }
+      }
+      // Si imageUrl es null y removeImage es false, mantener la imagen actual (no hacer nada)
+
+      // Actualizar en Firestore
+      await _firestore.collection('rides').doc(rideId).update(updateData);
+
+      // Recargar rodadas y actualizar la seleccionada
+      await loadAllRides();
+      await selectRideById(rideId);
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('Error al actualizar la rodada: $e');
       _setLoading(false);
       return false;
     }
