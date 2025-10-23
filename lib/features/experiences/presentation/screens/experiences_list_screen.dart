@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +20,10 @@ class ExperiencesListScreen extends StatefulWidget {
   State<ExperiencesListScreen> createState() => _ExperiencesListScreenState();
 }
 
-class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
+class _ExperiencesListScreenState extends State<ExperiencesListScreen>
+    with WidgetsBindingObserver {
+  Timer? _autoRefreshTimer;
+
   /// Obtiene el ID del usuario actual autenticado
   String? get _currentUserId {
     final user = FirebaseAuth.instance.currentUser;
@@ -29,18 +33,52 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     // Cargar feed personalizado al inicializar
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userId = _currentUserId;
-      if (userId != null) {
-        // Cambiar a feed personalizado que incluye grupos, mis posts y posts de seguidos
-        context.read<ExperienceProvider>().loadPersonalizedFeed(userId);
-        // Cargar grupos que sigue el usuario
-        context.read<GroupProvider>().loadUserGroups();
-      } else {
-        print('⚠️ Usuario no autenticado, no se puede cargar el feed');
-      }
+      _loadFeed();
+      _startAutoRefresh();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _autoRefreshTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App vuelve a primer plano - recargar y reiniciar timer
+      _loadFeed();
+      _startAutoRefresh();
+    } else if (state == AppLifecycleState.paused) {
+      // App va a segundo plano - pausar timer
+      _autoRefreshTimer?.cancel();
+    }
+  }
+
+  void _startAutoRefresh() {
+    _autoRefreshTimer?.cancel();
+    _autoRefreshTimer = Timer.periodic(
+      const Duration(minutes: 5),
+      (_) => _loadFeed(),
+    );
+  }
+
+  Future<void> _loadFeed() async {
+    final userId = _currentUserId;
+    if (userId != null) {
+      // Cambiar a feed personalizado que incluye grupos, mis posts y posts de seguidos
+      await context.read<ExperienceProvider>().loadPersonalizedFeed(userId);
+      // Cargar grupos que sigue el usuario
+      context.read<GroupProvider>().loadUserGroups();
+    } else {
+      print('⚠️ Usuario no autenticado, no se puede cargar el feed');
+    }
   }
 
   @override
@@ -99,21 +137,24 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
     final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
 
     // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
-    return Column(
-      children: [
-        // Sección de Grupos que sigo (temporalmente comentado)
-        // _buildGroupsSection(),
+    return RefreshIndicator(
+      onRefresh: _loadFeed,
+      child: Column(
+        children: [
+          // Sección de Grupos que sigo (temporalmente comentado)
+          // _buildGroupsSection(),
 
-        // Sección de Stories con indicador
-        const ExperiencesStoriesWidget(),
+          // Sección de Stories con indicador
+          const ExperiencesStoriesWidget(),
 
-        // Lista de posts abajo o estado vacío
-        Expanded(
-          child: posts.isEmpty
-              ? _buildEmptyStateInLayout()
-              : _buildExperiencesList(posts),
-        ),
-      ],
+          // Lista de posts abajo o estado vacío
+          Expanded(
+            child: posts.isEmpty
+                ? _buildEmptyStateInLayout()
+                : _buildExperiencesList(posts),
+          ),
+        ],
+      ),
     );
   }
 
@@ -168,34 +209,40 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen> {
   Widget _buildEmptyStateInLayout() {
     final theme = Theme.of(context);
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.article_outlined,
-            size: 64,
-            color: theme.iconTheme.color?.withOpacity(0.5),
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.article_outlined,
+                size: 64,
+                color: theme.iconTheme.color?.withOpacity(0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '¡Comparte tu primera publicación!',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: theme.textTheme.bodyLarge?.color,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            '¡Comparte tu primera publicación!',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: theme.textTheme.bodyLarge?.color,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
-            style: TextStyle(
-              fontSize: 14,
-              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -45,6 +45,9 @@ import '../../../features/bikes/presentation/screens/bike_registration_screen.da
 import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
 import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
 
+// Settings imports
+import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
+
 // Social imports
 import '../../../features/social/presentation/screens/notifications_screen.dart';
 import '../../../features/social/presentation/screens/comments_screen.dart';
@@ -388,6 +391,15 @@ final GoRouter _router = GoRouter(
             final qrCode = state.pathParameters['qrCode']!;
             return PublicBikeInfoScreen(qrCode: qrCode);
           },
+        ),
+
+        // ===== SETTINGS =====
+
+        // Configuración de notificaciones
+        GoRoute(
+          path: AppRoutes.notificationSettings,
+          name: AppRoutes.notificationSettingsName,
+          builder: (context, state) => const NotificationSettingsScreen(),
         ),
 
         // ===== SOCIAL FEATURES =====

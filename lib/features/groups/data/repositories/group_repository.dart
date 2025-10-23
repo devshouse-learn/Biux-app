@@ -74,27 +74,27 @@ class GroupRepository {
         .where('cityId', isEqualTo: cityId)
         .snapshots()
         .map((snapshot) {
-      print('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
+          print('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
 
-      final groups = snapshot.docs
-          .map((doc) {
-            try {
-              return GroupModel.fromFirestore(doc);
-            } catch (e) {
-              print('❌ Error parseando grupo ${doc.id}: $e');
-              return null;
-            }
-          })
-          .where((group) => group != null)
-          .cast<GroupModel>()
-          .toList();
+          final groups = snapshot.docs
+              .map((doc) {
+                try {
+                  return GroupModel.fromFirestore(doc);
+                } catch (e) {
+                  print('❌ Error parseando grupo ${doc.id}: $e');
+                  return null;
+                }
+              })
+              .where((group) => group != null)
+              .cast<GroupModel>()
+              .toList();
 
-      // Ordenar por fecha en memoria
-      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          // Ordenar por fecha en memoria
+          groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      print('✅ Grupos procesados correctamente: ${groups.length}');
-      return groups;
-    });
+          print('✅ Grupos procesados correctamente: ${groups.length}');
+          return groups;
+        });
   }
 
   // Obtener todos los grupos activos - MANTENER PARA COMPATIBILIDAD
@@ -106,27 +106,27 @@ class GroupRepository {
         .where('isActive', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
-      print('📊 Grupos encontrados: ${snapshot.docs.length}');
+          print('📊 Grupos encontrados: ${snapshot.docs.length}');
 
-      final groups = snapshot.docs
-          .map((doc) {
-            try {
-              return GroupModel.fromFirestore(doc);
-            } catch (e) {
-              print('❌ Error parseando grupo ${doc.id}: $e');
-              return null;
-            }
-          })
-          .where((group) => group != null)
-          .cast<GroupModel>()
-          .toList();
+          final groups = snapshot.docs
+              .map((doc) {
+                try {
+                  return GroupModel.fromFirestore(doc);
+                } catch (e) {
+                  print('❌ Error parseando grupo ${doc.id}: $e');
+                  return null;
+                }
+              })
+              .where((group) => group != null)
+              .cast<GroupModel>()
+              .toList();
 
-      // Ordenar por fecha en memoria
-      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          // Ordenar por fecha en memoria
+          groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      print('✅ Grupos procesados correctamente: ${groups.length}');
-      return groups;
-    });
+          print('✅ Grupos procesados correctamente: ${groups.length}');
+          return groups;
+        });
   }
 
   // Obtener grupos donde el usuario es miembro
@@ -137,11 +137,12 @@ class GroupRepository {
         .where('isActive', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
-      final groups =
-          snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList();
-      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      return groups;
-    });
+          final groups = snapshot.docs
+              .map((doc) => GroupModel.fromFirestore(doc))
+              .toList();
+          groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return groups;
+        });
   }
 
   // Obtener grupos administrados por el usuario
@@ -152,11 +153,12 @@ class GroupRepository {
         .where('isActive', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
-      final groups =
-          snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList();
-      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      return groups;
-    });
+          final groups = snapshot.docs
+              .map((doc) => GroupModel.fromFirestore(doc))
+              .toList();
+          groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return groups;
+        });
   }
 
   // Obtener un grupo específico
@@ -176,10 +178,59 @@ class GroupRepository {
   // Solicitar unirse a un grupo
   Future<bool> requestJoinGroup(String groupId, String userId) async {
     try {
+      // Actualizar grupo con solicitud pendiente
       await _firestore.collection(_collection).doc(groupId).update({
         'pendingRequestIds': FieldValue.arrayUnion([userId]),
         'updatedAt': Timestamp.fromDate(DateTime.now()),
       });
+
+      // Obtener datos del grupo y usuario para crear notificación
+      try {
+        final groupDoc = await _firestore
+            .collection(_collection)
+            .doc(groupId)
+            .get();
+        final groupData = groupDoc.data();
+
+        final userDoc = await _firestore.collection('users').doc(userId).get();
+        final userData = userDoc.data();
+
+        if (groupData != null && userData != null) {
+          final adminId = groupData['adminId'] as String?;
+
+          if (adminId != null && adminId.isNotEmpty) {
+            // Crear notificación para el admin del grupo
+            await _firestore
+                .collection('users')
+                .doc(adminId)
+                .collection('notifications')
+                .add({
+                  'type': 'group_join_request',
+                  'fromUserId': userId,
+                  'fromUserName':
+                      userData['fullName'] ?? userData['userName'] ?? 'Usuario',
+                  'fromUserPhoto': userData['photo'],
+                  'targetType': 'group',
+                  'targetId': groupId,
+                  'targetPreview': groupData['name'] ?? 'Grupo',
+                  'message':
+                      'solicita unirse a tu grupo ${groupData['name'] ?? ""}',
+                  'isRead': false,
+                  'createdAt': FieldValue.serverTimestamp(),
+                  'metadata': {
+                    'groupName': groupData['name'],
+                    'groupLogo': groupData['logo'],
+                  },
+                });
+          }
+        }
+      } catch (notifError) {
+        print(
+          'Error creando notificación de solicitud de ingreso: $notifError',
+        );
+        // No fallar la operación si la notificación falla
+      }
+
       return true;
     } catch (e) {
       print('Error solicitando unirse al grupo: $e');
@@ -314,7 +365,9 @@ class GroupRepository {
           .collection(_collection)
           .where('isActive', isEqualTo: true)
           .orderBy('name')
-          .startAt([query]).endAt([query + '\uf8ff']).get();
+          .startAt([query])
+          .endAt([query + '\uf8ff'])
+          .get();
 
       return snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList();
     } catch (e) {

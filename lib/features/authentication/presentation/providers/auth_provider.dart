@@ -3,14 +3,9 @@ import 'dart:async';
 import '../../data/repositories/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/shared/services/notification_service.dart';
 
-enum AuthState {
-  initial,
-  loading,
-  codeSent,
-  authenticated,
-  error,
-}
+enum AuthState { initial, loading, codeSent, authenticated, error }
 
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
@@ -24,7 +19,7 @@ class AuthProvider extends ChangeNotifier {
   Timer? _resendTimer;
 
   AuthProvider({required AuthRepository authRepository})
-      : _authRepository = authRepository;
+    : _authRepository = authRepository;
 
   AuthState get state => _state;
   String? get errorMessage => _errorMessage;
@@ -80,11 +75,26 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      final authResponse =
-          await _authRepository.validateOTP(_phoneNumber!, code);
+      final authResponse = await _authRepository.validateOTP(
+        _phoneNumber!,
+        code,
+      );
+
+      print('🔑 Token recibido: ${authResponse.token.substring(0, 20)}...');
 
       // Autenticar con Firebase
-      await _auth.signInWithCustomToken(authResponse.token);
+      final userCredential = await _auth.signInWithCustomToken(
+        authResponse.token,
+      );
+      final user = userCredential.user;
+
+      print('✅ Usuario autenticado: ${user?.uid}');
+      print('🎫 Token ID (para Realtime Database):');
+      final idToken = await user?.getIdToken();
+      print(idToken?.substring(0, 50));
+
+      // Reinicializar servicio de notificaciones con el usuario autenticado
+      await NotificationService().reinitializeAfterLogin();
 
       _state = AuthState.authenticated;
     } catch (e) {
@@ -102,10 +112,21 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
+      // Forzar eliminación completa de la sesión
+      final currentUser = _auth.currentUser;
+      if (currentUser != null) {
+        print('🚪 Cerrando sesión de: ${currentUser.uid}');
+        // Eliminar tokens cached
+        await currentUser.delete().catchError((e) {
+          print('⚠️ No se pudo eliminar usuario (normal si es externo): $e');
+        });
+      }
       await _auth.signOut();
+      print('✅ Sesión cerrada completamente');
       _state = AuthState.initial;
       notifyListeners();
     } catch (e) {
+      print('❌ Error al cerrar sesión: $e');
       _errorMessage = 'Error al cerrar sesión';
       notifyListeners();
     }

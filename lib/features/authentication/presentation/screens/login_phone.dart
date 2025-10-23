@@ -13,8 +13,10 @@ class LoginPhonePage extends StatefulWidget {
 
 class _LoginPhonePageState extends State<LoginPhonePage> {
   final TextEditingController phoneController = TextEditingController();
-  final List<TextEditingController> codeControllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> codeControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());
 
   @override
@@ -33,9 +35,9 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
     if (phoneController.text.isNotEmpty) {
       context.read<AuthProvider>().sendCode(phoneController.text);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ingresa tu teléfono')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ingresa tu teléfono')));
     }
   }
 
@@ -44,9 +46,9 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
     if (code.length == 6) {
       context.read<AuthProvider>().validateCode(code);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ingresa los 6 dígitos')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ingresa los 6 dígitos')));
     }
   }
 
@@ -70,7 +72,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                   // Manejar estados de autenticación
                   if (auth.state == AuthState.authenticated) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      context.go(AppRoutes.map);
+                      context.go(AppRoutes.roadsList); // Redirigir a rodadas
                     });
                   }
 
@@ -94,10 +96,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        Images.kBiuxLogoLettersWhite,
-                        width: 200,
-                      ),
+                      Image.asset(Images.kBiuxLogoLettersWhite, width: 200),
                       SizedBox(height: 50),
                       TextField(
                         controller: phoneController,
@@ -106,24 +105,29 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         decoration: InputDecoration(
                           labelText: 'Teléfono',
                           labelStyle: TextStyle(color: ColorTokens.neutral100),
-                          prefixIcon:
-                              Icon(Icons.phone, color: ColorTokens.secondary50),
+                          prefixIcon: Icon(
+                            Icons.phone,
+                            color: ColorTokens.secondary50,
+                          ),
                           filled: true,
                           fillColor: Colors.white.withValues(alpha: 0.1),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide:
-                                BorderSide(color: ColorTokens.neutral100),
+                            borderSide: BorderSide(
+                              color: ColorTokens.neutral100,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide:
-                                BorderSide(color: ColorTokens.neutral100),
+                            borderSide: BorderSide(
+                              color: ColorTokens.neutral100,
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide:
-                                BorderSide(color: ColorTokens.secondary50),
+                            borderSide: BorderSide(
+                              color: ColorTokens.secondary50,
+                            ),
                           ),
                         ),
                         style: TextStyle(color: ColorTokens.neutral100),
@@ -131,7 +135,8 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                       SizedBox(height: 20),
                       if (auth.state == AuthState.loading)
                         CircularProgressIndicator(
-                            color: ColorTokens.secondary50)
+                          color: ColorTokens.secondary50,
+                        )
                       else if (auth.state != AuthState.codeSent)
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -142,11 +147,14 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                             ),
                           ),
                           onPressed: _handleSendCode,
-                          child: Text('Enviar código',
-                              style: TextStyle(
-                                  color: ColorTokens.neutral100,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
+                          child: Text(
+                            'Enviar código',
+                            style: TextStyle(
+                              color: ColorTokens.neutral100,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       if (auth.state == AuthState.codeSent) ...[
                         SizedBox(height: 30),
@@ -166,32 +174,38 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                                 style: TextStyle(color: ColorTokens.neutral100),
                                 onChanged: (value) {
                                   if (value.isNotEmpty && i < 5) {
-                                    FocusScope.of(context)
-                                        .requestFocus(focusNodes[i + 1]);
+                                    FocusScope.of(
+                                      context,
+                                    ).requestFocus(focusNodes[i + 1]);
                                   } else if (value.isEmpty && i > 0) {
-                                    FocusScope.of(context)
-                                        .requestFocus(focusNodes[i - 1]);
+                                    FocusScope.of(
+                                      context,
+                                    ).requestFocus(focusNodes[i - 1]);
                                   }
                                 },
                                 decoration: InputDecoration(
                                   counterText: '',
                                   filled: true,
-                                  fillColor:
-                                      Colors.white.withValues(alpha: 0.1),
+                                  fillColor: Colors.white.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
-                                        color: ColorTokens.neutral100),
+                                      color: ColorTokens.neutral100,
+                                    ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
-                                        color: ColorTokens.neutral100),
+                                      color: ColorTokens.neutral100,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(
-                                        color: ColorTokens.secondary50),
+                                      color: ColorTokens.secondary50,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -210,11 +224,14 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           onPressed: auth.state != AuthState.loading
                               ? _handleValidateCode
                               : null,
-                          child: Text('Validar código',
-                              style: TextStyle(
-                                  color: ColorTokens.neutral100,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
+                          child: Text(
+                            'Validar código',
+                            style: TextStyle(
+                              color: ColorTokens.neutral100,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                         SizedBox(height: 10),
                         ElevatedButton(
@@ -227,20 +244,27 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                               borderRadius: BorderRadius.circular(25),
                             ),
                           ),
-                          onPressed: auth.canResendCode &&
+                          onPressed:
+                              auth.canResendCode &&
                                   auth.state != AuthState.loading
                               ? () => context.read<AuthProvider>().resendCode()
                               : null,
                           child: auth.canResendCode
-                              ? Text('Reenviar código',
+                              ? Text(
+                                  'Reenviar código',
                                   style: TextStyle(
-                                      color: ColorTokens.neutral100,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold))
-                              : Text('Reenviar en ${auth.resendSeconds} s',
+                                    color: ColorTokens.neutral100,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : Text(
+                                  'Reenviar en ${auth.resendSeconds} s',
                                   style: TextStyle(
-                                      color: ColorTokens.neutral100,
-                                      fontSize: 16)),
+                                    color: ColorTokens.neutral100,
+                                    fontSize: 16,
+                                  ),
+                                ),
                         ),
                       ],
                     ],

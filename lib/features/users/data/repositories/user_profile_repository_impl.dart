@@ -108,6 +108,36 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       });
 
       await batch.commit();
+
+      // Crear notificación de seguimiento
+      try {
+        final currentUser = await _firestore
+            .collection('users')
+            .doc(_currentUserId)
+            .get();
+        final currentUserData = currentUser.data();
+
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('notifications')
+            .add({
+              'type': 'follow',
+              'fromUserId': _currentUserId,
+              'fromUserName':
+                  currentUserData?['fullName'] ??
+                  currentUserData?['userName'] ??
+                  'Usuario',
+              'fromUserPhoto': currentUserData?['photo'],
+              'message': 'ha comenzado a seguirte',
+              'isRead': false,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+      } catch (notifError) {
+        print('Error creando notificación de seguimiento: $notifError');
+        // No fallar la operación si la notificación falla
+      }
+
       return true;
     } catch (e) {
       print('Error siguiendo usuario: $e');

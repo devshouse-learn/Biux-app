@@ -1,4 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import '../models/comment_model.dart';
 
 /// Datasource para comentarios en Firebase Realtime Database
@@ -109,16 +111,55 @@ class CommentsRealtimeDatasource {
       mentions: comment.mentions,
     );
 
-    await ref.set(commentWithId.toJson());
+    // Debug: Ver qué datos estamos enviando
+    final jsonData = commentWithId.toJson();
+
+    // IMPORTANTE: Usar timestamp del servidor en lugar del cliente
+    jsonData['createdAt'] = ServerValue.timestamp;
+
+    print('🔍 Creando comentario en: ${ref.path}');
+    print('🔍 UserId del comentario: ${comment.userId}');
+
+    // CRÍTICO: Verificar que el usuario esté autenticado
+    final currentUser = FirebaseAuth.instance.currentUser;
+    print('👤 Usuario actual en Firebase Auth: ${currentUser?.uid}');
+    print('🎫 ¿Tiene token?: ${currentUser != null}');
+    if (currentUser != null) {
+      final token = await currentUser.getIdToken();
+      print('🎫 Token ID (primeros 50 chars): ${token?.substring(0, 50)}');
+    }
+
+    print('📝 Escribiendo comentario en Realtime Database...');
+    print('   Datos: $jsonData');
+    try {
+      await ref.set(jsonData);
+      print('✅ Comentario creado exitosamente: $commentId');
+    } catch (e) {
+      print('❌ Error al crear comentario: $e');
+      print('❌ Path: ${ref.path}');
+      if (e is PlatformException) {
+        print('❌ Code: ${e.code}');
+        print('❌ Message: ${e.message}');
+      }
+      rethrow;
+    }
 
     // Si es una respuesta, incrementar el contador de respuestas del padre
     if (comment.parentCommentId != null) {
-      final parentRef = _database.ref(
-        '${_getBasePath(type)}/$targetId/${comment.parentCommentId}/repliesCount',
-      );
-      final snapshot = await parentRef.get();
-      final currentCount = snapshot.value as int? ?? 0;
-      await parentRef.set(currentCount + 1);
+      try {
+        print('🔢 Actualizando contador de respuestas del padre...');
+        final parentRef = _database.ref(
+          '${_getBasePath(type)}/$targetId/${comment.parentCommentId}/repliesCount',
+        );
+        final snapshot = await parentRef.get();
+        final currentCount = snapshot.value as int? ?? 0;
+        await parentRef.set(currentCount + 1);
+        print('✅ Contador actualizado: $currentCount -> ${currentCount + 1}');
+      } catch (counterError) {
+        // No fallar si el contador no se puede actualizar
+        print('⚠️ No se pudo actualizar contador de respuestas: $counterError');
+        // El comentario ya fue creado exitosamente, esto es solo metadata
+      }
     }
 
     return ref.key!;

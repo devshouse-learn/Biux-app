@@ -3,15 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/attendee_entity.dart';
 import '../../domain/repositories/attendees_repository.dart';
-import '../../domain/repositories/notifications_repository.dart';
-import '../../domain/entities/notification_entity.dart';
+// import '../../domain/repositories/notifications_repository.dart'; // ✅ Not needed - Cloud Functions handle notifications
+// import '../../domain/entities/notification_entity.dart'; // ✅ Not needed - Cloud Functions handle notifications
 import '../../data/adapters/attendees_firestore_adapter.dart';
 import '../../../users/domain/repositories/user_repository.dart';
 
 /// Provider para gestionar asistentes a rodadas
 class AttendeesProvider extends ChangeNotifier {
   final AttendeesRepository _repository;
-  final NotificationsRepository _notificationsRepository;
+  // final NotificationsRepository _notificationsRepository; // ✅ Not needed - Cloud Functions handle notifications
   final AttendeesFirestoreAdapter _firestoreAdapter;
   final UserRepository? _userRepository;
   final String userId;
@@ -26,12 +26,12 @@ class AttendeesProvider extends ChangeNotifier {
 
   AttendeesProvider({
     required AttendeesRepository repository,
-    required NotificationsRepository notificationsRepository,
+    // required NotificationsRepository notificationsRepository, // ✅ Not needed
     AttendeesFirestoreAdapter? firestoreAdapter,
     UserRepository? userRepository,
     required this.userId,
   }) : _repository = repository,
-       _notificationsRepository = notificationsRepository,
+       // _notificationsRepository = notificationsRepository, // ✅ Not needed
        _firestoreAdapter = firestoreAdapter ?? AttendeesFirestoreAdapter(),
        _userRepository = userRepository;
 
@@ -158,23 +158,27 @@ class AttendeesProvider extends ChangeNotifier {
         status: status,
       );
 
-      // Crear notificación solo si no es el propio usuario
-      if (rideOwnerId != userId) {
-        // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
-        final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
-            ? _cachedUserName!
-            : userId.split('_').last; // Fallback: usar parte del userId
+      // ✅ NOTIFICATIONS NOW CREATED BY CLOUD FUNCTIONS
+      // Cloud Function onRideJoinCreated handles notifications automatically
+      // when a user joins a ride at: /attendees/rides/{rideId}/{userId}
 
-        await _notificationsRepository.createNotification(
-          userId: rideOwnerId,
-          type: NotificationType.rideJoin,
-          fromUserId: userId,
-          fromUserName: safeUserName,
-          fromUserPhoto: _cachedUserPhoto,
-          targetType: NotificationTargetType.ride,
-          targetId: rideId,
-        );
-      }
+      // Crear notificación solo si no es el propio usuario
+      // if (rideOwnerId != userId) {
+      //   // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
+      //   final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
+      //       ? _cachedUserName!
+      //       : userId.split('_').last; // Fallback: usar parte del userId
+
+      //   await _notificationsRepository.createNotification(
+      //     userId: rideOwnerId,
+      //     type: NotificationType.rideJoin,
+      //     fromUserId: userId,
+      //     fromUserName: safeUserName,
+      //     fromUserPhoto: _cachedUserPhoto,
+      //     targetType: NotificationTargetType.ride,
+      //     targetId: rideId,
+      //   );
+      // }
 
       _isJoining = false;
       notifyListeners();

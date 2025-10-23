@@ -151,6 +151,8 @@ class CommentItem extends StatelessWidget {
                                           if (isLiked) {
                                             await likesProvider.unlikeComment(
                                               comment.id,
+                                              contextTargetId: targetId,
+                                              contextType: type,
                                             );
                                           } else {
                                             await likesProvider.likeComment(

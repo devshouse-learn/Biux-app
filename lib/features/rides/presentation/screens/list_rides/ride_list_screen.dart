@@ -137,8 +137,8 @@ class _RideListScreenState extends State<RideListScreen> {
               // Botón en estado vac�o
               if (widget.groupId != null)
                 ElevatedButton.icon(
-                  onPressed:
-                      () => context.push('/rides/create/${widget.groupId}'),
+                  onPressed: () =>
+                      context.push('/rides/create/${widget.groupId}'),
                   icon: Icon(Icons.add),
                   label: Text('Crear Rodada'),
                   style: ElevatedButton.styleFrom(
@@ -148,8 +148,8 @@ class _RideListScreenState extends State<RideListScreen> {
                 )
               else if (groupProvider.adminGroups.isNotEmpty)
                 ElevatedButton.icon(
-                  onPressed:
-                      () => _showCreateRideDialog(context, groupProvider),
+                  onPressed: () =>
+                      _showCreateRideDialog(context, groupProvider),
                   icon: Icon(Icons.add),
                   label: Text('Crear Rodada'),
                   style: ElevatedButton.styleFrom(
@@ -177,72 +177,195 @@ class _RideListScreenState extends State<RideListScreen> {
   Widget _buildRideCard(RideModel ride, RideProvider provider) {
     final participationStatus = provider.getParticipationStatus(ride);
     final isCreator = provider.isCreator(ride);
+    final isPastRide = ride.dateTime.isBefore(DateTime.now());
 
-    return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => context.push('/rides/${ride.id}'),
-        borderRadius: BorderRadius.circular(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Opacity(
+      opacity: isPastRide ? 0.6 : 1.0,
+      child: Card(
+        margin: EdgeInsets.only(bottom: 16),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Stack(
           children: [
-            // Header con estado y dificultad
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: _getStatusColor(ride.status).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-              ),
-              child: Row(
+            InkWell(
+              onTap: () => context.push('/rides/${ride.id}'),
+              borderRadius: BorderRadius.circular(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
+                  // Header con estado y dificultad
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isPastRide
+                          ? Colors.grey.withValues(alpha: 0.2)
+                          : _getStatusColor(ride.status).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      ride.name,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: isPastRide
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                    color: ColorTokens.neutral60,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: _getDifficultyColor(
+                                        ride.difficulty,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      ride.difficultyDisplayName,
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral100,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '${ride.kilometers} km',
+                                    style: TextStyle(
+                                      color: ColorTokens.neutral60,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isCreator)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorTokens.warning50,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Organizador',
+                              style: TextStyle(
+                                color: ColorTokens.neutral100,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Información del grupo organizador
+                        if (widget.groupId ==
+                            null) // Solo mostrar si no estamos en un grupo específico
+                          FutureBuilder<Map<String, dynamic>?>(
+                            future: provider.getGroupInfo(ride.groupId),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.hasData &&
+                                  snapshot.data != null) {
+                                final groupInfo = snapshot.data!;
+                                return Container(
+                                  margin: EdgeInsets.only(bottom: 12),
+                                  child: Row(
+                                    children: [
+                                      groupInfo['logoUrl'] != null &&
+                                              groupInfo['logoUrl']
+                                                  .toString()
+                                                  .isNotEmpty
+                                          ? ClipOval(
+                                              child: OptimizedNetworkImage(
+                                                imageUrl: groupInfo['logoUrl'],
+                                                width: 32,
+                                                height: 32,
+                                                imageType:
+                                                    'avatar', // Cache de larga duración para logos
+                                                fit: BoxFit.cover,
+                                              ),
+                                            )
+                                          : CircleAvatar(
+                                              radius: 16,
+                                              backgroundColor:
+                                                  ColorTokens.primary30,
+                                              child: Icon(
+                                                Icons.group,
+                                                size: 16,
+                                                color: ColorTokens.neutral100,
+                                              ),
+                                            ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'Organizado por ${groupInfo['name']}',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium?.color,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return SizedBox.shrink();
+                            },
+                          ),
+
+                        // Fecha y hora
                         Row(
                           children: [
-                            Expanded(
-                              child: Text(
-                                ride.name,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
                             Icon(
-                              Icons.arrow_forward_ios,
+                              Icons.calendar_today,
                               size: 16,
                               color: ColorTokens.neutral60,
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _getDifficultyColor(ride.difficulty),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                ride.difficultyDisplayName,
-                                style: TextStyle(
-                                  color: ColorTokens.neutral100,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
                             SizedBox(width: 8),
                             Text(
-                              '${ride.kilometers} km',
+                              _formatDateTime(ride.dateTime),
                               style: TextStyle(
                                 color: ColorTokens.neutral60,
                                 fontSize: 14,
@@ -250,158 +373,88 @@ class _RideListScreenState extends State<RideListScreen> {
                             ),
                           ],
                         ),
+                        SizedBox(height: 8),
+
+                        // Participantes
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.group,
+                              size: 16,
+                              color: ColorTokens.neutral60,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              '${ride.participantCount} confirmados',
+                              style: TextStyle(
+                                color: ColorTokens.neutral60,
+                                fontSize: 14,
+                              ),
+                            ),
+                            if (ride.maybeParticipantCount > 0) ...[
+                              Text(
+                                ' ',
+                                style: TextStyle(color: ColorTokens.neutral60),
+                              ),
+                              Text(
+                                '${ride.maybeParticipantCount} tal vez',
+                                style: TextStyle(
+                                  color: ColorTokens.warning60,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        SizedBox(height: 12),
+
+                        // Estado de participación del usuario
+                        _buildParticipationChip(participationStatus),
+                        SizedBox(height: 16),
+
+                        // Botones de acción
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: _buildActionButton(
+                            ride,
+                            participationStatus,
+                            provider,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  if (isCreator)
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: ColorTokens.warning50,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Organizador',
+                ],
+              ),
+            ),
+            // Badge de "Finalizada" para rodadas pasadas
+            if (isPastRide)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[800],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.history, size: 14, color: Colors.white),
+                      SizedBox(width: 4),
+                      Text(
+                        'Finalizada',
                         style: TextStyle(
-                          color: ColorTokens.neutral100,
+                          color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Información del grupo organizador
-                  if (widget.groupId ==
-                      null) // Solo mostrar si no estamos en un grupo específico
-                    FutureBuilder<Map<String, dynamic>?>(
-                      future: provider.getGroupInfo(ride.groupId),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done &&
-                            snapshot.hasData &&
-                            snapshot.data != null) {
-                          final groupInfo = snapshot.data!;
-                          return Container(
-                            margin: EdgeInsets.only(bottom: 12),
-                            child: Row(
-                              children: [
-                                groupInfo['logoUrl'] != null &&
-                                        groupInfo['logoUrl']
-                                            .toString()
-                                            .isNotEmpty
-                                    ? ClipOval(
-                                      child: OptimizedNetworkImage(
-                                        imageUrl: groupInfo['logoUrl'],
-                                        width: 32,
-                                        height: 32,
-                                        imageType:
-                                            'avatar', // Cache de larga duración para logos
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                    : CircleAvatar(
-                                      radius: 16,
-                                      backgroundColor: ColorTokens.primary30,
-                                      child: Icon(
-                                        Icons.group,
-                                        size: 16,
-                                        color: ColorTokens.neutral100,
-                                      ),
-                                    ),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Organizado por ${groupInfo['name']}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium?.color,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        return SizedBox.shrink();
-                      },
-                    ),
-
-                  // Fecha y hora
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        size: 16,
-                        color: ColorTokens.neutral60,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        _formatDateTime(ride.dateTime),
-                        style: TextStyle(
-                          color: ColorTokens.neutral60,
-                          fontSize: 14,
-                        ),
-                      ),
                     ],
                   ),
-                  SizedBox(height: 8),
-
-                  // Participantes
-                  Row(
-                    children: [
-                      Icon(Icons.group, size: 16, color: ColorTokens.neutral60),
-                      SizedBox(width: 8),
-                      Text(
-                        '${ride.participantCount} confirmados',
-                        style: TextStyle(
-                          color: ColorTokens.neutral60,
-                          fontSize: 14,
-                        ),
-                      ),
-                      if (ride.maybeParticipantCount > 0) ...[
-                        Text(
-                          ' ',
-                          style: TextStyle(color: ColorTokens.neutral60),
-                        ),
-                        Text(
-                          '${ride.maybeParticipantCount} tal vez',
-                          style: TextStyle(
-                            color: ColorTokens.warning60,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  SizedBox(height: 12),
-
-                  // Estado de participación del usuario
-                  _buildParticipationChip(participationStatus),
-                  SizedBox(height: 16),
-
-                  // Botones de acción
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: _buildActionButton(
-                      ride,
-                      participationStatus,
-                      provider,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -640,20 +693,19 @@ class _RideListScreenState extends State<RideListScreen> {
                   SizedBox(height: 16),
                   // Lista de grupos administrados por el usuario
                   Column(
-                    children:
-                        groupProvider.adminGroups.map((group) {
-                          return RadioListTile<String>(
-                            title: Text(group.name),
-                            value: group.id,
-                            groupValue: selectedGroupId,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedGroupId = value;
-                              });
-                            },
-                            activeColor: ColorTokens.primary30,
-                          );
-                        }).toList(),
+                    children: groupProvider.adminGroups.map((group) {
+                      return RadioListTile<String>(
+                        title: Text(group.name),
+                        value: group.id,
+                        groupValue: selectedGroupId,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGroupId = value;
+                          });
+                        },
+                        activeColor: ColorTokens.primary30,
+                      );
+                    }).toList(),
                   ),
                 ],
               ),

@@ -49,14 +49,37 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
+      final now = DateTime.now();
+      final oneWeekAgo = now.subtract(const Duration(days: 7));
+
       final querySnapshot = await _firestore
           .collection('rides')
+          .where(
+            'dateTime',
+            isGreaterThanOrEqualTo: oneWeekAgo.toIso8601String(),
+          )
           .orderBy('dateTime', descending: false)
           .get();
 
       _rides = querySnapshot.docs
           .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
           .toList();
+
+      // Separar rodadas: próximas primero, luego pasadas (última semana)
+      final upcomingRides = _rides.where((ride) {
+        return ride.dateTime.isAfter(now);
+      }).toList();
+
+      final pastRides = _rides.where((ride) {
+        return ride.dateTime.isBefore(now) && ride.dateTime.isAfter(oneWeekAgo);
+      }).toList();
+
+      // Ordenar: próximas ascendente (más cercanas primero), pasadas descendente (más recientes primero)
+      upcomingRides.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      pastRides.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+      // Combinar: próximas + pasadas
+      _rides = [...upcomingRides, ...pastRides];
 
       _setLoading(false);
     } catch (e) {
@@ -71,15 +94,38 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
+      final now = DateTime.now();
+      final oneWeekAgo = now.subtract(const Duration(days: 7));
+
       final querySnapshot = await _firestore
           .collection('rides')
           .where('groupId', isEqualTo: groupId)
+          .where(
+            'dateTime',
+            isGreaterThanOrEqualTo: oneWeekAgo.toIso8601String(),
+          )
           .orderBy('dateTime', descending: false)
           .get();
 
       _rides = querySnapshot.docs
           .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
           .toList();
+
+      // Separar rodadas: próximas primero, luego pasadas (última semana)
+      final upcomingRides = _rides.where((ride) {
+        return ride.dateTime.isAfter(now);
+      }).toList();
+
+      final pastRides = _rides.where((ride) {
+        return ride.dateTime.isBefore(now) && ride.dateTime.isAfter(oneWeekAgo);
+      }).toList();
+
+      // Ordenar: próximas ascendente (más cercanas primero), pasadas descendente (más recientes primero)
+      upcomingRides.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      pastRides.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+      // Combinar: próximas + pasadas
+      _rides = [...upcomingRides, ...pastRides];
 
       _setLoading(false);
     } catch (e) {

@@ -33,6 +33,9 @@ class AppRoutes {
   static const String bikeDetail = '/bikes/:bikeId';
   static const String publicBikeInfo = '/bikes/public/:qrCode';
 
+  // Rutas de configuración
+  static const String notificationSettings = '/settings/notifications';
+
   // Nombres de rutas para navegación
   static const String splashName = 'splash';
   static const String loginName = 'login';
@@ -56,4 +59,5 @@ class AppRoutes {
   static const String bikeRegistrationName = 'bikeRegistration';
   static const String bikeDetailName = 'bikeDetail';
   static const String publicBikeInfoName = 'publicBikeInfo';
+  static const String notificationSettingsName = 'notificationSettings';
 }

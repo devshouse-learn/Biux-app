@@ -107,13 +107,11 @@ class NotificationItem extends StatelessWidget {
               : null,
           backgroundColor: notification.isRead
               ? Colors.grey[300]
-              : Theme.of(context).primaryColor.withOpacity(0.1),
+              : Theme.of(context).primaryColor,
           child: notification.fromUserPhoto == null
               ? Icon(
                   _getIcon(),
-                  color: notification.isRead
-                      ? Colors.grey
-                      : Theme.of(context).primaryColor,
+                  color: notification.isRead ? Colors.grey : Colors.white,
                 )
               : null,
         ),
@@ -123,6 +121,11 @@ class NotificationItem extends StatelessWidget {
             fontWeight: notification.isRead
                 ? FontWeight.normal
                 : FontWeight.bold,
+            color: notification.isRead
+                ? null
+                : Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : null,
           ),
         ),
         subtitle: Column(
@@ -141,7 +144,11 @@ class NotificationItem extends StatelessWidget {
             ),
           ],
         ),
-        tileColor: notification.isRead ? null : Colors.blue[50],
+        tileColor: notification.isRead
+            ? null
+            : Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[900]
+            : Colors.blue[50],
         onTap: () {
           // Marcar como leída
           if (!notification.isRead) {

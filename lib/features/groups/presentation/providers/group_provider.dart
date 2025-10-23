@@ -47,6 +47,8 @@ class GroupProvider extends ChangeNotifier {
   // Cargar todos los grupos
   void loadAllGroups() {
     _repository.getGroups().listen((groups) {
+      // Ordenar por cantidad de miembros (de mayor a menor)
+      groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
       _allGroups = groups;
       notifyListeners();
     });
@@ -56,6 +58,8 @@ class GroupProvider extends ChangeNotifier {
   void loadUserGroups() {
     if (currentUserId != null) {
       _repository.getUserGroups(currentUserId!).listen((groups) {
+        // Ordenar por cantidad de miembros (de mayor a menor)
+        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
         _userGroups = groups;
         notifyListeners();
       });
@@ -66,6 +70,8 @@ class GroupProvider extends ChangeNotifier {
   void loadAdminGroups() {
     if (currentUserId != null) {
       _repository.getAdminGroups(currentUserId!).listen((groups) {
+        // Ordenar por cantidad de miembros (de mayor a menor)
+        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
         _adminGroups = groups;
         notifyListeners();
       });
@@ -107,6 +113,8 @@ class GroupProvider extends ChangeNotifier {
   // NUEVO: Cargar grupos por ciudad
   void loadGroupsByCity(String cityId) {
     _repository.getGroupsByCity(cityId).listen((groups) {
+      // Ordenar por cantidad de miembros (de mayor a menor)
+      groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
       _allGroups = groups;
       notifyListeners();
     });

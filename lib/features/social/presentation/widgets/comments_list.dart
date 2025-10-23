@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/entities/comment_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 import '../providers/comments_provider.dart';
@@ -28,6 +29,52 @@ class CommentsList extends StatelessWidget {
 
     return Column(
       children: [
+        Expanded(
+          child: StreamBuilder<List<CommentEntity>>(
+            stream: provider.watchComments(type, targetId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              final comments = snapshot.data ?? [];
+
+              if (comments.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Text(
+                      'No hay comentarios aún',
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.only(bottom: 8),
+                itemCount: comments.length,
+                itemBuilder: (context, index) {
+                  return CommentItem(
+                    comment: comments[index],
+                    type: type,
+                    targetId: targetId,
+                    targetOwnerId: targetOwnerId,
+                  );
+                },
+              );
+            },
+          ),
+        ),
         if (showTextField)
           _CommentTextField(
             type: type,
@@ -35,49 +82,6 @@ class CommentsList extends StatelessWidget {
             targetOwnerId: targetOwnerId,
             placeholder: placeholder ?? 'Escribe un comentario...',
           ),
-        StreamBuilder<List<CommentEntity>>(
-          stream: provider.watchComments(type, targetId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-
-            final comments = snapshot.data ?? [];
-
-            if (comments.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Text(
-                  'No hay comentarios aún',
-                  style: TextStyle(
-                    color: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                  ),
-                ),
-              );
-            }
-
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: comments.length,
-              itemBuilder: (context, index) {
-                return CommentItem(
-                  comment: comments[index],
-                  type: type,
-                  targetId: targetId,
-                  targetOwnerId: targetOwnerId,
-                );
-              },
-            );
-          },
-        ),
       ],
     );
   }
@@ -139,6 +143,38 @@ class _CommentTextFieldState extends State<_CommentTextField> {
         parentCommentId: widget.parentCommentId,
         parentCommentOwnerId: widget.parentCommentOwnerId,
       );
+    }
+
+    // Verificar si el error es por perfil incompleto
+    if (commentId == null && provider.error == 'complete_profile') {
+      if (mounted) {
+        final shouldNavigate = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Completa tu perfil'),
+            content: const Text(
+              'Para comentar necesitas completar tu perfil con tu nombre. '
+              '¿Quieres ir a editar tu perfil ahora?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Ir a perfil'),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldNavigate == true && mounted) {
+          // Redirigir a editar perfil usando GoRouter
+          context.push('/edit-user');
+        }
+      }
+      return;
     }
 
     if (commentId != null) {

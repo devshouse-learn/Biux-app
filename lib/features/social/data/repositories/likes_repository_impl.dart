@@ -2,6 +2,7 @@ import '../../domain/entities/like_entity.dart';
 import '../../domain/repositories/likes_repository.dart';
 import '../datasources/likes_realtime_datasource.dart';
 import '../models/like_model.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 /// Implementación del repositorio de likes
 class LikesRepositoryImpl implements LikesRepository {
@@ -56,9 +57,18 @@ class LikesRepositoryImpl implements LikesRepository {
       userId: userId,
       userName: userName,
       userPhoto: userPhoto,
-      timestamp: DateTime.now().millisecondsSinceEpoch,
+      timestamp: ServerValue.timestamp, // ✅ Usar timestamp del servidor
       expiresAt: expiresAt?.millisecondsSinceEpoch,
     );
+
+    print('🔍 DEBUG LIKE - Type: ${_typeToString(type)}');
+    print('🔍 DEBUG LIKE - TargetId: $targetId');
+    print('🔍 DEBUG LIKE - UserId: $userId');
+    print('🔍 DEBUG LIKE - UserName: "$userName"');
+    print('🔍 DEBUG LIKE - UserPhoto: $userPhoto');
+    print('🔍 DEBUG LIKE - Timestamp: ServerValue.timestamp');
+    print('🔍 DEBUG LIKE - ExpiresAt: ${like.expiresAt}');
+    print('🔍 DEBUG LIKE - JSON: ${like.toJson()}');
 
     return _datasource.like(
       type: _typeToString(type),

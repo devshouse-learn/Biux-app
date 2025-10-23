@@ -1,11 +1,12 @@
 import '../../domain/entities/like_entity.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 /// Modelo de like para Firebase Realtime Database
 class LikeModel {
   final String userId;
   final String userName;
   final String? userPhoto;
-  final int timestamp;
+  final dynamic timestamp; // dynamic para soportar ServerValue.timestamp
   final int? expiresAt;
 
   const LikeModel({
@@ -40,11 +41,16 @@ class LikeModel {
 
   /// Convierte de modelo a entidad
   LikeEntity toEntity() {
+    // Si timestamp es ServerValue, usar DateTime.now() como placeholder
+    final timestampValue = timestamp is int
+        ? timestamp as int
+        : DateTime.now().millisecondsSinceEpoch;
+
     return LikeEntity(
       userId: userId,
       userName: userName,
       userPhoto: userPhoto,
-      timestamp: DateTime.fromMillisecondsSinceEpoch(timestamp),
+      timestamp: DateTime.fromMillisecondsSinceEpoch(timestampValue),
       expiresAt: expiresAt != null
           ? DateTime.fromMillisecondsSinceEpoch(expiresAt!)
           : null,

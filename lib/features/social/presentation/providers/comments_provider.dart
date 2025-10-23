@@ -31,7 +31,7 @@ class CommentsProvider extends ChangeNotifier {
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
-        _cachedUserName = 'Usuario';
+        _cachedUserName = null;
         _cachedUserPhoto = null;
         _userDataLoaded = true;
         return;
@@ -43,49 +43,55 @@ class CommentsProvider extends ChangeNotifier {
           .doc(userId)
           .get();
 
+      print('🔍 Buscando usuario en Firestore: $userId');
+      print('🔍 Documento existe: ${userDoc.exists}');
+
       final userData = userDoc.data();
+
+      if (userData != null) {
+        print('🔍 Datos del usuario: $userData');
+      }
 
       if (userData != null && userData.isNotEmpty) {
         String? name = userData['name'];
         String? username = userData['username'];
-        String? phoneNumber = userData['phoneNumber'];
+        String? fullName = userData['fullName'];
 
-        _cachedUserName =
-            (name != null && name.trim().isNotEmpty ? name : null) ??
-            (username != null && username.trim().isNotEmpty
-                ? username
-                : null) ??
-            currentUser.displayName ??
-            (phoneNumber != null && phoneNumber.trim().isNotEmpty
-                ? phoneNumber.replaceAll('phone_', '').replaceAll('+57', '')
-                : null) ??
-            currentUser.email?.split('@').first ??
-            'Usuario';
+        // Solo usar nombres reales, NO usar fallbacks
+        _cachedUserName = null;
+
+        if (name != null && name.trim().isNotEmpty) {
+          _cachedUserName = name.trim();
+        } else if (username != null && username.trim().isNotEmpty) {
+          _cachedUserName = username.trim();
+        } else if (fullName != null && fullName.trim().isNotEmpty) {
+          _cachedUserName = fullName.trim();
+        }
 
         _cachedUserPhoto = userData['photoUrl'] ?? userData['photo'];
       } else {
-        // Fallback a Firebase Auth
-        _cachedUserName =
-            currentUser.displayName ??
-            currentUser.phoneNumber
-                ?.replaceAll('phone_', '')
-                .replaceAll('+57', '') ??
-            currentUser.email?.split('@').first ??
-            'Usuario';
-        _cachedUserPhoto = currentUser.photoURL;
+        // Si no hay datos en Firestore, el usuario no ha completado su perfil
+        _cachedUserName = null;
+        _cachedUserPhoto = null;
       }
 
       _userDataLoaded = true;
-      print(
-        '✅ CommentsProvider: Datos de usuario cargados - userName: $_cachedUserName, photoUrl: $_cachedUserPhoto',
-      );
+      print('✅ CommentsProvider: Datos de usuario cargados');
+      print('   👤 UserId: $userId');
+      print('   📝 UserName encontrado: $_cachedUserName');
+      print('   📸 UserPhoto: $_cachedUserPhoto');
+      print('   ✔️ Perfil completo: $hasCompletedProfile');
     } catch (e) {
       print('⚠️ Error cargando datos de usuario en CommentsProvider: $e');
-      _cachedUserName = 'Usuario';
+      _cachedUserName = null;
       _cachedUserPhoto = null;
       _userDataLoaded = true;
     }
   }
+
+  /// Verifica si el usuario ha completado su perfil (tiene nombre)
+  bool get hasCompletedProfile =>
+      _cachedUserName != null && _cachedUserName!.trim().isNotEmpty;
 
   bool _isPosting = false;
   bool _isEditing = false;
@@ -194,19 +200,65 @@ class CommentsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
+      // IMPORTANTE: Forzar recarga de datos para asegurar que están actualizados
+      _userDataLoaded = false;
+
+      // Cargar datos del usuario si no están cargados
+      await _loadUserData();
+
+      // DEBUG: Mostrar estado de validación
+      debugPrint('🔍 Validando perfil del usuario...');
+      debugPrint('   _cachedUserName: $_cachedUserName');
+      debugPrint('   hasCompletedProfile: $hasCompletedProfile');
+
+      // Verificar que el usuario haya completado su perfil
+      if (!hasCompletedProfile) {
+        debugPrint('❌ Usuario sin perfil completo, redirigiendo...');
+        _error = 'complete_profile'; // Error especial para detectar en UI
+        _isPosting = false;
+        notifyListeners();
+        return null;
+      }
+
+      // Verificar autenticación de Firebase
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        debugPrint('❌ Usuario no autenticado en Firebase Auth');
+        _error = 'Debes iniciar sesión para comentar';
+        _isPosting = false;
+        notifyListeners();
+        return null;
+      }
+
+      debugPrint('🔐 Firebase Auth UID: ${currentUser.uid}');
+      debugPrint('🔐 Provider userId: $userId');
+
+      if (currentUser.uid != userId) {
+        debugPrint(
+          '⚠️ WARNING: Firebase Auth UID no coincide con Provider userId',
+        );
+        debugPrint(
+          '   Usando Firebase Auth UID para cumplir reglas de seguridad',
+        );
+      }
+
+      // IMPORTANTE: Usar currentUser.uid para cumplir con las reglas de seguridad
+      // Las reglas requieren que userId === auth.uid
+      final userIdForComment = currentUser.uid;
+
       // Debug: Log antes de crear comentario
       debugPrint('📝 Intentando crear comentario...');
       debugPrint('   Tipo: $type');
       debugPrint('   TargetId: $targetId');
-      debugPrint('   UserId: $userId');
+      debugPrint('   UserId para comentario: $userIdForComment');
       debugPrint('   UserName: $_cachedUserName');
       debugPrint('   UserPhoto: $_cachedUserPhoto');
 
       final commentId = await _repository.createComment(
         type: type,
         targetId: targetId,
-        userId: userId,
-        userName: _cachedUserName ?? 'Usuario',
+        userId: userIdForComment,
+        userName: _cachedUserName!,
         userPhoto: _cachedUserPhoto,
         text: text.trim(),
         parentCommentId: parentCommentId,
@@ -214,36 +266,9 @@ class CommentsProvider extends ChangeNotifier {
 
       debugPrint('✅ Comentario creado: $commentId');
 
-      // Crear notificación
-      final isReply = parentCommentId != null;
-      final recipientId = isReply ? parentCommentOwnerId! : targetOwnerId;
-
-      // Solo notificar si no es el propio usuario
-      if (recipientId != userId) {
-        // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
-        final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
-            ? _cachedUserName!
-            : userId.split('_').last; // Fallback: usar parte del userId
-
-        await _notificationsRepository.createNotification(
-          userId: recipientId,
-          type: isReply
-              ? NotificationType.replyComment
-              : (type == CommentableType.post
-                    ? NotificationType.commentPost
-                    : NotificationType.commentRide),
-          fromUserId: userId,
-          fromUserName: safeUserName,
-          fromUserPhoto: _cachedUserPhoto,
-          targetType: type == CommentableType.post
-              ? NotificationTargetType.post
-              : NotificationTargetType.ride,
-          targetId: targetId,
-          targetPreview: text.length > 50
-              ? '${text.substring(0, 50)}...'
-              : text,
-        );
-      }
+      // ⚠️ Las notificaciones son creadas automáticamente por Cloud Functions
+      // Ver: biux-cloud/functions/comment-notifications.js
+      // Triggers: onCommentPostCreated, onCommentRideCreated
 
       // Detectar menciones y notificar
       await _notifyMentions(text, targetId, type);

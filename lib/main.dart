@@ -37,14 +37,19 @@ import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.da
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
 import 'package:biux/features/social/social_providers_config.dart';
+import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
+import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
 
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
+import 'package:biux/shared/services/notification_service.dart';
+import 'package:biux/shared/widgets/notification_listener_widget.dart';
 
 // External packages
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import "package:flutter/services.dart";
@@ -66,6 +71,10 @@ void main() async {
   }
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Configurar manejador de mensajes en background
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
@@ -76,6 +85,10 @@ void main() async {
   };
 
   await LocalStorage().init();
+
+  // Inicializar servicio de notificaciones
+  await NotificationService().initialize();
+
   runApp(
     MultiProvider(
       providers: [
@@ -145,6 +158,13 @@ void main() async {
 
         // Social Providers (Notificaciones, Likes, Comentarios, Asistentes)
         ...SocialProvidersConfig.getProviders(),
+
+        // Settings Providers
+        ChangeNotifierProvider(
+          create: (_) => NotificationSettingsProvider(
+            NotificationSettingsRepositoryImpl(),
+          ),
+        ),
       ],
       child: MyApp(),
     ),
@@ -162,19 +182,21 @@ class MyApp extends StatelessWidget {
     ]);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale(AppStrings.en, AppStrings.us)],
-      title: AppStrings.APP_NAME,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeNotifier.themeMode,
-      routerConfig: AppRouter.router,
+    return BiuxNotificationListener(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale(AppStrings.en, AppStrings.us)],
+        title: AppStrings.APP_NAME,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeNotifier.themeMode,
+        routerConfig: AppRouter.router,
+      ),
     );
   }
 }

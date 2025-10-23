@@ -34,9 +34,21 @@ class OptimizedNetworkImage extends StatelessWidget {
       height: height,
       fit: fit,
       placeholder: (context, url) => placeholder ?? _buildPlaceholder(),
-      errorWidget: (context, url, error) => errorWidget ?? _buildErrorWidget(),
+      errorWidget: (context, url, error) {
+        // Log del error para debugging
+        print('❌ Error cargando imagen: $url');
+        print('   Error: $error');
+        return errorWidget ?? _buildErrorWidget();
+      },
       memCacheWidth: width?.toInt(),
       memCacheHeight: height?.toInt(),
+      // Agregar listener para errores de decodificación
+      errorListener: (exception) {
+        print('⚠️ Error listener: $exception');
+      },
+      // Usar fadeIn más corto para mejor UX
+      fadeInDuration: const Duration(milliseconds: 200),
+      fadeOutDuration: const Duration(milliseconds: 100),
     );
   }
 

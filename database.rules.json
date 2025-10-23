@@ -10,7 +10,7 @@
             ".validate": "newData.val() === $notificationId"
           },
           "type": {
-            ".validate": "newData.isString() && (newData.val() === 'like_post' || newData.val() === 'like_comment' || newData.val() === 'like_story' || newData.val() === 'comment_post' || newData.val() === 'comment_ride' || newData.val() === 'reply_comment' || newData.val() === 'ride_join' || newData.val() === 'mention' || newData.val() === 'follow')"
+            ".validate": "newData.isString() && (newData.val() === 'like_post' || newData.val() === 'like_comment' || newData.val() === 'like_story' || newData.val() === 'comment_post' || newData.val() === 'comment_ride' || newData.val() === 'reply_comment' || newData.val() === 'ride_join' || newData.val() === 'mention' || newData.val() === 'follow' || newData.val() === 'group_join_request')"
           },
           "fromUserId": {
             ".validate": "newData.isString() && newData.val().length > 0"
@@ -34,7 +34,7 @@
             ".validate": "newData.isString() && newData.val().length > 0"
           },
           "isRead": {
-            ".validate": "newData.isBoolean() && ((!data.exists() && newData.val() === false) || (data.exists() && auth.uid === $userId))"
+            ".validate": "newData.isBoolean() && (!data.exists() ? newData.val() === false : true)"
           },
           "createdAt": {
             ".validate": "newData.isNumber() && newData.val() <= now"
@@ -49,7 +49,7 @@
       },
       "unread": {
         "$userId": {
-          ".read": "auth != null",
+          ".read": "auth != null && auth.uid === $userId",
           ".write": "auth != null",
           "count": {
             ".validate": "newData.isNumber() && newData.val() >= 0"
@@ -69,21 +69,18 @@
           ".read": "auth != null",
           "$userId": {
             ".write": "auth != null && auth.uid === $userId",
-            ".validate": "newData.hasChildren(['userId', 'timestamp']) && newData.child('userId').val() === $userId",
+            ".validate": "newData.hasChild('userId') && newData.hasChild('timestamp') && newData.child('userId').val() === $userId",
             "userId": {
               ".validate": "newData.val() === $userId"
             },
             "userName": {
-              ".validate": "newData.isString()"
+              ".validate": "!newData.exists() || newData.isString()"
             },
             "userPhoto": {
               ".validate": "!newData.exists() || newData.isString()"
             },
             "timestamp": {
-              ".validate": "newData.isNumber() && newData.val() <= now"
-            },
-            "$other": {
-              ".validate": false
+              ".validate": "newData.val() === now || (newData.isNumber() && newData.val() > 0)"
             }
           }
         }
@@ -93,21 +90,39 @@
           ".read": "auth != null",
           "$userId": {
             ".write": "auth != null && auth.uid === $userId",
-            ".validate": "newData.hasChildren(['userId', 'timestamp']) && newData.child('userId').val() === $userId",
+            ".validate": "newData.hasChild('userId') && newData.hasChild('timestamp') && newData.child('userId').val() === $userId",
             "userId": {
               ".validate": "newData.val() === $userId"
             },
             "userName": {
-              ".validate": "newData.isString()"
+              ".validate": "!newData.exists() || newData.isString()"
             },
             "userPhoto": {
               ".validate": "!newData.exists() || newData.isString()"
             },
             "timestamp": {
-              ".validate": "newData.isNumber() && newData.val() <= now"
+              ".validate": "newData.val() === now || (newData.isNumber() && newData.val() > 0)"
+            }
+          }
+        }
+      },
+      "rides": {
+        "$rideId": {
+          ".read": "auth != null",
+          "$userId": {
+            ".write": "auth != null && auth.uid === $userId",
+            ".validate": "newData.hasChild('userId') && newData.hasChild('timestamp') && newData.child('userId').val() === $userId",
+            "userId": {
+              ".validate": "newData.val() === $userId"
             },
-            "$other": {
-              ".validate": false
+            "userName": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "userPhoto": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "timestamp": {
+              ".validate": "newData.val() === now || (newData.isNumber() && newData.val() > 0)"
             }
           }
         }
@@ -117,24 +132,21 @@
           ".read": "auth != null",
           "$userId": {
             ".write": "auth != null && auth.uid === $userId",
-            ".validate": "newData.hasChildren(['userId', 'timestamp', 'expiresAt']) && newData.child('userId').val() === $userId && newData.child('expiresAt').val() <= newData.child('timestamp').val() + 86400000",
+            ".validate": "newData.hasChild('userId') && newData.hasChild('timestamp') && newData.hasChild('expiresAt') && newData.child('userId').val() === $userId && newData.child('expiresAt').val() <= newData.child('timestamp').val() + 86400000",
             "userId": {
               ".validate": "newData.val() === $userId"
             },
             "userName": {
-              ".validate": "newData.isString()"
+              ".validate": "!newData.exists() || newData.isString()"
             },
             "userPhoto": {
               ".validate": "!newData.exists() || newData.isString()"
             },
             "timestamp": {
-              ".validate": "newData.isNumber() && newData.val() <= now"
+              ".validate": "newData.val() === now || (newData.isNumber() && newData.val() > 0)"
             },
             "expiresAt": {
               ".validate": "newData.isNumber()"
-            },
-            "$other": {
-              ".validate": false
             }
           }
         }
@@ -144,17 +156,17 @@
       "posts": {
         "$postId": {
           ".read": "auth != null",
+          ".write": "auth != null",
           "$commentId": {
-            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid || (data.exists() && (newData.child('repliesCount').val() !== data.child('repliesCount').val() || newData.child('likesCount').val() !== data.child('likesCount').val()) && newData.child('userId').val() === data.child('userId').val() && newData.child('text').val() === data.child('text').val()))",
-            ".validate": "newData.hasChildren(['id', 'userId', 'userName', 'text', 'createdAt']) && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
+            ".validate": "newData.hasChild('id') && newData.hasChild('userId') && newData.hasChild('userName') && newData.hasChild('text') && newData.hasChild('createdAt') && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
             "id": {
               ".validate": "newData.val() === $commentId"
             },
             "userId": {
-              ".validate": "newData.isString() && (!data.exists() && newData.val() === auth.uid || data.exists() && newData.val() === data.val())"
+              ".validate": "newData.isString() && newData.val().length > 0"
             },
             "userName": {
-              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+              ".validate": "newData.isString() && newData.val().length > 0"
             },
             "userPhoto": {
               ".validate": "!newData.exists() || newData.isString()"
@@ -163,7 +175,7 @@
               ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
             },
             "createdAt": {
-              ".validate": "newData.isNumber() && (!data.exists() && newData.val() <= now || data.exists() && newData.val() === data.val())"
+              ".validate": "newData.val() === now || (newData.isNumber() && newData.val() > 0)"
             },
             "updatedAt": {
               ".validate": "!newData.exists() || newData.isNumber()"
@@ -188,9 +200,6 @@
               "$mentionIndex": {
                 ".validate": "newData.isString()"
               }
-            },
-            "$other": {
-              ".validate": false
             }
           }
         }
@@ -198,17 +207,17 @@
       "rides": {
         "$rideId": {
           ".read": "auth != null",
+          ".write": "auth != null",
           "$commentId": {
-            ".write": "auth != null && (!data.exists() || data.child('userId').val() === auth.uid || (data.exists() && (newData.child('repliesCount').val() !== data.child('repliesCount').val() || newData.child('likesCount').val() !== data.child('likesCount').val()) && newData.child('userId').val() === data.child('userId').val() && newData.child('text').val() === data.child('text').val()))",
-            ".validate": "newData.hasChildren(['id', 'userId', 'userName', 'text', 'createdAt']) && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
+            ".validate": "newData.hasChild('id') && newData.hasChild('userId') && newData.hasChild('userName') && newData.hasChild('text') && newData.hasChild('createdAt') && newData.child('id').val() === $commentId && newData.child('text').val().length >= 1 && newData.child('text').val().length <= 500",
             "id": {
               ".validate": "newData.val() === $commentId"
             },
             "userId": {
-              ".validate": "newData.isString() && (!data.exists() && newData.val() === auth.uid || data.exists() && newData.val() === data.val())"
+              ".validate": "newData.isString() && newData.val().length > 0"
             },
             "userName": {
-              ".validate": "newData.isString() && (!data.exists() || newData.val() === data.val())"
+              ".validate": "newData.isString() && newData.val().length > 0"
             },
             "userPhoto": {
               ".validate": "!newData.exists() || newData.isString()"
@@ -217,7 +226,7 @@
               ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 500"
             },
             "createdAt": {
-              ".validate": "newData.isNumber() && (!data.exists() && newData.val() <= now || data.exists() && newData.val() === data.val())"
+              ".validate": "newData.val() === now || (newData.isNumber() && newData.val() > 0)"
             },
             "updatedAt": {
               ".validate": "!newData.exists() || newData.isNumber()"
@@ -242,9 +251,6 @@
               "$mentionIndex": {
                 ".validate": "newData.isString()"
               }
-            },
-            "$other": {
-              ".validate": false
             }
           }
         }

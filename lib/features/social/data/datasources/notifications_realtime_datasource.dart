@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../models/notification_model.dart';
 
@@ -34,14 +35,27 @@ class NotificationsRealtimeDatasource {
   /// Stream del conteo de notificaciones no leídas
   Stream<int> watchUnreadCount(String userId) {
     final ref = _database.ref('notifications/unread/$userId');
+    print('👀 Escuchando contador para userId: $userId en: ${ref.path}');
 
-    return ref.onValue.map((event) {
-      if (event.snapshot.value == null) return 0;
+    return ref.onValue
+        .map((event) {
+          print('📊 Evento de contador recibido para $userId');
+          if (event.snapshot.value == null) {
+            print('   Contador: 0 (null)');
+            return 0;
+          }
 
-      // ⚠️ Las reglas esperan estructura {count: number, lastUpdated: number}
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
-      return data?['count'] as int? ?? 0;
-    });
+          // ⚠️ Las reglas esperan estructura {count: number, lastUpdated: number}
+          final data = event.snapshot.value as Map<dynamic, dynamic>?;
+          final count = data?['count'] as int? ?? 0;
+          print('   Contador: $count');
+          return count;
+        })
+        .handleError((error) {
+          print('❌ Error en stream de contador para $userId: $error');
+          // Retornar 0 en caso de error en vez de fallar
+          return 0;
+        });
   }
 
   /// Marca una notificación como leída
@@ -119,6 +133,8 @@ class NotificationsRealtimeDatasource {
       metadata: notification.metadata,
     );
 
+    // ⚠️ Las notificaciones ahora son creadas por Cloud Functions
+    // Este método solo se usa para casos legacy
     await notificationRef.set(notificationWithId.toJson());
 
     // Incrementar contador de no leídas

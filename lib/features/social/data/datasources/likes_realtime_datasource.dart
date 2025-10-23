@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/like_model.dart';
 
 /// Datasource para likes en Firebase Realtime Database
@@ -82,8 +83,27 @@ class LikesRealtimeDatasource {
     required String targetId,
     required LikeModel like,
   }) async {
-    final ref = _database.ref('${_getBasePath(type)}/$targetId/${like.userId}');
-    await ref.set(like.toJson());
+    final path = '${_getBasePath(type)}/$targetId/${like.userId}';
+    final jsonData = like.toJson();
+
+    print('🔍 DEBUG DATASOURCE - Path: $path');
+    print('🔍 DEBUG DATASOURCE - JSON: $jsonData');
+
+    // Verificar auth
+    final currentUser = FirebaseAuth.instance.currentUser;
+    print('🔍 DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
+    print('🔍 DEBUG AUTH - like.userId: ${like.userId}');
+    print('🔍 DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
+
+    final ref = _database.ref(path);
+
+    try {
+      await ref.set(jsonData);
+      print('✅ LIKE GUARDADO EXITOSAMENTE');
+    } catch (e) {
+      print('❌ ERROR AL GUARDAR LIKE: $e');
+      rethrow;
+    }
   }
 
   /// Quita el like de un contenido
