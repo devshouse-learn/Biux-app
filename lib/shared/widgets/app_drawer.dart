@@ -7,7 +7,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:biux/core/design_system/design_system.dart';
 import '../../core/config/router/app_routes.dart';
-import '../../features/maps/presentation/providers/meeting_point_provider.dart';
 import '../../features/users/presentation/providers/user_provider.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -168,17 +167,6 @@ class _AppDrawerState extends State<AppDrawer> {
               children: [
                 ListTile(
                   leading: Icon(
-                    Icons.map,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  title: Text('Mapa'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.go(AppRoutes.map);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
                     Icons.person,
                     color: Theme.of(context).iconTheme.color,
                   ),
@@ -188,50 +176,13 @@ class _AppDrawerState extends State<AppDrawer> {
                     context.go(AppRoutes.profile);
                   },
                 ),
-                ListTile(
-                  leading: Icon(
-                    Icons.directions_bike,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  title: Text('Mis Rutas'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Funcionalidad próximamente')),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.group,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  title: Text('Grupos'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.go(AppRoutes.groupList);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.group_work,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  title: Text('Mis Grupos'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.go(AppRoutes.myGroups);
-                  },
-                ),
                 Divider(),
                 ListTile(
                   leading: Icon(Icons.settings, color: ColorTokens.neutral60),
                   title: Text('Configuración'),
                   onTap: () {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Funcionalidad próximamente')),
-                    );
+                    context.go(AppRoutes.notificationSettings);
                   },
                 ),
 
@@ -346,18 +297,6 @@ class _AppDrawerState extends State<AppDrawer> {
           );
         },
       );
-
-      // Detener listeners de Firestore
-      try {
-        final meetingPointProvider = Provider.of<MeetingPointProvider>(
-          context,
-          listen: false,
-        );
-        meetingPointProvider.stopListening();
-        print('✅ MeetingPointProvider detenido');
-      } catch (e) {
-        print('⚠️ Error deteniendo MeetingPointProvider: $e');
-      }
 
       // Limpiar UserProvider
       try {

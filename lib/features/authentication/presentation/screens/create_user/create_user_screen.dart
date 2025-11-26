@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:go_router/go_router.dart';
 // import 'package:biux/data/models/analitics.dart'; // TODO: Migrate analytics
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/core/models/common/response.dart';
@@ -568,11 +569,9 @@ class CreateUserScreen extends StatelessWidget {
             Future.delayed(
               Duration(seconds: 3),
               () async {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.mainMenuRoute,
-                  (route) => false,
-                );
+                if (context.mounted) {
+                  context.go(AppRoutes.mainMenu);
+                }
               },
             );
           } else {

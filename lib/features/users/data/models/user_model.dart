@@ -34,11 +34,11 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      uid: map['uid'],
+      uid: map['uid'] ?? '',
       name: map['name'],
       email: map['email'],
       photoUrl: map['photoUrl'],
-      phoneNumber: map['phoneNumber'],
+      phoneNumber: map['phoneNumber'] ?? '',
       username: map['username'],
       isDeleting: map['isDeleting'] ?? false,
       deletionRequestDate: map['deletionRequestDate'] != null

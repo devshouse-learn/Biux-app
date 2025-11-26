@@ -57,11 +57,17 @@ class _LikeButtonState extends State<LikeButton>
   Future<void> _onTap() async {
     final provider = context.read<LikesProvider>();
 
+    // Verificar si ya ha dado like (solo permitir una vez)
+    final isLiked = await provider.watchUserLiked(widget.type, widget.targetId).first;
+    if (isLiked) {
+      return; // No hacer nada si ya le dio like
+    }
+
     // Animación
     await _controller.forward();
     await _controller.reverse();
 
-    // Toggle like
+    // Like (solo permite dar like, no remover)
     switch (widget.type) {
       case LikeableType.post:
         await provider.likePost(
@@ -103,7 +109,7 @@ class _LikeButtonState extends State<LikeButton>
             final count = countSnapshot.data ?? 0;
 
             return InkWell(
-              onTap: provider.isProcessing ? null : _onTap,
+              onTap: (provider.isProcessing || isLiked) ? null : _onTap,
               borderRadius: BorderRadius.circular(20),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

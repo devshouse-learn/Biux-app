@@ -7,7 +7,6 @@ import 'package:biux/features/authentication/data/repositories/authentication_re
 import 'package:biux/features/stories/presentation/screens/story_create/story_create_bloc.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:biux/shared/widgets/loading_widget.dart';
-import 'package:biux/shared/widgets/tags_story_widgets.dart';
 import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -355,15 +354,13 @@ class _AppbarCreateStory extends StatelessWidget
             if (bloc.imgList.isNotEmpty) {
               showDialogCreateStory(
                 context: context,
-                listTags: bloc.listTags,
-                onTapAdd: bloc.addLabel,
-                onSave: (listTags, description) async {
+                onSave: (description) async {
                   final userId = AuthenticationRepository().getUserId;
                   final user = await bloc.getUser(id: userId);
                   final creationDate = DateTime.now();
                   final story = Story(
                     description: description,
-                    tags: listTags,
+                    tags: [],
                     creationDate: creationDate.toString(),
                     user: user,
                   );
@@ -539,13 +536,10 @@ class _CarouselImagesSelected extends StatelessWidget {
 
 void showDialogCreateStory({
   required context,
-  required Function(List<String>, String) onSave,
-  required List<String> listTags,
-  required Function onTapAdd,
+  required Function(String) onSave,
 }) async {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _labelsController = TextEditingController();
 
   return await showDialog(
     context: context,
@@ -580,48 +574,9 @@ void showDialogCreateStory({
                       radiusCircular: 20,
                       autofocus: true,
                       validator: (value) {
-                        if (value!.isEmpty) {
-                          return AppStrings.textValidatorDescriptionStory;
-                        }
+                        // Descripción es opcional
                         return null;
                       },
-                    ),
-                    TextFormFieldBiuxWidget(
-                      text: AppStrings.tagsStory,
-                      controller: _labelsController,
-                      padding: const EdgeInsets.all(10),
-                      radiusCircular: 20,
-                      addButton: Container(
-                        height: 32,
-                        width: 32,
-                        margin: EdgeInsets.only(right: 10),
-                        child: GestureDetector(
-                          onTap: () async {
-                            if (listTags.length < 10)
-                              onTapAdd(_labelsController.text);
-                            setState(() {});
-                          },
-                          child: Image.asset(Images.kImageAdd),
-                        ),
-                      ),
-                      onFieldSubmitted: listTags.length < 10
-                          ? (value) => listTags.add(value)
-                          : (value) {},
-                    ),
-                    Wrap(
-                      alignment: WrapAlignment.start,
-                      children: listTags
-                          .map(
-                            (e) => TagsStoryWidget(
-                              labelText: e,
-                              onPressed: () => setState(
-                                () => listTags.removeWhere(
-                                  (element) => element == e,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
                     ),
                     Align(
                       alignment: Alignment.center,
@@ -631,10 +586,7 @@ void showDialogCreateStory({
                           style: Styles().textButtonStyle,
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              onSave(
-                                listTags,
-                                _descriptionController.text,
-                              );
+                              onSave(_descriptionController.text);
                               Navigator.of(context).pop();
                             }
                           },

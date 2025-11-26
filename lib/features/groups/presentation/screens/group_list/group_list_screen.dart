@@ -231,6 +231,145 @@ class _GroupListScreenState extends State<GroupListScreen> {
 
                   const SizedBox(height: 12),
 
+                  // Ciudad del grupo
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, size: 16, color: ColorTokens.neutral60),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          '📍 ${_getCityName(group.cityId)}',
+                          style: TextStyle(
+                            color: ColorTokens.neutral60,
+                            fontSize: 13,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Estados de rodadas
+                  Text(
+                    'Estados de Rodadas:',
+                    style: TextStyle(
+                      color: ColorTokens.neutral60,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _buildRideStatusBadge('Próxima', ColorTokens.warning50),
+                      const SizedBox(width: 8),
+                      _buildRideStatusBadge('Cancelada', ColorTokens.error50),
+                      const SizedBox(width: 8),
+                      _buildRideStatusBadge('Realizada', ColorTokens.success40),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Creador del grupo como líder
+                  FutureBuilder<Map<String, dynamic>>(
+                    future: provider.getUserAdminInfo(group.adminId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: ColorTokens.primary30.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '👤 Cargando líder...',
+                            style: TextStyle(
+                              color: ColorTokens.neutral60,
+                              fontSize: 12,
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasData) {
+                        final admin = snapshot.data!;
+                        return Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: ColorTokens.primary30.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: ColorTokens.primary30.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: ColorTokens.neutral20,
+                                backgroundImage: admin['photo'] != null && admin['photo'].isNotEmpty
+                                    ? NetworkImage(admin['photo'])
+                                    : null,
+                                child: admin['photo'] == null || admin['photo'].isEmpty
+                                    ? Icon(Icons.person, size: 16, color: ColorTokens.neutral60)
+                                    : null,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '👑 ${admin['fullName'] ?? 'Líder'}',
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral100,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '@${admin['userName'] ?? 'usuario'}',
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral60,
+                                        fontSize: 11,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: ColorTokens.primary30.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '👤 Líder no disponible',
+                          style: TextStyle(
+                            color: ColorTokens.neutral60,
+                            fontSize: 12,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+
                   // Descripción
                   Text(
                     group.description,
@@ -255,6 +394,48 @@ class _GroupListScreenState extends State<GroupListScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildRideStatusBadge(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color, width: 0.5),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  String _getCityName(String cityId) {
+    // Mapeo básico de IDs de ciudad a nombres
+    // En producción, esto debería venir del provider
+    const cityMap = {
+      'bogota': 'Bogotá',
+      'medellin': 'Medellín',
+      'cali': 'Cali',
+      'barranquilla': 'Barranquilla',
+      'cartagena': 'Cartagena',
+      'santa-marta': 'Santa Marta',
+      'manizales': 'Manizales',
+      'pereira': 'Pereira',
+      'armenia': 'Armenia',
+      'bucaramanga': 'Bucaramanga',
+      'tunja': 'Tunja',
+      'villavicencio': 'Villavicencio',
+      'popayan': 'Popayán',
+      'cucuta': 'Cúcuta',
+      'neiva': 'Neiva',
+    };
+    return cityMap[cityId.toLowerCase()] ?? cityId;
   }
 
   Widget _buildStatusChip(GroupMembershipStatus status) {

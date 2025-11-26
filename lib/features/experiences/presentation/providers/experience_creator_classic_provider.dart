@@ -114,8 +114,8 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1920,
-        maxHeight: 1920,
+        maxWidth: 1080,    // ✅ Cambio: 1080px de ancho máximo
+        maxHeight: 1350,   // ✅ Cambio: 1350px de alto máximo
         imageQuality: 85,
       );
 
@@ -148,8 +148,8 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1920,
-        maxHeight: 1920,
+        maxWidth: 1080,    // ✅ Cambio: 1080px de ancho máximo
+        maxHeight: 1350,   // ✅ Cambio: 1350px de alto máximo
         imageQuality: 85,
       );
 

@@ -61,4 +61,14 @@ class StoryViewBloc extends ChangeNotifier {
       story: storyUpdate,
     );
   }
+
+  void deleteStory({required Story story}) async {
+    try {
+      await storiesFirebaseRepository.deleteStory(story.id);
+      listStory.removeWhere((element) => element.id == story.id);
+      notifyListeners();
+    } catch (e) {
+      print('Error eliminando historia: $e');
+    }
+  }
 }

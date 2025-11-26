@@ -31,14 +31,42 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
     super.dispose();
   }
 
-  void _handleSendCode() {
-    if (phoneController.text.isNotEmpty) {
-      context.read<AuthProvider>().sendCode(phoneController.text);
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Ingresa tu teléfono')));
+  String? _validatePhoneNumber(String phone) {
+    if (phone.isEmpty) {
+      return 'Por favor ingresa tu número de teléfono';
     }
+    
+    // Limpiar número (solo dígitos)
+    final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
+    
+    // Validar longitud (mínimo 10, máximo 15 dígitos)
+    if (cleanPhone.length < 10) {
+      return 'El número debe tener mínimo 10 dígitos';
+    }
+    if (cleanPhone.length > 15) {
+      return 'El número no puede tener más de 15 dígitos';
+    }
+    
+    return null; // Válido
+  }
+
+  void _handleSendCode() {
+    final validationError = _validatePhoneNumber(phoneController.text);
+    
+    if (validationError != null) {
+      print('⚠️ [LoginPhone] Validación fallida: $validationError');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(validationError),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    print('✅ [LoginPhone] Teléfono válido, enviando código...');
+    context.read<AuthProvider>().sendCode(phoneController.text);
   }
 
   void _handleValidateCode() {
@@ -79,15 +107,38 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                   if (auth.state == AuthState.error &&
                       auth.errorMessage != null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(auth.errorMessage!),
-                          action: SnackBarAction(
-                            label: 'OK',
-                            onPressed: () {
-                              context.read<AuthProvider>().clearError();
-                            },
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog(
+                          backgroundColor: ColorTokens.primary30,
+                          title: Row(
+                            children: [
+                              Icon(Icons.error_outline, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text(
+                                'Error',
+                                style: TextStyle(color: ColorTokens.neutral100),
+                              ),
+                            ],
                           ),
+                          content: SingleChildScrollView(
+                            child: Text(
+                              auth.errorMessage ?? 'Error desconocido',
+                              style: TextStyle(color: ColorTokens.neutral100),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(dialogContext);
+                                context.read<AuthProvider>().clearError();
+                              },
+                              child: Text(
+                                'OK',
+                                style: TextStyle(color: ColorTokens.secondary50),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     });
@@ -104,6 +155,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         enabled: auth.state != AuthState.loading,
                         decoration: InputDecoration(
                           labelText: 'Teléfono',
+                          hintText: '+573001234567 o 3001234567',
                           labelStyle: TextStyle(color: ColorTokens.neutral100),
                           prefixIcon: Icon(
                             Icons.phone,
@@ -129,8 +181,37 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                               color: ColorTokens.secondary50,
                             ),
                           ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.red,
+                              width: 2,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            borderSide: BorderSide(
+                              color: Colors.red,
+                              width: 2,
+                            ),
+                          ),
                         ),
                         style: TextStyle(color: ColorTokens.neutral100),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'ℹ️ Formato: +CÓDIGO-PAÍS-NÚMERO o solo el número (10-15 dígitos)',
+                          style: TextStyle(
+                            color: ColorTokens.neutral100.withValues(alpha: 0.7),
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                       SizedBox(height: 20),
                       if (auth.state == AuthState.loading)
@@ -265,6 +346,33 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                                     fontSize: 16,
                                   ),
                                 ),
+                        ),
+                      ],
+                      SizedBox(height: 30),
+                      if (auth.state != AuthState.codeSent) ...[
+                        Divider(color: ColorTokens.neutral100.withValues(alpha: 0.3)),
+                        SizedBox(height: 20),
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: ColorTokens.neutral100,
+                            ),
+                            minimumSize: Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                          ),
+                          onPressed: auth.state != AuthState.loading
+                              ? () => context.read<AuthProvider>().signInAsGuest()
+                              : null,
+                          child: Text(
+                            '👤 Continuar como Invitado',
+                            style: TextStyle(
+                              color: ColorTokens.neutral100,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ],

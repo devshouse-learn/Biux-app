@@ -1,6 +1,7 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
+import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -253,7 +254,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 children: [
                   _buildStatItem('Seguidores', user.followerS.toString()),
                   _buildStatItem('Siguiendo', user.following.length.toString()),
-                  _buildFollowButton(provider),
+                  _buildFollowButton(provider, widget.userId),
                 ],
               ),
             ],
@@ -285,15 +286,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildFollowButton(UserProfileProvider provider) {
+  Widget _buildFollowButton(UserProfileProvider provider, String profileUserId) {
+    final currentUserId = AuthenticationRepository().getUserId;
+    final isOwnProfile = currentUserId == profileUserId;
+    
+    // No mostrar botón si es el perfil del usuario actual
+    if (isOwnProfile) {
+      return SizedBox.shrink();
+    }
+    
     return ElevatedButton(
-      onPressed: () async {
-        if (provider.isFollowing) {
-          await provider.unfollowUser(widget.userId);
-        } else {
-          await provider.followUser(widget.userId);
-        }
-      },
+      onPressed: provider.isFollowing
+          ? null // Deshabilitar si ya sigue
+          : () async {
+              await provider.followUser(profileUserId);
+            },
       style: ElevatedButton.styleFrom(
         backgroundColor: provider.isFollowing
             ? ColorTokens.neutral100.withValues(alpha: 0.2)

@@ -6,6 +6,8 @@ import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:location/location.dart' as loc;
 
 import 'package:biux/core/design_system/color_tokens.dart';
 
@@ -31,6 +33,9 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
   TimeOfDay? _selectedTime;
   DifficultyLevel _selectedDifficulty = DifficultyLevel.easy;
   MeetingPoint? _selectedMeetingPoint;
+  String? _customMeetingPointName;
+  double? _customMeetingPointLat;
+  double? _customMeetingPointLng;
   String? _rideImageUrl;
 
   @override
@@ -328,37 +333,135 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => _showMeetingPointPicker(provider),
-          child: Container(
+        
+        // ✅ CAMPO DE TEXTO PARA NOMBRE MANUAL
+        if (_customMeetingPointName != null)
+          Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              border: Border.all(color: ColorTokens.neutral60),
+              border: Border.all(color: ColorTokens.primary30, width: 2),
               borderRadius: BorderRadius.circular(12),
+              color: ColorTokens.primary30.withOpacity(0.05),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on, color: ColorTokens.primary30),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _selectedMeetingPoint?.name ??
-                        'Selecciona un punto de encuentro',
-                    style: TextStyle(
-                      color: _selectedMeetingPoint != null
-                          ? ColorTokens.neutral20
-                          : ColorTokens.neutral60,
-                      fontSize: 16,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Punto personalizado',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: ColorTokens.neutral60,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            _customMeetingPointName!,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: ColorTokens.neutral20,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (_customMeetingPointLat != null && _customMeetingPointLng != null)
+                            Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Text(
+                                '${_customMeetingPointLat!.toStringAsFixed(4)}, ${_customMeetingPointLng!.toStringAsFixed(4)}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: ColorTokens.neutral60,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
+                    GestureDetector(
+                      onTap: () => _openMapWithCoordinates(
+                        _customMeetingPointLat ?? 4.6097,
+                        _customMeetingPointLng ?? -74.0817,
+                        _customMeetingPointName ?? 'Punto de Encuentro',
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: ColorTokens.primary30,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.map,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                Icon(Icons.arrow_drop_down, color: ColorTokens.neutral60),
               ],
             ),
+          )
+        else
+          // Selector de puntos predefinidos
+          GestureDetector(
+            onTap: () => _showMeetingPointPicker(provider),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                border: Border.all(color: ColorTokens.neutral60),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.location_on, color: ColorTokens.primary30),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _selectedMeetingPoint?.name ??
+                          'Selecciona un punto de encuentro',
+                      style: TextStyle(
+                        color: _selectedMeetingPoint != null
+                            ? ColorTokens.neutral20
+                            : ColorTokens.neutral60,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.arrow_drop_down, color: ColorTokens.neutral60),
+                ],
+              ),
+            ),
+          ),
+
+        SizedBox(height: 12),
+
+        // ✅ BOTÓN PARA AGREGAR PUNTO MANUAL
+        ElevatedButton.icon(
+          onPressed: () => _showCustomMeetingPointDialog(),
+          icon: Icon(Icons.add_location),
+          label: Text(_customMeetingPointName != null 
+              ? 'Cambiar punto personalizado' 
+              : 'Agregar punto personalizado'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: ColorTokens.secondary50,
+            foregroundColor: Colors.white,
+            minimumSize: Size(double.infinity, 48),
           ),
         ),
-        if (_selectedMeetingPoint == null)
+
+        // Si hay error
+        if (_selectedMeetingPoint == null && _customMeetingPointName == null)
           Padding(
             padding: EdgeInsets.only(top: 8, left: 12),
             child: Text(
@@ -596,10 +699,22 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
   void _saveRide() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedMeetingPoint == null) {
+    // Validar que hay al menos un punto de encuentro (predefinido o personalizado)
+    if (_selectedMeetingPoint == null && _customMeetingPointName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Por favor selecciona un punto de encuentro'),
+          content: Text('Por favor selecciona o agrega un punto de encuentro'),
+          backgroundColor: ColorTokens.error50,
+        ),
+      );
+      return;
+    }
+
+    // Si hay punto personalizado pero sin coordenadas
+    if (_customMeetingPointName != null && (_customMeetingPointLat == null || _customMeetingPointLng == null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('El punto personalizado debe tener una ubicación'),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -646,13 +761,25 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
     final provider = Provider.of<RideProvider>(context, listen: false);
 
+    // Determinar el meetingPointId a usar
+    late String meetingPointId;
+    
+    if (_customMeetingPointName != null) {
+      // Si hay punto personalizado, crear uno temporal con ID único
+      final customPointId = 'custom_${DateTime.now().millisecondsSinceEpoch}';
+      meetingPointId = customPointId;
+    } else {
+      // Usar el punto seleccionado
+      meetingPointId = _selectedMeetingPoint!.id;
+    }
+
     final bool success;
     if (widget.rideToEdit != null) {
       // Modo edición
       success = await provider.updateRide(
         rideId: widget.rideToEdit!.id,
         name: _nameController.text.trim(),
-        meetingPointId: _selectedMeetingPoint!.id,
+        meetingPointId: meetingPointId,
         dateTime: dateTime,
         difficulty: _selectedDifficulty,
         kilometers: double.parse(_kilometersController.text),
@@ -665,7 +792,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       success = await provider.createRide(
         name: _nameController.text.trim(),
         groupId: widget.groupId,
-        meetingPointId: _selectedMeetingPoint!.id,
+        meetingPointId: meetingPointId,
         dateTime: dateTime,
         difficulty: _selectedDifficulty,
         kilometers: double.parse(_kilometersController.text),
@@ -688,6 +815,158 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       );
       context.pop();
     }
+  }
+
+  Future<void> _openMapWithCoordinates(double lat, double lng, String name) async {
+    try {
+      final googleMapsUrl = 'https://www.google.com/maps?q=$lat,$lng&z=16';
+      final appleMapsUrl = 'https://maps.apple.com/?q=$lat,$lng';
+      
+      final googleMapsUri = Uri.parse(googleMapsUrl);
+      final appleMapsUri = Uri.parse(appleMapsUrl);
+      
+      if (await canLaunchUrl(googleMapsUri)) {
+        await launchUrl(googleMapsUri);
+      } else if (await canLaunchUrl(appleMapsUri)) {
+        await launchUrl(appleMapsUri);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('No se encontró aplicación de mapas')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al abrir mapas: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showCustomMeetingPointDialog() async {
+    final nameController = TextEditingController();
+    
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(_customMeetingPointName != null 
+              ? 'Cambiar punto personalizado' 
+              : 'Agregar punto personalizado'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nombre del punto',
+                    hintText: 'Ej: Parque Central, Puente Sur',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    try {
+                      final locationService = loc.Location();
+                      final hasPermission = await locationService.requestPermission();
+                      
+                      if (hasPermission == loc.PermissionStatus.granted) {
+                        final currentLocation = await locationService.getLocation();
+                        if (mounted) {
+                          setState(() {
+                            _customMeetingPointLat = currentLocation.latitude;
+                            _customMeetingPointLng = currentLocation.longitude;
+                            _customMeetingPointName = nameController.text.trim();
+                          });
+                          Navigator.pop(context);
+                        }
+                      } else {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Permiso de ubicación denegado')),
+                          );
+                        }
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error al obtener ubicación: $e')),
+                        );
+                      }
+                    }
+                  },
+                  icon: Icon(Icons.location_on),
+                  label: Text('Usar ubicación actual'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: ColorTokens.neutral100,
+                  ),
+                ),
+                if (_customMeetingPointLat != null && _customMeetingPointLng != null)
+                  Padding(
+                    padding: EdgeInsets.only(top: 12),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.primary10,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Coordenadas guardadas:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Lat: ${_customMeetingPointLat?.toStringAsFixed(4)}\n'
+                            'Lng: ${_customMeetingPointLng?.toStringAsFixed(4)}',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (nameController.text.trim().isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Ingresa un nombre para el punto')),
+                  );
+                  return;
+                }
+                if (_customMeetingPointLat == null || _customMeetingPointLng == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Selecciona una ubicación')),
+                  );
+                  return;
+                }
+                setState(() {
+                  _customMeetingPointName = nameController.text.trim();
+                });
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorTokens.primary30,
+                foregroundColor: ColorTokens.neutral100,
+              ),
+              child: Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

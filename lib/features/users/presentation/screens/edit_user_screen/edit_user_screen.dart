@@ -277,15 +277,37 @@ class _BotonSend extends StatelessWidget {
             child: Text(AppStrings.update, style: Styles.daysRoadListDateTime),
             onPressed: () async {
               if (form.currentState!.validate()) {
-                bloc.uploadUpdate(context);
-                bloc.onTapPop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBarUtils.customSnackBar(
-                    content: AppStrings.userUpdate,
-                    backgroundColor: ColorTokens.secondary50,
-                  ),
-                );
-              } else
+                try {
+                  print('📝 Iniciando actualización de perfil...');
+                  await bloc.uploadUpdate(context);
+                  print('✅ Perfil actualizado, cerrando pantalla...');
+                  
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBarUtils.customSnackBar(
+                        content: AppStrings.userUpdate,
+                        backgroundColor: ColorTokens.secondary50,
+                      ),
+                    );
+                    // Esperamos un poco antes de navegar para que se vea el snackbar
+                    await Future.delayed(Duration(milliseconds: 500));
+                    if (context.mounted) {
+                      bloc.onTapPop(context);
+                    }
+                  }
+                } catch (e) {
+                  print('❌ Excepción capturada: $e');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBarUtils.customSnackBar(
+                        content: 'Error al actualizar perfil: ${e.toString()}',
+                        backgroundColor: ColorTokens.error50,
+                      ),
+                    );
+                  }
+                }
+              } else {
+                print('⚠️ Formulario inválido');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
                     content: bloc.nameController.text.isEmpty
@@ -296,10 +318,11 @@ class _BotonSend extends StatelessWidget {
                         ? AppStrings.cityIsEmpty
                         : bloc.descripcionController.text.isEmpty
                         ? AppStrings.descritionIsEmpty
-                        : '',
+                        : 'Por favor completa todos los campos obligatorios',
                     backgroundColor: ColorTokens.error50,
                   ),
                 );
+              }
             },
           ),
         ),

@@ -60,35 +60,35 @@ class MediaSelectorWidget extends StatelessWidget {
             ],
           ),
 
-          // Botones para videos (solo si está permitido)
-          if (allowVideo &&
-              (onVideoFromGallery != null || onRecordVideo != null)) ...[
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                if (onVideoFromGallery != null)
-                  Expanded(
-                    child: _MediaButton(
-                      icon: Icons.video_library,
-                      label: 'Video',
-                      onTap: onVideoFromGallery!,
-                      color: ColorTokens.secondary50,
-                    ),
-                  ),
-                if (onVideoFromGallery != null && onRecordVideo != null)
-                  const SizedBox(width: 8),
-                if (onRecordVideo != null)
-                  Expanded(
-                    child: _MediaButton(
-                      icon: Icons.videocam,
-                      label: 'Grabar',
-                      onTap: onRecordVideo!,
-                      color: ColorTokens.secondary50,
-                    ),
-                  ),
-              ],
-            ),
-          ],
+          // ✅ VIDEOS DESHABILITADOS - Solo se permiten fotos
+          // if (allowVideo &&
+          //     (onVideoFromGallery != null || onRecordVideo != null)) ...[
+          //   const SizedBox(height: 8),
+          //   Row(
+          //     children: [
+          //       if (onVideoFromGallery != null)
+          //         Expanded(
+          //           child: _MediaButton(
+          //             icon: Icons.video_library,
+          //             label: 'Video',
+          //             onTap: onVideoFromGallery!,
+          //             color: ColorTokens.secondary50,
+          //           ),
+          //         ),
+          //       if (onVideoFromGallery != null && onRecordVideo != null)
+          //         const SizedBox(width: 8),
+          //       if (onRecordVideo != null)
+          //         Expanded(
+          //           child: _MediaButton(
+          //             icon: Icons.videocam,
+          //             label: 'Grabar',
+          //             onTap: onRecordVideo!,
+          //             color: ColorTokens.secondary50,
+          //           ),
+          //         ),
+          //     ],
+          //   ),
+          // ],
         ],
       ),
     );
@@ -100,18 +100,16 @@ class _MediaButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  final Color? color;
 
   const _MediaButton({
     required this.icon,
     required this.label,
     required this.onTap,
-    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor = color ?? ColorTokens.primary50;
+    final buttonColor = ColorTokens.primary50;
 
     return Material(
       color: Colors.transparent,

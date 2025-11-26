@@ -92,25 +92,82 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   Future<void> _updateProfile() async {
+    print('🔍 ====== INICIANDO ACTUALIZACIÓN DE PERFIL ======');
+    print('📝 Nombre: "${_nameController.text}"');
+    print('📧 Email: "${_emailController.text}"');
+    
+    // Validar que los campos no estén vacíos
+    if (_nameController.text.trim().isEmpty) {
+      print('❌ ERROR: Nombre vacío');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Por favor ingresa tu nombre'),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (_emailController.text.trim().isEmpty) {
+      print('❌ ERROR: Email vacío');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Por favor ingresa tu email'),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Validar formato de email
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    if (!emailRegex.hasMatch(_emailController.text.trim())) {
+      print('❌ ERROR: Email inválido - "${_emailController.text.trim()}"');
+      print('   Ejemplo válido: usuario@dominio.com');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Por favor ingresa un email válido (ejemplo: usuario@dominio.com)'),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
+      }
+      return;
+    }
+
+    print('✅ Validaciones pasadas');
+    print('🚀 Enviando datos al provider...');
+    
     bool success = await widget.userProvider.updateProfile(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
     );
+
+    print('📊 Resultado: ${success ? "ÉXITO" : "ERROR"}');
+    if (!success) {
+      print('❌ Error del provider: ${widget.userProvider.error}');
+    }
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             success
-                ? 'Perfil actualizado correctamente'
-                : widget.userProvider.error ?? 'Error al actualizar perfil',
+                ? 'Perfil actualizado correctamente ✅'
+                : '❌ ${widget.userProvider.error ?? 'Error al actualizar perfil'}',
           ),
           backgroundColor: success
               ? ColorTokens.success40
               : ColorTokens.error50,
+          duration: Duration(seconds: 3),
         ),
       );
     }
+    print('🔍 ====== FIN DE ACTUALIZACIÓN ======\n');
   }
 
   void _showLogoutDialog() {

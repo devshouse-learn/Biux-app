@@ -229,16 +229,27 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
+      print('📝 Guardando datos en Firestore:');
+      print('   - ID: ${user.id}');
+      print('   - Nombre: ${user.fullName}');
+      print('   - Teléfono: ${user.whatsapp}');
+      print('   - Ciudad: ${user.cityId.name}');
+      print('   - Descripción: ${user.description}');
+      
       await firestore.collection(collection).doc(user.id).update({
         AppStrings.fullName: user.fullName,
         AppStrings.whatsappLowercase: user.whatsapp,
-        AppStrings.cityId: user.cityId,
-        AppStrings.description: user.description
+        AppStrings.cityId: user.cityId.toJson(), // Serializar cityId como JSON
+        AppStrings.description: user.description,
       });
+      
+      print('✅ Datos guardados en Firestore correctamente');
       final response = await this.getUserId(user.id);
+      print('✅ Datos recuperados: ${response.fullName}');
       return response;
     } catch (e) {
-      return BiuxUser();
+      print('❌ Error al actualizar en Firestore: $e');
+      rethrow; // Propagar el error para que se capture en la pantalla
     }
   }
 

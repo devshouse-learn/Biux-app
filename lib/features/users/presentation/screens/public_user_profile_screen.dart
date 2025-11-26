@@ -3,10 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
-import 'package:biux/features/users/data/models/user.dart';
 
 /// Pantalla de perfil público de usuario
-/// Muestra información básica, posts, historias y opción de seguir
+/// Muestra información básica y posts (botón de seguir removido)
 class PublicUserProfileScreen extends StatefulWidget {
   final String userId;
 
@@ -300,8 +299,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
                               const SizedBox(height: 20),
 
-                              // Botón de seguir/siguiendo
-                              _buildFollowButton(provider, user),
+                              // Botón de seguir removido
                               const Spacer(flex: 1), // Espacio flexible abajo
                             ],
                           ),
@@ -374,40 +372,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
           overflow: TextOverflow.ellipsis,
         ),
       ],
-    );
-  }
-
-  Widget _buildFollowButton(UserProfileProvider provider, BiuxUser user) {
-    final isFollowing = provider.isFollowing;
-
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          if (isFollowing) {
-            provider.unfollowUser(user.id);
-          } else {
-            provider.followUser(user.id);
-          }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isFollowing
-              ? ColorTokens.neutral100
-              : ColorTokens.secondary50,
-          foregroundColor: isFollowing
-              ? ColorTokens.primary50
-              : ColorTokens.neutral100,
-          side: isFollowing
-              ? const BorderSide(color: ColorTokens.primary50)
-              : null,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: Text(
-          isFollowing ? 'Siguiendo' : 'Seguir',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-      ),
     );
   }
 

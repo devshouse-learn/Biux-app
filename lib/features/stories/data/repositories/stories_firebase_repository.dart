@@ -21,11 +21,19 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       final result = await firestore.collection(collection).add(
             story.toJson(),
           );
+      
       final listImages = await uploadStory(
         id: result.id,
         listFile: listFile,
       );
-      updateStory(
+      
+      if (listImages.isEmpty) {
+        // Si no se subieron imágenes, eliminar el documento
+        await firestore.collection(collection).doc(result.id).delete();
+        return false;
+      }
+      
+      final updateResult = await updateStory(
         id: result.id,
         story: Story(
           description: story.description,
@@ -36,8 +44,10 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           listReactions: story.listReactions,
         ),
       );
-      return true;
+      
+      return updateResult;
     } catch (e) {
+      print('Error en createStory: $e');
       return false;
     }
   }
@@ -74,18 +84,18 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     required List<File> listFile,
   }) async {
     List<String> listUrl = [];
-    List<String> listNamesPhotos = [
-      'photo1',
-      'photo2',
-      'photo3',
-    ];
+    int photoIndex = 1;
+    
     for (var element in listFile) {
       final image = await uploadImageStory(
-        nameUrl: listNamesPhotos.removeAt(0),
+        nameUrl: 'photo$photoIndex',
         id: id,
         fileUrl: element,
       );
-      listUrl.add(image);
+      if (image.isNotEmpty) {
+        listUrl.add(image);
+      }
+      photoIndex++;
     }
     return listUrl;
   }
@@ -102,12 +112,15 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
               int.parse(
                       bytes.replaceRange(bytes.length - 2, bytes.length, '')) >=
                   200) fileUrl = await compressImage(fileUrl, bytes);
+      
       final userId = AuthenticationRepository().getUserId;
       Reference ref = FirebaseStorage.instance.ref('$userId/$id/$nameUrl');
       UploadTask uploadTask = ref.putFile(fileUrl);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+      print('Imagen subida exitosamente: $nameUrl -> $downloadUrl');
       return downloadUrl;
     } catch (e) {
+      print('Error subiendo imagen $nameUrl: $e');
       return '';
     }
   }

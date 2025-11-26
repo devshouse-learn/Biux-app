@@ -498,6 +498,37 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
+  // Obtener información del admin/creador del grupo
+  Future<Map<String, dynamic>> getUserAdminInfo(String userId) async {
+    try {
+      final user = await _userRepository.getUserById(userId);
+      
+      if (user != null) {
+        return {
+          'fullName': user.name ?? 'Usuario',
+          'userName': user.username ?? 'usuario',
+          'photo': user.photoUrl ?? '',
+          'email': user.email ?? '',
+        };
+      }
+      
+      return {
+        'fullName': 'Usuario',
+        'userName': 'usuario',
+        'photo': '',
+        'email': '',
+      };
+    } catch (e) {
+      print('Error obteniendo info del admin: $e');
+      return {
+        'fullName': 'Usuario',
+        'userName': 'usuario',
+        'photo': '',
+        'email': '',
+      };
+    }
+  }
+
   // Métodos privados
   void _setLoading(bool loading) {
     _isLoading = loading;

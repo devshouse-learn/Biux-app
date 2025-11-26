@@ -21,12 +21,24 @@ class UserService {
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
         print('🐛 DEBUG - Datos obtenidos: $data');
-        return UserModel.fromMap(data);
+        try {
+          return UserModel.fromMap(data);
+        } catch (parseError) {
+          print('⚠️ Error parseando datos del usuario: $parseError');
+          // Retornar un UserModel básico con los datos disponibles
+          return UserModel(
+            uid: uid,
+            phoneNumber: data['phoneNumber'] ?? uid,
+            name: data['name'],
+            email: data['email'],
+            photoUrl: data['photoUrl'],
+          );
+        }
       }
       print('🐛 DEBUG - Documento de usuario no existe');
       return null;
     } catch (e) {
-      print('Error obteniendo datos del usuario: $e');
+      print('❌ Error obteniendo datos del usuario: $e');
       return null;
     }
   }
@@ -36,23 +48,56 @@ class UserService {
     String? name,
     String? email,
   }) async {
+    print('🔍 ====== USER SERVICE: updateUserProfile ======');
+    print('🆔 UID: $uid');
+    print('📝 Nombre: "$name"');
+    print('📧 Email: "$email"');
+    
     try {
+      // Validar UID
+      if (uid.isEmpty) {
+        print('❌ ERROR: UID vacío');
+        return false;
+      }
+
       Map<String, dynamic> updateData = {};
 
-      if (name != null) updateData['name'] = name;
-      if (email != null) updateData['email'] = email;
+      if (name != null && name.isNotEmpty) {
+        updateData['name'] = name.trim();
+        print('✅ Nombre agregado a updateData');
+      }
+      if (email != null && email.isNotEmpty) {
+        updateData['email'] = email.trim();
+        print('✅ Email agregado a updateData');
+      }
+
+      // Si no hay datos para actualizar, retornar false
+      if (updateData.isEmpty) {
+        print('❌ ERROR: updateData vacío después de procesar');
+        return false;
+      }
+
+      // Agregar timestamp de última actualización
+      updateData['updatedAt'] = DateTime.now().toIso8601String();
+      print('⏰ Timestamp agregado: ${updateData['updatedAt']}');
+
+      print('📦 Datos a guardar en Firestore: $updateData');
+      print('🗄️ Colección: users, Documento: $uid');
 
       await _firestore
           .collection('users')
           .doc(uid)
           .set(updateData, SetOptions(merge: true));
 
-      // Firebase Auth maneja automáticamente la información del usuario
-      // No es necesario actualizar manualmente el email en Auth
-
+      print('✅ Actualización guardada exitosamente en Firestore');
+      print('🔍 ====== FIN DE ACTUALIZACIÓN ======\n');
       return true;
     } catch (e) {
-      print('Error actualizando perfil: $e');
+      print('❌ EXCEPCIÓN en updateUserProfile: $e');
+      print('   Tipo: ${e.runtimeType}');
+      print('   Stack trace:');
+      print(StackTrace.current);
+      print('🔍 ====== FIN DE ACTUALIZACIÓN (ERROR) ======\n');
       return false;
     }
   }

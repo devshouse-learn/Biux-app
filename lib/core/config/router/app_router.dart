@@ -66,6 +66,113 @@ import 'auth_notifier.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final AuthNotifier _authNotifier = AuthNotifier();
 
+/// Convierte URLs de dominio personalizado a rutas internas
+/// Ej: https://biux.devshouse.org/ride/123 → /rides/123
+String? _convertDeepLinkToRoute(String location) {
+  print('🔗 Intentando convertir deep link: $location');
+
+  try {
+    final uri = Uri.parse(location);
+
+    // Manejar dominio personalizado
+    if (uri.scheme == 'https' && uri.host == 'biux.devshouse.org') {
+      print('🔗 Detectado app link de biux.devshouse.org');
+      print('🔗 Path: ${uri.path}, Segments: ${uri.pathSegments}');
+
+      // https://biux.devshouse.org/ride/{rideId} → /rides/{rideId}
+      if (uri.path.startsWith('/ride/')) {
+        final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+        if (rideId != null && rideId.isNotEmpty) {
+          final newRoute = '/rides/$rideId';
+          print('✅ Ruta convertida: $location → $newRoute');
+          return newRoute;
+        }
+      }
+
+      // https://biux.devshouse.org/rides/{rideId} → /rides/{rideId}
+      if (uri.path.startsWith('/rides/')) {
+        final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+        if (rideId != null && rideId.isNotEmpty) {
+          final newRoute = '/rides/$rideId';
+          print('✅ Ruta convertida: $location → $newRoute');
+          return newRoute;
+        }
+      }
+
+      // https://biux.devshouse.org/posts/{postId} → /stories
+      if (uri.path.startsWith('/posts/')) {
+        print('✅ Ruta convertida: $location → /stories');
+        return '/stories';
+      }
+
+      // https://biux.devshouse.org/stories/{storyId} → /stories
+      if (uri.path.startsWith('/stories/')) {
+        print('✅ Ruta convertida: $location → /stories');
+        return '/stories';
+      }
+
+      // https://biux.devshouse.org/group/{groupId} → /groups/{groupId}
+      if (uri.path.startsWith('/group/')) {
+        final groupId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+        if (groupId != null && groupId.isNotEmpty) {
+          final newRoute = '/groups/$groupId';
+          print('✅ Ruta convertida: $location → $newRoute');
+          return newRoute;
+        }
+      }
+
+      // https://biux.devshouse.org/user/{userId} → /user-profile/{userId}
+      if (uri.path.startsWith('/user/')) {
+        final userId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+        if (userId != null && userId.isNotEmpty) {
+          final newRoute = '/user-profile/$userId';
+          print('✅ Ruta convertida: $location → $newRoute');
+          return newRoute;
+        }
+      }
+    }
+
+    // Manejar esquema biux://
+    if (uri.scheme == 'biux') {
+      print('🔗 Detectado deep link con esquema biux://');
+
+      // biux://ride/{rideId}
+      if (uri.host == 'ride') {
+        final rideId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+        if (rideId != null && rideId.isNotEmpty) {
+          final newRoute = '/rides/$rideId';
+          print('✅ Ruta convertida: $location → $newRoute');
+          return newRoute;
+        }
+      }
+
+      // biux://group/{groupId}
+      if (uri.host == 'group') {
+        final groupId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+        if (groupId != null && groupId.isNotEmpty) {
+          final newRoute = '/groups/$groupId';
+          print('✅ Ruta convertida: $location → $newRoute');
+          return newRoute;
+        }
+      }
+
+      // biux://user/{userId} o biux://user-profile/{userId}
+      if (uri.host == 'user' || uri.host == 'user-profile') {
+        final userId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+        if (userId != null && userId.isNotEmpty) {
+          final newRoute = '/user-profile/$userId';
+          print('✅ Ruta convertida: $location → $newRoute');
+          return newRoute;
+        }
+      }
+    }
+  } catch (e) {
+    print('❌ Error al procesar deep link: $e');
+  }
+
+  return null;
+}
+
 // Guard de autenticación (función global)
 String? _guard(BuildContext context, GoRouterState state) {
   final bool isLoggedIn = _authNotifier.isLoggedIn;
@@ -76,8 +183,16 @@ String? _guard(BuildContext context, GoRouterState state) {
     '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
   );
 
+  // PRIMERO: Intentar convertir deep links a rutas internas
+  String effectiveLocation = location;
+  final convertedRoute = _convertDeepLinkToRoute(location);
+  if (convertedRoute != null) {
+    effectiveLocation = convertedRoute;
+    print('🔗 Deep link convertido: $location → $effectiveLocation');
+  }
+
   // Si está en la ruta root '/', decidir dónde ir según autenticación
-  if (location == '/') {
+  if (effectiveLocation == '/') {
     if (isLoggedIn) {
       print('📍 Usuario logueado en root, redirigiendo a experiencias');
       return '/stories';
@@ -94,12 +209,12 @@ String? _guard(BuildContext context, GoRouterState state) {
     AppRoutes.createUser,
   ];
 
-  final bool isPublicRoute = publicRoutes.contains(location);
+  final bool isPublicRoute = publicRoutes.contains(effectiveLocation);
 
   // Si está en una ruta pública
   if (isPublicRoute) {
     // Si está logueado y trata de ir al login, redirigir a experiencias
-    if (isLoggedIn && location == AppRoutes.login) {
+    if (isLoggedIn && effectiveLocation == AppRoutes.login) {
       print(
         '📍 Usuario logueado intentando ir al login, redirigiendo a experiencias',
       );
@@ -116,6 +231,12 @@ String? _guard(BuildContext context, GoRouterState state) {
   }
 
   // Usuario autenticado accediendo a ruta privada
+  // Si hubo conversión de deep link, redirigir a la ruta convertida
+  if (convertedRoute != null) {
+    print('✅ Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute');
+    return convertedRoute;
+  }
+
   print('✅ Usuario autenticado, permitiendo acceso');
   return null;
 }

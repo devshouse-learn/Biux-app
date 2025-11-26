@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
-import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -338,14 +336,15 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             ),
             const SizedBox(height: 24),
 
-            // Opciones de post
+            // Opciones de post - DESHABILITADAS: Las publicaciones deben ser dentro de un contexto
+            /*
             Column(
               children: [
                 // Post con multimedia
                 _PostOptionTile(
                   icon: Icons.photo_library,
                   title: 'Post con Multimedia',
-                  subtitle: 'Fotos o videos',
+                  subtitle: 'Solo fotos',
                   color: ColorTokens.secondary50,
                   onTap: () {
                     Navigator.of(context).pop();
@@ -368,6 +367,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 ),
               ],
             ),
+            */
 
             const SizedBox(height: 20),
           ],
@@ -376,6 +376,8 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     );
   }
 
+  // MÉTODOS COMENTADOS - Ya no se crean publicaciones generales
+  /*
   void _navigateToCreatePostWithMedia(BuildContext context) {
     // Navegar a crear post CON multimedia (fotos/videos)
     Navigator.of(context).push(
@@ -401,6 +403,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       ),
     );
   }
+  */
 }
 
 /// Widget para mostrar una experiencia individual en la lista
@@ -454,12 +457,7 @@ class _ExperienceCard extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // Tags
-                if (experience.tags.isNotEmpty) _buildTags(),
-
-                if (experience.tags.isNotEmpty) const SizedBox(height: 12),
-
-                // Metadata
+                // Metadata (tags removidos)
                 _buildMetadata(),
               ],
             ),
@@ -548,35 +546,6 @@ class _ExperienceCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTags() {
-    return Builder(
-      builder: (context) {
-        final theme = Theme.of(context);
-        return Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: experience.tags.map((tag) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: theme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '#$tag',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: theme.primaryColor,
-                ),
-              ),
-            );
-          }).toList(),
-        );
-      },
-    );
-  }
-
   Widget _buildMetadata() {
     return Builder(
       builder: (context) {
@@ -632,6 +601,7 @@ class _ExperienceCard extends StatelessWidget {
   Widget _buildAuthorHeader(BuildContext context) {
     final theme = Theme.of(context);
     final user = experience.user;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -674,7 +644,7 @@ class _ExperienceCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
-                        color: theme.textTheme.bodyLarge?.color,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     Row(
@@ -684,8 +654,9 @@ class _ExperienceCard extends StatelessWidget {
                             '@${user.userName}',
                             style: TextStyle(
                               fontSize: 13,
-                              color: theme.textTheme.bodySmall?.color
-                                  ?.withOpacity(0.7),
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                           ),
                         if (user.userName.isNotEmpty)
@@ -693,16 +664,18 @@ class _ExperienceCard extends StatelessWidget {
                             ' • ',
                             style: TextStyle(
                               fontSize: 13,
-                              color: theme.textTheme.bodySmall?.color
-                                  ?.withOpacity(0.7),
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                           ),
                         Text(
                           _formatDate(experience.createdAt),
                           style: TextStyle(
                             fontSize: 13,
-                            color: theme.textTheme.bodySmall?.color
-                                ?.withOpacity(0.7),
+                            color: isDark
+                                ? Colors.grey[400]
+                                : Colors.grey[600],
                           ),
                         ),
                       ],
@@ -868,38 +841,31 @@ class _ExperienceCard extends StatelessWidget {
 
   void _sharePost(BuildContext context) async {
     try {
-      // Construir el mensaje para compartir
-      final userName = experience.user.fullName.isNotEmpty
-          ? experience.user.fullName
-          : experience.user.userName;
-
-      String shareText = '🚴 ¡Mira esta publicación de $userName en Biux!\n\n';
-
-      if (experience.description.isNotEmpty) {
-        // Limitar la descripción a 150 caracteres
-        final description = experience.description.length > 150
-            ? '${experience.description.substring(0, 150)}...'
-            : experience.description;
-        shareText += '$description\n\n';
-      }
-
-      // Agregar deep link con dominio personalizado
-      shareText += 'https://biux.devshouse.org/posts/${experience.id}\n\n';
-      shareText += '📱 Si no tienes la app, descárgala para ver más';
-
-      // Usar Share.share del paquete share_plus
-      await Share.share(shareText, subject: 'Publicación de Biux');
+      // En lugar de compartir un link, abrir la app directamente con deep link
+      final deepLink = 'biux://posts/${experience.id}';
+      await launchUrl(
+        Uri.parse(deepLink),
+        mode: LaunchMode.externalApplication,
+      ).catchError((e) {
+        // Fallback: si el deep link falla, mostrar mensaje
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('La app debe estar instalada para compartir')),
+        );
+        return false;
+      });
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al compartir: $e')),
+        );
       }
     }
   }
 }
 
 /// Widget para cada opción de post
+// CLASE COMENTADA - Ya no se usa _PostOptionTile
+/*
 class _PostOptionTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -973,3 +939,4 @@ class _PostOptionTile extends StatelessWidget {
     );
   }
 }
+*/

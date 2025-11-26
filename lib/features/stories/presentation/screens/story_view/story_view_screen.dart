@@ -204,8 +204,8 @@ class _CarouselImagesState extends State<_CarouselImages> {
                       '${widget.story.user.fullName}',
                       style: Styles.advertisingTitleBlack.copyWith(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Theme.of(context).textTheme.bodyLarge?.color
-                            : ColorTokens.neutral100,
+                            ? Colors.white
+                            : Colors.black87,
                       ),
                     ),
                   ),
@@ -215,13 +215,22 @@ class _CarouselImagesState extends State<_CarouselImages> {
                       widget.story.creationDate.timeHaveCreated,
                       style: Styles.accentTextThemeWhite.copyWith(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Theme.of(
-                                context,
-                              ).textTheme.bodySmall?.color?.withOpacity(0.7)
-                            : ColorTokens.neutral100,
+                            ? Colors.grey[400]
+                            : Colors.grey[700],
                       ),
                     ),
                   ),
+                  // Botón de eliminar solo si es el dueño
+                  if (widget.story.user.id == AuthenticationRepository().getUserId)
+                    GestureDetector(
+                      onTap: () => _showDeleteConfirmationDialog(context),
+                      child: Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                    ),
+                  SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => ShareUtils().shareFile(
                       filePath: widget.story.fileUrl1,
@@ -396,6 +405,43 @@ class _CarouselImagesState extends State<_CarouselImages> {
           },
         ),
       ],
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    final bloc = context.read<StoryViewBloc>();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Eliminar historia'),
+          content: const Text(
+            '¿Estás seguro de que deseas eliminar esta historia? Esta acción no se puede deshacer.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                bloc.deleteStory(story: widget.story);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Historia eliminada exitosamente'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              child: const Text(
+                'Eliminar',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

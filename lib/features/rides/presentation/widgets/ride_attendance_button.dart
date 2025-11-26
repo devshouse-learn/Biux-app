@@ -22,6 +22,35 @@ class RideAttendanceButton extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    // ✅ VERIFICAR SI LA RODADA YA PASÓ LA FECHA DE CONVOCATORIA
+    final now = DateTime.now();
+    final rideHasPassed = ride.dateTime.isBefore(now);
+
+    if (rideHasPassed) {
+      // Mostrar botón deshabilitado si ya pasó
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: null, // Deshabilitado
+          icon: const Icon(Icons.block, size: 24),
+          label: const Text(
+            'Rodada finalizada - No se pueden agregar participantes',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF9E9E9E), // Gris
+            disabledBackgroundColor: const Color(0xFF9E9E9E),
+            foregroundColor: Colors.white,
+            disabledForegroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      );
+    }
+
     // Determinar estado actual
     final isConfirmed = ride.participants.contains(currentUserId);
     final isMaybe = ride.maybeParticipants.contains(currentUserId);

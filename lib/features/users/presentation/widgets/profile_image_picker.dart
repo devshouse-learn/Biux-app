@@ -6,6 +6,7 @@ import 'package:image/image.dart' as img;
 import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Widget para seleccionar y recortar imagen de perfil en formato cuadrado
+/// La foto es OPCIONAL - el usuario puede dejar su perfil sin foto
 class ProfileImagePicker extends StatefulWidget {
   final String? currentImageUrl;
   final Function(File) onImageSelected;

@@ -106,23 +106,59 @@ class EditUserScreenBloc extends ChangeNotifier {
   }
 
   Future<void> onTapPop(BuildContext context) async {
-    Future.delayed(Duration(seconds: 3), () async {
-      Navigator.pop(context);
-    });
-    notifyListeners();
+    Navigator.pop(context);
   }
 
   Future<void> uploadUpdate(BuildContext context) async {
-    final uploadUser = BiuxUser(
-      id: user.id,
-      fullName: nameController.text,
-      whatsapp: numberController.text,
-      cityId: cityId,
-      description: descripcionController.text,
-    );
-    await UserFirebaseRepository().updateUser(uploadUser);
-    if (imageNew != null)
-      await UserFirebaseRepository().uploadPhoto(user.id, imageNew);
-    notifyListeners();
+    try {
+      print('📝 Preparando actualización de perfil...');
+      
+      // Crear usuario con todos los datos (preservar los que no cambian)
+      final uploadUser = BiuxUser(
+        id: user.id,
+        fullName: nameController.text,
+        whatsapp: numberController.text,
+        cityId: cityId,
+        description: descripcionController.text,
+        userName: user.userName, // Preservar datos que no cambian
+        email: user.email,
+        gender: user.gender,
+        dateBirth: user.dateBirth,
+        facebook: user.facebook,
+        photo: user.photo, // Foto actual (será reemplazada si hay imagen nueva)
+        token: user.token,
+        modality: user.modality,
+        premium: user.premium,
+        profileCover: user.profileCover,
+        followerS: user.followerS,
+        instagram: user.instagram,
+        followers: user.followers,
+        following: user.following,
+        groupId: user.groupId,
+        situationAccident: user.situationAccident,
+      );
+      
+      print('📤 Enviando datos a Firebase...');
+      await UserFirebaseRepository().updateUser(uploadUser);
+      
+      print('📷 Verificando si hay foto nueva para subir...');
+      if (imageNew != null) {
+        print('📤 Subiendo foto de perfil...');
+        await UserFirebaseRepository().uploadPhoto(user.id, imageNew);
+        print('✅ Foto subida correctamente');
+      } else {
+        print('ℹ️ No hay foto nueva');
+      }
+      
+      // Recargar datos del usuario para asegurar sincronización
+      print('🔄 Recargando datos del perfil...');
+      await getUser();
+      
+      print('✅ Perfil actualizado completamente');
+      notifyListeners();
+    } catch (e) {
+      print('❌ Error al actualizar perfil: $e');
+      rethrow;
+    }
   }
 }
