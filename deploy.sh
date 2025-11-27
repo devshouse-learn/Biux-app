@@ -21,6 +21,11 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export PATH="/Users/macmini/dev/flutter/bin:$PATH"
 
+# Asegurar que CocoaPods está disponible
+if [ -x "/opt/homebrew/bin/pod" ]; then
+  export PATH="/opt/homebrew/bin:$PATH"
+fi
+
 # ============================================
 # Funciones de utilidad
 # ============================================
