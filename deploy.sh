@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# 🚀 BIUX Deploy - Compile & Upload a TestFlight
-# Sistema automático para macOS local
+# BIUX Deploy - Compile & Upload a TestFlight
+# Sistema automatico para macOS local
 
 set -e
 
@@ -21,40 +21,28 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export PATH="/Users/macmini/dev/flutter/bin:$PATH"
 
-# Asegurar que CocoaPods está disponible
+# Asegurar que CocoaPods esta disponible
 if [ -x "/opt/homebrew/bin/pod" ]; then
   export PATH="/opt/homebrew/bin:$PATH"
 fi
 
-# ============================================
-# Funciones de utilidad
-# ============================================
-
-log() { echo -e "${BLUE}ℹ️${NC} $1"; }
-success() { echo -e "${GREEN}✅${NC} $1"; }
-error() { echo -e "${RED}❌${NC} $1" >&2; }
-warn() { echo -e "${YELLOW}⚠️${NC} $1"; }
-
-# ============================================
-# COMPILAR
-# ============================================
+log() { echo -e "${BLUE}INFO${NC} $1"; }
+success() { echo -e "${GREEN}OK${NC} $1"; }
+error() { echo -e "${RED}ERROR${NC} $1" >&2; }
+warn() { echo -e "${YELLOW}WARN${NC} $1"; }
 
 compile_app() {
-  log "🔨 Compilando para iOS (5-15 minutos)..."
+  log "Compilando para iOS (5-15 minutos)..."
   
   cd "$BIUX_PATH" || exit 1
   
-  # Volver a la raíz del proyecto
-  cd "$BIUX_PATH" || exit 1
-  
-  # Limpiar
-  log "🧹 Limpiando builds anteriores..."
+  log "Limpiando builds anteriores..."
   rm -rf build/ 2>/dev/null || true
   rm -rf ios/build/ 2>/dev/null || true
+  pkill -9 -f "xcodebuild" 2>/dev/null || true
   rm -rf "$HOME/Library/Developer/Xcode/DerivedData/Runner-"* 2>/dev/null || true
   
-  # Compilar con Flutter
-  log "📱 Ejecutando flutter build ios..."
+  log "Ejecutando flutter build ios..."
   if ! flutter build ios --release 2>&1 | tee "$BUILD_LOG"; then
     error "Error en flutter build ios"
     tail -20 "$BUILD_LOG"
@@ -62,32 +50,32 @@ compile_app() {
   fi
   
   if ! grep -q "Built an image" "$BUILD_LOG" 2>/dev/null; then
-    error "Compilación fallida"
+    error "Compilacion fallida"
     tail -20 "$BUILD_LOG"
     exit 1
   fi
   
-  # Ahora hacer el archive con xcodebuild
-  log "📦 Archivando con xcodebuild..."
+  log "Archivando con xcodebuild..."
   cd "$IOS_PATH" || exit 1
   
   if ! xcodebuild \
     -workspace Runner.xcworkspace \
     -scheme Runner \
     -configuration Release \
-    -derivedDataPath build/ \
-    -destination "generic/platform=iOS" \
+    -derivedDataPath build/deriveddata \
     -archivePath "build/Runner.xcarchive" \
-    archive > "$BUILD_LOG" 2>&1; then
+    -allowProvisioningUpdates \
+    -skipPackagePluginValidation \
+    clean archive >> "$BUILD_LOG" 2>&1; then
     
     error "Error archivando"
-    tail -20 "$BUILD_LOG"
+    tail -30 "$BUILD_LOG"
     exit 1
   fi
   
   if ! grep -q "ARCHIVE SUCCEEDED" "$BUILD_LOG" 2>/dev/null; then
     error "Archivado fallido"
-    tail -20 "$BUILD_LOG"
+    tail -30 "$BUILD_LOG"
     exit 1
   fi
   
@@ -95,21 +83,16 @@ compile_app() {
   current_build=$(agvtool what-version -terse 2>/dev/null | tail -1)
   agvtool next-version -all > /dev/null 2>&1
   new_build=$(agvtool what-version -terse 2>/dev/null | tail -1)
-  log "📊 Build incrementado: $current_build → $new_build"
+  log "Build incrementado: $current_build -> $new_build"
   
-  success "Compilación y archivado completados"
+  success "Compilacion y archivado completados"
 }
 
-# ============================================
-# EXPORTAR IPA
-# ============================================
-
 export_ipa() {
-  log "📦 Exportando IPA..."
+  log "Exportando IPA..."
   
   cd "$IOS_PATH" || exit 1
   
-  # Crear opciones de export
   cat > ExportOptions.plist << 'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -146,12 +129,8 @@ PLIST
   success "IPA exportado: build/ipa/Runner.ipa"
 }
 
-# ============================================
-# SUBIR A TESTFLIGHT
-# ============================================
-
 upload_testflight() {
-  log "📤 Subiendo a TestFlight..."
+  log "Subiendo a TestFlight..."
   
   cd "$IOS_PATH" || exit 1
   
@@ -159,8 +138,8 @@ upload_testflight() {
   
   if [ -z "$APPLE_ID" ] || [ -z "$APPLE_PASSWORD" ]; then
     warn "Variables no configuradas: APPLE_ID, APPLE_PASSWORD"
-    log "📍 IPA disponible en: $IPA_PATH"
-    log "💡 Para automatizar, configura:"
+    log "IPA disponible en: $IPA_PATH"
+    log "Para automatizar, configura:"
     log "   export APPLE_ID='tu@email.com'"
     log "   export APPLE_PASSWORD='tu-app-password'"
     return 0
@@ -173,17 +152,13 @@ upload_testflight() {
     --output-format json > /dev/null 2>&1; then
     
     warn "Error con Transporter"
-    log "📍 IPA disponible en: $IPA_PATH"
+    log "IPA disponible en: $IPA_PATH"
     return 0
   fi
   
   success "Subida a TestFlight completada"
-  log "📲 La versión estará disponible en ~30 minutos"
+  log "La version estara disponible en ~30 minutos"
 }
-
-# ============================================
-# MAIN
-# ============================================
 
 case "${1:-full}" in
   compile)
@@ -199,7 +174,7 @@ case "${1:-full}" in
     compile_app
     export_ipa
     upload_testflight
-    success "✨ ¡Proceso completado!"
+    success "Proceso completado!"
     ;;
   *)
     echo "Uso: $0 {compile|export|upload|full}"
