@@ -19,6 +19,7 @@ NC='\033[0m'
 # Setup
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+export PATH="/Users/macmini/dev/flutter/bin:$PATH"
 
 # ============================================
 # Funciones de utilidad
@@ -36,20 +37,35 @@ warn() { echo -e "${YELLOW}⚠️${NC} $1"; }
 compile_app() {
   log "🔨 Compilando para iOS (5-15 minutos)..."
   
-  cd "$IOS_PATH" || exit 1
+  cd "$BIUX_PATH" || exit 1
   
-  # Incrementar build number
-  current_build=$(agvtool what-version -terse 2>/dev/null | tail -1)
-  agvtool next-version -all > /dev/null 2>&1
-  new_build=$(agvtool what-version -terse 2>/dev/null | tail -1)
-  
-  log "📊 Build: $current_build → $new_build"
+  # Volver a la raíz del proyecto
+  cd "$BIUX_PATH" || exit 1
   
   # Limpiar
+  log "🧹 Limpiando builds anteriores..."
   rm -rf build/ 2>/dev/null || true
+  rm -rf ios/build/ 2>/dev/null || true
   rm -rf "$HOME/Library/Developer/Xcode/DerivedData/Runner-"* 2>/dev/null || true
   
-  # Compilar
+  # Compilar con Flutter
+  log "📱 Ejecutando flutter build ios..."
+  if ! flutter build ios --release 2>&1 | tee "$BUILD_LOG"; then
+    error "Error en flutter build ios"
+    tail -20 "$BUILD_LOG"
+    exit 1
+  fi
+  
+  if ! grep -q "Built an image" "$BUILD_LOG" 2>/dev/null; then
+    error "Compilación fallida"
+    tail -20 "$BUILD_LOG"
+    exit 1
+  fi
+  
+  # Ahora hacer el archive con xcodebuild
+  log "📦 Archivando con xcodebuild..."
+  cd "$IOS_PATH" || exit 1
+  
   if ! xcodebuild \
     -workspace Runner.xcworkspace \
     -scheme Runner \
@@ -59,18 +75,24 @@ compile_app() {
     -archivePath "build/Runner.xcarchive" \
     archive > "$BUILD_LOG" 2>&1; then
     
-    error "Error compilando"
+    error "Error archivando"
     tail -20 "$BUILD_LOG"
     exit 1
   fi
   
   if ! grep -q "ARCHIVE SUCCEEDED" "$BUILD_LOG" 2>/dev/null; then
-    error "Compilación fallida"
+    error "Archivado fallido"
     tail -20 "$BUILD_LOG"
     exit 1
   fi
   
-  success "Compilación completada"
+  # Solo incrementar build number si TODO fue exitoso
+  current_build=$(agvtool what-version -terse 2>/dev/null | tail -1)
+  agvtool next-version -all > /dev/null 2>&1
+  new_build=$(agvtool what-version -terse 2>/dev/null | tail -1)
+  log "📊 Build incrementado: $current_build → $new_build"
+  
+  success "Compilación y archivado completados"
 }
 
 # ============================================

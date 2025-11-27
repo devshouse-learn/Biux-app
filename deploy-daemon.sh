@@ -67,6 +67,19 @@ setup_launchd() {
     <true/>
     <key>KeepAlive</key>
     <true/>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>LANG</key>
+        <string>en_US.UTF-8</string>
+        <key>LC_ALL</key>
+        <string>en_US.UTF-8</string>
+        <key>APPLE_ID</key>
+        <string>tu-email@icloud.com</string>
+        <key>APPLE_PASSWORD</key>
+        <string>oecd-jqgg-kpxv-bqmb</string>
+        <key>TEAM_ID</key>
+        <string>552JRWRZ88</string>
+    </dict>
 </dict>
 </plist>
 PLIST
