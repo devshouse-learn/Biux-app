@@ -15,48 +15,31 @@ class AuthNotifier extends ChangeNotifier {
 
   AuthNotifier() {
     _isWebPlatform = kIsWeb;
+    _user = FirebaseAuth.instance.currentUser;
     
-    // En web, simular usuario logueado para pruebas
     if (_isWebPlatform) {
-      print('🌐 WEB: Modo prueba - Usuario simulado activo');
-      _user = FirebaseAuth.instance.currentUser ?? _createTestWebUser();
+      print('🌐 WEB: Modo desarrollo - Saltando autenticación');
     } else {
       print('📱 MOBILE: Requiriendo autenticación real');
-      _user = FirebaseAuth.instance.currentUser;
     }
 
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (_isWebPlatform) {
-        // En web, mantener el usuario de prueba
-        if (_user == null) {
-          _user = _createTestWebUser();
+      if (!_isWebPlatform) {
+        // Solo en mobile actualizar el estado de autenticación
+        if (_user != user) {
+          _user = user;
+          print('🔄 Estado de autenticación cambió: ${user?.uid ?? "null"}');
           notifyListeners();
         }
-        return;
-      }
-      
-      // En mobile, usar el usuario real de Firebase
-      if (_user != user) {
-        _user = user;
-        notifyListeners();
       }
     });
   }
 
-  /// Intenta crear un usuario de prueba con FirebaseAuth
-  User? _createTestWebUser() {
-    try {
-      // Retornar un usuario vacío que pase las validaciones
-      // En web solo se necesita un User no nulo para pasar el guard
-      return FirebaseAuth.instance.currentUser;
-    } catch (e) {
-      print('⚠️ No se pudo crear usuario de prueba: $e');
-      return null;
-    }
-  }
-
   User? get user => _user;
-  bool get isLoggedIn => _user != null || _isWebPlatform;
+  
+  // En web, siempre retornar true para saltear autenticación
+  // En mobile, verificar si hay usuario
+  bool get isLoggedIn => _isWebPlatform ? true : _user != null;
 
   @override
   void dispose() {

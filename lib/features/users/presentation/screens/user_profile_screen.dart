@@ -2,11 +2,13 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
+import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;
@@ -126,6 +128,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             foregroundColor: ColorTokens.neutral100,
             expandedHeight: 300,
             pinned: true,
+            actions: [
+              // Botón de compartir perfil
+              IconButton(
+                icon: Icon(Icons.share),
+                onPressed: () => _shareProfile(user),
+                tooltip: 'Compartir perfil',
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: _buildProfileHeader(user, provider),
             ),
@@ -290,14 +300,30 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     final currentUserId = AuthenticationRepository().getUserId;
     final isOwnProfile = currentUserId == profileUserId;
     
-    // No mostrar botón si es el perfil del usuario actual
+    // Si es el perfil propio, mostrar botón "Editar perfil"
     if (isOwnProfile) {
-      return SizedBox.shrink();
+      return ElevatedButton(
+        onPressed: () {
+          // Navegar a la pantalla de editar perfil
+          context.go('/profile');
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorTokens.neutral100,
+          foregroundColor: ColorTokens.primary30,
+        ),
+        child: Text(
+          'Editar perfil',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      );
     }
     
+    // Deshabilitar si está procesando o si ya sigue
+    final isDisabled = provider.isProcessingFollow || provider.isFollowing;
+    
     return ElevatedButton(
-      onPressed: provider.isFollowing
-          ? null // Deshabilitar si ya sigue
+      onPressed: isDisabled
+          ? null
           : () async {
               await provider.followUser(profileUserId);
             },
@@ -313,30 +339,128 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           width: provider.isFollowing ? 1 : 0,
         ),
       ),
-      child: Text(
-        provider.isFollowing ? 'Siguiendo' : 'Seguir',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
+      child: provider.isProcessingFollow
+          ? SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  provider.isFollowing 
+                      ? ColorTokens.neutral100 
+                      : ColorTokens.primary30,
+                ),
+              ),
+            )
+          : Text(
+              provider.isFollowing ? 'Siguiendo' : 'Seguir',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
     );
   }
 
   Widget _buildPostsTab(BiuxUser user) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.photo_library_outlined,
-            size: 64,
-            color: ColorTokens.neutral60,
+    return Consumer<ExperienceProvider>(
+      builder: (context, expProvider, child) {
+        // Cargar experiencias del usuario si no están cargadas
+        if (expProvider.userExperiences.isEmpty && !expProvider.isLoading) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            expProvider.loadUserExperiences(widget.userId);
+          });
+        }
+
+        if (expProvider.isLoading) {
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
+            ),
+          );
+        }
+
+        // Filtrar experiencias con media (fotos/videos)
+        final experiencesWithMedia = expProvider.userExperiences
+            .where((exp) => exp.media.isNotEmpty)
+            .toList();
+
+        if (experiencesWithMedia.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.photo_library_outlined,
+                  size: 64,
+                  color: ColorTokens.neutral60,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Sin publicaciones aún',
+                  style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Obtener todas las URLs de media
+        final List<String> allMediaUrls = [];
+        for (var exp in experiencesWithMedia) {
+          allMediaUrls.addAll(exp.media.map((m) => m.url));
+        }
+
+        // Mostrar grid de fotos
+        return GridView.builder(
+          padding: EdgeInsets.all(2),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 2,
+            mainAxisSpacing: 2,
           ),
-          SizedBox(height: 16),
-          Text(
-            'Publicaciones próximamente',
-            style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
-          ),
-        ],
-      ),
+          itemCount: allMediaUrls.length,
+          itemBuilder: (context, index) {
+            final mediaUrl = allMediaUrls[index];
+            return GestureDetector(
+              onTap: () {
+                // Ir al detalle de la experiencia
+                final experience = experiencesWithMedia.firstWhere(
+                  (exp) => exp.media.any((m) => m.url == mediaUrl),
+                );
+                // Navegar según el tipo
+                if (experience.isStoryFormat) {
+                  // TODO: Navegar a vista de historia
+                  context.push('/stories');
+                } else {
+                  // TODO: Navegar a vista de post
+                  context.push('/stories');
+                }
+              },
+              child: CachedNetworkImage(
+                imageUrl: mediaUrl,
+                cacheManager: OptimizedCacheManager.instance,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: ColorTokens.neutral20,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        ColorTokens.primary30,
+                      ),
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: ColorTokens.neutral20,
+                  child: Icon(
+                    Icons.error_outline,
+                    color: ColorTokens.neutral60,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -436,6 +560,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
       },
     );
+  }
+
+  // Método para compartir el perfil del usuario
+  Future<void> _shareProfile(BiuxUser user) async {
+    try {
+      final userName = user.userName.isNotEmpty ? user.userName : user.fullName;
+      final shareUrl = 'https://biux.devshouse.org/user/${user.id}';
+      
+      final shareText = '🚴 Mira el perfil de $userName en Biux\n\n$shareUrl';
+      
+      await Share.share(
+        shareText,
+        subject: 'Perfil de $userName en Biux',
+      );
+    } catch (e) {
+      print('Error al compartir perfil: $e');
+    }
   }
 }
 

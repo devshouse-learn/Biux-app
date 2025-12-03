@@ -32,7 +32,7 @@ class CreateExperienceScreen extends StatefulWidget {
 
 class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   final _descriptionController = TextEditingController();
-  final _tagsController = TextEditingController();
+  // final _tagsController = TextEditingController(); // Ya no se usa
   final _formKey = GlobalKey<FormState>();
 
   // Tipo de contenido (Story o Post)
@@ -64,7 +64,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   @override
   void dispose() {
     _descriptionController.dispose();
-    _tagsController.dispose();
+    // _tagsController.dispose(); // Ya no se usa
     super.dispose();
   }
 
@@ -72,6 +72,21 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   Widget build(BuildContext context) {
     return Consumer<ExperienceCreatorProvider>(
       builder: (context, provider, child) {
+        // 🔥 LÓGICA AUTOMÁTICA: Si se añaden medios y no estamos en modo fijo, cambiar a historia
+        if (!widget.isStoryMode && 
+            !widget.isPostMode && 
+            provider.mediaItems.isNotEmpty && 
+            _contentType != 'story') {
+          // Usar Future.microtask para evitar setState durante build
+          Future.microtask(() {
+            if (mounted) {
+              setState(() {
+                _contentType = 'story';
+              });
+            }
+          });
+        }
+        
         return Scaffold(
           backgroundColor: ColorTokens.neutral10,
           appBar: AppBar(
@@ -155,10 +170,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
                         const SizedBox(height: 24),
 
-                        // Tags
-                        _buildTagsSection(provider),
-
-                        const SizedBox(height: 24),
+                        // Tags - REMOVIDO (no se necesita)
+                        // _buildTagsSection(provider),
+                        // const SizedBox(height: 24),
 
                         // Información adicional
                         _buildInfoSection(),
@@ -271,7 +285,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         child: Text(
                           _contentType == 'story'
                               ? 'Historia requiere imagen o video (máximo 30 segundos)'
-                              : 'Publicación: Opcional - Agrega fotos/videos o solo texto',
+                              : 'Publicación: Si agregas multimedia, se publicará como HISTORIA',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
@@ -482,6 +496,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     );
   }
 
+  // Widget _buildTagsSection removido - ya no se usa
+  /*
   Widget _buildTagsSection(ExperienceCreatorProvider provider) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -555,6 +571,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       ),
     );
   }
+  */
 
   Widget _buildInfoSection() {
     final isDark = Theme.of(context).brightness == Brightness.dark;

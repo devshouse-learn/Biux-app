@@ -256,7 +256,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       case MediaType.image:
         return OptimizedNetworkImage(
           imageUrl: media.url,
-          fit: BoxFit.contain,
+          fit: BoxFit.cover,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           imageType: 'experience',

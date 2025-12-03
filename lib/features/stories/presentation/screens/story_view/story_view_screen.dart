@@ -174,7 +174,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                   imageUrl: item,
                   imageType: 'general',
                   width: sizeScreen.width * 0.8,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain, // Cambiado de cover a contain para mostrar fotos verticales completas
                 ),
               ],
             ),
@@ -255,7 +255,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                             child: OptimizedNetworkImage(
                               imageUrl: e,
                               imageType: 'general',
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain, // Cambiado de cover a contain para mostrar fotos verticales completas
                             ),
                           ),
                           onTap: () {
@@ -367,6 +367,14 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     preDataText: widget.story.user.userName,
                     preDataTextStyle: Styles.numberBlack.copyWith(
                       color: Theme.of(context).textTheme.bodyLarge?.color,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(0, 1),
+                          blurRadius: 3.0,
+                          color: Colors.black.withOpacity(0.7),
+                        ),
+                      ],
                     ),
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyMedium?.color,

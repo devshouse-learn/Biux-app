@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Feature imports (providers)
 import '../../../features/groups/presentation/providers/group_provider.dart';
@@ -49,6 +51,9 @@ import '../../../features/bikes/presentation/screens/public_bike_info_screen.dar
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
+
+// Help imports
+import '../../../features/help/presentation/screens/help_screen.dart';
 
 // Social imports
 import '../../../features/social/presentation/screens/notifications_screen.dart';
@@ -182,6 +187,18 @@ String? _guard(BuildContext context, GoRouterState state) {
   print(
     '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
   );
+
+  // EN WEB: Redirigir a login para ver flujo completo sin errores
+  if (kIsWeb) {
+    print('🌐 WEB: Modo desarrollo - Redirigiendo a login');
+    // Desde root, ir al login
+    if (location == '/') {
+      print('📍 Root en web, redirigiendo a login');
+      return AppRoutes.login;
+    }
+    // Permitir acceso a todas las rutas (desarrollo)
+    return null;
+  }
 
   // PRIMERO: Intentar convertir deep links a rutas internas
   String effectiveLocation = location;
@@ -545,6 +562,13 @@ final GoRouter _router = GoRouter(
           path: AppRoutes.notificationSettings,
           name: AppRoutes.notificationSettingsName,
           builder: (context, state) => const NotificationSettingsScreen(),
+        ),
+
+        // Ayuda y soporte
+        GoRoute(
+          path: AppRoutes.help,
+          name: AppRoutes.helpName,
+          builder: (context, state) => const HelpScreen(),
         ),
 
         // ===== SOCIAL FEATURES =====

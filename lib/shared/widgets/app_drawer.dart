@@ -194,9 +194,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   title: Text('Ayuda'),
                   onTap: () {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Funcionalidad próximamente')),
-                    );
+                    context.go(AppRoutes.help);
                   },
                 ),
               ],

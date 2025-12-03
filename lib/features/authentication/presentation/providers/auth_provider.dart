@@ -4,12 +4,14 @@ import '../../data/repositories/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/shared/services/notification_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum AuthState { initial, loading, codeSent, authenticated, error }
 
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   AuthState _state = AuthState.initial;
   String? _errorMessage;
@@ -19,6 +21,7 @@ class AuthProvider extends ChangeNotifier {
   Timer? _resendTimer;
   int _sendAttempts = 0;
   static const int _maxSendAttempts = 3;
+  bool _needsProfileSetup = false; // Nueva bandera para perfil incompleto
 
   AuthProvider({required AuthRepository authRepository})
     : _authRepository = authRepository;
@@ -27,6 +30,7 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get canResendCode => _canResendCode;
   int get resendSeconds => _resendSeconds;
+  bool get needsProfileSetup => _needsProfileSetup;
 
   void _startResendTimer() {
     _resendTimer?.cancel();
@@ -146,6 +150,9 @@ class AuthProvider extends ChangeNotifier {
       print('📢 Reinicializando servicio de notificaciones...');
       await NotificationService().reinitializeAfterLogin();
 
+      // Verificar si el usuario necesita completar su perfil
+      await _checkProfileSetup(user!.uid);
+
       _state = AuthState.authenticated;
       print('✅ [AuthProvider] ¡Autenticación completada exitosamente!');
     } catch (e) {
@@ -217,6 +224,37 @@ class AuthProvider extends ChangeNotifier {
       print('❌ Error al cerrar sesión: $e');
       _errorMessage = 'Error al cerrar sesión';
       notifyListeners();
+    }
+  }
+
+  /// Verifica si el usuario necesita completar su perfil
+  Future<void> _checkProfileSetup(String uid) async {
+    try {
+      print('🔍 Verificando perfil del usuario: $uid');
+      final doc = await _firestore.collection('users').doc(uid).get();
+      
+      if (doc.exists) {
+        final data = doc.data();
+        final userName = data?['userName'] as String?;
+        final name = data?['name'] as String?;
+        
+        // Si no tiene userName o name, necesita completar perfil
+        if ((userName == null || userName.isEmpty) && 
+            (name == null || name.isEmpty)) {
+          _needsProfileSetup = true;
+          print('⚠️ Usuario necesita completar perfil');
+        } else {
+          _needsProfileSetup = false;
+          print('✅ Usuario tiene perfil completo');
+        }
+      } else {
+        // Si el documento no existe, necesita crear perfil
+        _needsProfileSetup = true;
+        print('⚠️ Documento de usuario no existe, necesita crear perfil');
+      }
+    } catch (e) {
+      print('❌ Error verificando perfil: $e');
+      _needsProfileSetup = false; // En caso de error, no bloquear
     }
   }
 

@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
+import 'package:biux/features/maps/data/models/meeting_point.dart';
 
 class RideListScreen extends StatefulWidget {
   final String? groupId; // Ahora es opcional
@@ -354,6 +356,48 @@ class _RideListScreenState extends State<RideListScreen> {
                               return SizedBox.shrink();
                             },
                           ),
+
+                        // Punto de encuentro (ciudad)
+                        FutureBuilder<MeetingPoint?>(
+                          future: Provider.of<MeetingPointProvider>(
+                            context,
+                            listen: false,
+                          ).getMeetingPoint(ride.meetingPointId),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.hasData &&
+                                snapshot.data != null) {
+                              final meetingPoint = snapshot.data!;
+                              return Container(
+                                margin: EdgeInsets.only(bottom: 12),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      size: 16,
+                                      color: ColorTokens.neutral60,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        meetingPoint.name,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium?.color,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return SizedBox.shrink();
+                          },
+                        ),
 
                         // Fecha y hora
                         Row(

@@ -100,7 +100,12 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                   // Manejar estados de autenticación
                   if (auth.state == AuthState.authenticated) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      context.go(AppRoutes.roadsList); // Redirigir a rodadas
+                      // Verificar si necesita completar perfil
+                      if (auth.needsProfileSetup) {
+                        context.go(AppRoutes.profile); // Redirigir a editar perfil
+                      } else {
+                        context.go(AppRoutes.roadsList); // Redirigir a rodadas
+                      }
                     });
                   }
 
@@ -154,8 +159,8 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         keyboardType: TextInputType.phone,
                         enabled: auth.state != AuthState.loading,
                         decoration: InputDecoration(
-                          labelText: 'Teléfono',
-                          hintText: '+573001234567 o 3001234567',
+                          labelText: 'Número de teléfono',
+                          hintText: 'Ingresa tu número',
                           labelStyle: TextStyle(color: ColorTokens.neutral100),
                           prefixIcon: Icon(
                             Icons.phone,
@@ -198,21 +203,6 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         ),
                         style: TextStyle(color: ColorTokens.neutral100),
                       ),
-                      SizedBox(height: 8),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'ℹ️ Formato: +CÓDIGO-PAÍS-NÚMERO o solo el número (10-15 dígitos)',
-                          style: TextStyle(
-                            color: ColorTokens.neutral100.withValues(alpha: 0.7),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
                       SizedBox(height: 20),
                       if (auth.state == AuthState.loading)
                         CircularProgressIndicator(
@@ -238,6 +228,14 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           ),
                         ),
                       if (auth.state == AuthState.codeSent) ...[
+                        Text(
+                          'Código enviado a: ${phoneController.text}',
+                          style: TextStyle(
+                            color: ColorTokens.neutral100,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                         SizedBox(height: 30),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -349,32 +347,6 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         ),
                       ],
                       SizedBox(height: 30),
-                      if (auth.state != AuthState.codeSent) ...[
-                        Divider(color: ColorTokens.neutral100.withValues(alpha: 0.3)),
-                        SizedBox(height: 20),
-                        OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(
-                              color: ColorTokens.neutral100,
-                            ),
-                            minimumSize: Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                          onPressed: auth.state != AuthState.loading
-                              ? () => context.read<AuthProvider>().signInAsGuest()
-                              : null,
-                          child: Text(
-                            '👤 Continuar como Invitado',
-                            style: TextStyle(
-                              color: ColorTokens.neutral100,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
                   );
                 },

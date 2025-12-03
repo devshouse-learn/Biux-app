@@ -22,6 +22,7 @@ class UserProfileProvider extends ChangeNotifier {
   List<BiuxUser> _following = [];
   bool _isLoadingFollowers = false;
   bool _isLoadingFollowing = false;
+  bool _isProcessingFollow = false; // ✅ NUEVA: Estado de procesamiento
 
   // Estado de posts y stories del usuario
   List<dynamic> _userPosts = [];
@@ -55,6 +56,7 @@ class UserProfileProvider extends ChangeNotifier {
   bool get isLoadingProfile => _isLoadingProfile;
   bool get isLoading => _isLoadingProfile || _isLoadingContent;
   bool get isFollowing => _isFollowing;
+  bool get isProcessingFollow => _isProcessingFollow; // ✅ NUEVO
   List<BiuxUser> get followers => _followers;
   List<BiuxUser> get following => _following;
   bool get isLoadingFollowers => _isLoadingFollowers;
@@ -209,6 +211,12 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Seguir usuario
   Future<bool> followUser(String userId) async {
+    // ⛔ PROTECCIÓN: No permitir si ya está procesando
+    if (_isProcessingFollow) {
+      debugPrint('⏳ Ya se está procesando una acción de follow/unfollow');
+      return false;
+    }
+
     // Cooldown: evitar múltiples clicks en el mismo usuario
     if (_isInFollowCooldown(userId)) {
       debugPrint(
@@ -216,6 +224,9 @@ class UserProfileProvider extends ChangeNotifier {
       );
       return false;
     }
+
+    _isProcessingFollow = true;
+    notifyListeners();
 
     try {
       final success = await _repository.followUser(userId);
@@ -238,11 +249,20 @@ class UserProfileProvider extends ChangeNotifier {
     } catch (e) {
       print('Error siguiendo usuario: $e');
       return false;
+    } finally {
+      _isProcessingFollow = false;
+      notifyListeners();
     }
   }
 
   // Dejar de seguir usuario
   Future<bool> unfollowUser(String userId) async {
+    // ⛔ PROTECCIÓN: No permitir si ya está procesando
+    if (_isProcessingFollow) {
+      debugPrint('⏳ Ya se está procesando una acción de follow/unfollow');
+      return false;
+    }
+
     // Cooldown: evitar múltiples clicks en el mismo usuario
     if (_isInFollowCooldown(userId)) {
       debugPrint(
@@ -250,6 +270,9 @@ class UserProfileProvider extends ChangeNotifier {
       );
       return false;
     }
+
+    _isProcessingFollow = true;
+    notifyListeners();
 
     try {
       final success = await _repository.unfollowUser(userId);
@@ -272,6 +295,9 @@ class UserProfileProvider extends ChangeNotifier {
     } catch (e) {
       print('Error dejando de seguir usuario: $e');
       return false;
+    } finally {
+      _isProcessingFollow = false;
+      notifyListeners();
     }
   }
 

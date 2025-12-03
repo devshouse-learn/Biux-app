@@ -57,9 +57,17 @@ class _LikeButtonState extends State<LikeButton>
   Future<void> _onTap() async {
     final provider = context.read<LikesProvider>();
 
-    // Verificar si ya ha dado like (solo permitir una vez)
+    // ⛔ PROTECCIÓN MÚLTIPLE CONTRA DOBLE CLICK
+    // 1. No permitir si ya está procesando otra acción
+    if (provider.isProcessing) {
+      debugPrint('⏳ Like ya está procesando, por favor espera');
+      return;
+    }
+
+    // 2. Verificar si ya ha dado like (solo permitir una vez)
     final isLiked = await provider.watchUserLiked(widget.type, widget.targetId).first;
     if (isLiked) {
+      debugPrint('✅ Ya has dado like a este contenido');
       return; // No hacer nada si ya le dio like
     }
 

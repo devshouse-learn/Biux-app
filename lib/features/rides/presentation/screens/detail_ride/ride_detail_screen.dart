@@ -14,6 +14,7 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 
@@ -497,6 +498,25 @@ class GroupInfoWidget extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
+                            // Mostrar líder de la rodada
+                            SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.person,
+                                  size: 14,
+                                  color: ColorTokens.primary50,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Líder de la rodada',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: ColorTokens.primary50,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -678,19 +698,48 @@ class MeetingPointInfoWidget extends StatelessWidget {
               value: meetingPoint.description,
             ),
             SizedBox(height: 12),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/map'),
-              icon: Icon(Icons.map),
-              label: Text('Ver en mapa'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.primary30,
-                foregroundColor: ColorTokens.neutral100,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => context.push('/map'),
+                    icon: Icon(Icons.map),
+                    label: Text('Ver en mapa'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorTokens.primary30,
+                      foregroundColor: ColorTokens.neutral100,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _openInGoogleMaps(
+                      meetingPoint.latitude,
+                      meetingPoint.longitude,
+                      meetingPoint.name,
+                    ),
+                    icon: Icon(Icons.map_outlined),
+                    label: Text('Google Maps'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorTokens.secondary50,
+                      foregroundColor: ColorTokens.neutral100,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _openInGoogleMaps(double lat, double lng, String label) async {
+    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
   }
 }
 

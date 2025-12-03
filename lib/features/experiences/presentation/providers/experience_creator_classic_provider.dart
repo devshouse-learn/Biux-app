@@ -201,10 +201,17 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         final duration = controller.value.duration.inSeconds;
         controller.dispose();
 
+        // Validar duración máxima de 30 segundos
+        if (duration > 30) {
+          _error = 'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
+          notifyListeners();
+          return;
+        }
+
         final mediaItem = MediaItem(
           filePath: video.path,
           mediaType: MediaType.video,
-          duration: duration > 30 ? 30 : duration, // Máximo 30 segundos
+          duration: duration,
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -239,10 +246,17 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         final duration = controller.value.duration.inSeconds;
         controller.dispose();
 
+        // Validar duración máxima de 30 segundos
+        if (duration > 30) {
+          _error = 'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
+          notifyListeners();
+          return;
+        }
+
         final mediaItem = MediaItem(
           filePath: video.path,
           mediaType: MediaType.video,
-          duration: duration > 30 ? 30 : duration,
+          duration: duration,
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -310,9 +324,20 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           )
           .toList();
 
+      // 🔥 NUEVA LÓGICA: Si tiene multimedia, se publica como HISTORIA
+      // Las historias tienen descripción corta (máx 20 caracteres)
+      // Si hay multimedia, recortamos la descripción a 20 caracteres
+      String finalDescription = _description;
+      if (_mediaItems.isNotEmpty) {
+        // Forzar formato de historia limitando descripción a 20 chars
+        if (_description.length > 20) {
+          finalDescription = _description.substring(0, 20);
+        }
+      }
+
       // Crear request de experiencia
       final request = CreateExperienceRequest(
-        description: _description,
+        description: finalDescription,
         tags: _tags,
         mediaFiles: mediaRequests,
         type: _experienceType ?? ExperienceType.general,

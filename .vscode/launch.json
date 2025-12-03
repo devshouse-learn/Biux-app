@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "biux (Flutter iPhone 16 Pro)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "deviceId": "8A60CA7F-41E8-484E-9E52-F0F06788A4B7"
+        },
+        {
             "name": "biux",
             "request": "launch",
             "type": "dart"

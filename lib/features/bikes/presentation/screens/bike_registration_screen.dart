@@ -200,33 +200,10 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       ),
       child: Row(
         children: [
-          // Botón Anterior
-          if (bikeProvider.currentStep > 0)
-            Expanded(
-              child: OutlinedButton(
-                onPressed: bikeProvider.isLoading
-                    ? null
-                    : () {
-                        bikeProvider.previousStep();
-                      },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: ColorTokens.primary30),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: Text(
-                  AppStrings.previous,
-                  style: const TextStyle(
-                    color: ColorTokens.primary30,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-
-          if (bikeProvider.currentStep > 0) const SizedBox(width: 16),
-
-          // Botón Siguiente/Finalizar
+          // Solo botón Siguiente/Finalizar (alineado a la derecha)
+          const Spacer(),
           Expanded(
+            flex: 2,
             child: ElevatedButton(
               onPressed: bikeProvider.isLoading
                   ? null
