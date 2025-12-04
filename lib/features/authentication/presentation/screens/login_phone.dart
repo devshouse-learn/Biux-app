@@ -3,6 +3,7 @@ import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -39,12 +40,9 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
     // Limpiar número (solo dígitos)
     final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
     
-    // Validar longitud (mínimo 10, máximo 15 dígitos)
-    if (cleanPhone.length < 10) {
-      return 'El número debe tener mínimo 10 dígitos';
-    }
-    if (cleanPhone.length > 15) {
-      return 'El número no puede tener más de 15 dígitos';
+    // Validar longitud (10 dígitos para Colombia)
+    if (cleanPhone.length != 10) {
+      return 'El número debe tener 10 dígitos';
     }
     
     return null; // Válido
@@ -65,8 +63,10 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
       return;
     }
 
-    print('✅ [LoginPhone] Teléfono válido, enviando código...');
-    context.read<AuthProvider>().sendCode(phoneController.text);
+    // Agregar el prefijo +57 al número antes de enviar
+    final fullPhone = '+57${phoneController.text}';
+    print('✅ [LoginPhone] Teléfono válido, enviando código a: $fullPhone');
+    context.read<AuthProvider>().sendCode(fullPhone);
   }
 
   void _handleValidateCode() {
@@ -158,13 +158,24 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
                         enabled: auth.state != AuthState.loading,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         decoration: InputDecoration(
                           labelText: 'Número de teléfono',
-                          hintText: 'Ingresa tu número',
+                          hintText: '3001234567',
                           labelStyle: TextStyle(color: ColorTokens.neutral100),
-                          prefixIcon: Icon(
-                            Icons.phone,
-                            color: ColorTokens.secondary50,
+                          prefixIcon: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                            child: Text(
+                              '+57',
+                              style: TextStyle(
+                                color: ColorTokens.neutral100,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                           filled: true,
                           fillColor: Colors.white.withValues(alpha: 0.1),
