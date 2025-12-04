@@ -208,6 +208,71 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
+  /// Comprar ahora (compra directa sin pasar por el carrito)
+  /// Crea una orden inmediata con un solo producto
+  Future<String?> buyNow({
+    required String userId,
+    required String userName,
+    required ProductEntity product,
+    required int quantity,
+    String? selectedSize,
+    required String deliveryAddress,
+    required String phoneNumber,
+    String? notes,
+  }) async {
+    try {
+      // Validar stock
+      if (product.stock < quantity) {
+        _errorMessage = 'Stock insuficiente';
+        notifyListeners();
+        return null;
+      }
+
+      // Validar talla si es necesaria
+      if (product.sizes.isNotEmpty && selectedSize == null) {
+        _errorMessage = 'Debes seleccionar una talla';
+        notifyListeners();
+        return null;
+      }
+
+      // Crear item temporal
+      final cartItem = CartItemEntity(
+        product: product,
+        quantity: quantity,
+        selectedSize: selectedSize,
+      );
+
+      // Crear orden
+      final order = OrderEntity(
+        id: '',
+        userId: userId,
+        userName: userName,
+        items: [cartItem],
+        total: cartItem.subtotal,
+        status: OrderStatus.pending,
+        deliveryAddress: deliveryAddress,
+        phoneNumber: phoneNumber,
+        notes: notes,
+        createdAt: DateTime.now(),
+      );
+
+      final orderId = await orderRepository.createOrder(order);
+
+      // Actualizar stock del producto
+      final newStock = product.stock - quantity;
+      await productRepository.updateStock(product.id, newStock);
+
+      // Recargar productos para actualizar stock
+      await loadProducts();
+
+      return orderId;
+    } catch (e) {
+      _errorMessage = 'Error al realizar compra: $e';
+      notifyListeners();
+      return null;
+    }
+  }
+
   /// Cargar órdenes del usuario
   Future<void> loadUserOrders(String userId) async {
     _isLoadingOrders = true;
