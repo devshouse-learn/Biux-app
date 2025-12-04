@@ -90,6 +90,13 @@ class _MainShellState extends State<MainShell> {
             ),
             label: 'Mis Bicis',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.shopping_bag,
+              size: 24,
+            ),
+            label: 'Tienda',
+          ),
         ],
       ),
       body: ResponsiveHelper.wrapForWeb(
@@ -120,6 +127,10 @@ class _MainShellState extends State<MainShell> {
         // Mis Bicis
         context.go(AppRoutes.myBikes);
         break;
+      case 3:
+        // Tienda
+        context.go('/shop');
+        break;
     }
   }
 
@@ -143,6 +154,10 @@ class _MainShellState extends State<MainShell> {
     } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
       setState(() {
         _selectedIndex = 2;
+      });
+    } else if (location.startsWith('/shop')) {
+      setState(() {
+        _selectedIndex = 3;
       });
     }
   }

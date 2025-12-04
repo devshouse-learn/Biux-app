@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Feature imports (providers)
 import '../../../features/groups/presentation/providers/group_provider.dart';
@@ -48,6 +47,12 @@ import '../../../features/bikes/presentation/screens/my_bikes_screen.dart';
 import '../../../features/bikes/presentation/screens/bike_registration_screen.dart';
 import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
 import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
+
+// Shop imports
+import '../../../features/shop/presentation/screens/shop_screen.dart';
+import '../../../features/shop/presentation/screens/product_detail_screen.dart';
+import '../../../features/shop/presentation/screens/cart_screen.dart';
+import '../../../features/shop/presentation/screens/admin_shop_screen.dart';
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
@@ -614,6 +619,45 @@ final GoRouter _router = GoRouter(
 
             return RideAttendeesScreen(rideId: rideId, rideOwnerId: ownerId);
           },
+        ),
+
+        // ===== SHOP/TIENDA =====
+        
+        // Tienda principal
+        GoRoute(
+          path: '/shop',
+          name: 'shop',
+          builder: (context, state) => const ShopScreen(),
+        ),
+
+        // Detalle de producto
+        GoRoute(
+          path: '/shop/:id',
+          name: 'productDetail',
+          builder: (context, state) {
+            final productId = state.pathParameters['id']!;
+            return ProductDetailScreen(productId: productId);
+          },
+        ),
+
+        // Carrito de compras
+        GoRoute(
+          path: '/shop/cart',
+          name: 'cart',
+          builder: (context, state) => const CartScreen(),
+        ),
+
+        // Panel de administración (solo admins)
+        GoRoute(
+          path: '/shop/admin',
+          name: 'adminShop',
+          builder: (context, state) => const AdminShopScreen(),
+          // TODO: Agregar redirect cuando UserEntity tenga isAdmin
+          // redirect: (context, state) {
+          //   final userProvider = context.read<UserProvider>();
+          //   final isAdmin = userProvider.user?.isAdmin ?? false;
+          //   return isAdmin ? null : '/shop';
+          // },
         ),
       ],
     ),

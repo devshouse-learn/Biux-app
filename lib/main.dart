@@ -37,6 +37,11 @@ import 'package:biux/features/bikes/domain/usecases/get_user_bikes_usecase.dart'
 import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
+import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
+import 'package:biux/features/shop/data/repositories/product_repository_impl.dart';
+import 'package:biux/features/shop/data/repositories/order_repository_impl.dart';
+import 'package:biux/features/shop/data/datasources/product_remote_datasource.dart';
+import 'package:biux/features/shop/data/datasources/order_remote_datasource.dart';
 import 'package:biux/features/social/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
@@ -136,6 +141,19 @@ void main() async {
             );
           },
         ),
+        
+        // Shop Provider
+        ChangeNotifierProvider(
+          create: (_) => ShopProvider(
+            productRepository: ProductRepositoryImpl(
+              remoteDataSource: ProductRemoteDataSource(),
+            ),
+            orderRepository: OrderRepositoryImpl(
+              remoteDataSource: OrderRemoteDataSource(),
+            ),
+          ),
+        ),
+        
         ChangeNotifierProvider(create: (_) => ExperienceProvider()),
         ChangeNotifierProvider(
           create: (_) => StoryGroupsProvider(

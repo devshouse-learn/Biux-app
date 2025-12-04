@@ -7,6 +7,7 @@ class UserModel {
   final String? username;
   final bool isDeleting;
   final DateTime? deletionRequestDate;
+  final bool isAdmin; // Campo para administradores
 
   UserModel({
     required this.uid,
@@ -17,6 +18,7 @@ class UserModel {
     this.username,
     this.isDeleting = false,
     this.deletionRequestDate,
+    this.isAdmin = false, // Por defecto NO es admin
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class UserModel {
       'username': username,
       'isDeleting': isDeleting,
       'deletionRequestDate': deletionRequestDate?.toIso8601String(),
+      'isAdmin': isAdmin, // Incluir en serialización
     };
   }
 
@@ -44,6 +47,7 @@ class UserModel {
       deletionRequestDate: map['deletionRequestDate'] != null
           ? DateTime.parse(map['deletionRequestDate'])
           : null,
+      isAdmin: map['isAdmin'] ?? false, // Leer de Firebase
     );
   }
 
@@ -56,6 +60,7 @@ class UserModel {
     String? username,
     bool? isDeleting,
     DateTime? deletionRequestDate,
+    bool? isAdmin, // Incluir en copyWith
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -66,6 +71,7 @@ class UserModel {
       username: username ?? this.username,
       isDeleting: isDeleting ?? this.isDeleting,
       deletionRequestDate: deletionRequestDate ?? this.deletionRequestDate,
+      isAdmin: isAdmin ?? this.isAdmin, // Incluir en copyWith
     );
   }
 }
