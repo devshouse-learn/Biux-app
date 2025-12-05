@@ -19,19 +19,12 @@ class PriceTag extends StatelessWidget {
   }) : super(key: key);
 
   String _formatPrice(double price) {
-    // Formato colombiano: $45.000
-    final parts = price.toStringAsFixed(0).split('');
-    final reversed = parts.reversed.toList();
-    final withDots = <String>[];
+    // Formato colombiano: $45.000 o $1.250.000
+    final priceStr = price.toStringAsFixed(0);
     
-    for (var i = 0; i < reversed.length; i++) {
-      if (i > 0 && i % 3 == 0) {
-        withDots.add('.');
-      }
-      withDots.add(reversed[i]);
-    }
-    
-    return withDots.reversed.join();
+    // Separar en grupos de 3 desde la derecha
+    final regex = RegExp(r'(\d)(?=(\d{3})+(?!\d))');
+    return priceStr.replaceAllMapped(regex, (Match match) => '${match[1]}.');
   }
 
   @override
