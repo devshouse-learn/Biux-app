@@ -193,15 +193,17 @@ String? _guard(BuildContext context, GoRouterState state) {
     '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
   );
 
-  // EN WEB: Redirigir a login para ver flujo completo sin errores
+  // EN WEB: Permitir acceso sin autenticación
   if (kIsWeb) {
-    print('🌐 WEB: Modo desarrollo - Redirigiendo a login');
-    // Desde root, ir al login
+    print('🌐 WEB: Permitiendo acceso sin autenticación');
+    
+    // Si está en root, redirigir a la tienda
     if (location == '/') {
-      print('📍 Root en web, redirigiendo a login');
-      return AppRoutes.login;
+      print('📍 Root en web, redirigiendo a tienda');
+      return '/shop';
     }
-    // Permitir acceso a todas las rutas (desarrollo)
+    
+    // Permitir acceso libre a todas las rutas en web
     return null;
   }
 
