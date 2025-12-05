@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
+import 'package:biux/features/shop/data/datasources/mock_products.dart';
 
 /// Datasource para productos en Firebase Firestore
 class ProductRemoteDataSource {
@@ -18,11 +19,23 @@ class ProductRemoteDataSource {
           .orderBy('createdAt', descending: true)
           .get();
 
+      // Si no hay productos en Firestore, retornar productos mock
+      if (snapshot.docs.isEmpty) {
+        final mockProducts = MockProducts.getProducts();
+        return mockProducts
+            .map((entity) => ProductModel.fromEntity(entity))
+            .toList();
+      }
+
       return snapshot.docs
           .map((doc) => ProductModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      throw Exception('Error al obtener productos: $e');
+      // En caso de error, retornar productos mock
+      final mockProducts = MockProducts.getProducts();
+      return mockProducts
+          .map((entity) => ProductModel.fromEntity(entity))
+          .toList();
     }
   }
 
