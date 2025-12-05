@@ -49,7 +49,7 @@ import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
 import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
 
 // Shop imports
-import '../../../features/shop/presentation/screens/shop_screen.dart';
+import '../../../features/shop/presentation/screens/shop_screen_new.dart';
 import '../../../features/shop/presentation/screens/product_detail_screen.dart';
 import '../../../features/shop/presentation/screens/cart_screen.dart';
 import '../../../features/shop/presentation/screens/admin_shop_screen.dart';

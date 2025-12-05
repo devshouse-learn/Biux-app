@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/data/datasources/mock_products.dart';
@@ -12,31 +13,39 @@ class ProductRemoteDataSource {
 
   /// Obtener todos los productos activos
   Future<List<ProductModel>> getProducts() async {
+    // OPTIMIZACIÓN: Cargar productos mock inmediatamente sin esperar Firestore
+    // Esto evita demoras en la carga inicial
     try {
+      // Intentar cargar desde Firestore con timeout de 2 segundos
       final snapshot = await _firestore
           .collection(_collection)
           .where('isActive', isEqualTo: true)
           .orderBy('createdAt', descending: true)
-          .get();
+          .get()
+          .timeout(
+            const Duration(seconds: 2),
+            onTimeout: () {
+              // Si Firestore tarda mucho, retornar snapshot vacío
+              throw TimeoutException('Firestore timeout');
+            },
+          );
 
-      // Si no hay productos en Firestore, retornar productos mock
-      if (snapshot.docs.isEmpty) {
-        final mockProducts = MockProducts.getProducts();
-        return mockProducts
-            .map((entity) => ProductModel.fromEntity(entity))
+      // Si hay productos en Firestore, usarlos
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs
+            .map((doc) => ProductModel.fromFirestore(doc))
             .toList();
       }
-
-      return snapshot.docs
-          .map((doc) => ProductModel.fromFirestore(doc))
-          .toList();
     } catch (e) {
-      // En caso de error, retornar productos mock
-      final mockProducts = MockProducts.getProducts();
-      return mockProducts
-          .map((entity) => ProductModel.fromEntity(entity))
-          .toList();
+      // Cualquier error (timeout, red, etc.) → usar productos mock
+      print('⚠️ Error cargando desde Firestore, usando productos mock: $e');
     }
+
+    // Siempre retornar productos mock como fallback rápido
+    final mockProducts = MockProducts.getProducts();
+    return mockProducts
+        .map((entity) => ProductModel.fromEntity(entity))
+        .toList();
   }
 
   /// Obtener productos por categoría

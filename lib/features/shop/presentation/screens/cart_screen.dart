@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/shop/presentation/widgets/price_tag.dart';
+import 'package:biux/features/shop/presentation/widgets/payment_method_selector.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,113 +16,134 @@ class CartScreen extends StatelessWidget {
     final TextEditingController addressController = TextEditingController();
     final TextEditingController phoneController = TextEditingController();
     final TextEditingController notesController = TextEditingController();
+    PaymentMethod? selectedPaymentMethod;
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Finalizar Compra'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: addressController,
-                decoration: const InputDecoration(
-                  labelText: 'Dirección de entrega',
-                  border: OutlineInputBorder(),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Finalizar Compra'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Selector de método de pago
+                CompactPaymentMethodSelector(
+                  selectedMethod: selectedPaymentMethod,
+                  onChanged: (method) {
+                    setState(() {
+                      selectedPaymentMethod = method;
+                    });
+                  },
                 ),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono de contacto',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: addressController,
+                  decoration: const InputDecoration(
+                    labelText: 'Dirección de entrega',
+                    prefixIcon: Icon(Icons.location_on),
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
                 ),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Notas adicionales (opcional)',
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Teléfono de contacto',
+                    prefixIcon: Icon(Icons.phone),
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.phone,
                 ),
-                maxLines: 3,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (addressController.text.isEmpty ||
-                  phoneController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Por favor completa todos los campos'),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: notesController,
+                  decoration: const InputDecoration(
+                    labelText: 'Notas adicionales (opcional)',
+                    prefixIcon: Icon(Icons.note),
+                    border: OutlineInputBorder(),
                   ),
-                );
-                return;
-              }
-
-              Navigator.of(dialogContext).pop();
-
-              final shopProvider = context.read<ShopProvider>();
-              final userProvider = context.read<UserProvider>();
-              
-              final currentUser = userProvider.user;
-              if (currentUser == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Error: usuario no encontrado'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                return;
-              }
-
-              final orderId = await shopProvider.createOrderFromCart(
-                userId: currentUser.uid,
-                userName: currentUser.username ?? currentUser.name ?? 'Usuario',
-                deliveryAddress: addressController.text,
-                phoneNumber: phoneController.text,
-                notes: notesController.text.isEmpty
-                    ? null
-                    : notesController.text,
-              );
-
-              if (orderId != null) {
-                // Éxito
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('¡Pedido realizado con éxito!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                context.go('/shop');
-              } else {
-                // Error
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        shopProvider.errorMessage ?? 'Error al crear pedido'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.secondary50,
+                  maxLines: 3,
+                ),
+              ],
             ),
-            child: const Text('Confirmar Pedido'),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (selectedPaymentMethod == null ||
+                    addressController.text.isEmpty ||
+                    phoneController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Por favor completa todos los campos obligatorios'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                  return;
+                }
+
+                Navigator.of(dialogContext).pop();
+
+                final shopProvider = context.read<ShopProvider>();
+                final userProvider = context.read<UserProvider>();
+                
+                final currentUser = userProvider.user;
+                if (currentUser == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Error: usuario no encontrado'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+
+                final orderId = await shopProvider.createOrderFromCart(
+                  userId: currentUser.uid,
+                  userName: currentUser.username ?? currentUser.name ?? 'Usuario',
+                  deliveryAddress: addressController.text,
+                  phoneNumber: phoneController.text,
+                  notes: notesController.text.isEmpty
+                      ? 'Método de pago: ${selectedPaymentMethod!.label}'
+                      : 'Método de pago: ${selectedPaymentMethod!.label}\n${notesController.text}',
+                );
+
+                if (orderId != null) {
+                  // Éxito
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '¡Pedido realizado con éxito!\nMétodo de pago: ${selectedPaymentMethod!.label}',
+                      ),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 4),
+                    ),
+                  );
+                  context.go('/shop');
+                } else {
+                  // Error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          shopProvider.errorMessage ?? 'Error al crear pedido'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorTokens.secondary50,
+              ),
+              child: const Text('Confirmar Pedido'),
+            ),
+          ],
+        ),
       ),
     );
   }
