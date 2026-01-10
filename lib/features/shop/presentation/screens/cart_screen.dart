@@ -172,28 +172,40 @@ class CartScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.shopping_cart_outlined,
-                              size: 120,
-                              color: Colors.grey[300],
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: ColorTokens.primary30.withValues(alpha: 0.1),
+                                border: Border.all(
+                                  color: ColorTokens.primary30.withValues(alpha: 0.2),
+                                  width: 2,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.shopping_cart_outlined,
+                                size: 60,
+                                color: ColorTokens.primary30,
+                              ),
                             ),
                             const SizedBox(height: 24),
-                            const Text(
-                              'No has añadido productos aún',
+                            Text(
+                              '¡Tu carrito está vacío!',
                               style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
                               ),
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Explora nuestra tienda y encuentra\nlo que necesitas para tu bici',
+                              'Elige aquí tus productos favoritos\ny agrégalos para continuar',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
                                 color: Colors.grey[600],
-                                height: 1.5,
+                                height: 1.4,
                               ),
                             ),
                             const SizedBox(height: 32),
@@ -201,10 +213,10 @@ class CartScreen extends StatelessWidget {
                               onPressed: () {
                                 context.go('/shop');
                               },
-                              icon: const Icon(Icons.store, size: 20),
-                              label: const Text('Ir a la tienda'),
+                              icon: const Icon(Icons.pedal_bike, size: 22),
+                              label: const Text('Explorar productos'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorTokens.secondary50,
+                                backgroundColor: ColorTokens.primary30,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 32,
@@ -213,7 +225,7 @@ class CartScreen extends StatelessWidget {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                elevation: 2,
+                                elevation: 3,
                               ),
                             ),
                           ],
@@ -407,6 +419,37 @@ class CartScreen extends StatelessWidget {
                   child: SafeArea(
                     child: Column(
                       children: [
+                        // Información de métodos de pago
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.green[200]!),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.payment,
+                                color: Colors.green[700],
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Métodos de pago: Efectivo, PSE, Tarjeta',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.green[800],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        
                         // Total de items
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -429,6 +472,51 @@ class CartScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
 
+                        // Subtotal
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Subtotal:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            Text(
+                              '\$${(shopProvider.cartTotal * 1).toStringAsFixed(0)} COP',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Envío
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Envío:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            Text(
+                              shopProvider.cartTotal >= 100000 ? 'Gratis' : '\$${(15000).toStringAsFixed(0)} COP',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: shopProvider.cartTotal >= 100000 ? Colors.green : Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(height: 24),
+
                         // Total a pagar
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -440,7 +528,14 @@ class CartScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            LargePriceTag(price: shopProvider.cartTotal),
+                            Text(
+                              '\$${(shopProvider.cartTotal + (shopProvider.cartTotal >= 100000 ? 0 : 15000)).toStringAsFixed(0)} COP',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: ColorTokens.primary30,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -448,21 +543,18 @@ class CartScreen extends StatelessWidget {
                         // Botón de checkout
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
+                          child: ElevatedButton.icon(
                             onPressed: () => _showCheckoutDialog(context),
+                            icon: const Icon(Icons.shopping_cart_checkout),
+                            label: const Text('Finalizar Compra'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorTokens.secondary50,
+                              backgroundColor: ColorTokens.primary30,
+                              foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                            ),
-                            child: const Text(
-                              'Finalizar Compra',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              elevation: 2,
                             ),
                           ),
                         ),

@@ -41,28 +41,63 @@ class CartScreen extends StatelessWidget {
 
   Widget _buildEmptyCart(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.shopping_cart_outlined,
-            size: 100,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Tu carrito está vacío',
-            style: TextStyle(fontSize: 20, color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/store');
-            },
-            icon: const Icon(Icons.shopping_bag),
-            label: const Text('Ir a la tienda'),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.shopping_cart_outlined,
+                size: 80,
+                color: Colors.grey[400],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Tu carrito está vacío',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '¡Pon aquí o elige tus productos favoritos!',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Explora nuestra tienda y encuentra productos increíbles',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/store');
+              },
+              icon: const Icon(Icons.shopping_bag),
+              label: const Text('Explorar Tienda'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -124,7 +159,7 @@ class CartScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${product.precioFinal.toStringAsFixed(2)} c/u',
+                    '\$${(product.precioFinal * 4000).toStringAsFixed(0)} COP c/u',
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
@@ -185,7 +220,7 @@ class CartScreen extends StatelessWidget {
 
                       // Subtotal
                       Text(
-                        '\$${item.subtotal.toStringAsFixed(2)}',
+                        '\$${(item.subtotal * 4000).toStringAsFixed(0)} COP',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -303,7 +338,7 @@ class CartScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '\$${cart.total.toStringAsFixed(2)}',
+                  '\$${(cart.total * 4000).toStringAsFixed(0)} COP',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -311,6 +346,46 @@ class CartScreen extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+
+            // Métodos de pago disponibles
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.payment, color: Colors.blue[700], size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Métodos de pago disponibles',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[700],
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildPaymentMethod(Icons.credit_card, 'Tarjeta'),
+                      _buildPaymentMethod(Icons.account_balance, 'PSE'),
+                      _buildPaymentMethod(Icons.phone_android, 'Nequi'),
+                      _buildPaymentMethod(Icons.wallet, 'Daviplata'),
+                    ],
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -392,7 +467,7 @@ class CartScreen extends StatelessWidget {
             const Text('Resumen de tu pedido:'),
             const SizedBox(height: 12),
             Text('Productos: ${cart.totalQuantity}'),
-            Text('Total: \$${cart.total.toStringAsFixed(2)}'),
+            Text('Total: \$${(cart.total * 4000).toStringAsFixed(0)} COP'),
             const SizedBox(height: 12),
             const Text(
               'Esta es una versión demo. En producción, aquí se integraría una pasarela de pago real (Stripe, PayPal, etc.)',
@@ -424,6 +499,24 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPaymentMethod(IconData icon, String name) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: Icon(icon, size: 24, color: Colors.blue[600]),
+        ),
+        const SizedBox(height: 4),
+        Text(name, style: const TextStyle(fontSize: 12)),
+      ],
     );
   }
 }

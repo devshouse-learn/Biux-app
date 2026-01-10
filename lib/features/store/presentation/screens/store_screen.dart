@@ -77,27 +77,53 @@ class _StoreScreenState extends State<StoreScreen> {
           // Barra de búsqueda
           Padding(
             padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Buscar productos...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          context.read<ProductProvider>().clearFilters();
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Buscar productos...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                context.read<ProductProvider>().clearFilters();
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    onSubmitted: (value) {
+                      context.read<ProductProvider>().searchProducts(value);
+                    },
+                    onChanged: (value) {
+                      setState(() {}); // Para actualizar el suffixIcon
+                    },
+                  ),
                 ),
-              ),
-              onSubmitted: (value) {
-                context.read<ProductProvider>().searchProducts(value);
-              },
+                const SizedBox(width: 12),
+                // Botón limpiar filtros
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _searchController.clear();
+                    context.read<ProductProvider>().clearFilters();
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.clear_all, size: 18),
+                  label: const Text('Limpiar'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -256,7 +282,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   const SizedBox(height: 4),
                   if (product.tieneDescuento) ...[
                     Text(
-                      '\$${product.precio.toStringAsFixed(2)}',
+                      '\$${(product.precio * 4000).toStringAsFixed(0)} COP',
                       style: const TextStyle(
                         decoration: TextDecoration.lineThrough,
                         color: Colors.grey,
@@ -264,7 +290,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       ),
                     ),
                     Text(
-                      '\$${product.precioFinal.toStringAsFixed(2)}',
+                      '\$${(product.precioFinal * 4000).toStringAsFixed(0)} COP',
                       style: const TextStyle(
                         color: Colors.green,
                         fontWeight: FontWeight.bold,
@@ -273,7 +299,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
                   ] else
                     Text(
-                      '\$${product.precio.toStringAsFixed(2)}',
+                      '\$${(product.precio * 4000).toStringAsFixed(0)} COP',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
