@@ -146,18 +146,14 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
             AppStrings.registerFirstBike,
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              context.push('/bikes/register');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.primary30,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          const SizedBox(height: 8),
+          Text(
+            'Toca el botón + para agregar tu primera bicicleta',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[400],
+              fontStyle: FontStyle.italic,
             ),
-            icon: const Icon(Icons.add),
-            label: Text(AppStrings.registerBike),
           ),
         ],
       ),
