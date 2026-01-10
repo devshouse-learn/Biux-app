@@ -9,6 +9,7 @@ import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import '../widgets/request_seller_permission_dialog.dart';
+import '../widgets/recommended_for_rides_widget.dart';
 
 /// Tienda virtual profesional con características de e-commerce avanzadas
 class ShopScreenPro extends StatefulWidget {
@@ -120,25 +121,25 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 onTap: (index) {
                   final categories = [
                     null, // Todos
+                    ProductCategories.bikes,
                     ProductCategories.jerseys,
                     ProductCategories.shorts,
-                    ProductCategories.gloves,
                     ProductCategories.helmets,
-                    ProductCategories.glasses,
                     ProductCategories.shoes,
+                    ProductCategories.components,
                     ProductCategories.accessories,
                   ];
                   _onCategoryChanged(categories[index]);
                 },
                 tabs: const [
-                  Tab(text: 'Todos'),
-                  Tab(text: 'Jerseys'),
-                  Tab(text: 'Culotes'),
-                  Tab(text: 'Guantes'),
-                  Tab(text: 'Cascos'),
-                  Tab(text: 'Gafas'),
-                  Tab(text: 'Calzado'),
-                  Tab(text: 'Accesorios'),
+                  Tab(icon: Icon(Icons.dashboard), text: 'Todos'),
+                  Tab(icon: Icon(Icons.pedal_bike), text: 'Bicis'),
+                  Tab(icon: Icon(Icons.checkroom), text: 'Jerseys'),
+                  Tab(icon: Icon(Icons.sports), text: 'Culotes'),
+                  Tab(icon: Icon(Icons.sports_motorsports), text: 'Cascos'),
+                  Tab(icon: Icon(Icons.directions_run), text: 'Calzado'),
+                  Tab(icon: Icon(Icons.settings), text: 'Componentes'),
+                  Tab(icon: Icon(Icons.category), text: 'Más'),
                 ],
               ),
             ),
@@ -146,6 +147,27 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
           // Toolbar: Ordenar y Vista
           SliverToBoxAdapter(child: _buildToolbar()),
+
+          // Productos recomendados para rodadas
+          SliverToBoxAdapter(
+            child: Consumer<ShopProvider>(
+              builder: (context, provider, child) {
+                // Mostrar productos destacados o los primeros 6
+                final recommendedProducts = provider.products
+                    .where((p) => p.isFeatured || p.isAvailable)
+                    .take(6)
+                    .toList();
+                    
+                if (recommendedProducts.isNotEmpty) {
+                  return RecommendedForRidesWidget(
+                    products: recommendedProducts,
+                    subtitle: 'Equípate para tus próximas aventuras 🚴',
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
 
           // Panel de filtros (expandible)
           if (_showFilters) SliverToBoxAdapter(child: _buildAdvancedFilters()),
@@ -510,76 +532,193 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Banner promocional estilo Amazon/MercadoLibre
+  /// Banner promocional integrado con Biux
   Widget _buildPromoBanner() {
+    return Column(
+      children: [
+        // Banner principal de ciclismo
+        Container(
+          height: 140,
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                ColorTokens.primary30,
+                ColorTokens.primary30.withValues(alpha: 0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              children: [
+                // Patrón de fondo
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.1,
+                    child: CustomPaint(
+                      painter: BikePatternPainter(),
+                    ),
+                  ),
+                ),
+                // Contenido
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              '🚴 TIENDA BIUX',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Equípate para tus rodadas',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                height: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ColorTokens.secondary50,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text(
+                                    '🏷️ Hasta 30% OFF',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Envío gratis > \$100k',
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.95),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.pedal_bike,
+                        size: 56,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        // Mini banners de beneficios
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildBenefitCard(
+                  '🎯',
+                  'Descuentos para grupos',
+                  Colors.blue,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildBenefitCard(
+                  '⚡',
+                  'Ofertas relámpago',
+                  Colors.orange,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildBenefitCard(
+                  '🏆',
+                  'Productos premium',
+                  Colors.purple,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBenefitCard(String emoji, String text, Color color) {
     return Container(
-      height: 120,
-      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            // Contenido
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          '🚴 PRODUCTOS DE CICLISMO',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Encuentra todo lo que necesitas',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            height: 1.2,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Calidad garantizada',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(Icons.shopping_bag, size: 48, color: Colors.white),
-                ],
-              ),
+      child: Column(
+        children: [
+          Text(
+            emoji,
+            style: const TextStyle(fontSize: 24),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: color,
+              height: 1.2,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1360,4 +1499,57 @@ class _ShopScreenProState extends State<ShopScreenPro>
     // Usar el nuevo widget de diálogo
     showRequestSellerPermissionDialog(context);
   }
+}
+
+/// Custom painter para patrón de bicicletas en el banner
+class BikePatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    const double bikeSize = 40;
+    const double spacing = 60;
+
+    for (double x = -bikeSize; x < size.width + bikeSize; x += spacing) {
+      for (double y = -bikeSize; y < size.height + bikeSize; y += spacing) {
+        _drawBike(canvas, paint, Offset(x, y), bikeSize);
+      }
+    }
+  }
+
+  void _drawBike(Canvas canvas, Paint paint, Offset center, double size) {
+    final radius = size / 8;
+    
+    // Rueda trasera
+    canvas.drawCircle(
+      Offset(center.dx - size / 4, center.dy),
+      radius,
+      paint,
+    );
+    
+    // Rueda delantera
+    canvas.drawCircle(
+      Offset(center.dx + size / 4, center.dy),
+      radius,
+      paint,
+    );
+    
+    // Marco simple
+    canvas.drawLine(
+      Offset(center.dx - size / 4, center.dy),
+      Offset(center.dx, center.dy - size / 4),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(center.dx, center.dy - size / 4),
+      Offset(center.dx + size / 4, center.dy),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
