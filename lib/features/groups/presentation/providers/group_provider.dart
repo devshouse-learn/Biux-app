@@ -1,4 +1,4 @@
-﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -502,7 +502,7 @@ class GroupProvider extends ChangeNotifier {
   Future<Map<String, dynamic>> getUserAdminInfo(String userId) async {
     try {
       final user = await _userRepository.getUserById(userId);
-      
+
       if (user != null) {
         return {
           'fullName': user.name ?? 'Usuario',
@@ -511,7 +511,7 @@ class GroupProvider extends ChangeNotifier {
           'email': user.email ?? '',
         };
       }
-      
+
       return {
         'fullName': 'Usuario',
         'userName': 'usuario',

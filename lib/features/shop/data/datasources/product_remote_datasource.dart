@@ -9,7 +9,7 @@ class ProductRemoteDataSource {
   static const String _collection = 'products';
 
   ProductRemoteDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Obtener todos los productos activos
   Future<List<ProductModel>> getProducts() async {
@@ -90,12 +90,14 @@ class ProductRemoteDataSource {
           .get();
 
       final lowercaseQuery = query.toLowerCase();
-      
+
       return snapshot.docs
           .map((doc) => ProductModel.fromFirestore(doc))
-          .where((product) =>
-              product.name.toLowerCase().contains(lowercaseQuery) ||
-              product.description.toLowerCase().contains(lowercaseQuery))
+          .where(
+            (product) =>
+                product.name.toLowerCase().contains(lowercaseQuery) ||
+                product.description.toLowerCase().contains(lowercaseQuery),
+          )
           .toList();
     } catch (e) {
       throw Exception('Error al buscar productos: $e');

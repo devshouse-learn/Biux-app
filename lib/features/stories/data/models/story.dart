@@ -43,35 +43,28 @@ class Story {
     this.creationDate = '',
   });
 
-  factory Story.fromJson(
-    Map json,
-    String id,
-  ) =>
-      Story(
-        id: id,
-        files:
-            (json['files'] as List<dynamic>).map((e) => e.toString()).toList(),
-        description: json['description'],
-        user: BiuxUser.fromMapStory(json['user']),
-        tags: json['tags'] != null
-            ? (json['tags'] as List<dynamic>).map((e) => e.toString()).toList()
-            : [],
-        creationDate: json['creationDate'],
-        listReactions: json['listReactions'] != null
-            ? (json['listReactions'] as List<dynamic>)
-                .map(
-                  (e) => ReactionStory.fromJson(e),
-                )
-                .toList()
-            : [],
-      );
+  factory Story.fromJson(Map json, String id) => Story(
+    id: id,
+    files: (json['files'] as List<dynamic>).map((e) => e.toString()).toList(),
+    description: json['description'],
+    user: BiuxUser.fromMapStory(json['user']),
+    tags: json['tags'] != null
+        ? (json['tags'] as List<dynamic>).map((e) => e.toString()).toList()
+        : [],
+    creationDate: json['creationDate'],
+    listReactions: json['listReactions'] != null
+        ? (json['listReactions'] as List<dynamic>)
+              .map((e) => ReactionStory.fromJson(e))
+              .toList()
+        : [],
+  );
 
   Map<String, dynamic> toJson() => {
-        'files': files,
-        'description': description,
-        'user': user.toMapStory(),
-        'tags': tags,
-        'creationDate': creationDate,
-        'listReactions': listReactions.map((e) => e.toJson()).toList(),
-      };
+    'files': files,
+    'description': description,
+    'user': user.toMapStory(),
+    'tags': tags,
+    'creationDate': creationDate,
+    'listReactions': listReactions.map((e) => e.toJson()).toList(),
+  };
 }

@@ -181,7 +181,7 @@ class _StoryOptionsBottomSheet extends StatelessWidget {
             'Tu historia desaparecerá en 24 horas',
             style: TextStyle(
               fontSize: 14,
-              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+              color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 24),
@@ -269,7 +269,7 @@ class _StoryOptionButton extends StatelessWidget {
               subtitle,
               style: TextStyle(
                 fontSize: 12,
-                color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -374,7 +374,7 @@ class _StoryGroupCircle extends StatelessWidget {
       child: Icon(
         Icons.person,
         size: 35,
-        color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+        color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.5),
       ),
     );
   }

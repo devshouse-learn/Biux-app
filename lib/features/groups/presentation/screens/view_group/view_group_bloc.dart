@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/groups/data/models/group.dart';
+import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/features/roads/data/repositories/roads_firebase_repository.dart';
@@ -27,8 +27,10 @@ class ViewGroupBloc extends ChangeNotifier {
     loadData(adminId: adminId, groupId: groupId);
   }
 
-  Future<void> loadData(
-      {required String groupId, required String adminId}) async {
+  Future<void> loadData({
+    required String groupId,
+    required String adminId,
+  }) async {
     Future.delayed(Duration.zero, () async {
       await getUser();
       await getGroup(groupId);
@@ -47,18 +49,21 @@ class ViewGroupBloc extends ChangeNotifier {
   }
 
   Future<void> getGroup(String groupId) async {
-    final dataGroup =
-        await GroupsFirebaseRepository().getSpecificGroup(groupId);
-    final dataMembers =
-        await MembersFirebaseRepository().getMyMembersGroup(groupId);
+    final dataGroup = await GroupsFirebaseRepository().getSpecificGroup(
+      groupId,
+    );
+    final dataMembers = await MembersFirebaseRepository().getMyMembersGroup(
+      groupId,
+    );
     member = dataMembers;
     group = dataGroup;
     notifyListeners();
   }
 
   Future<void> getRoads(String groupId) async {
-    final dataRoads =
-        await RoadsFirebaseRepository().getRoadsGroups(groupId: groupId);
+    final dataRoads = await RoadsFirebaseRepository().getRoadsGroups(
+      groupId: groupId,
+    );
     roads = dataRoads;
     notifyListeners();
   }

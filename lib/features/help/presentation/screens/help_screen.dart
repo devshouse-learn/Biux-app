@@ -55,37 +55,43 @@ class HelpScreen extends StatelessWidget {
           _buildFeatureCard(
             icon: Icons.camera_alt,
             title: 'Historias y Experiencias',
-            description: 'Comparte momentos de tus rodadas con fotos y videos. Las historias duran 24 horas.',
+            description:
+                'Comparte momentos de tus rodadas con fotos y videos. Las historias duran 24 horas.',
             color: ColorTokens.primary50,
           ),
           _buildFeatureCard(
             icon: Icons.directions_bike,
             title: 'Rodadas Organizadas',
-            description: 'Crea o únete a rodadas con otros ciclistas. Coordina rutas, horarios y puntos de encuentro.',
+            description:
+                'Crea o únete a rodadas con otros ciclistas. Coordina rutas, horarios y puntos de encuentro.',
             color: ColorTokens.secondary50,
           ),
           _buildFeatureCard(
             icon: Icons.pedal_bike,
             title: 'Registro de Bicicletas',
-            description: 'Registra tus bicis con QR único. Si la pierdes, otros usuarios pueden ayudarte a encontrarla.',
+            description:
+                'Registra tus bicis con QR único. Si la pierdes, otros usuarios pueden ayudarte a encontrarla.',
             color: Colors.green,
           ),
           _buildFeatureCard(
             icon: Icons.group,
             title: 'Grupos y Comunidad',
-            description: 'Crea grupos de ciclismo, comparte rutas, organiza eventos y conecta con otros riders.',
+            description:
+                'Crea grupos de ciclismo, comparte rutas, organiza eventos y conecta con otros riders.',
             color: ColorTokens.primary30,
           ),
           _buildFeatureCard(
             icon: Icons.map,
             title: 'Mapas y Rutas',
-            description: 'Explora rutas de ciclismo, guarda tus favoritas y compártelas con la comunidad.',
+            description:
+                'Explora rutas de ciclismo, guarda tus favoritas y compártelas con la comunidad.',
             color: ColorTokens.secondary30,
           ),
           _buildFeatureCard(
             icon: Icons.favorite,
             title: 'Interacción Social',
-            description: 'Da like, comenta y sigue a otros ciclistas. Recibe notificaciones de actividad.',
+            description:
+                'Da like, comenta y sigue a otros ciclistas. Recibe notificaciones de actividad.',
             color: Colors.pink,
           ),
 
@@ -144,7 +150,8 @@ class HelpScreen extends StatelessWidget {
             icon: Icons.bug_report,
             title: 'Reportar un Error',
             subtitle: 'Ayúdanos a mejorar reportando bugs',
-            onTap: () => _launchEmail('bugs@biux.app', 
+            onTap: () => _launchEmail(
+              'bugs@biux.app',
               subject: 'Reporte de Error - BiUX App',
             ),
           ),
@@ -164,7 +171,8 @@ class HelpScreen extends StatelessWidget {
               context: context,
               applicationName: 'BiUX',
               applicationVersion: '1.0.0',
-              applicationLegalese: '© 2025 BiUX. Todos los derechos reservados.',
+              applicationLegalese:
+                  '© 2025 BiUX. Todos los derechos reservados.',
             );
           }),
 
@@ -187,18 +195,12 @@ class HelpScreen extends StatelessWidget {
                 SizedBox(height: 4),
                 Text(
                   'Versión 1.0.0',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: ColorTokens.neutral60,
-                  ),
+                  style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
                 ),
                 SizedBox(height: 4),
                 Text(
                   '© 2025 BiUX. Todos los derechos reservados.',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: ColorTokens.neutral60,
-                  ),
+                  style: TextStyle(fontSize: 10, color: ColorTokens.neutral60),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -238,11 +240,7 @@ class HelpScreen extends StatelessWidget {
             SizedBox(height: 12),
             Text(
               'Aquí encontrarás respuestas a las preguntas más frecuentes, consejos de seguridad y cómo contactarnos si necesitas ayuda.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-                height: 1.4,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.white, height: 1.4),
             ),
           ],
         ),
@@ -270,10 +268,7 @@ class HelpScreen extends StatelessWidget {
       child: ExpansionTile(
         title: Text(
           question,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         ),
         children: [
           Padding(
@@ -308,7 +303,7 @@ class HelpScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 28),
@@ -355,10 +350,7 @@ class HelpScreen extends StatelessWidget {
         ),
         subtitle: Padding(
           padding: EdgeInsets.only(top: 4),
-          child: Text(
-            description,
-            style: TextStyle(fontSize: 13),
-          ),
+          child: Text(description, style: TextStyle(fontSize: 13)),
         ),
       ),
     );
@@ -374,13 +366,10 @@ class HelpScreen extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: ColorTokens.primary50.withOpacity(0.1),
+          backgroundColor: ColorTokens.primary50.withValues(alpha: 0.1),
           child: Icon(icon, color: ColorTokens.primary50),
         ),
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Text(subtitle),
         trailing: Icon(Icons.arrow_forward_ios, size: 16),
         onTap: onTap,
@@ -406,7 +395,7 @@ class HelpScreen extends StatelessWidget {
       path: email,
       query: subject != null ? 'subject=${Uri.encodeComponent(subject)}' : null,
     );
-    
+
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     }
@@ -414,7 +403,7 @@ class HelpScreen extends StatelessWidget {
 
   void _launchWhatsApp(String phone) async {
     final Uri whatsappUri = Uri.parse('https://wa.me/$phone');
-    
+
     if (await canLaunchUrl(whatsappUri)) {
       await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
     }
@@ -422,7 +411,7 @@ class HelpScreen extends StatelessWidget {
 
   void _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }

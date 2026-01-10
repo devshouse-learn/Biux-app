@@ -21,10 +21,21 @@ BIUX_PATH="/Users/macmini/biux"
 DAEMON_LOG="$BIUX_PATH/.deploy-daemon.log"
 LAST_COMMIT="$BIUX_PATH/.last-deployed-commit"
 
-# Credenciales
-export APPLE_ID="tu-email@icloud.com"
-export APPLE_PASSWORD="oecd-jqgg-kpxv-bqmb"
-export TEAM_ID="552JRWRZ88"
+# Credenciales - DEBEN ser configuradas como variables de entorno del sistema
+# NO incluir credenciales directamente en este archivo
+if [ -z "$APPLE_ID" ]; then
+  echo "ERROR: APPLE_ID no está configurado en las variables de entorno" >> "$DAEMON_LOG"
+  exit 1
+fi
+
+if [ -z "$APPLE_PASSWORD" ]; then
+  echo "ERROR: APPLE_PASSWORD no está configurado en las variables de entorno" >> "$DAEMON_LOG"
+  exit 1
+fi
+
+if [ -z "$TEAM_ID" ]; then
+  export TEAM_ID="552JRWRZ88"  # Este es un ID público de equipo, no es secreto
+fi
 
 log_time() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$DAEMON_LOG"

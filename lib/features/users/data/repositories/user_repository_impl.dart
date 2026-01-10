@@ -58,4 +58,14 @@ class UserRepositoryImpl implements UserRepository {
     // Implementation here
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> updateUserRole(String userId, UserRole newRole) async {
+    await remoteDataSource.updateUserRole(userId, newRole);
+  }
+
+  @override
+  Future<void> toggleAutorizacionAdmin(String userId, bool autorizado) async {
+    await remoteDataSource.toggleAutorizacionAdmin(userId, autorizado);
+  }
 }

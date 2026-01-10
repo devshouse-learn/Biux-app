@@ -40,8 +40,10 @@ class ShopProvider with ChangeNotifier {
   String get selectedCategory => _selectedCategory;
   String get searchQuery => _searchQuery;
   List<CartItemEntity> get cartItems => _cartItems;
-  int get cartItemCount => _cartItems.fold(0, (sum, item) => sum + item.quantity);
-  double get cartTotal => _cartItems.fold(0.0, (sum, item) => sum + item.subtotal);
+  int get cartItemCount =>
+      _cartItems.fold(0, (sum, item) => sum + item.quantity);
+  double get cartTotal =>
+      _cartItems.fold(0.0, (sum, item) => sum + item.subtotal);
   List<OrderEntity> get userOrders => _userOrders;
   bool get isLoadingOrders => _isLoadingOrders;
   bool get hasItemsInCart => _cartItems.isNotEmpty;
@@ -82,13 +84,17 @@ class ShopProvider with ChangeNotifier {
   void _applyFilters() {
     _filteredProducts = _allProducts.where((product) {
       // Filtro por categoría
-      final matchesCategory = _selectedCategory == ProductCategories.all ||
+      final matchesCategory =
+          _selectedCategory == ProductCategories.all ||
           product.category == _selectedCategory;
 
       // Filtro por búsqueda
-      final matchesSearch = _searchQuery.isEmpty ||
+      final matchesSearch =
+          _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().contains(_searchQuery.toLowerCase());
+          product.description.toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          );
 
       return matchesCategory && matchesSearch;
     }).toList();
@@ -104,46 +110,67 @@ class ShopProvider with ChangeNotifier {
 
   /// Agregar producto al carrito
   void addToCart(ProductEntity product, {String? selectedSize}) {
+    print('🛒 ShopProvider.addToCart llamado:');
+    print('  - Producto: ${product.name} (ID: ${product.id})');
+    print('  - Talla: $selectedSize');
+    print('  - Carrito actual: ${_cartItems.length} items');
+
     // Verificar si el producto ya está en el carrito
     final existingIndex = _cartItems.indexWhere(
-      (item) => item.product.id == product.id && item.selectedSize == selectedSize,
+      (item) =>
+          item.product.id == product.id && item.selectedSize == selectedSize,
     );
 
     if (existingIndex >= 0) {
       // Incrementar cantidad
+      print('  ✓ Producto ya existe en carrito, incrementando cantidad');
       final existing = _cartItems[existingIndex];
       _cartItems[existingIndex] = existing.copyWith(
         quantity: existing.quantity + 1,
       );
+      print('  - Nueva cantidad: ${_cartItems[existingIndex].quantity}');
     } else {
       // Agregar nuevo item
-      _cartItems.add(CartItemEntity(
-        product: product,
-        quantity: 1,
-        selectedSize: selectedSize,
-      ));
+      print('  ✓ Agregando nuevo producto al carrito');
+      _cartItems.add(
+        CartItemEntity(
+          product: product,
+          quantity: 1,
+          selectedSize: selectedSize,
+        ),
+      );
     }
 
+    print('  - Carrito actualizado: ${_cartItems.length} items');
+    print('  - Total items: $cartItemCount');
+    print('  - Total precio: \$$cartTotal');
     notifyListeners();
+    print('  ✅ notifyListeners() llamado');
   }
 
   /// Remover producto del carrito
   void removeFromCart(String productId, {String? selectedSize}) {
     _cartItems.removeWhere(
-      (item) => item.product.id == productId && item.selectedSize == selectedSize,
+      (item) =>
+          item.product.id == productId && item.selectedSize == selectedSize,
     );
     notifyListeners();
   }
 
   /// Actualizar cantidad de un item en el carrito
-  void updateCartItemQuantity(String productId, int newQuantity, {String? selectedSize}) {
+  void updateCartItemQuantity(
+    String productId,
+    int newQuantity, {
+    String? selectedSize,
+  }) {
     if (newQuantity <= 0) {
       removeFromCart(productId, selectedSize: selectedSize);
       return;
     }
 
     final index = _cartItems.indexWhere(
-      (item) => item.product.id == productId && item.selectedSize == selectedSize,
+      (item) =>
+          item.product.id == productId && item.selectedSize == selectedSize,
     );
 
     if (index >= 0) {
@@ -293,7 +320,7 @@ class ShopProvider with ChangeNotifier {
   Future<bool> cancelOrder(String orderId) async {
     try {
       await orderRepository.cancelOrder(orderId);
-      
+
       // Actualizar lista de órdenes
       final index = _userOrders.indexWhere((order) => order.id == orderId);
       if (index >= 0) {
@@ -311,8 +338,18 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Crear producto (solo admins)
-  Future<bool> createProduct(ProductEntity product) async {
+  /// Crear producto (solo admins y vendedores autorizados)
+  Future<bool> createProduct(
+    ProductEntity product, {
+    required bool canCreateProducts,
+  }) async {
+    if (!canCreateProducts) {
+      _errorMessage =
+          'No tienes permiso para crear productos. Contacta a un administrador.';
+      notifyListeners();
+      return false;
+    }
+
     try {
       await productRepository.createProduct(product);
       await loadProducts(); // Recargar productos
@@ -345,6 +382,77 @@ class ShopProvider with ChangeNotifier {
       return true;
     } catch (e) {
       _errorMessage = 'Error al eliminar producto: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Dar like a un producto (solo si está disponible)
+  Future<bool> toggleProductLike(String productId, String userId) async {
+    try {
+      final productIndex = _allProducts.indexWhere((p) => p.id == productId);
+      if (productIndex == -1) return false;
+
+      final product = _allProducts[productIndex];
+
+      // Solo permitir like si el producto está disponible
+      if (!product.isAvailable) {
+        _errorMessage = 'No puedes dar me gusta a un producto no disponible';
+        notifyListeners();
+        return false;
+      }
+
+      final likedByUsers = List<String>.from(product.likedByUsers);
+
+      if (likedByUsers.contains(userId)) {
+        likedByUsers.remove(userId); // Quitar like
+      } else {
+        likedByUsers.add(userId); // Agregar like
+      }
+
+      final updatedProduct = product.copyWith(likedByUsers: likedByUsers);
+      await productRepository.updateProduct(updatedProduct);
+
+      // Actualizar localmente
+      _allProducts[productIndex] = updatedProduct;
+      _applyFilters();
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _errorMessage = 'Error al dar me gusta: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Marcar producto como vendido (solo el vendedor)
+  Future<bool> markProductAsSold(String productId, String userId) async {
+    try {
+      final productIndex = _allProducts.indexWhere((p) => p.id == productId);
+      if (productIndex == -1) return false;
+
+      final product = _allProducts[productIndex];
+
+      // Solo el vendedor puede marcar como vendido
+      if (product.sellerId != userId) {
+        _errorMessage =
+            'Solo el vendedor puede marcar el producto como vendido';
+        notifyListeners();
+        return false;
+      }
+
+      final updatedProduct = product.copyWith(isSold: true, stock: 0);
+      await productRepository.updateProduct(updatedProduct);
+
+      // Actualizar localmente
+      _allProducts[productIndex] = updatedProduct;
+      _applyFilters();
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _errorMessage = 'Error al marcar como vendido: $e';
       notifyListeners();
       return false;
     }

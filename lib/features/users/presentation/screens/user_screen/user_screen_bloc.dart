@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/roads/data/repositories/roads_firebase_repository.dart';
 import 'package:biux/features/stories/data/models/story.dart';
@@ -27,37 +27,28 @@ class UserScreenBloc extends ChangeNotifier {
 
   Future<void> getUser() async {
     String? userId = AuthenticationRepository().getUserId;
-    final dataUser = await UserFirebaseRepository().getUserId(
-      userId,
-    );
+    final dataUser = await UserFirebaseRepository().getUserId(userId);
     user = dataUser;
     notifyListeners();
   }
 
   Future<void> getStorie() async {
-    final dataStory = await StoriesFirebaseRepository().getStoriesId(
-      user.id,
-    );
+    final dataStory = await StoriesFirebaseRepository().getStoriesId(user.id);
     stories = dataStory;
     notifyListeners();
   }
 
   Future<void> getroads() async {
-    final dataCompetidorRoad =
-        await RoadsFirebaseRepository().getListassistedRoads();
+    final dataCompetidorRoad = await RoadsFirebaseRepository()
+        .getListassistedRoads();
     competitorRoad = dataCompetidorRoad
-        .where(
-          (road) => road.userId == user.id,
-        )
+        .where((road) => road.userId == user.id)
         .toList();
     notifyListeners();
   }
 
   Future<void> onTapEdit(BuildContext context) async {
-    await Navigator.pushNamed(
-      context,
-      AppRoutes.editUserScreenRoute,
-    );
+    await Navigator.pushNamed(context, AppRoutes.editUserScreenRoute);
     notifyListeners();
     getUser();
   }

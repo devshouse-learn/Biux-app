@@ -67,12 +67,12 @@ void testDateTimeCompatibility() {
 }
 
 /// Ejemplo de cómo DateTime funciona con Firestore
-/// 
+///
 /// Firestore maneja DateTime de las siguientes maneras:
 /// 1. DateTime -> Timestamp automáticamente al guardar
 /// 2. Timestamp -> DateTime automáticamente al leer
 /// 3. String ISO8601 -> DateTime al deserializar JSON
-/// 
+///
 /// Nuestro modelo actual es compatible con todos estos casos:
 /// - ExperienceModel.toJson() -> convierte DateTime a ISO8601 string
 /// - ExperienceModel.fromJson() -> convierte string a DateTime

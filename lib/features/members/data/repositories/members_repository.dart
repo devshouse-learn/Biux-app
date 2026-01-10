@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:biux/features/members/data/models/member.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -11,8 +11,9 @@ class MembersRepository {
 
     Map responseData = json.decode(response.body);
     List memberJson = responseData["data"];
-    List<Member> members =
-        memberJson.map((memberJson) => Member.fromJson(memberJson)).toList();
+    List<Member> members = memberJson
+        .map((memberJson) => Member.fromJson(memberJson))
+        .toList();
 
     return members;
   }
@@ -24,27 +25,18 @@ class MembersRepository {
 
     var responseData = json.decode(response.body);
     List membersJson = responseData["data"];
-    List<Member> roadsGroup =
-        membersJson.map((membersJson) => Member.fromJson(membersJson)).toList();
+    List<Member> roadsGroup = membersJson
+        .map((membersJson) => Member.fromJson(membersJson))
+        .toList();
 
     return roadsGroup;
   }
 
-  Future<bool> joinGroups(
-    String userId,
-    String groupId,
-  ) async {
+  Future<bool> joinGroups(String userId, String groupId) async {
     var uriResponse = await http.post(
       Uri.parse("https://biux-prod.ibacrea.com/api/v1/miembros"),
-      body: jsonEncode(
-        {
-          "userId": userId,
-          "groupId": groupId,
-        },
-      ),
-      headers: {
-        'Content-type': 'application/json',
-      },
+      body: jsonEncode({"userId": userId, "groupId": groupId}),
+      headers: {'Content-type': 'application/json'},
     );
 
     if (uriResponse.statusCode == 200) {
@@ -60,9 +52,7 @@ class MembersRepository {
   }
 
   Future<Member> getApproved(String id, String userId) async {
-    var headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
-    };
+    var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
 
     var url = '$URLMembers?grupo.id=$id&usuarioId=$userId';
 
@@ -82,8 +72,9 @@ class MembersRepository {
 
     var responseData = json.decode(response.body);
     List membersJson = responseData["data"];
-    List<Member> myGroups =
-        membersJson.map((membersJson) => Member.fromJson(membersJson)).toList();
+    List<Member> myGroups = membersJson
+        .map((membersJson) => Member.fromJson(membersJson))
+        .toList();
 
     return myGroups;
   }
@@ -92,14 +83,10 @@ class MembersRepository {
     var url =
         'https://biux-prod.ibacrea.com/api/v1/miembros?grupo.administrador.id=$id';
 
-    final http.Response response = await http.get(
-      Uri.parse(url),
-    );
+    final http.Response response = await http.get(Uri.parse(url));
 
     Map<String, dynamic> responseData = json.decode(response.body);
-    var memberVoid = Member(
-      approved: false,
-    );
+    var memberVoid = Member(approved: false);
     List groupJson = responseData["data"].toList();
     if (groupJson.length != 0) {
       return Member.fromJson(groupJson.length == 0 ? null : groupJson.first);

@@ -21,39 +21,38 @@ class ViewRoadsGroup extends StatelessWidget {
       alignment: Alignment.center,
       child: SingleChildScrollView(
         child: Wrap(
-          children:
-              bloc.roads
-                  .map(
-                    (road) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                            margin: const EdgeInsets.only(top: 20),
-                            height: 180,
-                            width: 320,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: ColorTokens.neutral60,
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                _DateSection(road: road),
-                                _TextSection(road: road),
-                              ],
-                            ),
+          children: bloc.roads
+              .map(
+                (road) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        height: 180,
+                        width: 320,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: ColorTokens.neutral60,
+                            width: 1,
                           ),
-                          _ImageCircular(road: road),
-                          _ButtonSection(road: road),
-                        ],
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _DateSection(road: road),
+                            _TextSection(road: road),
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                  .toList(),
+                      _ImageCircular(road: road),
+                      _ButtonSection(road: road),
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
         ),
       ),
     );

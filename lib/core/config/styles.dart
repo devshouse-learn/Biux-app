@@ -2,12 +2,8 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:flutter/material.dart';
 
 class Styles {
-  static const accentTextThemeWhite = TextStyle(
-    color: ColorTokens.neutral100,
-  );
-  static const accentTextThemeBlack = TextStyle(
-    color: ColorTokens.neutral0,
-  );
+  static const accentTextThemeWhite = TextStyle(color: ColorTokens.neutral100);
+  static const accentTextThemeBlack = TextStyle(color: ColorTokens.neutral0);
   static const wrapDrawerWhite = TextStyle(
     color: ColorTokens.neutral100,
     fontSize: 20.0,
@@ -34,16 +30,12 @@ class Styles {
     fontWeight: FontWeight.w500,
     color: ColorTokens.neutral0,
   );
-  static const cancelButtonText = TextStyle(
-    color: ColorTokens.neutral60,
-  );
+  static const cancelButtonText = TextStyle(color: ColorTokens.neutral60);
   static const fontWeightText = TextStyle(
     fontSize: 25.0,
     fontWeight: FontWeight.bold,
   );
-  static const fontSize = TextStyle(
-    fontSize: 20.0,
-  );
+  static const fontSize = TextStyle(fontSize: 20.0);
   static const headline = TextStyle(
     color: ColorTokens.neutral100,
     fontSize: null,
@@ -62,9 +54,7 @@ class Styles {
     fontSize: 18,
     fontWeight: FontWeight.w300,
   );
-  static const splashScreenViewText = TextStyle(
-    fontSize: 40.0,
-  );
+  static const splashScreenViewText = TextStyle(fontSize: 40.0);
   static const clipRRectRowWhite = TextStyle(
     fontSize: 23,
     fontWeight: FontWeight.bold,
@@ -94,10 +84,7 @@ class Styles {
     color: ColorTokens.neutral100,
     shadows: <Shadow>[
       Shadow(
-        offset: Offset(
-          1.0,
-          1.0,
-        ),
+        offset: Offset(1.0, 1.0),
         blurRadius: 1.0,
         color: ColorTokens.neutral0,
       ),
@@ -113,10 +100,7 @@ class Styles {
     color: ColorTokens.neutral100,
     shadows: <Shadow>[
       Shadow(
-        offset: Offset(
-          1.0,
-          1.0,
-        ),
+        offset: Offset(1.0, 1.0),
         blurRadius: 1.0,
         color: ColorTokens.neutral0,
       ),
@@ -129,9 +113,7 @@ class Styles {
     fontSize: 15.0,
     fontWeight: FontWeight.bold,
   );
-  static const hintStyle = TextStyle(
-    fontSize: 13.0,
-  );
+  static const hintStyle = TextStyle(fontSize: 13.0);
   static const sendText = TextStyle(
     fontSize: 15.0,
     fontWeight: FontWeight.bold,
@@ -178,12 +160,8 @@ class Styles {
     fontWeight: FontWeight.bold,
     fontSize: 25,
   );
-  static const sizedBoxHint = TextStyle(
-    fontSize: 14.0,
-  );
-  static const fontWeightBold = TextStyle(
-    fontWeight: FontWeight.bold,
-  );
+  static const sizedBoxHint = TextStyle(fontSize: 14.0);
+  static const fontWeightBold = TextStyle(fontWeight: FontWeight.bold);
   static const cardGroupName = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.bold,
@@ -213,9 +191,7 @@ class Styles {
     fontWeight: FontWeight.bold,
     color: ColorTokens.primary30,
   );
-  static const rowGreyishNavyBlue = TextStyle(
-    color: ColorTokens.primary30,
-  );
+  static const rowGreyishNavyBlue = TextStyle(color: ColorTokens.primary30);
   static const flexibleBold = TextStyle(
     fontSize: 10.0,
     fontWeight: FontWeight.bold,
@@ -276,20 +252,14 @@ class Styles {
     fontWeight: FontWeight.bold,
     color: ColorTokens.neutral0,
   );
-  static const paddingText = TextStyle(
-    fontSize: 30.0,
-  );
+  static const paddingText = TextStyle(fontSize: 30.0);
   static const stackWhite = TextStyle(
     fontWeight: FontWeight.bold,
     color: ColorTokens.neutral100,
     fontSize: 23.0,
   );
-  static const paddingHintText = TextStyle(
-    fontSize: 16.0,
-  );
-  static const rowGestureDetector = TextStyle(
-    fontSize: 11,
-  );
+  static const paddingHintText = TextStyle(fontSize: 16.0);
+  static const rowGestureDetector = TextStyle(fontSize: 11);
   static const expandedText = TextStyle(
     color: ColorTokens.neutral100,
     fontSize: 40,
@@ -311,9 +281,7 @@ class Styles {
     fontSize: 11.0,
     fontWeight: FontWeight.bold,
   );
-  static const flexibleContainerText = TextStyle(
-    fontSize: 12.2,
-  );
+  static const flexibleContainerText = TextStyle(fontSize: 12.2);
   static const sizedBoxGestureDetector = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.bold,
@@ -347,9 +315,7 @@ class Styles {
     fontSize: 15.0,
     fontWeight: FontWeight.bold,
   );
-  static const roadDescriptionText = TextStyle(
-    fontSize: 15.0,
-  );
+  static const roadDescriptionText = TextStyle(fontSize: 15.0);
   static const joinMeText = TextStyle(
     fontSize: 14,
     color: ColorTokens.neutral100,
@@ -390,12 +356,8 @@ class Styles {
     fontFamily: "Poppins",
     color: ColorTokens.neutral60,
   );
-  static const centerLocationName = TextStyle(
-    color: ColorTokens.neutral60,
-  );
-  static const containerDirection = TextStyle(
-    fontSize: 13.5,
-  );
+  static const centerLocationName = TextStyle(color: ColorTokens.neutral60);
+  static const containerDirection = TextStyle(fontSize: 13.5);
   static const containerStatus = TextStyle(
     fontSize: 20.0,
     fontWeight: FontWeight.bold,
@@ -405,17 +367,12 @@ class Styles {
     color: ColorTokens.neutral0,
     fontSize: 19,
   );
-  static const rowItem = TextStyle(
-    color: ColorTokens.neutral0,
-    fontSize: 10,
-  );
+  static const rowItem = TextStyle(color: ColorTokens.neutral0, fontSize: 10);
   static const rowHintStyleBlack = TextStyle(
     fontSize: 14.0,
     color: ColorTokens.neutral60,
   );
-  static const appBarChildren = TextStyle(
-    fontSize: 17,
-  );
+  static const appBarChildren = TextStyle(fontSize: 17);
   static const rowPadding = TextStyle(
     fontSize: 20.0,
     fontWeight: FontWeight.bold,
@@ -502,9 +459,7 @@ class Styles {
     color: ColorTokens.primary50,
     fontWeight: FontWeight.bold,
   );
-  static const selectableWidget = TextStyle(
-    fontSize: 12,
-  );
+  static const selectableWidget = TextStyle(fontSize: 12);
   static const containerImage = TextStyle(
     color: ColorTokens.neutral100,
     fontSize: 15,
@@ -583,29 +538,24 @@ class Styles {
     padding: EdgeInsets.symmetric(horizontal: 20),
     maximumSize: Size(200, 50),
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(10),
-      ),
+      borderRadius: BorderRadius.all(Radius.circular(10)),
     ),
   );
 
   final ButtonStyle textButtonStrongCyanStyle = ElevatedButton.styleFrom(
-      //primary: ColorTokens.secondary50,
-      padding: EdgeInsets.all(0),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(20),
-        ),
-      ));
+    //primary: ColorTokens.secondary50,
+    padding: EdgeInsets.all(0),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+    ),
+  );
 
   final ButtonStyle textButtonWhiteStyle = ElevatedButton.styleFrom(
     // primary: ColorTokens.neutral100,
     padding: EdgeInsets.symmetric(horizontal: 0),
     maximumSize: Size(64, 50),
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(10),
-      ),
+      borderRadius: BorderRadius.all(Radius.circular(10)),
     ),
   );
 
@@ -649,9 +599,7 @@ class Styles {
     padding: EdgeInsets.symmetric(horizontal: 20),
     maximumSize: Size(250, 50),
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.all(Radius.circular(20)),
     ),
   );
 
@@ -661,9 +609,7 @@ class Styles {
     maximumSize: Size(64, 50),
     shape: const RoundedRectangleBorder(
       side: BorderSide(color: ColorTokens.neutral60, width: 1),
-      borderRadius: BorderRadius.all(
-        Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.all(Radius.circular(20)),
     ),
   );
 
@@ -681,4 +627,3 @@ class Styles {
     fontWeight: FontWeight.w300,
   );
 }
-

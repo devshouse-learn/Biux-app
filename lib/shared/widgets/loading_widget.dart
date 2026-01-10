@@ -21,10 +21,7 @@ class _LoadingState extends State<Loading> {
       child: Stack(
         children: [
           Center(
-            child: Container(
-              height: height,
-              width: width,
-            ),
+            child: Container(height: height, width: width),
           ),
           Center(
             child: SizedBox(
@@ -44,7 +41,3 @@ class _LoadingState extends State<Loading> {
     );
   }
 }
-
-
-
-

@@ -9,13 +9,7 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
   Future<List<TypeBike>> getListTypesBike() async {
     try {
       final result = await firestore.collection(collection).get();
-      return result.docs
-          .map(
-            (e) => TypeBike.fromJsonMap(
-              e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => TypeBike.fromJsonMap(e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -24,14 +18,11 @@ class TypesBikeFirebaseRepository extends TypesBikeRepositoryAbstract {
   @override
   Future<List<TypeBike>> getTypesBike(String id) async {
     try {
-      final result = await firestore.collection(collection).where('id',isEqualTo: id).get();
-      return result.docs
-          .map(
-            (e) => TypeBike.fromJsonMap(
-              e.data(),
-            ),
-          )
-          .toList();
+      final result = await firestore
+          .collection(collection)
+          .where('id', isEqualTo: id)
+          .get();
+      return result.docs.map((e) => TypeBike.fromJsonMap(e.data())).toList();
     } catch (e) {
       return List.empty();
     }

@@ -195,10 +195,9 @@ class _QualityOption extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? ColorTokens.primary50.withOpacity(0.1)
-                  : Colors.transparent,
+          color: isSelected
+              ? ColorTokens.primary50.withValues(alpha: 0.1)
+              : Colors.transparent,
           border: Border.all(
             color: isSelected ? ColorTokens.primary50 : Colors.grey[300]!,
             width: isSelected ? 2 : 1,
@@ -219,12 +218,11 @@ class _QualityOption extends StatelessWidget {
                 ),
                 color: isSelected ? ColorTokens.primary50 : Colors.transparent,
               ),
-              child:
-                  isSelected
-                      ? const Center(
-                        child: Icon(Icons.check, size: 10, color: Colors.white),
-                      )
-                      : null,
+              child: isSelected
+                  ? const Center(
+                      child: Icon(Icons.check, size: 10, color: Colors.white),
+                    )
+                  : null,
             ),
 
             const SizedBox(width: 12),
@@ -241,10 +239,9 @@ class _QualityOption extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color:
-                              isSelected
-                                  ? ColorTokens.primary50
-                                  : Colors.black87,
+                          color: isSelected
+                              ? ColorTokens.primary50
+                              : Colors.black87,
                         ),
                       ),
                       const Spacer(),

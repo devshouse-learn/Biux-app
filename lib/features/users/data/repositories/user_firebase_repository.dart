@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/members/data/models/user_membership.dart';
@@ -23,9 +23,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .collection(collection)
           .where('id', isEqualTo: userMembership.id)
           .get();
-      return UserMembership.fromJsonMap(
-        response.docs.first.data(),
-      );
+      return UserMembership.fromJsonMap(response.docs.first.data());
     } catch (e) {
       return UserMembership();
     }
@@ -39,11 +37,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('stateMembership', isEqualTo: true)
           .get();
       return result.docs
-          .map(
-            (e) => UserMembership.fromJsonMap(
-              e.data(),
-            ),
-          )
+          .map((e) => UserMembership.fromJsonMap(e.data()))
           .toList();
     } catch (e) {
       return List.empty();
@@ -58,9 +52,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .where('stateMembership', isEqualTo: true)
           .where('userId', isEqualTo: id)
           .get();
-      return UserMembership.fromJsonMap(
-        result.docs.first.data(),
-      );
+      return UserMembership.fromJsonMap(result.docs.first.data());
     } catch (e) {
       return UserMembership();
     }
@@ -73,9 +65,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .collection(collection)
           .where('user', isEqualTo: nUsername)
           .get();
-      return BiuxUser.fromJsonMap(
-        result.docs.first.data(),
-      );
+      return BiuxUser.fromJsonMap(result.docs.first.data());
     } catch (e) {
       return BiuxUser();
     }
@@ -88,9 +78,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .collection(collection)
           .where('userName', isEqualTo: username)
           .get();
-      return BiuxUser.fromJsonMap(
-        result.docs.first.data(),
-      );
+      return BiuxUser.fromJsonMap(result.docs.first.data());
     } catch (e) {
       return BiuxUser();
     }
@@ -102,9 +90,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .collection(collection)
           .where('id', isEqualTo: id)
           .get();
-      return BiuxUser.fromJsonMap(
-        result.docs.first.data(),
-      );
+      return BiuxUser.fromJsonMap(result.docs.first.data());
     } catch (e) {
       return BiuxUser();
     }
@@ -117,13 +103,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .collection(collection)
           .where('stateMembership', isEqualTo: true)
           .get();
-      return result.docs
-          .map(
-            (e) => BiuxUser.fromJsonMap(
-              e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -133,13 +113,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   Future<List<BiuxUser>> getUsers(int limit, int offset) async {
     try {
       final result = await firestore.collection(collection).get();
-      return result.docs
-          .map(
-            (e) => BiuxUser.fromJsonMap(
-              e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => BiuxUser.fromJsonMap(e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -152,9 +126,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .collection(collection)
           .where('email', isEqualTo: email)
           .get();
-      return BiuxUser.fromJsonMap(
-        result.docs.first.data(),
-      );
+      return BiuxUser.fromJsonMap(result.docs.first.data());
     } catch (e) {
       return BiuxUser();
     }
@@ -167,9 +139,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
           .collection(collection)
           .where('facebook', isEqualTo: facebook)
           .get();
-      return BiuxUser.fromJsonMap(
-        result.docs.first.data(),
-      );
+      return BiuxUser.fromJsonMap(result.docs.first.data());
     } catch (e) {
       return BiuxUser();
     }
@@ -235,14 +205,14 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       print('   - Teléfono: ${user.whatsapp}');
       print('   - Ciudad: ${user.cityId.name}');
       print('   - Descripción: ${user.description}');
-      
+
       await firestore.collection(collection).doc(user.id).update({
         AppStrings.fullName: user.fullName,
         AppStrings.whatsappLowercase: user.whatsapp,
         AppStrings.cityId: user.cityId.toJson(), // Serializar cityId como JSON
         AppStrings.description: user.description,
       });
-      
+
       print('✅ Datos guardados en Firestore correctamente');
       final response = await this.getUserId(user.id);
       print('✅ Datos recuperados: ${response.fullName}');
@@ -257,24 +227,16 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     try {
       final response = await firestore
           .collection(collection)
-          .where(
-            'id',
-            isEqualTo: id,
-          )
+          .where('id', isEqualTo: id)
           .get();
-      return BiuxUser.fromJsonMap(
-        response.docs.first.data(),
-      );
+      return BiuxUser.fromJsonMap(response.docs.first.data());
     } catch (e) {
       return BiuxUser();
     }
   }
 
   @override
-  Future uploadPhoto(
-    String id,
-    File filePhoto,
-  ) async {
+  Future uploadPhoto(String id, File filePhoto) async {
     try {
       final url = await firebaseUtils.uploadImage(
         image: filePhoto,
@@ -303,22 +265,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
 
   Future<ResponseRepo> registerUser({required BiuxUser user}) async {
     try {
-      await firestore.collection(collection).doc(user.id).set(
-            user.toJson(),
-          );
+      await firestore.collection(collection).doc(user.id).set(user.toJson());
       // LocalStorage().saveUserEmail(user.email);
       // LocalStorage().saveUserId(user.id);
-      return ResponseRepo(
-        status: true,
-        message: '',
-        statusCode: 200,
-      );
+      return ResponseRepo(status: true, message: '', statusCode: 200);
     } catch (e) {
-      return ResponseRepo(
-        status: false,
-        message: '',
-        statusCode: 500,
-      );
+      return ResponseRepo(status: false, message: '', statusCode: 500);
     }
   }
 }

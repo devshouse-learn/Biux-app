@@ -275,12 +275,11 @@ class _TabBarViewUserState extends State<_TabBarViewUser>
             tabs: List<Widget>.generate(
               tabController.length,
               (index) => _TabDecoration(
-                borderRadius:
-                    index == 0
-                        ? BorderRadius.only(topLeft: Radius.circular(10))
-                        : index == 2
-                        ? BorderRadius.only(topRight: Radius.circular(10))
-                        : BorderRadius.only(),
+                borderRadius: index == 0
+                    ? BorderRadius.only(topLeft: Radius.circular(10))
+                    : index == 2
+                    ? BorderRadius.only(topRight: Radius.circular(10))
+                    : BorderRadius.only(),
                 index: index,
                 selectedIndex: _selectedIndex,
                 numberRoads: widget.user.followerS.toString(),
@@ -336,68 +335,67 @@ class _TabDecoration extends StatelessWidget {
           children: [
             index == 0
                 ? Container(
-                  height: 25,
-                  width: 25,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: new AssetImage(Images.kImageGallery),
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: new AssetImage(Images.kImageGallery),
+                      ),
                     ),
-                  ),
-                )
+                  )
                 : index == 1
                 ? Icon(Icons.directions_bike, color: ColorTokens.neutral0)
                 : index == 2
                 ? Container(
-                  height: 25,
-                  width: 25,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: new AssetImage(Images.kImageSocial),
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: new AssetImage(Images.kImageSocial),
+                      ),
                     ),
-                  ),
-                )
+                  )
                 : SizedBox(),
             SizedBox(width: 10),
             index == 0
                 ? Selector<UserScreenBloc, List<Story>>(
-                  selector: (_, bloc) => bloc.stories,
-                  builder: (context, value, child) {
-                    return Text(
-                      bloc.stories.length.toString(),
-                      style: Styles.rowItemColorligth,
-                    );
-                  },
-                )
+                    selector: (_, bloc) => bloc.stories,
+                    builder: (context, value, child) {
+                      return Text(
+                        bloc.stories.length.toString(),
+                        style: Styles.rowItemColorligth,
+                      );
+                    },
+                  )
                 : index == 1
                 ? Selector<UserScreenBloc, List<CompetitorRoad>>(
-                  selector: (_, bloc) => bloc.competitorRoad,
-                  builder: (context, value, child) {
-                    return Text(
-                      bloc.competitorRoad.length.toString(),
-                      style: Styles.rowItemColorligth,
-                    );
-                  },
-                )
+                    selector: (_, bloc) => bloc.competitorRoad,
+                    builder: (context, value, child) {
+                      return Text(
+                        bloc.competitorRoad.length.toString(),
+                        style: Styles.rowItemColorligth,
+                      );
+                    },
+                  )
                 : index == 2
                 ? Selector<UserScreenBloc, List<Story>>(
-                  selector: (_, bloc) => bloc.stories,
-                  builder: (context, value, child) {
-                    return Text(
-                      bloc.user.followerS.toString(),
-                      style: Styles.rowItemColorligth,
-                    );
-                  },
-                )
+                    selector: (_, bloc) => bloc.stories,
+                    builder: (context, value, child) {
+                      return Text(
+                        bloc.user.followerS.toString(),
+                        style: Styles.rowItemColorligth,
+                      );
+                    },
+                  )
                 : SizedBox(),
           ],
         ),
         decoration: BoxDecoration(
           border: Border.all(color: ColorTokens.neutral60, width: 0.1),
           borderRadius: borderRadius,
-          color:
-              index == selectedIndex
-                  ? ColorTokens.neutral100
-                  : ColorTokens.neutral100,
+          color: index == selectedIndex
+              ? ColorTokens.neutral100
+              : ColorTokens.neutral100,
         ),
       ),
     );
@@ -414,43 +412,42 @@ class _ViewUserImage extends StatelessWidget {
       backgroundColor: ColorTokens.neutral100,
       body: SingleChildScrollView(
         child: Wrap(
-          children:
-              stories
-                  .map(
-                    (story) => Stack(
-                      children: <Widget>[
-                        Container(
-                          height: 125,
-                          width: 130.8,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: ColorTokens.neutral60,
-                              width: 1,
-                            ),
-                          ),
-                          child: OptimizedNetworkImage(
-                            imageUrl: story.files.first,
-                            width: 130.8,
-                            height: 130.8,
-                            imageType: 'thumbnail',
-                            fit: BoxFit.fill,
+          children: stories
+              .map(
+                (story) => Stack(
+                  children: <Widget>[
+                    Container(
+                      height: 125,
+                      width: 130.8,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: ColorTokens.neutral60,
+                          width: 1,
+                        ),
+                      ),
+                      child: OptimizedNetworkImage(
+                        imageUrl: story.files.first,
+                        width: 130.8,
+                        height: 130.8,
+                        imageType: 'thumbnail',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    if (story.files.length > 1)
+                      Container(
+                        height: 20,
+                        width: 20,
+                        margin: EdgeInsets.only(left: 105, top: 5),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: new AssetImage(Images.kImageSnakeCase),
                           ),
                         ),
-                        if (story.files.length > 1)
-                          Container(
-                            height: 20,
-                            width: 20,
-                            margin: EdgeInsets.only(left: 105, top: 5),
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: new AssetImage(Images.kImageSnakeCase),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  )
-                  .toList(),
+                      ),
+                  ],
+                ),
+              )
+              .toList(),
         ),
       ),
     );

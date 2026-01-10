@@ -27,11 +27,11 @@ class SituationAccident {
   }
 
   Map<String, dynamic> toJson() => {
-        "allergies": allergies,
-        "contactEmergency": contactEmergency,
-        "nameEps": nameEps,
-        "id": id,
-        "medicines": medicines,
-        "rh": rh,
-      };
+    "allergies": allergies,
+    "contactEmergency": contactEmergency,
+    "nameEps": nameEps,
+    "id": id,
+    "medicines": medicines,
+    "rh": rh,
+  };
 }

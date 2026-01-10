@@ -298,26 +298,24 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             await file.writeAsBytes(response.bodyBytes);
 
             // Compartir con imagen
-            await Share.shareXFiles(
-              [XFile(file.path)],
-              text: shareText,
-              subject: '🚴 Rodada: ${ride.name}',
+            await SharePlus.instance.share(
+              ShareParams(files: [XFile(file.path)], text: shareText),
             );
 
             // Limpiar archivo temporal después de compartir
             await file.delete();
           } else {
             // Si falla la descarga, compartir solo texto
-            await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+            await SharePlus.instance.share(ShareParams(text: shareText));
           }
         } catch (e) {
           // Si hay error con la imagen, compartir solo texto
           print('Error compartiendo imagen: $e');
-          await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+          await SharePlus.instance.share(ShareParams(text: shareText));
         }
       } else {
         // Sin imagen, compartir solo texto
-        await Share.share(shareText, subject: '🚴 Rodada: ${ride.name}');
+        await SharePlus.instance.share(ShareParams(text: shareText));
       }
     } catch (e) {
       print('Error al compartir: $e');
@@ -510,10 +508,11 @@ class GroupInfoWidget extends StatelessWidget {
                                 SizedBox(width: 4),
                                 Text(
                                   'Líder de la rodada',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: ColorTokens.primary50,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: ColorTokens.primary50,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                 ),
                               ],
                             ),
@@ -736,7 +735,9 @@ class MeetingPointInfoWidget extends StatelessWidget {
   }
 
   void _openInGoogleMaps(double lat, double lng, String label) async {
-    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    final url = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     }

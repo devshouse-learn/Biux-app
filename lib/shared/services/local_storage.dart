@@ -23,19 +23,13 @@ class LocalStorage {
     return _prefs.getString(key) ?? AppStrings.notFoundKey;
   }
 
-  Future<void> _setString({
-    required String key,
-    required String value,
-  }) async {
+  Future<void> _setString({required String key, required String value}) async {
     await _prefs.setString(key, value);
   }
 
   // userName
-  Future setUserName(String userId) => _setString(
-        key: StorageKeys.userName,
-        value: userId,
-      );
+  Future setUserName(String userId) =>
+      _setString(key: StorageKeys.userName, value: userId);
 
   String getUserName() => _getString(StorageKeys.userName);
-
 }

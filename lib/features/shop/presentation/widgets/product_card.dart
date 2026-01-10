@@ -8,11 +8,8 @@ class ProductCard extends StatelessWidget {
   final ProductEntity product;
   final VoidCallback onTap;
 
-  const ProductCard({
-    Key? key,
-    required this.product,
-    required this.onTap,
-  }) : super(key: key);
+  const ProductCard({Key? key, required this.product, required this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +17,7 @@ class ProductCard extends StatelessWidget {
       onTap: onTap,
       child: Card(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

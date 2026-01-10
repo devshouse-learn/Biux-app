@@ -40,7 +40,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
             border: Border.all(color: ColorTokens.primary30, width: 3),
             boxShadow: [
               BoxShadow(
-                color: ColorTokens.neutral0.withOpacity(0.1),
+                color: ColorTokens.neutral0.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -55,7 +55,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: ColorTokens.neutral0.withOpacity(0.7),
+                color: ColorTokens.neutral0.withValues(alpha: 0.7),
               ),
               child: const Center(
                 child: CircularProgressIndicator(
@@ -83,7 +83,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                 border: Border.all(color: ColorTokens.neutral100, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: ColorTokens.neutral0.withOpacity(0.2),
+                    color: ColorTokens.neutral0.withValues(alpha: 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 1),
                   ),
@@ -186,7 +186,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: ColorTokens.primary50.withOpacity(0.1),
+                      color: ColorTokens.primary50.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -206,7 +206,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: ColorTokens.secondary50.withOpacity(0.1),
+                      color: ColorTokens.secondary50.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -229,7 +229,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                     leading: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: ColorTokens.error50.withOpacity(0.1),
+                        color: ColorTokens.error50.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(

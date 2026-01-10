@@ -12,7 +12,7 @@ class MeetingPointProvider extends ChangeNotifier {
   StreamSubscription? _meetingPointsSubscription;
 
   MeetingPointProvider({required MeetingPointRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   List<MeetingPoint> get meetingPoints => _meetingPoints;
   bool get isLoading => _isLoading;

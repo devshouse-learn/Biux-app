@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -34,17 +34,17 @@ class MyGroupsBloc extends ChangeNotifier {
   Future<List<Group>> getGroups() async {
     final dataMembers = await MembersFirebaseRepository().getMembers();
     listMembers = dataMembers
-        .where(
-          (member) => member.userId == user.id,
-        )
+        .where((member) => member.userId == user.id)
         .toList();
     listGroup.clear();
-    final myGroup =
-        await GroupsFirebaseRepository().getSpecificGroup(user.groupId);
+    final myGroup = await GroupsFirebaseRepository().getSpecificGroup(
+      user.groupId,
+    );
     if (myGroup.adminId.isNotEmpty) listGroup.add(myGroup);
     listMembers.map((e) async {
-      final group =
-          await GroupsFirebaseRepository().getSpecificGroup(e.groupId);
+      final group = await GroupsFirebaseRepository().getSpecificGroup(
+        e.groupId,
+      );
       listGroup.add(group);
       notifyListeners();
     }).toList();
@@ -59,28 +59,37 @@ class MyGroupsBloc extends ChangeNotifier {
   }
 
   Future<void> onTapJoin(
-      Member member, List<Member> members, Group group) async {
-    final valueJoin = await MembersFirebaseRepository()
-        .joinGroups(group.id, group.numberMembers, member);
+    Member member,
+    List<Member> members,
+    Group group,
+  ) async {
+    final valueJoin = await MembersFirebaseRepository().joinGroups(
+      group.id,
+      group.numberMembers,
+      member,
+    );
     group.numberMembers = group.numberMembers + 1;
     listMembers.add(
-      Member(
-        approved: true,
-        groupId: group.id,
-        id: valueJoin,
-        userId: user.id,
-      ),
+      Member(approved: true, groupId: group.id, id: valueJoin, userId: user.id),
     );
     notifyListeners();
   }
 
-  Future<void> onTapLeave(String idMember, List<Member> members, Group group,
-      int numberMembers) async {
+  Future<void> onTapLeave(
+    String idMember,
+    List<Member> members,
+    Group group,
+    int numberMembers,
+  ) async {
     group.numberMembers = group.numberMembers - 1;
-    listMembers =
-        listMembers.where((memebr) => memebr.groupId != group.id).toList();
-    await MembersFirebaseRepository()
-        .leaveGroups(idMember, numberMembers, group.id);
+    listMembers = listMembers
+        .where((memebr) => memebr.groupId != group.id)
+        .toList();
+    await MembersFirebaseRepository().leaveGroups(
+      idMember,
+      numberMembers,
+      group.id,
+    );
     getGroups();
     notifyListeners();
   }

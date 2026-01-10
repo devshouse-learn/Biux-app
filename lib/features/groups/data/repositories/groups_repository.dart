@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/members/data/models/member.dart';
@@ -16,8 +16,9 @@ class GroupsRepository {
 
     Map responseData = json.decode(response.body);
     List<dynamic> groupsJson = responseData["data"];
-    List<Group> groups =
-        groupsJson.map((grupoJson) => Group.fromJson(json: grupoJson)).toList();
+    List<Group> groups = groupsJson
+        .map((grupoJson) => Group.fromJson(json: grupoJson))
+        .toList();
 
     return groups;
   }
@@ -29,9 +30,7 @@ class GroupsRepository {
     dio.options.headers["authorization"] = token;
 
     FormData formData = FormData.fromMap({
-      "fileLogo": await MultipartFile.fromFile(
-        filePhoto.path,
-      ),
+      "fileLogo": await MultipartFile.fromFile(filePhoto.path),
     });
 
     await dio.patch('$URL_BASE/$id', data: formData);
@@ -46,9 +45,7 @@ class GroupsRepository {
     dio.options.headers["authorization"] = token;
 
     FormData formData = FormData.fromMap({
-      "fileProfileCover": await MultipartFile.fromFile(
-        fileProfileCover.path,
-      ),
+      "fileProfileCover": await MultipartFile.fromFile(fileProfileCover.path),
     });
 
     await dio.patch('$URL_BASE/$id', data: formData);
@@ -101,8 +98,11 @@ class GroupsRepository {
     var body = jsonEncode(group.toJson());
 
     var url = '$URL_BASE/${group.id}';
-    final http.Response response =
-        await http.patch(Uri.parse(url), headers: headers, body: body);
+    final http.Response response = await http.patch(
+      Uri.parse(url),
+      headers: headers,
+      body: body,
+    );
 
     if (response.statusCode == 200) {
       return Group.fromJson(json: json.decode(response.body));

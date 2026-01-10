@@ -114,8 +114,8 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1080,    // ✅ Cambio: 1080px de ancho máximo
-        maxHeight: 1350,   // ✅ Cambio: 1350px de alto máximo
+        maxWidth: 1080, // ✅ Cambio: 1080px de ancho máximo
+        maxHeight: 1350, // ✅ Cambio: 1350px de alto máximo
         imageQuality: 85,
       );
 
@@ -148,8 +148,8 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1080,    // ✅ Cambio: 1080px de ancho máximo
-        maxHeight: 1350,   // ✅ Cambio: 1350px de alto máximo
+        maxWidth: 1080, // ✅ Cambio: 1080px de ancho máximo
+        maxHeight: 1350, // ✅ Cambio: 1350px de alto máximo
         imageQuality: 85,
       );
 
@@ -203,7 +203,8 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
         // Validar duración máxima de 30 segundos
         if (duration > 30) {
-          _error = 'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
+          _error =
+              'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
           notifyListeners();
           return;
         }
@@ -248,7 +249,8 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
         // Validar duración máxima de 30 segundos
         if (duration > 30) {
-          _error = 'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
+          _error =
+              'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
           notifyListeners();
           return;
         }

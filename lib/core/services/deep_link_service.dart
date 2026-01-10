@@ -37,10 +37,12 @@ class DeepLinkService {
     if (link == null || link.isEmpty) return;
 
     print('🔗 Procesando deep link: $link');
-    
+
     try {
       final uri = Uri.parse(link);
-      print('🔗 URI Schema: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}');
+      print(
+        '🔗 URI Schema: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}',
+      );
 
       // Manejar esquema biux://
       if (uri.scheme == 'biux') {

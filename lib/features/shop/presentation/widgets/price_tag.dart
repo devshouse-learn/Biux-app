@@ -21,7 +21,7 @@ class PriceTag extends StatelessWidget {
   String _formatPrice(double price) {
     // Formato colombiano: $45.000 o $1.250.000
     final priceStr = price.toStringAsFixed(0);
-    
+
     // Separar en grupos de 3 desde la derecha
     final regex = RegExp(r'(\d)(?=(\d{3})+(?!\d))');
     return priceStr.replaceAllMapped(regex, (Match match) => '${match[1]}.');
@@ -44,18 +44,11 @@ class PriceTag extends StatelessWidget {
 class SmallPriceTag extends StatelessWidget {
   final double price;
 
-  const SmallPriceTag({
-    Key? key,
-    required this.price,
-  }) : super(key: key);
+  const SmallPriceTag({Key? key, required this.price}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return PriceTag(
-      price: price,
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-    );
+    return PriceTag(price: price, fontSize: 16, fontWeight: FontWeight.w600);
   }
 }
 
@@ -63,17 +56,10 @@ class SmallPriceTag extends StatelessWidget {
 class LargePriceTag extends StatelessWidget {
   final double price;
 
-  const LargePriceTag({
-    Key? key,
-    required this.price,
-  }) : super(key: key);
+  const LargePriceTag({Key? key, required this.price}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return PriceTag(
-      price: price,
-      fontSize: 28,
-      fontWeight: FontWeight.bold,
-    );
+    return PriceTag(price: price, fontSize: 28, fontWeight: FontWeight.bold);
   }
 }

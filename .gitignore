@@ -411,3 +411,29 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/flutter,androidstudio,android,xcode,visualstudiocode,swift,objective-c,dart
+
+# === SEGURIDAD: Archivos con credenciales ===
+# Nunca commitear archivos con passwords, tokens, o API keys
+*.key
+*.pem
+*.p12
+*.mobileprovision
+.env
+.env.*
+!.env.example
+secrets/
+credentials/
+*.credentials
+.secrets
+config/secrets.json
+firebase-adminsdk-*.json
+
+# === Logs de Deploy ===
+.deploy-daemon.log
+.last-deployed-commit
+deploy-*.log
+
+# === Archivos de usuario ===
+.DS_Store
+.vscode/settings.json
+.idea/workspace.xml

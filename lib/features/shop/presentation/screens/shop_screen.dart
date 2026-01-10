@@ -43,10 +43,7 @@ class _ShopScreenState extends State<ShopScreen> {
         elevation: 0,
         title: const Text(
           'Tienda Biux',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           Consumer<ShopProvider>(
@@ -75,7 +72,9 @@ class _ShopScreenState extends State<ShopScreen> {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Buscar productos...',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+                hintStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
                 prefixIcon: const Icon(Icons.search, color: Colors.white),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -87,7 +86,7 @@ class _ShopScreenState extends State<ShopScreen> {
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.2),
+                fillColor: Colors.white.withValues(alpha: 0.2),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -95,7 +94,7 @@ class _ShopScreenState extends State<ShopScreen> {
               ),
             ),
           ),
-          
+
           // Filtro de categorías
           Consumer<ShopProvider>(
             builder: (context, shopProvider, child) {
@@ -107,9 +106,9 @@ class _ShopScreenState extends State<ShopScreen> {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Grid de productos
           Expanded(
             child: Container(
@@ -201,12 +200,13 @@ class _ShopScreenState extends State<ShopScreen> {
 
                   return GridView.builder(
                     padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.7,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.7,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
                     itemCount: products.length,
                     itemBuilder: (context, index) {
                       final product = products[index];
@@ -229,9 +229,9 @@ class _ShopScreenState extends State<ShopScreen> {
         builder: (context, shopProvider, userProvider, child) {
           // Verificar si el usuario es admin
           final isAdmin = userProvider.user?.isAdmin ?? false;
-          
+
           if (!isAdmin) return const SizedBox.shrink();
-          
+
           return FloatingActionButton(
             onPressed: () {
               context.push('/shop/admin');

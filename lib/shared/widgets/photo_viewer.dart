@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 /// Widget para visualizar fotos en pantalla completa con zoom y gestos
 class PhotoViewer extends StatefulWidget {
@@ -61,7 +62,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
             left: 0,
             right: 0,
             child: AppBar(
-              backgroundColor: Colors.black.withOpacity(0.7),
+              backgroundColor: Colors.black.withValues(alpha: 0.7),
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white),
@@ -97,7 +98,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -185,7 +186,7 @@ class _ZoomablePhotoState extends State<ZoomablePhoto>
       targetMatrix = Matrix4.identity();
     } else {
       // Si está en zoom original, hacer zoom x2
-      targetMatrix = Matrix4.identity()..scale(2.0);
+      targetMatrix = Matrix4.identity()..scaleByVector3(Vector3(2.0, 2.0, 1.0));
     }
 
     _animation = Matrix4Tween(begin: currentMatrix, end: targetMatrix).animate(

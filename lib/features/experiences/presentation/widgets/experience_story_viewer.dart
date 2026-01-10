@@ -300,7 +300,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             height: 3,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(1.5),
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
             ),
             child: AnimatedBuilder(
               animation: _progressController,
@@ -415,7 +415,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
       ),
       child: Text(
         widget.experience.description,

@@ -1,3 +1,5 @@
+import 'package:biux/features/users/domain/entities/user_entity.dart';
+
 class UserModel {
   final String uid;
   final String? name;
@@ -8,6 +10,9 @@ class UserModel {
   final bool isDeleting;
   final DateTime? deletionRequestDate;
   final bool isAdmin; // Campo para administradores
+  final bool canSellProducts; // Campo para vendedores autorizados
+  final String? role; // Nuevo: "user", "seller", "admin"
+  final bool autorizadoPorAdmin; // Nuevo: Si fue autorizado por admin
 
   UserModel({
     required this.uid,
@@ -18,8 +23,52 @@ class UserModel {
     this.username,
     this.isDeleting = false,
     this.deletionRequestDate,
-    this.isAdmin = false, // Por defecto NO es admin
+    this.isAdmin = false,
+    this.canSellProducts = false,
+    this.role,
+    this.autorizadoPorAdmin = false,
   });
+
+  // Getter para rol enum
+  UserRole get userRole {
+    // Prioridad: usar campo 'role' nuevo, luego legacy
+    if (role != null) {
+      switch (role!.toLowerCase()) {
+        case 'admin':
+          return UserRole.admin;
+        case 'seller':
+          return UserRole.seller;
+        default:
+          return UserRole.user;
+      }
+    }
+    // Fallback a campos legacy
+    if (isAdmin) return UserRole.admin;
+    if (canSellProducts) return UserRole.seller;
+    return UserRole.user;
+  }
+
+  // Getter para verificar si puede crear productos
+  bool get canCreateProducts =>
+      isAdmin ||
+      canSellProducts ||
+      userRole == UserRole.admin ||
+      userRole == UserRole.seller;
+
+  // Convertir a UserEntity
+  UserEntity toEntity() {
+    return UserEntity(
+      id: uid,
+      fullName: name ?? '',
+      userName: username ?? '',
+      email: email ?? '',
+      photo: photoUrl ?? '',
+      role: userRole,
+      autorizadoPorAdmin: autorizadoPorAdmin,
+      isAdmin: isAdmin,
+      canSellProducts: canSellProducts,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -31,7 +80,10 @@ class UserModel {
       'username': username,
       'isDeleting': isDeleting,
       'deletionRequestDate': deletionRequestDate?.toIso8601String(),
-      'isAdmin': isAdmin, // Incluir en serialización
+      'isAdmin': isAdmin,
+      'canSellProducts': canSellProducts,
+      'role': role ?? userRole.name, // Guardar rol como string
+      'autorizadoPorAdmin': autorizadoPorAdmin,
     };
   }
 
@@ -47,7 +99,10 @@ class UserModel {
       deletionRequestDate: map['deletionRequestDate'] != null
           ? DateTime.parse(map['deletionRequestDate'])
           : null,
-      isAdmin: map['isAdmin'] ?? false, // Leer de Firebase
+      isAdmin: map['isAdmin'] ?? false,
+      canSellProducts: map['canSellProducts'] ?? false,
+      role: map['role'],
+      autorizadoPorAdmin: map['autorizadoPorAdmin'] ?? false,
     );
   }
 
@@ -60,7 +115,10 @@ class UserModel {
     String? username,
     bool? isDeleting,
     DateTime? deletionRequestDate,
-    bool? isAdmin, // Incluir en copyWith
+    bool? isAdmin,
+    bool? canSellProducts,
+    String? role,
+    bool? autorizadoPorAdmin,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -71,7 +129,10 @@ class UserModel {
       username: username ?? this.username,
       isDeleting: isDeleting ?? this.isDeleting,
       deletionRequestDate: deletionRequestDate ?? this.deletionRequestDate,
-      isAdmin: isAdmin ?? this.isAdmin, // Incluir en copyWith
+      isAdmin: isAdmin ?? this.isAdmin,
+      canSellProducts: canSellProducts ?? this.canSellProducts,
+      role: role ?? this.role,
+      autorizadoPorAdmin: autorizadoPorAdmin ?? this.autorizadoPorAdmin,
     );
   }
 }

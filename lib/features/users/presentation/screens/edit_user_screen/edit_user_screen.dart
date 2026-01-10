@@ -122,7 +122,7 @@ class _FormGroupWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         border: Border.all(color: ColorTokens.primary30),
                         borderRadius: BorderRadius.circular(12),
-                        color: ColorTokens.primary30.withOpacity(0.1),
+                        color: ColorTokens.primary30.withValues(alpha: 0.1),
                       ),
                       child: Row(
                         children: [
@@ -281,7 +281,7 @@ class _BotonSend extends StatelessWidget {
                   print('📝 Iniciando actualización de perfil...');
                   await bloc.uploadUpdate(context);
                   print('✅ Perfil actualizado, cerrando pantalla...');
-                  
+
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(

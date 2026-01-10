@@ -12,16 +12,16 @@ class Member {
   });
 
   factory Member.fromJson(Map json) => Member(
-        approved: json["approved"],
-        id: json["id"],
-        userId: json["userId"],
-        groupId: json["groupId"],
-      );
+    approved: json["approved"],
+    id: json["id"],
+    userId: json["userId"],
+    groupId: json["groupId"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "approved": approved,
-        "id": id,
-        "userId": userId,
-        "groupId": groupId,
-      };
+    "approved": approved,
+    "id": id,
+    "userId": userId,
+    "groupId": groupId,
+  };
 }

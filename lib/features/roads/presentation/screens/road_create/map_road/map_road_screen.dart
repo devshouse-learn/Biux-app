@@ -1,4 +1,3 @@
-
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
@@ -39,7 +38,7 @@ class MapRoadsLocation extends StatelessWidget {
                   bloc.locationData.latitude!,
                   bloc.locationData.longitude!,
                 ),
-              )
+              ),
             },
           ),
           Align(
@@ -49,22 +48,16 @@ class MapRoadsLocation extends StatelessWidget {
               width: 200,
               child: TextButton(
                 style: Styles().textButtonStyle,
-                onPressed: () => Navigator.pop(
-                  context,
-                  bloc.locationData,
-                ),
+                onPressed: () => Navigator.pop(context, bloc.locationData),
                 child: Text(
                   AppStrings.savePointText,
                   style: Styles.containerNameUser,
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
-
-
-

@@ -28,8 +28,10 @@ class _MapScreenState extends State<MapScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-        final meetingPointProvider =
-            Provider.of<MeetingPointProvider>(context, listen: false);
+        final meetingPointProvider = Provider.of<MeetingPointProvider>(
+          context,
+          listen: false,
+        );
         meetingPointProvider.startListening();
       }
     });
@@ -40,74 +42,75 @@ class _MapScreenState extends State<MapScreen> {
     return Consumer3<MapProvider, MeetingPointProvider, LocationProvider>(
       builder:
           (context, mapProvider, meetingPointProvider, locationProvider, _) {
-        // Conectar LocationProvider con MapProvider una vez
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          mapProvider.setLocationProvider(locationProvider);
-        });
+            // Conectar LocationProvider con MapProvider una vez
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              mapProvider.setLocationProvider(locationProvider);
+            });
 
-        // Cargar puntos de encuentro
-        if (meetingPointProvider.meetingPoints.isNotEmpty) {
-          mapProvider.updateMeetingPoints(meetingPointProvider.meetingPoints);
-        }
+            // Cargar puntos de encuentro
+            if (meetingPointProvider.meetingPoints.isNotEmpty) {
+              mapProvider.updateMeetingPoints(
+                meetingPointProvider.meetingPoints,
+              );
+            }
 
-        return Stack(
-          children: [
-            MapView(
-              initialPosition: _defaultLocation,
-              mapProvider: mapProvider,
-            ),
-
-            // Botón flotante para solicitar ubicación
-            Positioned(
-              top: 16,
-              right: 16,
-              child: FloatingActionButton(
-                heroTag: "location_btn",
-                mini: true,
-                backgroundColor: ColorTokens.secondary50,
-                foregroundColor: ColorTokens.neutral100,
-                onPressed: () async {
-                  await mapProvider.requestUserLocation();
-
-                  if (locationProvider.error != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(locationProvider.error!),
-                        backgroundColor: ColorTokens.error50,
-                      ),
-                    );
-                  }
-                },
-                child: locationProvider.isLoading
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(ColorTokens.neutral100),
-                        ),
-                      )
-                    : Icon(Icons.my_location),
-              ),
-            ),
-
-            if (mapProvider.isLoading || meetingPointProvider.isLoading)
-              const LoadingIndicator(),
-
-            // Card de detalles del punto de encuentro
-            if (mapProvider.selectedPoint != null)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: MeetingPointDetailsCard(
+            return Stack(
+              children: [
+                MapView(
+                  initialPosition: _defaultLocation,
                   mapProvider: mapProvider,
                 ),
-              ),
-          ],
-        );
-      },
+
+                // Botón flotante para solicitar ubicación
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: FloatingActionButton(
+                    heroTag: "location_btn",
+                    mini: true,
+                    backgroundColor: ColorTokens.secondary50,
+                    foregroundColor: ColorTokens.neutral100,
+                    onPressed: () async {
+                      await mapProvider.requestUserLocation();
+
+                      if (locationProvider.error != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(locationProvider.error!),
+                            backgroundColor: ColorTokens.error50,
+                          ),
+                        );
+                      }
+                    },
+                    child: locationProvider.isLoading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorTokens.neutral100,
+                              ),
+                            ),
+                          )
+                        : Icon(Icons.my_location),
+                  ),
+                ),
+
+                if (mapProvider.isLoading || meetingPointProvider.isLoading)
+                  const LoadingIndicator(),
+
+                // Card de detalles del punto de encuentro
+                if (mapProvider.selectedPoint != null)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: MeetingPointDetailsCard(mapProvider: mapProvider),
+                  ),
+              ],
+            );
+          },
     );
   }
 }
@@ -153,10 +156,8 @@ class LoadingIndicator extends StatelessWidget {
 class MeetingPointDetailsCard extends StatelessWidget {
   final MapProvider mapProvider;
 
-  const MeetingPointDetailsCard({
-    Key? key,
-    required this.mapProvider,
-  }) : super(key: key);
+  const MeetingPointDetailsCard({Key? key, required this.mapProvider})
+    : super(key: key);
 
   Future<void> _openGoogleMaps() async {
     final point = mapProvider.selectedPoint!;
@@ -226,10 +227,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
                 SizedBox(height: 16),
                 Text(
                   'Rutas disponibles:',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
                 RoutesList(routes: mapProvider.selectedPoint!.routes),
@@ -245,10 +243,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
 class DetailsHeader extends StatelessWidget {
   final MapProvider mapProvider;
 
-  const DetailsHeader({
-    Key? key,
-    required this.mapProvider,
-  }) : super(key: key);
+  const DetailsHeader({Key? key, required this.mapProvider}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -258,10 +253,7 @@ class DetailsHeader extends StatelessWidget {
         Expanded(
           child: Text(
             mapProvider.selectedPoint!.name,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -278,10 +270,7 @@ class DetailsHeader extends StatelessWidget {
 class RoutesList extends StatelessWidget {
   final List<BiuxRoute> routes;
 
-  const RoutesList({
-    Key? key,
-    required this.routes,
-  }) : super(key: key);
+  const RoutesList({Key? key, required this.routes}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -299,10 +288,7 @@ class RoutesList extends StatelessWidget {
 class RouteCard extends StatelessWidget {
   final BiuxRoute route;
 
-  const RouteCard({
-    Key? key,
-    required this.route,
-  }) : super(key: key);
+  const RouteCard({Key? key, required this.route}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -317,8 +303,9 @@ class RouteCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           if (isSelected) {
-            mapProvider
-                .selectRoute(null); // Deseleccionar si ya está seleccionada
+            mapProvider.selectRoute(
+              null,
+            ); // Deseleccionar si ya está seleccionada
           } else {
             mapProvider.selectRoute(route); // Seleccionar esta ruta
           }
@@ -342,11 +329,7 @@ class RouteCard extends StatelessWidget {
                     ),
                   ),
                   if (isSelected)
-                    Icon(
-                      Icons.route,
-                      color: ColorTokens.secondary50,
-                      size: 20,
-                    ),
+                    Icon(Icons.route, color: ColorTokens.secondary50, size: 20),
                 ],
               ),
               SizedBox(height: 4),
@@ -392,19 +375,13 @@ class RouteCard extends StatelessWidget {
 class RouteLevelBadge extends StatelessWidget {
   final String level;
 
-  const RouteLevelBadge({
-    Key? key,
-    required this.level,
-  }) : super(key: key);
+  const RouteLevelBadge({Key? key, required this.level}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Flexible(
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 6,
-          vertical: 4,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         decoration: BoxDecoration(
           color: ColorTokens.info40.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(12),
@@ -423,7 +400,3 @@ class RouteLevelBadge extends StatelessWidget {
     );
   }
 }
-
-
-
-

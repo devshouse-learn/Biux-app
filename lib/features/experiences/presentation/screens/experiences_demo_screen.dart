@@ -189,8 +189,8 @@ class _ExperiencesDemoScreenState extends State<ExperiencesDemoScreen> {
                                   border: Border.all(
                                     color:
                                         experience.type == ExperienceType.ride
-                                            ? Colors.orange
-                                            : Colors.cyan,
+                                        ? Colors.orange
+                                        : Colors.cyan,
                                     width: 2,
                                   ),
                                 ),

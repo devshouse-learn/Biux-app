@@ -16,10 +16,13 @@ class FirebaseUtils {
       if (bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.megaBytes ||
           bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.kiloBytes &&
               int.parse(
-                      bytes.replaceRange(bytes.length - 2, bytes.length, '')) >=
-                  200) image = await compressImage(image, bytes);
-      Reference ref =
-          FirebaseStorage.instance.ref().child('$imageFolder/$nameImage');
+                    bytes.replaceRange(bytes.length - 2, bytes.length, ''),
+                  ) >=
+                  200)
+        image = await compressImage(image, bytes);
+      Reference ref = FirebaseStorage.instance.ref().child(
+        '$imageFolder/$nameImage',
+      );
       UploadTask uploadTask = ref.putFile(image);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
       return downloadUrl;

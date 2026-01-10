@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'dart:io';
@@ -25,13 +25,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   Future<List<Group>> getGroups() async {
     try {
       final result = await firestore.collection(collection).get();
-      return result.docs
-          .map(
-            (e) => Group.fromJson(
-              json: e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => Group.fromJson(json: e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -44,13 +38,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
           .collection(collection)
           .where('cityAdmin', isEqualTo: cityAdmin)
           .get();
-      return result.docs
-          .map(
-            (e) => Group.fromJson(
-              json: e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => Group.fromJson(json: e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -64,13 +52,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
           .doc(id)
           .collection(subCollection)
           .get();
-      return result.docs
-          .map(
-            (e) => Member.fromJson(
-              e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => Member.fromJson(e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -80,11 +62,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   Future<List<String>> getNamesGroups() async {
     try {
       final result = await firestore.collection(collection).get();
-      return result.docs
-          .map(
-            (e) => e.data()['name'] as String,
-          )
-          .toList();
+      return result.docs.map((e) => e.data()['name'] as String).toList();
     } catch (e) {
       return List.empty();
     }
@@ -97,9 +75,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
           .collection(collection)
           .where('id', isEqualTo: id)
           .get();
-      return Group.fromJson(
-        json: result.docs.first.data(),
-      );
+      return Group.fromJson(json: result.docs.first.data());
     } catch (e) {
       return Group(id: '');
     }
@@ -197,27 +173,23 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   }
 
   @override
-  Future<String> createGroup(
-    Group group,
-    File logo,
-  ) async {
+  Future<String> createGroup(Group group, File logo) async {
     String? docId;
     try {
-      await firestore.collection(collection).add(group.toJson()).then(
-        (DocumentReference doc) async {
-          docId = doc.id;
-          final logoUrl = await updateImageLogo(logo, group.name);
-          firestore.collection(collection).doc(docId).update(
-            {
-              AppStrings.logoText: logoUrl,
-              AppStrings.idText: docId,
-            },
-          );
-          await firestore.collection(AppStrings.usersText).doc(group.adminId).update({
-            AppStrings.groupIdText: docId,
-          });
-        },
-      );
+      await firestore.collection(collection).add(group.toJson()).then((
+        DocumentReference doc,
+      ) async {
+        docId = doc.id;
+        final logoUrl = await updateImageLogo(logo, group.name);
+        firestore.collection(collection).doc(docId).update({
+          AppStrings.logoText: logoUrl,
+          AppStrings.idText: docId,
+        });
+        await firestore
+            .collection(AppStrings.usersText)
+            .doc(group.adminId)
+            .update({AppStrings.groupIdText: docId});
+      });
       return docId!;
     } catch (e) {
       return docId!;
@@ -236,7 +208,9 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   }
 
   Future<String> updateImageProfileCover(
-      File fileProfileCover, String id) async {
+    File fileProfileCover,
+    String id,
+  ) async {
     FirebaseUtils firebaseUtils = FirebaseUtils();
     final url = await firebaseUtils.uploadImage(
       image: fileProfileCover,
@@ -250,13 +224,7 @@ class GroupsFirebaseRepository extends GroupsRepositoryAbstract {
   Future<List<Member>> getListMemberGroup() async {
     try {
       final response = await firestore.collectionGroup(subCollection).get();
-      return response.docs
-          .map(
-            (e) => Member.fromJson(
-              e.data(),
-            ),
-          )
-          .toList();
+      return response.docs.map((e) => Member.fromJson(e.data())).toList();
     } catch (e) {
       return List.empty();
     }

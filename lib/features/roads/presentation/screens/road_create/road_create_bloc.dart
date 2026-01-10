@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/cities/data/models/city.dart';
+import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/features/cities/data/repositories/cities_firebase_repository.dart';
@@ -15,9 +15,7 @@ class RoadCreateBloc extends ChangeNotifier {
   final CitiesFirebaseRepository citiesFirebaseRepository =
       CitiesFirebaseRepository();
 
-  RoadCreateBloc({
-    required this.group,
-  }) {
+  RoadCreateBloc({required this.group}) {
     getCities();
   }
 
@@ -34,8 +32,9 @@ class RoadCreateBloc extends ChangeNotifier {
 
   void getCities() async {
     listCities = await citiesFirebaseRepository.getCities();
-    final city =
-        listCities.where((element) => element.id == group.cityId).toList();
+    final city = listCities
+        .where((element) => element.id == group.cityId)
+        .toList();
     dropdownValueCity = city.first;
     notifyListeners();
   }

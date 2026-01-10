@@ -38,7 +38,7 @@ class _MainShellState extends State<MainShell> {
             builder: (context, provider, child) {
               final unreadCount = provider?.unreadCount ?? 0;
               final hasUnread = provider?.hasUnread ?? false;
-              
+
               return IconButton(
                 icon: Badge(
                   label: Text('$unreadCount'),
@@ -63,47 +63,32 @@ class _MainShellState extends State<MainShell> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: ColorTokens.primary40,
         selectedItemColor: ColorTokens.neutral100,
-        unselectedItemColor: ColorTokens.neutral100.withOpacity(0.6),
+        unselectedItemColor: ColorTokens.neutral100.withValues(alpha: 0.6),
         showSelectedLabels: true,
         showUnselectedLabels: true,
         selectedFontSize: 12,
         unselectedFontSize: 10,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.collections,
-              size: 24,
-            ),
+            icon: Icon(Icons.collections, size: 24),
             label: 'Historias',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.directions_bike,
-              size: 24,
-            ),
+            icon: Icon(Icons.directions_bike, size: 24),
             label: 'Rutas',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.pedal_bike,
-              size: 24,
-            ),
+            icon: Icon(Icons.pedal_bike, size: 24),
             label: 'Mis Bicis',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.shopping_bag,
-              size: 24,
-            ),
+            icon: Icon(Icons.shopping_bag, size: 24),
             label: 'Tienda',
           ),
         ],
       ),
       body: ResponsiveHelper.wrapForWeb(
-        Container(
-          height: double.infinity,
-          child: widget.child,
-        ),
+        Container(height: double.infinity, child: widget.child),
         context,
       ),
     );

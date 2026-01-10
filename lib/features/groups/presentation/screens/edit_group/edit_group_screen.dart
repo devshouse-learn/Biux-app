@@ -252,17 +252,16 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child:
-                _coverFile != null
-                    ? Image.file(File(_coverFile!.path), fit: BoxFit.cover)
-                    : _group?.coverUrl != null
-                    ? OptimizedNetworkImage(
-                      imageUrl: _group!.coverUrl!,
-                      imageType: 'cover',
-                      fit: BoxFit.cover,
-                      errorWidget: _buildImagePlaceholder(),
-                    )
-                    : _buildImagePlaceholder(),
+            child: _coverFile != null
+                ? Image.file(File(_coverFile!.path), fit: BoxFit.cover)
+                : _group?.coverUrl != null
+                ? OptimizedNetworkImage(
+                    imageUrl: _group!.coverUrl!,
+                    imageType: 'cover',
+                    fit: BoxFit.cover,
+                    errorWidget: _buildImagePlaceholder(),
+                  )
+                : _buildImagePlaceholder(),
           ),
         ),
         SizedBox(height: 8),
@@ -312,27 +311,22 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
               border: Border.all(color: ColorTokens.neutral90),
             ),
             child: ClipOval(
-              child:
-                  _logoFile != null
-                      ? Image.file(File(_logoFile!.path), fit: BoxFit.cover)
-                      : _group?.logoUrl != null
-                      ? OptimizedNetworkImage(
-                        imageUrl: _group!.logoUrl!,
-                        width: 100,
-                        height: 100,
-                        imageType: 'avatar',
-                        fit: BoxFit.cover,
-                        errorWidget: Icon(
-                          Icons.group,
-                          size: 50,
-                          color: ColorTokens.neutral60,
-                        ),
-                      )
-                      : Icon(
+              child: _logoFile != null
+                  ? Image.file(File(_logoFile!.path), fit: BoxFit.cover)
+                  : _group?.logoUrl != null
+                  ? OptimizedNetworkImage(
+                      imageUrl: _group!.logoUrl!,
+                      width: 100,
+                      height: 100,
+                      imageType: 'avatar',
+                      fit: BoxFit.cover,
+                      errorWidget: Icon(
                         Icons.group,
                         size: 50,
                         color: ColorTokens.neutral60,
                       ),
+                    )
+                  : Icon(Icons.group, size: 50, color: ColorTokens.neutral60),
             ),
           ),
         ),

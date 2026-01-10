@@ -5,92 +5,160 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 /// Servicio para subir imágenes y videos a Firebase Storage
+/// Optimizado para funcionar en Web y Mobile
 class MediaUploadService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _picker = ImagePicker();
 
-  /// Seleccionar imagen de la cámara
+  /// Seleccionar imagen de la cámara (solo mobile)
   Future<XFile?> pickImageFromCamera() async {
+    if (kIsWeb) {
+      debugPrint('⚠️ Cámara no disponible en Web');
+      return null;
+    }
+
     try {
-      return await _picker.pickImage(
+      debugPrint('📸 Abriendo cámara...');
+      final image = await _picker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1920,
         maxHeight: 1080,
         imageQuality: 85,
       );
+
+      if (image != null) {
+        debugPrint('✅ Foto tomada: ${image.name}');
+      }
+      return image;
     } catch (e) {
-      debugPrint('Error al tomar foto: $e');
+      debugPrint('❌ Error al tomar foto: $e');
       return null;
     }
   }
 
-  /// Seleccionar imagen de la galería
+  /// Seleccionar imagen de la galería (web y mobile)
   Future<XFile?> pickImageFromGallery() async {
     try {
-      return await _picker.pickImage(
+      debugPrint('�️ Abriendo selector de imágenes...');
+
+      final image = await _picker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1920,
         maxHeight: 1080,
         imageQuality: 85,
       );
-    } catch (e) {
-      debugPrint('Error al seleccionar imagen: $e');
+
+      if (image != null) {
+        debugPrint(
+          '✅ Imagen seleccionada: ${image.name} (${await image.length()} bytes)',
+        );
+        return image;
+      } else {
+        debugPrint('⚠️ No se seleccionó ninguna imagen');
+        return null;
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error al seleccionar imagen: $e');
+      debugPrint('Stack trace: $stackTrace');
       return null;
     }
   }
 
-  /// Seleccionar múltiples imágenes de la galería
+  /// Seleccionar múltiples imágenes de la galería (web y mobile)
   Future<List<XFile>> pickMultipleImages() async {
     try {
+      debugPrint('�️ Abriendo selector múltiple...');
+
       final images = await _picker.pickMultiImage(
         maxWidth: 1920,
         maxHeight: 1080,
         imageQuality: 85,
       );
+
+      debugPrint('✅ ${images.length} imágenes seleccionadas');
+      for (var img in images) {
+        final size = await img.length();
+        debugPrint('  - ${img.name}: $size bytes');
+      }
+
       return images;
-    } catch (e) {
-      debugPrint('Error al seleccionar imágenes: $e');
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error al seleccionar múltiples imágenes: $e');
+      debugPrint('Stack trace: $stackTrace');
       return [];
     }
   }
 
-  /// Seleccionar video de la cámara
+  /// Seleccionar video de la cámara (solo mobile)
   Future<XFile?> pickVideoFromCamera() async {
+    if (kIsWeb) {
+      debugPrint('⚠️ Grabar video no disponible en Web');
+      return null;
+    }
+
     try {
-      return await _picker.pickVideo(
+      debugPrint('🎥 Abriendo cámara de video...');
+      final video = await _picker.pickVideo(
         source: ImageSource.camera,
         maxDuration: const Duration(seconds: 30),
       );
+
+      if (video != null) {
+        debugPrint('✅ Video grabado: ${video.name}');
+      }
+      return video;
     } catch (e) {
-      debugPrint('Error al grabar video: $e');
+      debugPrint('❌ Error al grabar video: $e');
       return null;
     }
   }
 
-  /// Seleccionar video de la galería
+  /// Seleccionar video de la galería (web y mobile)
   Future<XFile?> pickVideoFromGallery() async {
     try {
-      return await _picker.pickVideo(
+      debugPrint('🎥 Abriendo selector de videos...');
+
+      final video = await _picker.pickVideo(
         source: ImageSource.gallery,
         maxDuration: const Duration(seconds: 30),
       );
-    } catch (e) {
-      debugPrint('Error al seleccionar video: $e');
+
+      if (video != null) {
+        debugPrint('✅ Video seleccionado: ${video.name}');
+      } else {
+        debugPrint('⚠️ No se seleccionó ningún video');
+      }
+      return video;
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error al seleccionar video: $e');
+      debugPrint('Stack trace: $stackTrace');
       return null;
     }
   }
 
   /// Validar duración del video (máximo 30 segundos)
   Future<bool> validateVideoDuration(String videoPath) async {
+    if (kIsWeb) {
+      // En web no podemos validar fácilmente, asumimos válido
+      debugPrint(
+        '⚠️ Validación de duración no disponible en Web (asumiendo válido)',
+      );
+      return true;
+    }
+
     try {
       final controller = VideoPlayerController.file(File(videoPath));
       await controller.initialize();
       final duration = controller.value.duration;
       controller.dispose();
 
-      return duration.inSeconds <= 30;
+      final isValid = duration.inSeconds <= 30;
+      debugPrint(
+        '⏱️ Duración del video: ${duration.inSeconds}s - Válido: $isValid',
+      );
+      return isValid;
     } catch (e) {
-      debugPrint('Error al validar duración del video: $e');
+      debugPrint('❌ Error al validar duración del video: $e');
       return false;
     }
   }
@@ -102,7 +170,8 @@ class MediaUploadService {
     Function(double)? onProgress,
   }) async {
     try {
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${imageFile.name}';
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${imageFile.name}';
       final ref = _storage.ref().child('products/$productId/images/$fileName');
 
       final uploadTask = ref.putFile(File(imageFile.path));
@@ -137,7 +206,8 @@ class MediaUploadService {
         return null;
       }
 
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
       final ref = _storage.ref().child('products/$productId/videos/$fileName');
 
       final uploadTask = ref.putFile(File(videoFile.path));

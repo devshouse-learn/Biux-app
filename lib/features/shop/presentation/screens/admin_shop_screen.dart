@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
@@ -42,7 +43,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
             Icon(
               icon,
               size: 120,
-              color: ColorTokens.primary30.withOpacity(0.3),
+              color: ColorTokens.primary30.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 24),
             Text(
@@ -57,10 +58,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
             const SizedBox(height: 16),
             Text(
               message,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -107,7 +105,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
               Navigator.of(context).pop();
               final shopProvider = context.read<ShopProvider>();
               final success = await shopProvider.deleteProduct(product.id);
-              
+
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -118,7 +116,9 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(shopProvider.errorMessage ?? 'Error al eliminar'),
+                    content: Text(
+                      shopProvider.errorMessage ?? 'Error al eliminar',
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -173,8 +173,12 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
           // Aplicar búsqueda
           if (_searchQuery.isNotEmpty) {
             myProducts = myProducts.where((p) {
-              return p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                     p.description.toLowerCase().contains(_searchQuery.toLowerCase());
+              return p.name.toLowerCase().contains(
+                    _searchQuery.toLowerCase(),
+                  ) ||
+                  p.description.toLowerCase().contains(
+                    _searchQuery.toLowerCase(),
+                  );
             }).toList();
           }
 
@@ -267,14 +271,17 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                                         width: 60,
                                         height: 60,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            width: 60,
-                                            height: 60,
-                                            color: Colors.grey[200],
-                                            child: const Icon(Icons.shopping_bag),
-                                          );
-                                        },
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Container(
+                                                width: 60,
+                                                height: 60,
+                                                color: Colors.grey[200],
+                                                child: const Icon(
+                                                  Icons.shopping_bag,
+                                                ),
+                                              );
+                                            },
                                       ),
                                     )
                                   : Container(
@@ -288,7 +295,9 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                                     ),
                               title: Text(
                                 product.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,12 +329,24 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.blue),
-                                    onPressed: () => _showProductForm(context, product: product),
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: () => _showProductForm(
+                                      context,
+                                      product: product,
+                                    ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => _showDeleteConfirmation(context, product),
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () => _showDeleteConfirmation(
+                                      context,
+                                      product,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -361,14 +382,14 @@ class ProductFormModal extends StatefulWidget {
 class _ProductFormModalState extends State<ProductFormModal> {
   final _formKey = GlobalKey<FormState>();
   final _mediaService = MediaUploadService();
-  
+
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
   late TextEditingController _longDescriptionController;
   late TextEditingController _priceController;
   late TextEditingController _stockController;
   late TextEditingController _cityController;
-  
+
   String _selectedCategory = ProductCategories.all;
   List<String> _selectedSizes = [];
   List<String> _imageUrls = [];
@@ -380,16 +401,22 @@ class _ProductFormModalState extends State<ProductFormModal> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.product?.name ?? '');
-    _descriptionController = TextEditingController(text: widget.product?.description ?? '');
-    _longDescriptionController = TextEditingController(text: widget.product?.longDescription ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.product?.description ?? '',
+    );
+    _longDescriptionController = TextEditingController(
+      text: widget.product?.longDescription ?? '',
+    );
     _priceController = TextEditingController(
       text: widget.product?.price.toStringAsFixed(0) ?? '',
     );
     _stockController = TextEditingController(
       text: widget.product?.stock.toString() ?? '',
     );
-    _cityController = TextEditingController(text: widget.product?.sellerCity ?? '');
-    
+    _cityController = TextEditingController(
+      text: widget.product?.sellerCity ?? '',
+    );
+
     if (widget.product != null) {
       _selectedCategory = widget.product!.category;
       _selectedSizes = List.from(widget.product!.sizes);
@@ -410,23 +437,72 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _pickImageFromCamera() async {
+    print('📸 Intentando abrir cámara...');
     final image = await _mediaService.pickImageFromCamera();
     if (image != null) {
+      print('✅ Imagen capturada, subiendo...');
       await _uploadImage(image);
+    } else {
+      print('⚠️ No se capturó imagen');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No se pudo acceder a la cámara'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _pickImageFromGallery() async {
-    final image = await _mediaService.pickImageFromGallery();
-    if (image != null) {
-      await _uploadImage(image);
+    print('🖼️ Abriendo selector de imágenes...');
+    try {
+      final image = await _mediaService.pickImageFromGallery();
+      if (image != null) {
+        print('✅ Imagen seleccionada: ${image.name}, subiendo...');
+        await _uploadImage(image);
+      } else {
+        print('⚠️ No se seleccionó ninguna imagen');
+      }
+    } catch (e) {
+      print('❌ Error en _pickImageFromGallery: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al seleccionar imagen: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _pickMultipleImages() async {
-    final images = await _mediaService.pickMultipleImages();
-    for (final image in images) {
-      await _uploadImage(image);
+    print('🖼️ Abriendo selector múltiple...');
+    try {
+      final images = await _mediaService.pickMultipleImages();
+      print('📸 ${images.length} imágenes seleccionadas');
+
+      if (images.isEmpty) {
+        print('⚠️ No se seleccionaron imágenes');
+        return;
+      }
+
+      for (final image in images) {
+        print('📤 Subiendo ${image.name}...');
+        await _uploadImage(image);
+      }
+    } catch (e) {
+      print('❌ Error en _pickMultipleImages: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al seleccionar imágenes: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -436,7 +512,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
       _uploadProgress = 0.0;
     });
 
-    final productId = widget.product?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final productId =
+        widget.product?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
     final url = await _mediaService.uploadImage(
       image,
       productId,
@@ -460,7 +537,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al subir imagen'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('Error al subir imagen'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -497,7 +577,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
       _uploadProgress = 0.0;
     });
 
-    final productId = widget.product?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final productId =
+        widget.product?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
     final url = await _mediaService.uploadVideo(
       video,
       productId,
@@ -521,7 +602,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al subir video'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('Error al subir video'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -544,17 +628,20 @@ class _ProductFormModalState extends State<ProductFormModal> {
       builder: (context) => SafeArea(
         child: Wrap(
           children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt, color: Colors.blue),
-              title: const Text('Tomar foto'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImageFromCamera();
-              },
-            ),
+            // 🌐 En WEB: Solo mostrar opciones de galería (cámara no funciona en web)
+            if (!kIsWeb) ...[
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Colors.blue),
+                title: const Text('Tomar foto'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageFromCamera();
+                },
+              ),
+            ],
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.green),
-              title: const Text('Seleccionar de galería'),
+              title: const Text('Seleccionar imagen'),
               onTap: () {
                 Navigator.pop(context);
                 _pickImageFromGallery();
@@ -562,21 +649,23 @@ class _ProductFormModalState extends State<ProductFormModal> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.purple),
-              title: const Text('Seleccionar múltiples'),
+              title: const Text('Seleccionar múltiples imágenes'),
               onTap: () {
                 Navigator.pop(context);
                 _pickMultipleImages();
               },
             ),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.videocam, color: Colors.red),
-              title: const Text('Grabar video (máx 30s)'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickVideoFromCamera();
-              },
-            ),
+            if (!kIsWeb) ...[
+              ListTile(
+                leading: const Icon(Icons.videocam, color: Colors.red),
+                title: const Text('Grabar video (máx 30s)'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickVideoFromCamera();
+                },
+              ),
+            ],
             ListTile(
               leading: const Icon(Icons.video_library, color: Colors.orange),
               title: const Text('Seleccionar video'),
@@ -603,7 +692,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
     final userProvider = context.read<UserProvider>();
     final currentUser = userProvider.user;
-    
+
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error: usuario no encontrado')),
@@ -615,8 +704,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
       id: widget.product?.id ?? '',
       name: _nameController.text,
       description: _descriptionController.text,
-      longDescription: _longDescriptionController.text.isEmpty 
-          ? null 
+      longDescription: _longDescriptionController.text.isEmpty
+          ? null
           : _longDescriptionController.text,
       price: double.parse(_priceController.text),
       images: _imageUrls,
@@ -635,7 +724,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
     bool success;
 
     if (widget.product == null) {
-      success = await shopProvider.createProduct(product);
+      success = await shopProvider.createProduct(
+        product,
+        canCreateProducts:
+            currentUser.isAdmin ||
+            (userProvider.user?.canCreateProducts ?? false),
+      );
     } else {
       success = await shopProvider.updateProduct(product);
     }
@@ -694,14 +788,17 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Título
               Text(
                 widget.product == null ? 'Crear Producto' : 'Editar Producto',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
-              
+
               // Nombre
               TextFormField(
                 controller: _nameController,
@@ -717,7 +814,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Descripción corta
               TextFormField(
                 controller: _descriptionController,
@@ -734,7 +831,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Descripción larga
               TextFormField(
                 controller: _longDescriptionController,
@@ -746,7 +843,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 maxLines: 4,
               ),
               const SizedBox(height: 16),
-              
+
               // Precio y Stock
               Row(
                 children: [
@@ -793,7 +890,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Ciudad
               TextFormField(
                 controller: _cityController,
@@ -805,10 +902,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Categoría
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Categoría *',
                   border: OutlineInputBorder(),
@@ -828,7 +925,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Tallas
               const Text(
                 'Tallas disponibles (opcional)',
@@ -859,7 +956,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 }).toList(),
               ),
               const SizedBox(height: 16),
-              
+
               // Botón agregar multimedia
               OutlinedButton.icon(
                 onPressed: _isUploading ? null : _showMediaOptions,
@@ -871,14 +968,16 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
-              
+
               // Progress bar durante carga
               if (_isUploading) ...[
                 const SizedBox(height: 16),
                 LinearProgressIndicator(
                   value: _uploadProgress,
                   backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.secondary50),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    ColorTokens.secondary50,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -887,9 +986,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ],
-              
+
               const SizedBox(height: 16),
-              
+
               // Lista de imágenes
               if (_imageUrls.isNotEmpty) ...[
                 const Text(
@@ -943,7 +1042,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ),
                 const SizedBox(height: 16),
               ],
-              
+
               // Video
               if (_videoUrl != null) ...[
                 const Text(
@@ -991,9 +1090,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ),
                 const SizedBox(height: 16),
               ],
-              
+
               const SizedBox(height: 24),
-              
+
               // Botones
               Row(
                 children: [

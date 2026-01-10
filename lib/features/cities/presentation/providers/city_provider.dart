@@ -175,8 +175,12 @@ class CityProvider extends ChangeNotifier {
         if (cachedData != null) {
           final List<dynamic> jsonList = json.decode(cachedData);
           return jsonList
-              .map((json) => CityModel.fromFirestore(
-                  Map<String, dynamic>.from(json), json['id'] ?? ''))
+              .map(
+                (json) => CityModel.fromFirestore(
+                  Map<String, dynamic>.from(json),
+                  json['id'] ?? '',
+                ),
+              )
               .toList();
         }
       }
@@ -193,10 +197,7 @@ class CityProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonList = cities
-          .map((city) => {
-                'id': city.id,
-                ...city.toFirestore(),
-              })
+          .map((city) => {'id': city.id, ...city.toFirestore()})
           .toList();
 
       await prefs.setString(_cacheKey, json.encode(jsonList));

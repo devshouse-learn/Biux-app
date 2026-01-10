@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 /// Notificador que escucha los cambios en el estado de autenticación de Firebase
 /// y los convierte en un Listenable que GoRouter puede usar
-/// 
+///
 /// EN WEB: Simula un usuario logueado para pruebas (sin login requerido)
 /// EN MOBILE: Requiere autenticación real de Firebase
 class AuthNotifier extends ChangeNotifier {
@@ -16,7 +16,7 @@ class AuthNotifier extends ChangeNotifier {
   AuthNotifier() {
     _isWebPlatform = kIsWeb;
     _user = FirebaseAuth.instance.currentUser;
-    
+
     if (_isWebPlatform) {
       print('🌐 WEB: Modo desarrollo - Saltando autenticación');
     } else {
@@ -36,7 +36,7 @@ class AuthNotifier extends ChangeNotifier {
   }
 
   User? get user => _user;
-  
+
   // En web, siempre retornar true para saltear autenticación
   // En mobile, verificar si hay usuario
   bool get isLoggedIn => _isWebPlatform ? true : _user != null;
@@ -47,4 +47,3 @@ class AuthNotifier extends ChangeNotifier {
     super.dispose();
   }
 }
-

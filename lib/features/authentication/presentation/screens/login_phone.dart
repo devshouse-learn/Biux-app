@@ -36,21 +36,21 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
     if (phone.isEmpty) {
       return 'Por favor ingresa tu número de teléfono';
     }
-    
+
     // Limpiar número (solo dígitos)
     final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
-    
+
     // Validar longitud (10 dígitos para Colombia)
     if (cleanPhone.length != 10) {
       return 'El número debe tener 10 dígitos';
     }
-    
+
     return null; // Válido
   }
 
   void _handleSendCode() {
     final validationError = _validatePhoneNumber(phoneController.text);
-    
+
     if (validationError != null) {
       print('⚠️ [LoginPhone] Validación fallida: $validationError');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +102,9 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       // Verificar si necesita completar perfil
                       if (auth.needsProfileSetup) {
-                        context.go(AppRoutes.profile); // Redirigir a editar perfil
+                        context.go(
+                          AppRoutes.profile,
+                        ); // Redirigir a editar perfil
                       } else {
                         context.go(AppRoutes.roadsList); // Redirigir a rodadas
                       }
@@ -140,7 +142,9 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                               },
                               child: Text(
                                 'OK',
-                                style: TextStyle(color: ColorTokens.secondary50),
+                                style: TextStyle(
+                                  color: ColorTokens.secondary50,
+                                ),
                               ),
                             ),
                           ],
@@ -167,7 +171,10 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           hintText: '3001234567',
                           labelStyle: TextStyle(color: ColorTokens.neutral100),
                           prefixIcon: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 15,
+                            ),
                             child: Text(
                               '+57',
                               style: TextStyle(
@@ -199,17 +206,11 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 2,
-                            ),
+                            borderSide: BorderSide(color: Colors.red, width: 2),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 2,
-                            ),
+                            borderSide: BorderSide(color: Colors.red, width: 2),
                           ),
                         ),
                         style: TextStyle(color: ColorTokens.neutral100),

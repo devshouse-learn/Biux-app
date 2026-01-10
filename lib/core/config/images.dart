@@ -32,7 +32,8 @@ class Images {
   static const kImageIconWhatsapp = '$kImagesPath/icon_whatsapp.png';
   static const kImageIconInstagram = '$kImagesPath/icon_instagram.png';
   static const kSelectedBlackImage = '$kImagesPath/selected_black_image.png';
-  static const kDeselectedBlackImage = '$kImagesPath/deselected_black_image.png';
+  static const kDeselectedBlackImage =
+      '$kImagesPath/deselected_black_image.png';
   static const kRouteNameImage = '$kImagesPath/route_name.png';
   static const kPointMeetingImage = '$kImagesPath/point_meeting.png';
   static const kLocationGreyImage = '$kImagesPath/location_grey.png';

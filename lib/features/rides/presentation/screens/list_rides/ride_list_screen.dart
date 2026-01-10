@@ -738,16 +738,26 @@ class _RideListScreenState extends State<RideListScreen> {
                   // Lista de grupos administrados por el usuario
                   Column(
                     children: groupProvider.adminGroups.map((group) {
+                      // ignore: deprecated_member_use
                       return RadioListTile<String>(
                         title: Text(group.name),
                         value: group.id,
+                        // ignore: deprecated_member_use
                         groupValue: selectedGroupId,
+                        // ignore: deprecated_member_use
                         onChanged: (value) {
                           setState(() {
                             selectedGroupId = value;
                           });
                         },
-                        activeColor: ColorTokens.primary30,
+                        fillColor: WidgetStateProperty.resolveWith<Color>((
+                          Set<WidgetState> states,
+                        ) {
+                          if (states.contains(WidgetState.selected)) {
+                            return ColorTokens.primary30;
+                          }
+                          return Colors.grey;
+                        }),
                       );
                     }).toList(),
                   ),

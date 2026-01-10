@@ -25,13 +25,9 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
     // Iniciar animación
     _animationController.forward();
@@ -63,14 +59,9 @@ class _SplashScreenState extends State<SplashScreen>
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
-          child: Image.asset(
-            Images.kBiuxLogoLettersWhite,
-            width: 130,
-          ),
+          child: Image.asset(Images.kBiuxLogoLettersWhite, width: 130),
         ),
       ),
     );
   }
 }
-
-

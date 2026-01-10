@@ -40,13 +40,17 @@ class OrderModel extends OrderEntity {
       id: json['id'] as String? ?? '',
       userId: json['userId'] as String? ?? '',
       userName: json['userName'] as String? ?? '',
-      items: (json['items'] as List<dynamic>?)
-              ?.map((item) => CartItemEntity(
-                    product: ProductModel.fromJson(
-                        item['product'] as Map<String, dynamic>),
-                    quantity: (item['quantity'] as num?)?.toInt() ?? 1,
-                    selectedSize: item['selectedSize'] as String?,
-                  ))
+      items:
+          (json['items'] as List<dynamic>?)
+              ?.map(
+                (item) => CartItemEntity(
+                  product: ProductModel.fromJson(
+                    item['product'] as Map<String, dynamic>,
+                  ),
+                  quantity: (item['quantity'] as num?)?.toInt() ?? 1,
+                  selectedSize: item['selectedSize'] as String?,
+                ),
+              )
               .toList() ??
           [],
       total: (json['total'] as num?)?.toDouble() ?? 0.0,
@@ -57,22 +61,19 @@ class OrderModel extends OrderEntity {
       createdAt: json['createdAt'] is Timestamp
           ? (json['createdAt'] as Timestamp).toDate()
           : json['createdAt'] is String
-              ? DateTime.parse(json['createdAt'] as String)
-              : DateTime.now(),
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
       completedAt: json['completedAt'] != null
           ? (json['completedAt'] is Timestamp
-              ? (json['completedAt'] as Timestamp).toDate()
-              : DateTime.parse(json['completedAt'] as String))
+                ? (json['completedAt'] as Timestamp).toDate()
+                : DateTime.parse(json['completedAt'] as String))
           : null,
     );
   }
 
   factory OrderModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return OrderModel.fromJson({
-      ...data,
-      'id': doc.id,
-    });
+    return OrderModel.fromJson({...data, 'id': doc.id});
   }
 
   Map<String, dynamic> toJson() {
@@ -81,11 +82,13 @@ class OrderModel extends OrderEntity {
       'userId': userId,
       'userName': userName,
       'items': items
-          .map((item) => {
-                'product': ProductModel.fromEntity(item.product).toJson(),
-                'quantity': item.quantity,
-                if (item.selectedSize != null) 'selectedSize': item.selectedSize,
-              })
+          .map(
+            (item) => {
+              'product': ProductModel.fromEntity(item.product).toJson(),
+              'quantity': item.quantity,
+              if (item.selectedSize != null) 'selectedSize': item.selectedSize,
+            },
+          )
           .toList(),
       'total': total,
       'status': status,

@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/config/strings.dart';
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -18,7 +18,6 @@ class AuthenticationRepository {
 
   String get getUserId => _auth.currentUser!.uid;
 
-
   Future<void> signOut() => _auth.signOut();
 
   Future<ResponseRepo> login(String email, String password) async {
@@ -28,11 +27,7 @@ class AuthenticationRepository {
         password: password,
       );
       final user = userCredential.user;
-      return ResponseRepo(
-        message: user!.uid,
-        status: true,
-        statusCode: 200,
-      );
+      return ResponseRepo(message: user!.uid, status: true, statusCode: 200);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return ResponseRepo(
@@ -82,16 +77,13 @@ class AuthenticationRepository {
     }
   }
 
-
-
-
   Future<ResponseRepo> registerUser({required BiuxUser user}) async {
     try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: user.email,
-        password: user.password,
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
+            email: user.email,
+            password: user.password,
+          );
       final String uid = userCredential.user!.uid;
       final BiuxUser biuxUser = BiuxUser(
         id: uid,
@@ -118,11 +110,7 @@ class AuthenticationRepository {
       );
       await UserFirebaseRepository().registerUser(user: biuxUser);
       LocalStorage().setUserName(user.userName);
-      return ResponseRepo(
-        message: biuxUser.id,
-        status: true,
-        statusCode: 200,
-      );
+      return ResponseRepo(message: biuxUser.id, status: true, statusCode: 200);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         return ResponseRepo(

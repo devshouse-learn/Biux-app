@@ -42,59 +42,62 @@ class Group {
   });
 
   factory Group.fromJson({required Map json}) => Group(
-        id: json["id"],
-        name: json["name"],
-        active: json["active"],
-        adminId: json["adminId"],
-        cityAdmin: json["cityAdmin"],
-        cityId: json["cityId"],
-        description: json["description"],
-        facebook: json["facebook"],
-        instagram: json["instagram"],
-        logo: json["logo"] ??
-            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-        logoADM: json["logoADM"],
-        modality: json["modality"],
-        numberMembers: json["numberMembers"],
-        numberRoads: json["numberRoads"],
-        profileCover: json["profileCover"] ??
-            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-        profileCoverADM: json["profileCoverADM"],
-        whatsapp: json["whatsapp"],
-        public: json["public"],
-      );
+    id: json["id"],
+    name: json["name"],
+    active: json["active"],
+    adminId: json["adminId"],
+    cityAdmin: json["cityAdmin"],
+    cityId: json["cityId"],
+    description: json["description"],
+    facebook: json["facebook"],
+    instagram: json["instagram"],
+    logo:
+        json["logo"] ??
+        "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+    logoADM: json["logoADM"],
+    modality: json["modality"],
+    numberMembers: json["numberMembers"],
+    numberRoads: json["numberRoads"],
+    profileCover:
+        json["profileCover"] ??
+        "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+    profileCoverADM: json["profileCoverADM"],
+    whatsapp: json["whatsapp"],
+    public: json["public"],
+  );
 
   factory Group.fromJsonRoad({required Map json}) => Group(
-        id: json["id"],
-        adminId: json["adminId"],
-        logo: json["logo"] ??
-            "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
-      );
+    id: json["id"],
+    adminId: json["adminId"],
+    logo:
+        json["logo"] ??
+        "https://lh3.googleusercontent.com/wq0_KD2KZpzof7IR9sEaYTA5_PRE_aeJS0eKdrcmM7o5elnQ5keCxo29IG-DuEG4Rw",
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "numberMembers": numberMembers,
-        "numberRoads": numberRoads,
-        "active": active,
-        "logo": logo,
-        "logoADM": logoADM,
-        "profileCoverADM": profileCoverADM,
-        "adminId": adminId,
-        "profileCover": profileCover,
-        "description": description,
-        "modality": modality,
-        "cityAdmin": cityAdmin,
-        "whatsapp": whatsapp,
-        "cityId": cityId,
-        "facebook": facebook,
-        "instagram": instagram,
-        "public": public
-      };
+    "id": id,
+    "name": name,
+    "numberMembers": numberMembers,
+    "numberRoads": numberRoads,
+    "active": active,
+    "logo": logo,
+    "logoADM": logoADM,
+    "profileCoverADM": profileCoverADM,
+    "adminId": adminId,
+    "profileCover": profileCover,
+    "description": description,
+    "modality": modality,
+    "cityAdmin": cityAdmin,
+    "whatsapp": whatsapp,
+    "cityId": cityId,
+    "facebook": facebook,
+    "instagram": instagram,
+    "public": public,
+  };
 
   Map<String, dynamic> toJsonRoad() => {
-        "id": id,
-        "logo": logo,
-        "adminId": adminId,
-      };
+    "id": id,
+    "logo": logo,
+    "adminId": adminId,
+  };
 }

@@ -10,10 +10,11 @@ class SnackBarUtils {
     return SnackBar(
       backgroundColor: backgroundColor,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
-      )),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
       content: Text(
         content,
         textAlign: TextAlign.center,

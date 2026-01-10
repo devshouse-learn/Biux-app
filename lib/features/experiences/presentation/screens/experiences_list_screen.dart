@@ -171,7 +171,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           Icon(
             Icons.error_outline,
             size: 64,
-            color: theme.iconTheme.color?.withOpacity(0.5),
+            color: theme.iconTheme.color?.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -187,7 +187,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             error,
             style: TextStyle(
               fontSize: 14,
-              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+              color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -223,7 +223,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               Icon(
                 Icons.article_outlined,
                 size: 64,
-                color: theme.iconTheme.color?.withOpacity(0.5),
+                color: theme.iconTheme.color?.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 16),
               Text(
@@ -239,7 +239,9 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
                 style: TextStyle(
                   fontSize: 14,
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                  color: theme.textTheme.bodySmall?.color?.withValues(
+                    alpha: 0.7,
+                  ),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -331,7 +333,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               'Elige el tipo de post que quieres compartir',
               style: TextStyle(
                 fontSize: 14,
-                color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 24),
@@ -368,7 +370,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               ],
             ),
             */
-
             const SizedBox(height: 20),
           ],
         ),
@@ -423,7 +424,7 @@ class _ExperienceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.08),
+            color: theme.shadowColor.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -509,7 +510,7 @@ class _ExperienceCard extends StatelessWidget {
                       child: Center(
                         child: Icon(
                           Icons.image_not_supported,
-                          color: theme.iconTheme.color?.withOpacity(0.5),
+                          color: theme.iconTheme.color?.withValues(alpha: 0.5),
                           size: 48,
                         ),
                       ),
@@ -562,14 +563,18 @@ class _ExperienceCard extends StatelessWidget {
                   Icon(
                     Icons.photo_library,
                     size: 16,
-                    color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                    color: theme.textTheme.bodySmall?.color?.withValues(
+                      alpha: 0.7,
+                    ),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${experience.media.length}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                      color: theme.textTheme.bodySmall?.color?.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                   ),
                 ],
@@ -656,9 +661,7 @@ class _ExperienceCard extends StatelessWidget {
                           _formatDate(experience.createdAt),
                           style: TextStyle(
                             fontSize: 13,
-                            color: isDark
-                                ? Colors.grey[400]
-                                : Colors.grey[600],
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
                           ),
                         ),
                       ],
@@ -777,7 +780,7 @@ class _ExperienceCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: theme.dialogBackgroundColor,
+        backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
           'Eliminar publicación',
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
@@ -838,9 +841,9 @@ class _ExperienceCard extends StatelessWidget {
       });
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al compartir: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
       }
     }
   }
@@ -872,7 +875,7 @@ class _PostOptionTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -880,7 +883,7 @@ class _PostOptionTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: color, size: 28),
@@ -905,7 +908,7 @@ class _PostOptionTile extends StatelessWidget {
                       fontSize: 13,
                       color: Theme.of(
                         context,
-                      ).textTheme.bodySmall?.color?.withOpacity(0.7),
+                      ).textTheme.bodySmall?.color?.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -914,7 +917,7 @@ class _PostOptionTile extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+              color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.5),
             ),
           ],
         ),

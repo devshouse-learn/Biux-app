@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/cities/data/models/city.dart';
+import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/roads/data/models/road.dart';
@@ -53,9 +53,11 @@ class RoadsListScreenBloc extends ChangeNotifier {
   Future<void> filterCities() async {
     final dataFilterCities = await CitiesFirebaseRepository().getCities();
     listCities = dataFilterCities
-        .where((cities) => cities.name
-            .toLowerCase()
-            .contains(searchCityController.text.toLowerCase()))
+        .where(
+          (cities) => cities.name.toLowerCase().contains(
+            searchCityController.text.toLowerCase(),
+          ),
+        )
         .toList();
     notifyListeners();
   }
@@ -86,8 +88,9 @@ class RoadsListScreenBloc extends ChangeNotifier {
 
   Future<void> getGroup() async {
     listRoads.map((e) async {
-      final dataGroup =
-          await GroupsFirebaseRepository().getSpecificGroup(e.group.id);
+      final dataGroup = await GroupsFirebaseRepository().getSpecificGroup(
+        e.group.id,
+      );
       listGroup.add(dataGroup);
     }).toList();
     notifyListeners();

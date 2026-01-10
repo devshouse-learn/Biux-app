@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 
@@ -21,8 +21,10 @@ abstract class RoadsRepositoryAbstract {
     required String roadId,
   });
   Future<bool> deleteRoad(Road road);
-  Future<CompetitorRoad> getParticipantRoad(
-      {required String id, required String userId});
+  Future<CompetitorRoad> getParticipantRoad({
+    required String id,
+    required String userId,
+  });
   Future<bool> deleteCompetitorRoad({
     required CompetitorRoad competitorRoad,
     required String roadId,

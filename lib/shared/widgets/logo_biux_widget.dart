@@ -36,29 +36,28 @@ class LogoBiuxWidget extends StatelessWidget {
               ),
               height: 120,
               width: 120,
-              child:
-                  imageLogo == null
-                      ? new Center(
-                        child: new Image.asset(
-                          Images.kBiuxLogoLettersWhite,
-                          scale: 20,
-                          color: ColorTokens.neutral100,
+              child: imageLogo == null
+                  ? new Center(
+                      child: new Image.asset(
+                        Images.kBiuxLogoLettersWhite,
+                        scale: 20,
+                        color: ColorTokens.neutral100,
+                      ),
+                    )
+                  : Container(
+                      alignment: (Alignment(-1.0, 2.5)),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: FileImage(
+                            imageLogo.path != null ? imageLogo : getImage,
+                          ),
                         ),
-                      )
-                      : Container(
-                        alignment: (Alignment(-1.0, 2.5)),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: FileImage(
-                              imageLogo.path != null ? imageLogo : getImage,
-                            ),
-                          ),
-                          borderRadius: BorderRadius.all(
-                            const Radius.circular(80.0),
-                          ),
+                        borderRadius: BorderRadius.all(
+                          const Radius.circular(80.0),
                         ),
                       ),
+                    ),
             ),
           ),
         ),

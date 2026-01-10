@@ -296,10 +296,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildFollowButton(UserProfileProvider provider, String profileUserId) {
+  Widget _buildFollowButton(
+    UserProfileProvider provider,
+    String profileUserId,
+  ) {
     final currentUserId = AuthenticationRepository().getUserId;
     final isOwnProfile = currentUserId == profileUserId;
-    
+
     // Si es el perfil propio, mostrar botón "Editar perfil"
     if (isOwnProfile) {
       return ElevatedButton(
@@ -317,10 +320,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ),
       );
     }
-    
+
     // Deshabilitar si está procesando o si ya sigue
     final isDisabled = provider.isProcessingFollow || provider.isFollowing;
-    
+
     return ElevatedButton(
       onPressed: isDisabled
           ? null
@@ -346,8 +349,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               child: CircularProgressIndicator(
                 strokeWidth: 2,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  provider.isFollowing 
-                      ? ColorTokens.neutral100 
+                  provider.isFollowing
+                      ? ColorTokens.neutral100
                       : ColorTokens.primary30,
                 ),
               ),
@@ -567,13 +570,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     try {
       final userName = user.userName.isNotEmpty ? user.userName : user.fullName;
       final shareUrl = 'https://biux.devshouse.org/user/${user.id}';
-      
+
       final shareText = '🚴 Mira el perfil de $userName en Biux\n\n$shareUrl';
-      
-      await Share.share(
-        shareText,
-        subject: 'Perfil de $userName en Biux',
-      );
+
+      await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
       print('Error al compartir perfil: $e');
     }

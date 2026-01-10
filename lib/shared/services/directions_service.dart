@@ -13,7 +13,8 @@ class DirectionsService {
     required LatLng destination,
     String travelMode = 'bicycling', // Cambiado de 'driving' a 'bicycling'
   }) async {
-    final String url = '$_baseUrl?'
+    final String url =
+        '$_baseUrl?'
         'origin=${origin.latitude},${origin.longitude}&'
         'destination=${destination.latitude},${destination.longitude}&'
         'mode=$travelMode&'
@@ -47,7 +48,8 @@ class DirectionsService {
     required LatLng destination,
     String travelMode = 'bicycling', // Cambiado de 'driving' a 'bicycling'
   }) async {
-    final String url = '$_baseUrl?'
+    final String url =
+        '$_baseUrl?'
         'origin=${origin.latitude},${origin.longitude}&'
         'destination=${destination.latitude},${destination.longitude}&'
         'mode=$travelMode&'
@@ -57,13 +59,15 @@ class DirectionsService {
     print('URL: $url');
 
     try {
-      final response = await http.get(Uri.parse(url)).timeout(
-        Duration(seconds: 10), // Timeout de 10 segundos
-        onTimeout: () {
-          print('⏰ Timeout en la petición a Google Directions API');
-          throw Exception('Timeout');
-        },
-      );
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(
+            Duration(seconds: 10), // Timeout de 10 segundos
+            onTimeout: () {
+              print('⏰ Timeout en la petición a Google Directions API');
+              throw Exception('Timeout');
+            },
+          );
 
       print('📡 Response status: ${response.statusCode}');
 
@@ -78,7 +82,8 @@ class DirectionsService {
 
           print('✅ Route found! Polyline length: ${polylinePoints.length}');
           print(
-              '📏 Distance: ${leg['distance']['text']}, Duration: ${leg['duration']['text']}');
+            '📏 Distance: ${leg['distance']['text']}, Duration: ${leg['duration']['text']}',
+          );
 
           final List<LatLng> points = _decodePolyline(polylinePoints);
           print('🗺️ Decoded ${points.length} points for the route');

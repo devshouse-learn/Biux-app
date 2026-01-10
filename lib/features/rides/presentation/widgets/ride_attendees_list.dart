@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../users/domain/repositories/user_repository.dart';
 import '../../../users/domain/entities/user_entity.dart';
-import '../../../../core/config/router/app_routes.dart';
 import 'package:go_router/go_router.dart';
 
 /// Widget que muestra la lista de asistentes a una rodada

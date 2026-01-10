@@ -232,14 +232,14 @@ class AuthProvider extends ChangeNotifier {
     try {
       print('🔍 Verificando perfil del usuario: $uid');
       final doc = await _firestore.collection('users').doc(uid).get();
-      
+
       if (doc.exists) {
         final data = doc.data();
         final userName = data?['userName'] as String?;
         final name = data?['name'] as String?;
-        
+
         // Si no tiene userName o name, necesita completar perfil
-        if ((userName == null || userName.isEmpty) && 
+        if ((userName == null || userName.isEmpty) &&
             (name == null || name.isEmpty)) {
           _needsProfileSetup = true;
           print('⚠️ Usuario necesita completar perfil');

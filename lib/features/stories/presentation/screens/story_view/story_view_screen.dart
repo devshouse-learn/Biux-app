@@ -174,7 +174,8 @@ class _CarouselImagesState extends State<_CarouselImages> {
                   imageUrl: item,
                   imageType: 'general',
                   width: sizeScreen.width * 0.8,
-                  fit: BoxFit.contain, // Cambiado de cover a contain para mostrar fotos verticales completas
+                  fit: BoxFit
+                      .contain, // Cambiado de cover a contain para mostrar fotos verticales completas
                 ),
               ],
             ),
@@ -221,7 +222,8 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     ),
                   ),
                   // Botón de eliminar solo si es el dueño
-                  if (widget.story.user.id == AuthenticationRepository().getUserId)
+                  if (widget.story.user.id ==
+                      AuthenticationRepository().getUserId)
                     GestureDetector(
                       onTap: () => _showDeleteConfirmationDialog(context),
                       child: Icon(
@@ -255,7 +257,8 @@ class _CarouselImagesState extends State<_CarouselImages> {
                             child: OptimizedNetworkImage(
                               imageUrl: e,
                               imageType: 'general',
-                              fit: BoxFit.contain, // Cambiado de cover a contain para mostrar fotos verticales completas
+                              fit: BoxFit
+                                  .contain, // Cambiado de cover a contain para mostrar fotos verticales completas
                             ),
                           ),
                           onTap: () {
@@ -268,7 +271,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                               imageProvider,
                               backgroundColor: Theme.of(
                                 context,
-                              ).scaffoldBackgroundColor.withOpacity(0.9),
+                              ).scaffoldBackgroundColor.withValues(alpha: 0.9),
                               useSafeArea: true,
                               immersive: false,
                             );
@@ -319,7 +322,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).shadowColor.withOpacity(0.3),
+                    color: Theme.of(context).shadowColor.withValues(alpha: 0.3),
                     spreadRadius: 5,
                     blurRadius: 7,
                     offset: Offset(0, 3),
@@ -372,7 +375,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                         Shadow(
                           offset: Offset(0, 1),
                           blurRadius: 3.0,
-                          color: Colors.black.withOpacity(0.7),
+                          color: Colors.black.withValues(alpha: 0.7),
                         ),
                       ],
                     ),

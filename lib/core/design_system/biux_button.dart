@@ -124,9 +124,7 @@ class BiuxButton extends StatelessWidget {
           horizontal: horizontalPadding,
           vertical: verticalPadding,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         disabledBackgroundColor: colorScheme.onSurface.withValues(alpha: 0.12),
       ),
       child: buttonChild,

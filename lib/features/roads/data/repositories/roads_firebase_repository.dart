@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/groups/data/models/group.dart';
+import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'dart:io';
@@ -48,11 +48,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .collection(collectionCompetitor)
           .get();
       return result.docs
-          .map(
-            (e) => CompetitorRoad.fromJsonMap(
-              json: e.data(),
-            ),
-          )
+          .map((e) => CompetitorRoad.fromJsonMap(json: e.data()))
           .toList();
     } catch (e) {
       return List.empty();
@@ -60,8 +56,10 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
   }
 
   @override
-  Future<CompetitorRoad> getParticipantRoad(
-      {required String id, required String userId}) async {
+  Future<CompetitorRoad> getParticipantRoad({
+    required String id,
+    required String userId,
+  }) async {
     try {
       final response = await firestore
           .collection(collection)
@@ -69,9 +67,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .collection(collectionCompetitor)
           .where('userId', isEqualTo: userId)
           .get();
-      return CompetitorRoad.fromJsonMap(
-        json: response.docs.first.data(),
-      );
+      return CompetitorRoad.fromJsonMap(json: response.docs.first.data());
     } catch (e) {
       return CompetitorRoad();
     }
@@ -89,12 +85,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .where('cityId', isEqualTo: cityId)
           .get();
       return result.docs
-          .map(
-            (e) => Road.fromJson(
-              json: e.data(),
-              id: e.id,
-            ),
-          )
+          .map((e) => Road.fromJson(json: e.data(), id: e.id))
           .toList();
     } catch (e) {
       return List.empty();
@@ -113,12 +104,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .where('groupId', isEqualTo: groupId)
           .get();
       return result.docs
-          .map(
-            (e) => Road.fromJson(
-              json: e.data(),
-              id: e.id,
-            ),
-          )
+          .map((e) => Road.fromJson(json: e.data(), id: e.id))
           .toList();
     } catch (e) {
       return List.empty();
@@ -136,9 +122,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
           .doc(roadId)
           .collection(collectionCompetitor)
           .doc(competitorRoad.userId)
-          .set(
-            competitorRoad.toJson(),
-          );
+          .set(competitorRoad.toJson());
       return true;
     } catch (e) {
       return false;
@@ -148,9 +132,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
   @override
   Future<bool> updateRoad(Road road) async {
     try {
-      await firestore.collection(collection).doc(road.id).update(
-            road.toJson(),
-          );
+      await firestore.collection(collection).doc(road.id).update(road.toJson());
       return true;
     } catch (e) {
       return false;
@@ -158,10 +140,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
   }
 
   @override
-  Future<bool> uploadProfileCoverRoad(
-    String id,
-    File filePhoto,
-  ) async {
+  Future<bool> uploadProfileCoverRoad(String id, File filePhoto) async {
     try {
       FirebaseUtils firebaseUtils = FirebaseUtils();
       final url = await firebaseUtils.uploadImage(
@@ -211,9 +190,7 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
   @override
   Future<bool> createRoad(Road road) async {
     try {
-      await firestore.collection(collection).add(
-            road.toJson(),
-          );
+      await firestore.collection(collection).add(road.toJson());
       return true;
     } catch (e) {
       return false;
@@ -222,23 +199,18 @@ class RoadsFirebaseRepository extends RoadsRepositoryAbstract {
 
   Future<List<CompetitorRoad>> getListassistedRoads() async {
     try {
-      final response =
-          await firestore.collectionGroup(collectionCompetitor).get();
+      final response = await firestore
+          .collectionGroup(collectionCompetitor)
+          .get();
       return response.docs
-          .map(
-            (e) => CompetitorRoad.fromJsonMap(
-              json: e.data(),
-            ),
-          )
+          .map((e) => CompetitorRoad.fromJsonMap(json: e.data()))
           .toList();
     } catch (e) {
       return List.empty();
     }
   }
 
-  Future<bool> onTapRoad(
-    Road road,
-  ) async {
+  Future<bool> onTapRoad(Road road) async {
     try {
       await firestore.collection(collection).doc(road.id).update(road.toJson());
       return true;

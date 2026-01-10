@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 
 // Imports del sistema social
 import 'package:biux/features/social/presentation/widgets/like_button.dart';
-import 'package:biux/features/social/presentation/widgets/comments_list.dart';
-import 'package:biux/features/social/presentation/widgets/attendees_list.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'package:biux/features/social/presentation/providers/comments_provider.dart';
 import 'package:biux/features/social/presentation/providers/attendees_provider.dart';
@@ -73,10 +71,7 @@ class PostCardExample extends StatelessWidget {
                 const SizedBox(width: 8),
 
                 // Botón de comentarios con contador
-                _CommentsButton(
-                  postId: postId,
-                  postOwnerId: postOwnerId,
-                ),
+                _CommentsButton(postId: postId, postOwnerId: postOwnerId),
 
                 const Spacer(),
 
@@ -92,10 +87,7 @@ class PostCardExample extends StatelessWidget {
           ),
 
           // Vista previa de comentarios (opcional)
-          _CommentsPreview(
-            postId: postId,
-            postOwnerId: postOwnerId,
-          ),
+          _CommentsPreview(postId: postId, postOwnerId: postOwnerId),
         ],
       ),
     );
@@ -106,10 +98,7 @@ class _CommentsButton extends StatelessWidget {
   final String postId;
   final String postOwnerId;
 
-  const _CommentsButton({
-    required this.postId,
-    required this.postOwnerId,
-  });
+  const _CommentsButton({required this.postId, required this.postOwnerId});
 
   @override
   Widget build(BuildContext context) {
@@ -130,10 +119,7 @@ class _CommentsButton extends StatelessWidget {
             child: Row(
               children: [
                 const Icon(Icons.comment_outlined, size: 24),
-                if (count > 0) ...[
-                  const SizedBox(width: 4),
-                  Text('$count'),
-                ],
+                if (count > 0) ...[const SizedBox(width: 4), Text('$count')],
               ],
             ),
           ),
@@ -147,10 +133,7 @@ class _CommentsPreview extends StatelessWidget {
   final String postId;
   final String postOwnerId;
 
-  const _CommentsPreview({
-    required this.postId,
-    required this.postOwnerId,
-  });
+  const _CommentsPreview({required this.postId, required this.postOwnerId});
 
   @override
   Widget build(BuildContext context) {
@@ -170,18 +153,20 @@ class _CommentsPreview extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Divider(height: 1),
-            ...previewComments.map((comment) => ListTile(
-                  dense: true,
-                  title: Text(
-                    comment.userName,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    comment.text,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                )),
+            ...previewComments.map(
+              (comment) => ListTile(
+                dense: true,
+                title: Text(
+                  comment.userName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  comment.text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
             if (comments.length > 2)
               TextButton(
                 onPressed: () {
@@ -295,8 +280,6 @@ class RideCardExample extends StatelessWidget {
                   return StreamBuilder<dynamic>(
                     stream: attendeesProvider.watchUserStatus(rideId),
                     builder: (context, statusSnapshot) {
-                      final status = statusSnapshot.data;
-
                       return Row(
                         children: [
                           const Icon(Icons.check_circle, color: Colors.green),
@@ -340,10 +323,7 @@ class RideCardExample extends StatelessWidget {
 
           // Comentarios
           const Divider(height: 1),
-          _RideCommentsButton(
-            rideId: rideId,
-            rideOwnerId: rideOwnerId,
-          ),
+          _RideCommentsButton(rideId: rideId, rideOwnerId: rideOwnerId),
         ],
       ),
     );
@@ -373,10 +353,7 @@ class _RideCommentsButton extends StatelessWidget {
   final String rideId;
   final String rideOwnerId;
 
-  const _RideCommentsButton({
-    required this.rideId,
-    required this.rideOwnerId,
-  });
+  const _RideCommentsButton({required this.rideId, required this.rideOwnerId});
 
   @override
   Widget build(BuildContext context) {
@@ -421,10 +398,7 @@ class NavigationBarWithNotifications extends StatelessWidget {
       onTap: onTap,
       type: BottomNavigationBarType.fixed,
       items: [
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Inicio',
-        ),
+        const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
         const BottomNavigationBarItem(
           icon: Icon(Icons.search),
           label: 'Buscar',
@@ -477,12 +451,7 @@ class StoryViewerExample extends StatelessWidget {
     return Stack(
       children: [
         // Imagen de la historia
-        Positioned.fill(
-          child: Image.network(
-            storyImageUrl,
-            fit: BoxFit.cover,
-          ),
-        ),
+        Positioned.fill(child: Image.network(storyImageUrl, fit: BoxFit.cover)),
 
         // Botón de like en la parte inferior
         Positioned(

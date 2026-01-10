@@ -1,4 +1,3 @@
-
 class StoleBikes {
   String? bikeId;
   String? description;
@@ -18,21 +17,21 @@ class StoleBikes {
 
   factory StoleBikes.fromjson(Map json) {
     return StoleBikes(
-        bikeId: json["bikeId"],
-        description: json["description"],
-        direction: json["direction"],
-        dateCreate: json["dateCreate"],
-        datetimeStole: json["datetimeStole"],
-        id: json["id"],
-      );
+      bikeId: json["bikeId"],
+      description: json["description"],
+      direction: json["direction"],
+      dateCreate: json["dateCreate"],
+      datetimeStole: json["datetimeStole"],
+      id: json["id"],
+    );
   }
 
   Map<String, dynamic> toJson() => {
-        "bikeId": bikeId,
-        "description": description,
-        "direction": direction,
-        "dateCreate": dateCreate,
-        "datetimeStole": datetimeStole,
-        "id": id,
-      };
+    "bikeId": bikeId,
+    "description": description,
+    "direction": direction,
+    "dateCreate": dateCreate,
+    "datetimeStole": datetimeStole,
+    "id": id,
+  };
 }

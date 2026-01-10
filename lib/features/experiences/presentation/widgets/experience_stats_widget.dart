@@ -108,15 +108,15 @@ class ExperienceStatsWidget extends StatelessWidget {
   }
 
   Color _getBackgroundColor() {
-    if (totalSizeMB > 50) return ColorTokens.warning10.withOpacity(0.1);
-    if (totalSizeMB > 20) return ColorTokens.secondary10.withOpacity(0.1);
-    return ColorTokens.success10.withOpacity(0.1);
+    if (totalSizeMB > 50) return ColorTokens.warning10.withValues(alpha: 0.1);
+    if (totalSizeMB > 20) return ColorTokens.secondary10.withValues(alpha: 0.1);
+    return ColorTokens.success10.withValues(alpha: 0.1);
   }
 
   Color _getBorderColor() {
-    if (totalSizeMB > 50) return ColorTokens.warning40.withOpacity(0.3);
-    if (totalSizeMB > 20) return ColorTokens.secondary50.withOpacity(0.3);
-    return ColorTokens.success40.withOpacity(0.3);
+    if (totalSizeMB > 50) return ColorTokens.warning40.withValues(alpha: 0.3);
+    if (totalSizeMB > 20) return ColorTokens.secondary50.withValues(alpha: 0.3);
+    return ColorTokens.success40.withValues(alpha: 0.3);
   }
 
   Color _getIconColor() {
@@ -147,9 +147,9 @@ class ExperienceStatsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: ColorTokens.warning10.withOpacity(0.1),
+        color: ColorTokens.warning10.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: ColorTokens.warning40.withOpacity(0.3)),
+        border: Border.all(color: ColorTokens.warning40.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

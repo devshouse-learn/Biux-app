@@ -112,7 +112,7 @@ class EditUserScreenBloc extends ChangeNotifier {
   Future<void> uploadUpdate(BuildContext context) async {
     try {
       print('📝 Preparando actualización de perfil...');
-      
+
       // Crear usuario con todos los datos (preservar los que no cambian)
       final uploadUser = BiuxUser(
         id: user.id,
@@ -137,10 +137,10 @@ class EditUserScreenBloc extends ChangeNotifier {
         groupId: user.groupId,
         situationAccident: user.situationAccident,
       );
-      
+
       print('📤 Enviando datos a Firebase...');
       await UserFirebaseRepository().updateUser(uploadUser);
-      
+
       print('📷 Verificando si hay foto nueva para subir...');
       if (imageNew != null) {
         print('📤 Subiendo foto de perfil...');
@@ -149,11 +149,11 @@ class EditUserScreenBloc extends ChangeNotifier {
       } else {
         print('ℹ️ No hay foto nueva');
       }
-      
+
       // Recargar datos del usuario para asegurar sincronización
       print('🔄 Recargando datos del perfil...');
       await getUser();
-      
+
       print('✅ Perfil actualizado completamente');
       notifyListeners();
     } catch (e) {

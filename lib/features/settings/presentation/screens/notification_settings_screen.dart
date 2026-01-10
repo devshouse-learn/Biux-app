@@ -267,11 +267,11 @@ class _NotificationSettingsScreenState
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? ColorTokens.primary30.withOpacity(0.1)
-                      : ColorTokens.primary30.withOpacity(0.05),
+                      ? ColorTokens.primary30.withValues(alpha: 0.1)
+                      : ColorTokens.primary30.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: ColorTokens.primary30.withOpacity(0.2),
+                    color: ColorTokens.primary30.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
@@ -314,7 +314,10 @@ class _NotificationSettingsScreenState
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: enabled
-              ? [ColorTokens.primary30, ColorTokens.primary30.withOpacity(0.7)]
+              ? [
+                  ColorTokens.primary30,
+                  ColorTokens.primary30.withValues(alpha: 0.7),
+                ]
               : [Colors.grey.shade600, Colors.grey.shade700],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -323,8 +326,8 @@ class _NotificationSettingsScreenState
         boxShadow: [
           BoxShadow(
             color: enabled
-                ? ColorTokens.primary30.withOpacity(0.3)
-                : Colors.grey.withOpacity(0.3),
+                ? ColorTokens.primary30.withValues(alpha: 0.3)
+                : Colors.grey.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -335,7 +338,7 @@ class _NotificationSettingsScreenState
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -361,7 +364,7 @@ class _NotificationSettingsScreenState
                 Text(
                   enabled ? 'Activadas' : 'Desactivadas',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 14,
                   ),
                 ),
@@ -371,10 +374,22 @@ class _NotificationSettingsScreenState
           Switch(
             value: enabled,
             onChanged: provider.togglePushNotifications,
-            activeColor: Colors.white,
-            activeTrackColor: Colors.white.withOpacity(0.5),
-            inactiveThumbColor: Colors.white70,
-            inactiveTrackColor: Colors.white.withOpacity(0.3),
+            thumbColor: WidgetStateProperty.resolveWith<Color>((
+              Set<WidgetState> states,
+            ) {
+              if (states.contains(WidgetState.selected)) {
+                return Colors.white;
+              }
+              return Colors.white70;
+            }),
+            trackColor: WidgetStateProperty.resolveWith<Color>((
+              Set<WidgetState> states,
+            ) {
+              if (states.contains(WidgetState.selected)) {
+                return Colors.white.withValues(alpha: 0.5);
+              }
+              return Colors.white.withValues(alpha: 0.3);
+            }),
           ),
         ],
       ),
@@ -421,7 +436,7 @@ class _NotificationSettingsScreenState
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.15),
+                color: iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: iconColor, size: 24),
@@ -453,7 +468,14 @@ class _NotificationSettingsScreenState
             Switch(
               value: value,
               onChanged: enabled ? onChanged : null,
-              activeColor: ColorTokens.primary30,
+              thumbColor: WidgetStateProperty.resolveWith<Color>((
+                Set<WidgetState> states,
+              ) {
+                if (states.contains(WidgetState.selected)) {
+                  return ColorTokens.primary30;
+                }
+                return Colors.grey;
+              }),
             ),
           ],
         ),

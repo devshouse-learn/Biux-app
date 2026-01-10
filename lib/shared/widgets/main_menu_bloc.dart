@@ -1,4 +1,4 @@
-﻿import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/router_path.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/members/data/models/user_membership.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
@@ -22,13 +22,13 @@ class MainMenuBloc extends ChangeNotifier {
     });
   }
 
-  Future<void> signOut() async{
+  Future<void> signOut() async {
     await authenticationRepository.signOut();
     notifyListeners();
   }
 
   Future<void> getUser() async {
-    String? userId =  AuthenticationRepository().getUserId;
+    String? userId = AuthenticationRepository().getUserId;
     final dataUser = await UserFirebaseRepository().getUserId(userId);
     user = dataUser;
     notifyListeners();

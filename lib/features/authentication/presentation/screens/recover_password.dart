@@ -58,45 +58,41 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                 Stack(
                   children: [
                     Container(
-                      padding: EdgeInsets.only(
-                        top: 0,
-                        left: 0,
-                      ),
+                      padding: EdgeInsets.only(top: 0, left: 0),
                       height: 150,
                       width: 400,
-                      child: Stack(children: <Widget>[
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 10,
-                                top: 20,
-                              ),
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.arrow_back_outlined,
-                                  size: 30,
-                                  color: ColorTokens.neutral100,
+                      child: Stack(
+                        children: <Widget>[
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 10,
+                                  top: 20,
                                 ),
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
+                                child: GestureDetector(
+                                  child: Icon(
+                                    Icons.arrow_back_outlined,
+                                    size: 30,
+                                    color: ColorTokens.neutral100,
+                                  ),
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
                               ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(
-                                top: 20,
-                                left: 10,
+                              Container(
+                                margin: EdgeInsets.only(top: 20, left: 10),
+                                child: Text(
+                                  AppStrings.recoverPassword,
+                                  textAlign: TextAlign.center,
+                                  style: Styles.accentTextThemeWhite,
+                                ),
                               ),
-                              child: Text(
-                                AppStrings.recoverPassword,
-                                textAlign: TextAlign.center,
-                                style: Styles.accentTextThemeWhite,
-                              ),
-                            ),
-                          ],
-                        )
-                      ]),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 65),
@@ -114,8 +110,9 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                     child: Card(
                                       color: ColorTokens.neutral100,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0),
+                                        borderRadius: BorderRadius.circular(
+                                          16.0,
+                                        ),
                                       ),
                                       child: Column(
                                         mainAxisAlignment:
@@ -146,58 +143,66 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                                   Icons.email,
                                                   color: ColorTokens.neutral60,
                                                 ),
-                                                fillColor: ColorTokens.neutral100,
+                                                fillColor:
+                                                    ColorTokens.neutral100,
                                                 enabledBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: ColorTokens.neutral60,
-                                                    width: 1,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(45),
-                                                ),
+                                                      borderSide: BorderSide(
+                                                        color: ColorTokens
+                                                            .neutral60,
+                                                        width: 1,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            45,
+                                                          ),
+                                                    ),
                                                 filled: true,
                                                 contentPadding:
                                                     EdgeInsets.fromLTRB(
-                                                  10.0,
-                                                  15.0,
-                                                  20.0,
-                                                  15.0,
-                                                ),
+                                                      10.0,
+                                                      15.0,
+                                                      20.0,
+                                                      15.0,
+                                                    ),
                                                 hintText: AppStrings.enterGmail,
                                                 errorBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: ColorTokens.neutral60,
+                                                    color:
+                                                        ColorTokens.neutral60,
                                                   ),
                                                   borderRadius:
                                                       BorderRadius.circular(15),
                                                 ),
                                                 focusedErrorBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: ColorTokens.neutral60,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
+                                                      borderSide: BorderSide(
+                                                        color: ColorTokens
+                                                            .neutral60,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            15,
+                                                          ),
+                                                    ),
                                                 focusedBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: ColorTokens.neutral60,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(
-                                                      45,
+                                                      borderSide: BorderSide(
+                                                        color: ColorTokens
+                                                            .neutral60,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                            Radius.circular(45),
+                                                          ),
                                                     ),
-                                                  ),
-                                                ),
                                                 hintStyle:
                                                     Styles.sizedBoxHintStyle,
                                               ),
                                               validator: (value) {
                                                 if (emailController
-                                                    .text.isEmpty) {
+                                                    .text
+                                                    .isEmpty) {
                                                   return '';
                                                 } else {
                                                   return null;
@@ -225,14 +230,14 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                   borderRadius: BorderRadius.circular(55.0),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(60.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: ColorTokens.neutral100,
-                                            spreadRadius: 10,
-                                          )
-                                        ]),
+                                      borderRadius: BorderRadius.circular(60.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: ColorTokens.neutral100,
+                                          spreadRadius: 10,
+                                        ),
+                                      ],
+                                    ),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
@@ -276,8 +281,9 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                           style: Styles.advertisingTitle,
                                         ),
                                       );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(snackBar);
                                     });
                                   } else {
                                     final snackBar = SnackBar(
@@ -293,8 +299,9 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                         style: Styles.advertisingTitle,
                                       ),
                                     );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(snackBar);
                                     Future.delayed(
                                       Duration(seconds: 3),
                                       () async {},
@@ -316,8 +323,9 @@ class _RecoverPasswordState extends State<RecoverPassword> {
                                       style: Styles.advertisingTitle,
                                     ),
                                   );
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(snackBar);
                                 }
                               },
                             ),
@@ -347,5 +355,3 @@ class _RecoverPasswordState extends State<RecoverPassword> {
     );
   }
 }
-
-

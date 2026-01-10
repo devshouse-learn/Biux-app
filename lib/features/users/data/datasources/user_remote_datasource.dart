@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 
 // Remote Data Source Interface for Users
 abstract class UserRemoteDataSource {
@@ -8,6 +9,8 @@ abstract class UserRemoteDataSource {
   Future<UserModel> createUser(Map<String, dynamic> userData);
   Future<UserModel> updateUser(String id, Map<String, dynamic> userData);
   Future<void> deleteUser(String id);
+  Future<void> updateUserRole(String userId, UserRole newRole);
+  Future<void> toggleAutorizacionAdmin(String userId, bool autorizado);
 }
 
 // Implementation of Remote Data Source using Firestore
@@ -116,6 +119,31 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       await _firestore.collection('usuarios').doc(id).delete();
     } catch (e) {
       print('Error deleting user: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateUserRole(String userId, UserRole newRole) async {
+    try {
+      await _firestore.collection('usuarios').doc(userId).update({
+        'userRole': newRole.toString().split('.').last,
+        'isAdmin': newRole == UserRole.admin,
+      });
+    } catch (e) {
+      print('Error updating user role: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> toggleAutorizacionAdmin(String userId, bool autorizado) async {
+    try {
+      await _firestore.collection('usuarios').doc(userId).update({
+        'autorizadoPorAdmin': autorizado,
+      });
+    } catch (e) {
+      print('Error toggling admin authorization: $e');
       rethrow;
     }
   }

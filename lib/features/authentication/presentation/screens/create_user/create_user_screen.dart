@@ -67,10 +67,7 @@ class CreateUserScreen extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(
-                        top: 20,
-                        left: 15,
-                      ),
+                      margin: const EdgeInsets.only(top: 20, left: 15),
                       child: Text(
                         AppStrings.welcomePart1,
                         textAlign: TextAlign.center,
@@ -78,23 +75,17 @@ class CreateUserScreen extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.only(
-                        top: 20,
-                        left: 5,
-                      ),
+                      margin: const EdgeInsets.only(top: 20, left: 5),
                       child: Text(
                         AppStrings.welcomePart2,
                         textAlign: TextAlign.center,
                         style: Styles.stackWhite,
                       ),
-                    )
+                    ),
                   ],
                 ),
                 Container(
-                  margin: const EdgeInsets.only(
-                    top: 45,
-                    left: 15,
-                  ),
+                  margin: const EdgeInsets.only(top: 45, left: 15),
                   child: Text(
                     AppStrings.signUpToRoll,
                     textAlign: TextAlign.center,
@@ -110,21 +101,15 @@ class CreateUserScreen extends StatelessWidget {
                         child: Center(
                           child: Container(
                             height: 600,
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
                             child: Card(
                               color: ColorTokens.neutral100,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  16.0,
-                                ),
+                                borderRadius: BorderRadius.circular(16.0),
                               ),
                               child: Column(
                                 children: [
-                                  const SizedBox(
-                                    height: 70,
-                                  ),
+                                  const SizedBox(height: 70),
                                   TexFieldWidget(
                                     obscureText: false,
                                     focusNode: FocusNode(),
@@ -143,7 +128,8 @@ class CreateUserScreen extends StatelessWidget {
                                   ),
                                   TexFieldWidget(
                                     obscureText: false,
-                                    color: bloc.validateColor1 ==
+                                    color:
+                                        bloc.validateColor1 ==
                                             AppStrings.validatedText
                                         ? ColorTokens.error50
                                         : ColorTokens.neutral0,
@@ -166,7 +152,8 @@ class CreateUserScreen extends StatelessWidget {
                                     obscureText: false,
                                     focusNode: FocusNode(),
                                     nameController: emailController,
-                                    color: bloc.validateColor2 ==
+                                    color:
+                                        bloc.validateColor2 ==
                                             AppStrings.validatedText
                                         ? ColorTokens.error50
                                         : ColorTokens.neutral0,
@@ -176,10 +163,12 @@ class CreateUserScreen extends StatelessWidget {
                                       color: ColorTokens.neutral60,
                                     ),
                                     validator: (value) {
-                                      if (!value!
-                                              .contains(AppStrings.gmailText) &&
+                                      if (!value!.contains(
+                                            AppStrings.gmailText,
+                                          ) &&
                                           !value.contains(
-                                              AppStrings.hotmailText) &&
+                                            AppStrings.hotmailText,
+                                          ) &&
                                           !value.contains(
                                             AppStrings.outlookText,
                                           )) {
@@ -234,14 +223,13 @@ class CreateUserScreen extends StatelessWidget {
                                           Icons.room,
                                           color: ColorTokens.neutral60,
                                         ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
+                                        SizedBox(width: 10),
                                         Expanded(
                                           child: DropdownButton<String>(
                                             value: bloc.dropdownValueCity,
                                             isExpanded: true,
-                                            dropdownColor: ColorTokens.neutral100,
+                                            dropdownColor:
+                                                ColorTokens.neutral100,
                                             style: Styles.accentTextThemeBlack,
                                             icon: const Icon(
                                               Icons.keyboard_arrow_down,
@@ -257,14 +245,17 @@ class CreateUserScreen extends StatelessWidget {
                                               );
                                             },
                                             items: bloc.listCities
-                                                .map<DropdownMenuItem<String>>(
-                                              (City value) {
-                                                return DropdownMenuItem<String>(
-                                                  value: value.name,
-                                                  child: Text(value.name),
-                                                );
-                                              },
-                                            ).toList(),
+                                                .map<DropdownMenuItem<String>>((
+                                                  City value,
+                                                ) {
+                                                  return DropdownMenuItem<
+                                                    String
+                                                  >(
+                                                    value: value.name,
+                                                    child: Text(value.name),
+                                                  );
+                                                })
+                                                .toList(),
                                           ),
                                         ),
                                       ],
@@ -316,22 +307,33 @@ class CreateUserScreen extends StatelessWidget {
                                   ),
                                   Theme(
                                     data: ThemeData(
-                                      unselectedWidgetColor: ColorTokens.neutral0,
+                                      unselectedWidgetColor:
+                                          ColorTokens.neutral0,
                                     ),
                                     child: CheckboxListTile(
                                       title: Text(
                                         AppStrings.termsConditions
                                             .toUpperCase(),
-                                        style:
-                                            Styles.rowGestureDetector.copyWith(
-                                          color: ColorTokens.neutral0,
-                                        ),
+                                        style: Styles.rowGestureDetector
+                                            .copyWith(
+                                              color: ColorTokens.neutral0,
+                                            ),
                                       ),
                                       value: bloc.isChecked,
                                       onChanged: (newValue) {
                                         bloc.changeChecked(newValue!);
                                       },
-                                      activeColor: ColorTokens.secondary50,
+                                      fillColor:
+                                          WidgetStateProperty.resolveWith<
+                                            Color
+                                          >((Set<WidgetState> states) {
+                                            if (states.contains(
+                                              WidgetState.selected,
+                                            )) {
+                                              return ColorTokens.secondary50;
+                                            }
+                                            return ColorTokens.neutral0;
+                                          }),
                                       controlAffinity:
                                           ListTileControlAffinity.leading,
                                     ),
@@ -358,7 +360,7 @@ class CreateUserScreen extends StatelessWidget {
                                     BoxShadow(
                                       color: ColorTokens.neutral100,
                                       spreadRadius: 10,
-                                    )
+                                    ),
                                   ],
                                 ),
                                 child: Container(
@@ -390,19 +392,17 @@ class CreateUserScreen extends StatelessWidget {
                               bloc.isChecked) {
                             bloc.changeLoading(true);
                             City citySeleted = City();
-                            bloc.listCities.forEach(
-                              (element) {
-                                if (element.name == bloc.dropdownValueCity) {
-                                  citySeleted = element;
-                                }
-                              },
-                            );
+                            bloc.listCities.forEach((element) {
+                              if (element.name == bloc.dropdownValueCity) {
+                                citySeleted = element;
+                              }
+                            });
                             createUser(
                               BiuxUser(
                                 userName: userNameController.text,
                                 modality: [
                                   AppStrings.urbanoText.toLowerCase(),
-                                  AppStrings.rutaText.toLowerCase()
+                                  AppStrings.rutaText.toLowerCase(),
                                 ],
                                 premium: false,
                                 cityId: citySeleted,
@@ -475,21 +475,14 @@ class CreateUserScreen extends StatelessWidget {
                                       )
                                     : InkWell(
                                         child: Container(
-                                          alignment: (Alignment(
-                                            -1.0,
-                                            2.5,
-                                          )),
+                                          alignment: (Alignment(-1.0, 2.5)),
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.all(
-                                              const Radius.circular(
-                                                80.0,
-                                              ),
+                                              const Radius.circular(80.0),
                                             ),
                                             image: DecorationImage(
                                               fit: BoxFit.cover,
-                                              image: FileImage(
-                                                bloc.image,
-                                              ),
+                                              image: FileImage(bloc.image),
                                             ),
                                           ),
                                         ),
@@ -538,16 +531,17 @@ class CreateUserScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
   void createUser(
-      BiuxUser user, CreateUserBloc bloc, BuildContext context) async {
+    BiuxUser user,
+    CreateUserBloc bloc,
+    BuildContext context,
+  ) async {
     try {
       final userRepeted = await bloc.getValidationUserName(
         userNameController.text,
@@ -559,21 +553,16 @@ class CreateUserScreen extends StatelessWidget {
           bloc.replacevalidateColor2(AppStrings.novalidoText2);
           if (response.statusCode == 200) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBarUtils.customSnackBar(
-                content: AppStrings.biuxUserText,
-              ),
+              SnackBarUtils.customSnackBar(content: AppStrings.biuxUserText),
             );
             String id = response.message;
             // Analitycs.sendSignUp(id); // TODO: Migrate analytics
             await bloc.uploadPhoto(id);
-            Future.delayed(
-              Duration(seconds: 3),
-              () async {
-                if (context.mounted) {
-                  context.go(AppRoutes.mainMenu);
-                }
-              },
-            );
+            Future.delayed(Duration(seconds: 3), () async {
+              if (context.mounted) {
+                context.go(AppRoutes.mainMenu);
+              }
+            });
           } else {
             bloc.changeLoading(false);
             bloc.replacevalidateColor2(AppStrings.validatedText);
@@ -614,5 +603,3 @@ class CreateUserScreen extends StatelessWidget {
     }
   }
 }
-
-

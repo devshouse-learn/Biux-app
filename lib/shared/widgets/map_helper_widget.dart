@@ -18,16 +18,12 @@ class MapHelper {
     String url, {
     required int targetWidth,
   }) async {
-
     final File markerImageFile = await DefaultCacheManager().getSingleFile(url);
 
     Uint8List markerImageBytes = await markerImageFile.readAsBytes();
 
-    markerImageBytes = await _resizeImageBytes(
-      markerImageBytes,
-      targetWidth,
-    );
-      return BitmapDescriptor.fromBytes(markerImageBytes);
+    markerImageBytes = await _resizeImageBytes(markerImageBytes, targetWidth);
+    return BitmapDescriptor.bytes(markerImageBytes);
   }
 
   static Future<BitmapDescriptor> _getClusterMarker(
@@ -36,7 +32,6 @@ class MapHelper {
     Color textColor,
     int width,
   ) async {
-
     final PictureRecorder pictureRecorder = PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
     final Paint paint = Paint()..color = clusterColor;
@@ -46,16 +41,9 @@ class MapHelper {
 
     final double radius = width / 2;
 
-    canvas.drawCircle(
-      Offset(radius, radius),
-      radius,
-      paint,
-    );
+    canvas.drawCircle(Offset(radius, radius), radius, paint);
 
-    CircleAvatar(
-      backgroundColor: ColorTokens.warning50,
-      maxRadius: radius,
-    );
+    CircleAvatar(backgroundColor: ColorTokens.warning50, maxRadius: radius);
 
     textPainter.text = TextSpan(
       text: clusterSize.toString(),
@@ -72,13 +60,11 @@ class MapHelper {
     );
 
     final image = await pictureRecorder.endRecording().toImage(
-          radius.toInt() * 2,
-          radius.toInt() * 2,
-        );
-    final data = await image.toByteData(format: ImageByteFormat.png);
-    return BitmapDescriptor.fromBytes(
-      data!.buffer.asUint8List(),
+      radius.toInt() * 2,
+      radius.toInt() * 2,
     );
+    final data = await image.toByteData(format: ImageByteFormat.png);
+    return BitmapDescriptor.bytes(data!.buffer.asUint8List());
   }
 
   static Future<Uint8List> _resizeImageBytes(
@@ -101,7 +87,6 @@ class MapHelper {
     int minZoom,
     int maxZoom,
   ) async {
-
     return Fluster<MapMarker>(
       minZoom: minZoom,
       maxZoom: maxZoom,
@@ -109,12 +94,7 @@ class MapHelper {
       extent: 2048,
       nodeSize: 64,
       points: markers,
-      createCluster: (
-        BaseCluster cluster,
-        double lng,
-        double lat,
-      ) =>
-          MapMarker(
+      createCluster: (BaseCluster cluster, double lng, double lat) => MapMarker(
         id: cluster.id.toString(),
         position: LatLng(lat, lng),
         isCluster: cluster.isCluster,
@@ -132,20 +112,20 @@ class MapHelper {
     Color clusterTextColor,
     int clusterWidth,
   ) {
-
-    return Future.wait(clusterManager.clusters(
-        [-180, -85, 180, 85], currentZoom.toInt()).map((mapMarker) async {
-      if (mapMarker.isCluster == true) {
-        mapMarker.icon = await _getClusterMarker(
-          mapMarker.pointsSize ?? 0,
-          clusterColor,
-          clusterTextColor,
-          clusterWidth,
-        );
-      }
-      return mapMarker.toMarker();
-    }).toList());
+    return Future.wait(
+      clusterManager.clusters([-180, -85, 180, 85], currentZoom.toInt()).map((
+        mapMarker,
+      ) async {
+        if (mapMarker.isCluster == true) {
+          mapMarker.icon = await _getClusterMarker(
+            mapMarker.pointsSize ?? 0,
+            clusterColor,
+            clusterTextColor,
+            clusterWidth,
+          );
+        }
+        return mapMarker.toMarker();
+      }).toList(),
+    );
   }
 }
-
-

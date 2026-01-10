@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/stories/data/models/story.dart';
@@ -18,21 +18,16 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     required List<File> listFile,
   }) async {
     try {
-      final result = await firestore.collection(collection).add(
-            story.toJson(),
-          );
-      
-      final listImages = await uploadStory(
-        id: result.id,
-        listFile: listFile,
-      );
-      
+      final result = await firestore.collection(collection).add(story.toJson());
+
+      final listImages = await uploadStory(id: result.id, listFile: listFile);
+
       if (listImages.isEmpty) {
         // Si no se subieron imágenes, eliminar el documento
         await firestore.collection(collection).doc(result.id).delete();
         return false;
       }
-      
+
       final updateResult = await updateStory(
         id: result.id,
         story: Story(
@@ -44,7 +39,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           listReactions: story.listReactions,
         ),
       );
-      
+
       return updateResult;
     } catch (e) {
       print('Error en createStory: $e');
@@ -63,16 +58,9 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
     try {
       final result = await firestore
           .collection(collection)
-          .orderBy(
-            'creationDate',
-            descending: true,
-          )
+          .orderBy('creationDate', descending: true)
           .get();
-      return result.docs
-          .map(
-            (e) => Story.fromJson(e.data(), e.id),
-          )
-          .toList();
+      return result.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
     } catch (e) {
       return [];
     }
@@ -85,7 +73,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   }) async {
     List<String> listUrl = [];
     int photoIndex = 1;
-    
+
     for (var element in listFile) {
       final image = await uploadImageStory(
         nameUrl: 'photo$photoIndex',
@@ -110,9 +98,11 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       if (bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.megaBytes ||
           bytes.replaceRange(0, bytes.length - 2, '') == AppStrings.kiloBytes &&
               int.parse(
-                      bytes.replaceRange(bytes.length - 2, bytes.length, '')) >=
-                  200) fileUrl = await compressImage(fileUrl, bytes);
-      
+                    bytes.replaceRange(bytes.length - 2, bytes.length, ''),
+                  ) >=
+                  200)
+        fileUrl = await compressImage(fileUrl, bytes);
+
       final userId = AuthenticationRepository().getUserId;
       Reference ref = FirebaseStorage.instance.ref('$userId/$id/$nameUrl');
       UploadTask uploadTask = ref.putFile(fileUrl);
@@ -159,14 +149,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           .collection(collection)
           .where('user.id', isEqualTo: id)
           .get();
-      return response.docs
-          .map(
-            (e) => Story.fromJson(
-              e.data(),
-              e.id,
-            ),
-          )
-          .toList();
+      return response.docs.map((e) => Story.fromJson(e.data(), e.id)).toList();
     } catch (e) {
       return List.empty();
     }

@@ -47,8 +47,10 @@ class DefaultFirebaseOptions {
     projectId: 'biux-1576614678644',
     databaseURL: 'https://biux-1576614678644-default-rtdb.firebaseio.com',
     storageBucket: 'biux-1576614678644.appspot.com',
-    androidClientId: '1047544274797-6c44qs41vma258e6fbt4rnvm3i5uqjql.apps.googleusercontent.com',
-    iosClientId: '1047544274797-kfd5pkg38smus0p9m6l81eq2lufq24ni.apps.googleusercontent.com',
+    androidClientId:
+        '1047544274797-6c44qs41vma258e6fbt4rnvm3i5uqjql.apps.googleusercontent.com',
+    iosClientId:
+        '1047544274797-kfd5pkg38smus0p9m6l81eq2lufq24ni.apps.googleusercontent.com',
     iosBundleId: 'com.example.biux',
   );
 
@@ -81,8 +83,10 @@ class DefaultFirebaseOptions {
     projectId: 'biux-1576614678644',
     databaseURL: 'https://biux-1576614678644-default-rtdb.firebaseio.com',
     storageBucket: 'biux-1576614678644.appspot.com',
-    androidClientId: '1047544274797-6c44qs41vma258e6fbt4rnvm3i5uqjql.apps.googleusercontent.com',
-    iosClientId: '1047544274797-bk26jufigkthtcea5rht0mq1d5nv8vca.apps.googleusercontent.com',
+    androidClientId:
+        '1047544274797-6c44qs41vma258e6fbt4rnvm3i5uqjql.apps.googleusercontent.com',
+    iosClientId:
+        '1047544274797-bk26jufigkthtcea5rht0mq1d5nv8vca.apps.googleusercontent.com',
     iosBundleId: 'com.example.biux2',
   );
 
@@ -94,5 +98,4 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://biux-1576614678644-default-rtdb.firebaseio.com',
     storageBucket: 'biux-1576614678644.appspot.com',
   );
-
 }

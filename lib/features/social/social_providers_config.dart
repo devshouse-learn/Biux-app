@@ -1,18 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 // Auth
 import '../authentication/presentation/providers/auth_provider.dart'
     as app_auth;
-
-// Domain
-import 'domain/repositories/notifications_repository.dart';
-import 'domain/repositories/likes_repository.dart';
-import 'domain/repositories/comments_repository.dart';
-import 'domain/repositories/attendees_repository.dart';
-import '../users/domain/repositories/user_repository.dart';
 
 // Data
 import 'data/repositories/notifications_repository_impl.dart';

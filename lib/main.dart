@@ -38,10 +38,23 @@ import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.da
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
+import 'package:biux/features/shop/presentation/providers/seller_request_provider.dart';
 import 'package:biux/features/shop/data/repositories/product_repository_impl.dart';
 import 'package:biux/features/shop/data/repositories/order_repository_impl.dart';
 import 'package:biux/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:biux/features/shop/data/datasources/order_remote_datasource.dart';
+
+// Store (Tienda) imports
+import 'package:biux/features/store/data/repositories/product_repository_impl.dart'
+    as store_repo;
+import 'package:biux/features/store/domain/usecases/create_product_usecase.dart';
+import 'package:biux/features/store/domain/usecases/get_products_usecase.dart';
+import 'package:biux/features/store/domain/usecases/update_product_usecase.dart';
+import 'package:biux/features/store/domain/usecases/delete_product_usecase.dart';
+import 'package:biux/features/store/presentation/providers/product_provider.dart';
+import 'package:biux/features/store/presentation/providers/cart_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:biux/features/social/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
@@ -141,7 +154,7 @@ void main() async {
             );
           },
         ),
-        
+
         // Shop Provider
         ChangeNotifierProvider(
           create: (_) => ShopProvider(
@@ -153,7 +166,38 @@ void main() async {
             ),
           ),
         ),
-        
+
+        // Seller Request Provider (para gestionar solicitudes de vendedores)
+        ChangeNotifierProvider(
+          create: (_) => SellerRequestProvider()..initialize(),
+        ),
+
+        // Store (Tienda Online) Providers
+        ChangeNotifierProvider(
+          create: (_) {
+            final productRepository = store_repo.ProductRepositoryImpl(
+              FirebaseFirestore.instance,
+            );
+            return ProductProvider(
+              getAllProductsUseCase: GetAllProductsUseCase(productRepository),
+              getProductsByCategoryUseCase: GetProductsByCategoryUseCase(
+                productRepository,
+              ),
+              getProductsBySellerUseCase: GetProductsBySellerUseCase(
+                productRepository,
+              ),
+              getFeaturedProductsUseCase: GetFeaturedProductsUseCase(
+                productRepository,
+              ),
+              searchProductsUseCase: SearchProductsUseCase(productRepository),
+              createProductUseCase: CreateProductUseCase(productRepository),
+              updateProductUseCase: UpdateProductUseCase(productRepository),
+              deleteProductUseCase: DeleteProductUseCase(productRepository),
+            );
+          },
+        ),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+
         ChangeNotifierProvider(create: (_) => ExperienceProvider()),
         ChangeNotifierProvider(
           create: (_) => StoryGroupsProvider(

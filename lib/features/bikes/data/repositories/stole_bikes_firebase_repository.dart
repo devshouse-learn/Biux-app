@@ -20,9 +20,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
           .collection(collection)
           .where('id', isEqualTo: id.toString())
           .get();
-      return StoleBikes.fromjson(
-        response.docs.first.data(),
-      );
+      return StoleBikes.fromjson(response.docs.first.data());
     } catch (e) {
       return StoleBikes();
     }
@@ -31,16 +29,14 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
   @override
   Future createDatesStoleBikes(StoleBikes stoleBikes) async {
     try {
-      await firestore.collection(collection).add(stoleBikes.toJson()).then(
-        (DocumentReference doc) {
-          String docId = doc.id;
-          firestore.collection(collection).doc(docId).update(
-            {
-              AppStrings.idText: docId,
-            },
-          );
-        },
-      );
+      await firestore.collection(collection).add(stoleBikes.toJson()).then((
+        DocumentReference doc,
+      ) {
+        String docId = doc.id;
+        firestore.collection(collection).doc(docId).update({
+          AppStrings.idText: docId,
+        });
+      });
     } catch (e) {}
   }
 

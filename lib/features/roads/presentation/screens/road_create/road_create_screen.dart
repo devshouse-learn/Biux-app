@@ -1,4 +1,3 @@
-
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/router_path.dart';
@@ -36,10 +35,7 @@ class RoadCreateScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         centerTitle: true,
-        title: Text(
-          AppStrings.createRoadText,
-          style: Styles.mainMenuTextBiux,
-        ),
+        title: Text(AppStrings.createRoadText, style: Styles.mainMenuTextBiux),
       ),
       body: Stack(
         alignment: Alignment.center,
@@ -63,9 +59,7 @@ class RoadCreateScreen extends StatelessWidget {
               key: _formKey,
               child: ListView(
                 children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   TextFormFieldBiuxWidget(
                     controller: controllerRouteName,
                     text: AppStrings.routeNameText,
@@ -79,10 +73,7 @@ class RoadCreateScreen extends StatelessWidget {
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
-                      child: Image.asset(
-                        Images.kRouteNameImage,
-                        height: 15,
-                      ),
+                      child: Image.asset(Images.kRouteNameImage, height: 15),
                     ),
                   ),
                   TextFormFieldBiuxWidget(
@@ -98,10 +89,7 @@ class RoadCreateScreen extends StatelessWidget {
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
-                      child: Image.asset(
-                        Images.kPointMeetingImage,
-                        height: 15,
-                      ),
+                      child: Image.asset(Images.kPointMeetingImage, height: 15),
                     ),
                   ),
                   TextFormFieldBiuxWidget(
@@ -118,10 +106,7 @@ class RoadCreateScreen extends StatelessWidget {
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
-                      child: Image.asset(
-                        Images.kLocationGreyImage,
-                        height: 15,
-                      ),
+                      child: Image.asset(Images.kLocationGreyImage, height: 15),
                     ),
                     onTap: () async {
                       final result = await Navigator.pushNamed(
@@ -137,30 +122,19 @@ class RoadCreateScreen extends StatelessWidget {
                   ),
                   Container(
                     height: 48,
-                    padding: const EdgeInsets.only(
-                      left: 5,
-                    ),
+                    padding: const EdgeInsets.only(left: 5),
                     margin: const EdgeInsets.symmetric(
                       horizontal: 15,
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: ColorTokens.neutral60,
-                      ),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15),
-                      ),
+                      border: Border.all(color: ColorTokens.neutral60),
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
                     child: Row(
                       children: [
-                        Image.asset(
-                          Images.kImageCity,
-                          height: 30,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
+                        Image.asset(Images.kImageCity, height: 30),
+                        SizedBox(width: 10),
                         Expanded(
                           child: DropdownButton<String>(
                             value: bloc.dropdownValueCity.name,
@@ -176,19 +150,16 @@ class RoadCreateScreen extends StatelessWidget {
                             ),
                             elevation: 16,
                             onChanged: (String? value) {
-                              bloc.replaceDropdownValueCity(
-                                value!,
-                              );
+                              bloc.replaceDropdownValueCity(value!);
                             },
-                            items:
-                                bloc.listCities.map<DropdownMenuItem<String>>(
-                              (City value) {
-                                return DropdownMenuItem<String>(
-                                  value: value.name,
-                                  child: Text(value.name),
-                                );
-                              },
-                            ).toList(),
+                            items: bloc.listCities
+                                .map<DropdownMenuItem<String>>((City value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value.name,
+                                    child: Text(value.name),
+                                  );
+                                })
+                                .toList(),
                           ),
                         ),
                       ],
@@ -208,10 +179,7 @@ class RoadCreateScreen extends StatelessWidget {
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
-                      child: Image.asset(
-                        Images.kImageDistance,
-                        height: 15,
-                      ),
+                      child: Image.asset(Images.kImageDistance, height: 15),
                     ),
                   ),
                   TextFormFieldBiuxWidget(
@@ -228,10 +196,7 @@ class RoadCreateScreen extends StatelessWidget {
                     },
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(5),
-                      child: Image.asset(
-                        Images.kDateTimeImage,
-                        height: 10,
-                      ),
+                      child: Image.asset(Images.kDateTimeImage, height: 10),
                     ),
                     onTap: () async {
                       DateTime? pickedDate = await showDatePicker(
@@ -271,19 +236,12 @@ class RoadCreateScreen extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20.0,
-                    ),
+                    padding: const EdgeInsets.only(left: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          AppStrings.levelText,
-                          style: Styles.sizedBox,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        Text(AppStrings.levelText, style: Styles.sizedBox),
+                        const SizedBox(height: 10),
                         SmoothStarRating(
                           allowHalfRating: false,
                           starCount: 5,
@@ -314,8 +272,9 @@ class RoadCreateScreen extends StatelessWidget {
                   double distance = 0.0;
                   if (_formKey.currentState!.validate() &&
                       bloc.rating != 0.0 &&
-                      RegExp(AppStrings.validatorNumber)
-                          .hasMatch(controllerDistance.text)) {
+                      RegExp(
+                        AppStrings.validatorNumber,
+                      ).hasMatch(controllerDistance.text)) {
                     distance = double.parse(controllerDistance.text);
                     final road = Road(
                       cityId: bloc.dropdownValueCity.id,
@@ -334,8 +293,9 @@ class RoadCreateScreen extends StatelessWidget {
                         content: result
                             ? AppStrings.succesCreateRoadText
                             : AppStrings.errorCreateRoadText,
-                        backgroundColor:
-                            result ? ColorTokens.secondary50 : ColorTokens.error50,
+                        backgroundColor: result
+                            ? ColorTokens.secondary50
+                            : ColorTokens.error50,
                       ),
                     );
                     if (result) {
@@ -346,10 +306,11 @@ class RoadCreateScreen extends StatelessWidget {
                       SnackBarUtils.customSnackBar(
                         content: !_formKey.currentState!.validate()
                             ? AppStrings.validationCreateRoadText
-                            : !RegExp(AppStrings.validatorNumber)
-                                    .hasMatch(controllerDistance.text)
-                                ? AppStrings.advertDistance
-                                : '',
+                            : !RegExp(
+                                AppStrings.validatorNumber,
+                              ).hasMatch(controllerDistance.text)
+                            ? AppStrings.advertDistance
+                            : '',
                         backgroundColor: ColorTokens.error50,
                       ),
                     );
@@ -361,16 +322,9 @@ class RoadCreateScreen extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
-
-
-
-
-
-
-

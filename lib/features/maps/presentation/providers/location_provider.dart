@@ -75,8 +75,10 @@ class LocationProvider extends ChangeNotifier {
 
     try {
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 10),
+        locationSettings: LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
       );
 
       _currentPosition = position;

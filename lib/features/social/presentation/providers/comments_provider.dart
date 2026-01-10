@@ -4,12 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/comment_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 import '../../domain/repositories/notifications_repository.dart';
-import '../../domain/entities/notification_entity.dart';
 
 /// Provider para gestionar comentarios
 class CommentsProvider extends ChangeNotifier {
   final CommentsRepository _repository;
-  final NotificationsRepository _notificationsRepository;
   final String userId;
 
   // Variables para caché de datos del usuario
@@ -21,8 +19,7 @@ class CommentsProvider extends ChangeNotifier {
     required CommentsRepository repository,
     required NotificationsRepository notificationsRepository,
     required this.userId,
-  }) : _repository = repository,
-       _notificationsRepository = notificationsRepository;
+  }) : _repository = repository;
 
   /// Obtiene los datos del usuario desde Firestore (se ejecuta una sola vez)
   Future<void> _loadUserData() async {

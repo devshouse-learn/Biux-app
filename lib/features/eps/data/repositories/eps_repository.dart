@@ -17,13 +17,8 @@ class EpsRepository {
   }
 
   Future getEps() async {
-    var headers = {
-      HttpHeaders.contentTypeHeader: 'aplication/json',
-    };
-    var response = await http.get(
-      Uri.parse(urlBase),
-      headers: headers,
-    );
+    var headers = {HttpHeaders.contentTypeHeader: 'aplication/json'};
+    var response = await http.get(Uri.parse(urlBase), headers: headers);
     return response;
   }
 

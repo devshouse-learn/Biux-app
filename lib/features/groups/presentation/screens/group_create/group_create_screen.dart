@@ -292,13 +292,12 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       ),
                     ),
                   ),
-                  items:
-                      cityProvider.cities.map((city) {
-                        return DropdownMenuItem<CityModel>(
-                          value: city,
-                          child: Text(city.name),
-                        );
-                      }).toList(),
+                  items: cityProvider.cities.map((city) {
+                    return DropdownMenuItem<CityModel>(
+                      value: city,
+                      child: Text(city.name),
+                    );
+                  }).toList(),
                   onChanged: (CityModel? newValue) {
                     setState(() {
                       _selectedCity = newValue;
@@ -399,18 +398,17 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child:
-                    groupProvider.isLoading
-                        ? const CircularProgressIndicator(
-                          color: ColorTokens.neutral100,
-                        )
-                        : const Text(
-                          'Crear Grupo',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                child: groupProvider.isLoading
+                    ? const CircularProgressIndicator(
+                        color: ColorTokens.neutral100,
+                      )
+                    : const Text(
+                        'Crear Grupo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
               ),
             ),
           ],

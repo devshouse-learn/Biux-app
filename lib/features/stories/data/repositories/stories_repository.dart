@@ -14,8 +14,9 @@ class StoriesRepository {
     var response = await http.get(Uri.parse(url));
     Map responseData = json.decode(response.body);
     List storyJson = responseData["data"];
-    List<Story> stories =
-        storyJson.map((storyJson) => Story.fromJson(storyJson, storyJson)).toList();
+    List<Story> stories = storyJson
+        .map((storyJson) => Story.fromJson(storyJson, storyJson))
+        .toList();
 
     return stories;
   }
@@ -36,12 +37,13 @@ class StoriesRepository {
     try {
       var storyVoid = Story();
       var uriResponse = await http.post(
-          Uri.parse("https://biux-prod.ibacrea.com/api/v1/historias-item"),
-          body: jsonEncode(storyItem.toJson()),
-          headers: {
-            HttpHeaders.contentTypeHeader: 'application/json',
-            // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
-          });
+        Uri.parse("https://biux-prod.ibacrea.com/api/v1/historias-item"),
+        body: jsonEncode(storyItem.toJson()),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+        },
+      );
       if (uriResponse.statusCode == 200) {
       } else {
         return storyVoid;
@@ -50,19 +52,15 @@ class StoriesRepository {
     return null;
   }
 
-  Future reactionStory(
-    String userId,
-    String storyId,
-  ) async {
-    var uriResponse = await http.post(Uri.parse(URLREACTIONSTORY),
-        body: jsonEncode({
-          "userId": userId,
-          "storyId": storyId,
-        }),
-        headers: {
-          'Content-type': 'application/json',
-          // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
-        });
+  Future reactionStory(String userId, String storyId) async {
+    var uriResponse = await http.post(
+      Uri.parse(URLREACTIONSTORY),
+      body: jsonEncode({"userId": userId, "storyId": storyId}),
+      headers: {
+        'Content-type': 'application/json',
+        // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
+      },
+    );
     if (uriResponse.statusCode == 200) {
       json.decode(uriResponse.body);
       // int id = datal["id"];
@@ -72,20 +70,13 @@ class StoriesRepository {
     }
   }
 
-  Future uploadImageStory(
-    int id,
-    File image,
-  ) async {
+  Future uploadImageStory(int id, File image) async {
     Dio dio = new Dio();
     // dio.options.headers["content-Type"] = "multipart/form-data";
     // dio.options.headers["authorization"] = await LocalStorage().getToken();
-    FormData formData = FormData.fromMap(
-      {
-        "file": await MultipartFile.fromFile(
-          image.path,
-        ),
-      },
-    );
+    FormData formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(image.path),
+    });
     await dio.patch(
       'https://biux-prod.ibacrea.com/api/v1/historias-item/$id/subir-fotos',
       data: formData,

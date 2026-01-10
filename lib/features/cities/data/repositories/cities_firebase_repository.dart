@@ -11,18 +11,9 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
     try {
       final result = await firestore
           .collection(collectionCities)
-          .orderBy(
-            "name",
-            descending: false,
-          )
+          .orderBy("name", descending: false)
           .get();
-      return result.docs
-          .map(
-            (e) => City.fromJson(
-              json: e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => City.fromJson(json: e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -35,9 +26,7 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .collection(collectionCities)
           .where('id', isEqualTo: cityId)
           .get();
-      return City.fromJson(
-        json: response.docs.first.data(),
-      );
+      return City.fromJson(json: response.docs.first.data());
     } catch (e) {
       return City();
     }
@@ -50,9 +39,7 @@ class CitiesFirebaseRepository extends CitiesRepositoryAbstract {
           .collection(collectionCities)
           .where('id', isEqualTo: id)
           .get();
-      return City.fromJson(
-        json: result.docs.first.data(),
-      );
+      return City.fromJson(json: result.docs.first.data());
     } catch (e) {
       return City();
     }

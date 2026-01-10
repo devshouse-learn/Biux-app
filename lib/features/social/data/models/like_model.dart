@@ -1,5 +1,4 @@
 import '../../domain/entities/like_entity.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 /// Modelo de like para Firebase Realtime Database
 class LikeModel {

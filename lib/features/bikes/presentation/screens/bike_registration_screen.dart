@@ -30,14 +30,17 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        if (didPop) return;
+
         final bikeProvider = context.read<BikeProvider>();
         if (bikeProvider.currentStep > 0) {
           bikeProvider.previousStep();
-          return false;
+        } else {
+          Navigator.of(context).pop();
         }
-        return true;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -192,7 +195,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),

@@ -119,9 +119,9 @@ class _MediaButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           decoration: BoxDecoration(
-            border: Border.all(color: buttonColor.withOpacity(0.3)),
+            border: Border.all(color: buttonColor.withValues(alpha: 0.3)),
             borderRadius: BorderRadius.circular(8),
-            color: buttonColor.withOpacity(0.05),
+            color: buttonColor.withValues(alpha: 0.05),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

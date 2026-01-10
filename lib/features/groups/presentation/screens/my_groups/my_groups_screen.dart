@@ -41,7 +41,10 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
           labelColor: ColorTokens.neutral100,
           unselectedLabelColor: ColorTokens.neutral100.withValues(alpha: 0.7),
           indicatorColor: ColorTokens.neutral100,
-          tabs: [Tab(text: 'Miembro'), Tab(text: 'Administrados')],
+          tabs: [
+            Tab(text: 'Miembro'),
+            Tab(text: 'Administrados'),
+          ],
         ),
       ),
       body: Consumer<GroupProvider>(
@@ -198,21 +201,19 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     CircleAvatar(
                       radius: 20,
                       backgroundColor: ColorTokens.primary30,
-                      backgroundImage:
-                          group.logoUrl != null
-                              ? CachedNetworkImageProvider(
-                                group.logoUrl!,
-                                cacheManager: OptimizedCacheManager.instance,
-                              )
-                              : null,
-                      child:
-                          group.logoUrl == null
-                              ? Icon(
-                                Icons.group,
-                                color: ColorTokens.neutral100,
-                                size: 20,
-                              )
-                              : null,
+                      backgroundImage: group.logoUrl != null
+                          ? CachedNetworkImageProvider(
+                              group.logoUrl!,
+                              cacheManager: OptimizedCacheManager.instance,
+                            )
+                          : null,
+                      child: group.logoUrl == null
+                          ? Icon(
+                              Icons.group,
+                              color: ColorTokens.neutral100,
+                              size: 20,
+                            )
+                          : null,
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -345,21 +346,19 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     CircleAvatar(
                       radius: 20,
                       backgroundColor: ColorTokens.primary30,
-                      backgroundImage:
-                          group.logoUrl != null
-                              ? CachedNetworkImageProvider(
-                                group.logoUrl!,
-                                cacheManager: OptimizedCacheManager.instance,
-                              )
-                              : null,
-                      child:
-                          group.logoUrl == null
-                              ? Icon(
-                                Icons.group,
-                                color: ColorTokens.neutral100,
-                                size: 20,
-                              )
-                              : null,
+                      backgroundImage: group.logoUrl != null
+                          ? CachedNetworkImageProvider(
+                              group.logoUrl!,
+                              cacheManager: OptimizedCacheManager.instance,
+                            )
+                          : null,
+                      child: group.logoUrl == null
+                          ? Icon(
+                              Icons.group,
+                              color: ColorTokens.neutral100,
+                              size: 20,
+                            )
+                          : null,
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -465,46 +464,43 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   void _showLeaveGroupDialog(GroupModel group, GroupProvider provider) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Salir del grupo'),
-            content: Text(
-              '¿Estás seguro de que quieres salir del grupo "${group.name}"?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  final success = await provider.leaveGroup(group.id);
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Has salido del grupo'),
-                        backgroundColor: ColorTokens.success40,
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          provider.error ?? 'Error al salir del grupo',
-                        ),
-                        backgroundColor: ColorTokens.error50,
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorTokens.error50,
-                ),
-                child: Text('Salir'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text('Salir del grupo'),
+        content: Text(
+          '¿Estás seguro de que quieres salir del grupo "${group.name}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar'),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final success = await provider.leaveGroup(group.id);
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Has salido del grupo'),
+                    backgroundColor: ColorTokens.success40,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(provider.error ?? 'Error al salir del grupo'),
+                    backgroundColor: ColorTokens.error50,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.error50,
+            ),
+            child: Text('Salir'),
+          ),
+        ],
+      ),
     );
   }
 

@@ -73,9 +73,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     return Consumer<ExperienceCreatorProvider>(
       builder: (context, provider, child) {
         // 🔥 LÓGICA AUTOMÁTICA: Si se añaden medios y no estamos en modo fijo, cambiar a historia
-        if (!widget.isStoryMode && 
-            !widget.isPostMode && 
-            provider.mediaItems.isNotEmpty && 
+        if (!widget.isStoryMode &&
+            !widget.isPostMode &&
+            provider.mediaItems.isNotEmpty &&
             _contentType != 'story') {
           // Usar Future.microtask para evitar setState durante build
           Future.microtask(() {
@@ -86,7 +86,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             }
           });
         }
-        
+
         return Scaffold(
           backgroundColor: ColorTokens.neutral10,
           appBar: AppBar(
@@ -246,11 +246,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ? (_contentType == 'story'
                                   ? ColorTokens.primary50
                                   : ColorTokens.secondary50)
-                              .withOpacity(0.15)
+                              .withValues(alpha: 0.15)
                         : (_contentType == 'story'
                                   ? ColorTokens.primary50
                                   : ColorTokens.secondary50)
-                              .withOpacity(0.1),
+                              .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
                       width: 1.5,
@@ -258,11 +258,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                           ? (_contentType == 'story'
                                     ? ColorTokens.primary30
                                     : ColorTokens.secondary30)
-                                .withOpacity(0.6)
+                                .withValues(alpha: 0.6)
                           : (_contentType == 'story'
                                     ? ColorTokens.primary50
                                     : ColorTokens.secondary50)
-                                .withOpacity(0.5),
+                                .withValues(alpha: 0.5),
                     ),
                   ),
                   child: Row(
@@ -391,11 +391,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                   ? (_contentType == 'story'
                             ? ColorTokens.primary50
                             : ColorTokens.secondary50)
-                        .withOpacity(0.15)
+                        .withValues(alpha: 0.15)
                   : (_contentType == 'story'
                             ? ColorTokens.primary50
                             : ColorTokens.secondary50)
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 width: 1.5,
@@ -403,11 +403,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                     ? (_contentType == 'story'
                               ? ColorTokens.primary30
                               : ColorTokens.secondary30)
-                          .withOpacity(0.6)
+                          .withValues(alpha: 0.6)
                     : (_contentType == 'story'
                               ? ColorTokens.primary50
                               : ColorTokens.secondary50)
-                          .withOpacity(0.5),
+                          .withValues(alpha: 0.5),
               ),
             ),
             child: Row(
@@ -730,7 +730,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -763,7 +763,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: _contentType == 'story'
-                          ? ColorTokens.primary50.withOpacity(0.1)
+                          ? ColorTokens.primary50.withValues(alpha: 0.1)
                           : ColorTokens.neutral10,
                       border: Border.all(
                         color: _contentType == 'story'
@@ -811,7 +811,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: _contentType == 'post'
-                          ? ColorTokens.secondary50.withOpacity(0.1)
+                          ? ColorTokens.secondary50.withValues(alpha: 0.1)
                           : ColorTokens.neutral10,
                       border: Border.all(
                         color: _contentType == 'post'

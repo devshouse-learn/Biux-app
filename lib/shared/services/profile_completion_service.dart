@@ -87,8 +87,7 @@ class ProfileCompletionService {
       'dateBirth': 'fecha de nacimiento',
     };
 
-    final labels =
-        missingFields.map((f) => fieldLabels[f] ?? f).toList();
+    final labels = missingFields.map((f) => fieldLabels[f] ?? f).toList();
     return 'Por favor completa: ${labels.join(', ')}';
   }
 }

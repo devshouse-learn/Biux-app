@@ -49,10 +49,28 @@ import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
 import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
 
 // Shop imports
-import '../../../features/shop/presentation/screens/shop_screen_new.dart';
+import '../../../features/shop/presentation/screens/shop_screen_pro.dart';
 import '../../../features/shop/presentation/screens/product_detail_screen.dart';
 import '../../../features/shop/presentation/screens/cart_screen.dart';
 import '../../../features/shop/presentation/screens/admin_shop_screen.dart';
+import '../../../features/shop/presentation/screens/manage_sellers_screen.dart';
+import '../../../features/shop/presentation/screens/seller_requests_screen.dart';
+import '../../../features/shop/presentation/screens/delete_all_products_screen.dart';
+import '../../../features/shop/presentation/screens/favorites_screen.dart';
+import '../../../features/shop/presentation/screens/my_orders_screen.dart';
+
+// Store (Tienda Online) imports
+import '../../../features/store/presentation/screens/store_screen.dart';
+import '../../../features/store/presentation/screens/product_detail_screen.dart'
+    as store_detail;
+import '../../../features/store/presentation/screens/cart_screen.dart'
+    as store_cart;
+import '../../../features/store/presentation/screens/seller_dashboard_screen.dart';
+import '../../../features/store/presentation/screens/admin_dashboard_screen.dart';
+import '../../../features/store/domain/entities/product_entity.dart';
+
+// TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+// import '../../../features/shop/presentation/screens/qr_scanner_screen.dart';
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
@@ -123,7 +141,9 @@ String? _convertDeepLinkToRoute(String location) {
 
       // https://biux.devshouse.org/group/{groupId} → /groups/{groupId}
       if (uri.path.startsWith('/group/')) {
-        final groupId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+        final groupId = uri.pathSegments.length > 1
+            ? uri.pathSegments[1]
+            : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
           print('✅ Ruta convertida: $location → $newRoute');
@@ -148,7 +168,9 @@ String? _convertDeepLinkToRoute(String location) {
 
       // biux://ride/{rideId}
       if (uri.host == 'ride') {
-        final rideId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+        final rideId = uri.pathSegments.isNotEmpty
+            ? uri.pathSegments.first
+            : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
           print('✅ Ruta convertida: $location → $newRoute');
@@ -158,7 +180,9 @@ String? _convertDeepLinkToRoute(String location) {
 
       // biux://group/{groupId}
       if (uri.host == 'group') {
-        final groupId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+        final groupId = uri.pathSegments.isNotEmpty
+            ? uri.pathSegments.first
+            : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
           print('✅ Ruta convertida: $location → $newRoute');
@@ -168,7 +192,9 @@ String? _convertDeepLinkToRoute(String location) {
 
       // biux://user/{userId} o biux://user-profile/{userId}
       if (uri.host == 'user' || uri.host == 'user-profile') {
-        final userId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+        final userId = uri.pathSegments.isNotEmpty
+            ? uri.pathSegments.first
+            : null;
         if (userId != null && userId.isNotEmpty) {
           final newRoute = '/user-profile/$userId';
           print('✅ Ruta convertida: $location → $newRoute');
@@ -196,13 +222,13 @@ String? _guard(BuildContext context, GoRouterState state) {
   // EN WEB: Permitir acceso sin autenticación
   if (kIsWeb) {
     print('🌐 WEB: Permitiendo acceso sin autenticación');
-    
+
     // Si está en root, redirigir a la tienda
     if (location == '/') {
       print('📍 Root en web, redirigiendo a tienda');
       return '/shop';
     }
-    
+
     // Permitir acceso libre a todas las rutas en web
     return null;
   }
@@ -257,7 +283,9 @@ String? _guard(BuildContext context, GoRouterState state) {
   // Usuario autenticado accediendo a ruta privada
   // Si hubo conversión de deep link, redirigir a la ruta convertida
   if (convertedRoute != null) {
-    print('✅ Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute');
+    print(
+      '✅ Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute',
+    );
     return convertedRoute;
   }
 
@@ -624,12 +652,15 @@ final GoRouter _router = GoRouter(
         ),
 
         // ===== SHOP/TIENDA =====
-        
+
         // Tienda principal
         GoRoute(
           path: '/shop',
           name: 'shop',
-          builder: (context, state) => const ShopScreen(),
+          builder: (context, state) {
+            final searchQuery = state.uri.queryParameters['search'];
+            return ShopScreenPro(initialSearch: searchQuery);
+          },
         ),
 
         // Detalle de producto
@@ -649,6 +680,20 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const CartScreen(),
         ),
 
+        // Mis Favoritos
+        GoRoute(
+          path: '/shop/favorites',
+          name: 'favorites',
+          builder: (context, state) => const FavoritesScreen(),
+        ),
+
+        // Mis Pedidos
+        GoRoute(
+          path: '/shop/orders',
+          name: 'myOrders',
+          builder: (context, state) => const MyOrdersScreen(),
+        ),
+
         // Panel de administración (solo admins)
         GoRoute(
           path: '/shop/admin',
@@ -660,6 +705,97 @@ final GoRouter _router = GoRouter(
           //   final isAdmin = userProvider.user?.isAdmin ?? false;
           //   return isAdmin ? null : '/shop';
           // },
+        ),
+
+        // Gestión de vendedores (solo admins)
+        GoRoute(
+          path: '/shop/manage-sellers',
+          name: 'manageSellers',
+          builder: (context, state) => const ManageSellersScreen(),
+        ),
+
+        // Solicitudes de vendedores (solo admins)
+        GoRoute(
+          path: '/shop/seller-requests',
+          name: 'sellerRequests',
+          builder: (context, state) => const SellerRequestsScreen(),
+        ),
+
+        // Eliminar todos los productos (solo admins)
+        GoRoute(
+          path: '/shop/delete-all-products',
+          name: 'deleteAllProducts',
+          builder: (context, state) => const DeleteAllProductsScreen(),
+        ),
+
+        // TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+        // Escáner QR
+        // GoRoute(
+        //   path: '/shop/qr-scanner',
+        //   name: 'qrScanner',
+        //   builder: (context, state) => const QRScannerScreen(),
+        // ),
+
+        // ===== STORE (TIENDA ONLINE) ROUTES =====
+
+        // Tienda principal
+        GoRoute(
+          path: '/store',
+          name: 'store',
+          builder: (context, state) => const StoreScreen(),
+        ),
+
+        // Detalle de producto
+        GoRoute(
+          path: '/store/product/:productId',
+          name: 'storeProductDetail',
+          builder: (context, state) {
+            final product = state.extra as ProductEntity;
+            return store_detail.ProductDetailScreen(product: product);
+          },
+        ),
+
+        // Carrito de compras
+        GoRoute(
+          path: '/store/cart',
+          name: 'storeCart',
+          builder: (context, state) => const store_cart.CartScreen(),
+        ),
+
+        // Panel de vendedor
+        GoRoute(
+          path: '/store/seller-dashboard',
+          name: 'sellerDashboard',
+          builder: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final currentUser = userProvider.user;
+
+            if (currentUser == null) {
+              return const Scaffold(
+                body: Center(child: Text('Usuario no encontrado')),
+              );
+            }
+
+            return SellerDashboardScreen(currentUser: currentUser.toEntity());
+          },
+        ),
+
+        // Panel de administración
+        GoRoute(
+          path: '/store/admin-dashboard',
+          name: 'storeAdminDashboard',
+          builder: (context, state) {
+            final userProvider = context.read<UserProvider>();
+            final currentUser = userProvider.user;
+
+            if (currentUser == null) {
+              return const Scaffold(
+                body: Center(child: Text('Usuario no encontrado')),
+              );
+            }
+
+            return AdminDashboardScreen(currentUser: currentUser.toEntity());
+          },
         ),
       ],
     ),

@@ -16,7 +16,7 @@ class PaymentsRepository {
             "apiLogin": "pRRXKOl8ikMmt9u",
             "apiKey": "4Vj8eK4rloUd272L48hsrarnUA",
           },
-          "test": "true"
+          "test": "true",
         },
       );
       // return json.decode(uriResponse.body);

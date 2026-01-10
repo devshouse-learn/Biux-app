@@ -81,7 +81,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: ColorTokens.primary50.withOpacity(0.1),
+                color: ColorTokens.primary50.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
@@ -151,13 +151,12 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed:
-                          _isInitialized && !_hasError
-                              ? () {
-                                Navigator.of(context).pop();
-                                widget.onAccept?.call();
-                              }
-                              : null,
+                      onPressed: _isInitialized && !_hasError
+                          ? () {
+                              Navigator.of(context).pop();
+                              widget.onAccept?.call();
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorTokens.primary50,
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -245,7 +244,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.black.withValues(alpha: 0.6),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -279,7 +278,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
             allowScrubbing: true,
             colors: VideoProgressColors(
               playedColor: ColorTokens.primary50,
-              bufferedColor: ColorTokens.primary50.withOpacity(0.3),
+              bufferedColor: ColorTokens.primary50.withValues(alpha: 0.3),
               backgroundColor: Colors.grey[300]!,
             ),
           ),
@@ -325,12 +324,11 @@ Future<bool?> showVideoPreviewDialog({
   return showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder:
-        (context) => VideoPreviewDialog(
-          videoFile: videoFile,
-          title: title,
-          onAccept: () => Navigator.of(context).pop(true),
-          onReject: () => Navigator.of(context).pop(false),
-        ),
+    builder: (context) => VideoPreviewDialog(
+      videoFile: videoFile,
+      title: title,
+      onAccept: () => Navigator.of(context).pop(true),
+      onReject: () => Navigator.of(context).pop(false),
+    ),
   );
 }

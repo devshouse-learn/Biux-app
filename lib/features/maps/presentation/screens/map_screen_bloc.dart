@@ -27,9 +27,7 @@ class MapScreenBloc extends ChangeNotifier {
     _selectedPoint = point;
     if (point != null && _mapController != null) {
       _mapController!.animateCamera(
-        CameraUpdate.newLatLng(
-          LatLng(point.latitude, point.longitude),
-        ),
+        CameraUpdate.newLatLng(LatLng(point.latitude, point.longitude)),
       );
     }
     notifyListeners();
@@ -41,10 +39,7 @@ class MapScreenBloc extends ChangeNotifier {
         markerId: MarkerId(point.id),
         position: LatLng(point.latitude, point.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        infoWindow: InfoWindow(
-          title: point.name,
-          snippet: point.description,
-        ),
+        infoWindow: InfoWindow(title: point.name, snippet: point.description),
         onTap: () => selectMeetingPoint(point),
       );
     }).toSet();

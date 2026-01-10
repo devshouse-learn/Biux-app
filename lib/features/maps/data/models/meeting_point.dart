@@ -31,11 +31,11 @@ class MeetingPoint {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'latitude': latitude,
-        'longitude': longitude,
-        'routes': routes.map((route) => route.toJson()).toList(),
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'latitude': latitude,
+    'longitude': longitude,
+    'routes': routes.map((route) => route.toJson()).toList(),
+  };
 }

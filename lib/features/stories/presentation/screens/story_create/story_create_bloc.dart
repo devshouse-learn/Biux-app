@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/stories/data/repositories/stories_firebase_repository.dart';
@@ -41,9 +41,7 @@ class StoryCreateBloc extends ChangeNotifier {
   }
 
   void deleteImageSeleted({required AssetEntity image}) {
-    imgList.removeWhere(
-      (element) => element == image,
-    );
+    imgList.removeWhere((element) => element == image);
     notifyListeners();
   }
 
@@ -69,7 +67,7 @@ class StoryCreateBloc extends ChangeNotifier {
   }) async {
     try {
       List<File> listFiles = [];
-      
+
       for (var element in list) {
         final file = await element.file;
         if (file != null) {
@@ -78,24 +76,24 @@ class StoryCreateBloc extends ChangeNotifier {
           listFiles.add(resizedFile);
         }
       }
-      
+
       if (listFiles.isEmpty) {
         print('Error: No hay archivos para subir');
         return false;
       }
-      
+
       final result = await storiesFirebaseRepository.createStory(
         story: story,
         listFile: listFiles,
       );
-      
+
       if (result) {
         // Limpiar las imágenes después de publicar
         imgList.clear();
         listTags.clear();
         notifyListeners();
       }
-      
+
       return result;
     } catch (e) {
       print('Error creando historia: $e');
@@ -109,32 +107,34 @@ class StoryCreateBloc extends ChangeNotifier {
     try {
       final bytes = await imageFile.readAsBytes();
       final image = img.decodeImage(bytes);
-      
+
       if (image == null) {
         print('No se pudo decodificar la imagen');
         return imageFile;
       }
-      
+
       // Máximas dimensiones permitidas
       const maxWidth = 1080;
       const maxHeight = 1350;
-      
+
       // Si la imagen ya está dentro de los límites, retornarla sin cambios
       if (image.width <= maxWidth && image.height <= maxHeight) {
         print('Imagen dentro de límites (${image.width}x${image.height})');
         return imageFile;
       }
-      
+
       // Calcular las nuevas dimensiones manteniendo relación de aspecto
       double widthRatio = maxWidth / image.width;
       double heightRatio = maxHeight / image.height;
       double ratio = widthRatio < heightRatio ? widthRatio : heightRatio;
-      
+
       final newWidth = (image.width * ratio).toInt();
       final newHeight = (image.height * ratio).toInt();
-      
-      print('Redimensionando imagen: ${image.width}x${image.height} → ${newWidth}x${newHeight}');
-      
+
+      print(
+        'Redimensionando imagen: ${image.width}x${image.height} → ${newWidth}x${newHeight}',
+      );
+
       // Redimensionar imagen
       final resizedImage = img.copyResize(
         image,
@@ -142,13 +142,15 @@ class StoryCreateBloc extends ChangeNotifier {
         height: newHeight,
         interpolation: img.Interpolation.linear,
       );
-      
+
       // Guardar imagen redimensionada en un archivo temporal
       final resizedBytes = img.encodeJpg(resizedImage, quality: 85);
       final tempDir = Directory.systemTemp;
-      final tempFile = File('${tempDir.path}/story_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final tempFile = File(
+        '${tempDir.path}/story_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
       await tempFile.writeAsBytes(resizedBytes);
-      
+
       print('Imagen redimensionada guardada: ${tempFile.path}');
       return tempFile;
     } catch (e) {

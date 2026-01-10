@@ -13,18 +13,11 @@ class SearchBarWidget extends StatelessWidget {
     final bloc = context.watch<GroupListScreenBloc>();
     return Container(
       width: 350,
-      margin: EdgeInsets.only(
-        top: 10,
-        left: 10,
-        right: 10,
-      ),
+      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: ColorTokens.neutral60,
-          width: 1,
-        ),
+        border: Border.all(color: ColorTokens.neutral60, width: 1),
       ),
       child: TextFormField(
         controller: bloc.searchGroupController,
@@ -35,25 +28,14 @@ class SearchBarWidget extends StatelessWidget {
         focusNode: bloc.focusNodeGrupo,
         style: Styles.TextCityList,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(
-            10.0,
-            15.0,
-            20.0,
-            15.0,
-          ),
+          contentPadding: EdgeInsets.fromLTRB(10.0, 15.0, 20.0, 15.0),
           border: InputBorder.none,
           hintText: AppStrings.search,
           hintStyle: Styles.TextSearch,
-          prefixIcon: Icon(
-            Icons.search,
-            color: ColorTokens.neutral60,
-          ),
+          prefixIcon: Icon(Icons.search, color: ColorTokens.neutral60),
           suffixIcon: bloc.focusNodeGrupo.hasFocus
               ? IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: ColorTokens.neutral60,
-                  ),
+                  icon: Icon(Icons.close, color: ColorTokens.neutral60),
                   onPressed: () {
                     bloc.searchGroupController.clear();
                     bloc.getGroupList();
@@ -67,5 +49,3 @@ class SearchBarWidget extends StatelessWidget {
     );
   }
 }
-
-

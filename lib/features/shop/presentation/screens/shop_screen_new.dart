@@ -41,10 +41,7 @@ class _ShopScreenState extends State<ShopScreen> {
       appBar: AppBar(
         title: const Text(
           'Tienda Biux',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         backgroundColor: ColorTokens.primary30,
         elevation: 0,
@@ -96,14 +93,12 @@ class _ShopScreenState extends State<ShopScreen> {
         children: [
           // Barra de búsqueda
           _buildSearchBar(),
-          
+
           // Filtros de categoría
           _buildCategoryFilters(),
-          
+
           // Lista de productos
-          Expanded(
-            child: _buildProductList(),
-          ),
+          Expanded(child: _buildProductList()),
         ],
       ),
     );
@@ -150,13 +145,41 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget _buildCategoryFilters() {
     final categories = [
       {'id': null, 'label': 'Todos', 'icon': Icons.apps},
-      {'id': ProductCategories.jerseys, 'label': 'Jerseys', 'icon': Icons.checkroom},
-      {'id': ProductCategories.shorts, 'label': 'Culotes', 'icon': Icons.straighten},
-      {'id': ProductCategories.gloves, 'label': 'Guantes', 'icon': Icons.back_hand},
-      {'id': ProductCategories.helmets, 'label': 'Cascos', 'icon': Icons.sports_motorsports},
-      {'id': ProductCategories.glasses, 'label': 'Gafas', 'icon': Icons.visibility},
-      {'id': ProductCategories.shoes, 'label': 'Calzado', 'icon': Icons.directions_bike},
-      {'id': ProductCategories.accessories, 'label': 'Accesorios', 'icon': Icons.backpack},
+      {
+        'id': ProductCategories.jerseys,
+        'label': 'Jerseys',
+        'icon': Icons.checkroom,
+      },
+      {
+        'id': ProductCategories.shorts,
+        'label': 'Culotes',
+        'icon': Icons.straighten,
+      },
+      {
+        'id': ProductCategories.gloves,
+        'label': 'Guantes',
+        'icon': Icons.back_hand,
+      },
+      {
+        'id': ProductCategories.helmets,
+        'label': 'Cascos',
+        'icon': Icons.sports_motorsports,
+      },
+      {
+        'id': ProductCategories.glasses,
+        'label': 'Gafas',
+        'icon': Icons.visibility,
+      },
+      {
+        'id': ProductCategories.shoes,
+        'label': 'Calzado',
+        'icon': Icons.directions_bike,
+      },
+      {
+        'id': ProductCategories.accessories,
+        'label': 'Accesorios',
+        'icon': Icons.backpack,
+      },
     ];
 
     return Container(
@@ -188,9 +211,11 @@ class _ShopScreenState extends State<ShopScreen> {
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  _selectedCategory = selected ? category['id'] as String? : null;
+                  _selectedCategory = selected
+                      ? category['id'] as String?
+                      : null;
                 });
-                
+
                 final provider = context.read<ShopProvider>();
                 if (_selectedCategory == null) {
                   provider.filterByCategory('');
@@ -226,10 +251,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 SizedBox(height: 16),
                 Text(
                   'Cargando productos...',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ],
             ),
@@ -242,18 +264,11 @@ class _ShopScreenState extends State<ShopScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  size: 64,
-                  color: Colors.red,
-                ),
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
                 const SizedBox(height: 16),
                 Text(
                   shopProvider.errorMessage!,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.red,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -297,10 +312,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Intenta con otra búsqueda o categoría',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                 ),
               ],
             ),
@@ -329,12 +341,10 @@ class _ShopScreenState extends State<ShopScreen> {
   /// Card individual de producto
   Widget _buildProductCard(ProductEntity product) {
     return GestureDetector(
-      onTap: () => context.go('/shop/product/${product.id}'),
+      onTap: () => context.go('/shop/${product.id}'),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -353,9 +363,7 @@ class _ShopScreenState extends State<ShopScreen> {
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
                         color: Colors.grey[200],
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        child: const Center(child: CircularProgressIndicator()),
                       ),
                       errorWidget: (context, url, error) => Container(
                         color: Colors.grey[200],
@@ -418,7 +426,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
               ),
             ),
-            
+
             // Info del producto
             Expanded(
               flex: 2,
@@ -438,19 +446,16 @@ class _ShopScreenState extends State<ShopScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // Descripción corta
                     Text(
                       product.description,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const Spacer(),
-                    
+
                     // Precio
                     Text(
                       _formatPrice(product.price),
@@ -460,7 +465,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         color: ColorTokens.primary30,
                       ),
                     ),
-                    
+
                     // Ciudad
                     Row(
                       children: [

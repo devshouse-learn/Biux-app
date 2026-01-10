@@ -24,9 +24,7 @@ class StoryCreateScreen extends StatelessWidget {
       appBar: _AppbarCreateStory(),
       body: Column(
         children: [
-          Expanded(
-            child: _CarouselImagesSelected(),
-          ),
+          Expanded(child: _CarouselImagesSelected()),
           Expanded(
             child: Consumer<StoryCreateBloc>(
               builder: (context, bloc, child) {
@@ -78,21 +76,17 @@ class _GallerySectionState extends State<GallerySection> {
   }
 
   Future<void> _requestAssets() async {
-    setState(
-      () {
-        _isLoading = true;
-      },
-    );
+    setState(() {
+      _isLoading = true;
+    });
     final PermissionState ps = await PhotoManager.requestPermissionExtend();
     if (!mounted) {
       return;
     }
     if (!ps.hasAccess) {
-      setState(
-        () {
-          _isLoading = false;
-        },
-      );
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
           content: AppStrings.permissionNotAccessibleCreateStory,
@@ -110,11 +104,9 @@ class _GallerySectionState extends State<GallerySection> {
       return;
     }
     if (paths.isEmpty) {
-      setState(
-        () {
-          _isLoading = false;
-        },
-      );
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
           content: AppStrings.pathsNotFoundCreateStory,
@@ -134,19 +126,14 @@ class _GallerySectionState extends State<GallerySection> {
     if (!mounted) {
       return;
     }
-    Future.delayed(
-      Duration.zero,
-      () {
-        final bloc = context.read<StoryCreateBloc>();
-        setState(
-          () {
-            bloc.initialEntities(entitiesList: entities);
-            _isLoading = false;
-            _hasMoreToLoad = widget.entitiesList.length < _totalEntitiesCount;
-          },
-        );
-      },
-    );
+    Future.delayed(Duration.zero, () {
+      final bloc = context.read<StoryCreateBloc>();
+      setState(() {
+        bloc.initialEntities(entitiesList: entities);
+        _isLoading = false;
+        _hasMoreToLoad = widget.entitiesList.length < _totalEntitiesCount;
+      });
+    });
   }
 
   Future<void> _loadMoreAsset() async {
@@ -157,42 +144,27 @@ class _GallerySectionState extends State<GallerySection> {
     if (!mounted) {
       return;
     }
-    Future.delayed(
-      Duration.zero,
-      () {
-        final bloc = context.read<StoryCreateBloc>();
-        setState(
-          () {
-            bloc.addAllEntities(entitiesList: entities);
-            _page++;
-            _hasMoreToLoad = widget.entitiesList.length < _totalEntitiesCount;
-            _isLoadingMore = false;
-          },
-        );
-      },
-    );
+    Future.delayed(Duration.zero, () {
+      final bloc = context.read<StoryCreateBloc>();
+      setState(() {
+        bloc.addAllEntities(entitiesList: entities);
+        _page++;
+        _hasMoreToLoad = widget.entitiesList.length < _totalEntitiesCount;
+        _isLoadingMore = false;
+      });
+    });
   }
 
   Widget _buildBody(BuildContext context) {
     final bloc = context.watch<StoryCreateBloc>();
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator.adaptive(),
-      );
+      return const Center(child: CircularProgressIndicator.adaptive());
     }
     if (_path == null) {
-      return const Center(
-        child: Text(
-          AppStrings.pathsRequestCreateStory,
-        ),
-      );
+      return const Center(child: Text(AppStrings.pathsRequestCreateStory));
     }
     if (widget.entitiesList.isNotEmpty != true) {
-      return const Center(
-        child: Text(
-          AppStrings.assetsNotFoundCreateStory,
-        ),
-      );
+      return const Center(child: Text(AppStrings.assetsNotFoundCreateStory));
     }
     return GridView.custom(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -227,9 +199,7 @@ class _GallerySectionState extends State<GallerySection> {
                 );
               }
             },
-            option: const ThumbnailOption(
-              size: ThumbnailSize.square(200),
-            ),
+            option: const ThumbnailOption(size: ThumbnailSize.square(200)),
           );
         },
         childCount: widget.entitiesList.length,
@@ -264,11 +234,7 @@ class ImageItemWidget extends StatelessWidget {
   final List<AssetEntity> imgList;
 
   Widget buildContent(BuildContext context) {
-    return _buildImageWidget(
-      context,
-      entity,
-      option,
-    );
+    return _buildImageWidget(context, entity, option);
   }
 
   Widget _buildImageWidget(
@@ -289,11 +255,7 @@ class ImageItemWidget extends StatelessWidget {
         PositionedDirectional(
           top: 4,
           end: 4,
-          child: Image.asset(
-            Images.kDeselectedImage,
-            height: 20,
-            width: 20,
-          ),
+          child: Image.asset(Images.kDeselectedImage, height: 20, width: 20),
         ),
       ],
     );
@@ -304,11 +266,7 @@ class ImageItemWidget extends StatelessWidget {
           PositionedDirectional(
             top: 4,
             end: 4,
-            child: Image.asset(
-              Images.kSelectedImage,
-              height: 20,
-              width: 20,
-            ),
+            child: Image.asset(Images.kSelectedImage, height: 20, width: 20),
           ),
         ],
       );
@@ -334,22 +292,15 @@ class _AppbarCreateStory extends StatelessWidget
     return AppBar(
       backgroundColor: ColorTokens.primary30,
       leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-        ),
+        icon: Icon(Icons.arrow_back),
         onPressed: () {
           Navigator.pop(context, false);
         },
       ),
-      title: Text(
-        AppStrings.titleAppBarCreateStory,
-        style: Styles.noDateText,
-      ),
+      title: Text(AppStrings.titleAppBarCreateStory, style: Styles.noDateText),
       actions: [
         IconButton(
-          icon: Icon(
-            Icons.arrow_forward,
-          ),
+          icon: Icon(Icons.arrow_forward),
           onPressed: () {
             if (bloc.imgList.isNotEmpty) {
               showDialogCreateStory(
@@ -375,8 +326,9 @@ class _AppbarCreateStory extends StatelessWidget
                       content: result
                           ? AppStrings.textSuccessfulCreateStory
                           : AppStrings.textErrorCreateStory,
-                      backgroundColor:
-                          result ? ColorTokens.secondary50 : ColorTokens.error50,
+                      backgroundColor: result
+                          ? ColorTokens.secondary50
+                          : ColorTokens.error50,
                     ),
                   );
                   if (result) {
@@ -386,7 +338,7 @@ class _AppbarCreateStory extends StatelessWidget
               );
             }
           },
-        )
+        ),
       ],
     );
   }
@@ -402,9 +354,7 @@ class _CarouselImagesSelected extends StatelessWidget {
   final ImagePicker _picker = ImagePicker();
 
   void _takePhoto({required StoryCreateBloc bloc}) async {
-    XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-    );
+    XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       final fileBytes = await pickedFile.readAsBytes();
       final entity = await PhotoManager.editor.saveImage(
@@ -469,30 +419,26 @@ class _CarouselImagesSelected extends StatelessWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: bloc.imgList.asMap().entries.map(
-                      (entry) {
-                        return GestureDetector(
-                          onTap: () => _controller.animateToPage(entry.key),
-                          child: Container(
-                            width: 10.0,
-                            height: 10.0,
-                            margin: EdgeInsets.symmetric(
-                              vertical: 5.0,
-                              horizontal: 4.0,
-                            ),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: ColorTokens.neutral0,
-                              ),
-                              color: (bloc.current == entry.key
-                                  ? ColorTokens.secondary50
-                                  : ColorTokens.primary30),
-                            ),
+                    children: bloc.imgList.asMap().entries.map((entry) {
+                      return GestureDetector(
+                        onTap: () => _controller.animateToPage(entry.key),
+                        child: Container(
+                          width: 10.0,
+                          height: 10.0,
+                          margin: EdgeInsets.symmetric(
+                            vertical: 5.0,
+                            horizontal: 4.0,
                           ),
-                        );
-                      },
-                    ).toList(),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: ColorTokens.neutral0),
+                            color: (bloc.current == entry.key
+                                ? ColorTokens.secondary50
+                                : ColorTokens.primary30),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -515,20 +461,18 @@ class _CarouselImagesSelected extends StatelessWidget {
                               onPressed: () async {
                                 _takePhoto(bloc: bloc);
                               },
-                              icon: Icon(
-                                Icons.camera_alt_outlined,
-                              ),
+                              icon: Icon(Icons.camera_alt_outlined),
                             ),
-                          )
+                          ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
           ],
         ),
-        if (bloc.loading) Loading()
+        if (bloc.loading) Loading(),
       ],
     );
   }
@@ -596,21 +540,15 @@ void showDialogCreateStory({
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
             ),
-            actions: [
-              SizedBox(
-                width: sizeScreen.width,
-              ),
-            ],
+            actions: [SizedBox(width: sizeScreen.width)],
           );
         },
       );
     },
   );
 }
-
-

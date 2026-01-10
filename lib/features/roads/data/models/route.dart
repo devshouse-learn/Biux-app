@@ -2,10 +2,7 @@ class RoutePoint {
   final double latitude;
   final double longitude;
 
-  RoutePoint({
-    required this.latitude,
-    required this.longitude,
-  });
+  RoutePoint({required this.latitude, required this.longitude});
 
   factory RoutePoint.fromJson(Map<String, dynamic> json) {
     return RoutePoint(
@@ -15,9 +12,9 @@ class RoutePoint {
   }
 
   Map<String, dynamic> toJson() => {
-        'latitude': latitude,
-        'longitude': longitude,
-      };
+    'latitude': latitude,
+    'longitude': longitude,
+  };
 }
 
 class BiuxRoute {
@@ -49,11 +46,11 @@ class BiuxRoute {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'level': level,
-        'destinationLatitude': destinationLatitude,
-        'destinationLongitude': destinationLongitude,
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'level': level,
+    'destinationLatitude': destinationLatitude,
+    'destinationLongitude': destinationLongitude,
+  };
 }

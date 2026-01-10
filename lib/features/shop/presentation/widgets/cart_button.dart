@@ -6,11 +6,8 @@ class CartButton extends StatelessWidget {
   final int itemCount;
   final VoidCallback onPressed;
 
-  const CartButton({
-    Key? key,
-    required this.itemCount,
-    required this.onPressed,
-  }) : super(key: key);
+  const CartButton({Key? key, required this.itemCount, required this.onPressed})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +17,7 @@ class CartButton extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Icon(
-            itemCount > 0
-                ? Icons.shopping_cart
-                : Icons.shopping_cart_outlined,
+            itemCount > 0 ? Icons.shopping_cart : Icons.shopping_cart_outlined,
             color: Colors.white,
           ),
           if (itemCount > 0)
@@ -35,10 +30,7 @@ class CartButton extends StatelessWidget {
                   color: ColorTokens.secondary50,
                   shape: BoxShape.circle,
                 ),
-                constraints: const BoxConstraints(
-                  minWidth: 18,
-                  minHeight: 18,
-                ),
+                constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                 child: Text(
                   itemCount > 99 ? '99+' : itemCount.toString(),
                   style: const TextStyle(

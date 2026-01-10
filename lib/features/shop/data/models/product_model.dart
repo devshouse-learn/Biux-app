@@ -19,6 +19,8 @@ class ProductModel extends ProductEntity {
     super.sellerCity,
     required super.createdAt,
     super.isActive,
+    super.likedByUsers,
+    super.isSold,
     super.metadata,
   });
 
@@ -39,6 +41,8 @@ class ProductModel extends ProductEntity {
       sellerCity: entity.sellerCity,
       createdAt: entity.createdAt,
       isActive: entity.isActive,
+      likedByUsers: entity.likedByUsers,
+      isSold: entity.isSold,
       metadata: entity.metadata,
     );
   }
@@ -50,13 +54,15 @@ class ProductModel extends ProductEntity {
       description: json['description'] as String? ?? '',
       longDescription: json['longDescription'] as String?,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      images: (json['images'] as List<dynamic>?)
+      images:
+          (json['images'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
       videoUrl: json['videoUrl'] as String?,
       category: json['category'] as String? ?? '',
-      sizes: (json['sizes'] as List<dynamic>?)
+      sizes:
+          (json['sizes'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
@@ -67,19 +73,22 @@ class ProductModel extends ProductEntity {
       createdAt: json['createdAt'] is Timestamp
           ? (json['createdAt'] as Timestamp).toDate()
           : json['createdAt'] is String
-              ? DateTime.parse(json['createdAt'] as String)
-              : DateTime.now(),
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
       isActive: json['isActive'] as bool? ?? true,
+      likedByUsers:
+          (json['likedByUsers'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      isSold: json['isSold'] as bool? ?? false,
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
   }
 
   factory ProductModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return ProductModel.fromJson({
-      ...data,
-      'id': doc.id,
-    });
+    return ProductModel.fromJson({...data, 'id': doc.id});
   }
 
   Map<String, dynamic> toJson() {
@@ -99,6 +108,8 @@ class ProductModel extends ProductEntity {
       if (sellerCity != null) 'sellerCity': sellerCity,
       'createdAt': Timestamp.fromDate(createdAt),
       'isActive': isActive,
+      'likedByUsers': likedByUsers,
+      'isSold': isSold,
       if (metadata != null) 'metadata': metadata,
     };
   }

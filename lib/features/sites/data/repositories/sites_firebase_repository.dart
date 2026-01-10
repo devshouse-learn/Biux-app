@@ -9,13 +9,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
   Future<List<Sites>> getSites() async {
     try {
       final result = await firestore.collection(collection).get();
-      return result.docs
-          .map(
-            (e) => Sites.fromJson(
-              json: e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => Sites.fromJson(json: e.data())).toList();
     } catch (e) {
       return List.empty();
     }
@@ -23,9 +17,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
 
   Future<bool> createSites(Sites sites) async {
     try {
-      await firestore.collection(collection).add(
-            sites.toJson(),
-          );
+      await firestore.collection(collection).add(sites.toJson());
       return true;
     } catch (e) {
       return false;
@@ -39,13 +31,7 @@ class SitesFirebaseRepository extends SitesRepositoryAbstract {
           .collection(collection)
           .where('typesSites.type', isEqualTo: 'Negocio')
           .get();
-      return result.docs
-          .map(
-            (e) => Sites.fromJson(
-              json: e.data(),
-            ),
-          )
-          .toList();
+      return result.docs.map((e) => Sites.fromJson(json: e.data())).toList();
     } catch (e) {
       return List.empty();
     }

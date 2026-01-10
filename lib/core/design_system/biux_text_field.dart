@@ -111,8 +111,8 @@ class _BiuxTextFieldState extends State<BiuxTextField> {
             filled: true,
             fillColor: widget.enabled
                 ? (theme.brightness == Brightness.dark
-                    ? colorScheme.surfaceContainerHighest
-                    : colorScheme.surface)
+                      ? colorScheme.surfaceContainerHighest
+                      : colorScheme.surface)
                 : colorScheme.onSurface.withValues(alpha: 0.04),
           ),
         ),

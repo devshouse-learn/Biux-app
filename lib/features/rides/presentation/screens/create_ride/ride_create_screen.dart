@@ -333,7 +333,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
-        
+
         // ✅ CAMPO DE TEXTO PARA NOMBRE MANUAL
         if (_customMeetingPointName != null)
           Container(
@@ -342,7 +342,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
             decoration: BoxDecoration(
               border: Border.all(color: ColorTokens.primary30, width: 2),
               borderRadius: BorderRadius.circular(12),
-              color: ColorTokens.primary30.withOpacity(0.05),
+              color: ColorTokens.primary30.withValues(alpha: 0.05),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,7 +373,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (_customMeetingPointLat != null && _customMeetingPointLng != null)
+                          if (_customMeetingPointLat != null &&
+                              _customMeetingPointLng != null)
                             Padding(
                               padding: EdgeInsets.only(top: 4),
                               child: Text(
@@ -399,11 +400,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                           color: ColorTokens.primary30,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          Icons.map,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                        child: Icon(Icons.map, color: Colors.white, size: 20),
                       ),
                     ),
                   ],
@@ -450,9 +447,11 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         ElevatedButton.icon(
           onPressed: () => _showCustomMeetingPointDialog(),
           icon: Icon(Icons.add_location),
-          label: Text(_customMeetingPointName != null 
-              ? 'Cambiar punto personalizado' 
-              : 'Agregar punto personalizado'),
+          label: Text(
+            _customMeetingPointName != null
+                ? 'Cambiar punto personalizado'
+                : 'Agregar punto personalizado',
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorTokens.secondary50,
             foregroundColor: Colors.white,
@@ -711,7 +710,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     }
 
     // Si hay punto personalizado pero sin coordenadas
-    if (_customMeetingPointName != null && (_customMeetingPointLat == null || _customMeetingPointLng == null)) {
+    if (_customMeetingPointName != null &&
+        (_customMeetingPointLat == null || _customMeetingPointLng == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('El punto personalizado debe tener una ubicación'),
@@ -763,7 +763,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
     // Determinar el meetingPointId a usar
     late String meetingPointId;
-    
+
     if (_customMeetingPointName != null) {
       // Si hay punto personalizado, crear uno temporal con ID único
       final customPointId = 'custom_${DateTime.now().millisecondsSinceEpoch}';
@@ -817,14 +817,18 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     }
   }
 
-  Future<void> _openMapWithCoordinates(double lat, double lng, String name) async {
+  Future<void> _openMapWithCoordinates(
+    double lat,
+    double lng,
+    String name,
+  ) async {
     try {
       final googleMapsUrl = 'https://www.google.com/maps?q=$lat,$lng&z=16';
       final appleMapsUrl = 'https://maps.apple.com/?q=$lat,$lng';
-      
+
       final googleMapsUri = Uri.parse(googleMapsUrl);
       final appleMapsUri = Uri.parse(appleMapsUrl);
-      
+
       if (await canLaunchUrl(googleMapsUri)) {
         await launchUrl(googleMapsUri);
       } else if (await canLaunchUrl(appleMapsUri)) {
@@ -838,23 +842,25 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al abrir mapas: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al abrir mapas: $e')));
       }
     }
   }
 
   Future<void> _showCustomMeetingPointDialog() async {
     final nameController = TextEditingController();
-    
+
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(_customMeetingPointName != null 
-              ? 'Cambiar punto personalizado' 
-              : 'Agregar punto personalizado'),
+          title: Text(
+            _customMeetingPointName != null
+                ? 'Cambiar punto personalizado'
+                : 'Agregar punto personalizado',
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -872,29 +878,36 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   onPressed: () async {
                     try {
                       final locationService = loc.Location();
-                      final hasPermission = await locationService.requestPermission();
-                      
+                      final hasPermission = await locationService
+                          .requestPermission();
+
                       if (hasPermission == loc.PermissionStatus.granted) {
-                        final currentLocation = await locationService.getLocation();
+                        final currentLocation = await locationService
+                            .getLocation();
                         if (mounted) {
                           setState(() {
                             _customMeetingPointLat = currentLocation.latitude;
                             _customMeetingPointLng = currentLocation.longitude;
-                            _customMeetingPointName = nameController.text.trim();
+                            _customMeetingPointName = nameController.text
+                                .trim();
                           });
                           Navigator.pop(context);
                         }
                       } else {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Permiso de ubicación denegado')),
+                            SnackBar(
+                              content: Text('Permiso de ubicación denegado'),
+                            ),
                           );
                         }
                       }
                     } catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error al obtener ubicación: $e')),
+                          SnackBar(
+                            content: Text('Error al obtener ubicación: $e'),
+                          ),
                         );
                       }
                     }
@@ -906,7 +919,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     foregroundColor: ColorTokens.neutral100,
                   ),
                 ),
-                if (_customMeetingPointLat != null && _customMeetingPointLng != null)
+                if (_customMeetingPointLat != null &&
+                    _customMeetingPointLng != null)
                   Padding(
                     padding: EdgeInsets.only(top: 12),
                     child: Container(
@@ -946,7 +960,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   );
                   return;
                 }
-                if (_customMeetingPointLat == null || _customMeetingPointLng == null) {
+                if (_customMeetingPointLat == null ||
+                    _customMeetingPointLng == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Selecciona una ubicación')),
                   );

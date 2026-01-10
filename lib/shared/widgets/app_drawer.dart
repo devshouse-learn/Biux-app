@@ -85,8 +85,9 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor:
-          Theme.of(context).scaffoldBackgroundColor, // Respeta el tema
+      backgroundColor: Theme.of(
+        context,
+      ).scaffoldBackgroundColor, // Respeta el tema
       child: Column(
         children: [
           // Header del drawer con información del usuario
@@ -118,43 +119,41 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
                 currentAccountPicture:
                     user?.photoUrl != null && user!.photoUrl!.isNotEmpty
-                        ? CachedNetworkImage(
-                          imageUrl: user.photoUrl!,
-                          imageBuilder:
-                              (context, imageProvider) => CircleAvatar(
-                                backgroundColor: ColorTokens.neutral100,
-                                backgroundImage: imageProvider,
-                              ),
-                          placeholder:
-                              (context, url) => CircleAvatar(
-                                backgroundColor: ColorTokens.neutral100,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    ColorTokens.primary50,
-                                  ),
-                                ),
-                              ),
-                          errorWidget: (context, url, error) {
-                            print('🐛 Error cargando imagen de perfil: $error');
-                            return CircleAvatar(
-                              backgroundColor: ColorTokens.neutral100,
-                              child: Icon(
-                                Icons.person,
-                                size: 40,
-                                color: ColorTokens.neutral60,
-                              ),
-                            );
-                          },
-                        )
-                        : CircleAvatar(
+                    ? CachedNetworkImage(
+                        imageUrl: user.photoUrl!,
+                        imageBuilder: (context, imageProvider) => CircleAvatar(
                           backgroundColor: ColorTokens.neutral100,
-                          child: Icon(
-                            Icons.person,
-                            size: 40,
-                            color: ColorTokens.neutral60,
+                          backgroundImage: imageProvider,
+                        ),
+                        placeholder: (context, url) => CircleAvatar(
+                          backgroundColor: ColorTokens.neutral100,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              ColorTokens.primary50,
+                            ),
                           ),
                         ),
+                        errorWidget: (context, url, error) {
+                          print('🐛 Error cargando imagen de perfil: $error');
+                          return CircleAvatar(
+                            backgroundColor: ColorTokens.neutral100,
+                            child: Icon(
+                              Icons.person,
+                              size: 40,
+                              color: ColorTokens.neutral60,
+                            ),
+                          );
+                        },
+                      )
+                    : CircleAvatar(
+                        backgroundColor: ColorTokens.neutral100,
+                        child: Icon(
+                          Icons.person,
+                          size: 40,
+                          color: ColorTokens.neutral60,
+                        ),
+                      ),
                 decoration: BoxDecoration(color: ColorTokens.primary30),
               );
             },
@@ -276,8 +275,8 @@ class _AppDrawerState extends State<AppDrawer> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext loadingContext) {
-          return WillPopScope(
-            onWillPop: () async => false,
+          return PopScope(
+            canPop: false,
             child: AlertDialog(
               content: Row(
                 mainAxisSize: MainAxisSize.min,

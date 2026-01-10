@@ -50,10 +50,7 @@ class CategoryFilter extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Text(
-                      category.icon,
-                      style: const TextStyle(fontSize: 18),
-                    ),
+                    Text(category.icon, style: const TextStyle(fontSize: 18)),
                     const SizedBox(width: 8),
                     Text(
                       category.name,

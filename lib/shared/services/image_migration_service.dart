@@ -34,8 +34,8 @@ class ImageMigrationService {
             imageUrl: imageUrl,
             entityId: userId,
             imageType: 'gallery',
-            uploadFunction:
-                (file, type, id) => OptimizedStorageService.uploadUserImage(
+            uploadFunction: (file, type, id) =>
+                OptimizedStorageService.uploadUserImage(
                   userId: id,
                   imageFile: file,
                   imageType: type,
@@ -67,10 +67,9 @@ class ImageMigrationService {
     final originalSize = results['originalSizeBytes'] as int;
     final compressedSize = results['compressedSizeBytes'] as int;
     results['savingsBytes'] = originalSize - compressedSize;
-    results['savingsPercentage'] =
-        originalSize > 0
-            ? ((originalSize - compressedSize) / originalSize * 100)
-            : 0.0;
+    results['savingsPercentage'] = originalSize > 0
+        ? ((originalSize - compressedSize) / originalSize * 100)
+        : 0.0;
 
     return results;
   }
@@ -246,8 +245,9 @@ class ImageMigrationService {
     }
 
     final savings = totalOriginalSize - estimatedCompressedSize;
-    final savingsPercentage =
-        totalOriginalSize > 0 ? (savings / totalOriginalSize * 100) : 0.0;
+    final savingsPercentage = totalOriginalSize > 0
+        ? (savings / totalOriginalSize * 100)
+        : 0.0;
 
     return {
       'totalImages': imageUrls.length,

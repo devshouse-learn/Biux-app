@@ -35,7 +35,7 @@ class AppRoutes {
 
   // Rutas de configuración
   static const String notificationSettings = '/settings/notifications';
-  
+
   // Rutas de ayuda
   static const String help = '/help';
 

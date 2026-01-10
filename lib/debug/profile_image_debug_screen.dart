@@ -97,10 +97,9 @@ class _ProfileImageDebugWidgetState extends State<ProfileImageDebugWidget> {
                       userProvider.user != null
                           ? Icons.person
                           : Icons.person_outline,
-                      color:
-                          userProvider.user != null
-                              ? Colors.green
-                              : Colors.orange,
+                      color: userProvider.user != null
+                          ? Colors.green
+                          : Colors.orange,
                     ),
                   ),
                 ),
@@ -121,12 +120,11 @@ class _ProfileImageDebugWidgetState extends State<ProfileImageDebugWidget> {
                             backgroundColor: ColorTokens.neutral20,
                             backgroundImage:
                                 userProvider.user!.photoUrl!.isNotEmpty
-                                    ? NetworkImage(userProvider.user!.photoUrl!)
-                                    : null,
-                            child:
-                                userProvider.user!.photoUrl!.isEmpty
-                                    ? Icon(Icons.person, size: 50)
-                                    : null,
+                                ? NetworkImage(userProvider.user!.photoUrl!)
+                                : null,
+                            child: userProvider.user!.photoUrl!.isEmpty
+                                ? Icon(Icons.person, size: 50)
+                                : null,
                           ),
                           SizedBox(height: 8),
                           Text(

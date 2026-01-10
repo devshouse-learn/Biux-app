@@ -7,4 +7,8 @@ abstract class UserRepository {
   Future<UserEntity> createUser(UserEntity user);
   Future<UserEntity> updateUser(UserEntity user);
   Future<void> deleteUser(String id);
+
+  // Métodos para gestión de roles (tienda)
+  Future<void> updateUserRole(String userId, UserRole newRole);
+  Future<void> toggleAutorizacionAdmin(String userId, bool autorizado);
 }

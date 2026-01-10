@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/cities/data/models/city.dart';
+import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -36,19 +36,16 @@ class GroupListScreenBloc extends ChangeNotifier {
       listGroup = await GroupsFirebaseRepository().getGroups();
       final dataMembers = await MembersFirebaseRepository().getMembers();
       listMembers = dataMembers
-          .where(
-            (member) => member.userId == user.id,
-          )
+          .where((member) => member.userId == user.id)
           .toList();
       notifyListeners();
     } else {
-      listGroup = await GroupsFirebaseRepository()
-          .getFilterGroups(searchCityController.text);
+      listGroup = await GroupsFirebaseRepository().getFilterGroups(
+        searchCityController.text,
+      );
       final dataMembers = await MembersFirebaseRepository().getMembers();
       listMembers = dataMembers
-          .where(
-            (member) => member.userId == user.id,
-          )
+          .where((member) => member.userId == user.id)
           .toList();
       notifyListeners();
     }
@@ -59,12 +56,15 @@ class GroupListScreenBloc extends ChangeNotifier {
     if (searchCityController.text.isEmpty)
       listFilterGroup = await GroupsFirebaseRepository().getGroups();
     else
-      listFilterGroup = await GroupsFirebaseRepository()
-          .getFilterGroups(searchCityController.text);
+      listFilterGroup = await GroupsFirebaseRepository().getFilterGroups(
+        searchCityController.text,
+      );
     listGroup = listFilterGroup
-        .where((groups) => groups.name
-            .toLowerCase()
-            .contains(searchGroupController.text.toLowerCase()))
+        .where(
+          (groups) => groups.name.toLowerCase().contains(
+            searchGroupController.text.toLowerCase(),
+          ),
+        )
         .toList();
     notifyListeners();
   }
@@ -85,9 +85,11 @@ class GroupListScreenBloc extends ChangeNotifier {
   Future<void> filterCities() async {
     final dataFilterCities = await CitiesFirebaseRepository().getCities();
     listCities = dataFilterCities
-        .where((cities) => cities.name
-            .toLowerCase()
-            .contains(searchCityController.text.toLowerCase()))
+        .where(
+          (cities) => cities.name.toLowerCase().contains(
+            searchCityController.text.toLowerCase(),
+          ),
+        )
         .toList();
     notifyListeners();
   }
@@ -116,28 +118,37 @@ class GroupListScreenBloc extends ChangeNotifier {
   }
 
   Future<void> onTapJoin(
-      Member member, List<Member> members, Group group) async {
-    final valueJoin = await MembersFirebaseRepository()
-        .joinGroups(group.id, group.numberMembers, member);
+    Member member,
+    List<Member> members,
+    Group group,
+  ) async {
+    final valueJoin = await MembersFirebaseRepository().joinGroups(
+      group.id,
+      group.numberMembers,
+      member,
+    );
     group.numberMembers = group.numberMembers + 1;
     listMembers.add(
-      Member(
-        approved: true,
-        groupId: group.id,
-        id: valueJoin,
-        userId: user.id,
-      ),
+      Member(approved: true, groupId: group.id, id: valueJoin, userId: user.id),
     );
     notifyListeners();
   }
 
-  Future<void> onTapLeave(String idMember, List<Member> members, Group group,
-      int numberMembers) async {
+  Future<void> onTapLeave(
+    String idMember,
+    List<Member> members,
+    Group group,
+    int numberMembers,
+  ) async {
     group.numberMembers = group.numberMembers - 1;
-    listMembers =
-        listMembers.where((memebr) => memebr.groupId != group.id).toList();
-    await MembersFirebaseRepository()
-        .leaveGroups(idMember, numberMembers, group.id);
+    listMembers = listMembers
+        .where((memebr) => memebr.groupId != group.id)
+        .toList();
+    await MembersFirebaseRepository().leaveGroups(
+      idMember,
+      numberMembers,
+      group.id,
+    );
     notifyListeners();
   }
 }

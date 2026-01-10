@@ -10,9 +10,7 @@ class EpsFirebaseRepository extends EpsRepositoryAbstract {
     try {
       final result = await _firestore.collection(collection).get();
       return result.docs
-          .map(
-            (doc) => Eps.fromJson(json: doc.data(), docId: doc.id),
-          )
+          .map((doc) => Eps.fromJson(json: doc.data(), docId: doc.id))
           .toList();
     } catch (e) {
       return [];

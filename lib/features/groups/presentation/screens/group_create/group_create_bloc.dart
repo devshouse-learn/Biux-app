@@ -46,9 +46,7 @@ class GroupCreateBloc extends ChangeNotifier {
   Future<File> getImageLogo() async {
     ImagePicker imagePicker = ImagePicker();
     XFile pickedFile;
-    pickedFile = (await imagePicker.pickImage(
-      source: ImageSource.gallery,
-    ))!;
+    pickedFile = (await imagePicker.pickImage(source: ImageSource.gallery))!;
     File image = File(pickedFile.path);
     imageLogo = image;
     notifyListeners();
@@ -74,14 +72,19 @@ class GroupCreateBloc extends ChangeNotifier {
     );
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBarUtils.customSnackBar(
-          content: AppStrings.groupCreatedText,
-          backgroundColor: ColorTokens.secondary50),
+        content: AppStrings.groupCreatedText,
+        backgroundColor: ColorTokens.secondary50,
+      ),
     );
     onTapPop(context);
-    Navigator.pushNamed(context, AppRoutes.viewGroupRoute, arguments: {
-      AppStrings.adminIdText: user.id,
-      AppStrings.groupIdText: result
-    });
+    Navigator.pushNamed(
+      context,
+      AppRoutes.viewGroupRoute,
+      arguments: {
+        AppStrings.adminIdText: user.id,
+        AppStrings.groupIdText: result,
+      },
+    );
     notifyListeners();
   }
 
@@ -93,10 +96,9 @@ class GroupCreateBloc extends ChangeNotifier {
   Future<void> onTapValidator(String validator) async {
     if (validator == AppStrings.public)
       publicValidator = true;
-    else if (validator == AppStrings.private) publicValidator = false;
+    else if (validator == AppStrings.private)
+      publicValidator = false;
     notifyListeners();
     return publicValidator;
   }
 }
-
-

@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
 class MapState {
   final Set<Marker> markers;
   final Set<Polyline> polylines;
@@ -50,25 +49,24 @@ class MapState {
       markers: markers ?? this.markers,
       polylines: polylines ?? this.polylines,
       meetingPoints: meetingPoints ?? this.meetingPoints,
-      selectedPoint:
-          clearSelectedPoint ? null : (selectedPoint ?? this.selectedPoint),
-      selectedRoute:
-          clearSelectedRoute ? null : (selectedRoute ?? this.selectedRoute),
+      selectedPoint: clearSelectedPoint
+          ? null
+          : (selectedPoint ?? this.selectedPoint),
+      selectedRoute: clearSelectedRoute
+          ? null
+          : (selectedRoute ?? this.selectedRoute),
       isLoading: isLoading ?? this.isLoading,
       defaultLocation: defaultLocation ?? this.defaultLocation,
-      userLocation:
-          clearUserLocation ? null : (userLocation ?? this.userLocation),
+      userLocation: clearUserLocation
+          ? null
+          : (userLocation ?? this.userLocation),
     );
   }
 }
 
 class MapProvider extends ChangeNotifier {
   GoogleMapController? _mapController;
-  MapState _state = MapState(
-    markers: {},
-    meetingPoints: [],
-    isLoading: false,
-  );
+  MapState _state = MapState(markers: {}, meetingPoints: [], isLoading: false);
   BitmapDescriptor? _meetingPointIcon;
   LocationProvider? _locationProvider;
   bool _locationRequested = false;
@@ -125,21 +123,17 @@ class MapProvider extends ChangeNotifier {
     );
 
     // Dibujar la imagen en el centro
-    canvas.drawImage(
-      fi.image,
-      Offset(padding, padding),
-      Paint(),
-    );
+    canvas.drawImage(fi.image, Offset(padding, padding), Paint());
 
     // Convertir a imagen
     final picture = pictureRecorder.endRecording();
     final img = await picture.toImage(targetSize, targetSize);
-    final ByteData? byteData =
-        await img.toByteData(format: ui.ImageByteFormat.png);
+    final ByteData? byteData = await img.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
 
     if (byteData != null) {
-      _meetingPointIcon =
-          BitmapDescriptor.fromBytes(byteData.buffer.asUint8List());
+      _meetingPointIcon = BitmapDescriptor.bytes(byteData.buffer.asUint8List());
       notifyListeners();
     }
   }
@@ -174,15 +168,10 @@ class MapProvider extends ChangeNotifier {
 
     if (position != null) {
       LatLng userLatLng = LatLng(position.latitude, position.longitude);
-      _state = _state.copyWith(
-        userLocation: userLatLng,
-        isLoading: false,
-      );
+      _state = _state.copyWith(userLocation: userLatLng, isLoading: false);
 
       // Centrar mapa en la ubicación del usuario
-      _mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(userLatLng, 15),
-      );
+      _mapController?.animateCamera(CameraUpdate.newLatLngZoom(userLatLng, 15));
     } else {
       _state = _state.copyWith(isLoading: false);
     }
@@ -220,9 +209,7 @@ class MapProvider extends ChangeNotifier {
       _state = _state.copyWith(selectedPoint: point);
       if (_mapController != null) {
         _mapController!.animateCamera(
-          CameraUpdate.newLatLng(
-            LatLng(point.latitude, point.longitude),
-          ),
+          CameraUpdate.newLatLng(LatLng(point.latitude, point.longitude)),
         );
       }
     }
@@ -231,10 +218,7 @@ class MapProvider extends ChangeNotifier {
 
   void selectRoute(BiuxRoute? route) async {
     if (route == null) {
-      _state = _state.copyWith(
-        clearSelectedRoute: true,
-        polylines: {},
-      );
+      _state = _state.copyWith(clearSelectedRoute: true, polylines: {});
       notifyListeners();
       return;
     }
@@ -245,12 +229,17 @@ class MapProvider extends ChangeNotifier {
 
     try {
       final origin = LatLng(
-          _state.selectedPoint!.latitude, _state.selectedPoint!.longitude);
-      final destination =
-          LatLng(route.destinationLatitude, route.destinationLongitude);
+        _state.selectedPoint!.latitude,
+        _state.selectedPoint!.longitude,
+      );
+      final destination = LatLng(
+        route.destinationLatitude,
+        route.destinationLongitude,
+      );
 
       print(
-          '🗺️ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}');
+        '🗺️ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
+      );
 
       // Obtener la ruta real usando Google Directions API para ciclismo
       final directionResult = await DirectionsService.getDirectionsWithDetails(
@@ -261,7 +250,8 @@ class MapProvider extends ChangeNotifier {
 
       if (directionResult != null && directionResult.points.isNotEmpty) {
         print(
-            '✅ Ruta obtenida exitosamente con ${directionResult.points.length} puntos');
+          '✅ Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
+        );
 
         final polylines = {
           Polyline(
@@ -295,7 +285,7 @@ class MapProvider extends ChangeNotifier {
             width: 4,
             patterns: [
               PatternItem.dash(20),
-              PatternItem.gap(10)
+              PatternItem.gap(10),
             ], // Línea punteada
           ),
         };
@@ -322,20 +312,22 @@ class MapProvider extends ChangeNotifier {
     if (_mapController == null || points.isEmpty) return;
 
     if (points.length == 1) {
-      _mapController!.animateCamera(
-        CameraUpdate.newLatLng(points.first),
-      );
+      _mapController!.animateCamera(CameraUpdate.newLatLng(points.first));
       return;
     }
 
-    double minLat =
-        points.map((p) => p.latitude).reduce((a, b) => a < b ? a : b);
-    double maxLat =
-        points.map((p) => p.latitude).reduce((a, b) => a > b ? a : b);
-    double minLng =
-        points.map((p) => p.longitude).reduce((a, b) => a < b ? a : b);
-    double maxLng =
-        points.map((p) => p.longitude).reduce((a, b) => a > b ? a : b);
+    double minLat = points
+        .map((p) => p.latitude)
+        .reduce((a, b) => a < b ? a : b);
+    double maxLat = points
+        .map((p) => p.latitude)
+        .reduce((a, b) => a > b ? a : b);
+    double minLng = points
+        .map((p) => p.longitude)
+        .reduce((a, b) => a < b ? a : b);
+    double maxLng = points
+        .map((p) => p.longitude)
+        .reduce((a, b) => a > b ? a : b);
 
     _mapController!.animateCamera(
       CameraUpdate.newLatLngBounds(
@@ -354,10 +346,7 @@ class MapProvider extends ChangeNotifier {
         markerId: MarkerId(point.id),
         position: LatLng(point.latitude, point.longitude),
         icon: _meetingPointIcon ?? BitmapDescriptor.defaultMarker,
-        infoWindow: InfoWindow(
-          title: point.name,
-          snippet: point.description,
-        ),
+        infoWindow: InfoWindow(title: point.name, snippet: point.description),
         onTap: () => selectMeetingPoint(point),
       );
     }).toSet();
@@ -449,5 +438,3 @@ class MapProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-
-

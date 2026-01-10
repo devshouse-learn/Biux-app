@@ -12,10 +12,7 @@ class MapRoadBloc extends ChangeNotifier {
     'longitude': -75.2135319,
   });
   CameraPosition locationPosition = CameraPosition(
-    target: LatLng(
-      4.4410096,
-      -75.2135319,
-    ),
+    target: LatLng(4.4410096, -75.2135319),
     zoom: 14.4746,
   );
 
@@ -26,10 +23,7 @@ class MapRoadBloc extends ChangeNotifier {
   Future<void> currentLocation() async {
     locationData = await Location().getLocation();
     locationPosition = CameraPosition(
-      target: LatLng(
-        locationData.latitude!,
-        locationData.longitude!,
-      ),
+      target: LatLng(locationData.latitude!, locationData.longitude!),
       zoom: 14.4746,
     );
     changeCameraPosition(locationPosition);
@@ -42,10 +36,7 @@ class MapRoadBloc extends ChangeNotifier {
       'longitude': latLng.longitude,
     });
     locationPosition = CameraPosition(
-      target: LatLng(
-        latLng.latitude,
-        latLng.longitude,
-      ),
+      target: LatLng(latLng.latitude, latLng.longitude),
       zoom: 14.4746,
     );
     changeCameraPosition(locationPosition);
@@ -54,8 +45,6 @@ class MapRoadBloc extends ChangeNotifier {
 
   Future<void> changeCameraPosition(CameraPosition cameraPosition) async {
     final GoogleMapController controllerMap = await controller.future;
-    controllerMap.animateCamera(
-      CameraUpdate.newCameraPosition(cameraPosition),
-    );
+    controllerMap.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 }

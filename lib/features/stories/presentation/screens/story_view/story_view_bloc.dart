@@ -1,4 +1,3 @@
-
 import 'package:biux/features/stories/data/models/reaction_story.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/stories/data/repositories/stories_firebase_repository.dart';
@@ -21,10 +20,7 @@ class StoryViewBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateStoryLike({
-    required String idUser,
-    required Story story,
-  }) async {
+  void updateStoryLike({required String idUser, required Story story}) async {
     bool exists = false;
     ReactionStory reactionStory = ReactionStory();
     List<ReactionStory> listReactions = story.listReactions;
@@ -36,10 +32,7 @@ class StoryViewBloc extends ChangeNotifier {
     }
     if (!exists) {
       listReactions.add(
-        ReactionStory(
-          id: idUser,
-          username: LocalStorage().getUserName(),
-        ),
+        ReactionStory(id: idUser, username: LocalStorage().getUserName()),
       );
     } else {
       listReactions.remove(reactionStory);

@@ -10,11 +10,7 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
     try {
       final result = await firestore.collection(collection).get();
       return result.docs
-          .map(
-            (e) => TrademarkBike.fromJsonMap(
-              e.data(),
-            ),
-          )
+          .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
     } catch (e) {
       return List.empty();
@@ -24,13 +20,12 @@ class TrademarkBikeFirebaseRepository extends TrademarkBikeRepositoryAbstract {
   @override
   Future<List<TrademarkBike>> getTrademarksBike(String trademark) async {
     try {
-      final result = await firestore.collection(collection).where('trademark', isEqualTo: trademark).get();
+      final result = await firestore
+          .collection(collection)
+          .where('trademark', isEqualTo: trademark)
+          .get();
       return result.docs
-          .map(
-            (e) => TrademarkBike.fromJsonMap(
-              e.data(),
-            ),
-          )
+          .map((e) => TrademarkBike.fromJsonMap(e.data()))
           .toList();
     } catch (e) {
       return List.empty();

@@ -10,7 +10,7 @@ class BytesExtension {
       AppStrings.kiloBytes,
       AppStrings.megaBytes,
       AppStrings.gigaBytes,
-      AppStrings.teraBytes
+      AppStrings.teraBytes,
     ];
     var i = (log(bytes) / log(1024)).floor();
     return ((bytes / pow(1024, i)).toStringAsFixed(0) + suffixes[i]);

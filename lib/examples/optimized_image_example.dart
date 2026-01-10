@@ -182,7 +182,7 @@ class _OptimizedImageExampleScreenState
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: ColorTokens.neutral20.withOpacity(0.1),
+            color: ColorTokens.neutral20.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: Offset(0, 2),
           ),

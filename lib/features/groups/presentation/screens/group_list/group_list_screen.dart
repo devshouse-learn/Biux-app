@@ -175,26 +175,25 @@ class _GroupListScreenState extends State<GroupListScreen> {
                           borderRadius: BorderRadius.circular(25),
                           color: ColorTokens.neutral20,
                         ),
-                        child:
-                            group.logoUrl != null
-                                ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  child: OptimizedNetworkImage(
-                                    imageUrl: group.logoUrl!,
-                                    width: 50,
-                                    height: 50,
-                                    imageType: 'avatar',
-                                    fit: BoxFit.cover,
-                                    errorWidget: const Icon(
-                                      Icons.group,
-                                      color: ColorTokens.neutral60,
-                                    ),
+                        child: group.logoUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child: OptimizedNetworkImage(
+                                  imageUrl: group.logoUrl!,
+                                  width: 50,
+                                  height: 50,
+                                  imageType: 'avatar',
+                                  fit: BoxFit.cover,
+                                  errorWidget: const Icon(
+                                    Icons.group,
+                                    color: ColorTokens.neutral60,
                                   ),
-                                )
-                                : const Icon(
-                                  Icons.group,
-                                  color: ColorTokens.neutral60,
                                 ),
+                              )
+                            : const Icon(
+                                Icons.group,
+                                color: ColorTokens.neutral60,
+                              ),
                       ),
                       const SizedBox(width: 12),
 
@@ -234,7 +233,11 @@ class _GroupListScreenState extends State<GroupListScreen> {
                   // Ciudad del grupo
                   Row(
                     children: [
-                      Icon(Icons.location_on, size: 16, color: ColorTokens.neutral60),
+                      Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: ColorTokens.neutral60,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -283,7 +286,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                         return Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: ColorTokens.primary30.withOpacity(0.1),
+                            color: ColorTokens.primary30.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -301,10 +304,12 @@ class _GroupListScreenState extends State<GroupListScreen> {
                         return Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: ColorTokens.primary30.withOpacity(0.1),
+                            color: ColorTokens.primary30.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: ColorTokens.primary30.withOpacity(0.3),
+                              color: ColorTokens.primary30.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Row(
@@ -312,11 +317,19 @@ class _GroupListScreenState extends State<GroupListScreen> {
                               CircleAvatar(
                                 radius: 16,
                                 backgroundColor: ColorTokens.neutral20,
-                                backgroundImage: admin['photo'] != null && admin['photo'].isNotEmpty
+                                backgroundImage:
+                                    admin['photo'] != null &&
+                                        admin['photo'].isNotEmpty
                                     ? NetworkImage(admin['photo'])
                                     : null,
-                                child: admin['photo'] == null || admin['photo'].isEmpty
-                                    ? Icon(Icons.person, size: 16, color: ColorTokens.neutral60)
+                                child:
+                                    admin['photo'] == null ||
+                                        admin['photo'].isEmpty
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 16,
+                                        color: ColorTokens.neutral60,
+                                      )
                                     : null,
                               ),
                               const SizedBox(width: 8),
@@ -354,7 +367,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                       return Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: ColorTokens.primary30.withOpacity(0.1),
+                          color: ColorTokens.primary30.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -400,7 +413,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: color, width: 0.5),
       ),

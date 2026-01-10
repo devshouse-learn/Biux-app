@@ -89,8 +89,9 @@ class ExperienceCirclesRow extends StatelessWidget {
     required bool isRide,
   }) {
     final hasVideo = experience.hasVideo;
-    final firstMedia =
-        experience.media.isNotEmpty ? experience.media.first : null;
+    final firstMedia = experience.media.isNotEmpty
+        ? experience.media.first
+        : null;
 
     return Container(
       margin: const EdgeInsets.only(right: 12),
@@ -108,36 +109,23 @@ class ExperienceCirclesRow extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color:
-                          isRide
-                              ? ColorTokens.secondary50
-                              : ColorTokens.primary50,
+                      color: isRide
+                          ? ColorTokens.secondary50
+                          : ColorTokens.primary50,
                       width: 3,
                     ),
                   ),
                   child: ClipOval(
-                    child:
-                        firstMedia != null
-                            ? OptimizedNetworkImage(
-                              imageUrl:
-                                  firstMedia.mediaType == MediaType.video
-                                      ? (firstMedia.thumbnailUrl ??
-                                          firstMedia.url)
-                                      : firstMedia.url,
-                              fit: BoxFit.cover,
-                              width: 54,
-                              height: 54,
-                              imageType: 'experience_thumb',
-                              placeholder: Container(
-                                color: ColorTokens.neutral20,
-                                child: Icon(
-                                  isRide ? Icons.directions_bike : Icons.person,
-                                  color: ColorTokens.neutral60,
-                                  size: 24,
-                                ),
-                              ),
-                            )
-                            : Container(
+                    child: firstMedia != null
+                        ? OptimizedNetworkImage(
+                            imageUrl: firstMedia.mediaType == MediaType.video
+                                ? (firstMedia.thumbnailUrl ?? firstMedia.url)
+                                : firstMedia.url,
+                            fit: BoxFit.cover,
+                            width: 54,
+                            height: 54,
+                            imageType: 'experience_thumb',
+                            placeholder: Container(
                               color: ColorTokens.neutral20,
                               child: Icon(
                                 isRide ? Icons.directions_bike : Icons.person,
@@ -145,6 +133,15 @@ class ExperienceCirclesRow extends StatelessWidget {
                                 size: 24,
                               ),
                             ),
+                          )
+                        : Container(
+                            color: ColorTokens.neutral20,
+                            child: Icon(
+                              isRide ? Icons.directions_bike : Icons.person,
+                              color: ColorTokens.neutral60,
+                              size: 24,
+                            ),
+                          ),
                   ),
                 ),
 

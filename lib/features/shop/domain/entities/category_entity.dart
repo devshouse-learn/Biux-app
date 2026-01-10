@@ -40,46 +40,14 @@ class ProductCategories {
 
   static List<CategoryEntity> getAll() {
     return [
-      CategoryEntity(
-        id: all,
-        name: 'Todos',
-        icon: '🛍️',
-      ),
-      CategoryEntity(
-        id: jerseys,
-        name: 'Jerseys',
-        icon: '👕',
-      ),
-      CategoryEntity(
-        id: shorts,
-        name: 'Shorts',
-        icon: '🩳',
-      ),
-      CategoryEntity(
-        id: helmets,
-        name: 'Cascos',
-        icon: '🪖',
-      ),
-      CategoryEntity(
-        id: glasses,
-        name: 'Gafas',
-        icon: '🕶️',
-      ),
-      CategoryEntity(
-        id: gloves,
-        name: 'Guantes',
-        icon: '🧤',
-      ),
-      CategoryEntity(
-        id: shoes,
-        name: 'Zapatos',
-        icon: '👟',
-      ),
-      CategoryEntity(
-        id: accessories,
-        name: 'Accesorios',
-        icon: '🎒',
-      ),
+      CategoryEntity(id: all, name: 'Todos', icon: '🛍️'),
+      CategoryEntity(id: jerseys, name: 'Jerseys', icon: '👕'),
+      CategoryEntity(id: shorts, name: 'Shorts', icon: '🩳'),
+      CategoryEntity(id: helmets, name: 'Cascos', icon: '🪖'),
+      CategoryEntity(id: glasses, name: 'Gafas', icon: '🕶️'),
+      CategoryEntity(id: gloves, name: 'Guantes', icon: '🧤'),
+      CategoryEntity(id: shoes, name: 'Zapatos', icon: '👟'),
+      CategoryEntity(id: accessories, name: 'Accesorios', icon: '🎒'),
     ];
   }
 

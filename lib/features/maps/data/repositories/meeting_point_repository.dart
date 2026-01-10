@@ -6,27 +6,25 @@ class MeetingPointRepository {
   final String _collection = 'meeting_points';
 
   MeetingPointRepository({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   Stream<List<MeetingPoint>> getMeetingPoints() {
     return _firestore
         .collection(_collection)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => MeetingPoint.fromJson({
-                  'id': doc.id,
-                  ...doc.data(),
-                }))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => MeetingPoint.fromJson({'id': doc.id, ...doc.data()}),
+              )
+              .toList(),
+        );
   }
 
   Future<MeetingPoint?> getMeetingPoint(String id) async {
     final doc = await _firestore.collection(_collection).doc(id).get();
     if (doc.exists) {
-      return MeetingPoint.fromJson({
-        'id': doc.id,
-        ...doc.data()!,
-      });
+      return MeetingPoint.fromJson({'id': doc.id, ...doc.data()!});
     }
     return null;
   }

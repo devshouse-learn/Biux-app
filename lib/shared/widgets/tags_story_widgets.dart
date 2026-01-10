@@ -17,37 +17,20 @@ class TagsStoryWidget extends StatelessWidget {
       alignment: Alignment.topRight,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 3,
-          ),
-          margin: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 5,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: ColorTokens.primary30,
-            borderRadius: BorderRadius.all(
-              Radius.circular(
-                10,
-              ),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
-          child: Text(
-            labelText,
-            style: Styles.containerTextName,
-          ),
+          child: Text(labelText, style: Styles.containerTextName),
         ),
         GestureDetector(
           onTap: onPressed,
           child: ClipOval(
             child: ColoredBox(
               color: ColorTokens.error50,
-              child: Icon(
-                Icons.close,
-                color: ColorTokens.neutral100,
-                size: 18,
-              ),
+              child: Icon(Icons.close, color: ColorTokens.neutral100, size: 18),
             ),
           ),
         ),
@@ -55,5 +38,3 @@ class TagsStoryWidget extends StatelessWidget {
     );
   }
 }
-
-

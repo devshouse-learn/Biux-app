@@ -12,7 +12,7 @@ enum PaymentMethod {
   final String label;
   final IconData icon;
   final String description;
-  
+
   const PaymentMethod(this.label, this.icon, this.description);
 }
 
@@ -42,13 +42,10 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
           padding: EdgeInsets.only(bottom: 12),
           child: Text(
             'Método de pago',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        
+
         // Lista de métodos de pago
         Container(
           decoration: BoxDecoration(
@@ -56,24 +53,20 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
-            children: PaymentMethod.values
-                .asMap()
-                .entries
-                .map((entry) {
-                  final index = entry.key;
-                  final method = entry.value;
-                  final isFirst = index == 0;
-                  final isLast = index == PaymentMethod.values.length - 1;
-                  final isSelected = widget.selectedMethod == method;
-                  
-                  return _buildPaymentOption(
-                    method: method,
-                    isSelected: isSelected,
-                    isFirst: isFirst,
-                    isLast: isLast,
-                  );
-                })
-                .toList(),
+            children: PaymentMethod.values.asMap().entries.map((entry) {
+              final index = entry.key;
+              final method = entry.value;
+              final isFirst = index == 0;
+              final isLast = index == PaymentMethod.values.length - 1;
+              final isSelected = widget.selectedMethod == method;
+
+              return _buildPaymentOption(
+                method: method,
+                isSelected: isSelected,
+                isFirst: isFirst,
+                isLast: isLast,
+              );
+            }).toList(),
           ),
         ),
       ],
@@ -88,7 +81,9 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
     required bool isLast,
   }) {
     return Material(
-      color: isSelected ? ColorTokens.primary30.withOpacity(0.1) : Colors.transparent,
+      color: isSelected
+          ? ColorTokens.primary30.withValues(alpha: 0.1)
+          : Colors.transparent,
       borderRadius: BorderRadius.vertical(
         top: isFirst ? const Radius.circular(11) : Radius.zero,
         bottom: isLast ? const Radius.circular(11) : Radius.zero,
@@ -103,12 +98,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             border: !isLast
-                ? Border(
-                    bottom: BorderSide(
-                      color: Colors.grey[300]!,
-                      width: 1,
-                    ),
-                  )
+                ? Border(bottom: BorderSide(color: Colors.grey[300]!, width: 1))
                 : null,
           ),
           child: Row(
@@ -118,9 +108,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? ColorTokens.primary30 
-                      : Colors.grey[200],
+                  color: isSelected ? ColorTokens.primary30 : Colors.grey[200],
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -129,9 +117,9 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                   size: 24,
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Información del método
               Expanded(
                 child: Column(
@@ -141,22 +129,23 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                       method.label,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                        color: isSelected ? ColorTokens.primary30 : Colors.black87,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.w600,
+                        color: isSelected
+                            ? ColorTokens.primary30
+                            : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       method.description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                     ),
                   ],
                 ),
               ),
-              
+
               // Indicador de selección
               Container(
                 width: 24,
@@ -164,17 +153,17 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? ColorTokens.primary30 : Colors.grey[400]!,
+                    color: isSelected
+                        ? ColorTokens.primary30
+                        : Colors.grey[400]!,
                     width: 2,
                   ),
-                  color: isSelected ? ColorTokens.primary30 : Colors.transparent,
+                  color: isSelected
+                      ? ColorTokens.primary30
+                      : Colors.transparent,
                 ),
                 child: isSelected
-                    ? const Icon(
-                        Icons.check,
-                        size: 16,
-                        color: Colors.white,
-                      )
+                    ? const Icon(Icons.check, size: 16, color: Colors.white)
                     : null,
               ),
             ],
@@ -199,13 +188,11 @@ class CompactPaymentMethodSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<PaymentMethod>(
-      value: selectedMethod,
+      initialValue: selectedMethod,
       decoration: InputDecoration(
         labelText: 'Método de pago',
         prefixIcon: const Icon(Icons.payment),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
         fillColor: Colors.grey[100],
       ),

@@ -8,8 +8,9 @@ class RideRepository {
   // Crear una nueva rodada
   Future<String?> createRide(RideModel ride) async {
     try {
-      final docRef =
-          await _firestore.collection('rides').add(ride.toFirestore());
+      final docRef = await _firestore
+          .collection('rides')
+          .add(ride.toFirestore());
       return docRef.id;
     } catch (e) {
       print('Error creating ride: $e');
@@ -24,9 +25,11 @@ class RideRepository {
         .where('groupId', isEqualTo: groupId)
         .orderBy('dateTime', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   // Obtener TODAS las rodadas de todos los grupos
@@ -35,9 +38,11 @@ class RideRepository {
         .collection('rides')
         .orderBy('dateTime', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   // Obtener una rodada específica
@@ -59,8 +64,9 @@ class RideRepository {
     try {
       await _firestore.collection('rides').doc(rideId).update({
         'participants': FieldValue.arrayUnion([userId]),
-        'maybeParticipants':
-            FieldValue.arrayRemove([userId]), // Remover de "tal vez"
+        'maybeParticipants': FieldValue.arrayRemove([
+          userId,
+        ]), // Remover de "tal vez"
       });
       return true;
     } catch (e) {
@@ -74,8 +80,9 @@ class RideRepository {
     try {
       await _firestore.collection('rides').doc(rideId).update({
         'maybeParticipants': FieldValue.arrayUnion([userId]),
-        'participants':
-            FieldValue.arrayRemove([userId]), // Remover de confirmados
+        'participants': FieldValue.arrayRemove([
+          userId,
+        ]), // Remover de confirmados
       });
       return true;
     } catch (e) {
@@ -140,9 +147,11 @@ class RideRepository {
         .where('participants', arrayContains: userId)
         .orderBy('dateTime', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList(),
+        );
   }
 
   // Obtener próximas rodadas (todas)
@@ -155,8 +164,10 @@ class RideRepository {
         .orderBy('dateTime', descending: false)
         .limit(10)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
+              .toList(),
+        );
   }
 }

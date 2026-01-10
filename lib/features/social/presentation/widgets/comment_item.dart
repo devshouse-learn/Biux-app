@@ -87,7 +87,7 @@ class CommentItem extends StatelessWidget {
                             timeago.format(comment.createdAt, locale: 'es'),
                             style: TextStyle(
                               color: theme.textTheme.bodySmall?.color
-                                  ?.withOpacity(0.6),
+                                  ?.withValues(alpha: 0.6),
                               fontSize: 12,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -99,7 +99,7 @@ class CommentItem extends StatelessWidget {
                             ' (editado)',
                             style: TextStyle(
                               color: theme.textTheme.bodySmall?.color
-                                  ?.withOpacity(0.6),
+                                  ?.withValues(alpha: 0.6),
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                             ),
@@ -112,8 +112,8 @@ class CommentItem extends StatelessWidget {
                       comment.displayText,
                       style: TextStyle(
                         color: comment.isDeleted
-                            ? theme.textTheme.bodyMedium?.color?.withOpacity(
-                                0.5,
+                            ? theme.textTheme.bodyMedium?.color?.withValues(
+                                alpha: 0.5,
                               )
                             : theme.textTheme.bodyMedium?.color,
                         fontStyle: comment.isDeleted
@@ -183,7 +183,9 @@ class CommentItem extends StatelessWidget {
                                                         .textTheme
                                                         .bodySmall
                                                         ?.color
-                                                        ?.withOpacity(0.6),
+                                                        ?.withValues(
+                                                          alpha: 0.6,
+                                                        ),
                                             ),
                                             if (likesCount > 0) ...[
                                               const SizedBox(width: 4),

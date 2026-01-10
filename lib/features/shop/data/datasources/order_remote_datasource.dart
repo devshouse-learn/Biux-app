@@ -8,7 +8,7 @@ class OrderRemoteDataSource {
   static const String _collection = 'orders';
 
   OrderRemoteDataSource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Crear una nueva orden
   Future<String> createOrder(OrderModel order) async {
@@ -32,9 +32,7 @@ class OrderRemoteDataSource {
           .orderBy('createdAt', descending: true)
           .get();
 
-      return snapshot.docs
-          .map((doc) => OrderModel.fromFirestore(doc))
-          .toList();
+      return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
     } catch (e) {
       throw Exception('Error al obtener órdenes del usuario: $e');
     }
@@ -48,9 +46,7 @@ class OrderRemoteDataSource {
           .orderBy('createdAt', descending: true)
           .get();
 
-      return snapshot.docs
-          .map((doc) => OrderModel.fromFirestore(doc))
-          .toList();
+      return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
     } catch (e) {
       throw Exception('Error al obtener todas las órdenes: $e');
     }
@@ -75,15 +71,12 @@ class OrderRemoteDataSource {
   Future<void> updateOrderStatus(String orderId, String newStatus) async {
     try {
       final Map<String, dynamic> updateData = {'status': newStatus};
-      
+
       if (newStatus == OrderStatus.completed) {
         updateData['completedAt'] = Timestamp.now();
       }
 
-      await _firestore
-          .collection(_collection)
-          .doc(orderId)
-          .update(updateData);
+      await _firestore.collection(_collection).doc(orderId).update(updateData);
     } catch (e) {
       throw Exception('Error al actualizar estado de orden: $e');
     }

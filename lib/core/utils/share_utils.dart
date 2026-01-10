@@ -13,11 +13,9 @@ class ShareUtils {
     required String filePath,
   }) async {
     final imagePath = await XFile(filePath);
-    SharePlus.instance.share(ShareParams(
-      title: title,
-      text: text,
-      files: [imagePath],
-    ));
+    SharePlus.instance.share(
+      ShareParams(title: title, text: text, files: [imagePath]),
+    );
   }
 
   Future<File> urlToFile(String imageUrl) async {
@@ -31,9 +29,7 @@ class ShareUtils {
           '.jpg',
     );
     var url = Uri.parse(imageUrl);
-    http.Response response = await http.get(
-      url,
-    );
+    http.Response response = await http.get(url);
     await file.writeAsBytes(response.bodyBytes);
     return file;
   }

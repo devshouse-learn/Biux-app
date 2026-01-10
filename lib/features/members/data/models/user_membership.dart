@@ -7,7 +7,7 @@ class UserMembership {
   String? startMembership;
   Membership? membership;
   int? membershipId;
-  String? updatedAt; 
+  String? updatedAt;
   BiuxUser? user;
   int? userId;
   String? expirationMembership;
@@ -37,12 +37,12 @@ class UserMembership {
   }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "stateMembership": stateMembership,
-        "startMembership": startMembership,
-        "membershipId": membershipId,
-        "updatedAt": updatedAt,
-        "userId": userId,
-        "expirationMembership": expirationMembership,
-      };
+    "id": id,
+    "stateMembership": stateMembership,
+    "startMembership": startMembership,
+    "membershipId": membershipId,
+    "updatedAt": updatedAt,
+    "userId": userId,
+    "expirationMembership": expirationMembership,
+  };
 }

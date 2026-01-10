@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/roads/data/models/road.dart';
@@ -15,36 +15,24 @@ class RoadsRepository {
   final URL_BASE = "https://biux-prod.ibacrea.com/api/v1/rodadas";
   final URLParticipant =
       "https://biux-prod.ibacrea.com/api/v1/participantesRodada";
-  Future<List<Road>> getRoads(
-    int limit,
-    int offset,
-    String cityId,
-  ) async {
+  Future<List<Road>> getRoads(int limit, int offset, String cityId) async {
     var url =
         '$URL_BASE?ciudadId=$cityId&sort=fechaHora.asc&fechaHora.gt=$formattedDate,format=yyyy-MM-dd&limit=$limit&offset=$offset';
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
     List<Road> roads = roadsJson
-        .map((roadJson) => Road.fromJson(
-              json: roadJson,
-              id: roadJson,
-            ))
+        .map((roadJson) => Road.fromJson(json: roadJson, id: roadJson))
         .toList();
 
     return roads;
   }
 
-  Future uploadProfileCoverRoad(
-    String id,
-    File filePhoto,
-  ) async {
+  Future uploadProfileCoverRoad(String id, File filePhoto) async {
     Dio dio = Dio();
     // dio.options.headers["authorization"] = await LocalStorage().getToken();
     FormData formData = FormData.fromMap({
-      "fileImagen": await MultipartFile.fromFile(
-        filePhoto.path,
-      ),
+      "fileImagen": await MultipartFile.fromFile(filePhoto.path),
     });
     await dio.patch(
       'https://biux-prod.ibacrea.com/api/v1/rodadas/$id',
@@ -82,9 +70,7 @@ class RoadsRepository {
     //return Usuario.fromJsonMap(personasJson.first);
   }
 
-  Future<List<CompetitorRoad>> getListParticipantRoad(
-    String id,
-  ) async {
+  Future<List<CompetitorRoad>> getListParticipantRoad(String id) async {
     // var headers = {
     //   HttpHeaders.contentTypeHeader: 'application/json',
     // };
@@ -99,37 +85,22 @@ class RoadsRepository {
     return listCompetitorRoad;
   }
 
-  Future<List<Road>> getRoadsGroups(
-    String id,
-    int limit,
-    int offset,
-  ) async {
+  Future<List<Road>> getRoadsGroups(String id, int limit, int offset) async {
     var url = '$URL_BASE?grupo.id=$id&limit=$limit&offset=$offset';
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
     List<Road> roadsGroup = roadsJson
-        .map((roadJson) => Road.fromJson(
-              json: roadJson,
-              id: roadJson,
-            ))
+        .map((roadJson) => Road.fromJson(json: roadJson, id: roadJson))
         .toList();
 
     return roadsGroup;
   }
 
-  Future joinMeRoad(
-    String userId,
-    String roadId,
-  ) async {
+  Future joinMeRoad(String userId, String roadId) async {
     var uriResponse = await http.post(
       Uri.parse(URLParticipant),
-      body: jsonEncode(
-        {
-          "usuarioId": userId,
-          "rodadaId": roadId,
-        },
-      ),
+      body: jsonEncode({"usuarioId": userId, "rodadaId": roadId}),
       headers: {
         'Content-type': 'application/json',
         // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
@@ -162,13 +133,8 @@ class RoadsRepository {
     }
   }
 
-  Future<CompetitorRoad> getParticipantRoad(
-    String id,
-    String userId,
-  ) async {
-    var headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
-    };
+  Future<CompetitorRoad> getParticipantRoad(String id, String userId) async {
+    var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
     var url = '$URLParticipant?rodada.id=$id&usuarioId=$userId';
 
     var response = await http.get(Uri.parse(url), headers: headers);

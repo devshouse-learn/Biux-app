@@ -53,7 +53,7 @@ class CommentsList extends StatelessWidget {
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                        ).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
                       ),
                     ),
                   ),
@@ -101,7 +101,9 @@ class _CommentTextField extends StatefulWidget {
     required this.targetId,
     required this.targetOwnerId,
     required this.placeholder,
+    // ignore: unused_element_parameter
     this.parentCommentId,
+    // ignore: unused_element_parameter
     this.parentCommentOwnerId,
   });
 

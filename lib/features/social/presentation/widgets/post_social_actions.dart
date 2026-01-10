@@ -243,8 +243,8 @@ class _ShareButton extends StatelessWidget {
       shareText += 'https://biux.devshouse.org/posts/$postId\n\n';
       shareText += '📱 Si no tienes la app, descárgala para ver más';
 
-      // Usar Share.share del paquete share_plus
-      await Share.share(shareText, subject: 'Publicación de Biux');
+      // Usar SharePlus del paquete share_plus
+      await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(

@@ -51,10 +51,11 @@ class MainMenu extends StatelessWidget {
       ),
       drawer: AppDrawer(),
       bottomNavigationBar: Selector<MainMenuBloc, int>(
-          selector: (_, bloc) => bloc.pageIndex,
-          builder: (context, value, child) {
-            return _BottomNavigationBar();
-          }),
+        selector: (_, bloc) => bloc.pageIndex,
+        builder: (context, value, child) {
+          return _BottomNavigationBar();
+        },
+      ),
       body: Container(
         height: 1500,
         child: IndexedStack(
@@ -92,10 +93,7 @@ class _AppBar extends StatelessWidget {
         //   Text(
         //     '${AppStrings.map} ',
         //   ),
-        Text(
-          AppStrings.APP_NAME.toUpperCase(),
-          style: Styles.mainMenuTextBiux,
-        ),
+        Text(AppStrings.APP_NAME.toUpperCase(), style: Styles.mainMenuTextBiux),
       ],
     );
   }

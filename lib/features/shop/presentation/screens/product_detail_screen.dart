@@ -13,10 +13,8 @@ import 'package:go_router/go_router.dart';
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
 
-  const ProductDetailScreen({
-    Key? key,
-    required this.productId,
-  }) : super(key: key);
+  const ProductDetailScreen({Key? key, required this.productId})
+    : super(key: key);
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -43,37 +41,119 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _loadProduct() async {
-    final shopProvider = context.read<ShopProvider>();
-    final product = shopProvider.products.firstWhere(
-      (p) => p.id == widget.productId,
-      orElse: () => shopProvider.products.first,
-    );
-    
-    setState(() {
-      _product = product;
-      if (product.sizes.isNotEmpty) {
-        _selectedSize = product.sizes.first;
-      }
-    });
+    try {
+      print('🔍 Buscando producto con ID: ${widget.productId}');
+      final shopProvider = context.read<ShopProvider>();
 
-    // Inicializar video si existe
-    if (product.hasVideo) {
-      _initializeVideo(product.videoUrl!);
+      // Asegurarse de que los productos estén cargados
+      if (shopProvider.products.isEmpty) {
+        print('📦 Cargando productos desde Firebase...');
+        await shopProvider.loadProducts();
+        print('✅ Productos cargados: ${shopProvider.products.length}');
+      } else {
+        print('📦 Ya hay ${shopProvider.products.length} productos cargados');
+      }
+
+      // Buscar el producto específico
+      ProductEntity? product;
+      try {
+        product = shopProvider.products.firstWhere(
+          (p) => p.id == widget.productId,
+        );
+        print('✅ Producto encontrado: ${product.name}');
+      } catch (e) {
+        print('❌ Producto con ID ${widget.productId} no encontrado');
+        print(
+          '📋 IDs disponibles: ${shopProvider.products.map((p) => p.id).join(", ")}',
+        );
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Producto no encontrado'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Regresar a la tienda después de mostrar el error
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            print('⬅️ Regresando a la tienda...');
+            context.go('/shop');
+          }
+        });
+        return;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _product = product;
+        if (product!.sizes.isNotEmpty) {
+          _selectedSize = product.sizes.first;
+        }
+      });
+
+      // Inicializar video si existe
+      if (product.hasVideo &&
+          product.videoUrl != null &&
+          product.videoUrl!.isNotEmpty) {
+        print('🎥 Inicializando video: ${product.videoUrl}');
+        _initializeVideo(product.videoUrl!);
+      }
+    } catch (e) {
+      print('❌ Error cargando producto: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al cargar el producto'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _initializeVideo(String videoUrl) async {
-    _videoController = VideoPlayerController.network(videoUrl);
-    await _videoController!.initialize();
-    setState(() {
-      _isVideoInitialized = true;
-    });
+    try {
+      _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      await _videoController!.initialize();
+      if (mounted) {
+        setState(() {
+          _isVideoInitialized = true;
+        });
+      }
+    } catch (e) {
+      print('Error inicializando video: $e');
+      // Si falla el video, simplemente no lo mostramos
+      if (mounted) {
+        setState(() {
+          _isVideoInitialized = false;
+        });
+      }
+    }
   }
 
   void _addToCart() {
-    if (_product == null) return;
+    if (_product == null) {
+      print('⚠️ ERROR: Producto es null');
+      return;
+    }
+
+    print('🛒 Intentando agregar al carrito: ${_product!.name}');
+    print('  - ID: ${_product!.id}');
+    print('  - Precio: \$${_product!.price}');
+    print('  - Cantidad: $_quantity');
+    print('  - Talla seleccionada: $_selectedSize');
+    print('  - Disponible: ${_product!.isAvailable}');
+    print('  - Stock: ${_product!.stock}');
+    print('  - Activo: ${_product!.isActive}');
+    print('  - Vendido: ${_product!.isSold}');
 
     if (_product!.sizes.isNotEmpty && _selectedSize == null) {
+      print('⚠️ ERROR: Debe seleccionar una talla');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor selecciona una talla')),
       );
@@ -81,19 +161,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     final shopProvider = context.read<ShopProvider>();
+    print('📦 Carrito antes: ${shopProvider.cartItems.length} items');
+
     for (int i = 0; i < _quantity; i++) {
       shopProvider.addToCart(_product!, selectedSize: _selectedSize);
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$_quantity ${_product!.name} agregado(s) al carrito'),
-        action: SnackBarAction(
-          label: 'Ver carrito',
-          onPressed: () => context.push('/shop/cart'),
+    print('📦 Carrito después: ${shopProvider.cartItems.length} items');
+    print('✅ Producto agregado exitosamente');
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$_quantity ${_product!.name} agregado(s) al carrito'),
+          action: SnackBarAction(
+            label: 'Ver carrito',
+            onPressed: () => context.push('/shop/cart'),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _buyNow() {
@@ -165,9 +252,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (addressController.text.isEmpty || phoneController.text.isEmpty) {
+              if (addressController.text.isEmpty ||
+                  phoneController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Por favor completa todos los campos')),
+                  const SnackBar(
+                    content: Text('Por favor completa todos los campos'),
+                  ),
                 );
                 return;
               }
@@ -193,7 +283,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 selectedSize: _selectedSize,
                 deliveryAddress: addressController.text,
                 phoneNumber: phoneController.text,
-                notes: notesController.text.isEmpty ? null : notesController.text,
+                notes: notesController.text.isEmpty
+                    ? null
+                    : notesController.text,
               );
 
               if (orderId != null) {
@@ -207,7 +299,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(shopProvider.errorMessage ?? 'Error al realizar compra'),
+                    content: Text(
+                      shopProvider.errorMessage ?? 'Error al realizar compra',
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -217,6 +311,109 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               backgroundColor: ColorTokens.secondary50,
             ),
             child: const Text('Confirmar Compra'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMarkAsSoldDialog(String userId) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Marcar como vendido'),
+        content: const Text(
+          '¿Estás seguro de que quieres marcar este producto como vendido? '
+          'Ya no estará disponible para compra.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              final shopProvider = context.read<ShopProvider>();
+              final success = await shopProvider.markProductAsSold(
+                _product!.id,
+                userId,
+              );
+
+              if (success) {
+                setState(() {
+                  _product = _product!.copyWith(isSold: true, stock: 0);
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Producto marcado como vendido'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      shopProvider.errorMessage ??
+                          'Error al marcar como vendido',
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Marcar vendido'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteProductDialog(String userId) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Eliminar publicación'),
+        content: const Text(
+          '¿Estás seguro de que quieres eliminar esta publicación? '
+          'Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              final shopProvider = context.read<ShopProvider>();
+              final success = await shopProvider.deleteProduct(_product!.id);
+
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Publicación eliminada'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                context.go('/shop');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      shopProvider.errorMessage ??
+                          'Error al eliminar publicación',
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Eliminar'),
           ),
         ],
       ),
@@ -243,11 +440,56 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             expandedHeight: 400,
             pinned: true,
             backgroundColor: ColorTokens.primary30,
-            flexibleSpace: FlexibleSpaceBar(
-              background: _buildMediaSection(),
-            ),
+            flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
+            actions: [
+              // Botón de opciones para el vendedor
+              Consumer<UserProvider>(
+                builder: (context, userProvider, child) {
+                  final currentUser = userProvider.user;
+                  if (currentUser == null ||
+                      _product!.sellerId != currentUser.uid) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, color: Colors.white),
+                    onSelected: (value) async {
+                      if (value == 'mark_sold') {
+                        _showMarkAsSoldDialog(currentUser.uid);
+                      } else if (value == 'delete') {
+                        _showDeleteProductDialog(currentUser.uid);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      if (!_product!.isSold)
+                        const PopupMenuItem(
+                          value: 'mark_sold',
+                          child: Row(
+                            children: [
+                              Icon(Icons.check_circle, color: Colors.green),
+                              SizedBox(width: 8),
+                              Text('Marcar como vendido'),
+                            ],
+                          ),
+                        ),
+                      if (_product!.isSold)
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text('Eliminar publicación'),
+                            ],
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
           ),
-          
+
           // Contenido
           SliverToBoxAdapter(
             child: Padding(
@@ -259,7 +501,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   if (_product!.images.length > 1 || _product!.hasVideo)
                     _buildMediaIndicator(),
                   const SizedBox(height: 20),
-                  
+
                   // Nombre del producto
                   Text(
                     _product!.name,
@@ -269,20 +511,46 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Precio
                   LargePriceTag(price: _product!.price),
                   const SizedBox(height: 8),
-                  
+
+                  // Badge VENDIDO
+                  if (_product!.isSold)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        '🔴 PRODUCTO VENDIDO',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  if (_product!.isSold) const SizedBox(height: 8),
+
                   // Stock
                   _buildStockIndicator(),
                   const SizedBox(height: 16),
-                  
+
                   // Ciudad del vendedor
                   if (_product!.sellerCity != null) ...[
                     Row(
                       children: [
-                        Icon(Icons.location_on, size: 20, color: Colors.grey[600]),
+                        Icon(
+                          Icons.location_on,
+                          size: 20,
+                          color: Colors.grey[600],
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Ubicación: ${_product!.sellerCity}',
@@ -295,7 +563,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     const SizedBox(height: 16),
                   ],
-                  
+
                   // Vendedor
                   Row(
                     children: [
@@ -303,15 +571,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       const SizedBox(width: 8),
                       Text(
                         'Vendedor: ${_product!.sellerName}',
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[700], fontSize: 14),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Tallas
                   if (_product!.sizes.isNotEmpty) ...[
                     const Text(
@@ -344,14 +609,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     const SizedBox(height: 24),
                   ],
-                  
+
                   // Descripción detallada
                   const Text(
                     'Descripción',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -369,7 +631,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
         ],
       ),
-      
+
       // Barra inferior con botones
       bottomNavigationBar: _buildBottomBar(),
     );
@@ -377,14 +639,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _buildMediaSection() {
     final totalItems = _product!.images.length + (_product!.hasVideo ? 1 : 0);
-    
+
     return PageView.builder(
       itemCount: totalItems,
       onPageChanged: (index) {
         setState(() {
           _currentImageIndex = index;
         });
-        
+
         // Control de video
         if (_product!.hasVideo) {
           if (index == _product!.images.length && _videoController != null) {
@@ -399,7 +661,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         if (_product!.hasVideo && index == _product!.images.length) {
           return _buildVideoPlayer();
         }
-        
+
         // Mostrar imágenes
         return CachedNetworkImage(
           imageUrl: _product!.images[index],
@@ -410,7 +672,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
           errorWidget: (context, url, error) => Container(
             color: Colors.grey[200],
-            child: const Icon(Icons.shopping_bag, size: 100, color: Colors.grey),
+            child: const Icon(
+              Icons.shopping_bag,
+              size: 100,
+              color: Colors.grey,
+            ),
           ),
         );
       },
@@ -443,7 +709,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ? Icons.pause_circle_filled
                   : Icons.play_circle_filled,
               size: 64,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
             onPressed: () {
               setState(() {
@@ -462,7 +728,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Row(
@@ -484,27 +750,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _buildMediaIndicator() {
     final totalItems = _product!.images.length + (_product!.hasVideo ? 1 : 0);
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        totalItems,
-        (index) {
-          final isVideo = _product!.hasVideo && index == _product!.images.length;
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _currentImageIndex == index
-                  ? ColorTokens.secondary50
-                  : Colors.grey[300],
-              border: isVideo ? Border.all(color: Colors.red, width: 1) : null,
-            ),
-          );
-        },
-      ),
+      children: List.generate(totalItems, (index) {
+        final isVideo = _product!.hasVideo && index == _product!.images.length;
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _currentImageIndex == index
+                ? ColorTokens.secondary50
+                : Colors.grey[300],
+            border: isVideo ? Border.all(color: Colors.red, width: 1) : null,
+          ),
+        );
+      }),
     );
   }
 
@@ -537,7 +800,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -587,7 +850,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Botones de acción
             Row(
               children: [
@@ -608,7 +871,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Botón Comprar ahora
                 Expanded(
                   child: ElevatedButton.icon(

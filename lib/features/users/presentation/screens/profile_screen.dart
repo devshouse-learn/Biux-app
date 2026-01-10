@@ -95,7 +95,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     print('🔍 ====== INICIANDO ACTUALIZACIÓN DE PERFIL ======');
     print('📝 Nombre: "${_nameController.text}"');
     print('📧 Email: "${_emailController.text}"');
-    
+
     // Validar que los campos no estén vacíos
     if (_nameController.text.trim().isEmpty) {
       print('❌ ERROR: Nombre vacío');
@@ -131,7 +131,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Por favor ingresa un email válido (ejemplo: usuario@dominio.com)'),
+            content: Text(
+              'Por favor ingresa un email válido (ejemplo: usuario@dominio.com)',
+            ),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -141,7 +143,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
     print('✅ Validaciones pasadas');
     print('🚀 Enviando datos al provider...');
-    
+
     bool success = await widget.userProvider.updateProfile(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
@@ -202,8 +204,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   context: widgetContext,
                   barrierDismissible: false,
                   builder: (BuildContext loadingContext) {
-                    return WillPopScope(
-                      onWillPop: () async => false,
+                    return PopScope(
+                      canPop: false,
                       child: AlertDialog(
                         content: Row(
                           mainAxisSize: MainAxisSize.min,

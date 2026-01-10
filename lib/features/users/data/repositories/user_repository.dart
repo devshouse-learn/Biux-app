@@ -61,8 +61,9 @@ class UserRepository {
       // Firestore permite máximo 30 elementos en whereIn
       List<List<String>> chunks = [];
       for (int i = 0; i < uids.length; i += 30) {
-        chunks
-            .add(uids.sublist(i, i + 30 > uids.length ? uids.length : i + 30));
+        chunks.add(
+          uids.sublist(i, i + 30 > uids.length ? uids.length : i + 30),
+        );
       }
 
       for (List<String> chunk in chunks) {

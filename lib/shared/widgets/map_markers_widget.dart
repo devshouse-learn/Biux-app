@@ -16,21 +16,20 @@ class MapMarker extends Clusterable {
     pointsSize,
     childMarkerId,
   }) : super(
-          markerId: id,
-          latitude: position.latitude,
-          longitude: position.longitude,
-          isCluster: isCluster,
-          clusterId: clusterId,
-          pointsSize: pointsSize,
-          childMarkerId: childMarkerId,
-        );
+         markerId: id,
+         latitude: position.latitude,
+         longitude: position.longitude,
+         isCluster: isCluster,
+         clusterId: clusterId,
+         pointsSize: pointsSize,
+         childMarkerId: childMarkerId,
+       );
 
   Marker toMarker() => Marker(
-        markerId: MarkerId(isCluster == true ? AppStrings.markerIdMapMarker(id: id): id),
-        position: LatLng(
-          position.latitude,
-          position.longitude,
-        ),
-        icon: icon!,
-      );
+    markerId: MarkerId(
+      isCluster == true ? AppStrings.markerIdMapMarker(id: id) : id,
+    ),
+    position: LatLng(position.latitude, position.longitude),
+    icon: icon!,
+  );
 }

@@ -25,9 +25,7 @@ class ButtonWhatsappWidget extends StatelessWidget {
       onTap: () => LaunchSocialNetworks().launchwhatsapp(whatsapp, name),
       child: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: new AssetImage(whatsappLogo),
-          ),
+          image: DecorationImage(image: new AssetImage(whatsappLogo)),
           color: ColorTokens.neutral100,
           borderRadius: BorderRadius.circular(radiusCircular),
         ),
@@ -37,5 +35,3 @@ class ButtonWhatsappWidget extends StatelessWidget {
     );
   }
 }
-
-

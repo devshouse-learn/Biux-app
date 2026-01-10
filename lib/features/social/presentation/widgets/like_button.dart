@@ -65,7 +65,9 @@ class _LikeButtonState extends State<LikeButton>
     }
 
     // 2. Verificar si ya ha dado like (solo permitir una vez)
-    final isLiked = await provider.watchUserLiked(widget.type, widget.targetId).first;
+    final isLiked = await provider
+        .watchUserLiked(widget.type, widget.targetId)
+        .first;
     if (isLiked) {
       debugPrint('✅ Ya has dado like a este contenido');
       return; // No hacer nada si ya le dio like

@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/core/models/common/response.dart';
@@ -76,17 +76,15 @@ class CreateUserBloc extends ChangeNotifier {
   }
 
   Future<ResponseRepo> registerUser(BiuxUser user) async {
-    final responseRepo =
-        await authenticationRepository.registerUser(user: user);
+    final responseRepo = await authenticationRepository.registerUser(
+      user: user,
+    );
     notifyListeners();
     return responseRepo;
   }
 
   Future<void> uploadPhoto(String id) async {
-    await userFirebaseRepository.uploadPhoto(
-      id,
-      image,
-    );
+    await userFirebaseRepository.uploadPhoto(id, image);
     notifyListeners();
   }
 }
