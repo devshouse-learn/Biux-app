@@ -292,52 +292,85 @@ class _AppbarCreateStory extends StatelessWidget
     return AppBar(
       backgroundColor: ColorTokens.primary30,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: Icon(Icons.close, color: Colors.white),
         onPressed: () {
           Navigator.pop(context, false);
         },
       ),
-      title: Text(AppStrings.titleAppBarCreateStory, style: Styles.noDateText),
+      title: Text(
+        AppStrings.titleAppBarCreateStory,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
       actions: [
-        IconButton(
-          icon: Icon(Icons.arrow_forward),
-          onPressed: () {
-            if (bloc.imgList.isNotEmpty) {
-              showDialogCreateStory(
-                context: context,
-                onSave: (description) async {
-                  final userId = AuthenticationRepository().getUserId;
-                  final user = await bloc.getUser(id: userId);
-                  final creationDate = DateTime.now();
-                  final story = Story(
-                    description: description,
-                    tags: [],
-                    creationDate: creationDate.toString(),
-                    user: user,
-                  );
-                  bloc.changeLoading(true);
-                  final result = await bloc.createStory(
-                    story: story,
-                    list: bloc.imgList,
-                  );
-                  bloc.changeLoading(false);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBarUtils.customSnackBar(
-                      content: result
-                          ? AppStrings.textSuccessfulCreateStory
-                          : AppStrings.textErrorCreateStory,
-                      backgroundColor: result
-                          ? ColorTokens.secondary50
-                          : ColorTokens.error50,
-                    ),
-                  );
-                  if (result) {
-                    Navigator.pop(context, true);
-                  }
-                },
-              );
-            }
-          },
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: ColorTokens.primary30,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+            icon: Icon(Icons.check, size: 20),
+            label: Text(
+              'Publicar',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+            onPressed: () {
+              if (bloc.imgList.isNotEmpty) {
+                showDialogCreateStory(
+                  context: context,
+                  onSave: (description) async {
+                    final userId = AuthenticationRepository().getUserId;
+                    final user = await bloc.getUser(id: userId);
+                    final creationDate = DateTime.now();
+                    final story = Story(
+                      description: description,
+                      tags: [],
+                      creationDate: creationDate.toString(),
+                      user: user,
+                    );
+                    bloc.changeLoading(true);
+                    final result = await bloc.createStory(
+                      story: story,
+                      list: bloc.imgList,
+                    );
+                    bloc.changeLoading(false);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBarUtils.customSnackBar(
+                        content: result
+                            ? AppStrings.textSuccessfulCreateStory
+                            : AppStrings.textErrorCreateStory,
+                        backgroundColor: result
+                            ? ColorTokens.secondary50
+                            : ColorTokens.error50,
+                      ),
+                    );
+                    if (result) {
+                      Navigator.pop(context, true);
+                    }
+                  },
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBarUtils.customSnackBar(
+                    content: 'Selecciona al menos una foto',
+                    backgroundColor: ColorTokens.error50,
+                  ),
+                );
+              }
+            },
+          ),
         ),
       ],
     );
@@ -374,41 +407,73 @@ class _CarouselImagesSelected extends StatelessWidget {
     final List<Widget> imageSliders = bloc.imgList
         .map(
           (item) => Container(
-            child: StreamBuilder<Object>(
-              stream: null,
-              builder: (context, snapshot) {
-                final sizeScreen = MediaQuery.of(context).size;
-                return Stack(
-                  children: <Widget>[
-                    AssetEntityImage(
-                      item,
-                      width: sizeScreen.width,
-                      fit: BoxFit.cover,
-                    ),
-                  ],
-                );
-              },
+            width: sizeScreen.width,
+            height: sizeScreen.height * 0.5,
+            color: Colors.black,
+            child: Center(
+              child: AssetEntityImage(
+                item,
+                width: sizeScreen.width,
+                height: sizeScreen.height * 0.5,
+                fit: BoxFit.contain,
+                isOriginal: false,
+              ),
             ),
           ),
         )
         .toList();
+    
+    // Mostrar placeholder cuando no hay imágenes seleccionadas
+    if (bloc.imgList.isEmpty) {
+      imageSliders.add(
+        Container(
+          width: sizeScreen.width,
+          height: sizeScreen.height * 0.5,
+          color: Colors.grey[900],
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.photo_library_outlined,
+                  size: 80,
+                  color: Colors.grey[600],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Selecciona hasta 3 fotos',
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    
     return Stack(
       children: [
         Column(
           children: [
             Expanded(
-              child: CarouselSlider(
-                items: imageSliders,
-                carouselController: _controller,
-                options: CarouselOptions(
-                  enableInfiniteScroll: false,
-                  viewportFraction: 1.0,
-                  initialPage: 0,
-                  enlargeCenterPage: false,
-                  height: sizeScreen.height * 0.5,
-                  onPageChanged: (index, reason) {
-                    bloc.changeCurrent(current: index);
-                  },
+              child: Container(
+                color: Colors.black,
+                child: CarouselSlider(
+                  items: imageSliders,
+                  carouselController: _controller,
+                  options: CarouselOptions(
+                    enableInfiniteScroll: false,
+                    viewportFraction: 1.0,
+                    initialPage: 0,
+                    enlargeCenterPage: false,
+                    aspectRatio: 1.0,
+                    onPageChanged: (index, reason) {
+                      bloc.changeCurrent(current: index);
+                    },
+                  ),
                 ),
               ),
             ),
@@ -488,13 +553,12 @@ void showDialogCreateStory({
   return await showDialog(
     context: context,
     builder: (context) {
-      final sizeScreen = MediaQuery.of(context).size;
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
             backgroundColor: ColorTokens.neutral100,
-            contentPadding: EdgeInsets.zero,
-            insetPadding: EdgeInsets.zero,
+            contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 16),
             alignment: Alignment.bottomCenter,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -502,7 +566,6 @@ void showDialogCreateStory({
                 topRight: Radius.circular(20),
               ),
             ),
-            scrollable: true,
             content: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -510,33 +573,67 @@ void showDialogCreateStory({
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Título del diálogo
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.auto_awesome,
+                            color: ColorTokens.primary30,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Crear Historia',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: ColorTokens.primary30,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Campo de descripción
                     TextFormFieldBiuxWidget(
                       text: AppStrings.descriptionStory,
                       controller: _descriptionController,
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       maxLine: 6,
-                      radiusCircular: 20,
+                      radiusCircular: 12,
                       autofocus: true,
                       validator: (value) {
                         // Descripción es opcional
                         return null;
                       },
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: 250,
-                        child: TextButton(
-                          style: Styles().textButtonStyle,
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              onSave(_descriptionController.text);
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          child: Text(
-                            AppStrings.postText,
-                            style: Styles.containerNameUser,
+                    const SizedBox(height: 16),
+                    // Botón de publicar
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorTokens.primary30,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            onSave(_descriptionController.text);
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        icon: Icon(Icons.send, size: 20),
+                        label: Text(
+                          AppStrings.postText,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -545,7 +642,6 @@ void showDialogCreateStory({
                 ),
               ),
             ),
-            actions: [SizedBox(width: sizeScreen.width)],
           );
         },
       );
