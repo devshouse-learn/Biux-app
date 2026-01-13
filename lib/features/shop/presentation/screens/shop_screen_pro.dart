@@ -1567,9 +1567,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
-                      onPressed: () {
+                      onPressed: () async {
+                        final nav = GoRouter.of(context);
                         Navigator.pop(context);
-                        context.go('/shop/seller-requests');
+                        await Future.delayed(const Duration(milliseconds: 300));
+                        nav.go('/shop/seller-requests');
                       },
                       icon: const Icon(Icons.admin_panel_settings),
                       label: const Text('Panel de administración'),
@@ -1711,9 +1713,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
-                      onPressed: () {
+                      onPressed: () async {
+                        final nav = GoRouter.of(context);
                         Navigator.pop(context);
-                        context.go('/shop/manage-sellers');
+                        await Future.delayed(const Duration(milliseconds: 300));
+                        nav.go('/shop/manage-sellers');
                       },
                       icon: const Icon(Icons.settings),
                       label: const Text('Configurar permisos'),
@@ -1855,9 +1859,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
-                      onPressed: () {
+                      onPressed: () async {
+                        final nav = GoRouter.of(context);
                         Navigator.pop(context);
-                        context.go('/shop/delete-all-products');
+                        await Future.delayed(const Duration(milliseconds: 300));
+                        nav.go('/shop/delete-all-products');
                       },
                       icon: const Icon(Icons.inventory),
                       label: const Text('Ver inventario'),
