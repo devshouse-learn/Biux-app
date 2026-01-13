@@ -159,7 +159,7 @@ class CartScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${(product.precioFinal * 4000).toStringAsFixed(0)} COP c/u',
+                    '\$${product.precioFinal.toStringAsFixed(0)} COP c/u',
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
@@ -220,7 +220,7 @@ class CartScreen extends StatelessWidget {
 
                       // Subtotal
                       Text(
-                        '\$${(item.subtotal * 4000).toStringAsFixed(0)} COP',
+                        '\$${item.subtotal.toStringAsFixed(0)} COP',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -338,7 +338,7 @@ class CartScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '\$${(cart.total * 4000).toStringAsFixed(0)} COP',
+                  '\$${cart.total.toStringAsFixed(0)} COP',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -467,7 +467,7 @@ class CartScreen extends StatelessWidget {
             const Text('Resumen de tu pedido:'),
             const SizedBox(height: 12),
             Text('Productos: ${cart.totalQuantity}'),
-            Text('Total: \$${(cart.total * 4000).toStringAsFixed(0)} COP'),
+            Text('Total: \$${cart.total.toStringAsFixed(0)} COP'),
             const SizedBox(height: 12),
             const Text(
               'Esta es una versión demo. En producción, aquí se integraría una pasarela de pago real (Stripe, PayPal, etc.)',

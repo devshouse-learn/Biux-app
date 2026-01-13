@@ -282,7 +282,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   const SizedBox(height: 4),
                   if (product.tieneDescuento) ...[
                     Text(
-                      '\$${(product.precio * 4000).toStringAsFixed(0)} COP',
+                      '\$${product.precio.toStringAsFixed(0)} COP',
                       style: const TextStyle(
                         decoration: TextDecoration.lineThrough,
                         color: Colors.grey,
@@ -290,7 +290,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       ),
                     ),
                     Text(
-                      '\$${(product.precioFinal * 4000).toStringAsFixed(0)} COP',
+                      '\$${product.precioFinal.toStringAsFixed(0)} COP',
                       style: const TextStyle(
                         color: Colors.green,
                         fontWeight: FontWeight.bold,
@@ -299,7 +299,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
                   ] else
                     Text(
-                      '\$${(product.precio * 4000).toStringAsFixed(0)} COP',
+                      '\$${product.precio.toStringAsFixed(0)} COP',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

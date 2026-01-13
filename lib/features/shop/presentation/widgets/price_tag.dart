@@ -30,7 +30,7 @@ class PriceTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      showCurrency ? '\$${_formatPrice(price)}' : _formatPrice(price),
+      showCurrency ? '\$${_formatPrice(price)} COP' : _formatPrice(price),
       style: TextStyle(
         fontSize: fontSize,
         fontWeight: fontWeight,

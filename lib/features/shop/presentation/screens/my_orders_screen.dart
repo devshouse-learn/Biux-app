@@ -50,54 +50,97 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               Expanded(
                 child: isEmpty
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.shopping_bag_outlined,
-                              size: 120,
-                              color: Colors.grey[300],
-                            ),
-                            const SizedBox(height: 24),
-                            const Text(
-                              'No tienes pedidos aún',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Realiza tu primera compra y\naquí aparecerán tus pedidos',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                                height: 1.5,
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                context.go('/shop');
-                              },
-                              icon: const Icon(Icons.store, size: 20),
-                              label: const Text('Ir a la tienda'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorTokens.secondary50,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 16,
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  color: ColorTokens.primary30.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: ColorTokens.primary30.withValues(alpha: 0.2),
+                                    width: 2,
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                child: Icon(
+                                  Icons.shopping_bag_outlined,
+                                  size: 80,
+                                  color: ColorTokens.primary30,
                                 ),
-                                elevation: 2,
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 24),
+                              const Text(
+                                '¡Aún no tienes pedidos!',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                '¡Es hora de encontrar productos increíbles!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Explora nuestra tienda llena de productos\nde ciclismo de alta calidad y encuentra\ntodo lo que necesitas para tu próxima aventura.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[600],
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  context.go('/shop');
+                                },
+                                icon: const Icon(Icons.store, size: 22),
+                                label: const Text('Explorar Productos'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: ColorTokens.primary30,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 3,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  context.go('/shop');
+                                },
+                                icon: const Icon(Icons.pedal_bike, size: 20),
+                                label: const Text('Ver Ofertas'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: ColorTokens.primary30,
+                                  side: BorderSide(color: ColorTokens.primary30),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : ListView.builder(
