@@ -687,16 +687,6 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const MyOrdersScreen(),
         ),
 
-        // Detalle de producto (DEBE IR DESPUÉS de las rutas específicas)
-        GoRoute(
-          path: '/shop/:id',
-          name: 'productDetail',
-          builder: (context, state) {
-            final productId = state.pathParameters['id']!;
-            return ProductDetailScreen(productId: productId);
-          },
-        ),
-
         // Panel de administración (solo admins)
         GoRoute(
           path: '/shop/admin',
@@ -710,25 +700,36 @@ final GoRouter _router = GoRouter(
           // },
         ),
 
-        // Gestión de vendedores (solo admins)
+        // Gestión de vendedores (solo admins) - DEBE IR ANTES DE /shop/:id
         GoRoute(
           path: '/shop/manage-sellers',
           name: 'manageSellers',
           builder: (context, state) => const ManageSellersScreen(),
         ),
 
-        // Solicitudes de vendedores (solo admins)
+        // Solicitudes de vendedores (solo admins) - DEBE IR ANTES DE /shop/:id
         GoRoute(
           path: '/shop/seller-requests',
           name: 'sellerRequests',
           builder: (context, state) => const SellerRequestsScreen(),
         ),
 
-        // Eliminar todos los productos (solo admins)
+        // Eliminar todos los productos (solo admins) - DEBE IR ANTES DE /shop/:id
         GoRoute(
           path: '/shop/delete-all-products',
           name: 'deleteAllProducts',
           builder: (context, state) => const DeleteAllProductsScreen(),
+        ),
+
+        // ⚠️ CRÍTICO: Detalle de producto DEBE IR AL FINAL después de TODAS las rutas específicas
+        // para que :id no capture rutas como 'manage-sellers', 'seller-requests', 'delete-all-products'
+        GoRoute(
+          path: '/shop/:id',
+          name: 'productDetail',
+          builder: (context, state) {
+            final productId = state.pathParameters['id']!;
+            return ProductDetailScreen(productId: productId);
+          },
         ),
 
         // TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
