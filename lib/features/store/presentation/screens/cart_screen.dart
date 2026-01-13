@@ -47,36 +47,64 @@ class CartScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(20),
+                color: const Color(0xFF3B82F6).withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.shopping_cart_outlined,
-                size: 80,
+                size: 100,
                 color: Colors.grey[400],
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              '¡Tu carrito está vacío!',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.orange[200]!, width: 2),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.add_shopping_cart,
+                    color: Colors.orange[700],
+                    size: 32,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Pon tus productos aquí',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[900],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Explora nuestra tienda y agrega los productos que más te gusten',
+                    style: TextStyle(fontSize: 14, color: Colors.orange[800]),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              'Tu carrito está vacío',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '¡Pon aquí o elige tus productos favoritos!',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Explora nuestra tienda y encuentra productos increíbles',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              'Encuentra productos increíbles para tu ciclismo',
+              style: TextStyle(fontSize: 15, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -84,16 +112,22 @@ class CartScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/store');
               },
-              icon: const Icon(Icons.shopping_bag),
-              label: const Text('Explorar Tienda'),
+              icon: const Icon(Icons.shopping_bag, size: 24),
+              label: const Text(
+                'Explorar Tienda',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3B82F6),
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
+                  horizontal: 40,
+                  vertical: 18,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
+                elevation: 4,
               ),
             ),
           ],
@@ -389,17 +423,123 @@ class CartScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Botón de checkout
+            // Opciones de envío disponibles
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green[200]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.local_shipping,
+                        color: Colors.green[700],
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Envíos disponibles a:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildShippingChip('Bogotá', Icons.location_city),
+                      _buildShippingChip('Medellín', Icons.location_city),
+                      _buildShippingChip('Cali', Icons.location_city),
+                      _buildShippingChip('Barranquilla', Icons.location_city),
+                      _buildShippingChip('Cartagena', Icons.location_city),
+                      _buildShippingChip('Todo Colombia', Icons.public),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: Colors.green[700],
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Envío gratis en compras mayores a \$150,000 COP',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.green[900],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Botón de compra mejorado
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
+              child: ElevatedButton(
                 onPressed: hasStockIssues
                     ? null
                     : () => _processCheckout(context, cart),
-                icon: const Icon(Icons.payment),
-                label: const Text('Proceder al pago'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFF059669),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                  disabledBackgroundColor: Colors.grey[300],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.shopping_bag_outlined, size: 24),
+                    const SizedBox(width: 12),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Comprar Ahora',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '\$${cart.total.toStringAsFixed(0)} COP',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -453,52 +593,347 @@ class CartScreen extends StatelessWidget {
   }
 
   void _processCheckout(BuildContext context, CartProvider cart) {
-    // TODO: Implementar proceso de pago real
-    // Por ahora, mostrar un diálogo de confirmación
-
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar compra'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
           children: [
-            const Text('Resumen de tu pedido:'),
-            const SizedBox(height: 12),
-            Text('Productos: ${cart.totalQuantity}'),
-            Text('Total: \$${cart.total.toStringAsFixed(0)} COP'),
-            const SizedBox(height: 12),
-            const Text(
-              'Esta es una versión demo. En producción, aquí se integraría una pasarela de pago real (Stripe, PayPal, etc.)',
-              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            // Barra superior
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF059669).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.shopping_bag,
+                      color: Color(0xFF059669),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Confirmar Compra',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Revisa tu pedido',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+            // Contenido
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Resumen del pedido
+                    const Text(
+                      'Resumen del Pedido',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Productos:'),
+                              Text(
+                                '${cart.totalQuantity} ${cart.totalQuantity == 1 ? 'item' : 'items'}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Subtotal:'),
+                              Text('\$${cart.total.toStringAsFixed(0)} COP'),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Envío:'),
+                              Text(
+                                cart.total >= 150000
+                                    ? 'GRATIS'
+                                    : '\$15,000 COP',
+                                style: TextStyle(
+                                  color: cart.total >= 150000
+                                      ? const Color(0xFF059669)
+                                      : Colors.black,
+                                  fontWeight: cart.total >= 150000
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Total:',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                '\$${(cart.total + (cart.total >= 150000 ? 0 : 15000)).toStringAsFixed(0)} COP',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF059669),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Método de pago
+                    const Text(
+                      'Selecciona método de pago',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildPaymentOption(
+                      context,
+                      'Tarjeta de Crédito/Débito',
+                      Icons.credit_card,
+                    ),
+                    _buildPaymentOption(
+                      context,
+                      'PSE - Transferencia Bancaria',
+                      Icons.account_balance,
+                    ),
+                    _buildPaymentOption(context, 'Nequi', Icons.phone_android),
+                    _buildPaymentOption(context, 'Daviplata', Icons.wallet),
+                    const SizedBox(height: 24),
+
+                    // Ciudad de envío
+                    const Text(
+                      'Selecciona ciudad de envío',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildCityOption('Bogotá'),
+                        _buildCityOption('Medellín'),
+                        _buildCityOption('Cali'),
+                        _buildCityOption('Barranquilla'),
+                        _buildCityOption('Cartagena'),
+                        _buildCityOption('Otra ciudad'),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Nota informativa
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.blue[700]),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Esta es una versión demo. En producción se integraría una pasarela de pago real.',
+                              style: TextStyle(fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Botón de confirmación
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Simular compra exitosa
+                      cart.clearCart();
+                      Navigator.pop(context); // Cerrar modal
+                      Navigator.pop(context); // Volver a tienda
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  '¡Compra realizada con éxito!',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: const Color(0xFF059669),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF059669),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                    ),
+                    child: const Text(
+                      'Confirmar y Pagar',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Simular compra exitosa
-              cart.clearCart();
-              Navigator.pop(context); // Cerrar diálogo
-              Navigator.pop(context); // Volver a tienda
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('¡Compra realizada con éxito! (Demo)'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 3),
-                ),
-              );
-            },
-            child: const Text('Confirmar compra'),
-          ),
-        ],
       ),
+    );
+  }
+
+  Widget _buildPaymentOption(
+    BuildContext context,
+    String title,
+    IconData icon,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: const Color(0xFF3B82F6)),
+        title: Text(title),
+        trailing: Radio<bool>(
+          value: true,
+          groupValue: false,
+          onChanged: (value) {},
+        ),
+        onTap: () {},
+      ),
+    );
+  }
+
+  Widget _buildCityOption(String city) {
+    return ChoiceChip(
+      label: Text(city),
+      selected: false,
+      onSelected: (selected) {},
+      selectedColor: const Color(0xFF059669),
+      backgroundColor: Colors.grey[100],
+      labelStyle: const TextStyle(fontWeight: FontWeight.w500),
     );
   }
 
@@ -517,6 +952,32 @@ class CartScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(name, style: const TextStyle(fontSize: 12)),
       ],
+    );
+  }
+
+  Widget _buildShippingChip(String city, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.green[300]!),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: Colors.green[700]),
+          const SizedBox(width: 6),
+          Text(
+            city,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Colors.green[900],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
