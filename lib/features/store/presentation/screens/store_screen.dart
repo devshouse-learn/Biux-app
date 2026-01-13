@@ -48,10 +48,7 @@ class _StoreScreenState extends State<StoreScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E3A8A),
-                const Color(0xFF3B82F6),
-              ],
+              colors: [const Color(0xFF1E3A8A), const Color(0xFF3B82F6)],
             ),
             boxShadow: [
               BoxShadow(
@@ -96,12 +93,41 @@ class _StoreScreenState extends State<StoreScreen> {
                         ),
                         Text(
                           'Todo para tu ciclismo',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
+                    ),
+                  ),
+                  // Botón Mis Pedidos
+                  Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.receipt_long),
+                      color: Colors.white,
+                      tooltip: 'Mis pedidos',
+                      onPressed: () {
+                        _showMyOrdersScreen(context);
+                      },
+                    ),
+                  ),
+                  // Botón Favoritos
+                  Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.favorite_border),
+                      color: Colors.white,
+                      tooltip: 'Favoritos',
+                      onPressed: () {
+                        _showFavoritesScreen(context);
+                      },
                     ),
                   ),
                   // Carrito con badge mejorado
@@ -195,13 +221,18 @@ class _StoreScreenState extends State<StoreScreen> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Buscar productos...',
-                        prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                        ),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
                                 icon: const Icon(Icons.clear),
                                 onPressed: () {
                                   _searchController.clear();
-                                  context.read<ProductProvider>().clearFilters();
+                                  context
+                                      .read<ProductProvider>()
+                                      .clearFilters();
                                   setState(() {});
                                 },
                               )
@@ -241,7 +272,10 @@ class _StoreScreenState extends State<StoreScreen> {
                       context.read<ProductProvider>().clearFilters();
                       setState(() {});
                     },
-                    icon: const Icon(Icons.filter_list_off, color: Colors.white),
+                    icon: const Icon(
+                      Icons.filter_list_off,
+                      color: Colors.white,
+                    ),
                     tooltip: 'Limpiar filtros',
                   ),
                 ),
@@ -254,15 +288,16 @@ class _StoreScreenState extends State<StoreScreen> {
             height: 60,
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border(
-                bottom: BorderSide(color: Colors.grey[200]!),
-              ),
+              border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
             ),
             child: Consumer<ProductProvider>(
               builder: (context, provider, child) {
                 return ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   children: [
                     _buildCategoryChip(
                       context,
@@ -472,7 +507,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   : _buildPlaceholderImage(product),
             ),
           ),
-          
+
           // Información del producto
           Expanded(
             flex: 2,
@@ -493,11 +528,12 @@ class _StoreScreenState extends State<StoreScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  
+
                   // Precio con formato mejorado
                   Row(
                     children: [
-                      if (product.descuento != null && product.descuento! > 0) ...[
+                      if (product.descuento != null &&
+                          product.descuento! > 0) ...[
                         Text(
                           _formatPrice(product.precio),
                           style: TextStyle(
@@ -550,7 +586,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     ],
                   ),
                   const Spacer(),
-                  
+
                   // Stock y botón de agregar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -559,29 +595,33 @@ class _StoreScreenState extends State<StoreScreen> {
                         'Stock: ${product.stock}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: product.stock > 0 
-                              ? const Color(0xFF059669) 
+                          color: product.stock > 0
+                              ? const Color(0xFF059669)
                               : Colors.red,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: product.disponible 
-                              ? const Color(0xFF3B82F6) 
+                          color: product.disponible
+                              ? const Color(0xFF3B82F6)
                               : Colors.grey[300],
                           borderRadius: BorderRadius.circular(8),
-                          boxShadow: product.disponible ? [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ] : null,
+                          boxShadow: product.disponible
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.add_shopping_cart, size: 18),
-                          color: product.disponible ? Colors.white : Colors.grey[600],
+                          color: product.disponible
+                              ? Colors.white
+                              : Colors.grey[600],
                           onPressed: product.disponible
                               ? () {
                                   _addToCart(context, product);
@@ -628,10 +668,7 @@ class _StoreScreenState extends State<StoreScreen> {
           const SizedBox(height: 8),
           Text(
             product.categoria.displayName,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -667,10 +704,10 @@ class _StoreScreenState extends State<StoreScreen> {
   void _addToCart(BuildContext context, ProductEntity product) {
     try {
       context.read<CartProvider>().addItem(product);
-      
+
       // Feedback háptico
       HapticFeedback.lightImpact();
-      
+
       // Snackbar mejorado
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -688,9 +725,7 @@ class _StoreScreenState extends State<StoreScreen> {
           ),
           backgroundColor: const Color(0xFF059669),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           duration: const Duration(seconds: 2),
           action: SnackBarAction(
             label: 'Ver carrito',
@@ -713,12 +748,296 @@ class _StoreScreenState extends State<StoreScreen> {
           ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     }
+  }
+
+  /// Mostrar pantalla de Mis Pedidos con estado vacío
+  void _showMyOrdersScreen(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Barra superior con indicador
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.receipt_long,
+                      color: Color(0xFF3B82F6),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Mis Pedidos',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Historial de compras',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            // Estado vacío
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.shopping_bag_outlined,
+                        size: 80,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      '¡Aún no tienes pedidos!',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
+                      child: Text(
+                        'Pon aquí tus productos favoritos y realiza tu primera compra',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.shopping_cart),
+                      label: const Text('Explorar productos'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3B82F6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mostrar pantalla de Favoritos con estado vacío
+  void _showFavoritesScreen(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Barra superior con indicador
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.favorite,
+                      color: Colors.red,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Favoritos',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Productos que te gustan',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            // Estado vacío
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.favorite_border,
+                        size: 80,
+                        color: Colors.red[300],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      '¡Aún no tienes favoritos!',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
+                      child: Text(
+                        'Guarda tus productos favoritos para encontrarlos fácilmente',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.search),
+                      label: const Text('Descubrir productos'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
