@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
+import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 
@@ -106,12 +107,19 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           return _buildBody(provider);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreatePostOptions(context),
-        backgroundColor:
-            theme.floatingActionButtonTheme.backgroundColor ??
-            theme.primaryColor,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: GestureDetector(
+        // Tap principal: crear publicación directamente (como antes)
+        onTap: () => _navigateToCreatePost(context),
+        // Long press: mostrar opciones adicionales
+        onLongPress: () => _showCreatePostOptions(context),
+        child: FloatingActionButton(
+          onPressed: () => _navigateToCreatePost(context),
+          backgroundColor:
+              theme.floatingActionButtonTheme.backgroundColor ??
+              theme.primaryColor,
+          child: const Icon(Icons.add, color: Colors.white),
+          heroTag: "create_post_fab",
+        ),
       ),
     );
   }
@@ -289,6 +297,19 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             ),
           );
         },
+      ),
+    );
+  }
+
+  /// Navegar directamente a crear publicación (comportamiento original)
+  void _navigateToCreatePost(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const CreateExperienceScreen(
+          experienceType: ExperienceType.general,
+          isPostMode: true, // Modo publicación permanente
+          textOnly: false, // Permite multimedia
+        ),
       ),
     );
   }

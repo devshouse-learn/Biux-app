@@ -27,11 +27,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _currentImageIndex = 0;
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
+  bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _loadProduct();
+    // No llamar _loadProduct aquí para evitar usar context antes de que el widget esté montado
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isLoading) {
+      _loadProduct();
+    }
   }
 
   @override
@@ -69,19 +79,29 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Producto no encontrado'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
 
-        // Regresar a la tienda después de mostrar el error
-        Future.delayed(const Duration(seconds: 2), () {
+        // Mostrar snackbar solo si el widget está montado
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            print('⬅️ Regresando a la tienda...');
-            context.go('/shop');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Producto no encontrado'),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 2),
+              ),
+            );
+
+            // Regresar a la tienda después de mostrar el error
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                print('⬅️ Regresando a la tienda...');
+                context.go('/shop');
+              }
+            });
           }
         });
         return;
@@ -91,6 +111,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
       setState(() {
         _product = product;
+        _isLoading = false;
         if (product!.sizes.isNotEmpty) {
           _selectedSize = product.sizes.first;
         }
@@ -106,12 +127,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     } catch (e) {
       print('❌ Error cargando producto: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al cargar el producto'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error al cargar el producto'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        });
       }
     }
   }

@@ -663,15 +663,8 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Detalle de producto
-        GoRoute(
-          path: '/shop/:id',
-          name: 'productDetail',
-          builder: (context, state) {
-            final productId = state.pathParameters['id']!;
-            return ProductDetailScreen(productId: productId);
-          },
-        ),
+        // ⚠️ IMPORTANTE: Las rutas específicas DEBEN ir ANTES de /shop/:id
+        // para evitar que el parámetro :id capture 'cart', 'favorites', 'orders', etc.
 
         // Carrito de compras
         GoRoute(
@@ -692,6 +685,16 @@ final GoRouter _router = GoRouter(
           path: '/shop/orders',
           name: 'myOrders',
           builder: (context, state) => const MyOrdersScreen(),
+        ),
+
+        // Detalle de producto (DEBE IR DESPUÉS de las rutas específicas)
+        GoRoute(
+          path: '/shop/:id',
+          name: 'productDetail',
+          builder: (context, state) {
+            final productId = state.pathParameters['id']!;
+            return ProductDetailScreen(productId: productId);
+          },
         ),
 
         // Panel de administración (solo admins)

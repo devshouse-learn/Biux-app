@@ -91,10 +91,7 @@ class _AddStoryButton extends StatelessWidget {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      // Tap principal: crear publicación (como antes)
-      onTap: () => _navigateToCreatePost(context),
-      // Long press: mostrar opciones adicionales 
-      onLongPress: () => _showCreateStoryOptions(context),
+      onTap: () => _showCreateStoryOptions(context),
       child: Container(
         margin: const EdgeInsets.only(right: 12),
         child: Column(
@@ -110,13 +107,6 @@ class _AddStoryButton extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: ColorTokens.primary30.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: const Icon(Icons.add, color: Colors.white, size: 28),
             ),
@@ -124,10 +114,9 @@ class _AddStoryButton extends StatelessWidget {
             SizedBox(
               width: 70,
               child: Text(
-                'Publicar',
+                'Tu story',
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.w500,
                   color: theme.textTheme.bodySmall?.color,
                 ),
                 textAlign: TextAlign.center,
@@ -136,19 +125,6 @@ class _AddStoryButton extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  /// Navegar directamente a crear publicación (comportamiento original)
-  void _navigateToCreatePost(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CreateExperienceScreen(
-          experienceType: ExperienceType.general,
-          isPostMode: true, // Modo publicación permanente
-          textOnly: false, // Permite multimedia
         ),
       ),
     );
