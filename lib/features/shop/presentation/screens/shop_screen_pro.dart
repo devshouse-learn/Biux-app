@@ -157,7 +157,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     .where((p) => p.isFeatured || p.isAvailable)
                     .take(6)
                     .toList();
-                    
+
                 if (recommendedProducts.isNotEmpty) {
                   return RecommendedForRidesWidget(
                     products: recommendedProducts,
@@ -398,13 +398,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     context.go('/shop/favorites');
                     break;
                   case 'seller_requests':
-                    context.go('/shop/seller-requests');
+                    _showSellerRequestsModal(context);
                     break;
                   case 'manage_sellers':
-                    context.go('/shop/manage-sellers');
+                    _showManageSellersModal(context);
                     break;
                   case 'delete_all_products':
-                    context.go('/shop/delete-all-products');
+                    _showDeleteAllProductsModal(context);
                     break;
                   case 'request_seller':
                     showRequestSellerPermissionDialog(context);
@@ -566,9 +566,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 Positioned.fill(
                   child: Opacity(
                     opacity: 0.1,
-                    child: CustomPaint(
-                      painter: BikePatternPainter(),
-                    ),
+                    child: CustomPaint(painter: BikePatternPainter()),
                   ),
                 ),
                 // Contenido
@@ -647,7 +645,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
           ),
         ),
-        
+
         // Mini banners de beneficios
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -689,10 +687,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -703,10 +698,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       ),
       child: Column(
         children: [
-          Text(
-            emoji,
-            style: const TextStyle(fontSize: 24),
-          ),
+          Text(emoji, style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 4),
           Text(
             text,
@@ -1460,6 +1452,435 @@ class _ShopScreenProState extends State<ShopScreenPro>
     context.read<ShopProvider>().clearFilters();
   }
 
+  /// Mostrar pantalla de Solicitudes de Vendedores con estado vacío
+  void _showSellerRequestsModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Barra superior con indicador
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.pending_actions,
+                      color: Colors.purple,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Solicitudes de Vendedores',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Gestiona permisos de venta',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            // Estado vacío
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.purple.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check_circle_outline,
+                        size: 80,
+                        color: Colors.purple[300],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      '¡No hay solicitudes pendientes!',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
+                      child: Text(
+                        'Todas las solicitudes de vendedores han sido procesadas',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.admin_panel_settings),
+                      label: const Text('Panel de administración'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mostrar pantalla de Gestionar Vendedores con estado vacío
+  void _showManageSellersModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Barra superior con indicador
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.people,
+                      color: Colors.orange,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Gestionar Vendedores',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Administra permisos de usuarios',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            // Estado vacío
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.group_outlined,
+                        size: 80,
+                        color: Colors.orange[300],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Sistema de vendedores activo',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
+                      child: Text(
+                        'Gestiona los permisos de venta de los usuarios de tu plataforma',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.settings),
+                      label: const Text('Configurar permisos'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mostrar confirmación de Eliminar Todos los Productos
+  void _showDeleteAllProductsModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Barra superior con indicador
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.warning_rounded,
+                      color: Colors.red,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Eliminar Productos',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Gestión de inventario',
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            // Estado de advertencia
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.inventory_2_outlined,
+                        size: 80,
+                        color: Colors.red[300],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Gestión de Inventario',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
+                      child: Text(
+                        'Administra y organiza el inventario de productos de tu tienda',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.inventory),
+                      label: const Text('Ver inventario'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showHelpDialog() {
     showDialog(
       context: context,
@@ -1522,21 +1943,13 @@ class BikePatternPainter extends CustomPainter {
 
   void _drawBike(Canvas canvas, Paint paint, Offset center, double size) {
     final radius = size / 8;
-    
+
     // Rueda trasera
-    canvas.drawCircle(
-      Offset(center.dx - size / 4, center.dy),
-      radius,
-      paint,
-    );
-    
+    canvas.drawCircle(Offset(center.dx - size / 4, center.dy), radius, paint);
+
     // Rueda delantera
-    canvas.drawCircle(
-      Offset(center.dx + size / 4, center.dy),
-      radius,
-      paint,
-    );
-    
+    canvas.drawCircle(Offset(center.dx + size / 4, center.dy), radius, paint);
+
     // Marco simple
     canvas.drawLine(
       Offset(center.dx - size / 4, center.dy),
