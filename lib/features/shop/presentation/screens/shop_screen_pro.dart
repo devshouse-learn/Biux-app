@@ -1569,6 +1569,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
+                        context.go('/shop/seller-requests');
                       },
                       icon: const Icon(Icons.admin_panel_settings),
                       label: const Text('Panel de administración'),
@@ -1712,6 +1713,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
+                        context.go('/shop/manage-sellers');
                       },
                       icon: const Icon(Icons.settings),
                       label: const Text('Configurar permisos'),
@@ -1855,6 +1857,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
+                        context.go('/shop/delete-all-products');
                       },
                       icon: const Icon(Icons.inventory),
                       label: const Text('Ver inventario'),
