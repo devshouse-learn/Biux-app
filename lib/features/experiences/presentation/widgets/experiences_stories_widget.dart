@@ -91,7 +91,10 @@ class _AddStoryButton extends StatelessWidget {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: () => _showCreateStoryOptions(context),
+      // Tap principal: crear publicación (como antes)
+      onTap: () => _navigateToCreatePost(context),
+      // Long press: mostrar opciones adicionales 
+      onLongPress: () => _showCreateStoryOptions(context),
       child: Container(
         margin: const EdgeInsets.only(right: 12),
         child: Column(
@@ -107,6 +110,13 @@ class _AddStoryButton extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: ColorTokens.primary30.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: const Icon(Icons.add, color: Colors.white, size: 28),
             ),
@@ -114,11 +124,11 @@ class _AddStoryButton extends StatelessWidget {
             SizedBox(
               width: 70,
               child: Text(
-                'Tu story',
+                'Publicar',
                 style: TextStyle(
                   fontSize: 12,
-                  color: theme.textTheme.bodySmall?.color,
                   fontWeight: FontWeight.w500,
+                  color: theme.textTheme.bodySmall?.color,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -126,6 +136,19 @@ class _AddStoryButton extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Navegar directamente a crear publicación (comportamiento original)
+  void _navigateToCreatePost(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const CreateExperienceScreen(
+          experienceType: ExperienceType.general,
+          isPostMode: true, // Modo publicación permanente
+          textOnly: false, // Permite multimedia
         ),
       ),
     );
@@ -146,7 +169,7 @@ class _AddStoryButton extends StatelessWidget {
   }
 }
 
-/// Bottom sheet con opciones para crear contenido (historias y publicaciones)
+/// Bottom sheet simplificado para opciones adicionales
 class _CreateOptionsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -161,7 +184,7 @@ class _CreateOptionsBottomSheet extends StatelessWidget {
           Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.only(bottom: 20),
+            margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
               color: theme.dividerColor,
               borderRadius: BorderRadius.circular(2),
@@ -169,42 +192,20 @@ class _CreateOptionsBottomSheet extends StatelessWidget {
           ),
 
           Text(
-            'Crear Contenido',
+            'Opciones de Publicación',
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
               color: theme.textTheme.headlineMedium?.color,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Elige qué tipo de contenido quieres crear',
-            style: TextStyle(
-              fontSize: 14,
-              color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
-            ),
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
-          // Botón para crear publicación (como antes)
+          // Solo mostrar la opción de historia temporal como alternativa
           _StoryOptionButton(
-            icon: Icons.article,
-            title: 'Crear Publicación',
-            subtitle: 'Compartir experiencias permanentes',
-            color: ColorTokens.primary30,
-            onTap: () {
-              Navigator.of(context).pop();
-              _navigateToCreatePost(context);
-            },
-          ),
-
-          const SizedBox(height: 16),
-
-          // Botón para crear historia
-          _StoryOptionButton(
-            icon: Icons.auto_stories,
-            title: 'Crear Historia',
-            subtitle: 'Desaparece en 24 horas',
+            icon: Icons.schedule,
+            title: 'Crear Historia Temporal',
+            subtitle: 'Se elimina automáticamente en 24h',
             color: ColorTokens.secondary50,
             onTap: () {
               Navigator.of(context).pop();
@@ -214,19 +215,6 @@ class _CreateOptionsBottomSheet extends StatelessWidget {
 
           const SizedBox(height: 20),
         ],
-      ),
-    );
-  }
-
-  void _navigateToCreatePost(BuildContext context) {
-    // Navegar a crear publicación general (como estaba antes)
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CreateExperienceScreen(
-          experienceType: ExperienceType.general,
-          isPostMode: true, // Modo publicación
-          textOnly: false, // Permite multimedia
-        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Widget de etiqueta de precio con formato
@@ -19,12 +20,13 @@ class PriceTag extends StatelessWidget {
   }) : super(key: key);
 
   String _formatPrice(double price) {
-    // Formato colombiano: $45.000 o $1.250.000
-    final priceStr = price.toStringAsFixed(0);
-
-    // Separar en grupos de 3 desde la derecha
-    final regex = RegExp(r'(\d)(?=(\d{3})+(?!\d))');
-    return priceStr.replaceAllMapped(regex, (Match match) => '${match[1]}.');
+    // Formato profesional colombiano con separadores de miles
+    final formatter = NumberFormat.currency(
+      locale: 'es_CO',
+      symbol: '',
+      decimalDigits: 0,
+    );
+    return formatter.format(price).replaceAll(',', '.');
   }
 
   @override
