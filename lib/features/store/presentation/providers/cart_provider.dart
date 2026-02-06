@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
+import 'package:biux/features/store/domain/entities/coupon_entity.dart';
+import 'package:biux/features/store/data/datasources/coupon_datasource.dart';
 
 /// Item del carrito con producto y cantidad
 class CartItem {
@@ -14,8 +16,14 @@ class CartItem {
 /// Provider para gestión del carrito de compras
 class CartProvider with ChangeNotifier {
   final Map<String, CartItem> _items = {};
+  final CouponDataSource _couponDataSource = CouponDataSource();
+  
+  CouponEntity? _appliedCoupon;
+  String? _couponErrorMessage;
 
   Map<String, CartItem> get items => {..._items};
+  CouponEntity? get appliedCoupon => _appliedCoupon;
+  String? get couponErrorMessage => _couponErrorMessage;
 
   /// Número total de items en el carrito
   int get itemCount => _items.length;
@@ -25,9 +33,22 @@ class CartProvider with ChangeNotifier {
     return _items.values.fold(0, (sum, item) => sum + item.cantidad);
   }
 
-  /// Total del carrito
-  double get total {
+  /// Subtotal del carrito (antes de descuentos)
+  double get subtotal {
     return _items.values.fold(0.0, (sum, item) => sum + item.subtotal);
+  }
+
+  /// Descuento aplicado por el cupón
+  double get couponDiscount {
+    if (_appliedCoupon == null) return 0;
+    return _appliedCoupon!.calculateDiscount(subtotal);
+  }
+
+  /// Total del carrito (después de descuentos)
+  double get total {
+    final totalBeforeDiscount = subtotal;
+    final discount = couponDiscount;
+    return totalBeforeDiscount - discount;
   }
 
   /// Verificar si el carrito está vacío
@@ -113,6 +134,8 @@ class CartProvider with ChangeNotifier {
   /// Limpiar carrito
   void clearCart() {
     _items.clear();
+    _appliedCoupon = null;
+    _couponErrorMessage = null;
     notifyListeners();
   }
 
@@ -129,6 +152,55 @@ class CartProvider with ChangeNotifier {
   /// Obtener lista de productos del carrito
   List<CartItem> getCartItems() {
     return _items.values.toList();
+  }
+
+  /// Aplicar cupón de descuento
+  bool applyCoupon(String code) {
+    _couponErrorMessage = null;
+
+    if (code.trim().isEmpty) {
+      _couponErrorMessage = 'Ingresa un código de cupón';
+      notifyListeners();
+      return false;
+    }
+
+    final coupon = _couponDataSource.getCouponByCode(code);
+
+    if (coupon == null) {
+      _couponErrorMessage = 'Cupón no válido';
+      notifyListeners();
+      return false;
+    }
+
+    if (!coupon.isValid) {
+      _couponErrorMessage = 'Cupón expirado o inactivo';
+      notifyListeners();
+      return false;
+    }
+
+    if (coupon.minPurchase != null && subtotal < coupon.minPurchase!) {
+      _couponErrorMessage =
+          'Compra mínima de \$${coupon.minPurchase!.toStringAsFixed(0)} COP';
+      notifyListeners();
+      return false;
+    }
+
+    _appliedCoupon = coupon;
+    notifyListeners();
+    return true;
+  }
+
+  /// Remover cupón aplicado
+  void removeCoupon() {
+    _appliedCoupon = null;
+    _couponErrorMessage = null;
+    notifyListeners();
+  }
+
+  /// Limpiar mensaje de error del cupón
+  void clearCouponError() {
+    _couponErrorMessage = null;
+    notifyListeners();
   }
 
   /// Validar stock antes del checkout

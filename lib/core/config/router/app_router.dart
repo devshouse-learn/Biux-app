@@ -308,7 +308,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const SplashScreen(),
     ),
 
-    // Ruta de login
+    // Ruta de login (N8N Webhook original)
     GoRoute(
       path: AppRoutes.login,
       name: AppRoutes.loginName,

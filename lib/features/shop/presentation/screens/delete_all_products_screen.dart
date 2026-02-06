@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Pantalla administrativa para limpiar todos los productos
@@ -138,6 +139,11 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/shop'),
+          tooltip: 'Volver a la tienda',
+        ),
         title: const Text('Eliminar Todos los Productos'),
         backgroundColor: ColorTokens.primary30,
       ),

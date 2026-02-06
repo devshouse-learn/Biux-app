@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -99,6 +100,11 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/shop'),
+          tooltip: 'Volver a la tienda',
+        ),
         title: const Text('Gestionar Vendedores'),
         backgroundColor: ColorTokens.primary30,
         actions: [

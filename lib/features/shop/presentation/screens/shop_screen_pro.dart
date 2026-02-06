@@ -646,33 +646,61 @@ class _ShopScreenProState extends State<ShopScreenPro>
           ),
         ),
 
-        // Mini banners de beneficios
+        // Mini banners de beneficios en grid 2x2
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
+          child: Column(
             children: [
-              Expanded(
-                child: _buildBenefitCard(
-                  '🎯',
-                  'Descuentos para grupos',
-                  Colors.blue,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildBenefitCard(
+                      '🎯',
+                      'Descuentos para grupos',
+                      Colors.blue,
+                      onTap: () {
+                        _showGroupDiscountsDialog(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildBenefitCard(
+                      '⚡',
+                      'Ofertas relámpago',
+                      Colors.orange,
+                      onTap: () {
+                        _showFlashOffersDialog(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildBenefitCard(
-                  '⚡',
-                  'Ofertas relámpago',
-                  Colors.orange,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildBenefitCard(
-                  '🏆',
-                  'Productos premium',
-                  Colors.purple,
-                ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildBenefitCard(
+                      '🏆',
+                      'Productos premium',
+                      Colors.purple,
+                      onTap: () {
+                        _showPremiumProductsDialog(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildBenefitCard(
+                      '🚚',
+                      'Descuentos por envío',
+                      Colors.green,
+                      onTap: () {
+                        _showShippingDiscountsDialog(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -681,36 +709,43 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  Widget _buildBenefitCard(String emoji, String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
+  Widget _buildBenefitCard(String emoji, String text, Color color, {VoidCallback? onTap}) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 24)),
-          const SizedBox(height: 4),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: color,
-              height: 1.2,
-            ),
+          child: Column(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 24)),
+              const SizedBox(height: 4),
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                  height: 1.2,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -1974,4 +2009,828 @@ class BikePatternPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Extensión para el estado con los métodos de diálogos
+extension _BenefitDialogs on _ShopScreenProState {
+  /// Mostrar descuentos para grupos
+  void _showGroupDiscountsDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue[600]!, Colors.blue[400]!],
+                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Row(
+                children: [
+                  const Text('🎯', style: TextStyle(fontSize: 32)),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Descuentos para Grupos',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Contenido
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _buildInfoCard(
+                    icon: Icons.group,
+                    title: '¿Cómo funciona?',
+                    description: 'Compra en grupo con tus amigos ciclistas y obtén descuentos especiales. Mientras más sean, mayor el descuento.',
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  _buildDiscountTier('3-5 personas', '10% de descuento', Colors.blue[300]!),
+                  _buildDiscountTier('6-10 personas', '15% de descuento', Colors.blue[400]!),
+                  _buildDiscountTier('11-20 personas', '20% de descuento', Colors.blue[500]!),
+                  _buildDiscountTier('21+ personas', '25% de descuento', Colors.blue[600]!),
+                  
+                  const SizedBox(height: 20),
+                  _buildInfoCard(
+                    icon: Icons.card_giftcard,
+                    title: 'Beneficios adicionales',
+                    description: '• Envío gratis para grupos\n• Personalización incluida\n• Soporte prioritario\n• Descuentos acumulables',
+                    color: Colors.green,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Aquí podrías navegar a una pantalla de creación de grupo
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Contacta a un administrador para crear tu grupo de compra'),
+                          backgroundColor: Colors.blue,
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add_circle),
+                    label: const Text('Crear Grupo de Compra'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mostrar ofertas relámpago
+  void _showFlashOffersDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.orange[600]!, Colors.orange[400]!],
+                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Row(
+                children: [
+                  const Text('⚡', style: TextStyle(fontSize: 32)),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Ofertas Relámpago',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Contenido
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _buildInfoCard(
+                    icon: Icons.flash_on,
+                    title: '¡Ofertas por tiempo limitado!',
+                    description: 'Descuentos especiales que duran solo 24 horas. ¡Aprovecha antes de que terminen!',
+                    color: Colors.orange,
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  _buildFlashOffer(
+                    'Casco Profesional',
+                    '\$450.000',
+                    '\$299.000',
+                    '35% OFF',
+                    '18:45:23',
+                  ),
+                  _buildFlashOffer(
+                    'Guantes Premium',
+                    '\$120.000',
+                    '\$79.000',
+                    '34% OFF',
+                    '12:15:45',
+                  ),
+                  _buildFlashOffer(
+                    'Botella Térmica',
+                    '\$85.000',
+                    '\$49.000',
+                    '42% OFF',
+                    '06:30:12',
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  _buildInfoCard(
+                    icon: Icons.notifications_active,
+                    title: 'Recibe notificaciones',
+                    description: 'Activa las notificaciones para enterarte de las nuevas ofertas relámpago antes que nadie.',
+                    color: Colors.deepOrange,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.push('/settings/notifications');
+                    },
+                    icon: const Icon(Icons.notifications),
+                    label: const Text('Activar Notificaciones'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mostrar productos premium
+  void _showPremiumProductsDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.purple[600]!, Colors.purple[400]!],
+                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Row(
+                children: [
+                  const Text('🏆', style: TextStyle(fontSize: 32)),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Productos Premium',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Contenido
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _buildInfoCard(
+                    icon: Icons.star,
+                    title: 'Calidad superior',
+                    description: 'Productos de las mejores marcas internacionales con garantía extendida y certificaciones profesionales.',
+                    color: Colors.purple,
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  _buildPremiumProduct(
+                    'Bicicleta Carbono Pro',
+                    '\$8.500.000',
+                    'Shimano Dura-Ace • Cuadro carbono T1000',
+                    Icons.pedal_bike,
+                  ),
+                  _buildPremiumProduct(
+                    'Kit Ciclismo Elite',
+                    '\$1.200.000',
+                    'Jersey + Culote profesional • Tecnología aerodinámica',
+                    Icons.checkroom,
+                  ),
+                  _buildPremiumProduct(
+                    'Potenciómetro Dual',
+                    '\$2.800.000',
+                    'Medición precisa • Compatible ANT+ y Bluetooth',
+                    Icons.speed,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  _buildInfoCard(
+                    icon: Icons.verified,
+                    title: 'Garantías premium',
+                    description: '• Garantía extendida de 2 años\n• Servicio técnico prioritario\n• Repuestos garantizados\n• Devolución en 30 días',
+                    color: Colors.amber,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Filtrar solo productos premium
+                      context.read<ShopProvider>().filterByCategory(ProductCategories.accessories);
+                    },
+                    icon: const Icon(Icons.filter_list),
+                    label: const Text('Ver Todos los Premium'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widgets auxiliares
+  Widget _buildInfoCard({
+    required IconData icon,
+    required String title,
+    required String description,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscountTier(String people, String discount, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color.withValues(alpha: 0.2), Colors.white],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.group, color: Colors.white),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  people,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  discount,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.arrow_forward_ios, color: color, size: 18),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFlashOffer(
+    String name,
+    String originalPrice,
+    String salePrice,
+    String discount,
+    String timeLeft,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.orange[50]!, Colors.white],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.orange[300]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  discount,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                originalPrice,
+                style: TextStyle(
+                  decoration: TextDecoration.lineThrough,
+                  color: Colors.grey[600],
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                salePrice,
+                style: const TextStyle(
+                  color: Colors.orange,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.timer, size: 16, color: Colors.red),
+              const SizedBox(width: 4),
+              Text(
+                'Termina en: $timeLeft',
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPremiumProduct(
+    String name,
+    String price,
+    String features,
+    IconData icon,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.purple[50]!, Colors.white],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.purple[300]!),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.purple,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: Colors.white, size: 28),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  price,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purple[700],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  features,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Mostrar descuentos por envío
+  void _showShippingDiscountsDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green[600]!, Colors.green[400]!],
+                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Row(
+                children: [
+                  const Text('🚚', style: TextStyle(fontSize: 32)),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Descuentos por Envío',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Contenido
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _buildInfoCard(
+                    icon: Icons.local_shipping,
+                    title: 'Envío gratis por compra',
+                    description: 'Obtén envío gratuito según el monto de tu compra. Mientras más compres, más ahorras en envío.',
+                    color: Colors.green,
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  _buildShippingTier(
+                    'Compras desde \$50.000',
+                    'Envío: \$15.000',
+                    '0% descuento',
+                    Colors.grey[400]!,
+                  ),
+                  _buildShippingTier(
+                    'Compras desde \$100.000',
+                    'Envío gratis',
+                    '100% descuento',
+                    Colors.green[300]!,
+                  ),
+                  _buildShippingTier(
+                    'Compras desde \$200.000',
+                    'Envío gratis + Express',
+                    '100% + Express',
+                    Colors.green[500]!,
+                  ),
+                  _buildShippingTier(
+                    'Compras desde \$500.000',
+                    'Envío gratis + Express + Seguro',
+                    '100% + Beneficios',
+                    Colors.green[700]!,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  _buildInfoCard(
+                    icon: Icons.location_on,
+                    title: 'Cobertura nacional',
+                    description: '• Todas las ciudades principales\n• Municipios intermedios\n• Zonas rurales (costo adicional)\n• Envíos internacionales disponibles',
+                    color: Colors.blue,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  _buildInfoCard(
+                    icon: Icons.access_time,
+                    title: 'Tiempos de entrega',
+                    description: '• Ciudades principales: 2-3 días\n• Municipios: 4-6 días\n• Envío express: 24-48 horas\n• Zonas rurales: 7-10 días',
+                    color: Colors.orange,
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.amber[100]!, Colors.amber[50]!],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.amber[300]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.amber[700], size: 32),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '¡Tip para ahorrar!',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.amber[900],
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Combina tus compras para alcanzar \$100.000 y obtener envío gratis',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.push('/shop/cart');
+                    },
+                    icon: const Icon(Icons.shopping_cart),
+                    label: const Text('Ir al Carrito'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShippingTier(
+    String purchase,
+    String shipping,
+    String discount,
+    Color color,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color.withValues(alpha: 0.2), Colors.white],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.local_shipping, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  purchase,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  shipping,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              discount,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

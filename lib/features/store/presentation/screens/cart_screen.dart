@@ -364,6 +364,57 @@ class CartScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            
+            // Subtotal
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Subtotal:',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                Text(
+                  '\$${cart.subtotal.toStringAsFixed(0)} COP',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+            
+            // Cupón de descuento
+            const SizedBox(height: 16),
+            _buildCouponSection(context, cart),
+            
+            // Descuento aplicado (si existe)
+            if (cart.appliedCoupon != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Descuento (${cart.appliedCoupon!.code}):',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.green,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '-\$${cart.couponDiscount.toStringAsFixed(0)} COP',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            
+            const SizedBox(height: 12),
+            const Divider(),
+            const SizedBox(height: 8),
+            
+            // Total
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -707,9 +758,31 @@ class CartScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text('Subtotal:'),
-                              Text('\$${cart.total.toStringAsFixed(0)} COP'),
+                              Text('\$${cart.subtotal.toStringAsFixed(0)} COP'),
                             ],
                           ),
+                          if (cart.appliedCoupon != null) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Descuento (${cart.appliedCoupon!.code}):',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  '-\$${cart.couponDiscount.toStringAsFixed(0)} COP',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -978,6 +1051,162 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCouponSection(BuildContext context, CartProvider cart) {
+    final TextEditingController couponController = TextEditingController();
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: cart.appliedCoupon != null
+            ? Colors.green[50]
+            : Colors.orange[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: cart.appliedCoupon != null
+              ? Colors.green[300]!
+              : Colors.orange[300]!,
+        ),
+      ),
+      child: cart.appliedCoupon != null
+          ? _buildAppliedCoupon(cart)
+          : _buildCouponInput(context, cart, couponController),
+    );
+  }
+
+  Widget _buildAppliedCoupon(CartProvider cart) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.confirmation_number, color: Colors.green[700], size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Cupón aplicado: ${cart.appliedCoupon!.code}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[900],
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    cart.appliedCoupon!.description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.green[700],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, size: 20),
+              color: Colors.red[700],
+              onPressed: () => cart.removeCoupon(),
+              tooltip: 'Quitar cupón',
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCouponInput(
+    BuildContext context,
+    CartProvider cart,
+    TextEditingController controller,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.local_offer, color: Colors.orange[700], size: 20),
+            const SizedBox(width: 8),
+            Text(
+              '¿Tienes un cupón de descuento?',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.orange[900],
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                textCapitalization: TextCapitalization.characters,
+                decoration: InputDecoration(
+                  hintText: 'Ingresa tu código',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF059669)),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  errorText: cart.couponErrorMessage,
+                ),
+                onChanged: (_) => cart.clearCouponError(),
+              ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () {
+                final code = controller.text.trim();
+                final success = cart.applyCoupon(code);
+                if (success) {
+                  controller.clear();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Cupón "${cart.appliedCoupon!.code}" aplicado'),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF059669),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Aplicar',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

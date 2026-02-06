@@ -71,32 +71,33 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/shop'),
+          tooltip: 'Volver a la tienda',
+        ),
         title: const Text('Solicitudes de Vendedores'),
         backgroundColor: ColorTokens.neutral0,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: ColorTokens.secondary50,
           tabs: [
-            Tab(
-              icon: const Icon(Icons.pending_actions),
-              text: 'Pendientes',
-              child: Consumer<SellerRequestProvider>(
-                builder: (context, provider, _) {
-                  if (provider.pendingCount > 0) {
-                    return Badge(
-                      label: Text('${provider.pendingCount}'),
-                      child: const Tab(
-                        icon: Icon(Icons.pending_actions),
-                        text: 'Pendientes',
-                      ),
-                    );
-                  }
-                  return const Tab(
-                    icon: Icon(Icons.pending_actions),
-                    text: 'Pendientes',
+            Consumer<SellerRequestProvider>(
+              builder: (context, provider, _) {
+                if (provider.pendingCount > 0) {
+                  return Badge(
+                    label: Text('${provider.pendingCount}'),
+                    child: const Tab(
+                      icon: Icon(Icons.pending_actions),
+                      text: 'Pendientes',
+                    ),
                   );
-                },
-              ),
+                }
+                return const Tab(
+                  icon: Icon(Icons.pending_actions),
+                  text: 'Pendientes',
+                );
+              },
             ),
             const Tab(icon: Icon(Icons.check_circle), text: 'Aprobadas'),
             const Tab(icon: Icon(Icons.cancel), text: 'Rechazadas'),

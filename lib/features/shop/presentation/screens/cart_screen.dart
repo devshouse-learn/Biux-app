@@ -449,6 +449,10 @@ class CartScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
+
+                        // Campo de cupón
+                        const _CouponField(),
+                        const SizedBox(height: 16),
                         
                         // Total de items
                         Row(
@@ -494,6 +498,45 @@ class CartScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
 
+                        // Descuento por cupón (si aplica)
+                        Consumer<ShopProvider>(
+                          builder: (context, shopProvider, _) {
+                            if (shopProvider.appliedCoupon != null) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Descuento (${shopProvider.appliedCoupon}):',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.green[700],
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        '- \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.green[700],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+
                         // Envío
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -529,7 +572,7 @@ class CartScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '\$${(shopProvider.cartTotal + (shopProvider.cartTotal >= 100000 ? 0 : 15000)).toStringAsFixed(0)} COP',
+                              '\$${((shopProvider.cartTotalWithDiscount) + (shopProvider.cartTotal >= 100000 ? 0 : 15000)).toStringAsFixed(0)} COP',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -565,6 +608,463 @@ class CartScreen extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+/// Widget para aplicar cupones de descuento
+class _CouponField extends StatefulWidget {
+  const _CouponField();
+
+  @override
+  State<_CouponField> createState() => _CouponFieldState();
+}
+
+class _CouponFieldState extends State<_CouponField> {
+  final TextEditingController _couponController = TextEditingController();
+
+  @override
+  void dispose() {
+    _couponController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ShopProvider>(
+      builder: (context, shopProvider, _) {
+        // Si ya hay un cupón aplicado, mostrar badge con opción de remover
+        if (shopProvider.appliedCoupon != null) {
+          return Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.green[400]!, Colors.green[600]!],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.green.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        shopProvider.appliedCoupon!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Ahorro: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    shopProvider.removeCoupon();
+                    _couponController.clear();
+                  },
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  tooltip: 'Quitar cupón',
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Campo para ingresar cupón
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _couponController,
+                    decoration: InputDecoration(
+                      labelText: '¿Tienes un cupón de descuento?',
+                      hintText: 'Ej: BIUX20',
+                      prefixIcon: Icon(
+                        Icons.confirmation_number,
+                        color: ColorTokens.primary30,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: ColorTokens.primary30,
+                          width: 2,
+                        ),
+                      ),
+                      errorText: shopProvider.couponErrorMessage,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                    ),
+                    textCapitalization: TextCapitalization.characters,
+                    onSubmitted: (_) => _applyCoupon(shopProvider, context),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: () => _applyCoupon(shopProvider, context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 18,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: const Text(
+                    'Aplicar',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            
+            // Botón para ver cupones disponibles
+            InkWell(
+              onTap: () => _showAvailableCoupons(context, shopProvider),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.local_offer, color: Colors.blue[700], size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Ver cupones disponibles',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.blue[900],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.arrow_forward_ios, 
+                      color: Colors.blue[700], 
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _applyCoupon(ShopProvider shopProvider, BuildContext context) {
+    final coupon = _couponController.text.trim();
+    if (coupon.isNotEmpty) {
+      final success = shopProvider.applyCoupon(coupon);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '🎉 ¡Cupón aplicado! Ahorro: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+        _couponController.clear();
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ingresa un código de cupón'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
+  void _showAvailableCoupons(BuildContext context, ShopProvider shopProvider) {
+    final coupons = shopProvider.getAvailableCoupons();
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: ColorTokens.primary30,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.local_offer, color: Colors.white, size: 28),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Cupones Disponibles',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Información de compra mínima
+            Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.orange[800], size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Compra mínima: \$50.000 COP',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.orange[900],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Lista de cupones
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: coupons.length,
+                itemBuilder: (context, index) {
+                  final category = coupons[index];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          category['category'],
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.primary30,
+                          ),
+                        ),
+                      ),
+                      ...List.generate(
+                        category['coupons'].length,
+                        (couponIndex) {
+                          final coupon = category['coupons'][couponIndex];
+                          return _CouponCard(
+                            code: coupon['code'],
+                            discount: coupon['discount'],
+                            description: coupon['description'],
+                            onTap: () {
+                              Navigator.pop(context);
+                              _couponController.text = coupon['code'];
+                              _applyCoupon(shopProvider, context);
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget para mostrar una tarjeta de cupón
+class _CouponCard extends StatelessWidget {
+  final String code;
+  final String discount;
+  final String description;
+  final VoidCallback onTap;
+
+  const _CouponCard({
+    required this.code,
+    required this.discount,
+    required this.description,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [ColorTokens.primary30.withValues(alpha: 0.1), Colors.white],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ColorTokens.primary30.withValues(alpha: 0.3)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Badge de descuento
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: ColorTokens.primary30,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    discount,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                
+                // Información del cupón
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        code,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Botón de aplicar
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    color: Colors.green[700],
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -20,32 +20,36 @@ class AuthRepository {
     print('🔧 [AuthRepo] Inicializado con URL: $_baseUrl');
   }
 
-  // Validar formato de número telefónico (E.164)
+  // Validar formato de número telefónico - PERMISIVO
   bool _isValidPhoneNumber(String phoneNumber) {
-    // Aceptar números con formato +XXXXXXXXXXX (mínimo 10 dígitos)
-    // o números locales de 10 cifras
+    // Aceptar CUALQUIER número con al menos 8 dígitos
     final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-    return cleanNumber.length >= 10 && cleanNumber.length <= 15;
+    return cleanNumber.length >= 8; // Muy permisivo
   }
 
   Future<bool> sendOTP(String phoneNumber) async {
     try {
       print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('📱 [AuthRepo] INICIANDO ENVÍO DE OTP');
+      print('📱 [AuthRepo] ENVIANDO CÓDIGO SMS');
       print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('📞 Número de teléfono: $phoneNumber');
-      print('🌐 URL Base: $_baseUrl');
+      print('📞 NÚMERO DESTINO: $phoneNumber');
+      print('📞 EL CÓDIGO SE ENVIARÁ A: $phoneNumber');
+      print('🌐 URL Backend: $_baseUrl');
       print('⏰ Timestamp: ${DateTime.now().toIso8601String()}');
+      print('');
+      print('⚠️  IMPORTANTE: El SMS se envía al número ingresado');
+      print('⚠️  NO se envía al número del administrador');
+      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-      // Validar formato del número
+      // Validación muy permisiva
       if (!_isValidPhoneNumber(phoneNumber)) {
-        print('❌ [AuthRepo] Formato de número inválido: $phoneNumber');
+        print('❌ [AuthRepo] Número inválido: $phoneNumber');
         throw Exception(
-          'Formato de teléfono inválido. Usa +código área (ej: +573001234567) o 10-15 dígitos',
+          'Número inválido. Debe tener al menos 8 dígitos',
         );
       }
 
-      print('✅ [AuthRepo] Número validado correctamente');
+      print('✅ [AuthRepo] Número válido: $phoneNumber');
 
       final url = '$_baseUrl/send-otp';
       final requestData = {

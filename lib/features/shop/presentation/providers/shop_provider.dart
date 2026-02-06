@@ -6,6 +6,19 @@ import 'package:biux/features/shop/domain/entities/order_entity.dart';
 import 'package:biux/features/shop/domain/repositories/product_repository.dart';
 import 'package:biux/features/shop/domain/repositories/order_repository.dart';
 
+/// Datos de un cupón de descuento
+class CouponData {
+  final double discount; // Porcentaje de descuento (0.0 - 1.0)
+  final String description;
+  final double? minPurchase; // Compra mínima requerida (opcional)
+
+  const CouponData({
+    required this.discount,
+    required this.description,
+    this.minPurchase,
+  });
+}
+
 /// Provider para gestionar el estado de la tienda
 class ShopProvider with ChangeNotifier {
   final ProductRepository productRepository;
@@ -29,6 +42,11 @@ class ShopProvider with ChangeNotifier {
   // Estado del carrito
   List<CartItemEntity> _cartItems = [];
 
+  // Estado de cupones
+  String? _appliedCoupon;
+  double _couponDiscount = 0.0;
+  String? _couponErrorMessage;
+
   // Estado de órdenes
   List<OrderEntity> _userOrders = [];
   bool _isLoadingOrders = false;
@@ -47,6 +65,12 @@ class ShopProvider with ChangeNotifier {
   List<OrderEntity> get userOrders => _userOrders;
   bool get isLoadingOrders => _isLoadingOrders;
   bool get hasItemsInCart => _cartItems.isNotEmpty;
+  
+  // Getters de cupones
+  String? get appliedCoupon => _appliedCoupon;
+  double get couponDiscount => _couponDiscount;
+  String? get couponErrorMessage => _couponErrorMessage;
+  double get cartTotalWithDiscount => cartTotal - _couponDiscount;
 
   /// Cargar todos los productos
   Future<void> loadProducts() async {
@@ -182,6 +206,120 @@ class ShopProvider with ChangeNotifier {
   /// Limpiar carrito
   void clearCart() {
     _cartItems.clear();
+    _appliedCoupon = null;
+    _couponDiscount = 0.0;
+    _couponErrorMessage = null;
+    notifyListeners();
+  }
+
+  /// Aplicar cupón de descuento (solo para compras)
+  bool applyCoupon(String couponCode) {
+    _couponErrorMessage = null;
+    
+    // Validar que hay items en el carrito
+    if (_cartItems.isEmpty) {
+      _couponErrorMessage = 'Agrega productos al carrito primero';
+      notifyListeners();
+      return false;
+    }
+
+    // Validar compra mínima
+    const double minimumPurchase = 50000; // Compra mínima 50.000 COP
+    if (cartTotal < minimumPurchase) {
+      _couponErrorMessage = 'Compra mínima: \$${minimumPurchase.toStringAsFixed(0)} COP';
+      notifyListeners();
+      return false;
+    }
+
+    // Cupones organizados por categoría
+    final Map<String, CouponData> validCoupons = {
+      // Cupones generales
+      'BIUX10': CouponData(discount: 0.10, description: 'Descuento general 10%'),
+      'BIUX15': CouponData(discount: 0.15, description: 'Descuento general 15%'),
+      'BIUX20': CouponData(discount: 0.20, description: 'Descuento general 20%'),
+      
+      // Cupones especiales
+      'PRIMERACOMPRA': CouponData(discount: 0.15, description: 'Primera compra 15%'),
+      'CICLISTA': CouponData(discount: 0.12, description: 'Ciclistas 12%'),
+      'NUEVOCLIENTE': CouponData(discount: 0.18, description: 'Nuevo cliente 18%'),
+      
+      // Cupones estacionales
+      'VERANO2026': CouponData(discount: 0.25, description: 'Verano 2026 - 25%'),
+      'ENERO2026': CouponData(discount: 0.20, description: 'Enero 2026 - 20%'),
+      
+      // Cupones VIP
+      'VIP30': CouponData(discount: 0.30, description: 'Cliente VIP 30%', minPurchase: 200000),
+      'ELITE40': CouponData(discount: 0.40, description: 'Elite 40%', minPurchase: 500000),
+    };
+
+    final couponData = validCoupons[couponCode.toUpperCase()];
+    
+    if (couponData == null) {
+      _couponErrorMessage = 'Cupón inválido o expirado';
+      notifyListeners();
+      return false;
+    }
+
+    // Validar compra mínima específica del cupón
+    if (couponData.minPurchase != null && cartTotal < couponData.minPurchase!) {
+      _couponErrorMessage = 'Compra mínima para este cupón: \$${couponData.minPurchase!.toStringAsFixed(0)} COP';
+      notifyListeners();
+      return false;
+    }
+
+    // Calcular descuento
+    _couponDiscount = cartTotal * couponData.discount;
+    _appliedCoupon = couponCode.toUpperCase();
+    
+    print('🎟️ Cupón aplicado: $_appliedCoupon (${couponData.description})');
+    print('💰 Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)');
+    print('💵 Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP');
+    
+    notifyListeners();
+    return true;
+  }
+  
+  /// Obtener lista de cupones disponibles organizados
+  List<Map<String, dynamic>> getAvailableCoupons() {
+    return [
+      {
+        'category': 'Generales',
+        'coupons': [
+          {'code': 'BIUX10', 'discount': '10%', 'description': 'Descuento general'},
+          {'code': 'BIUX15', 'discount': '15%', 'description': 'Descuento general'},
+          {'code': 'BIUX20', 'discount': '20%', 'description': 'Descuento general'},
+        ]
+      },
+      {
+        'category': 'Especiales',
+        'coupons': [
+          {'code': 'PRIMERACOMPRA', 'discount': '15%', 'description': 'Primera compra'},
+          {'code': 'CICLISTA', 'discount': '12%', 'description': 'Para ciclistas'},
+          {'code': 'NUEVOCLIENTE', 'discount': '18%', 'description': 'Nuevo cliente'},
+        ]
+      },
+      {
+        'category': 'Temporada',
+        'coupons': [
+          {'code': 'VERANO2026', 'discount': '25%', 'description': 'Promoción verano'},
+          {'code': 'ENERO2026', 'discount': '20%', 'description': 'Promoción enero'},
+        ]
+      },
+      {
+        'category': 'VIP',
+        'coupons': [
+          {'code': 'VIP30', 'discount': '30%', 'description': 'Compra mínima \$200.000'},
+          {'code': 'ELITE40', 'discount': '40%', 'description': 'Compra mínima \$500.000'},
+        ]
+      },
+    ];
+  }
+
+  /// Remover cupón aplicado
+  void removeCoupon() {
+    _appliedCoupon = null;
+    _couponDiscount = 0.0;
+    _couponErrorMessage = null;
     notifyListeners();
   }
 
@@ -200,16 +338,26 @@ class ShopProvider with ChangeNotifier {
     }
 
     try {
+      // Calcular total final (con descuento de cupón si aplica)
+      final finalTotal = cartTotalWithDiscount;
+      
+      // Agregar info del cupón a las notas si se aplicó uno
+      String finalNotes = notes ?? '';
+      if (_appliedCoupon != null) {
+        final couponInfo = '\n🎟️ Cupón aplicado: $_appliedCoupon (Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP)';
+        finalNotes = finalNotes.isEmpty ? couponInfo : '$finalNotes$couponInfo';
+      }
+
       final order = OrderEntity(
         id: '', // Firebase genera el ID
         userId: userId,
         userName: userName,
         items: List.from(_cartItems),
-        total: cartTotal,
+        total: finalTotal,
         status: OrderStatus.pending,
         deliveryAddress: deliveryAddress,
         phoneNumber: phoneNumber,
-        notes: notes,
+        notes: finalNotes,
         createdAt: DateTime.now(),
       );
 
@@ -221,7 +369,7 @@ class ShopProvider with ChangeNotifier {
         await productRepository.updateStock(item.product.id, newStock);
       }
 
-      // Limpiar carrito
+      // Limpiar carrito (y cupón)
       clearCart();
 
       // Recargar productos para actualizar stock

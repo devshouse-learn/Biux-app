@@ -32,10 +32,7 @@ class _NotificationSettingsScreenState
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: true,
         title: const Text(
           'Notificaciones',
           style: TextStyle(
@@ -44,6 +41,7 @@ class _NotificationSettingsScreenState
             fontWeight: FontWeight.w600,
           ),
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           // Botón de debug (temporal para pruebas)
           IconButton(
@@ -105,6 +103,12 @@ class _NotificationSettingsScreenState
                   ),
                 ],
               ),
+            );
+          }
+
+          if (provider.settings == null) {
+            return const Center(
+              child: CircularProgressIndicator(color: ColorTokens.primary30),
             );
           }
 
