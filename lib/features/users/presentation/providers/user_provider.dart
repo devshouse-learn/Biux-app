@@ -6,7 +6,10 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class UserProvider extends ChangeNotifier {
   final UserService _userService = UserService();
+  // Flag para evitar llamadas remotas en tests
+  bool _skipRemoteCalls = false;
 
+  /// Constructor de producción
   UserModel? _user;
   bool _isLoading = false;
   String? _error;
@@ -24,6 +27,13 @@ class UserProvider extends ChangeNotifier {
     } else {
       loadUserData();
     }
+  }
+
+  /// Constructor especial para pruebas que evita llamadas remotas si se solicita
+  UserProvider.forTest({UserModel? initialUser, bool skipRemote = true}) {
+    _user = initialUser;
+    _isLoading = false;
+    _skipRemoteCalls = skipRemote;
   }
 
   // 🔴 Crear usuario admin de prueba SOLO para Chrome web
@@ -64,8 +74,10 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> loadUserData() async {
-    String? uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
+  if (_skipRemoteCalls) return;
+
+  String? uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
 
     print('');
     print('�' * 30);
@@ -242,6 +254,7 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+    if (_skipRemoteCalls) return true;
 
     _setLoading(true);
     _error = null;
@@ -271,6 +284,7 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+    if (_skipRemoteCalls) return true;
 
     _setLoading(true);
     _error = null;
@@ -300,6 +314,7 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
       return [];
     }
+    if (_skipRemoteCalls) return [];
 
     try {
       return await _userService.getAllUsers();

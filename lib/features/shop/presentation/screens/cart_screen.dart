@@ -156,6 +156,16 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/shop');
+            }
+          },
+        ),
         title: const Text('Carrito de Compras'),
         backgroundColor: ColorTokens.primary30,
       ),

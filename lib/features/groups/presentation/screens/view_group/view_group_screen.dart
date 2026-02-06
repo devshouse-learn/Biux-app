@@ -80,7 +80,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     Text('Grupo no encontrado'),
                     SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => context.go('/groups'),
+                      onPressed: () => context.push('/groups'),
                       child: Text('Volver a Grupos'),
                     ),
                   ],
@@ -837,7 +837,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
               Navigator.of(context).pop();
               final success = await provider.leaveGroup(group.id);
               if (success) {
-                context.go('/groups');
+                context.push('/groups');
               }
             },
             style: ElevatedButton.styleFrom(

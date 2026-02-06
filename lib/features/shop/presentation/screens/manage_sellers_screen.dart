@@ -113,6 +113,18 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
             onPressed: _loadUsers,
             tooltip: 'Actualizar',
           ),
+          // Botón de volver (solo icono)
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            tooltip: 'Volver',
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/shop');
+              }
+            },
+          ),
         ],
       ),
       body: _isLoading

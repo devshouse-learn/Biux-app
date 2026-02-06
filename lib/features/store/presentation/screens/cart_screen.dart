@@ -3,8 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:biux/features/store/presentation/providers/cart_provider.dart';
 
 /// Pantalla del carrito de compras con checkout
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  String? _selectedPayment;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +55,8 @@ class CartScreen extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: const Color(0xFF3B82F6).withOpacity(0.1),
+                decoration: BoxDecoration(
+                color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -679,7 +686,7 @@ class CartScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF059669).withOpacity(0.1),
+                      color: const Color(0xFF059669).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -842,24 +849,43 @@ class CartScreen extends StatelessWidget {
                       context,
                       'Tarjeta de Crédito/Débito',
                       Icons.credit_card,
+                      selected: _selectedPayment == 'Tarjeta de Crédito/Débito',
+                      onTap: () {
+                        setState(() => _selectedPayment = 'Tarjeta de Crédito/Débito');
+                        context.read<CartProvider>().setSelectedPayment('Tarjeta de Crédito/Débito');
+                      },
                     ),
                     _buildPaymentOption(
                       context,
                       'PSE - Transferencia Bancaria',
                       Icons.account_balance,
+                      selected: _selectedPayment == 'PSE - Transferencia Bancaria',
+                      onTap: () {
+                        setState(() => _selectedPayment = 'PSE - Transferencia Bancaria');
+                        context.read<CartProvider>().setSelectedPayment('PSE - Transferencia Bancaria');
+                      },
                     ),
-                    _buildPaymentOption(context, 'Nequi', Icons.phone_android),
-                    _buildPaymentOption(context, 'Daviplata', Icons.wallet),
+                    _buildPaymentOption(
+                      context,
+                      'Nequi',
+                      Icons.phone_android,
+                      selected: _selectedPayment == 'Nequi',
+                      onTap: () {
+                        setState(() => _selectedPayment = 'Nequi');
+                        context.read<CartProvider>().setSelectedPayment('Nequi');
+                      },
+                    ),
+                    _buildPaymentOption(
+                      context,
+                      'Daviplata',
+                      Icons.wallet,
+                      selected: _selectedPayment == 'Daviplata',
+                      onTap: () {
+                        setState(() => _selectedPayment = 'Daviplata');
+                        context.read<CartProvider>().setSelectedPayment('Daviplata');
+                      },
+                    ),
                     const SizedBox(height: 24),
-
-                    // Ciudad de envío
-                    const Text(
-                      'Selecciona ciudad de envío',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
@@ -907,7 +933,7 @@ class CartScreen extends StatelessWidget {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -5),
                   ),
@@ -978,8 +1004,10 @@ class CartScreen extends StatelessWidget {
   Widget _buildPaymentOption(
     BuildContext context,
     String title,
-    IconData icon,
-  ) {
+    IconData icon, {
+    bool selected = false,
+    VoidCallback? onTap,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -987,14 +1015,21 @@ class CartScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        leading: Icon(icon, color: const Color(0xFF3B82F6)),
-        title: Text(title),
-        trailing: Radio<bool>(
-          value: true,
-          groupValue: false,
-          onChanged: (value) {},
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: selected ? const Color(0xFF3B82F6) : Colors.grey[200],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: selected ? Colors.white : Colors.grey[600]),
         ),
-        onTap: () {},
+        title: Text(title),
+        trailing: Icon(
+          selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+          color: selected ? const Color(0xFF3B82F6) : Colors.grey,
+        ),
+        onTap: onTap,
       ),
     );
   }

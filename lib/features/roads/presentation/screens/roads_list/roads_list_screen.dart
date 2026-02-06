@@ -93,7 +93,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
-                    onPressed: () => context.go('/groups'),
+                    onPressed: () => context.push('/groups'),
                     icon: const Icon(Icons.group),
                     label: const Text('Ver Grupos'),
                     style: ElevatedButton.styleFrom(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/color_tokens.dart';
 import '../providers/notification_settings_provider.dart';
 import '../../../../debug/notification_debug_widget.dart';
@@ -63,6 +64,16 @@ class _NotificationSettingsScreenState
               );
             },
           ),
+          // Botón Salir / Volver
+            // Botón de volver (solo icono)
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              tooltip: 'Volver',
+              onPressed: () {
+                if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+                else context.go('/profile');
+              },
+            ),
         ],
       ),
       body: Consumer<NotificationSettingsProvider>(

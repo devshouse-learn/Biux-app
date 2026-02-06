@@ -452,6 +452,29 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_hasError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Producto')), 
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 78, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text('No se pudo cargar el producto', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => context.go('/shop'),
+                  child: const Text('Volver a la tienda'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     if (_product == null) {
       return Scaffold(
         appBar: AppBar(backgroundColor: ColorTokens.primary30),

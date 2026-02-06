@@ -348,7 +348,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               children: [
                 IconButton(
                   icon: const Icon(Icons.shopping_cart_outlined, size: 28),
-                  onPressed: () => context.go('/shop/cart'),
+                  onPressed: () => context.push('/shop/cart'),
                 ),
                 if (itemCount > 0)
                   Positioned(
@@ -641,6 +641,22 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ],
                   ),
                 ),
+                // Botón rápido a Promociones
+                Positioned(
+                  right: 16,
+                  bottom: 12,
+                  child: ElevatedButton.icon(
+                    onPressed: () => context.push('/promotions'),
+                    icon: const Icon(Icons.campaign, size: 18),
+                    label: const Text('Promociones'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white24,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -770,7 +786,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
               );
             },
           ),
-          const Spacer(),
+          // Reemplazado Spacer() por un espacio flexible controlado para evitar
+          // overflows en columnas y filas con altura/anchura limitada.
+          const SizedBox(width: 8),
 
           // Ordenar
           Container(
@@ -856,9 +874,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Row(
             children: [
               const Icon(Icons.tune, color: ColorTokens.primary30),
@@ -867,7 +886,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 'Filtros Avanzados',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              const Spacer(),
+              // Evitar Spacer() que expande indefinidamente dentro de filas
+              // anidadas en Slivers; usar un SizedBox flexible en su lugar.
+              const SizedBox(height: 4),
               TextButton(
                 onPressed: _clearFilters,
                 child: const Text('Limpiar'),
@@ -1193,6 +1214,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Nombre
@@ -1206,7 +1228,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
 
                     // Rating
                     Row(
@@ -1230,7 +1252,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
 
                     // Likes counter
                     if (product.likesCount > 0)
@@ -1270,7 +1292,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         ),
                       ),
 
-                    const Spacer(),
+                    const SizedBox(height: 4),
 
                     // Precio
                     Row(
@@ -1318,7 +1340,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                       action: SnackBarAction(
                                         label: 'Ver Carrito',
                                         onPressed: () =>
-                                            context.go('/shop/cart'),
+                                            context.push('/shop/cart'),
                                       ),
                                     ),
                                   );
@@ -1393,6 +1415,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           // Info
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -1404,7 +1427,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                    const SizedBox(height: 4),
                 Row(
                   children: [
                     ...List.generate(5, (index) {
@@ -1421,7 +1444,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                    const SizedBox(height: 4),
                 Text(
                   '\$${_formatPrice(product.price)}',
                   style: const TextStyle(
@@ -1524,7 +1547,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.purple.withOpacity(0.1),
+                      color: Colors.purple.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -1569,7 +1592,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     Container(
                       padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
-                        color: Colors.purple.withOpacity(0.1),
+                        color: Colors.purple.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -1670,7 +1693,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                      color: Colors.orange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -1715,7 +1738,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     Container(
                       padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+                        color: Colors.orange.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -1816,7 +1839,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -1861,7 +1884,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     Container(
                       padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(

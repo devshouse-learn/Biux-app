@@ -44,6 +44,9 @@ import 'package:biux/features/shop/data/repositories/order_repository_impl.dart'
 import 'package:biux/features/shop/data/datasources/product_remote_datasource.dart';
 import 'package:biux/features/shop/data/datasources/order_remote_datasource.dart';
 
+// Promotions
+import 'package:biux/features/promotions/presentation/providers/promotions_provider.dart';
+
 // Store (Tienda) imports
 import 'package:biux/features/store/data/repositories/product_repository_impl.dart'
     as store_repo;
@@ -166,6 +169,9 @@ void main() async {
             ),
           ),
         ),
+
+  // Promotions provider
+  ChangeNotifierProvider(create: (_) => PromotionsProvider()),
 
         // Seller Request Provider (para gestionar solicitudes de vendedores)
         ChangeNotifierProvider(

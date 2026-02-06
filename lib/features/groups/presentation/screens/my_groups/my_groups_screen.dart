@@ -78,7 +78,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
         title: 'No eres miembro de ningún grupo',
         subtitle: 'Explora grupos disponibles y únete a alguno',
         actionText: 'Ver Grupos',
-        onAction: () => context.go('/groups'),
+  onAction: () => context.push('/groups'),
       );
     }
 

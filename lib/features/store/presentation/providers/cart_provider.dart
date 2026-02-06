@@ -20,10 +20,17 @@ class CartProvider with ChangeNotifier {
   
   CouponEntity? _appliedCoupon;
   String? _couponErrorMessage;
+  String? _selectedPayment;
 
   Map<String, CartItem> get items => {..._items};
   CouponEntity? get appliedCoupon => _appliedCoupon;
   String? get couponErrorMessage => _couponErrorMessage;
+  String? get selectedPayment => _selectedPayment;
+
+  void setSelectedPayment(String? method) {
+    _selectedPayment = method;
+    notifyListeners();
+  }
 
   /// Número total de items en el carrito
   int get itemCount => _items.length;
@@ -136,6 +143,7 @@ class CartProvider with ChangeNotifier {
     _items.clear();
     _appliedCoupon = null;
     _couponErrorMessage = null;
+  _selectedPayment = null;
     notifyListeners();
   }
 

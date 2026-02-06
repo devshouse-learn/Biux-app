@@ -55,7 +55,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.shopping_cart_outlined, size: 28),
-                    onPressed: () => context.go('/shop/cart'),
+                    onPressed: () => context.push('/shop/cart'),
                   ),
                   if (itemCount > 0)
                     Positioned(

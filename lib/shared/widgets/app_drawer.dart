@@ -184,6 +184,14 @@ class _AppDrawerState extends State<AppDrawer> {
                     context.go(AppRoutes.notificationSettings);
                   },
                 ),
+                ListTile(
+                  leading: Icon(Icons.campaign, color: ColorTokens.neutral60),
+                  title: Text('Promociones'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/promotions');
+                  },
+                ),
 
                 ListTile(
                   leading: Icon(

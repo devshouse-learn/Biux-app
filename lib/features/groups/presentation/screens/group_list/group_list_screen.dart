@@ -34,7 +34,19 @@ class _GroupListScreenState extends State<GroupListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
+        // Añadir botón de volver explícito (flecha)
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              // Fallback: ir al menú principal si no hay historial
+              context.go('/main');
+            }
+          },
+        ),
+        automaticallyImplyLeading: false,
         title: const Text('Grupos'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,

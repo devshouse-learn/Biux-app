@@ -77,6 +77,8 @@ import '../../../features/settings/presentation/screens/notification_settings_sc
 
 // Help imports
 import '../../../features/help/presentation/screens/help_screen.dart';
+// Promotions
+import '../../../features/promotions/presentation/screens/promotions_screen.dart';
 
 // Social imports
 import '../../../features/social/presentation/screens/notifications_screen.dart';
@@ -685,6 +687,13 @@ final GoRouter _router = GoRouter(
           path: '/shop/orders',
           name: 'myOrders',
           builder: (context, state) => const MyOrdersScreen(),
+        ),
+
+        // Promociones (anuncios y eventos enviados por usuarios)
+        GoRoute(
+          path: '/promotions',
+          name: 'promotions',
+          builder: (context, state) => const PromotionsScreen(),
         ),
 
         // Panel de administración (solo admins)

@@ -214,7 +214,7 @@ class _NativeLoginPhonePageState extends State<NativeLoginPhonePage> {
                             ),
                           ),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
+                          fillColor: Colors.white.withValues(alpha: 0.1),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25),
                             borderSide: BorderSide(color: ColorTokens.neutral100),
@@ -334,7 +334,7 @@ class _NativeLoginPhonePageState extends State<NativeLoginPhonePage> {
                                     decoration: InputDecoration(
                                       counterText: '',
                                       filled: true,
-                                      fillColor: Colors.white.withOpacity(0.1),
+                                      fillColor: Colors.white.withValues(alpha: 0.1),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
                                         borderSide: BorderSide(color: ColorTokens.neutral100),

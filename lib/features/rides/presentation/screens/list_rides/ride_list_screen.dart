@@ -161,7 +161,7 @@ class _RideListScreenState extends State<RideListScreen> {
                 )
               else
                 ElevatedButton.icon(
-                  onPressed: () => context.go('/groups'),
+                  onPressed: () => context.push('/groups'),
                   icon: Icon(Icons.group),
                   label: Text('Ver Grupos'),
                   style: ElevatedButton.styleFrom(
