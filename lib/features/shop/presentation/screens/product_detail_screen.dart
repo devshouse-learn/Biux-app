@@ -652,9 +652,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               _selectedSize = size;
                             });
                           },
-                          selectedColor: ColorTokens.secondary50,
+                          // Fondo más claro para que el texto tenga mejor contraste
+                          selectedColor: ColorTokens.secondary50.withValues(alpha: 0.25),
                           labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
+                            color: isSelected ? ColorTokens.secondary50 : Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                         );
