@@ -948,9 +948,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         }
                       });
                     },
-                    selectedColor: ColorTokens.secondary50,
+                    // Usar la misma paleta `secondary50` pero más clara visualmente
+                    selectedColor: ColorTokens.secondary50.withValues(alpha: 0.25),
+                    // Cuando está seleccionado usar el color secundario oscuro para el texto
+                    // y cuando no, texto negro para legibilidad
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: isSelected ? ColorTokens.secondary50 : Colors.black,
                     ),
                   );
                 }).toList(),
