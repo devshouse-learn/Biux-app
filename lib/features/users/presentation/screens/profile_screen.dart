@@ -610,6 +610,25 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     ),
                   ),
 
+                  SizedBox(height: 16),
+
+                  // Botón guardar
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _updateProfile,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.primary50,
+                        foregroundColor: ColorTokens.neutral100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text('Guardar', style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+
                   SizedBox(height: 24),
 
                   // Estado de eliminación

@@ -113,8 +113,14 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                   TextFormField(
                     controller: _usernameController,
                     focusNode: _focusNode,
+                    style: const TextStyle(
+                      color: Color(0xFF000000),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'miusuario',
+                      hintStyle: TextStyle(color: ColorTokens.neutral60),
                       prefixText: '@',
                       prefixStyle: TextStyle(
                         color: ColorTokens.primary50,
@@ -122,7 +128,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                         fontSize: 16,
                       ),
                       filled: true,
-                      fillColor: ColorTokens.neutral100,
+                      fillColor: Colors.grey[50],
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: ColorTokens.neutral30),

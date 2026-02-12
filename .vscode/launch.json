@@ -4,31 +4,45 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
-            "name": "biux (Flutter iPhone 16 Pro)",
+            "name": "biux (Release)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
-            "deviceId": "8A60CA7F-41E8-484E-9E52-F0F06788A4B7"
+            "args": ["--release"]
         },
         {
-            "name": "biux",
+            "name": "biux (Debug - Cualquier Dispositivo)",
             "request": "launch",
-            "type": "dart"
-        }
-        ,
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
         {
-            "name": "biux (Flutter Android)",
+            "name": "biux (Flutter Emulador Android)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
-            // leave deviceId unset so VS Code lets you pick any connected Android device/emulator
-            "preLaunchTask": "enable-android-developer-mode",
+            "preLaunchTask": "flutter-android-emulator",
             "env": {
-                // hint for Flutter tools to prefer Android devices when this config is chosen
                 "FLUTTER_DEVICE_TYPE": "android"
             }
+        },
+        {
+            "name": "biux (Flutter iOS Simulator)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "preLaunchTask": "flutter-ios-simulator",
+            "env": {
+                "FLUTTER_DEVICE_TYPE": "ios"
+            }
+        },
+        {
+            "name": "biux (Web)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": ["-d", "chrome"]
         }
     ]
 }
