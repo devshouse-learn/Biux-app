@@ -28,7 +28,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _isLoading = true;
-  bool _hasError = false;
 
   @override
   void initState() {
@@ -80,7 +79,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         if (!mounted) return;
 
         setState(() {
-          _hasError = true;
           _isLoading = false;
         });
 
@@ -128,7 +126,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       print('❌ Error cargando producto: $e');
       if (mounted) {
         setState(() {
-          _hasError = true;
           _isLoading = false;
         });
 

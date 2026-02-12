@@ -225,10 +225,10 @@ String? _guard(BuildContext context, GoRouterState state) {
   if (kIsWeb) {
     print('🌐 WEB: Permitiendo acceso sin autenticación');
 
-    // Si está en root, redirigir a la tienda
+    // Si está en root, redirigir a las rutas
     if (location == '/') {
-      print('📍 Root en web, redirigiendo a tienda');
-      return '/shop';
+      print('📍 Root en web, redirigiendo a rutas');
+      return '/roads';
     }
 
     // Permitir acceso libre a todas las rutas en web
@@ -246,8 +246,8 @@ String? _guard(BuildContext context, GoRouterState state) {
   // Si está en la ruta root '/', decidir dónde ir según autenticación
   if (effectiveLocation == '/') {
     if (isLoggedIn) {
-      print('📍 Usuario logueado en root, redirigiendo a experiencias');
-      return '/stories';
+      print('📍 Usuario logueado en root, redirigiendo a rutas');
+      return '/roads';
     } else {
       print('📍 Usuario no logueado en root, redirigiendo al login');
       return AppRoutes.login;

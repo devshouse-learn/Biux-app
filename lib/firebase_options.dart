@@ -98,4 +98,5 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://biux-1576614678644-default-rtdb.firebaseio.com',
     storageBucket: 'biux-1576614678644.appspot.com',
   );
+
 }
