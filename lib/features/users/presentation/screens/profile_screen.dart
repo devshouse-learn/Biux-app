@@ -79,6 +79,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             currentUser.uid,
             formattedPhone,
           );
+          // Recargar datos después de crear el usuario
+          await widget.userProvider.loadUserData();
         }
 
         if (widget.userProvider.user != null && mounted) {

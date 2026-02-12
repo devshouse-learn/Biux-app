@@ -126,16 +126,23 @@ class UserProvider extends ChangeNotifier {
 
   Future<bool> updateProfile({String? name, String? email}) async {
     print('🔍 ====== USER PROVIDER: updateProfile ======');
-    print('👤 Usuario actual: $_user');
-    print('📝 Nombre recibido: "$name"');
+    print('� Nombre recibido: "$name"');
     print('📧 Email recibido: "$email"');
 
-    if (_user == null) {
-      print('❌ ERROR: _user es NULL');
-      _error = 'Usuario no cargado';
+    // SIEMPRE usar Firebase Auth como fuente de verdad
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    if (firebaseUser == null) {
+      print('❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth');
+      _error = 'No has iniciado sesión. Por favor, inicia sesión primero.';
       notifyListeners();
       return false;
     }
+
+    final uid = firebaseUser.uid;
+    print('✅ Usuario autenticado encontrado');
+    print('🆔 UID de Firebase Auth: $uid');
+    print('📞 Teléfono: ${firebaseUser.phoneNumber}');
 
     // Validar que al menos uno de los campos tenga valor
     if ((name == null || name.isEmpty) && (email == null || email.isEmpty)) {
@@ -150,10 +157,9 @@ class UserProvider extends ChangeNotifier {
 
     try {
       print('📝 Iniciando actualización de perfil...');
-      print('🆔 UID del usuario: ${_user!.uid}');
 
       bool success = await _userService.updateUserProfile(
-        uid: _user!.uid,
+        uid: uid,
         name: name,
         email: email,
       );
@@ -161,14 +167,11 @@ class UserProvider extends ChangeNotifier {
       print('📊 Respuesta del servicio: $success');
 
       if (success) {
-        // Actualizar datos locales
-        _user = _user!.copyWith(
-          name: name ?? _user!.name,
-          email: email ?? _user!.email,
-        );
-        print('✅ Perfil actualizado localmente');
-        print('   Nuevo nombre: ${_user!.name}');
-        print('   Nuevo email: ${_user!.email}');
+        // Recargar datos del usuario desde Firebase
+        await loadUserData();
+        print('✅ Perfil actualizado y recargado desde Firebase');
+        print('   Nuevo nombre: ${_user?.name}');
+        print('   Nuevo email: ${_user?.email}');
       } else {
         print('❌ El servicio retornó false');
         _error = 'Error al actualizar el perfil. Intenta nuevamente.';
