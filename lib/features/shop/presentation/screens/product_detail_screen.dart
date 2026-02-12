@@ -653,9 +653,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             });
                           },
                           // Fondo más claro para que el texto tenga mejor contraste
-                          selectedColor: ColorTokens.secondary50.withValues(alpha: 0.25),
+                          // usar alpha muy bajo y texto blanco cuando esté seleccionado
+                          selectedColor: ColorTokens.secondary50.withValues(alpha: 0.12),
                           labelStyle: TextStyle(
-                            color: isSelected ? ColorTokens.secondary50 : Colors.black,
+                            color: isSelected ? ColorTokens.neutral100 : Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                         );
