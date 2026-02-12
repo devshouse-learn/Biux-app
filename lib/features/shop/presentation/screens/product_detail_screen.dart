@@ -28,6 +28,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -80,6 +81,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
         setState(() {
           _isLoading = false;
+          _hasError = true;
         });
 
         // Mostrar snackbar solo si el widget está montado
@@ -110,6 +112,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       setState(() {
         _product = product;
         _isLoading = false;
+        _hasError = false;
         if (product!.sizes.isNotEmpty) {
           _selectedSize = product.sizes.first;
         }
@@ -127,6 +130,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _hasError = true;
         });
 
         WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -7,7 +7,6 @@ import 'package:biux/features/authentication/data/repositories/authentication_re
 import 'package:biux/core/utils/share_utils.dart';
 import 'package:biux/core/utils/strings_utils.dart';
 import 'package:biux/features/stories/presentation/screens/story_view/story_view_bloc.dart';
-import 'package:biux/shared/widgets/search_bar_widget.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -23,21 +22,39 @@ class StoryViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<StoryViewBloc>();
+    
+    // Construir lista de stories con inserciones promocionales
+    final displayStories = <MapEntry<Story, bool>>[];
+    for (int i = 0; i < bloc.listStory.length; i++) {
+      displayStories.add(MapEntry(bloc.listStory[i], false)); // Story normal
+      
+      // Cada 5 stories, insertar una promocional
+      if ((i + 1) % 5 == 0 && i < bloc.listStory.length - 1) {
+        displayStories.add(MapEntry(bloc.listStory[i], true)); // Story promocional
+      }
+    }
+    
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: ListView(
-        children: [
-          SearchBarWidget(),
-          ...bloc.listStory.map((e) => _StoryWidget(story: e)).toList(),
-        ],
+      body: ListView.builder(
+        itemCount: displayStories.length,
+        itemBuilder: (context, index) {
+          final entry = displayStories[index];
+          return _StoryWidget(
+            story: entry.key,
+            isPromotion: entry.value,
+          );
+        },
       ),
     );
   }
+
+// --- Clases privadas movidas a top-level ---
 }
 
 class _StoryWidget extends StatelessWidget {
   final Story story;
-  const _StoryWidget({Key? key, required this.story}) : super(key: key);
+  final bool isPromotion;
+  const _StoryWidget({Key? key, required this.story, this.isPromotion = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +66,7 @@ class _StoryWidget extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(top: 30),
             width: sizeScreen.width * 0.8,
-            child: _CarouselImages(story: story),
+            child: _CarouselImages(story: story, isPromotion: isPromotion),
           ),
         ),
         _PhotoUserStory(story: story),
@@ -144,7 +161,8 @@ class _ButtonLikesStory extends StatelessWidget {
 
 class _CarouselImages extends StatefulWidget {
   final Story story;
-  _CarouselImages({Key? key, required this.story}) : super(key: key);
+  final bool isPromotion;
+  _CarouselImages({Key? key, required this.story, this.isPromotion = false}) : super(key: key);
 
   @override
   State<_CarouselImages> createState() => _CarouselImagesState();
@@ -242,6 +260,30 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     ),
                     child: Image.asset(Images.kImageShare, height: 20),
                   ),
+                  if (widget.isPromotion) ...[
+                    SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () => _showPromotionDialog(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'Promoción',
+                          style: Styles.accentTextThemeWhite.copyWith(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -455,4 +497,65 @@ class _CarouselImagesState extends State<_CarouselImages> {
       },
     );
   }
+
+  void _showPromotionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.local_offer, color: Colors.orange, size: 24),
+              SizedBox(width: 8),
+              Text('Contenido Promocional'),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Este contenido es una promoción especial de ${widget.story.user.fullName}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Descripción:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 6),
+                Text(widget.story.description),
+                SizedBox(height: 12),
+                if (widget.story.tags.isNotEmpty) ...[
+                  Text(
+                    'Categorías:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    children: widget.story.tags.map((tag) {
+                      return Chip(
+                        label: Text('#$tag'),
+                        backgroundColor: Colors.orange.withValues(alpha: 0.2),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+
+
