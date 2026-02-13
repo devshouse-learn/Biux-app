@@ -269,6 +269,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           controller: controller,
           enabled: isEnabled,
           keyboardType: keyboardType,
+          style: const TextStyle(color: Colors.black, fontSize: 16),
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: ColorTokens.primary30),
             hintText: label,
