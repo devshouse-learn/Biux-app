@@ -8,6 +8,7 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/data/services/media_upload_service.dart';
+import 'package:biux/features/shop/presentation/widgets/product_form_modal.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/domain/services/stolen_bike_verification_service.dart';
