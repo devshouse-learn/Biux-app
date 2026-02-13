@@ -6,10 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/experiences/domain/entities/advertisement_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -262,6 +264,9 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   Widget _buildExperiencesList(List<ExperienceEntity> experiences) {
     final provider = context.read<ExperienceProvider>();
+    
+    // Crear lista intercalada de posts y anuncios
+    final intercaledList = _intercaleAdvertisements(experiences);
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
@@ -279,12 +284,17 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       },
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: experiences.length + (provider.hasMorePosts ? 1 : 0),
+        itemCount: intercaledList.length + (provider.hasMorePosts ? 1 : 0),
         itemBuilder: (context, index) {
-          // Mostrar post normal
-          if (index < experiences.length) {
-            final experience = experiences[index];
-            return _ExperienceCard(experience: experience);
+          // Mostrar post normal o anuncio
+          if (index < intercaledList.length) {
+            final item = intercaledList[index];
+            
+            if (item is ExperienceEntity) {
+              return _ExperienceCard(experience: item);
+            } else if (item is AdvertisementEntity) {
+              return _AdvertisementCard(advertisement: item);
+            }
           }
 
           // Mostrar indicador de carga al final
@@ -299,6 +309,73 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         },
       ),
     );
+  }
+
+  /// Intercala anuncios en el feed cada 5 experiencias normales
+  /// Retorna una lista mezclada de ExperienceEntity y AdvertisementEntity
+  List<dynamic> _intercaleAdvertisements(List<ExperienceEntity> experiences) {
+    if (experiences.isEmpty) {
+      return [];
+    }
+
+    final result = <dynamic>[];
+    int postCount = 0;
+
+    for (int i = 0; i < experiences.length; i++) {
+      result.add(experiences[i]);
+      postCount++;
+
+      // Intercalar anuncio cada 5 posts normales
+      if (postCount == 5) {
+        result.add(_createMockAdvertisement(i ~/ 5));
+        postCount = 0;
+      }
+    }
+
+    return result;
+  }
+
+  /// Crea un anuncio de ejemplo
+  /// En producción, esto vendría de un repositorio que consulte el backend
+  AdvertisementEntity _createMockAdvertisement(int index) {
+    final advertisements = [
+      AdvertisementEntity(
+        id: 'ad_1',
+        title: 'Biux Premium',
+        description: 'Desbloquea funciones exclusivas y conecta con más ciclistas',
+        imageUrl:
+            'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop',
+        callToActionText: 'Descubrir',
+        callToActionUrl: 'https://biux.app/premium',
+        advertiserName: 'Biux',
+        createdAt: DateTime.now(),
+      ),
+      AdvertisementEntity(
+        id: 'ad_2',
+        title: 'Accesorios para Ciclismo',
+        description: 'Los mejores accesorios para tus rodadas. Envío gratis.',
+        imageUrl:
+            'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=500&h=300&fit=crop',
+        callToActionText: 'Ver catálogo',
+        callToActionUrl: 'https://shop.biux.app',
+        advertiserName: 'Biux Shop',
+        createdAt: DateTime.now(),
+      ),
+      AdvertisementEntity(
+        id: 'ad_3',
+        title: 'Rodadas Organizadas',
+        description:
+            'Únete a nuestras rodadas semanales y conoce ciclistas de tu zona',
+        imageUrl:
+            'https://images.unsplash.com/photo-1519578962823-e54908f409b7?w=500&h=300&fit=crop',
+        callToActionText: 'Explorar',
+        callToActionUrl: 'https://biux.app/rides',
+        advertiserName: 'Biux Community',
+        createdAt: DateTime.now(),
+      ),
+    ];
+
+    return advertisements[index % advertisements.length];
   }
 
   /// Navegar directamente a crear publicación (comportamiento original)
@@ -947,3 +1024,388 @@ class _PostOptionTile extends StatelessWidget {
   }
 }
 */
+/// Widget para mostrar un anuncio publicitario en el feed
+class _AdvertisementCard extends StatelessWidget {
+  final AdvertisementEntity advertisement;
+
+  const _AdvertisementCard({required this.advertisement});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadowColor.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(
+          color: ColorTokens.secondary50.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: InkWell(
+        onTap: () => _showAdvertisementModal(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Etiqueta de "Anuncio"
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: ColorTokens.secondary50.withValues(alpha: 0.1),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.campaign,
+                    size: 14,
+                    color: ColorTokens.secondary50,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Anuncio publicitario',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: ColorTokens.secondary50,
+                    ),
+                  ),
+                  if (advertisement.advertiserName != null) ...[
+                    const SizedBox(width: 4),
+                    Text(
+                      '• ${advertisement.advertiserName}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: ColorTokens.secondary50.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            // Imagen del anuncio
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(0),
+                topLeft: Radius.circular(0),
+                topRight: Radius.circular(0),
+              ),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: Image.network(
+                    advertisement.imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (ctx, error, stackTrace) {
+                      return Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: theme.iconTheme.color?.withValues(alpha: 0.5),
+                            size: 48,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            // Contenido del anuncio
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Título
+                  Text(
+                    advertisement.title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: theme.textTheme.bodyLarge?.color,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Descripción
+                  Text(
+                    advertisement.description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: theme.textTheme.bodyMedium?.color,
+                      height: 1.4,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Botón CTA
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.secondary50,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () => _handleAdvertisementAction(context),
+                      child: Text(
+                        advertisement.callToActionText,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Muestra un modal expandido con los detalles del anuncio
+  void _showAdvertisementModal(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: theme.cardColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Column(
+          children: [
+            // Handle del modal
+            Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.dividerColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+
+            // Contenido scrollable
+            Expanded(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Imagen expandida
+                    AspectRatio(
+                      aspectRatio: 1,
+                      child: Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(horizontal: 0),
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Image.network(
+                          advertisement.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (ctx, error, stackTrace) {
+                            return Container(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: Center(
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  color: theme.iconTheme.color
+                                      ?.withValues(alpha: 0.5),
+                                  size: 64,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Contenido textual
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Marca del anunciante
+                          if (advertisement.advertiserName != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                advertisement.advertiserName!,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorTokens.secondary50,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+
+                          // Título
+                          Text(
+                            advertisement.title,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: theme.textTheme.headlineSmall?.color,
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // Descripción completa
+                          Text(
+                            advertisement.description,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: theme.textTheme.bodyMedium?.color,
+                              height: 1.6,
+                            ),
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Botón CTA expandido
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorTokens.secondary50,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _handleAdvertisementAction(context);
+                              },
+                              child: Text(
+                                advertisement.callToActionText,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Botón de cerrar
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor:
+                                    theme.textTheme.bodyMedium?.color,
+                                side: BorderSide(
+                                  color: theme.dividerColor,
+                                  width: 1,
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Cerrar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Maneja la acción del botón CTA del anuncio
+  void _handleAdvertisementAction(BuildContext context) async {
+    try {
+      if (advertisement.callToActionUrl != null &&
+          advertisement.callToActionUrl!.isNotEmpty) {
+        final uri = Uri.parse(advertisement.callToActionUrl!);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('No se pudo abrir el enlace del anuncio'),
+              ),
+            );
+          }
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Enlace no disponible'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+}

@@ -8,23 +8,27 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Pantalla principal de la tienda con filtros, búsqueda y lista de productos
-class ShopScreen extends StatefulWidget {
-  const ShopScreen({Key? key}) : super(key: key);
+class ShopScreenPro extends StatefulWidget {
+  final String? initialSearch;
+  const ShopScreenPro({Key? key, this.initialSearch}) : super(key: key);
 
   @override
-  State<ShopScreen> createState() => _ShopScreenState();
+  State<ShopScreenPro> createState() => _ShopScreenProState();
 }
 
-class _ShopScreenState extends State<ShopScreen> {
-  final TextEditingController _searchController = TextEditingController();
+class _ShopScreenProState extends State<ShopScreenPro> {
+  late final TextEditingController _searchController;
   String? _selectedCategory;
 
   @override
   void initState() {
     super.initState();
-    // Cargar productos al iniciar
+    _searchController = TextEditingController(text: widget.initialSearch ?? '');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ShopProvider>().loadProducts();
+      if (widget.initialSearch != null && widget.initialSearch!.isNotEmpty) {
+        context.read<ShopProvider>().searchProducts(widget.initialSearch!);
+      }
     });
   }
 

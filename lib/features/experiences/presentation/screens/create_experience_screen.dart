@@ -37,6 +37,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
   // Tipo de contenido (Story o Post)
   late String _contentType;
+  
+  // Toggle para marcador de publicidad
+  bool _isAdvertisement = false;
 
   @override
   void initState() {
@@ -490,6 +493,61 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               return null;
             },
             onChanged: provider.updateDescription,
+          ),
+          const SizedBox(height: 16),
+          // Toggle para marcador de publicidad
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.grey[800] : Colors.grey[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isDark ? Colors.grey[600]! : Colors.grey[300]!,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Marcar como publicidad',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isAdvertisement = !_isAdvertisement;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 60,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: _isAdvertisement ? Colors.green : Colors.black87,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Icon(
+                        _isAdvertisement ? Icons.check : Icons.close,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
