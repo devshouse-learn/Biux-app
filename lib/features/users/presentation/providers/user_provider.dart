@@ -74,10 +74,10 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> loadUserData() async {
-  if (_skipRemoteCalls) return;
+    if (_skipRemoteCalls) return;
 
-  String? uid = FirebaseAuth.instance.currentUser?.uid;
-  if (uid == null) return;
+    String? uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
 
     print('');
     print('�' * 30);
@@ -154,6 +154,7 @@ class UserProvider extends ChangeNotifier {
 
     _setLoading(true);
     _error = null;
+    notifyListeners();
 
     try {
       print('📝 Iniciando actualización de perfil...');
@@ -167,18 +168,25 @@ class UserProvider extends ChangeNotifier {
       print('📊 Respuesta del servicio: $success');
 
       if (success) {
+        print('✅ Actualización exitosa, recargando datos...');
         // Recargar datos del usuario desde Firebase
         await loadUserData();
-        print('✅ Perfil actualizado y recargado desde Firebase');
-        print('   Nuevo nombre: ${_user?.name}');
-        print('   Nuevo email: ${_user?.email}');
+
+        print('✅ Datos recargados:');
+        print('   Nombre actual: ${_user?.name}');
+        print('   Email actual: ${_user?.email}');
+
+        _error = null;
       } else {
         print('❌ El servicio retornó false');
         _error = 'Error al actualizar el perfil. Intenta nuevamente.';
       }
 
-      notifyListeners();
       _setLoading(false);
+      notifyListeners();
+      print(
+        '🔍 ====== FIN updateProfile (${success ? "ÉXITO" : "ERROR"}) ======\n',
+      );
       return success;
     } catch (e) {
       print('❌ EXCEPCIÓN en updateProfile: $e');
@@ -186,6 +194,7 @@ class UserProvider extends ChangeNotifier {
       _error = 'Error al actualizar perfil: ${e.toString()}';
       _setLoading(false);
       notifyListeners();
+      print('🔍 ====== FIN updateProfile (EXCEPCIÓN) ======\n');
       return false;
     }
   }

@@ -9,6 +9,8 @@ import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/data/services/media_upload_service.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/features/shop/domain/services/stolen_bike_verification_service.dart';
+import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 
 /// Pantalla de administración de productos (solo para admins)
 class AdminShopScreen extends StatefulWidget {
@@ -523,6 +525,11 @@ class _ProductFormModalState extends State<ProductFormModal> {
   late TextEditingController _priceController;
   late TextEditingController _stockController;
   late TextEditingController _cityController;
+  late TextEditingController _bikeFrameSerialController;
+  late TextEditingController _bikeBrandController;
+  late TextEditingController _bikeModelController;
+  late TextEditingController _bikeColorController;
+  late TextEditingController _bikeYearController;
 
   String _selectedCategory = ProductCategories.all;
   List<String> _selectedSizes = [];
@@ -530,6 +537,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
   String? _videoUrl;
   bool _isUploading = false;
   double _uploadProgress = 0.0;
+
+  // Campos anti-robo
+  bool _isBicycle = false;
+  bool _isVerifying = false;
+  bool?
+  _verificationResult; // null = no verificado, true = aprobado, false = robada
 
   @override
   void initState() {
@@ -551,11 +564,32 @@ class _ProductFormModalState extends State<ProductFormModal> {
       text: widget.product?.sellerCity ?? '',
     );
 
+    // Controladores para bicicletas
+    _bikeFrameSerialController = TextEditingController(
+      text: widget.product?.bikeFrameSerial ?? '',
+    );
+    _bikeBrandController = TextEditingController(
+      text: widget.product?.bikeBrand ?? '',
+    );
+    _bikeModelController = TextEditingController(
+      text: widget.product?.bikeModel ?? '',
+    );
+    _bikeColorController = TextEditingController(
+      text: widget.product?.bikeColor ?? '',
+    );
+    _bikeYearController = TextEditingController(
+      text: widget.product?.bikeYear?.toString() ?? '',
+    );
+
     if (widget.product != null) {
       _selectedCategory = widget.product!.category;
       _selectedSizes = List.from(widget.product!.sizes);
       _imageUrls = List.from(widget.product!.images);
       _videoUrl = widget.product?.videoUrl;
+      _isBicycle = widget.product!.isBicycle;
+      if (widget.product!.isVerifiedNotStolen) {
+        _verificationResult = true;
+      }
     }
   }
 
@@ -567,6 +601,11 @@ class _ProductFormModalState extends State<ProductFormModal> {
     _priceController.dispose();
     _stockController.dispose();
     _cityController.dispose();
+    _bikeFrameSerialController.dispose();
+    _bikeBrandController.dispose();
+    _bikeModelController.dispose();
+    _bikeColorController.dispose();
+    _bikeYearController.dispose();
     super.dispose();
   }
 
@@ -814,6 +853,197 @@ class _ProductFormModalState extends State<ProductFormModal> {
     );
   }
 
+  Future<void> _verifyBikeNotStolen() async {
+    // Validar que se haya ingresado el número de serie
+    if (_bikeFrameSerialController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.warning, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Debes ingresar el número de serie para verificar',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isVerifying = true;
+      _verificationResult = null;
+    });
+
+    try {
+      // Crear instancia del servicio de verificación
+      final bikeRepo = BikeRepositoryImpl();
+      final verificationService = StolenBikeVerificationService(
+        bikeRepository: bikeRepo,
+      );
+
+      // Verificar contra la base de datos
+      final result = await verificationService.verifyBikeNotStolen(
+        frameSerial: _bikeFrameSerialController.text.trim(),
+        brand: _bikeBrandController.text.trim().isEmpty
+            ? null
+            : _bikeBrandController.text.trim(),
+        model: _bikeModelController.text.trim().isEmpty
+            ? null
+            : _bikeModelController.text.trim(),
+        color: _bikeColorController.text.trim().isEmpty
+            ? null
+            : _bikeColorController.text.trim(),
+      );
+
+      setState(() {
+        _isVerifying = false;
+        _verificationResult = !result.isStolen;
+      });
+
+      if (result.isStolen) {
+        // ⚠️ BICICLETA ROBADA DETECTADA
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: ColorTokens.error50, width: 3),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.warning, color: ColorTokens.error50, size: 32),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '⚠️ ALERTA DE ROBO',
+                    style: TextStyle(
+                      color: ColorTokens.error50,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.error50.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: ColorTokens.error50),
+                    ),
+                    child: Text(
+                      result.message,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: ColorTokens.error50,
+                      ),
+                    ),
+                  ),
+                  if (result.details != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      'Detalles:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(result.details!, style: TextStyle(fontSize: 14)),
+                  ],
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.block, color: Colors.red.shade700),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'NO se puede publicar esta bicicleta en la tienda',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.red.shade700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  'Entendido',
+                  style: TextStyle(
+                    color: ColorTokens.error50,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // ✅ Bicicleta verificada
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.verified, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    result.message,
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isVerifying = false;
+        _verificationResult = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al verificar: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<void> _saveProduct() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -844,6 +1074,53 @@ class _ProductFormModalState extends State<ProductFormModal> {
       return;
     }
 
+    // Validación para bicicletas: deben estar verificadas
+    if (_isBicycle) {
+      if (_bikeFrameSerialController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '¡El número de serie es obligatorio para bicicletas!',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: ColorTokens.error50,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+
+      if (_verificationResult != true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.warning, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '¡Debes verificar que la bicicleta NO esté reportada como robada!',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+        return;
+      }
+    }
+
     final userProvider = context.read<UserProvider>();
     final currentUser = userProvider.user;
 
@@ -872,6 +1149,31 @@ class _ProductFormModalState extends State<ProductFormModal> {
       sellerCity: _cityController.text.isEmpty ? null : _cityController.text,
       createdAt: widget.product?.createdAt ?? DateTime.now(),
       isActive: true,
+      // Campos anti-robo para bicicletas
+      isBicycle: _isBicycle,
+      bikeFrameSerial:
+          _isBicycle && _bikeFrameSerialController.text.trim().isNotEmpty
+          ? _bikeFrameSerialController.text.trim()
+          : null,
+      bikeBrand: _isBicycle && _bikeBrandController.text.trim().isNotEmpty
+          ? _bikeBrandController.text.trim()
+          : null,
+      bikeModel: _isBicycle && _bikeModelController.text.trim().isNotEmpty
+          ? _bikeModelController.text.trim()
+          : null,
+      bikeColor: _isBicycle && _bikeColorController.text.trim().isNotEmpty
+          ? _bikeColorController.text.trim()
+          : null,
+      bikeYear: _isBicycle && _bikeYearController.text.trim().isNotEmpty
+          ? int.tryParse(_bikeYearController.text.trim())
+          : null,
+      isVerifiedNotStolen: _isBicycle && _verificationResult == true,
+      stolenVerificationDate: _isBicycle && _verificationResult == true
+          ? DateTime.now()
+          : null,
+      stolenVerificationBy: _isBicycle && _verificationResult == true
+          ? currentUser.uid
+          : null,
     );
 
     final shopProvider = context.read<ShopProvider>();
@@ -1214,6 +1516,317 @@ class _ProductFormModalState extends State<ProductFormModal> {
                     });
                   }
                 },
+              ),
+              const SizedBox(height: 16),
+
+              // ============ SECCIÓN DE VERIFICACIÓN ANTI-ROBO ============
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: ColorTokens.primary99,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _isBicycle
+                        ? ColorTokens.primary30
+                        : ColorTokens.neutral90,
+                    width: _isBicycle ? 2 : 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.pedal_bike,
+                          color: ColorTokens.primary30,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Sistema Anti-Robo de Bicicletas',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: ColorTokens.neutral20,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.shield,
+                          color: ColorTokens.primary30,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Checkbox: ¿Es una bicicleta completa?
+                    CheckboxListTile(
+                      value: _isBicycle,
+                      onChanged: (value) {
+                        setState(() {
+                          _isBicycle = value ?? false;
+                          if (!_isBicycle) {
+                            _verificationResult = null;
+                          }
+                        });
+                      },
+                      title: Text(
+                        '¿Este producto es una bicicleta completa?',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: ColorTokens.neutral30,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Si es bicicleta completa, debe verificarse contra base de robos',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: ColorTokens.neutral60,
+                        ),
+                      ),
+                      activeColor: ColorTokens.primary30,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+
+                    // Campos adicionales si es bicicleta
+                    if (_isBicycle) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.orange.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info,
+                              color: Colors.orange.shade700,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Obligatorio verificar antes de publicar',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.orange.shade700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Número de Serie (OBLIGATORIO)
+                      TextFormField(
+                        controller: _bikeFrameSerialController,
+                        style: TextStyle(color: ColorTokens.neutral20),
+                        decoration: InputDecoration(
+                          labelText: 'Número de Serie / Chasis *',
+                          labelStyle: TextStyle(color: ColorTokens.neutral60),
+                          hintText: 'Ej: AB123456789',
+                          hintStyle: TextStyle(color: ColorTokens.neutral70),
+                          filled: true,
+                          fillColor: ColorTokens.neutral100,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.tag,
+                            color: ColorTokens.primary30,
+                          ),
+                        ),
+                        validator: _isBicycle
+                            ? (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Número de serie obligatorio para bicicletas';
+                                }
+                                return null;
+                              }
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Marca
+                      TextFormField(
+                        controller: _bikeBrandController,
+                        style: TextStyle(color: ColorTokens.neutral20),
+                        decoration: InputDecoration(
+                          labelText: 'Marca',
+                          labelStyle: TextStyle(color: ColorTokens.neutral60),
+                          hintText: 'Ej: Trek, Giant, Specialized...',
+                          filled: true,
+                          fillColor: ColorTokens.neutral100,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Modelo y Color
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _bikeModelController,
+                              style: TextStyle(color: ColorTokens.neutral20),
+                              decoration: InputDecoration(
+                                labelText: 'Modelo',
+                                labelStyle: TextStyle(
+                                  color: ColorTokens.neutral60,
+                                ),
+                                filled: true,
+                                fillColor: ColorTokens.neutral100,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _bikeColorController,
+                              style: TextStyle(color: ColorTokens.neutral20),
+                              decoration: InputDecoration(
+                                labelText: 'Color',
+                                labelStyle: TextStyle(
+                                  color: ColorTokens.neutral60,
+                                ),
+                                filled: true,
+                                fillColor: ColorTokens.neutral100,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Año
+                      TextFormField(
+                        controller: _bikeYearController,
+                        style: TextStyle(color: ColorTokens.neutral20),
+                        decoration: InputDecoration(
+                          labelText: 'Año (opcional)',
+                          labelStyle: TextStyle(color: ColorTokens.neutral60),
+                          hintText: '2024',
+                          filled: true,
+                          fillColor: ColorTokens.neutral100,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Botón de Verificación
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: _isVerifying ? null : _verifyBikeNotStolen,
+                          icon: _isVerifying
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : Icon(
+                                  _verificationResult == true
+                                      ? Icons.verified
+                                      : _verificationResult == false
+                                      ? Icons.dangerous
+                                      : Icons.search,
+                                ),
+                          label: Text(
+                            _isVerifying
+                                ? 'Verificando contra base de robos...'
+                                : _verificationResult == true
+                                ? '✓ Verificado: NO está robada'
+                                : _verificationResult == false
+                                ? '✗ ROBADA - No se puede publicar'
+                                : 'Verificar contra Base de Robos',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _verificationResult == true
+                                ? Colors.green
+                                : _verificationResult == false
+                                ? ColorTokens.error50
+                                : ColorTokens.primary30,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // Mensaje de estado
+                      if (_verificationResult != null) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: _verificationResult == true
+                                ? Colors.green.shade50
+                                : Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _verificationResult == true
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                _verificationResult == true
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                color: _verificationResult == true
+                                    ? Colors.green.shade700
+                                    : Colors.red.shade700,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _verificationResult == true
+                                      ? 'Bicicleta verificada. Puede publicarse en la tienda.'
+                                      : 'Esta bicicleta está reportada como robada y NO puede publicarse.',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _verificationResult == true
+                                        ? Colors.green.shade700
+                                        : Colors.red.shade700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
 
