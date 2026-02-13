@@ -4,7 +4,6 @@ import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
-import 'package:biux/features/cities/presentation/providers/city_provider.dart';
 import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
 
 /// Primer paso del registro: Datos básicos obligatorios
@@ -26,7 +25,6 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
 
   BikeType? _selectedType;
   int? _selectedYear;
-  String? _selectedCity;
 
   // Método público para validar el formulario
   bool validateForm() {
@@ -49,15 +47,8 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
     _colorController.text = data['color'] ?? '';
     _sizeController.text = data['size'] ?? '';
     _frameSerialController.text = data['frameSerial'] ?? '';
-    _selectedCity = data['city'];
-    _cityController.text = _selectedCity ?? '';
+    _cityController.text = data['city'] ?? '';
     _selectedType = data['type'];
-
-    // Cargar ciudades si no están cargadas
-    final cityProvider = context.read<CityProvider>();
-    if (cityProvider.cities.isEmpty) {
-      cityProvider.loadCities();
-    }
   }
 
   @override
@@ -253,8 +244,55 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
 
             const SizedBox(height: 16),
 
-            // Ciudad * - Selector con lista de ciudades reales
-            _buildCitySelector(),
+            // Ciudad * - Campo de texto libre con validación
+            TextFormFieldBiuxWidget(
+              controller: _cityController,
+              text: '${AppStrings.cityLabel}, Departamento/Estado',
+              onChanged: (value) {
+                context.read<BikeProvider>().updateRegistrationData(
+                  'city',
+                  value,
+                );
+              },
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return AppStrings.fieldRequired;
+                }
+                // Validar formato: debe contener al menos una coma separando ciudad de departamento/estado
+                final parts = value.split(',').map((e) => e.trim()).toList();
+                if (parts.length < 2) {
+                  return 'Ingresa el formato: Ciudad, Departamento/Estado (ej: Bogotá, Cundinamarca)';
+                }
+                if (parts[0].isEmpty || parts[1].isEmpty) {
+                  return 'Ingresa tanto la ciudad como el departamento/estado';
+                }
+                if (parts[0].length < 2) {
+                  return 'El nombre de la ciudad debe tener al menos 2 caracteres';
+                }
+                if (parts[1].length < 2) {
+                  return 'El nombre del departamento/estado debe tener al menos 2 caracteres';
+                }
+                if (value.trim().length > 150) {
+                  return 'El texto no puede exceder 150 caracteres';
+                }
+                // Validar que solo contenga letras, espacios, comas, acentos y guiones
+                if (!RegExp(
+                  r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,\-\.]+$',
+                ).hasMatch(value.trim())) {
+                  return 'Solo se permiten letras, espacios, comas, puntos y guiones';
+                }
+                return null;
+              },
+            ),
+
+            // Texto de ayuda para ciudad
+            Padding(
+              padding: const EdgeInsets.only(top: 8, left: 12),
+              child: Text(
+                'Ejemplo: Bogotá, Cundinamarca o New York, New York',
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              ),
+            ),
 
             const SizedBox(height: 32),
           ],
@@ -331,38 +369,46 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   void _showBikeTypePicker() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: ColorTokens.primary30,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            color: ColorTokens.primary30,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
                 'Selecciona el Tipo de Bicicleta',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: ColorTokens.neutral100,
+                ),
               ),
-              const Divider(),
+              const Divider(color: ColorTokens.neutral80),
               ...BikeType.values.map((type) {
                 final isSelected = type == _selectedType;
                 return ListTile(
                   title: Text(
                     type.displayName,
                     style: TextStyle(
+                      fontSize: 16,
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,
-                      color: isSelected
-                          ? ColorTokens.primary30
-                          : Colors.black87,
+                      color: ColorTokens.neutral100,
                     ),
                   ),
                   trailing: isSelected
                       ? const Icon(
                           Icons.check_circle,
-                          color: ColorTokens.primary30,
+                          color: ColorTokens.secondary50,
                         )
                       : null,
                   onTap: () {
@@ -544,177 +590,6 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                         context.read<BikeProvider>().updateRegistrationData(
                           'year',
                           year,
-                        );
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCitySelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '${AppStrings.cityLabel} *',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: ColorTokens.primary30,
-          ),
-        ),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () => _showCityPicker(),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: _selectedCity == null
-                    ? ColorTokens.neutral70
-                    : ColorTokens.primary30,
-                width: _selectedCity == null ? 1 : 2,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.location_city,
-                  color: _selectedCity == null
-                      ? ColorTokens.neutral70
-                      : ColorTokens.primary30,
-                  size: 20,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  _selectedCity ?? 'Seleccionar ciudad',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: _selectedCity != null
-                        ? Colors.black87
-                        : ColorTokens.neutral70,
-                  ),
-                ),
-                const Spacer(),
-                Icon(Icons.arrow_drop_down, color: ColorTokens.neutral70),
-              ],
-            ),
-          ),
-        ),
-        if (_selectedCity == null && _shouldShowValidation())
-          Padding(
-            padding: const EdgeInsets.only(top: 8, left: 12),
-            child: Text(
-              AppStrings.fieldRequired,
-              style: TextStyle(fontSize: 12, color: ColorTokens.error40),
-            ),
-          ),
-      ],
-    );
-  }
-
-  void _showCityPicker() {
-    final cityProvider = context.read<CityProvider>();
-    final cities = cityProvider.cities;
-
-    if (cities.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cargando ciudades...'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-      cityProvider.loadCities();
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (BuildContext context) {
-        return Container(
-          height: 500,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
-                  ),
-                  const Text(
-                    'Selecciona tu Ciudad',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      if (_selectedCity != null) {
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: Text(
-                      'Listo',
-                      style: TextStyle(
-                        color: _selectedCity != null
-                            ? ColorTokens.primary30
-                            : ColorTokens.neutral70,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const Divider(),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: cities.length,
-                  itemBuilder: (context, index) {
-                    final city = cities[index];
-                    final isSelected = city.name == _selectedCity;
-
-                    return ListTile(
-                      title: Text(
-                        city.name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          color: isSelected
-                              ? ColorTokens.primary30
-                              : Colors.black87,
-                        ),
-                      ),
-                      subtitle: Text(
-                        city.department,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                      trailing: isSelected
-                          ? const Icon(
-                              Icons.check_circle,
-                              color: ColorTokens.primary30,
-                            )
-                          : null,
-                      onTap: () {
-                        setState(() {
-                          _selectedCity = city.name;
-                          _cityController.text = city.name;
-                        });
-                        context.read<BikeProvider>().updateRegistrationData(
-                          'city',
-                          city.name,
                         );
                         Navigator.pop(context);
                       },
