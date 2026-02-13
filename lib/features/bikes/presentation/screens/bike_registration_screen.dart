@@ -273,7 +273,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
         content: Text(
           message ?? 'Por favor completa todos los campos obligatorios',
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: ColorTokens.error50,
         duration: const Duration(seconds: 3),
       ),
     );
@@ -287,7 +287,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Debes iniciar sesión para registrar una bicicleta'),
-          backgroundColor: Colors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
       return;
@@ -302,7 +302,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppStrings.bikeRegistrationSuccess),
-          backgroundColor: Colors.green,
+          backgroundColor: ColorTokens.success40,
           duration: const Duration(seconds: 3),
         ),
       );
@@ -321,7 +321,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
           content: Text(
             bikeProvider.errorMessage ?? 'Error al registrar la bicicleta',
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: ColorTokens.error50,
         ),
       );
     }

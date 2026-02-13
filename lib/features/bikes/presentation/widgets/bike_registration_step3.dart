@@ -337,7 +337,9 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                   },
                   icon: const Icon(Icons.delete, size: 16),
                   label: const Text('Eliminar'),
-                  style: TextButton.styleFrom(foregroundColor: Colors.red),
+                  style: TextButton.styleFrom(
+                    foregroundColor: ColorTokens.error50,
+                  ),
                 ),
               ],
             ),
@@ -360,7 +362,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
           hasError ? 'Error al cargar imagen' : 'Toca para agregar factura',
           style: TextStyle(
             fontSize: 12,
-            color: hasError ? Colors.red : ColorTokens.neutral70,
+            color: hasError ? ColorTokens.error50 : ColorTokens.neutral70,
           ),
         ),
       ],

@@ -208,9 +208,12 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               value: 'delete',
               child: Row(
                 children: [
-                  Icon(Icons.delete, color: Colors.red),
+                  Icon(Icons.delete, color: ColorTokens.error50),
                   SizedBox(width: 8),
-                  Text('Eliminar', style: TextStyle(color: Colors.red)),
+                  Text(
+                    'Eliminar',
+                    style: TextStyle(color: ColorTokens.error50),
+                  ),
                 ],
               ),
             ),
@@ -227,12 +230,12 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
 
     switch (bike.status) {
       case BikeStatus.active:
-        statusColor = Colors.green;
+        statusColor = ColorTokens.success40;
         statusIcon = Icons.check_circle;
         statusDescription = 'Tu bicicleta está activa y registrada';
         break;
       case BikeStatus.stolen:
-        statusColor = Colors.red;
+        statusColor = ColorTokens.error50;
         statusIcon = Icons.warning;
         statusDescription = 'Reportada como robada';
         break;
@@ -609,7 +612,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             _buildActionButton(
               icon: Icons.warning,
               label: AppStrings.reportTheft,
-              color: Colors.red,
+              color: ColorTokens.error50,
               onPressed: () => _showTheftReportDialog(bike, bikeProvider),
             ),
 
@@ -617,7 +620,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             _buildActionButton(
               icon: Icons.restore,
               label: AppStrings.markRecovered,
-              color: Colors.green,
+              color: ColorTokens.success40,
               onPressed: () => _markAsRecovered(bike, bikeProvider),
             ),
 
@@ -699,7 +702,9 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               Navigator.pop(context);
               // TODO: Implementar reporte de robo
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.error50,
+            ),
             child: const Text('Reportar'),
           ),
         ],
@@ -769,7 +774,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('✅ Bicicleta eliminada correctamente'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: ColorTokens.success40,
                     duration: Duration(seconds: 2),
                   ),
                 );
@@ -783,13 +788,15 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('❌ Error: ${bikeProvider.errorMessage}'),
-                    backgroundColor: Colors.red,
+                    backgroundColor: ColorTokens.error50,
                     duration: const Duration(seconds: 3),
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.error50,
+            ),
             child: const Text('Eliminar'),
           ),
         ],
@@ -801,7 +808,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('QR descargado en la galería'),
-        backgroundColor: Colors.green,
+        backgroundColor: ColorTokens.success40,
       ),
     );
   }

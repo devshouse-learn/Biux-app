@@ -114,7 +114,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: isRequired ? Colors.red[100] : Colors.orange[100],
+                color: isRequired ? ColorTokens.error95 : ColorTokens.warning95,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -122,7 +122,9 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
-                  color: isRequired ? Colors.red[800] : Colors.orange[800],
+                  color: isRequired
+                      ? ColorTokens.error30
+                      : ColorTokens.warning30,
                 ),
               ),
             ),
@@ -190,7 +192,9 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                   },
                   icon: const Icon(Icons.delete, size: 16),
                   label: const Text('Eliminar'),
-                  style: TextButton.styleFrom(foregroundColor: Colors.red),
+                  style: TextButton.styleFrom(
+                    foregroundColor: ColorTokens.error50,
+                  ),
                 ),
               ],
             ),
@@ -213,7 +217,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
           hasError ? 'Error al cargar imagen' : 'Toca para agregar foto',
           style: TextStyle(
             fontSize: 14,
-            color: hasError ? Colors.red : ColorTokens.neutral70,
+            color: hasError ? ColorTokens.error50 : ColorTokens.neutral70,
           ),
         ),
       ],
@@ -333,7 +337,11 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                   color: Colors.red,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.close, color: Colors.white, size: 16),
+                child: const Icon(
+                  Icons.close,
+                  color: ColorTokens.neutral100,
+                  size: 16,
+                ),
               ),
             ),
           ),

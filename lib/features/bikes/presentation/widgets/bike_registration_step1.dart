@@ -329,7 +329,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             padding: const EdgeInsets.only(top: 8, left: 12),
             child: Text(
               AppStrings.fieldRequired,
-              style: TextStyle(fontSize: 12, color: Colors.red[700]),
+              style: TextStyle(fontSize: 12, color: ColorTokens.error40),
             ),
           ),
       ],
@@ -405,7 +405,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             padding: const EdgeInsets.only(top: 8, left: 12),
             child: Text(
               AppStrings.fieldRequired,
-              style: TextStyle(fontSize: 12, color: Colors.red[700]),
+              style: TextStyle(fontSize: 12, color: ColorTokens.error40),
             ),
           ),
       ],

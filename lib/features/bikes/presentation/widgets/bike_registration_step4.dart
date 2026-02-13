@@ -104,7 +104,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ColorTokens.neutral100,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: ColorTokens.neutral90),
         boxShadow: [
