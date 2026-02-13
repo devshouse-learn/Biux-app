@@ -454,7 +454,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     if (_hasError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Producto')), 
+        appBar: AppBar(title: const Text('Producto')),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -463,7 +463,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               children: [
                 const Icon(Icons.error_outline, size: 78, color: Colors.red),
                 const SizedBox(height: 16),
-                const Text('No se pudo cargar el producto', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text(
+                  'No se pudo cargar el producto',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => context.go('/shop'),
@@ -493,6 +496,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             expandedHeight: 400,
             pinned: true,
             backgroundColor: ColorTokens.primary30,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
             actions: [
               // Botón de opciones para el vendedor
@@ -652,11 +659,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               _selectedSize = size;
                             });
                           },
-                          // Fondo más claro para que el texto tenga mejor contraste
-                          // usar alpha muy bajo y texto blanco cuando esté seleccionado
-                          selectedColor: ColorTokens.secondary50.withValues(alpha: 0.12),
+                          // Usar un token de la misma paleta pero mucho más claro
+                          // para que sea claramente visible en el simulador
+                          selectedColor: ColorTokens.secondary95,
                           labelStyle: TextStyle(
-                            color: isSelected ? ColorTokens.neutral100 : Colors.black,
+                            color: isSelected
+                                ? ColorTokens.primary30
+                                : Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                         );
