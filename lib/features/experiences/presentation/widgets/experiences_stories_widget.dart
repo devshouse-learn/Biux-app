@@ -66,10 +66,10 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
               : ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: storyGroups.length + 1, // +1 para agregar
+                  itemCount: storyGroups.length + 1, // +1 para Tu story
                   itemBuilder: (context, index) {
                     if (index == 0) {
-                      // Primer elemento: botón "Agregar Story"
+                      // Primer elemento: botón "Tu Story"
                       return _AddStoryButton();
                     }
 
@@ -85,7 +85,12 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 }
 
 /// Botón para agregar una nueva story general
-class _AddStoryButton extends StatelessWidget {
+class _AddStoryButton extends StatefulWidget {
+  @override
+  State<_AddStoryButton> createState() => _AddStoryButtonState();
+}
+
+class _AddStoryButtonState extends State<_AddStoryButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
