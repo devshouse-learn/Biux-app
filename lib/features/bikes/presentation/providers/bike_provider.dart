@@ -151,13 +151,28 @@ class BikeProvider extends ChangeNotifier {
   String? validateCurrentStepWithMessage() {
     switch (_currentStep) {
       case 0: // Datos básicos
-        if (_registrationData['brand']?.toString().trim().isEmpty ?? true) {
+        // Marca
+        final brand = _registrationData['brand']?.toString().trim() ?? '';
+        if (brand.isEmpty) {
           return 'Falta ingresar la marca de la bicicleta';
         }
-        if (_registrationData['model']?.toString().trim().isEmpty ?? true) {
-          return 'Falta ingresar el modelo de la bicicleta';
+        if (brand.length < 2) {
+          return 'La marca debe tener al menos 2 caracteres';
+        }
+        if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-]+$').hasMatch(brand)) {
+          return 'La marca solo puede contener letras, números y guiones';
         }
 
+        // Modelo
+        final model = _registrationData['model']?.toString().trim() ?? '';
+        if (model.isEmpty) {
+          return 'Falta ingresar el modelo de la bicicleta';
+        }
+        if (model.length < 2) {
+          return 'El modelo debe tener al menos 2 caracteres';
+        }
+
+        // Año
         final year = _registrationData['year'];
         final currentYear = DateTime.now().year;
         if (year == null || year is! int) {
@@ -167,22 +182,57 @@ class BikeProvider extends ChangeNotifier {
           return 'El año debe estar entre 1900 y ${currentYear + 1}';
         }
 
-        if (_registrationData['color']?.toString().trim().isEmpty ?? true) {
+        // Color
+        final color = _registrationData['color']?.toString().trim() ?? '';
+        if (color.isEmpty) {
           return 'Falta ingresar el color de la bicicleta';
         }
-        if (_registrationData['size']?.toString().trim().isEmpty ?? true) {
+        if (color.length < 3) {
+          return 'Ingresa un color válido (ej: Rojo, Azul, Negro)';
+        }
+        if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\/\-]+$').hasMatch(color)) {
+          return 'El color solo puede contener letras';
+        }
+
+        // Talla
+        final size = _registrationData['size']?.toString().trim() ?? '';
+        if (size.isEmpty) {
           return 'Falta ingresar la talla de la bicicleta';
         }
+        if (!RegExp(
+          r'^(XXS|XS|S|M|L|XL|XXL|XXXL|\d{1,2}(\.\d)?|\d{1,2}"?)$',
+          caseSensitive: false,
+        ).hasMatch(size)) {
+          return 'Ingresa una talla válida (ej: S, M, L, XL, 16, 18")';
+        }
+
+        // Tipo
         if (_registrationData['type'] == null) {
           return 'Falta seleccionar el tipo de bicicleta';
         }
-        if (_registrationData['frameSerial']?.toString().trim().isEmpty ??
-            true) {
+
+        // Número de serie
+        final frameSerial =
+            _registrationData['frameSerial']?.toString().trim() ?? '';
+        if (frameSerial.isEmpty) {
           return 'Falta ingresar el número de serie del cuadro';
         }
-        if (_registrationData['city']?.toString().trim().isEmpty ?? true) {
+        if (frameSerial.length < 4) {
+          return 'El número de serie debe tener al menos 4 caracteres';
+        }
+        if (!RegExp(r'^[A-Za-z0-9\-]+$').hasMatch(frameSerial)) {
+          return 'El número de serie solo puede contener letras, números y guiones';
+        }
+
+        // Ciudad
+        final city = _registrationData['city']?.toString().trim() ?? '';
+        if (city.isEmpty) {
           return 'Falta ingresar la ciudad';
         }
+        if (city.length < 2) {
+          return 'Ingresa un nombre de ciudad válido';
+        }
+
         return null; // Todos los campos están completos
 
       case 1: // Fotos

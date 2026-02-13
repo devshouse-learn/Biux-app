@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIUX - Simulador iOS/Android</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 14px;
+            font-weight: 600;
+            color: #16242D;
+            z-index: 1000;
+        }
+
+        .phone-simulator {
+            width: 390px;
+            height: 844px;
+            background: black;
+            border-radius: 60px;
+            border: 12px solid #000;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Notch/Camera area */
+        .phone-simulator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 28px;
+            background: black;
+            border-radius: 0 0 40px 40px;
+            z-index: 100;
+        }
+
+        .screen {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            background: white;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .app-bar {
+            background: #16242D;
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .app-bar-title {
+            flex: 1;
+            text-align: center;
+        }
+
+        .app-bar-icon {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: white;
+        }
+
+        .body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .body::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 3px;
+        }
+
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.2s;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        .nav-item:active {
+            background: #f5f5f5;
+        }
+
+        .nav-item.active {
+            color: #16242D;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #16242D;
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .card-text {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #16242D;
+            font-weight: 500;
+        }
+
+        .button {
+            background: #16242D;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            transition: all 0.2s;
+            active: {
+                opacity: 0.8;
+            }
+        }
+
+        .button:active {
+            opacity: 0.8;
+        }
+
+        .story-carousel {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .story-carousel::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .story-item {
+            flex-shrink: 0;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .story-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 28px;
+            border: 3px solid #16242D;
+        }
+
+        .story-name {
+            font-size: 12px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 80px;
+        }
+
+        .ride-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .ride-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .ride-info {
+            font-size: 13px;
+            opacity: 0.95;
+            margin-bottom: 4px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #16242D;
+            margin: 16px 0 12px 0;
+        }
+
+        .group-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .group-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        .group-image {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .group-info {
+            padding: 12px;
+        }
+
+        .group-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #16242D;
+            margin-bottom: 4px;
+        }
+
+        .group-members {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .floating-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            font-size: 13px;
+            z-index: 1000;
+        }
+
+        .floating-container p {
+            margin-bottom: 8px;
+        }
+
+        .floating-container strong {
+            color: #16242D;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🚴 BIUX App - Simulador en Vivo</div>
+
+    <div class="phone-simulator">
+        <!-- SCREEN 1: STORIES -->
+        <div class="screen active" id="stories">
+            <div class="app-bar">
+                <span></span>
+                <span class="app-bar-title">Mi Feed</span>
+                <span class="app-bar-icon">🔍</span>
+            </div>
+
+            <div class="body">
+                <div class="story-carousel">
+                    <div class="story-item">
+                        <div class="story-avatar">➕</div>
+                        <div class="story-name">Tu Historia</div>
+                    </div>
+                    <div class="story-item">
+                        <div class="story-avatar">🚴</div>
+                        <div class="story-name">Juan</div>
+                    </div>
+                    <div class="story-item">
+                        <div class="story-avatar">🌟</div>
+                        <div class="story-name">María</div>
+                    </div>
+                    <div class="story-item">
+                        <div class="story-avatar">🏔️</div>
+                        <div class="story-name">Carlos</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-title">Experiencia Urbana</div>
+                    <div class="card-subtitle">Por Juan • Hace 2h</div>
+                    <div class="card-text">Ruta increíble por el centro de la ciudad. ¡Acompáñame en la próxima!</div>
+                    <div class="card-stats">
+                        <span>❤️ 245</span>
+                        <span>💬 32</span>
+                        <span>↗️ 18</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-title">Montaña Aventura</div>
+                    <div class="card-subtitle">Por María • Hace 4h</div>
+                    <div class="card-text">Hermoso atardecer en la montaña. Vista espectacular desde la cima 🏔️</div>
+                    <div class="card-stats">
+                        <span>❤️ 512</span>
+                        <span>💬 67</span>
+                        <span>↗️ 43</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-title">Paseo Familiar</div>
+                    <div class="card-subtitle">Por Carlos • Hace 6h</div>
+                    <div class="card-text">Un día perfecto con familia en el parque. Todos incluidos, todas las edades bienvenidas 👨‍👩‍👧‍👦</div>
+                    <div class="card-stats">
+                        <span>❤️ 156</span>
+                        <span>💬 24</span>
+                        <span>↗️ 12</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="switchScreen('stories')">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-label">Historias</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('rides')">
+                    <span class="nav-icon">🗺️</span>
+                    <span class="nav-label">Rutas</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('bikes')">
+                    <span class="nav-icon">🚲</span>
+                    <span class="nav-label">Mis Bicis</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('shop')">
+                    <span class="nav-icon">🛍️</span>
+                    <span class="nav-label">Tienda</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: RIDES -->
+        <div class="screen" id="rides">
+            <div class="app-bar">
+                <span></span>
+                <span class="app-bar-title">Rutas y Rodadas</span>
+                <span class="app-bar-icon">➕</span>
+            </div>
+
+            <div class="body">
+                <div class="section-title">Próximas Rutas Disponibles</div>
+                
+                <div class="ride-item">
+                    <div class="ride-title">Ruta Urbana Centro 🏙️</div>
+                    <div class="ride-info">📍 Centro Histórico | 🕐 Hoy 6:00 PM | 📏 25 km</div>
+                    <div class="ride-info">👥 12 ciclistas | ⭐ 4.8/5 rating | 💪 Intermedio</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Ascenso Montaña Verde 🏔️</div>
+                    <div class="ride-info">📍 Reserva Natural | 🕐 Mañana 7:00 AM | 📏 18 km</div>
+                    <div class="ride-info">👥 8 ciclistas | ⭐ 4.9/5 rating | 💪 Avanzado</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Paseo Familiar Parque 👨‍👩‍👧‍👦</div>
+                    <div class="ride-info">📍 Parque Central | 🕐 Domingo 10:00 AM | 📏 12 km</div>
+                    <div class="ride-info">👥 24 ciclistas | ⭐ 4.6/5 rating | 💪 Principiante</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Cicloruta Nocturna 🌙</div>
+                    <div class="ride-info">📍 Ribera del Río | 🕐 Viernes 7:30 PM | 📏 20 km</div>
+                    <div class="ride-info">👥 15 ciclistas | ⭐ 4.7/5 rating | 💪 Intermedio</div>
+                </div>
+
+                <button class="button">Crear Mi Propia Ruta</button>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="switchScreen('stories')">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-label">Historias</span>
+                </div>
+                <div class="nav-item active" onclick="switchScreen('rides')">
+                    <span class="nav-icon">🗺️</span>
+                    <span class="nav-label">Rutas</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('bikes')">
+                    <span class="nav-icon">🚲</span>
+                    <span class="nav-label">Mis Bicis</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('shop')">
+                    <span class="nav-icon">🛍️</span>
+                    <span class="nav-label">Tienda</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: BIKES -->
+        <div class="screen" id="bikes">
+            <div class="app-bar">
+                <span></span>
+                <span class="app-bar-title">Mis Bicicletas</span>
+                <span class="app-bar-icon">➕</span>
+            </div>
+
+            <div class="body">
+                <div class="section-title">Mis Bicicletas Registradas</div>
+                
+                <div class="ride-item">
+                    <div class="ride-title">Specialized Tarmac SL7</div>
+                    <div class="ride-info">🏷️ Road Bike | 💪 Premium</div>
+                    <div class="ride-info">⚙️ Registrada desde: 45 días</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Trek Marlin Pro</div>
+                    <div class="ride-info">🏔️ Mountain Bike | 💪 Intermedio</div>
+                    <div class="ride-info">⚙️ Registrada desde: 120 días</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Giant Quick-E+ 45</div>
+                    <div class="ride-info">⚡ E-Bike | 🔋 Eléctrica</div>
+                    <div class="ride-info">⚙️ Registrada desde: 8 días</div>
+                </div>
+
+                <button class="button">Registrar Nueva Bicicleta</button>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="switchScreen('stories')">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-label">Historias</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('rides')">
+                    <span class="nav-icon">🗺️</span>
+                    <span class="nav-label">Rutas</span>
+                </div>
+                <div class="nav-item active" onclick="switchScreen('bikes')">
+                    <span class="nav-icon">🚲</span>
+                    <span class="nav-label">Mis Bicis</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('shop')">
+                    <span class="nav-icon">🛍️</span>
+                    <span class="nav-label">Tienda</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: SHOP -->
+        <div class="screen" id="shop">
+            <div class="app-bar">
+                <span></span>
+                <span class="app-bar-title">Tienda</span>
+                <span class="app-bar-icon">🔍</span>
+            </div>
+
+            <div class="body">
+                <div class="section-title">Accesorios Destacados</div>
+                
+                <div class="ride-item">
+                    <div class="ride-title">Casco de Seguridad Pro</div>
+                    <div class="ride-info">💰 $89.99 | ⭐ 4.8/5 (234 reviews)</div>
+                    <div class="ride-info">Protección máxima | Material premium</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Luces LED Smart</div>
+                    <div class="ride-info">💰 $45.00 | ⭐ 4.6/5 (156 reviews)</div>
+                    <div class="ride-info">Recargables USB | Múltiples modos</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Candado Digital</div>
+                    <div class="ride-info">💰 $124.99 | ⭐ 4.9/5 (412 reviews)</div>
+                    <div class="ride-info">Control por app | Muy seguro</div>
+                </div>
+
+                <div class="ride-item">
+                    <div class="ride-title">Mochila Impermeable</div>
+                    <div class="ride-info">💰 $65.00 | ⭐ 4.7/5 (89 reviews)</div>
+                    <div class="ride-info">25L capacidad | Material resistente</div>
+                </div>
+
+                <button class="button">Ver más productos</button>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="switchScreen('stories')">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-label">Historias</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('rides')">
+                    <span class="nav-icon">🗺️</span>
+                    <span class="nav-label">Rutas</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('bikes')">
+                    <span class="nav-icon">🚲</span>
+                    <span class="nav-label">Mis Bicis</span>
+                </div>
+                <div class="nav-item active" onclick="switchScreen('shop')">
+                    <span class="nav-icon">🛍️</span>
+                    <span class="nav-label">Tienda</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-container">
+        <p><strong>� BIUX Application</strong></p>
+        <p>App para Ciclistas - Versión Simulada</p>
+        <p><strong>Navegación:</strong></p>
+        <p>📖 Historias | 🗺️ Rutas | 🚲 Mis Bicis | 🛍️ Tienda</p>
+        <p style="margin-top: 8px; font-size: 12px; opacity: 0.7;">Hecho con Flutter + Firebase</p>
+    </div>
+
+    <script>
+        function switchScreen(screenId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+        }
+    </script>
+</body>
+</html>

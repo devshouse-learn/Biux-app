@@ -22,9 +22,16 @@ class PromotionsScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: 'Título')),
+              TextField(
+                controller: titleCtrl,
+                decoration: const InputDecoration(labelText: 'Título'),
+              ),
               const SizedBox(height: 8),
-              TextField(controller: descCtrl, decoration: const InputDecoration(labelText: 'Descripción'), maxLines: 3),
+              TextField(
+                controller: descCtrl,
+                decoration: const InputDecoration(labelText: 'Descripción'),
+                maxLines: 3,
+              ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: type,
@@ -54,16 +61,26 @@ class PromotionsScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
             onPressed: () {
               final title = titleCtrl.text.trim();
               final desc = descCtrl.text.trim();
               if (title.isEmpty || desc.isEmpty) return;
-              final req = PromotionRequestModel(title: title, description: desc, type: type, eventDate: eventDate);
+              final req = PromotionRequestModel(
+                title: title,
+                description: desc,
+                type: type,
+                eventDate: eventDate,
+              );
               context.read<PromotionsProvider>().addRequest(req);
               Navigator.of(ctx).pop();
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Solicitud enviada a los admins')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Solicitud enviada a los admins')),
+              );
             },
             child: const Text('Enviar solicitud'),
           ),
@@ -81,7 +98,10 @@ class PromotionsScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            if (Navigator.of(context).canPop()) Navigator.of(context).pop(); else context.go('/stories');
+            if (Navigator.of(context).canPop())
+              Navigator.of(context).pop();
+            else
+              context.go('/stories');
           },
         ),
       ),
@@ -92,23 +112,48 @@ class PromotionsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             children: [
               Card(
-                color: Colors.yellow[50],
+                color: Colors.grey[600],
                 child: ListTile(
-                  title: const Text('¿Quieres promocionar tu anuncio o evento?'),
-                  subtitle: const Text('Envía una solicitud y los admins la revisarán.'),
-                  trailing: ElevatedButton(onPressed: () => _openRequestDialog(context), child: const Text('Solicitar')),
+                  title: const Text(
+                    '¿Quieres promocionar tu anuncio o evento?',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: const Text(
+                    'Envía una solicitud y los admins la revisarán.',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  trailing: ElevatedButton(
+                    onPressed: () => _openRequestDialog(context),
+                    child: const Text(
+                      'Solicitar',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               if (items.isEmpty) ...[
-                Center(child: Text('No hay promociones publicadas.', style: TextStyle(color: Colors.grey[600]))),
-              ] else ...items.map((r) => Card(
-                child: ListTile(
-                  title: Text(r.title),
-                  subtitle: Text('${r.type.toUpperCase()} • ${r.description}\nEstado: ${r.status}'),
-                  isThreeLine: true,
+                Center(
+                  child: Text(
+                    'No hay promociones publicadas.',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
                 ),
-              )),
+              ] else
+                ...items.map(
+                  (r) => Card(
+                    child: ListTile(
+                      title: Text(r.title),
+                      subtitle: Text(
+                        '${r.type.toUpperCase()} • ${r.description}\nEstado: ${r.status}',
+                      ),
+                      isThreeLine: true,
+                    ),
+                  ),
+                ),
             ],
           );
         },

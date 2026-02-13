@@ -65,15 +65,17 @@ class _NotificationSettingsScreenState
             },
           ),
           // Botón Salir / Volver
-            // Botón de volver (solo icono)
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              tooltip: 'Volver',
-              onPressed: () {
-                if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-                else context.go('/profile');
-              },
-            ),
+          // Botón de volver (solo icono)
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            tooltip: 'Volver',
+            onPressed: () {
+              if (Navigator.of(context).canPop())
+                Navigator.of(context).pop();
+              else
+                context.go('/profile');
+            },
+          ),
         ],
       ),
       body: Consumer<NotificationSettingsProvider>(
@@ -497,7 +499,11 @@ class _NotificationSettingsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral60),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -512,8 +518,12 @@ class _NotificationSettingsScreenState
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary30,
+              foregroundColor: Colors.white,
             ),
-            child: const Text('Restaurar'),
+            child: const Text(
+              'Continuar',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

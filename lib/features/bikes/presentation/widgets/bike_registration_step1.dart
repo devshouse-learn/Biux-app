@@ -86,6 +86,14 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value == null || value.trim().isEmpty) {
                   return AppStrings.fieldRequired;
                 }
+                if (value.trim().length < 2) {
+                  return 'La marca debe tener al menos 2 caracteres';
+                }
+                if (!RegExp(
+                  r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-]+$',
+                ).hasMatch(value)) {
+                  return 'Solo se permiten letras, números y guiones';
+                }
                 return null;
               },
             ),
@@ -106,6 +114,9 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return AppStrings.fieldRequired;
+                }
+                if (value.trim().length < 2) {
+                  return 'El modelo debe tener al menos 2 caracteres';
                 }
                 return null;
               },
@@ -132,6 +143,12 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value == null || value.trim().isEmpty) {
                   return AppStrings.fieldRequired;
                 }
+                if (value.trim().length < 3) {
+                  return 'Ingresa un color válido (ej: Rojo, Azul, Negro)';
+                }
+                if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\/\-]+$').hasMatch(value)) {
+                  return 'Solo se permiten letras (ej: Rojo/Negro)';
+                }
                 return null;
               },
             ),
@@ -152,6 +169,13 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return AppStrings.fieldRequired;
+                }
+                // Acepta: S, M, L, XL, XXL o números (14, 16, 18, etc.) o medidas en pulgadas
+                if (!RegExp(
+                  r'^(XXS|XS|S|M|L|XL|XXL|XXXL|\d{1,2}(\.\d)?|\d{1,2}"?)$',
+                  caseSensitive: false,
+                ).hasMatch(value.trim())) {
+                  return 'Ingresa una talla válida (ej: S, M, L, XL, 16, 18")';
                 }
                 return null;
               },
@@ -178,6 +202,12 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return AppStrings.fieldRequired;
+                }
+                if (value.trim().length < 4) {
+                  return 'El número de serie debe tener al menos 4 caracteres';
+                }
+                if (!RegExp(r'^[A-Za-z0-9\-]+$').hasMatch(value.trim())) {
+                  return 'Solo se permiten letras, números y guiones';
                 }
                 return null;
               },
