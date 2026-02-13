@@ -65,7 +65,7 @@ class ShopProvider with ChangeNotifier {
   List<OrderEntity> get userOrders => _userOrders;
   bool get isLoadingOrders => _isLoadingOrders;
   bool get hasItemsInCart => _cartItems.isNotEmpty;
-  
+
   // Getters de cupones
   String? get appliedCoupon => _appliedCoupon;
   double get couponDiscount => _couponDiscount;
@@ -215,7 +215,7 @@ class ShopProvider with ChangeNotifier {
   /// Aplicar cupón de descuento (solo para compras)
   bool applyCoupon(String couponCode) {
     _couponErrorMessage = null;
-    
+
     // Validar que hay items en el carrito
     if (_cartItems.isEmpty) {
       _couponErrorMessage = 'Agrega productos al carrito primero';
@@ -226,7 +226,8 @@ class ShopProvider with ChangeNotifier {
     // Validar compra mínima
     const double minimumPurchase = 50000; // Compra mínima 50.000 COP
     if (cartTotal < minimumPurchase) {
-      _couponErrorMessage = 'Compra mínima: \$${minimumPurchase.toStringAsFixed(0)} COP';
+      _couponErrorMessage =
+          'Compra mínima: \$${minimumPurchase.toStringAsFixed(0)} COP';
       notifyListeners();
       return false;
     }
@@ -234,26 +235,52 @@ class ShopProvider with ChangeNotifier {
     // Cupones organizados por categoría
     final Map<String, CouponData> validCoupons = {
       // Cupones generales
-      'BIUX10': CouponData(discount: 0.10, description: 'Descuento general 10%'),
-      'BIUX15': CouponData(discount: 0.15, description: 'Descuento general 15%'),
-      'BIUX20': CouponData(discount: 0.20, description: 'Descuento general 20%'),
-      
+      'BIUX10': CouponData(
+        discount: 0.10,
+        description: 'Descuento general 10%',
+      ),
+      'BIUX15': CouponData(
+        discount: 0.15,
+        description: 'Descuento general 15%',
+      ),
+      'BIUX20': CouponData(
+        discount: 0.20,
+        description: 'Descuento general 20%',
+      ),
+
       // Cupones especiales
-      'PRIMERACOMPRA': CouponData(discount: 0.15, description: 'Primera compra 15%'),
+      'PRIMERACOMPRA': CouponData(
+        discount: 0.15,
+        description: 'Primera compra 15%',
+      ),
       'CICLISTA': CouponData(discount: 0.12, description: 'Ciclistas 12%'),
-      'NUEVOCLIENTE': CouponData(discount: 0.18, description: 'Nuevo cliente 18%'),
-      
+      'NUEVOCLIENTE': CouponData(
+        discount: 0.18,
+        description: 'Nuevo cliente 18%',
+      ),
+
       // Cupones estacionales
-      'VERANO2026': CouponData(discount: 0.25, description: 'Verano 2026 - 25%'),
+      'VERANO2026': CouponData(
+        discount: 0.25,
+        description: 'Verano 2026 - 25%',
+      ),
       'ENERO2026': CouponData(discount: 0.20, description: 'Enero 2026 - 20%'),
-      
+
       // Cupones VIP
-      'VIP30': CouponData(discount: 0.30, description: 'Cliente VIP 30%', minPurchase: 200000),
-      'ELITE40': CouponData(discount: 0.40, description: 'Elite 40%', minPurchase: 500000),
+      'VIP30': CouponData(
+        discount: 0.30,
+        description: 'Cliente VIP 30%',
+        minPurchase: 200000,
+      ),
+      'ELITE40': CouponData(
+        discount: 0.40,
+        description: 'Elite 40%',
+        minPurchase: 500000,
+      ),
     };
 
     final couponData = validCoupons[couponCode.toUpperCase()];
-    
+
     if (couponData == null) {
       _couponErrorMessage = 'Cupón inválido o expirado';
       notifyListeners();
@@ -262,7 +289,8 @@ class ShopProvider with ChangeNotifier {
 
     // Validar compra mínima específica del cupón
     if (couponData.minPurchase != null && cartTotal < couponData.minPurchase!) {
-      _couponErrorMessage = 'Compra mínima para este cupón: \$${couponData.minPurchase!.toStringAsFixed(0)} COP';
+      _couponErrorMessage =
+          'Compra mínima para este cupón: \$${couponData.minPurchase!.toStringAsFixed(0)} COP';
       notifyListeners();
       return false;
     }
@@ -270,47 +298,91 @@ class ShopProvider with ChangeNotifier {
     // Calcular descuento
     _couponDiscount = cartTotal * couponData.discount;
     _appliedCoupon = couponCode.toUpperCase();
-    
+
     print('🎟️ Cupón aplicado: $_appliedCoupon (${couponData.description})');
-    print('💰 Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)');
-    print('💵 Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP');
-    
+    print(
+      '💰 Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)',
+    );
+    print(
+      '💵 Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP',
+    );
+
     notifyListeners();
     return true;
   }
-  
+
   /// Obtener lista de cupones disponibles organizados
   List<Map<String, dynamic>> getAvailableCoupons() {
     return [
       {
         'category': 'Generales',
         'coupons': [
-          {'code': 'BIUX10', 'discount': '10%', 'description': 'Descuento general'},
-          {'code': 'BIUX15', 'discount': '15%', 'description': 'Descuento general'},
-          {'code': 'BIUX20', 'discount': '20%', 'description': 'Descuento general'},
-        ]
+          {
+            'code': 'BIUX10',
+            'discount': '10%',
+            'description': 'Descuento general',
+          },
+          {
+            'code': 'BIUX15',
+            'discount': '15%',
+            'description': 'Descuento general',
+          },
+          {
+            'code': 'BIUX20',
+            'discount': '20%',
+            'description': 'Descuento general',
+          },
+        ],
       },
       {
         'category': 'Especiales',
         'coupons': [
-          {'code': 'PRIMERACOMPRA', 'discount': '15%', 'description': 'Primera compra'},
-          {'code': 'CICLISTA', 'discount': '12%', 'description': 'Para ciclistas'},
-          {'code': 'NUEVOCLIENTE', 'discount': '18%', 'description': 'Nuevo cliente'},
-        ]
+          {
+            'code': 'PRIMERACOMPRA',
+            'discount': '15%',
+            'description': 'Primera compra',
+          },
+          {
+            'code': 'CICLISTA',
+            'discount': '12%',
+            'description': 'Para ciclistas',
+          },
+          {
+            'code': 'NUEVOCLIENTE',
+            'discount': '18%',
+            'description': 'Nuevo cliente',
+          },
+        ],
       },
       {
         'category': 'Temporada',
         'coupons': [
-          {'code': 'VERANO2026', 'discount': '25%', 'description': 'Promoción verano'},
-          {'code': 'ENERO2026', 'discount': '20%', 'description': 'Promoción enero'},
-        ]
+          {
+            'code': 'VERANO2026',
+            'discount': '25%',
+            'description': 'Promoción verano',
+          },
+          {
+            'code': 'ENERO2026',
+            'discount': '20%',
+            'description': 'Promoción enero',
+          },
+        ],
       },
       {
         'category': 'VIP',
         'coupons': [
-          {'code': 'VIP30', 'discount': '30%', 'description': 'Compra mínima \$200.000'},
-          {'code': 'ELITE40', 'discount': '40%', 'description': 'Compra mínima \$500.000'},
-        ]
+          {
+            'code': 'VIP30',
+            'discount': '30%',
+            'description': 'Compra mínima \$200.000',
+          },
+          {
+            'code': 'ELITE40',
+            'discount': '40%',
+            'description': 'Compra mínima \$500.000',
+          },
+        ],
       },
     ];
   }
@@ -340,11 +412,12 @@ class ShopProvider with ChangeNotifier {
     try {
       // Calcular total final (con descuento de cupón si aplica)
       final finalTotal = cartTotalWithDiscount;
-      
+
       // Agregar info del cupón a las notas si se aplicó uno
       String finalNotes = notes ?? '';
       if (_appliedCoupon != null) {
-        final couponInfo = '\n🎟️ Cupón aplicado: $_appliedCoupon (Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP)';
+        final couponInfo =
+            '\n🎟️ Cupón aplicado: $_appliedCoupon (Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP)';
         finalNotes = finalNotes.isEmpty ? couponInfo : '$finalNotes$couponInfo';
       }
 
@@ -532,6 +605,51 @@ class ShopProvider with ChangeNotifier {
       _errorMessage = 'Error al eliminar producto: $e';
       notifyListeners();
       return false;
+    }
+  }
+
+  /// Eliminar TODOS los productos sin imágenes (función de limpieza)
+  Future<int> deleteProductsWithoutImages() async {
+    int deletedCount = 0;
+
+    try {
+      // Recargar productos para tener la lista más actualizada
+      await loadProducts();
+
+      // Encontrar productos sin imágenes válidas
+      final productsToDelete = _allProducts.where((product) {
+        if (product.images.isEmpty) return true;
+        return !product.images.any(
+          (img) => img.isNotEmpty && img.trim().isNotEmpty,
+        );
+      }).toList();
+
+      print(
+        '🗑️ Productos sin imágenes encontrados: ${productsToDelete.length}',
+      );
+
+      // Eliminar cada producto sin imagen
+      for (final product in productsToDelete) {
+        try {
+          print(
+            '🗑️ Eliminando producto sin imagen: ${product.name} (${product.id})',
+          );
+          await productRepository.deleteProduct(product.id);
+          deletedCount++;
+        } catch (e) {
+          print('❌ Error eliminando ${product.name}: $e');
+        }
+      }
+
+      // Recargar productos después de la limpieza
+      await loadProducts();
+
+      print('✅ Productos eliminados: $deletedCount');
+      return deletedCount;
+    } catch (e) {
+      _errorMessage = 'Error en limpieza de productos: $e';
+      notifyListeners();
+      return deletedCount;
     }
   }
 

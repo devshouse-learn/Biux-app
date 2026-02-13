@@ -29,6 +29,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       'relevant'; // relevant, price_low, price_high, newest, popular
   String _viewMode = 'grid'; // grid, list
   bool _showFilters = false;
+  bool _showOffersExpanded = false; // Control para barra desplegable de ofertas
   late TabController _tabController;
 
   // Filtros avanzados
@@ -66,113 +67,29 @@ class _ShopScreenProState extends State<ShopScreenPro>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: ColorTokens.neutral99, // Fondo claro y limpio
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          // DEBUG VISUAL - Descomentado para ver información del usuario
-          // SliverToBoxAdapter(
-          //   child: Consumer<UserProvider>(
-          //     builder: (context, userProvider, child) {
-          //       final user = userProvider.user;
-          //       return Container(
-          //         color: Colors.red,
-          //         padding: const EdgeInsets.all(12),
-          //         child: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             Text('🔴 DEBUG MODE 🔴', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          //             Text('Usuario: ${user?.name ?? "NULL"}', style: TextStyle(color: Colors.white)),
-          //             Text('UID: ${user?.uid ?? "NULL"}', style: TextStyle(color: Colors.white, fontSize: 10)),
-          //             Text('isAdmin: ${user?.isAdmin ?? false}', style: TextStyle(color: Colors.white)),
-          //             Text('canSellProducts: ${user?.canSellProducts ?? false}', style: TextStyle(color: Colors.white)),
-          //             Text('canCreateProducts: ${user?.canCreateProducts ?? false}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          //           ],
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
+          // AppBar limpio estilo Chrome
+          _buildChromeStyleAppBar(),
 
-          // AppBar profesional con sticky search
-          _buildSliverAppBar(),
+          // Categorías horizontales con chips
+          _buildCategoryChips(),
 
-          // Banner promocional
-          SliverToBoxAdapter(child: _buildPromoBanner()),
+          // Barra de ofertas desplegable
+          SliverToBoxAdapter(child: _buildOffersBar()),
 
-          // Categorías con tabs
-          SliverToBoxAdapter(
-            child: Container(
-              color: Colors.white,
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                indicatorColor: ColorTokens.primary30,
-                labelColor: ColorTokens.primary30,
-                unselectedLabelColor: Colors.black87,
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14,
-                ),
-                onTap: (index) {
-                  final categories = [
-                    null, // Todos
-                    ProductCategories.bikes,
-                    ProductCategories.jerseys,
-                    ProductCategories.shorts,
-                    ProductCategories.helmets,
-                    ProductCategories.shoes,
-                    ProductCategories.components,
-                    ProductCategories.accessories,
-                  ];
-                  _onCategoryChanged(categories[index]);
-                },
-                tabs: const [
-                  Tab(icon: Icon(Icons.dashboard), text: 'Todos'),
-                  Tab(icon: Icon(Icons.pedal_bike), text: 'Bicis'),
-                  Tab(icon: Icon(Icons.checkroom), text: 'Jerseys'),
-                  Tab(icon: Icon(Icons.sports), text: 'Culotes'),
-                  Tab(icon: Icon(Icons.sports_motorsports), text: 'Cascos'),
-                  Tab(icon: Icon(Icons.directions_run), text: 'Calzado'),
-                  Tab(icon: Icon(Icons.settings), text: 'Componentes'),
-                  Tab(icon: Icon(Icons.category), text: 'Más'),
-                ],
-              ),
-            ),
-          ),
+          // Productos destacados
+          _buildFeaturedSection(),
 
-          // Toolbar: Ordenar y Vista
-          SliverToBoxAdapter(child: _buildToolbar()),
-
-          // Productos recomendados para rodadas
-          SliverToBoxAdapter(
-            child: Consumer<ShopProvider>(
-              builder: (context, provider, child) {
-                // Mostrar productos destacados o los primeros 6
-                final recommendedProducts = provider.products
-                    .where((p) => p.isFeatured || p.isAvailable)
-                    .take(6)
-                    .toList();
-
-                if (recommendedProducts.isNotEmpty) {
-                  return RecommendedForRidesWidget(
-                    products: recommendedProducts,
-                    subtitle: 'Equípate para tus próximas aventuras 🚴',
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ),
+          // Toolbar de filtros minimalista
+          SliverToBoxAdapter(child: _buildMinimalToolbar()),
 
           // Panel de filtros (expandible)
           if (_showFilters) SliverToBoxAdapter(child: _buildAdvancedFilters()),
 
-          // Grid/List de productos
+          // Grid de productos limpio
           _buildProductsGrid(),
         ],
       ),
@@ -254,7 +171,732 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// AppBar profesional con búsqueda integrada
+  /// AppBar limpio estilo Chrome Web Store
+  Widget _buildChromeStyleAppBar() {
+    return SliverAppBar(
+      floating: true,
+      snap: true,
+      elevation: 0,
+      backgroundColor: ColorTokens.neutral100,
+      surfaceTintColor: Colors.transparent,
+      toolbarHeight: 70,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          color: ColorTokens.neutral100,
+          border: Border(
+            bottom: BorderSide(color: ColorTokens.neutral95, width: 1),
+          ),
+        ),
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top + 8,
+          left: 16,
+          right: 16,
+          bottom: 8,
+        ),
+        child: Row(
+          children: [
+            // Logo o título
+            Text(
+              '🚴 Tienda Biux',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: ColorTokens.primary30,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Barra de búsqueda limpia
+            Expanded(
+              child: Container(
+                height: 42,
+                decoration: BoxDecoration(
+                  color: ColorTokens.neutral99,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: ColorTokens.neutral95, width: 1),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  style: TextStyle(color: ColorTokens.neutral20, fontSize: 14),
+                  onChanged: (query) {
+                    context.read<ShopProvider>().searchProducts(query);
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Buscar productos...',
+                    hintStyle: TextStyle(
+                      color: ColorTokens.neutral70,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: ColorTokens.neutral70,
+                      size: 20,
+                    ),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              color: ColorTokens.neutral70,
+                              size: 18,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              context.read<ShopProvider>().searchProducts('');
+                              setState(() {});
+                            },
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Carrito
+            Consumer<ShopProvider>(
+              builder: (context, shopProvider, child) {
+                final itemCount = shopProvider.cartItemCount;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.shopping_bag_outlined,
+                        size: 24,
+                        color: ColorTokens.primary30,
+                      ),
+                      onPressed: () => context.push('/shop/cart'),
+                      style: IconButton.styleFrom(
+                        backgroundColor: ColorTokens.neutral99,
+                      ),
+                    ),
+                    if (itemCount > 0)
+                      Positioned(
+                        right: 6,
+                        top: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: ColorTokens.error50,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '$itemCount',
+                            style: TextStyle(
+                              color: ColorTokens.neutral100,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Chips de categorías horizontales estilo Chrome
+  Widget _buildCategoryChips() {
+    final categories = [
+      {'icon': Icons.apps, 'label': 'Todos', 'value': null},
+      {
+        'icon': Icons.pedal_bike,
+        'label': 'Bicis',
+        'value': ProductCategories.bikes,
+      },
+      {
+        'icon': Icons.checkroom,
+        'label': 'Jerseys',
+        'value': ProductCategories.jerseys,
+      },
+      {
+        'icon': Icons.sports,
+        'label': 'Culotes',
+        'value': ProductCategories.shorts,
+      },
+      {
+        'icon': Icons.sports_motorsports,
+        'label': 'Cascos',
+        'value': ProductCategories.helmets,
+      },
+      {
+        'icon': Icons.directions_run,
+        'label': 'Calzado',
+        'value': ProductCategories.shoes,
+      },
+      {
+        'icon': Icons.settings,
+        'label': 'Componentes',
+        'value': ProductCategories.components,
+      },
+      {
+        'icon': Icons.category,
+        'label': 'Accesorios',
+        'value': ProductCategories.accessories,
+      },
+    ];
+
+    return SliverToBoxAdapter(
+      child: Container(
+        color: ColorTokens.neutral100,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: categories.map((cat) {
+              final isSelected =
+                  _tabController.index == categories.indexOf(cat);
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  selected: isSelected,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        cat['icon'] as IconData,
+                        size: 16,
+                        color: isSelected
+                            ? ColorTokens.primary30
+                            : ColorTokens.neutral60,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        cat['label'] as String,
+                        style: TextStyle(
+                          color: isSelected
+                              ? ColorTokens.primary30
+                              : ColorTokens.neutral40,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onSelected: (selected) {
+                    _tabController.animateTo(categories.indexOf(cat));
+                    _onCategoryChanged(cat['value'] as String?);
+                  },
+                  backgroundColor: ColorTokens.neutral99,
+                  selectedColor: ColorTokens.primary99,
+                  checkmarkColor: ColorTokens.primary30,
+                  side: BorderSide(
+                    color: isSelected
+                        ? ColorTokens.primary30
+                        : ColorTokens.neutral95,
+                    width: 1,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Barra de ofertas desplegable limpia
+  Widget _buildOffersBar() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ColorTokens.neutral100,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ColorTokens.neutral95),
+        boxShadow: [
+          BoxShadow(
+            color: ColorTokens.neutral90.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Cabecera clickeable
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _showOffersExpanded = !_showOffersExpanded;
+                });
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.warning99,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: ColorTokens.warning90),
+                      ),
+                      child: Icon(
+                        Icons.local_offer_outlined,
+                        color: ColorTokens.warning50,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Ofertas y Beneficios',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: ColorTokens.neutral20,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _showOffersExpanded
+                                ? 'Ocultar promociones'
+                                : 'Descuentos especiales disponibles',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: ColorTokens.neutral60,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.error50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '4',
+                        style: TextStyle(
+                          color: ColorTokens.neutral100,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AnimatedRotation(
+                      turns: _showOffersExpanded ? 0.5 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        Icons.keyboard_arrow_down,
+                        color: ColorTokens.neutral60,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Contenido expandible
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: Column(
+              children: [
+                Divider(height: 1, color: ColorTokens.neutral95),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildOfferCard(
+                              '⚡',
+                              'Ofertas\nRelámpago',
+                              ColorTokens.warning99,
+                              ColorTokens.warning50,
+                              () => _showFlashOffersDialog(context),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildOfferCard(
+                              '🎯',
+                              'Descuentos\nGrupales',
+                              ColorTokens.info90,
+                              ColorTokens.secondary50,
+                              () => _showGroupDiscountsDialog(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildOfferCard(
+                              '🏆',
+                              'Productos\nPremium',
+                              ColorTokens.secondary99,
+                              ColorTokens.primary50,
+                              () => _showPremiumProductsDialog(context),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildOfferCard(
+                              '🚚',
+                              'Envío\nGratis',
+                              ColorTokens.success99,
+                              ColorTokens.success40,
+                              () => _showShippingDiscountsDialog(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            crossFadeState: _showOffersExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Card de oferta individual
+  Widget _buildOfferCard(
+    String emoji,
+    String label,
+    Color bgColor,
+    Color accentColor,
+    VoidCallback onTap,
+  ) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+          ),
+          child: Column(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 24)),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: ColorTokens.neutral30,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Sección de productos destacados
+  Widget _buildFeaturedSection() {
+    return SliverToBoxAdapter(
+      child: Consumer<ShopProvider>(
+        builder: (context, provider, child) {
+          // ✅ FILTRAR: Solo productos destacados, disponibles Y con imágenes válidas
+          final featuredProducts = provider.products
+              .where((p) {
+                // Debe ser destacado y disponible
+                if (!p.isFeatured || !p.isAvailable) return false;
+                // Debe tener imágenes válidas
+                if (p.images.isEmpty) return false;
+                return p.images.any(
+                  (img) => img.isNotEmpty && img.trim().isNotEmpty,
+                );
+              })
+              .take(6)
+              .toList();
+
+          if (featuredProducts.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(16),
+            color: ColorTokens.neutral100,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.star_rounded,
+                      color: ColorTokens.warning50,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Destacados para ti',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: ColorTokens.neutral20,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Productos seleccionados para ciclistas',
+                  style: TextStyle(fontSize: 13, color: ColorTokens.neutral60),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 220,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: featuredProducts.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          right: index < featuredProducts.length - 1 ? 12 : 0,
+                        ),
+                        child: _buildFeaturedProductCard(
+                          featuredProducts[index],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Card de producto destacado horizontal
+  Widget _buildFeaturedProductCard(ProductEntity product) {
+    return Container(
+      width: 160,
+      decoration: BoxDecoration(
+        color: ColorTokens.neutral99,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ColorTokens.neutral95),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.push('/shop/product/${product.id}'),
+          borderRadius: BorderRadius.circular(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Imagen
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: CachedNetworkImage(
+                    imageUrl: product.images.isNotEmpty
+                        ? product.images.first
+                        : '',
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                    memCacheHeight: 400,
+                    memCacheWidth: 400,
+                    placeholder: (context, url) => Container(
+                      color: ColorTokens.neutral95,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation(
+                            ColorTokens.primary30,
+                          ),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: ColorTokens.neutral95,
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: ColorTokens.neutral70,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Info
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: ColorTokens.neutral20,
+                          height: 1.2,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '\$${product.price.toStringAsFixed(0)}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: ColorTokens.primary30,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Toolbar minimalista
+  Widget _buildMinimalToolbar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: ColorTokens.neutral100,
+      child: Row(
+        children: [
+          // Contador de productos (solo válidos con imágenes)
+          Consumer<ShopProvider>(
+            builder: (context, provider, child) {
+              final validCount = provider.products.where((p) {
+                if (p.images.isEmpty) return false;
+                return p.images.any(
+                  (img) => img.isNotEmpty && img.trim().isNotEmpty,
+                );
+              }).length;
+
+              return Text(
+                '$validCount productos',
+                style: TextStyle(
+                  color: ColorTokens.neutral50,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
+          ),
+          const Spacer(),
+          // Botón de filtros
+          TextButton.icon(
+            onPressed: () => setState(() => _showFilters = !_showFilters),
+            icon: Icon(
+              _showFilters ? Icons.filter_alt_off : Icons.filter_alt,
+              size: 18,
+              color: ColorTokens.primary30,
+            ),
+            label: Text(
+              'Filtros',
+              style: TextStyle(
+                color: ColorTokens.primary30,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: TextButton.styleFrom(
+              backgroundColor: ColorTokens.primary99,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: ColorTokens.primary90),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Selector de vista
+          Container(
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral99,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral95),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.grid_view),
+                  iconSize: 20,
+                  color: _viewMode == 'grid'
+                      ? ColorTokens.primary30
+                      : ColorTokens.neutral70,
+                  onPressed: () => setState(() => _viewMode = 'grid'),
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 36,
+                  ),
+                ),
+                Container(width: 1, height: 20, color: ColorTokens.neutral95),
+                IconButton(
+                  icon: Icon(Icons.view_list),
+                  iconSize: 20,
+                  color: _viewMode == 'list'
+                      ? ColorTokens.primary30
+                      : ColorTokens.neutral70,
+                  onPressed: () => setState(() => _viewMode = 'list'),
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 36,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// AppBar profesional con búsqueda integrada (antiguo)
   Widget _buildSliverAppBar() {
     return SliverAppBar(
       expandedHeight: 120,
@@ -641,82 +1283,237 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ],
                   ),
                 ),
-                // Botón rápido a Promociones
-                Positioned(
-                  right: 16,
-                  bottom: 12,
-                  child: ElevatedButton.icon(
-                    onPressed: () => context.push('/promotions'),
-                    icon: const Icon(Icons.campaign, size: 18),
-                    label: const Text('Promociones'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white24,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
+                // (Botón movido fuera del Stack para evitar superposición)
               ],
             ),
           ),
         ),
-
-        // Mini banners de beneficios en grid 2x2
+        // Botón rápido a Promociones colocado fuera del banner para evitar
+        // que se superponga a secciones siguientes (ej. cupones)
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildBenefitCard(
-                      '🎯',
-                      'Descuentos para grupos',
-                      Colors.blue,
-                      onTap: () {
-                        _showGroupDiscountsDialog(context);
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildBenefitCard(
-                      '⚡',
-                      'Ofertas relámpago',
-                      Colors.orange,
-                      onTap: () {
-                        _showFlashOffersDialog(context);
-                      },
-                    ),
-                  ),
-                ],
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push('/promotions'),
+              icon: const Icon(Icons.campaign, size: 18),
+              label: const Text('Promociones'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white24,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildBenefitCard(
-                      '🏆',
-                      'Productos premium',
-                      Colors.purple,
-                      onTap: () {
-                        _showPremiumProductsDialog(context);
-                      },
+            ),
+          ),
+        ),
+        // Barra desplegable de Ofertas y Beneficios
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Barra desplegable - siempre visible
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _showOffersExpanded = !_showOffersExpanded;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        // Icono con badge
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    ColorTokens.primary30.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                    ColorTokens.primary30.withValues(
+                                      alpha: 0.05,
+                                    ),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.local_offer,
+                                color: ColorTokens.primary30,
+                                size: 24,
+                              ),
+                            ),
+                            // Badge de cantidad de ofertas
+                            Positioned(
+                              top: -4,
+                              right: -4,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  '4',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 14),
+                        // Título y descripción
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Ofertas y Beneficios',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _showOffersExpanded
+                                    ? 'Ocultar promociones'
+                                    : 'Ver descuentos especiales y más',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Icono de expansión animado
+                        AnimatedRotation(
+                          turns: _showOffersExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: ColorTokens.primary30,
+                            size: 28,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _buildBenefitCard(
-                      '🚚',
-                      'Descuentos por envío',
-                      Colors.green,
-                      onTap: () {
-                        _showShippingDiscountsDialog(context);
-                      },
-                    ),
+                ),
+              ),
+
+              // Contenido desplegable con animación
+              AnimatedCrossFade(
+                firstChild: const SizedBox.shrink(),
+                secondChild: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    children: [
+                      // Divider decorativo
+                      Container(
+                        height: 1,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.grey.withValues(alpha: 0.1),
+                              Colors.grey.withValues(alpha: 0.3),
+                              Colors.grey.withValues(alpha: 0.1),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // Grid de beneficios organizados
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '⚡',
+                              'Ofertas relámpago',
+                              Colors.orange,
+                              onTap: () {
+                                _showFlashOffersDialog(context);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '🎯',
+                              'Descuentos para grupos',
+                              Colors.blue,
+                              onTap: () {
+                                _showGroupDiscountsDialog(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '🏆',
+                              'Productos premium',
+                              Colors.purple,
+                              onTap: () {
+                                _showPremiumProductsDialog(context);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '🚚',
+                              'Envío gratis',
+                              Colors.green,
+                              onTap: () {
+                                _showShippingDiscountsDialog(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
+                ),
+                crossFadeState: _showOffersExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(milliseconds: 300),
               ),
             ],
           ),
@@ -725,7 +1522,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  Widget _buildBenefitCard(String emoji, String text, Color color, {VoidCallback? onTap}) {
+  Widget _buildBenefitCard(
+    String emoji,
+    String text,
+    Color color, {
+    VoidCallback? onTap,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -773,11 +1575,18 @@ class _ShopScreenProState extends State<ShopScreenPro>
       color: Colors.white,
       child: Row(
         children: [
-          // Resultados count
+          // Resultados count (solo productos válidos)
           Consumer<ShopProvider>(
             builder: (context, provider, child) {
+              final validCount = provider.products.where((p) {
+                if (p.images.isEmpty) return false;
+                return p.images.any(
+                  (img) => img.isNotEmpty && img.trim().isNotEmpty,
+                );
+              }).length;
+
               return Text(
-                '${provider.products.length} productos',
+                '$validCount productos',
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontSize: 14,
@@ -874,10 +1683,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
           ),
         ],
       ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Row(
             children: [
               const Icon(Icons.tune, color: ColorTokens.primary30),
@@ -1005,7 +1814,34 @@ class _ShopScreenProState extends State<ShopScreenPro>
           );
         }
 
-        if (shopProvider.products.isEmpty) {
+        // ✅ FILTRAR PRODUCTOS: Solo mostrar productos con al menos una imagen válida
+        final validProducts = shopProvider.products.where((product) {
+          // Verificar que tenga imágenes Y que no estén vacías
+          if (product.images.isEmpty) {
+            print(
+              '🚫 Producto SIN imágenes filtrado: ${product.name} (${product.id})',
+            );
+            return false;
+          }
+          // Verificar que al menos una imagen tenga contenido válido
+          final hasValidImages = product.images.any(
+            (img) => img.isNotEmpty && img.trim().isNotEmpty,
+          );
+
+          if (!hasValidImages) {
+            print(
+              '🚫 Producto con imágenes VACÍAS filtrado: ${product.name} (${product.id})',
+            );
+          }
+
+          return hasValidImages;
+        }).toList();
+
+        print(
+          '✅ Productos válidos mostrados: ${validProducts.length} de ${shopProvider.products.length}',
+        );
+
+        if (validProducts.isEmpty) {
           return SliverFillRemaining(
             child: Center(
               child: Column(
@@ -1044,15 +1880,15 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 mainAxisSpacing: 12,
               ),
               delegate: SliverChildBuilderDelegate((context, index) {
-                return _buildProductCardGrid(shopProvider.products[index]);
-              }, childCount: shopProvider.products.length),
+                return _buildProductCardGrid(validProducts[index]);
+              }, childCount: validProducts.length),
             ),
           );
         } else {
           return SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              return _buildProductCardList(shopProvider.products[index]);
-            }, childCount: shopProvider.products.length),
+              return _buildProductCardList(validProducts[index]);
+            }, childCount: validProducts.length),
           );
         }
       },
@@ -1092,6 +1928,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       imageUrl: product.mainImage,
                       width: double.infinity,
                       fit: BoxFit.cover,
+                      filterQuality: FilterQuality.high,
+                      memCacheHeight: 500,
+                      memCacheWidth: 500,
                       placeholder: (context, url) => Container(
                         color: Colors.grey[200],
                         child: const Center(child: CircularProgressIndicator()),
@@ -1212,23 +2051,25 @@ class _ShopScreenProState extends State<ShopScreenPro>
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Nombre
-                    Text(
-                      product.name,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        height: 1.2,
+                    Flexible(
+                      child: Text(
+                        product.name,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          height: 1.2,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
 
                     // Rating
                     Row(
@@ -1237,62 +2078,21 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           children: List.generate(5, (index) {
                             return Icon(
                               index < 4 ? Icons.star : Icons.star_border,
-                              size: 12,
+                              size: 11,
                               color: Colors.amber,
                             );
                           }),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 3),
                         Text(
-                          '4.5 (120)',
+                          '4.5',
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 9,
                             color: Colors.grey[600],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
-
-                    // Likes counter
-                    if (product.likesCount > 0)
-                      Row(
-                        children: [
-                          Icon(Icons.favorite, size: 12, color: Colors.red),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${product.likesCount} Me gusta',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                    // Badge VENDIDO
-                    if (product.isSold)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'VENDIDO',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-
-                    const SizedBox(height: 4),
 
                     // Precio
                     Row(
@@ -1400,6 +2200,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
               width: 80,
               height: 80,
               fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              memCacheHeight: 200,
+              memCacheWidth: 200,
               placeholder: (context, url) => Container(
                 color: Colors.grey[200],
                 child: const Center(child: CircularProgressIndicator()),
@@ -1427,7 +2230,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                    const SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Row(
                   children: [
                     ...List.generate(5, (index) {
@@ -1444,7 +2247,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ],
                 ),
-                    const SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   '\$${_formatPrice(product.price)}',
                   style: const TextStyle(
@@ -2057,7 +2860,9 @@ extension _BenefitDialogs on _ShopScreenProState {
                 gradient: LinearGradient(
                   colors: [Colors.blue[600]!, Colors.blue[400]!],
                 ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -2080,7 +2885,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                 ],
               ),
             ),
-            
+
             // Contenido
             Expanded(
               child: ListView(
@@ -2089,24 +2894,42 @@ extension _BenefitDialogs on _ShopScreenProState {
                   _buildInfoCard(
                     icon: Icons.group,
                     title: '¿Cómo funciona?',
-                    description: 'Compra en grupo con tus amigos ciclistas y obtén descuentos especiales. Mientras más sean, mayor el descuento.',
+                    description:
+                        'Compra en grupo con tus amigos ciclistas y obtén descuentos especiales. Mientras más sean, mayor el descuento.',
                     color: Colors.blue,
                   ),
                   const SizedBox(height: 16),
-                  
-                  _buildDiscountTier('3-5 personas', '10% de descuento', Colors.blue[300]!),
-                  _buildDiscountTier('6-10 personas', '15% de descuento', Colors.blue[400]!),
-                  _buildDiscountTier('11-20 personas', '20% de descuento', Colors.blue[500]!),
-                  _buildDiscountTier('21+ personas', '25% de descuento', Colors.blue[600]!),
-                  
+
+                  _buildDiscountTier(
+                    '3-5 personas',
+                    '10% de descuento',
+                    Colors.blue[300]!,
+                  ),
+                  _buildDiscountTier(
+                    '6-10 personas',
+                    '15% de descuento',
+                    Colors.blue[400]!,
+                  ),
+                  _buildDiscountTier(
+                    '11-20 personas',
+                    '20% de descuento',
+                    Colors.blue[500]!,
+                  ),
+                  _buildDiscountTier(
+                    '21+ personas',
+                    '25% de descuento',
+                    Colors.blue[600]!,
+                  ),
+
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.card_giftcard,
                     title: 'Beneficios adicionales',
-                    description: '• Envío gratis para grupos\n• Personalización incluida\n• Soporte prioritario\n• Descuentos acumulables',
+                    description:
+                        '• Envío gratis para grupos\n• Personalización incluida\n• Soporte prioritario\n• Descuentos acumulables',
                     color: Colors.green,
                   ),
-                  
+
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -2114,7 +2937,9 @@ extension _BenefitDialogs on _ShopScreenProState {
                       // Aquí podrías navegar a una pantalla de creación de grupo
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Contacta a un administrador para crear tu grupo de compra'),
+                          content: Text(
+                            'Contacta a un administrador para crear tu grupo de compra',
+                          ),
                           backgroundColor: Colors.blue,
                         ),
                       );
@@ -2160,7 +2985,9 @@ extension _BenefitDialogs on _ShopScreenProState {
                 gradient: LinearGradient(
                   colors: [Colors.orange[600]!, Colors.orange[400]!],
                 ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -2183,7 +3010,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                 ],
               ),
             ),
-            
+
             // Contenido
             Expanded(
               child: ListView(
@@ -2192,11 +3019,12 @@ extension _BenefitDialogs on _ShopScreenProState {
                   _buildInfoCard(
                     icon: Icons.flash_on,
                     title: '¡Ofertas por tiempo limitado!',
-                    description: 'Descuentos especiales que duran solo 24 horas. ¡Aprovecha antes de que terminen!',
+                    description:
+                        'Descuentos especiales que duran solo 24 horas. ¡Aprovecha antes de que terminen!',
                     color: Colors.orange,
                   ),
                   const SizedBox(height: 20),
-                  
+
                   _buildFlashOffer(
                     'Casco Profesional',
                     '\$450.000',
@@ -2218,15 +3046,16 @@ extension _BenefitDialogs on _ShopScreenProState {
                     '42% OFF',
                     '06:30:12',
                   ),
-                  
+
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.notifications_active,
                     title: 'Recibe notificaciones',
-                    description: 'Activa las notificaciones para enterarte de las nuevas ofertas relámpago antes que nadie.',
+                    description:
+                        'Activa las notificaciones para enterarte de las nuevas ofertas relámpago antes que nadie.',
                     color: Colors.deepOrange,
                   ),
-                  
+
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -2274,7 +3103,9 @@ extension _BenefitDialogs on _ShopScreenProState {
                 gradient: LinearGradient(
                   colors: [Colors.purple[600]!, Colors.purple[400]!],
                 ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -2297,7 +3128,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                 ],
               ),
             ),
-            
+
             // Contenido
             Expanded(
               child: ListView(
@@ -2306,11 +3137,12 @@ extension _BenefitDialogs on _ShopScreenProState {
                   _buildInfoCard(
                     icon: Icons.star,
                     title: 'Calidad superior',
-                    description: 'Productos de las mejores marcas internacionales con garantía extendida y certificaciones profesionales.',
+                    description:
+                        'Productos de las mejores marcas internacionales con garantía extendida y certificaciones profesionales.',
                     color: Colors.purple,
                   ),
                   const SizedBox(height: 20),
-                  
+
                   _buildPremiumProduct(
                     'Bicicleta Carbono Pro',
                     '\$8.500.000',
@@ -2329,21 +3161,24 @@ extension _BenefitDialogs on _ShopScreenProState {
                     'Medición precisa • Compatible ANT+ y Bluetooth',
                     Icons.speed,
                   ),
-                  
+
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.verified,
                     title: 'Garantías premium',
-                    description: '• Garantía extendida de 2 años\n• Servicio técnico prioritario\n• Repuestos garantizados\n• Devolución en 30 días',
+                    description:
+                        '• Garantía extendida de 2 años\n• Servicio técnico prioritario\n• Repuestos garantizados\n• Devolución en 30 días',
                     color: Colors.amber,
                   ),
-                  
+
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
                       // Filtrar solo productos premium
-                      context.read<ShopProvider>().filterByCategory(ProductCategories.accessories);
+                      context.read<ShopProvider>().filterByCategory(
+                        ProductCategories.accessories,
+                      );
                     },
                     icon: const Icon(Icons.filter_list),
                     label: const Text('Ver Todos los Premium'),
@@ -2455,10 +3290,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                 ),
                 Text(
                   discount,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -2480,9 +3312,7 @@ extension _BenefitDialogs on _ShopScreenProState {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.orange[50]!, Colors.white],
-        ),
+        gradient: LinearGradient(colors: [Colors.orange[50]!, Colors.white]),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.orange[300]!),
       ),
@@ -2569,9 +3399,7 @@ extension _BenefitDialogs on _ShopScreenProState {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.purple[50]!, Colors.white],
-        ),
+        gradient: LinearGradient(colors: [Colors.purple[50]!, Colors.white]),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.purple[300]!),
       ),
@@ -2609,10 +3437,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                 const SizedBox(height: 4),
                 Text(
                   features,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -2643,7 +3468,9 @@ extension _BenefitDialogs on _ShopScreenProState {
                 gradient: LinearGradient(
                   colors: [Colors.green[600]!, Colors.green[400]!],
                 ),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Row(
                 children: [
@@ -2666,7 +3493,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                 ],
               ),
             ),
-            
+
             // Contenido
             Expanded(
               child: ListView(
@@ -2675,11 +3502,12 @@ extension _BenefitDialogs on _ShopScreenProState {
                   _buildInfoCard(
                     icon: Icons.local_shipping,
                     title: 'Envío gratis por compra',
-                    description: 'Obtén envío gratuito según el monto de tu compra. Mientras más compres, más ahorras en envío.',
+                    description:
+                        'Obtén envío gratuito según el monto de tu compra. Mientras más compres, más ahorras en envío.',
                     color: Colors.green,
                   ),
                   const SizedBox(height: 20),
-                  
+
                   _buildShippingTier(
                     'Compras desde \$50.000',
                     'Envío: \$15.000',
@@ -2704,23 +3532,25 @@ extension _BenefitDialogs on _ShopScreenProState {
                     '100% + Beneficios',
                     Colors.green[700]!,
                   ),
-                  
+
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.location_on,
                     title: 'Cobertura nacional',
-                    description: '• Todas las ciudades principales\n• Municipios intermedios\n• Zonas rurales (costo adicional)\n• Envíos internacionales disponibles',
+                    description:
+                        '• Todas las ciudades principales\n• Municipios intermedios\n• Zonas rurales (costo adicional)\n• Envíos internacionales disponibles',
                     color: Colors.blue,
                   ),
-                  
+
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.access_time,
                     title: 'Tiempos de entrega',
-                    description: '• Ciudades principales: 2-3 días\n• Municipios: 4-6 días\n• Envío express: 24-48 horas\n• Zonas rurales: 7-10 días',
+                    description:
+                        '• Ciudades principales: 2-3 días\n• Municipios: 4-6 días\n• Envío express: 24-48 horas\n• Zonas rurales: 7-10 días',
                     color: Colors.orange,
                   ),
-                  
+
                   const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -2761,7 +3591,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -2812,7 +3642,11 @@ extension _BenefitDialogs on _ShopScreenProState {
               color: color,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.local_shipping, color: Colors.white, size: 24),
+            child: const Icon(
+              Icons.local_shipping,
+              color: Colors.white,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -2829,10 +3663,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                 const SizedBox(height: 2),
                 Text(
                   shipping,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                 ),
               ],
             ),

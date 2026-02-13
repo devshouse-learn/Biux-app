@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
@@ -89,6 +90,118 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
     );
   }
 
+  void _showCleanupDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.cleaning_services, color: ColorTokens.warning50),
+            const SizedBox(width: 12),
+            const Text('Limpiar Base de Datos'),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Esta acción eliminará PERMANENTEMENTE todos los productos que no tengan imágenes.',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 12),
+            Text('Esto incluye:'),
+            SizedBox(height: 8),
+            Text('• Productos con array de imágenes vacío'),
+            Text('• Productos con imágenes en blanco'),
+            SizedBox(height: 12),
+            Text(
+              '⚠️ Esta acción NO se puede deshacer.',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              // Mostrar SnackBar de inicio (no bloquea la UI)
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const Text('Limpiando productos sin imágenes...'),
+                    ],
+                  ),
+                  duration: const Duration(seconds: 30),
+                  backgroundColor: ColorTokens.secondary50,
+                ),
+              );
+
+              // Ejecutar limpieza en segundo plano
+              final shopProvider = context.read<ShopProvider>();
+              final deletedCount = await shopProvider
+                  .deleteProductsWithoutImages();
+
+              // Ocultar SnackBar de progreso
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              }
+
+              // Mostrar resultado
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        Icon(
+                          deletedCount > 0 ? Icons.check_circle : Icons.info,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            deletedCount > 0
+                                ? '✅ $deletedCount producto(s) eliminado(s)'
+                                : '✨ No se encontraron productos sin imágenes',
+                          ),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: deletedCount > 0
+                        ? Colors.green
+                        : Colors.blue,
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.error50,
+            ),
+            child: const Text('Limpiar Ahora'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showDeleteConfirmation(BuildContext context, ProductEntity product) {
     showDialog(
       context: context,
@@ -136,8 +249,29 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Administrar Productos'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/shop');
+            }
+          },
+        ),
+        title: const Text(
+          'Administrar Productos',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: ColorTokens.primary30,
+        actions: [
+          // Botón para limpiar productos sin imágenes
+          IconButton(
+            icon: const Icon(Icons.cleaning_services, color: Colors.white),
+            tooltip: 'Limpiar productos sin imágenes',
+            onPressed: () => _showCleanupDialog(context),
+          ),
+        ],
       ),
       body: Consumer<ShopProvider>(
         builder: (context, shopProvider, child) {
@@ -683,9 +817,29 @@ class _ProductFormModalState extends State<ProductFormModal> {
   Future<void> _saveProduct() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Validación obligatoria de imágenes
     if (_imageUrls.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Agrega al menos una imagen')),
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '¡Debes agregar al menos una foto del producto!',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: ColorTokens.error50,
+          duration: const Duration(seconds: 4),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       );
       return;
     }
@@ -763,9 +917,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (_, controller) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: ColorTokens.neutral99, // Fondo claro
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -782,7 +936,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: ColorTokens.neutral90,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -792,9 +946,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
               // Título
               Text(
                 widget.product == null ? 'Crear Producto' : 'Editar Producto',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: ColorTokens.neutral20,
                 ),
               ),
               const SizedBox(height: 24),
@@ -802,9 +957,27 @@ class _ProductFormModalState extends State<ProductFormModal> {
               // Nombre
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                style: TextStyle(color: ColorTokens.neutral20),
+                decoration: InputDecoration(
                   labelText: 'Nombre del producto *',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: ColorTokens.neutral60),
+                  filled: true,
+                  fillColor: ColorTokens.neutral100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: ColorTokens.primary30,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -818,9 +991,27 @@ class _ProductFormModalState extends State<ProductFormModal> {
               // Descripción corta
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(
+                style: TextStyle(color: ColorTokens.neutral20),
+                decoration: InputDecoration(
                   labelText: 'Descripción corta *',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: ColorTokens.neutral60),
+                  filled: true,
+                  fillColor: ColorTokens.neutral100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: ColorTokens.primary30,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 maxLines: 2,
                 validator: (value) {
@@ -835,10 +1026,29 @@ class _ProductFormModalState extends State<ProductFormModal> {
               // Descripción larga
               TextFormField(
                 controller: _longDescriptionController,
-                decoration: const InputDecoration(
+                style: TextStyle(color: ColorTokens.neutral20),
+                decoration: InputDecoration(
                   labelText: 'Descripción detallada (opcional)',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: ColorTokens.neutral60),
                   hintText: 'Características, materiales, medidas, etc.',
+                  hintStyle: TextStyle(color: ColorTokens.neutral70),
+                  filled: true,
+                  fillColor: ColorTokens.neutral100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: ColorTokens.primary30,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 maxLines: 4,
               ),
@@ -850,10 +1060,29 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   Expanded(
                     child: TextFormField(
                       controller: _priceController,
-                      decoration: const InputDecoration(
+                      style: TextStyle(color: ColorTokens.neutral20),
+                      decoration: InputDecoration(
                         labelText: 'Precio *',
-                        border: OutlineInputBorder(),
+                        labelStyle: TextStyle(color: ColorTokens.neutral60),
                         prefixText: '\$ ',
+                        prefixStyle: TextStyle(color: ColorTokens.neutral40),
+                        filled: true,
+                        fillColor: ColorTokens.neutral100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: ColorTokens.neutral95),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: ColorTokens.neutral95),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: ColorTokens.primary30,
+                            width: 2,
+                          ),
+                        ),
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
@@ -871,9 +1100,27 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   Expanded(
                     child: TextFormField(
                       controller: _stockController,
-                      decoration: const InputDecoration(
+                      style: TextStyle(color: ColorTokens.neutral20),
+                      decoration: InputDecoration(
                         labelText: 'Stock *',
-                        border: OutlineInputBorder(),
+                        labelStyle: TextStyle(color: ColorTokens.neutral60),
+                        filled: true,
+                        fillColor: ColorTokens.neutral100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: ColorTokens.neutral95),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: ColorTokens.neutral95),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: ColorTokens.primary30,
+                            width: 2,
+                          ),
+                        ),
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
@@ -894,26 +1141,70 @@ class _ProductFormModalState extends State<ProductFormModal> {
               // Ciudad
               TextFormField(
                 controller: _cityController,
-                decoration: const InputDecoration(
+                style: TextStyle(color: ColorTokens.neutral20),
+                decoration: InputDecoration(
                   labelText: 'Ciudad (opcional)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.location_on),
+                  labelStyle: TextStyle(color: ColorTokens.neutral60),
                   hintText: 'Ej: Bogotá, Medellín, Cali...',
+                  hintStyle: TextStyle(color: ColorTokens.neutral70),
+                  prefixIcon: Icon(
+                    Icons.location_on,
+                    color: ColorTokens.neutral60,
+                  ),
+                  filled: true,
+                  fillColor: ColorTokens.neutral100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: ColorTokens.primary30,
+                      width: 2,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
 
               // Categoría
               DropdownButtonFormField<String>(
-                initialValue: _selectedCategory,
-                decoration: const InputDecoration(
+                value: _selectedCategory,
+                style: TextStyle(color: ColorTokens.neutral20),
+                decoration: InputDecoration(
                   labelText: 'Categoría *',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: ColorTokens.neutral60),
+                  filled: true,
+                  fillColor: ColorTokens.neutral100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: ColorTokens.neutral95),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: ColorTokens.primary30,
+                      width: 2,
+                    ),
+                  ),
                 ),
+                dropdownColor: ColorTokens.neutral100,
                 items: ProductCategories.getAll().map((category) {
                   return DropdownMenuItem(
                     value: category.id,
-                    child: Text('${category.icon} ${category.name}'),
+                    child: Text(
+                      '${category.icon} ${category.name}',
+                      style: TextStyle(color: ColorTokens.neutral20),
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -927,9 +1218,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
               const SizedBox(height: 16),
 
               // Tallas
-              const Text(
+              Text(
                 'Tallas disponibles (opcional)',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: ColorTokens.neutral30,
+                ),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -948,27 +1242,92 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         }
                       });
                     },
-                    // Usar la misma paleta `secondary50` pero más clara visualmente
-                    // y con mayor contraste: alpha más bajo
-                    selectedColor: ColorTokens.secondary50.withValues(alpha: 0.12),
-                    // Texto blanco al estar seleccionado para garantizar contraste
+                    backgroundColor: ColorTokens.neutral100,
+                    selectedColor: ColorTokens.primary99,
+                    checkmarkColor: ColorTokens.primary30,
                     labelStyle: TextStyle(
-                      color: isSelected ? ColorTokens.neutral100 : Colors.black,
+                      color: isSelected
+                          ? ColorTokens.primary30
+                          : ColorTokens.neutral50,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
+                    side: BorderSide(
+                      color: isSelected
+                          ? ColorTokens.primary30
+                          : ColorTokens.neutral90,
+                      width: isSelected ? 2 : 1,
                     ),
                   );
                 }).toList(),
               ),
               const SizedBox(height: 16),
 
+              // Título de sección de multimedia (obligatorio)
+              Row(
+                children: [
+                  Text(
+                    'Fotos del Producto',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: ColorTokens.neutral30,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '*',
+                    style: TextStyle(
+                      color: ColorTokens.error50,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '(Obligatorio)',
+                    style: TextStyle(
+                      color: ColorTokens.error50,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
               // Botón agregar multimedia
               OutlinedButton.icon(
                 onPressed: _isUploading ? null : _showMediaOptions,
-                icon: const Icon(Icons.add_photo_alternate),
-                label: const Text('Agregar Fotos/Video'),
+                icon: Icon(
+                  Icons.add_photo_alternate,
+                  color: _imageUrls.isEmpty
+                      ? ColorTokens.error50
+                      : ColorTokens.primary30,
+                ),
+                label: Text(
+                  _imageUrls.isEmpty
+                      ? 'Agregar Fotos (Requerido)'
+                      : 'Agregar Más Fotos/Video',
+                  style: TextStyle(
+                    color: _imageUrls.isEmpty
+                        ? ColorTokens.error50
+                        : ColorTokens.primary30,
+                  ),
+                ),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: ColorTokens.secondary50,
-                  side: BorderSide(color: ColorTokens.secondary50),
+                  backgroundColor: ColorTokens.neutral100,
+                  side: BorderSide(
+                    color: _imageUrls.isEmpty
+                        ? ColorTokens.error50
+                        : ColorTokens.primary90,
+                    width: 1.5,
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
 
@@ -977,16 +1336,17 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(height: 16),
                 LinearProgressIndicator(
                   value: _uploadProgress,
-                  backgroundColor: Colors.grey[200],
+                  backgroundColor: ColorTokens.neutral95,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    ColorTokens.secondary50,
+                    ColorTokens.primary30,
                   ),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Subiendo... ${(_uploadProgress * 100).toStringAsFixed(0)}%',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[600]),
+                  style: TextStyle(color: ColorTokens.neutral60, fontSize: 13),
                 ),
               ],
 
@@ -994,9 +1354,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
               // Lista de imágenes
               if (_imageUrls.isNotEmpty) ...[
-                const Text(
+                Text(
                   'Imágenes',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: ColorTokens.neutral30,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
@@ -1012,7 +1375,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
                             height: 100,
                             margin: const EdgeInsets.only(right: 8),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: ColorTokens.neutral95),
                               image: DecorationImage(
                                 image: NetworkImage(_imageUrls[index]),
                                 fit: BoxFit.cover,
@@ -1025,15 +1389,23 @@ class _ProductFormModalState extends State<ProductFormModal> {
                             child: GestureDetector(
                               onTap: () => _removeImage(index),
                               child: Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
+                                decoration: BoxDecoration(
+                                  color: ColorTokens.error50,
                                   shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
                                 ),
                                 padding: const EdgeInsets.all(4),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.close,
                                   size: 16,
-                                  color: Colors.white,
+                                  color: ColorTokens.neutral100,
                                 ),
                               ),
                             ),
@@ -1048,9 +1420,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
               // Video
               if (_videoUrl != null) ...[
-                const Text(
+                Text(
                   'Video',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: ColorTokens.neutral30,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Stack(
@@ -1059,14 +1434,15 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       width: double.infinity,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(8),
+                        color: ColorTokens.neutral20,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: ColorTokens.neutral95),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(
                           Icons.play_circle_filled,
                           size: 48,
-                          color: Colors.white,
+                          color: ColorTokens.neutral100,
                         ),
                       ),
                     ),
@@ -1076,15 +1452,21 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       child: GestureDetector(
                         onTap: _removeVideo,
                         child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
+                          decoration: BoxDecoration(
+                            color: ColorTokens.error50,
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 4,
+                              ),
+                            ],
                           ),
                           padding: const EdgeInsets.all(8),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close,
                             size: 20,
-                            color: Colors.white,
+                            color: ColorTokens.neutral100,
                           ),
                         ),
                       ),
@@ -1102,7 +1484,21 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancelar'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ColorTokens.neutral50,
+                        side: BorderSide(color: ColorTokens.neutral90),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Cancelar',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: ColorTokens.neutral50,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -1110,10 +1506,23 @@ class _ProductFormModalState extends State<ProductFormModal> {
                     child: ElevatedButton(
                       onPressed: _isUploading ? null : _saveProduct,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorTokens.secondary50,
+                        backgroundColor: ColorTokens.primary30,
+                        foregroundColor: ColorTokens.neutral100,
+                        disabledBackgroundColor: ColorTokens.neutral90,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
                       ),
                       child: Text(
-                        widget.product == null ? 'Crear' : 'Actualizar',
+                        widget.product == null
+                            ? 'Crear Producto'
+                            : 'Actualizar',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),
