@@ -44,7 +44,6 @@ class _NotificationSettingsScreenState
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-<<<<<<< HEAD
           // Botón de debug comentado temporalmente
           // IconButton(
           //   icon: const Icon(Icons.bug_report, color: Colors.orange),
@@ -57,20 +56,6 @@ class _NotificationSettingsScreenState
           //     );
           //   },
           // ),
-=======
-          // Botón de debug (temporal para pruebas)
-          IconButton(
-            icon: const Icon(Icons.bug_report, color: Colors.orange),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SizedBox.shrink(), // Widget de reemplazo temporal
-                ),
-              );
-            },
-          ),
->>>>>>> 2119a6d (feat: add advertising toggle in story creation and remove from carousel)
           Consumer<NotificationSettingsProvider>(
             builder: (context, provider, _) {
               return IconButton(

@@ -13,6 +13,9 @@ class UserModel {
   final bool canSellProducts; // Campo para vendedores autorizados
   final String? role; // Nuevo: "user", "seller", "admin"
   final bool autorizadoPorAdmin; // Nuevo: Si fue autorizado por admin
+  final String? description; // Nuevo: Descripción/Bio del usuario
+  final Map<String, dynamic>? followers; // Nuevo: Mapa de seguidores
+  final Map<String, dynamic>? following; // Nuevo: Mapa de seguidos
 
   UserModel({
     required this.uid,
@@ -27,6 +30,9 @@ class UserModel {
     this.canSellProducts = false,
     this.role,
     this.autorizadoPorAdmin = false,
+    this.description,
+    this.followers,
+    this.following,
   });
 
   // Getter para rol enum
@@ -84,6 +90,9 @@ class UserModel {
       'canSellProducts': canSellProducts,
       'role': role ?? userRole.name, // Guardar rol como string
       'autorizadoPorAdmin': autorizadoPorAdmin,
+      'description': description,
+      'followers': followers,
+      'following': following,
     };
   }
 
@@ -103,6 +112,9 @@ class UserModel {
       canSellProducts: map['canSellProducts'] ?? false,
       role: map['role'],
       autorizadoPorAdmin: map['autorizadoPorAdmin'] ?? false,
+      description: map['description'],
+      followers: map['followers'],
+      following: map['following'],
     );
   }
 
@@ -119,6 +131,9 @@ class UserModel {
     bool? canSellProducts,
     String? role,
     bool? autorizadoPorAdmin,
+    String? description,
+    Map<String, dynamic>? followers,
+    Map<String, dynamic>? following,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -133,6 +148,9 @@ class UserModel {
       canSellProducts: canSellProducts ?? this.canSellProducts,
       role: role ?? this.role,
       autorizadoPorAdmin: autorizadoPorAdmin ?? this.autorizadoPorAdmin,
+      description: description ?? this.description,
+      followers: followers ?? this.followers,
+      following: following ?? this.following,
     );
   }
 }

@@ -124,7 +124,11 @@ class UserProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<bool> updateProfile({String? name, String? email}) async {
+  Future<bool> updateProfile({
+    String? name,
+    String? email,
+    String? description,
+  }) async {
     print('🔍 ====== USER PROVIDER: updateProfile ======');
     print('� Nombre recibido: "$name"');
     print('📧 Email recibido: "$email"');
@@ -163,6 +167,7 @@ class UserProvider extends ChangeNotifier {
         uid: uid,
         name: name,
         email: email,
+        description: description,
       );
 
       print('📊 Respuesta del servicio: $success');
