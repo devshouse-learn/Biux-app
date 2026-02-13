@@ -172,8 +172,8 @@ void main() async {
           ),
         ),
 
-  // Promotions provider
-  ChangeNotifierProvider(create: (_) => PromotionsProvider()),
+        // Promotions provider
+        ChangeNotifierProvider(create: (_) => PromotionsProvider()),
 
         // Seller Request Provider (para gestionar solicitudes de vendedores)
         ChangeNotifierProvider(

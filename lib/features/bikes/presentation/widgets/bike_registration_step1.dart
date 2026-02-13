@@ -159,7 +159,9 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value.trim().length > 100) {
                   return 'El color no puede exceder 100 caracteres';
                 }
-                if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-/]+$').hasMatch(value.trim())) {
+                if (!RegExp(
+                  r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-/]+$',
+                ).hasMatch(value.trim())) {
                   return 'Solo se permiten letras, números, espacios, guiones y barras';
                 }
                 return null;
@@ -264,7 +266,9 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value.trim().length > 100) {
                   return 'El nombre de la ciudad no puede exceder 100 caracteres';
                 }
-                if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$').hasMatch(value.trim())) {
+                if (!RegExp(
+                  r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$',
+                ).hasMatch(value.trim())) {
                   return 'La ciudad solo puede contener letras, espacios y guiones';
                 }
                 return null;
