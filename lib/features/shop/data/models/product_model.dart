@@ -22,6 +22,16 @@ class ProductModel extends ProductEntity {
     super.likedByUsers,
     super.isSold,
     super.metadata,
+    // Campos de seguridad antirrobo
+    super.isBicycle,
+    super.bikeFrameSerial,
+    super.bikeBrand,
+    super.bikeModel,
+    super.bikeColor,
+    super.bikeYear,
+    super.isVerifiedNotStolen,
+    super.stolenVerificationDate,
+    super.stolenVerificationBy,
   });
 
   factory ProductModel.fromEntity(ProductEntity entity) {
@@ -44,6 +54,16 @@ class ProductModel extends ProductEntity {
       likedByUsers: entity.likedByUsers,
       isSold: entity.isSold,
       metadata: entity.metadata,
+      // Campos de seguridad antirrobo
+      isBicycle: entity.isBicycle,
+      bikeFrameSerial: entity.bikeFrameSerial,
+      bikeBrand: entity.bikeBrand,
+      bikeModel: entity.bikeModel,
+      bikeColor: entity.bikeColor,
+      bikeYear: entity.bikeYear,
+      isVerifiedNotStolen: entity.isVerifiedNotStolen,
+      stolenVerificationDate: entity.stolenVerificationDate,
+      stolenVerificationBy: entity.stolenVerificationBy,
     );
   }
 
@@ -83,6 +103,20 @@ class ProductModel extends ProductEntity {
           [],
       isSold: json['isSold'] as bool? ?? false,
       metadata: json['metadata'] as Map<String, dynamic>?,
+      // Campos de seguridad antirrobo
+      isBicycle: json['isBicycle'] as bool? ?? false,
+      bikeFrameSerial: json['bikeFrameSerial'] as String?,
+      bikeBrand: json['bikeBrand'] as String?,
+      bikeModel: json['bikeModel'] as String?,
+      bikeColor: json['bikeColor'] as String?,
+      bikeYear: (json['bikeYear'] as num?)?.toInt(),
+      isVerifiedNotStolen: json['isVerifiedNotStolen'] as bool? ?? false,
+      stolenVerificationDate: json['stolenVerificationDate'] is Timestamp
+          ? (json['stolenVerificationDate'] as Timestamp).toDate()
+          : json['stolenVerificationDate'] is String
+          ? DateTime.parse(json['stolenVerificationDate'] as String)
+          : null,
+      stolenVerificationBy: json['stolenVerificationBy'] as String?,
     );
   }
 
@@ -111,6 +145,18 @@ class ProductModel extends ProductEntity {
       'likedByUsers': likedByUsers,
       'isSold': isSold,
       if (metadata != null) 'metadata': metadata,
+      // Campos de seguridad antirrobo
+      'isBicycle': isBicycle,
+      if (bikeFrameSerial != null) 'bikeFrameSerial': bikeFrameSerial,
+      if (bikeBrand != null) 'bikeBrand': bikeBrand,
+      if (bikeModel != null) 'bikeModel': bikeModel,
+      if (bikeColor != null) 'bikeColor': bikeColor,
+      if (bikeYear != null) 'bikeYear': bikeYear,
+      'isVerifiedNotStolen': isVerifiedNotStolen,
+      if (stolenVerificationDate != null)
+        'stolenVerificationDate': Timestamp.fromDate(stolenVerificationDate!),
+      if (stolenVerificationBy != null)
+        'stolenVerificationBy': stolenVerificationBy,
     };
   }
 

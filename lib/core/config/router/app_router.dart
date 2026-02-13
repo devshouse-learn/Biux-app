@@ -58,6 +58,7 @@ import '../../../features/shop/presentation/screens/seller_requests_screen.dart'
 import '../../../features/shop/presentation/screens/delete_all_products_screen.dart';
 import '../../../features/shop/presentation/screens/favorites_screen.dart';
 import '../../../features/shop/presentation/screens/my_orders_screen.dart';
+import '../../../features/shop/presentation/screens/stolen_bikes_screen.dart';
 
 // Store (Tienda Online) imports
 import '../../../features/store/presentation/screens/store_screen.dart';
@@ -728,6 +729,13 @@ final GoRouter _router = GoRouter(
           path: '/shop/delete-all-products',
           name: 'deleteAllProducts',
           builder: (context, state) => const DeleteAllProductsScreen(),
+        ),
+
+        // Base de datos pública de bicicletas robadas - DEBE IR ANTES DE /shop/:id
+        GoRoute(
+          path: '/shop/stolen-bikes',
+          name: 'stolenBikes',
+          builder: (context, state) => const StolenBikesScreen(),
         ),
 
         // ⚠️ CRÍTICO: Detalle de producto DEBE IR AL FINAL después de TODAS las rutas específicas

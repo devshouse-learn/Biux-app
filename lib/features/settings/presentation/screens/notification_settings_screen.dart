@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/color_tokens.dart';
 import '../providers/notification_settings_provider.dart';
-import '../../../../core/debug/notification_debug_widget.dart';
+// import '../../../../core/debug/notification_debug_widget.dart'; // Widget de debug comentado
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -44,18 +44,18 @@ class _NotificationSettingsScreenState
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          // Botón de debug (temporal para pruebas)
-          IconButton(
-            icon: const Icon(Icons.bug_report, color: Colors.orange),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationDebugWidget(),
-                ),
-              );
-            },
-          ),
+          // Botón de debug comentado temporalmente
+          // IconButton(
+          //   icon: const Icon(Icons.bug_report, color: Colors.orange),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const NotificationDebugWidget(),
+          //       ),
+          //     );
+          //   },
+          // ),
           Consumer<NotificationSettingsProvider>(
             builder: (context, provider, _) {
               return IconButton(
@@ -65,15 +65,17 @@ class _NotificationSettingsScreenState
             },
           ),
           // Botón Salir / Volver
-            // Botón de volver (solo icono)
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              tooltip: 'Volver',
-              onPressed: () {
-                if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-                else context.go('/profile');
-              },
-            ),
+          // Botón de volver (solo icono)
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            tooltip: 'Volver',
+            onPressed: () {
+              if (Navigator.of(context).canPop())
+                Navigator.of(context).pop();
+              else
+                context.go('/profile');
+            },
+          ),
         ],
       ),
       body: Consumer<NotificationSettingsProvider>(

@@ -71,9 +71,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
+        print('🔄 Cargando datos del usuario...');
         await widget.userProvider.loadUserData();
 
         if (widget.userProvider.user == null) {
+          print('⚠️ Usuario no existe, creando...');
           String formattedPhone = widget.formatPhoneFunction(currentUser.uid);
           await widget.userProvider.createUserIfNotExists(
             currentUser.uid,
@@ -84,6 +86,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         }
 
         if (widget.userProvider.user != null && mounted) {
+          print('✅ Inicializando campos con datos del usuario:');
+          print('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
+          print('   Email: "${widget.userProvider.user?.email ?? ''}"');
           setState(() {
             _nameController.text = widget.userProvider.user?.name ?? '';
             _emailController.text = widget.userProvider.user?.email ?? '';
@@ -95,17 +100,24 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   Future<void> _updateProfile() async {
     print('🔍 ====== INICIANDO ACTUALIZACIÓN DE PERFIL ======');
-    print('📝 Nombre: "${_nameController.text}"');
-    print('📧 Email: "${_emailController.text}"');
+    print('📝 Nombre en campo: "${_nameController.text}"');
+    print('📧 Email en campo: "${_emailController.text}"');
 
     // Validar que los campos no estén vacíos
     if (_nameController.text.trim().isEmpty) {
-      print('❌ ERROR: Nombre vacío');
+      print('❌ ERROR: Campo de nombre vacío');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Por favor ingresa tu nombre'),
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(child: Text('Por favor ingresa tu nombre')),
+              ],
+            ),
             backgroundColor: ColorTokens.error50,
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -113,12 +125,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     }
 
     if (_emailController.text.trim().isEmpty) {
-      print('❌ ERROR: Email vacío');
+      print('❌ ERROR: Campo de email vacío');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Por favor ingresa tu email'),
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(child: Text('Por favor ingresa tu email')),
+              ],
+            ),
             backgroundColor: ColorTokens.error50,
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -133,10 +152,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Por favor ingresa un email válido (ejemplo: usuario@dominio.com)',
+            content: Row(
+              children: [
+                Icon(Icons.error, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Por favor ingresa un email válido (ejemplo: usuario@dominio.com)',
+                  ),
+                ),
+              ],
             ),
             backgroundColor: ColorTokens.error50,
+            duration: Duration(seconds: 4),
           ),
         );
       }
@@ -151,18 +179,34 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       email: _emailController.text.trim(),
     );
 
-    print('📊 Resultado: ${success ? "ÉXITO" : "ERROR"}');
+    print('📊 Resultado de actualización: ${success ? "ÉXITO ✅" : "ERROR ❌"}');
     if (!success) {
       print('❌ Error del provider: ${widget.userProvider.error}');
+    } else {
+      print('✅ Perfil actualizado correctamente');
+      print('   Nombre guardado: "${widget.userProvider.user?.name}"');
+      print('   Email guardado: "${widget.userProvider.user?.email}"');
     }
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            success
-                ? 'Perfil actualizado correctamente ✅'
-                : '❌ ${widget.userProvider.error ?? 'Error al actualizar perfil'}',
+          content: Row(
+            children: [
+              Icon(
+                success ? Icons.check_circle : Icons.error,
+                color: Colors.white,
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  success
+                      ? 'Perfil actualizado correctamente'
+                      : widget.userProvider.error ??
+                            'Error al actualizar perfil',
+                ),
+              ),
+            ],
           ),
           backgroundColor: success
               ? ColorTokens.success40
@@ -340,6 +384,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/');
+            }
+          },
+          tooltip: 'Volver',
+        ),
         title: Text('Mi Perfil'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
@@ -592,42 +647,44 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                   SizedBox(height: 32),
 
-                  // Botón actualizar
+                  // Botón actualizar perfil
                   SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: ElevatedButton(
-                      onPressed: _updateProfile,
+                    child: ElevatedButton.icon(
+                      onPressed: widget.userProvider.isLoading
+                          ? null
+                          : _updateProfile,
+                      icon: widget.userProvider.isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  ColorTokens.neutral100,
+                                ),
+                              ),
+                            )
+                          : Icon(Icons.save),
+                      label: Text(
+                        widget.userProvider.isLoading
+                            ? 'Guardando...'
+                            : 'Guardar Cambios',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorTokens.primary50,
                         foregroundColor: ColorTokens.neutral100,
+                        disabledBackgroundColor: ColorTokens.neutral40,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
+                        elevation: 2,
                       ),
-                      child: Text(
-                        'Actualizar Perfil',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Botón guardar
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _updateProfile,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorTokens.primary50,
-                        foregroundColor: ColorTokens.neutral100,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text('Guardar', style: TextStyle(fontSize: 16)),
                     ),
                   ),
 

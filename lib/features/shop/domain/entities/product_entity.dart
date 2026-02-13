@@ -31,6 +31,19 @@ class ProductEntity {
   final double? discount; // Descuento opcional (0-100)
   final DateTime? discountEndDate; // Fecha fin del descuento
 
+  // ===== CAMPOS PARA SISTEMA DE SEGURIDAD ANTIRROBO =====
+  final bool isBicycle; // Si el producto es una bicicleta completa
+  final String?
+  bikeFrameSerial; // Número de serie del cuadro (obligatorio si isBicycle = true)
+  final String? bikeBrand; // Marca de la bicicleta
+  final String? bikeModel; // Modelo de la bicicleta
+  final String? bikeColor; // Color de la bicicleta
+  final int? bikeYear; // Año de fabricación
+  final bool
+  isVerifiedNotStolen; // Si se verificó que no está reportada como robada
+  final DateTime? stolenVerificationDate; // Fecha de última verificación
+  final String? stolenVerificationBy; // ID del admin que verificó
+
   ProductEntity({
     required this.id,
     required this.name,
@@ -58,6 +71,16 @@ class ProductEntity {
     this.tags = const [],
     this.discount,
     this.discountEndDate,
+    // Parámetros de seguridad antirrobo
+    this.isBicycle = false,
+    this.bikeFrameSerial,
+    this.bikeBrand,
+    this.bikeModel,
+    this.bikeColor,
+    this.bikeYear,
+    this.isVerifiedNotStolen = false,
+    this.stolenVerificationDate,
+    this.stolenVerificationBy,
   });
 
   bool get isAvailable => isActive && stock > 0 && !isSold;
@@ -117,6 +140,16 @@ class ProductEntity {
     List<String>? tags,
     double? discount,
     DateTime? discountEndDate,
+    // Parámetros de seguridad antirrobo
+    bool? isBicycle,
+    String? bikeFrameSerial,
+    String? bikeBrand,
+    String? bikeModel,
+    String? bikeColor,
+    int? bikeYear,
+    bool? isVerifiedNotStolen,
+    DateTime? stolenVerificationDate,
+    String? stolenVerificationBy,
   }) {
     return ProductEntity(
       id: id ?? this.id,
@@ -144,6 +177,17 @@ class ProductEntity {
       tags: tags ?? this.tags,
       discount: discount ?? this.discount,
       discountEndDate: discountEndDate ?? this.discountEndDate,
+      // Campos de seguridad
+      isBicycle: isBicycle ?? this.isBicycle,
+      bikeFrameSerial: bikeFrameSerial ?? this.bikeFrameSerial,
+      bikeBrand: bikeBrand ?? this.bikeBrand,
+      bikeModel: bikeModel ?? this.bikeModel,
+      bikeColor: bikeColor ?? this.bikeColor,
+      bikeYear: bikeYear ?? this.bikeYear,
+      isVerifiedNotStolen: isVerifiedNotStolen ?? this.isVerifiedNotStolen,
+      stolenVerificationDate:
+          stolenVerificationDate ?? this.stolenVerificationDate,
+      stolenVerificationBy: stolenVerificationBy ?? this.stolenVerificationBy,
     );
   }
 }
