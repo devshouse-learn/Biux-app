@@ -362,7 +362,7 @@ ${widget.bikeBrand != null ? '• Marca: ${widget.bikeBrand}\n' : ''}${widget.bi
 Verificada el: ${DateFormat('dd/MM/yyyy').format(widget.verificationDate)}
 ''';
 
-      await Share.share(shareText, subject: 'Verificación de Bicicleta - Biux');
+      await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

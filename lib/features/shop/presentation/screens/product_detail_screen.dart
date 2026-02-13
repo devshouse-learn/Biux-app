@@ -99,7 +99,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Future.delayed(const Duration(seconds: 2), () {
               if (mounted) {
                 print('⬅️ Regresando a la tienda...');
-                context.go('/shop');
+                _goBack();
               }
             });
           }
@@ -144,6 +144,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           }
         });
       }
+    }
+  }
+
+  void _goBack() {
+    if (Navigator.canPop(context)) {
+      Navigator.of(context).pop();
+    } else {
+      context.go('/shop');
     }
   }
 
@@ -326,7 +334,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     backgroundColor: Colors.green,
                   ),
                 );
-                context.go('/shop');
+                _goBack();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -430,7 +438,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     backgroundColor: Colors.green,
                   ),
                 );
-                context.go('/shop');
+                _goBack();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -470,7 +478,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  onPressed: () => context.go('/shop'),
+                  onPressed: () => _goBack(),
                   child: const Text('Volver a la tienda'),
                 ),
               ],

@@ -3,7 +3,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 /// Servicio para generar códigos QR para bicicletas verificadas
 class BikeQRService {

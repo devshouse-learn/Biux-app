@@ -299,11 +299,11 @@ class _NotificationSettingsScreenState
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? ColorTokens.primary30.withOpacity(0.1)
-                      : ColorTokens.primary30.withOpacity(0.05),
+                      ? ColorTokens.primary30.withValues(alpha: 0.1)
+                      : ColorTokens.primary30.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: ColorTokens.primary30.withOpacity(0.2),
+                    color: ColorTokens.primary30.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
@@ -346,7 +346,10 @@ class _NotificationSettingsScreenState
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: enabled
-              ? [ColorTokens.primary30, ColorTokens.primary30.withOpacity(0.7)]
+              ? [
+                  ColorTokens.primary30,
+                  ColorTokens.primary30.withValues(alpha: 0.7),
+                ]
               : [Colors.grey.shade600, Colors.grey.shade700],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -355,7 +358,7 @@ class _NotificationSettingsScreenState
         boxShadow: [
           BoxShadow(
             color: enabled
-                ? ColorTokens.primary30.withOpacity(0.3)
+                ? ColorTokens.primary30.withValues(alpha: 0.3)
                 : Colors.grey.withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
@@ -393,7 +396,7 @@ class _NotificationSettingsScreenState
                 Text(
                   enabled ? 'Activadas' : 'Desactivadas',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 14,
                   ),
                 ),
@@ -404,9 +407,9 @@ class _NotificationSettingsScreenState
             value: enabled,
             onChanged: provider.togglePushNotifications,
             activeColor: Colors.white,
-            activeTrackColor: Colors.white.withOpacity(0.5),
+            activeTrackColor: Colors.white.withValues(alpha: 0.5),
             inactiveThumbColor: Colors.white70,
-            inactiveTrackColor: Colors.white.withOpacity(0.3),
+            inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
           ),
         ],
       ),
@@ -486,7 +489,7 @@ class _NotificationSettingsScreenState
               value: value,
               onChanged: enabled ? onChanged : null,
               activeColor: ColorTokens.primary30,
-              activeTrackColor: ColorTokens.primary30.withOpacity(0.5),
+              activeTrackColor: ColorTokens.primary30.withValues(alpha: 0.5),
               inactiveThumbColor: isDark
                   ? Colors.grey.shade500
                   : Colors.grey.shade400,
