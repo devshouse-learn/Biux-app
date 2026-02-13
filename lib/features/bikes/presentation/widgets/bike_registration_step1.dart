@@ -89,10 +89,13 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value.trim().length < 2) {
                   return 'La marca debe tener al menos 2 caracteres';
                 }
+                if (value.trim().length > 100) {
+                  return 'La marca no puede exceder 100 caracteres';
+                }
                 if (!RegExp(
                   r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-]+$',
-                ).hasMatch(value)) {
-                  return 'Solo se permiten letras, números y guiones';
+                ).hasMatch(value.trim())) {
+                  return 'Solo se permiten letras, números, espacios y guiones';
                 }
                 return null;
               },
@@ -104,7 +107,6 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             TextFormFieldBiuxWidget(
               controller: _modelController,
               text: AppStrings.modelLabel,
-
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'model',
@@ -117,6 +119,14 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 }
                 if (value.trim().length < 2) {
                   return 'El modelo debe tener al menos 2 caracteres';
+                }
+                if (value.trim().length > 100) {
+                  return 'El modelo no puede exceder 100 caracteres';
+                }
+                if (!RegExp(
+                  r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-/]+$',
+                ).hasMatch(value.trim())) {
+                  return 'Solo se permiten letras, números, espacios, guiones y barras';
                 }
                 return null;
               },
@@ -143,11 +153,14 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value == null || value.trim().isEmpty) {
                   return AppStrings.fieldRequired;
                 }
-                if (value.trim().length < 3) {
-                  return 'Ingresa un color válido (ej: Rojo, Azul, Negro)';
+                if (value.trim().length < 2) {
+                  return 'El color debe tener al menos 2 caracteres';
                 }
-                if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\/\-]+$').hasMatch(value)) {
-                  return 'Solo se permiten letras (ej: Rojo/Negro)';
+                if (value.trim().length > 100) {
+                  return 'El color no puede exceder 100 caracteres';
+                }
+                if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-/]+$').hasMatch(value.trim())) {
+                  return 'Solo se permiten letras, números, espacios, guiones y barras';
                 }
                 return null;
               },
@@ -159,7 +172,6 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             TextFormFieldBiuxWidget(
               controller: _sizeController,
               text: AppStrings.sizeLabel,
-
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'size',
@@ -170,12 +182,16 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value == null || value.trim().isEmpty) {
                   return AppStrings.fieldRequired;
                 }
-                // Acepta: S, M, L, XL, XXL o números (14, 16, 18, etc.) o medidas en pulgadas
+                final trimmed = value.trim();
+                if (trimmed.length > 10) {
+                  return 'La talla no puede exceder 10 caracteres';
+                }
+                // Acepta: XS, S, M, L, XL, XXL, XXXL o números (14, 16, 18, etc.) o medidas en pulgadas
                 if (!RegExp(
-                  r'^(XXS|XS|S|M|L|XL|XXL|XXXL|\d{1,2}(\.\d)?|\d{1,2}"?)$',
+                  r'^(XXS|XS|S|M|L|XL|XXL|XXXL|\d{1,2}(\.\d)?|\d{1,2}")$',
                   caseSensitive: false,
-                ).hasMatch(value.trim())) {
-                  return 'Ingresa una talla válida (ej: S, M, L, XL, 16, 18")';
+                ).hasMatch(trimmed)) {
+                  return 'Ingresa una talla válida (ej: XS, S, M, L, XL, 16, 18")';
                 }
                 return null;
               },
@@ -192,7 +208,6 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             TextFormFieldBiuxWidget(
               controller: _frameSerialController,
               text: AppStrings.frameSerialLabel,
-
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'frameSerial',
@@ -206,8 +221,11 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 if (value.trim().length < 4) {
                   return 'El número de serie debe tener al menos 4 caracteres';
                 }
+                if (value.trim().length > 100) {
+                  return 'El número de serie no puede exceder 100 caracteres';
+                }
                 if (!RegExp(r'^[A-Za-z0-9\-]+$').hasMatch(value.trim())) {
-                  return 'Solo se permiten letras, números y guiones';
+                  return 'Solo se permiten letras, números y guiones (sin espacios)';
                 }
                 return null;
               },
@@ -237,11 +255,17 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Este campo es obligatorio';
+                  return AppStrings.fieldRequired;
                 }
                 // Validar que tenga al menos 2 caracteres
                 if (value.trim().length < 2) {
-                  return 'Ingresa un nombre de ciudad válido';
+                  return 'Ingresa un nombre de ciudad válido (mínimo 2 caracteres)';
+                }
+                if (value.trim().length > 100) {
+                  return 'El nombre de la ciudad no puede exceder 100 caracteres';
+                }
+                if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$').hasMatch(value.trim())) {
+                  return 'La ciudad solo puede contener letras, espacios y guiones';
                 }
                 return null;
               },

@@ -37,6 +37,7 @@ import 'package:biux/features/bikes/domain/usecases/get_user_bikes_usecase.dart'
 import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/presentation/providers/seller_request_provider.dart';
 import 'package:biux/features/shop/data/repositories/product_repository_impl.dart';
@@ -154,6 +155,7 @@ void main() async {
                 repository,
               ),
               getPublicBikeInfoUseCase: GetPublicBikeInfoUseCase(repository),
+              deleteBikeUseCase: DeleteBikeUseCase(repository),
             );
           },
         ),

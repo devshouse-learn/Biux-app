@@ -83,7 +83,8 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
             ),
             filled: true,
             contentPadding: EdgeInsets.fromLTRB(10.0, 15.0, 20.0, 15.0),
-            hintText: text,
+            labelText: text,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: prefixIcon,
             prefixIconConstraints: prefixIcon != null
                 ? BoxConstraints(minWidth: 40, minHeight: 40)
@@ -101,7 +102,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(radiusCircular)),
             ),
             suffixIcon: onFieldSubmitted != null ? addButton : SizedBox(),
-            hintStyle: Styles.sizedBoxHintStyle.copyWith(fontSize: fontSize),
+            labelStyle: Styles.sizedBoxHintStyle.copyWith(fontSize: fontSize),
           ),
           onChanged: onChanged,
           validator: validator,

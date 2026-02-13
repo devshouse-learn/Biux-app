@@ -750,9 +750,44 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             child: Text(AppStrings.cancel),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // TODO: Implementar eliminación
+
+              // Mostrar indicador de carga
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Eliminando bicicleta...'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+
+              // Ejecutar eliminación
+              final bikeProvider = context.read<BikeProvider>();
+              final success = await bikeProvider.deleteBike(bike.id);
+
+              if (success && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Bicicleta eliminada correctamente'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                // Navegar de regreso a la lista de bicicletas después de 1 segundo
+                Future.delayed(const Duration(seconds: 1), () {
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                  }
+                });
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('❌ Error: ${bikeProvider.errorMessage}'),
+                    backgroundColor: Colors.red,
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Eliminar'),

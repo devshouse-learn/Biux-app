@@ -8,6 +8,7 @@ import 'package:biux/features/bikes/domain/usecases/get_user_bikes_usecase.dart'
 import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/shared/services/optimized_storage_service.dart';
 
@@ -21,6 +22,7 @@ class BikeProvider extends ChangeNotifier {
   final ReportBikeTheftUseCase _reportBikeTheftUseCase;
   final TransferBikeOwnershipUseCase _transferBikeOwnershipUseCase;
   final GetPublicBikeInfoUseCase _getPublicBikeInfoUseCase;
+  final DeleteBikeUseCase _deleteBikeUseCase;
 
   BikeProvider({
     required RegisterBikeUseCase registerBikeUseCase,
@@ -28,11 +30,13 @@ class BikeProvider extends ChangeNotifier {
     required ReportBikeTheftUseCase reportBikeTheftUseCase,
     required TransferBikeOwnershipUseCase transferBikeOwnershipUseCase,
     required GetPublicBikeInfoUseCase getPublicBikeInfoUseCase,
+    required DeleteBikeUseCase deleteBikeUseCase,
   }) : _registerBikeUseCase = registerBikeUseCase,
        _getUserBikesUseCase = getUserBikesUseCase,
        _reportBikeTheftUseCase = reportBikeTheftUseCase,
        _transferBikeOwnershipUseCase = transferBikeOwnershipUseCase,
-       _getPublicBikeInfoUseCase = getPublicBikeInfoUseCase;
+       _getPublicBikeInfoUseCase = getPublicBikeInfoUseCase,
+       _deleteBikeUseCase = deleteBikeUseCase;
 
   // ========== Estado general ==========
   BikeProviderState _state = BikeProviderState.initial;
@@ -443,6 +447,32 @@ class BikeProvider extends ChangeNotifier {
     } catch (e) {
       _setState(BikeProviderState.error, error: e.toString());
       rethrow;
+    }
+  }
+
+  // ========== Eliminación de bicicletas ==========
+
+  /// Elimina una bicicleta del usuario
+  Future<bool> deleteBike(String bikeId) async {
+    try {
+      _setState(BikeProviderState.loading);
+
+      await _deleteBikeUseCase(bikeId);
+
+      // Remover de la lista local
+      _userBikes.removeWhere((bike) => bike.id == bikeId);
+
+      // Si la bicicleta eliminada era la actual, limpiar la selección
+      if (_currentBike?.id == bikeId) {
+        _currentBike = null;
+      }
+
+      _setState(BikeProviderState.loaded);
+      return true;
+    } catch (e) {
+      print('❌ BikeProvider: Error eliminando bicicleta: $e');
+      _setState(BikeProviderState.error, error: e.toString());
+      return false;
     }
   }
 
