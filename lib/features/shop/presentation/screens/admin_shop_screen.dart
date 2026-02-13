@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
@@ -889,6 +890,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
         bikeRepository: bikeRepo,
       );
 
+      // Obtener información del usuario actual (vendedor)
+      final currentUser = context.read<UserProvider>().user;
+      final currentFirebaseUser = FirebaseAuth.instance.currentUser;
+
       // Verificar contra la base de datos
       final result = await verificationService.verifyBikeNotStolen(
         frameSerial: _bikeFrameSerialController.text.trim(),
@@ -901,6 +906,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
         color: _bikeColorController.text.trim().isEmpty
             ? null
             : _bikeColorController.text.trim(),
+        // 🚨 NUEVO: Pasar información del vendedor para notificaciones
+        sellerUid: currentFirebaseUser?.uid,
+        sellerName:
+            currentUser?.name ??
+            currentFirebaseUser?.phoneNumber ??
+            'Vendedor desconocido',
       );
 
       setState(() {

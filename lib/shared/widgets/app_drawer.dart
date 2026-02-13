@@ -192,7 +192,63 @@ class _AppDrawerState extends State<AppDrawer> {
                     context.push('/promotions');
                   },
                 ),
+                Divider(),
+                // NUEVA FUNCIONALIDAD: Acceso rápido a base de datos de bicis robadas
+                ListTile(
+                  leading: Icon(
+                    Icons.warning_amber_rounded,
+                    color: ColorTokens.error50,
+                  ),
+                  title: Text(
+                    'Bicicletas Robadas',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  subtitle: Text(
+                    'Consulta la base de datos pública',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: ColorTokens.neutral60,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/shop/stolen-bikes');
+                  },
+                ),
+                // NUEVA FUNCIONALIDAD: Dashboard de alertas (solo para admins)
+                Consumer<UserProvider>(
+                  builder: (context, userProvider, child) {
+                    final isAdmin = userProvider.user?.isAdmin ?? false;
+                    if (!isAdmin) return const SizedBox.shrink();
 
+                    return ListTile(
+                      leading: Icon(
+                        Icons.admin_panel_settings,
+                        color: ColorTokens.secondary50,
+                      ),
+                      title: Text(
+                        'Dashboard de Alertas',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        'Intentos de venta de bicis robadas',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: ColorTokens.neutral60,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push('/shop/admin-alerts');
+                      },
+                    );
+                  },
+                ),
+                Divider(),
                 ListTile(
                   leading: Icon(
                     Icons.help_outline,

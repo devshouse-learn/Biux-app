@@ -955,6 +955,83 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ],
             ),
+
+            // NUEVA FUNCIONALIDAD: Botón para ver código QR (solo para bicis verificadas)
+            if (_product!.isBicycle && _product!.isVerifiedNotStolen) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: ColorTokens.success99,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: ColorTokens.success40, width: 2),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: ColorTokens.success40,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '✅ Bicicleta Verificada',
+                                style: TextStyle(
+                                  color: ColorTokens.success30,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                'Esta bicicleta ha sido verificada como NO robada',
+                                style: TextStyle(
+                                  color: ColorTokens.neutral50,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.push(
+                          '/shop/bike-qr/${_product!.id}',
+                          extra: {
+                            'frameSerial': _product!.bikeFrameSerial ?? '',
+                            'verificationDate':
+                                _product!.stolenVerificationDate ??
+                                DateTime.now(),
+                            'verifierUid': _product!.stolenVerificationBy ?? '',
+                            'bikeBrand': _product!.bikeBrand,
+                            'bikeModel': _product!.bikeModel,
+                            'bikeColor': _product!.bikeColor,
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.qr_code_2),
+                      label: const Text('Ver Código QR de Verificación'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.success40,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),

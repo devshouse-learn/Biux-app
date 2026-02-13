@@ -59,6 +59,8 @@ import '../../../features/shop/presentation/screens/delete_all_products_screen.d
 import '../../../features/shop/presentation/screens/favorites_screen.dart';
 import '../../../features/shop/presentation/screens/my_orders_screen.dart';
 import '../../../features/shop/presentation/screens/stolen_bikes_screen.dart';
+import '../../../features/shop/presentation/screens/admin_alerts_screen.dart';
+import '../../../features/shop/presentation/screens/bike_qr_screen.dart';
 
 // Store (Tienda Online) imports
 import '../../../features/store/presentation/screens/store_screen.dart';
@@ -736,6 +738,33 @@ final GoRouter _router = GoRouter(
           path: '/shop/stolen-bikes',
           name: 'stolenBikes',
           builder: (context, state) => const StolenBikesScreen(),
+        ),
+
+        // Dashboard de alertas para administradores - DEBE IR ANTES DE /shop/:id
+        GoRoute(
+          path: '/shop/admin-alerts',
+          name: 'adminAlerts',
+          builder: (context, state) => const AdminAlertsScreen(),
+        ),
+
+        // Código QR de bicicleta verificada - DEBE IR ANTES DE /shop/:id
+        GoRoute(
+          path: '/shop/bike-qr/:productId',
+          name: 'bikeQR',
+          builder: (context, state) {
+            final productId = state.pathParameters['productId']!;
+            final extra = state.extra as Map<String, dynamic>?;
+            
+            return BikeQRScreen(
+              productId: productId,
+              frameSerial: extra?['frameSerial'] ?? '',
+              verificationDate: extra?['verificationDate'] ?? DateTime.now(),
+              verifierUid: extra?['verifierUid'] ?? '',
+              bikeBrand: extra?['bikeBrand'],
+              bikeModel: extra?['bikeModel'],
+              bikeColor: extra?['bikeColor'],
+            );
+          },
         ),
 
         // ⚠️ CRÍTICO: Detalle de producto DEBE IR AL FINAL después de TODAS las rutas específicas

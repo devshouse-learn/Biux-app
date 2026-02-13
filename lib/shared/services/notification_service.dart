@@ -382,6 +382,136 @@ class NotificationService {
   void dispose() {
     _notificationStreamController.close();
   }
+
+  // ========================================
+  // NUEVAS FUNCIONALIDADES: Sistema Anti-Robo
+  // ========================================
+
+  /// Envía notificación al propietario cuando alguien intenta vender su bici robada
+  Future<void> notifyStolenBikeSaleAttempt({
+    required String bikeOwnerId,
+    required String bikeFrameSerial,
+    required String bikeBrand,
+    required String bikeModel,
+    required String sellerUid,
+    required String sellerName,
+  }) async {
+    try {
+      print('🚨 Enviando alerta de robo al propietario $bikeOwnerId');
+
+      // Obtener tokens FCM del propietario
+      final ownerDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(bikeOwnerId)
+          .get();
+
+      if (!ownerDoc.exists) {
+        print('⚠️ Usuario propietario no encontrado');
+        return;
+      }
+
+      final ownerData = ownerDoc.data();
+      final fcmTokens = ownerData?['fcmTokens'] as List<dynamic>?;
+
+      if (fcmTokens == null || fcmTokens.isEmpty) {
+        print('⚠️ El propietario no tiene tokens FCM registrados');
+        return;
+      }
+
+      // Crear notificación en Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(bikeOwnerId)
+          .collection('notifications')
+          .add({
+            'title': '🚨 ALERTA: Intento de venta de tu bicicleta robada',
+            'body':
+                'Alguien intentó vender tu $bikeBrand $bikeModel (Serie: $bikeFrameSerial)',
+            'type': 'theft_alert',
+            'relatedId': bikeFrameSerial,
+            'senderId': sellerUid,
+            'senderName': sellerName,
+            'bikeData': {
+              'frameSerial': bikeFrameSerial,
+              'brand': bikeBrand,
+              'model': bikeModel,
+            },
+            'read': false,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+      // Crear alerta en la colección de alertas de administración
+      await FirebaseFirestore.instance.collection('theft_alerts').add({
+        'bikeOwnerId': bikeOwnerId,
+        'sellerUid': sellerUid,
+        'sellerName': sellerName,
+        'bikeData': {
+          'frameSerial': bikeFrameSerial,
+          'brand': bikeBrand,
+          'model': bikeModel,
+        },
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'pending',
+      });
+
+      print('✅ Alerta de robo guardada en Firestore');
+
+      // Aquí se enviaría la notificación push real mediante Cloud Functions
+      // En producción, esto se haría desde el backend usando Admin SDK
+      print('📤 Notificación push enviada al propietario (simulado)');
+    } catch (e) {
+      print('❌ Error enviando alerta de robo: $e');
+    }
+  }
+
+  /// Notifica a administradores sobre intentos de venta de bicis robadas
+  Future<void> notifyAdminsAboutTheftAttempt({
+    required String bikeFrameSerial,
+    required String bikeBrand,
+    required String bikeModel,
+    required String sellerUid,
+    required String sellerName,
+  }) async {
+    try {
+      print('📢 Notificando a administradores sobre intento de robo');
+
+      // Obtener todos los administradores
+      final adminsQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .where('isAdmin', isEqualTo: true)
+          .get();
+
+      for (final adminDoc in adminsQuery.docs) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(adminDoc.id)
+            .collection('notifications')
+            .add({
+              'title':
+                  '⚠️ Alerta de Seguridad: Intento de venta de bici robada',
+              'body':
+                  '$sellerName intentó vender $bikeBrand $bikeModel (Serie: $bikeFrameSerial)',
+              'type': 'admin_theft_alert',
+              'relatedId': bikeFrameSerial,
+              'senderId': sellerUid,
+              'senderName': sellerName,
+              'bikeData': {
+                'frameSerial': bikeFrameSerial,
+                'brand': bikeBrand,
+                'model': bikeModel,
+              },
+              'read': false,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+      }
+
+      print(
+        '✅ Administradores notificados (${adminsQuery.docs.length} admins)',
+      );
+    } catch (e) {
+      print('❌ Error notificando a administradores: $e');
+    }
+  }
 }
 
 /// Manejador de mensajes en background (debe estar fuera de la clase)

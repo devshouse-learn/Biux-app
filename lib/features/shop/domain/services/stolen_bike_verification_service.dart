@@ -1,11 +1,13 @@
 import 'package:biux/features/bikes/domain/repositories/bike_repository.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_theft_entity.dart';
+import 'package:biux/shared/services/notification_service.dart';
 
 /// Servicio para verificar si una bicicleta está reportada como robada
 /// antes de permitir su publicación en la tienda
 class StolenBikeVerificationService {
   final BikeRepository bikeRepository;
+  final NotificationService _notificationService = NotificationService();
 
   StolenBikeVerificationService({required this.bikeRepository});
 
@@ -16,6 +18,8 @@ class StolenBikeVerificationService {
     String? brand,
     String? model,
     String? color,
+    String? sellerUid,
+    String? sellerName,
   }) async {
     try {
       print('🔍 Verificando bicicleta con número de serie: $frameSerial');
@@ -49,6 +53,26 @@ class StolenBikeVerificationService {
             orElse: () => theftReports.first,
           );
 
+          // 🚨 NUEVA FUNCIONALIDAD: Notificar al propietario y administradores
+          if (sellerUid != null && sellerName != null) {
+            await _notificationService.notifyStolenBikeSaleAttempt(
+              bikeOwnerId: bike.ownerId,
+              bikeFrameSerial: frameSerial,
+              bikeBrand: brand ?? bike.brand,
+              bikeModel: model ?? bike.model,
+              sellerUid: sellerUid,
+              sellerName: sellerName,
+            );
+
+            await _notificationService.notifyAdminsAboutTheftAttempt(
+              bikeFrameSerial: frameSerial,
+              bikeBrand: brand ?? bike.brand,
+              bikeModel: model ?? bike.model,
+              sellerUid: sellerUid,
+              sellerName: sellerName,
+            );
+          }
+
           return VerificationResult(
             isStolen: true,
             isRegistered: true,
@@ -58,7 +82,8 @@ class StolenBikeVerificationService {
             details:
                 'Esta bicicleta fue reportada como robada el ${_formatDate(activeReport.theftDate)}. '
                 'Ubicación del robo: ${activeReport.location}. '
-                'No se permite la venta de bicicletas robadas.',
+                'No se permite la venta de bicicletas robadas.\n\n'
+                '🚨 El propietario y los administradores han sido notificados de este intento.',
           );
         }
 
