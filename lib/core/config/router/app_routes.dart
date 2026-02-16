@@ -35,6 +35,7 @@ class AppRoutes {
 
   // Rutas de configuración
   static const String notificationSettings = '/settings/notifications';
+  static const String accountSettings = '/account-settings';
 
   // Rutas de ayuda
   static const String help = '/help';
@@ -63,5 +64,6 @@ class AppRoutes {
   static const String bikeDetailName = 'bikeDetail';
   static const String publicBikeInfoName = 'publicBikeInfo';
   static const String notificationSettingsName = 'notificationSettings';
+  static const String accountSettingsName = 'accountSettings';
   static const String helpName = 'help';
 }

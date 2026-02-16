@@ -51,11 +51,13 @@ class UserService {
     required String uid,
     String? name,
     String? email,
+    String? description,
   }) async {
     print('🔍 ====== USER SERVICE: updateUserProfile ======');
     print('🆔 UID: $uid');
     print('📝 Nombre: "$name"');
     print('📧 Email: "$email"');
+    print('📋 Descripción: "$description"');
 
     try {
       // Validar UID
@@ -73,6 +75,10 @@ class UserService {
       if (email != null && email.isNotEmpty) {
         updateData['email'] = email.trim();
         print('✅ Email agregado a updateData');
+      }
+      if (description != null && description.isNotEmpty) {
+        updateData['description'] = description.trim();
+        print('✅ Descripción agregada a updateData');
       }
 
       // Si no hay datos para actualizar, retornar false
@@ -165,10 +171,7 @@ class UserService {
         print('🔐 Creando usuario: $uid');
         print('👤 Teléfono: $phoneNumber');
 
-        UserModel newUser = UserModel(
-          uid: uid,
-          phoneNumber: phoneNumber,
-        );
+        UserModel newUser = UserModel(uid: uid, phoneNumber: phoneNumber);
         await _firestore.collection('users').doc(uid).set(newUser.toMap());
         print('✅ Usuario creado');
       }

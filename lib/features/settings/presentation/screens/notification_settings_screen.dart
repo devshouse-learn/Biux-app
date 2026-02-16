@@ -43,6 +43,18 @@ class _NotificationSettingsScreenState
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
+          // Botón de debug comentado temporalmente
+          // IconButton(
+          //   icon: const Icon(Icons.bug_report, color: Colors.orange),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const NotificationDebugWidget(),
+          //       ),
+          //     );
+          //   },
+          // ),
           Consumer<NotificationSettingsProvider>(
             builder: (context, provider, _) {
               return IconButton(

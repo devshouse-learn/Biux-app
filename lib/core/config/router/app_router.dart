@@ -38,6 +38,7 @@ import '../../../features/social/presentation/screens/post_detail_screen.dart';
 import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
 import '../../../features/users/presentation/screens/edit_username_screen.dart';
 import '../../../features/users/presentation/screens/profile_screen.dart';
+import '../../../features/users/presentation/screens/account_settings_screen.dart';
 import '../../../features/users/presentation/screens/user_screen/user_screen.dart';
 import '../../../features/users/presentation/screens/user_search_screen.dart';
 import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
@@ -604,6 +605,13 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const NotificationSettingsScreen(),
         ),
 
+        // Configuración de cuenta
+        GoRoute(
+          path: AppRoutes.accountSettings,
+          name: AppRoutes.accountSettingsName,
+          builder: (context, state) => const AccountSettingsScreen(),
+        ),
+
         // Ayuda y soporte
         GoRoute(
           path: AppRoutes.help,
@@ -754,7 +762,7 @@ final GoRouter _router = GoRouter(
           builder: (context, state) {
             final productId = state.pathParameters['productId']!;
             final extra = state.extra as Map<String, dynamic>?;
-            
+
             return BikeQRScreen(
               productId: productId,
               frameSerial: extra?['frameSerial'] ?? '',
