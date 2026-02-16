@@ -332,7 +332,8 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
 
   void _removeImage() {
     Navigator.pop(context);
-    widget.onImageSelected(null);
+    // Pasar cadena vacía para indicar eliminación (no null)
+    widget.onImageSelected("");
   }
 
   void _showCompressionInfo(int originalSizeBytes) {

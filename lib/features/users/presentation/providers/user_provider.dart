@@ -162,6 +162,7 @@ class UserProvider extends ChangeNotifier {
         (description != null && description.isNotEmpty) ||
         (username != null && username.isNotEmpty);
     
+    // Una foto es actualización si: no es null (nuevo valor) O si es cadena vacía (eliminación)
     bool hasPhotoUpdate = photoUrl != null || coverPhotoUrl != null;
     
     if (!hasTextUpdate && !hasPhotoUpdate) {
@@ -177,6 +178,8 @@ class UserProvider extends ChangeNotifier {
 
     try {
       print('📝 Iniciando actualización de perfil...');
+      print('   Foto de perfil: "$photoUrl"');
+      print('   Foto de portada: "$coverPhotoUrl"');
 
       bool success = await _userService.updateUserProfile(
         uid: uid,
