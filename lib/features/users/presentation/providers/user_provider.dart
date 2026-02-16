@@ -156,12 +156,15 @@ class UserProvider extends ChangeNotifier {
     print('📞 Teléfono: ${firebaseUser.phoneNumber}');
 
     // Validar que al menos uno de los campos tenga valor
-    if ((name == null || name.isEmpty) &&
-        (email == null || email.isEmpty) &&
-        (description == null || description.isEmpty) &&
-        (username == null || username.isEmpty) &&
-        (photoUrl == null || photoUrl.isEmpty) &&
-        (coverPhotoUrl == null || coverPhotoUrl.isEmpty)) {
+    // Permitir null/empty para fotos (para poder eliminarlas)
+    bool hasTextUpdate = (name != null && name.isNotEmpty) ||
+        (email != null && email.isNotEmpty) ||
+        (description != null && description.isNotEmpty) ||
+        (username != null && username.isNotEmpty);
+    
+    bool hasPhotoUpdate = photoUrl != null || coverPhotoUrl != null;
+    
+    if (!hasTextUpdate && !hasPhotoUpdate) {
       print('❌ ERROR: Todos los campos vacíos');
       _error = 'Por favor ingresa al menos un campo para actualizar';
       notifyListeners();

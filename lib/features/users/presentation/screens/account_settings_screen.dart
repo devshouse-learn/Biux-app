@@ -129,13 +129,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Campo de Teléfono (solo lectura)
-                      _buildInfoSection(
+                      // Campo de Teléfono (mostrar como información, no como input)
+                      _buildPhoneInfoSection(
                         label: 'Número Telefónico',
                         icon: Icons.phone,
-                        controller: _phoneController,
-                        isEnabled: false, // El teléfono no se puede editar
-                        keyboardType: TextInputType.phone,
+                        phoneNumber: _phoneController.text,
                       ),
                       const SizedBox(height: 24),
 
@@ -296,6 +294,59 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: ColorTokens.primary30, width: 2),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhoneInfoSection({
+    required String label,
+    required IconData icon,
+    required String phoneNumber,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: ColorTokens.primary30,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: ColorTokens.primary30),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  phoneNumber.isNotEmpty ? phoneNumber : 'No disponible',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.lock,
+                color: Colors.grey[400],
+                size: 18,
+              ),
+            ],
           ),
         ),
       ],

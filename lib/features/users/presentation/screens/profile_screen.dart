@@ -1,6 +1,8 @@
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/users/data/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -281,6 +283,237 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         ),
       ],
     );
+  }
+
+  Widget _buildStatCardButton({
+    required String value,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: ColorTokens.primary30,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: ColorTokens.neutral70,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFollowersModal(BuildContext context) {
+    final followers = widget.userProvider.user?.followers ?? {};
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        if (followers.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: SizedBox(
+              height: 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.people_outline,
+                    size: 48,
+                    color: ColorTokens.neutral60,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text('Sin seguidores aún'),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) {
+            return ListView(
+              controller: scrollController,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'Seguidores (${followers.length})',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ...followers.entries.map((entry) {
+                  final userId = entry.key;
+                  return FutureBuilder<BiuxUser?>(
+                    future: _getUserById(userId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const ListTile(
+                          title: Text('Cargando...'),
+                        );
+                      }
+
+                      if (!snapshot.hasData || snapshot.data == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final user = snapshot.data!;
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: user.photo.isNotEmpty
+                              ? NetworkImage(user.photo)
+                              : null,
+                          child: user.photo.isEmpty
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                        title: Text(user.fullName.isNotEmpty
+                            ? user.fullName
+                            : user.userName),
+                        subtitle: Text('@${user.userName}'),
+                        onTap: () {
+                          context.pop();
+                          context.push('/public-profile/${user.id}');
+                        },
+                      );
+                    },
+                  );
+                }),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showFollowingModal(BuildContext context) {
+    final following = widget.userProvider.user?.following ?? {};
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        if (following.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: SizedBox(
+              height: 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.people_outline,
+                    size: 48,
+                    color: ColorTokens.neutral60,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text('No sigue a nadie aún'),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) {
+            return ListView(
+              controller: scrollController,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'Siguiendo (${following.length})',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ...following.entries.map((entry) {
+                  final userId = entry.key;
+                  return FutureBuilder<BiuxUser?>(
+                    future: _getUserById(userId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const ListTile(
+                          title: Text('Cargando...'),
+                        );
+                      }
+
+                      if (!snapshot.hasData || snapshot.data == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final user = snapshot.data!;
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: user.photo.isNotEmpty
+                              ? NetworkImage(user.photo)
+                              : null,
+                          child: user.photo.isEmpty
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                        title: Text(user.fullName.isNotEmpty
+                            ? user.fullName
+                            : user.userName),
+                        subtitle: Text('@${user.userName}'),
+                        onTap: () {
+                          context.pop();
+                          context.push('/public-profile/${user.id}');
+                        },
+                      );
+                    },
+                  );
+                }),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<BiuxUser?> _getUserById(String userId) async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      
+      if (userDoc.exists) {
+        return BiuxUser.fromJsonMap(userDoc.data() as Map<String, dynamic>);
+      }
+    } catch (e) {
+      print('Error cargando usuario $userId: $e');
+    }
+    return null;
   }
 
   void _showEditProfileDialog() {
@@ -748,7 +981,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              _buildStatCard(
+                              _buildStatCardButton(
                                 value:
                                     (widget
                                                 .userProvider
@@ -758,8 +991,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             0)
                                         .toString(),
                                 label: 'Seguidores',
+                                onTap: () => _showFollowersModal(context),
                               ),
-                              _buildStatCard(
+                              _buildStatCardButton(
                                 value:
                                     (widget
                                                 .userProvider
@@ -769,6 +1003,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             0)
                                         .toString(),
                                 label: 'Siguiendo',
+                                onTap: () => _showFollowingModal(context),
                               ),
                             ],
                           ),
