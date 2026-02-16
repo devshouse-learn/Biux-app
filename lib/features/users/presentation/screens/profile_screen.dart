@@ -561,7 +561,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       child: OptimizedImagePicker(
                         currentImageUrl:
                             selectedProfileImageUrl != null
-                                ? selectedProfileImageUrl.isEmpty
+                                ? (selectedProfileImageUrl?.isEmpty ?? false)
                                     ? null  // Cadena vacía = sin foto
                                     : selectedProfileImageUrl  // Tiene URL
                                 : widget.userProvider.user?.photoUrl,  // Sin cambios = usa actual
@@ -611,7 +611,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       child: OptimizedImagePicker(
                         currentImageUrl:
                             selectedCoverImageUrl != null
-                                ? selectedCoverImageUrl.isEmpty
+                                ? (selectedCoverImageUrl?.isEmpty ?? false)
                                     ? null  // Cadena vacía = sin foto
                                     : selectedCoverImageUrl  // Tiene URL
                                 : widget.userProvider.user?.coverPhotoUrl,  // Sin cambios = usa actual
