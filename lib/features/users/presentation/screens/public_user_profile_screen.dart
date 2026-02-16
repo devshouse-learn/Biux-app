@@ -332,13 +332,18 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                             onPressed: () async {
                                               final userProvider =
                                                   context.read<UserProvider>();
+                                              final profileProvider =
+                                                  context.read<UserProfileProvider>();
                                               setState(() {
                                                 isFollowing = false;
                                               });
                                               final success =
                                                   await userProvider
                                                       .unfollowUser(widget.userId);
-                                              if (!success && mounted) {
+                                              if (success && mounted) {
+                                                // Recargar el perfil para actualizar el contador de followers
+                                                await profileProvider.loadUserProfile(widget.userId);
+                                              } else if (!success && mounted) {
                                                 setState(() {
                                                   isFollowing = true;
                                                 });
@@ -373,12 +378,17 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                             onPressed: () async {
                                               final userProvider =
                                                   context.read<UserProvider>();
+                                              final profileProvider =
+                                                  context.read<UserProfileProvider>();
                                               setState(() {
                                                 isFollowing = true;
                                               });
                                               final success = await userProvider
                                                   .followUser(widget.userId);
-                                              if (!success && mounted) {
+                                              if (success && mounted) {
+                                                // Recargar el perfil para actualizar el contador de followers
+                                                await profileProvider.loadUserProfile(widget.userId);
+                                              } else if (!success && mounted) {
                                                 setState(() {
                                                   isFollowing = false;
                                                 });
