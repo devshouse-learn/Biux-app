@@ -1,4 +1,3 @@
-// (conflict markers removed - keeping remote version)
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -899,12 +898,628 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// AppBar profesional con búsqueda integrada (antiguo)
   Widget _buildSliverAppBar() {
-    return const SizedBox.shrink();
+    return SliverAppBar(
+      expandedHeight: 120,
+      pinned: true,
+      backgroundColor: ColorTokens.primary30,
+      elevation: 4,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                ColorTokens.primary30,
+                ColorTokens.primary30.withValues(alpha: 0.8),
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.only(
+            top: 60,
+            left: 16,
+            right: 16,
+            bottom: 8,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Barra de búsqueda profesional
+              Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  style: const TextStyle(color: Colors.black87, fontSize: 14),
+                  onChanged: (query) {
+                    context.read<ShopProvider>().searchProducts(query);
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Buscar productos, marcas, categorías...',
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: ColorTokens.primary30,
+                    ),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, color: Colors.grey),
+                            onPressed: () {
+                              _searchController.clear();
+                              context.read<ShopProvider>().searchProducts('');
+                              setState(() {});
+                            },
+                          )
+                        // TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+                        : null,
+                    // : IconButton(
+                    //     icon: const Icon(Icons.qr_code_scanner, color: Colors.grey),
+                    //     onPressed: () {
+                    //       context.push('/shop/qr-scanner');
+                    //     },
+                    //   ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        // Carrito con badge
+        Consumer<ShopProvider>(
+          builder: (context, shopProvider, child) {
+            final itemCount = shopProvider.cartItemCount;
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.shopping_cart_outlined, size: 28),
+                  onPressed: () => context.push('/shop/cart'),
+                ),
+                if (itemCount > 0)
+                  Positioned(
+                    right: 4,
+                    top: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        '$itemCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+
+        // Menú de opciones
+        Consumer2<UserProvider, SellerRequestProvider>(
+          builder: (context, userProvider, requestProvider, child) {
+            final currentUser = userProvider.user;
+            final isAdmin = currentUser?.isAdmin ?? false;
+            final pendingCount = requestProvider.pendingCount;
+
+            return PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                switch (value) {
+                  case 'orders':
+                    context.go('/shop/orders');
+                    break;
+                  case 'favorites':
+                    context.go('/shop/favorites');
+                    break;
+                  case 'seller_requests':
+                    _showSellerRequestsModal(context);
+                    break;
+                  case 'manage_sellers':
+                    _showManageSellersModal(context);
+                    break;
+                  case 'delete_all_products':
+                    _showDeleteAllProductsModal(context);
+                    break;
+                  case 'request_seller':
+                    showRequestSellerPermissionDialog(context);
+                    break;
+                  case 'help':
+                    _showHelpDialog();
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'orders',
+                  child: Row(
+                    children: [
+                      Icon(Icons.receipt_long, size: 20),
+                      SizedBox(width: 12),
+                      Text('Mis Pedidos'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'favorites',
+                  child: Row(
+                    children: [
+                      Icon(Icons.favorite_border, size: 20),
+                      SizedBox(width: 12),
+                      Text('Favoritos'),
+                    ],
+                  ),
+                ),
+                // Solo mostrar a usuarios NO autorizados (para solicitar permiso)
+                if (!isAdmin && !(currentUser?.canSellProducts ?? false)) ...[
+                  const PopupMenuItem(
+                    value: 'request_seller',
+                    child: Row(
+                      children: [
+                        Icon(Icons.request_page, size: 20, color: Colors.blue),
+                        SizedBox(width: 12),
+                        Text(
+                          'Solicitar Vender Productos',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                // Solo mostrar a administradores
+                if (isAdmin) ...[
+                  PopupMenuItem(
+                    value: 'seller_requests',
+                    child: Row(
+                      children: [
+                        Badge(
+                          label: Text('$pendingCount'),
+                          isLabelVisible: pendingCount > 0,
+                          child: const Icon(
+                            Icons.pending_actions,
+                            size: 20,
+                            color: Colors.purple,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Solicitudes de Vendedores',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'manage_sellers',
+                    child: Row(
+                      children: [
+                        Icon(Icons.people, size: 20, color: Colors.orange),
+                        SizedBox(width: 12),
+                        Text(
+                          'Gestionar Vendedores',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete_all_products',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_forever, size: 20, color: Colors.red),
+                        SizedBox(width: 12),
+                        Text(
+                          'Eliminar Todos los Productos',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const PopupMenuItem(
+                  value: 'help',
+                  child: Row(
+                    children: [
+                      Icon(Icons.help_outline, size: 20),
+                      SizedBox(width: 12),
+                      Text('Ayuda'),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
   }
 
   /// Banner promocional integrado con Biux
   Widget _buildPromoBanner() {
-    return const SizedBox.shrink();
+    return Column(
+      children: [
+        // Banner principal de ciclismo
+        Container(
+          height: 140,
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                ColorTokens.primary30,
+                ColorTokens.primary30.withValues(alpha: 0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              children: [
+                // Patrón de fondo
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.1,
+                    child: CustomPaint(painter: BikePatternPainter()),
+                  ),
+                ),
+                // Contenido
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              '🚴 TIENDA BIUX',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Equípate para tus rodadas',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                height: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ColorTokens.secondary50,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text(
+                                    '🏷️ Hasta 30% OFF',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Envío gratis > \$100k',
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.95),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.pedal_bike,
+                        size: 56,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+                // (Botón movido fuera del Stack para evitar superposición)
+              ],
+            ),
+          ),
+        ),
+        // Botón rápido a Promociones colocado fuera del banner para evitar
+        // que se superponga a secciones siguientes (ej. cupones)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push('/promotions'),
+              icon: const Icon(Icons.campaign, size: 18),
+              label: const Text('Promociones'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white24,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ),
+        ),
+        // Barra desplegable de Ofertas y Beneficios
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Barra desplegable - siempre visible
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _showOffersExpanded = !_showOffersExpanded;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        // Icono con badge
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    ColorTokens.primary30.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                    ColorTokens.primary30.withValues(
+                                      alpha: 0.05,
+                                    ),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.local_offer,
+                                color: ColorTokens.primary30,
+                                size: 24,
+                              ),
+                            ),
+                            // Badge de cantidad de ofertas
+                            Positioned(
+                              top: -4,
+                              right: -4,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  '4',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 14),
+                        // Título y descripción
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Ofertas y Beneficios',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _showOffersExpanded
+                                    ? 'Ocultar promociones'
+                                    : 'Ver descuentos especiales y más',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Icono de expansión animado
+                        AnimatedRotation(
+                          turns: _showOffersExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: ColorTokens.primary30,
+                            size: 28,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Contenido desplegable con animación
+              AnimatedCrossFade(
+                firstChild: const SizedBox.shrink(),
+                secondChild: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    children: [
+                      // Divider decorativo
+                      Container(
+                        height: 1,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.grey.withValues(alpha: 0.1),
+                              Colors.grey.withValues(alpha: 0.3),
+                              Colors.grey.withValues(alpha: 0.1),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // Grid de beneficios organizados
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '⚡',
+                              'Ofertas relámpago',
+                              Colors.orange,
+                              onTap: () {
+                                _showFlashOffersDialog(context);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '🎯',
+                              'Descuentos para grupos',
+                              Colors.blue,
+                              onTap: () {
+                                _showGroupDiscountsDialog(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '🏆',
+                              'Productos premium',
+                              Colors.purple,
+                              onTap: () {
+                                _showPremiumProductsDialog(context);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildBenefitCard(
+                              '🚚',
+                              'Envío gratis',
+                              Colors.green,
+                              onTap: () {
+                                _showShippingDiscountsDialog(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                crossFadeState: _showOffersExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(milliseconds: 300),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildBenefitCard(
@@ -955,7 +1570,101 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Toolbar con ordenamiento y vista
   Widget _buildToolbar() {
-    return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: Colors.white,
+      child: Row(
+        children: [
+          // Resultados count (solo productos válidos)
+          Consumer<ShopProvider>(
+            builder: (context, provider, child) {
+              final validCount = provider.products.where((p) {
+                if (p.images.isEmpty) return false;
+                return p.images.any(
+                  (img) => img.isNotEmpty && img.trim().isNotEmpty,
+                );
+              }).length;
+
+              return Text(
+                '$validCount productos',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
+          ),
+          // Reemplazado Spacer() por un espacio flexible controlado para evitar
+          // overflows en columnas y filas con altura/anchura limitada.
+          const SizedBox(width: 8),
+
+          // Ordenar
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey[300]!),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: DropdownButton<String>(
+              value: _sortBy,
+              underline: const SizedBox(),
+              icon: const Icon(Icons.sort, size: 18),
+              isDense: true,
+              items: const [
+                DropdownMenuItem(
+                  value: 'relevant',
+                  child: Text('Más relevantes'),
+                ),
+                DropdownMenuItem(
+                  value: 'price_low',
+                  child: Text('Menor precio'),
+                ),
+                DropdownMenuItem(
+                  value: 'price_high',
+                  child: Text('Mayor precio'),
+                ),
+                DropdownMenuItem(value: 'newest', child: Text('Más recientes')),
+                DropdownMenuItem(value: 'popular', child: Text('Más vendidos')),
+              ],
+              onChanged: (value) {
+                setState(() => _sortBy = value!);
+                _applySorting();
+              },
+            ),
+          ),
+          const SizedBox(width: 12),
+
+          // Vista Grid/List
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.grid_view,
+                  color: _viewMode == 'grid'
+                      ? ColorTokens.primary30
+                      : Colors.grey,
+                ),
+                onPressed: () => setState(() => _viewMode = 'grid'),
+                iconSize: 20,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.view_list,
+                  color: _viewMode == 'list'
+                      ? ColorTokens.primary30
+                      : Colors.grey,
+                ),
+                onPressed: () => setState(() => _viewMode = 'list'),
+                iconSize: 20,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   /// Panel de filtros avanzados
@@ -2979,5 +3688,3 @@ extension _BenefitDialogs on _ShopScreenProState {
     );
   }
 }
-
-// End of resolved conflict

@@ -106,6 +106,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               children: [
@@ -119,7 +120,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen> {
                   'Base de Datos de Bicicletas Robadas',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
@@ -128,31 +129,47 @@ class _StolenBikesScreenState extends State<StolenBikesScreen> {
                 Text(
                   'Consulta pública para prevenir la compra de bicicletas robadas',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 16),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                Card(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.info_outline, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        '${_stolenBikes.length} bicicletas reportadas',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.white, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          '${_stolenBikes.length} bicicletas reportadas',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Acción para reportar una bicicleta
+                  },
+                  icon: Icon(Icons.report, color: Colors.white),
+                  label: Text('Reportar una bicicleta'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ],
