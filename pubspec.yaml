@@ -40,7 +40,7 @@ dependencies:
   carousel_slider: ^5.1.1
   firebase_auth: ^6.0.2
   font_awesome_flutter: ^10.10.0
-  googleapis: ^15.0.0
+  googleapis: ^16.0.0
   googleapis_auth: ^2.0.0
   intl: ^0.20.2
   simple_star_rating: ^0.0.3
@@ -75,7 +75,7 @@ dependencies:
   firebase_crashlytics: ^5.0.2
   firebase_database: ^12.0.2
   firebase_messaging:
-  flutter_local_notifications: ^19.5.0
+  flutter_local_notifications: ^20.1.0
   spincircle_bottom_bar: ^2.0.0
   cloud_firestore: ^6.0.2
   firebase_core: ^4.1.1

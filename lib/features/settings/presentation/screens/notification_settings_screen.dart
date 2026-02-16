@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/color_tokens.dart';
 import '../providers/notification_settings_provider.dart';
-// import '../../../../core/debug/notification_debug_widget.dart';
+// import '../../../../core/debug/notification_debug_widget.dart'; // Widget de debug comentado
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -18,7 +18,6 @@ class _NotificationSettingsScreenState
   @override
   void initState() {
     super.initState();
-    // Cargar configuración al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationSettingsProvider>().loadSettings();
     });
@@ -44,33 +43,6 @@ class _NotificationSettingsScreenState
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-<<<<<<< HEAD
-          // Botón de debug comentado temporalmente
-          // IconButton(
-          //   icon: const Icon(Icons.bug_report, color: Colors.orange),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const NotificationDebugWidget(),
-          //       ),
-          //     );
-          //   },
-          // ),
-=======
-          // Botón de debug (temporal para pruebas)
-          IconButton(
-            icon: const Icon(Icons.bug_report, color: Colors.orange),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SizedBox.shrink(), // Widget de reemplazo temporal
-                ),
-              );
-            },
-          ),
->>>>>>> 2119a6d (feat: add advertising toggle in story creation and remove from carousel)
           Consumer<NotificationSettingsProvider>(
             builder: (context, provider, _) {
               return IconButton(
@@ -79,16 +51,15 @@ class _NotificationSettingsScreenState
               );
             },
           ),
-          // Botón Salir / Volver
-          // Botón de volver (solo icono)
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             tooltip: 'Volver',
             onPressed: () {
-              if (Navigator.of(context).canPop())
+              if (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
-              else
+              } else {
                 context.go('/profile');
+              }
             },
           ),
         ],
@@ -517,11 +488,7 @@ class _NotificationSettingsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral60),
-            child: const Text(
-              'Cancelar',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -536,12 +503,8 @@ class _NotificationSettingsScreenState
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary30,
-              foregroundColor: Colors.white,
             ),
-            child: const Text(
-              'Continuar',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
+            child: const Text('Restaurar'),
           ),
         ],
       ),

@@ -28,22 +28,15 @@ class NotificationService {
     if (_isInitialized) return;
 
     try {
-      // Configurar notificaciones locales
       await _initializeLocalNotifications();
-
-      // Solicitar permisos
       await _requestPermissions();
-
-      // Configurar manejadores de FCM
       _configureFCMHandlers();
-
-      // Obtener y guardar token FCM
       await _saveDeviceToken();
 
       _isInitialized = true;
-      print('✅ NotificationService inicializado correctamente');
+      print('NotificationService inicializado correctamente');
     } catch (e) {
-      print('❌ Error inicializando NotificationService: $e');
+      print('Error inicializando NotificationService: $e');
     }
   }
 
@@ -64,8 +57,10 @@ class NotificationService {
     );
 
     await _localNotifications.initialize(
-      initSettings,
-      onDidReceiveNotificationResponse: _onNotificationTapped,
+      settings: initSettings,
+      onDidReceiveNotificationResponse: (response) {
+        print('Notificación recibida: ${response.payload}');
+      },
     );
 
     // Canal de notificaciones para Android
@@ -216,10 +211,10 @@ class NotificationService {
     );
 
     await _localNotifications.show(
-      message.hashCode,
-      notification.title,
-      notification.body,
-      notificationDetails,
+      id: message.hashCode,
+      title: notification.title,
+      body: notification.body,
+      notificationDetails: notificationDetails,
       payload: jsonEncode(data),
     );
   }
@@ -349,7 +344,7 @@ class NotificationService {
 
   /// Cancela una notificación específica
   Future<void> cancelNotification(int id) async {
-    await _localNotifications.cancel(id);
+    await _localNotifications.cancel(id: id);
   }
 
   /// Obtiene el token FCM actual
