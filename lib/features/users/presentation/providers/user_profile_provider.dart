@@ -150,6 +150,25 @@ class UserProfileProvider extends ChangeNotifier {
     }
   }
 
+  /// Actualización rápida del perfil sin cargar contenido (para después de follow/unfollow)
+  Future<void> refreshProfileQuick(String userId) async {
+    try {
+      print('⚡ ACTUALIZACIÓN RÁPIDA DEL PERFIL');
+      final profile = await _repository.getUserProfile(userId);
+
+      if (profile != null) {
+        _currentProfile = profile;
+        print('✅ Perfil actualizado rápidamente');
+        print('   Followers: ${profile.followerS}');
+        print('   Following: ${profile.following.length}');
+      }
+    } catch (e) {
+      print('❌ Error en actualización rápida: $e');
+    } finally {
+      notifyListeners();
+    }
+  }
+
   // Cargar contenido del usuario (posts y stories)
   Future<void> _loadUserContent(String userId) async {
     _isLoadingContent = true;

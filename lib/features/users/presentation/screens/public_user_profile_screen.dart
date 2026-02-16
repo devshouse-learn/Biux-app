@@ -302,15 +302,21 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                       ),
                                     ),
                                     Expanded(
-                                      child: _buildStatItem(
-                                        'Seguidores',
-                                        '${provider.followersCount}',
+                                      child: GestureDetector(
+                                        onTap: () => _showFollowersModal(context, provider),
+                                        child: _buildStatItem(
+                                          'Seguidores',
+                                          '${provider.followersCount}',
+                                        ),
                                       ),
                                     ),
                                     Expanded(
-                                      child: _buildStatItem(
-                                        'Siguiendo',
-                                        '${provider.followingCount}',
+                                      child: GestureDetector(
+                                        onTap: () => _showFollowingModal(context, provider),
+                                        child: _buildStatItem(
+                                          'Siguiendo',
+                                          '${provider.followingCount}',
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -341,8 +347,8 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                                   await userProvider
                                                       .unfollowUser(widget.userId);
                                               if (success && mounted) {
-                                                // Recargar el perfil para actualizar el contador de followers
-                                                await profileProvider.loadUserProfile(widget.userId);
+                                                // Actualización rápida del perfil para ver cambios inmediatamente
+                                                await profileProvider.refreshProfileQuick(widget.userId);
                                               } else if (!success && mounted) {
                                                 setState(() {
                                                   isFollowing = true;
@@ -386,8 +392,8 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                               final success = await userProvider
                                                   .followUser(widget.userId);
                                               if (success && mounted) {
-                                                // Recargar el perfil para actualizar el contador de followers
-                                                await profileProvider.loadUserProfile(widget.userId);
+                                                // Actualización rápida del perfil para ver cambios inmediatamente
+                                                await profileProvider.refreshProfileQuick(widget.userId);
                                               } else if (!success && mounted) {
                                                 setState(() {
                                                   isFollowing = false;
@@ -490,9 +496,204 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             color: ColorTokens.neutral90,
           ),
           textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
         ),
       ],
+    );
+  }
+
+  void _showFollowersModal(BuildContext context, UserProfileProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return FutureBuilder<void>(
+          future: provider.loadFollowers(widget.userId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: SizedBox(
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(
+                        color: ColorTokens.primary50,
+                      ),
+                      SizedBox(height: 12),
+                      Text('Cargando seguidores...'),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            final followers = provider.followers;
+            if (followers.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: SizedBox(
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.people_outline,
+                        size: 48,
+                        color: ColorTokens.neutral60,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text('Sin seguidores aún'),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return DraggableScrollableSheet(
+              expand: false,
+              builder: (context, scrollController) {
+                return ListView(
+                  controller: scrollController,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Seguidores (${followers.length})',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ...followers.map((user) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: user.photo.isNotEmpty
+                              ? NetworkImage(user.photo)
+                              : null,
+                          child: user.photo.isEmpty
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                        title: Text(user.fullName.isNotEmpty
+                            ? user.fullName
+                            : user.userName),
+                        subtitle: Text('@${user.userName}'),
+                        onTap: () {
+                          context.pop();
+                          context.push('/public-profile/${user.id}');
+                        },
+                      );
+                    }),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showFollowingModal(BuildContext context, UserProfileProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return FutureBuilder<void>(
+          future: provider.loadFollowing(widget.userId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: SizedBox(
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(
+                        color: ColorTokens.primary50,
+                      ),
+                      SizedBox(height: 12),
+                      Text('Cargando seguidos...'),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            final following = provider.following;
+            if (following.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: SizedBox(
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.people_outline,
+                        size: 48,
+                        color: ColorTokens.neutral60,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text('No sigue a nadie aún'),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return DraggableScrollableSheet(
+              expand: false,
+              builder: (context, scrollController) {
+                return ListView(
+                  controller: scrollController,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Siguiendo (${following.length})',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ...following.map((user) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: user.photo.isNotEmpty
+                              ? NetworkImage(user.photo)
+                              : null,
+                          child: user.photo.isEmpty
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                        title: Text(user.fullName.isNotEmpty
+                            ? user.fullName
+                            : user.userName),
+                        subtitle: Text('@${user.userName}'),
+                        onTap: () {
+                          context.pop();
+                          context.push('/public-profile/${user.id}');
+                        },
+                      );
+                    }),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 
