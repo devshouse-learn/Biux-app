@@ -128,10 +128,17 @@ class UserProvider extends ChangeNotifier {
     String? name,
     String? email,
     String? description,
+    String? username,
+    String? photoUrl,
+    String? coverPhotoUrl,
   }) async {
     print('🔍 ====== USER PROVIDER: updateProfile ======');
-    print('� Nombre recibido: "$name"');
+    print('📝 Nombre recibido: "$name"');
     print('📧 Email recibido: "$email"');
+    print('📋 Descripción recibida: "$description"');
+    print('👤 Username recibido: "$username"');
+    print('🖼️ Foto de perfil recibida: "$photoUrl"');
+    print('🏞️ Foto de portada recibida: "$coverPhotoUrl"');
 
     // SIEMPRE usar Firebase Auth como fuente de verdad
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -149,8 +156,13 @@ class UserProvider extends ChangeNotifier {
     print('📞 Teléfono: ${firebaseUser.phoneNumber}');
 
     // Validar que al menos uno de los campos tenga valor
-    if ((name == null || name.isEmpty) && (email == null || email.isEmpty)) {
-      print('❌ ERROR: Ambos campos vacíos');
+    if ((name == null || name.isEmpty) &&
+        (email == null || email.isEmpty) &&
+        (description == null || description.isEmpty) &&
+        (username == null || username.isEmpty) &&
+        (photoUrl == null || photoUrl.isEmpty) &&
+        (coverPhotoUrl == null || coverPhotoUrl.isEmpty)) {
+      print('❌ ERROR: Todos los campos vacíos');
       _error = 'Por favor ingresa al menos un campo para actualizar';
       notifyListeners();
       return false;
@@ -168,6 +180,9 @@ class UserProvider extends ChangeNotifier {
         name: name,
         email: email,
         description: description,
+        username: username,
+        photoUrl: photoUrl,
+        coverPhotoUrl: coverPhotoUrl,
       );
 
       print('📊 Respuesta del servicio: $success');
@@ -180,6 +195,10 @@ class UserProvider extends ChangeNotifier {
         print('✅ Datos recargados:');
         print('   Nombre actual: ${_user?.name}');
         print('   Email actual: ${_user?.email}');
+        print('   Username actual: ${_user?.username}');
+        print('   Descripción actual: ${_user?.description}');
+        print('   Foto de perfil actual: ${_user?.photoUrl}');
+        print('   Foto de portada actual: ${_user?.coverPhotoUrl}');
 
         _error = null;
       } else {
@@ -339,6 +358,88 @@ class UserProvider extends ChangeNotifier {
       _error = 'Error al cargar usuarios: $e';
       notifyListeners();
       return [];
+    }
+  }
+
+  /// Seguir a un usuario
+  Future<bool> followUser(String userIdToFollow) async {
+    // Obtener el UID del usuario actual autenticado desde FirebaseAuth
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      _error = 'No estás autenticado';
+      notifyListeners();
+      return false;
+    }
+
+    final currentUserId = currentUser.uid;
+    print('📱 followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow');
+
+    _setLoading(true);
+    _error = null;
+
+    try {
+      bool success = await _userService.followUser(
+        currentUserId: currentUserId,
+        userIdToFollow: userIdToFollow,
+      );
+
+      if (success) {
+        // Actualizar la lista de seguidos localmente
+        await loadUserData();
+        print('✅ Ya sigues a $userIdToFollow');
+      } else {
+        _error = 'Error al seguir al usuario';
+      }
+
+      _setLoading(false);
+      notifyListeners();
+      return success;
+    } catch (e) {
+      _error = 'Error al seguir: $e';
+      _setLoading(false);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Dejar de seguir a un usuario
+  Future<bool> unfollowUser(String userIdToUnfollow) async {
+    // Obtener el UID del usuario actual autenticado desde FirebaseAuth
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      _error = 'No estás autenticado';
+      notifyListeners();
+      return false;
+    }
+
+    final currentUserId = currentUser.uid;
+    print('📱 unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow');
+
+    _setLoading(true);
+    _error = null;
+
+    try {
+      bool success = await _userService.unfollowUser(
+        currentUserId: currentUserId,
+        userIdToUnfollow: userIdToUnfollow,
+      );
+
+      if (success) {
+        // Actualizar la lista de seguidos localmente
+        await loadUserData();
+        print('✅ Dejaste de seguir a $userIdToUnfollow');
+      } else {
+        _error = 'Error al dejar de seguir';
+      }
+
+      _setLoading(false);
+      notifyListeners();
+      return success;
+    } catch (e) {
+      _error = 'Error al dejar de seguir: $e';
+      _setLoading(false);
+      notifyListeners();
+      return false;
     }
   }
 

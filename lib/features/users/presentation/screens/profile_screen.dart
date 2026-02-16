@@ -1,7 +1,6 @@
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -96,10 +95,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         }
       }
     });
-  }
-
-  Future<void> _updateProfile() async {
-    // Método no utilizado
   }
 
   void _showLogoutDialog() {
@@ -289,100 +284,264 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showEditProfileDialog() {
+    final nameController = TextEditingController(
+      text: widget.userProvider.user?.name ?? '',
+    );
+    final usernameController = TextEditingController(
+      text: widget.userProvider.user?.username ?? '',
+    );
     final descriptionController = TextEditingController(
       text: widget.userProvider.user?.description ?? '',
     );
 
+    String? selectedProfileImageUrl;
+    String? selectedCoverImageUrl;
+
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.edit, color: ColorTokens.primary30),
-              SizedBox(width: 8),
-              Text('Editar Perfil'),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Nombre',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.edit, color: ColorTokens.primary30),
+                  SizedBox(width: 8),
+                  Text('Editar Perfil'),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ========== FOTO DE PERFIL ==========
+                    Text(
+                      'Foto de Perfil',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Center(
+                      child: OptimizedImagePicker(
+                        currentImageUrl:
+                            selectedProfileImageUrl ??
+                            widget.userProvider.user?.photoUrl,
+                        onImageSelected: (url) {
+                          setState(() {
+                            selectedProfileImageUrl = url;
+                          });
+                        },
+                        imageType: 'avatar',
+                        entityId:
+                            FirebaseAuth.instance.currentUser?.uid ??
+                            'temp_user',
+                        width: 100,
+                        height: 100,
+                        borderRadius: BorderRadius.circular(50),
+                        placeholder: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: ColorTokens.neutral20,
+                            border: Border.all(
+                              color: ColorTokens.neutral100,
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 40,
+                            color: ColorTokens.neutral60,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // ========== FOTO DE PORTADA ==========
+                    Text(
+                      'Foto de Portada',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Center(
+                      child: OptimizedImagePicker(
+                        currentImageUrl:
+                            selectedCoverImageUrl ??
+                            widget.userProvider.user?.coverPhotoUrl,
+                        onImageSelected: (url) {
+                          setState(() {
+                            selectedCoverImageUrl = url;
+                          });
+                        },
+                        imageType: 'cover',
+                        entityId:
+                            FirebaseAuth.instance.currentUser?.uid ??
+                            'temp_user',
+                        width: 200,
+                        height: 100,
+                        borderRadius: BorderRadius.circular(8),
+                        placeholder: Container(
+                          width: 200,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: ColorTokens.neutral20,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: ColorTokens.neutral100,
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.image,
+                            size: 40,
+                            color: ColorTokens.neutral60,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // ========== NOMBRE ==========
+                    Text(
+                      'Nombre',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        hintText: 'Tu nombre completo',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // ========== USERNAME ==========
+                    Text(
+                      'Nombre de Usuario',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    TextField(
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                        hintText: 'tu_nombre_usuario',
+                        prefixText: '@',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    // ========== DESCRIPCIÓN ==========
+                    Text(
+                      'Descripción / Bio',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    TextField(
+                      controller: descriptionController,
+                      decoration: InputDecoration(
+                        hintText: 'Cuéntales sobre ti',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                      ),
+                      maxLines: 4,
+                      maxLength: 150,
+                    ),
+                  ],
                 ),
-                SizedBox(height: 8),
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: 'Tu nombre completo',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    nameController.dispose();
+                    usernameController.dispose();
+                    descriptionController.dispose();
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text('Cancelar'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    // Actualizar todos los campos de perfil
+                    bool success = await widget.userProvider.updateProfile(
+                      name: nameController.text.trim(),
+                      username: usernameController.text.trim(),
+                      description: descriptionController.text.trim(),
+                      photoUrl: selectedProfileImageUrl,
+                      coverPhotoUrl: selectedCoverImageUrl,
+                      email: widget.userProvider.user?.email ?? '',
+                    );
+
+                    if (mounted) {
+                      nameController.dispose();
+                      usernameController.dispose();
+                      descriptionController.dispose();
+                      Navigator.of(dialogContext).pop();
+
+                      if (success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Perfil actualizado correctamente'),
+                            backgroundColor: ColorTokens.success40,
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Error: ${widget.userProvider.error ?? "Intenta nuevamente"}',
+                            ),
+                            backgroundColor: ColorTokens.error50,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  icon: Icon(Icons.check),
+                  label: Text('Guardar'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: ColorTokens.neutral100,
                   ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Descripción / Bio',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                ),
-                SizedBox(height: 8),
-                TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(
-                    hintText: 'Cuéntales sobre ti',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                  ),
-                  maxLines: 4,
-                  maxLength: 150,
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Cancelar'),
-            ),
-            ElevatedButton.icon(
-              onPressed: () async {
-                // Actualizar nombre y descripción
-                await widget.userProvider.updateProfile(
-                  name: _nameController.text.trim(),
-                  email: widget.userProvider.user?.email ?? '',
-                  description: descriptionController.text.trim(),
-                );
-
-                if (mounted) {
-                  Navigator.of(dialogContext).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Perfil actualizado'),
-                      backgroundColor: ColorTokens.success40,
-                    ),
-                  );
-                }
-              },
-              icon: Icon(Icons.check),
-              label: Text('Guardar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.primary30,
-                foregroundColor: ColorTokens.neutral100,
-              ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -446,17 +605,37 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     ),
                     child: Stack(
                       children: [
-                        // Fondo gradiente
+                        // Imagen de portada del usuario o gradiente por defecto
                         Positioned.fill(
-                          child: Opacity(
-                            opacity: 0.1,
-                            child: Image.network(
-                              'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  SizedBox.shrink(),
-                            ),
-                          ),
+                          child:
+                              widget.userProvider.user?.coverPhotoUrl != null &&
+                                  widget
+                                      .userProvider
+                                      .user!
+                                      .coverPhotoUrl!
+                                      .isNotEmpty
+                              ? Image.network(
+                                  widget.userProvider.user!.coverPhotoUrl!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Opacity(
+                                        opacity: 0.1,
+                                        child: Image.network(
+                                          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                )
+                              : Opacity(
+                                  opacity: 0.1,
+                                  child: Image.network(
+                                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600',
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            SizedBox.shrink(),
+                                  ),
+                                ),
                         ),
                         // Botón configuración en esquina superior derecha
                         Positioned(
@@ -486,83 +665,51 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       child: Column(
                         children: [
                           // Foto de perfil
-                          OptimizedImagePicker(
-                            currentImageUrl: widget.userProvider.user?.photoUrl,
-                            onImageSelected: (url) async {
-                              if (url != null) {
-                                try {
-                                  final currentUser =
-                                      FirebaseAuth.instance.currentUser;
-                                  if (currentUser != null) {
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(currentUser.uid)
-                                        .update({'photoUrl': url});
-
-                                    await widget.userProvider.loadUserData();
-
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Imagen de perfil actualizada',
-                                          ),
-                                          backgroundColor:
-                                              ColorTokens.success40,
-                                        ),
-                                      );
-                                    }
-                                  }
-                                } catch (e) {
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Error actualizando imagen: $e',
-                                        ),
-                                        backgroundColor: ColorTokens.error50,
-                                      ),
-                                    );
-                                  }
-                                }
-                              }
-                            },
-                            imageType: 'avatar',
-                            entityId:
-                                FirebaseAuth.instance.currentUser?.uid ??
-                                'temp_user',
+                          Container(
                             width: 110,
                             height: 110,
-                            borderRadius: BorderRadius.circular(55),
-                            placeholder: Container(
-                              width: 110,
-                              height: 110,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ColorTokens.neutral20,
-                                border: Border.all(
-                                  color: ColorTokens.neutral100,
-                                  width: 3,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: ColorTokens.neutral60.withValues(
-                                      alpha: 0.3,
-                                    ),
-                                    spreadRadius: 2,
-                                    blurRadius: 8,
-                                    offset: Offset(0, 3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: ColorTokens.neutral20,
+                              border: Border.all(
+                                color: ColorTokens.neutral100,
+                                width: 3,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ColorTokens.neutral60.withValues(
+                                    alpha: 0.3,
                                   ),
-                                ],
-                              ),
-                              child: Icon(
-                                Icons.camera_alt,
-                                size: 40,
-                                color: ColorTokens.neutral60,
-                              ),
+                                  spreadRadius: 2,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
                             ),
+                            child:
+                                widget.userProvider.user?.photoUrl != null &&
+                                    widget
+                                        .userProvider
+                                        .user!
+                                        .photoUrl!
+                                        .isNotEmpty
+                                ? ClipOval(
+                                    child: Image.network(
+                                      widget.userProvider.user!.photoUrl!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) => Icon(
+                                            Icons.person,
+                                            size: 50,
+                                            color: ColorTokens.neutral60,
+                                          ),
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: ColorTokens.neutral60,
+                                  ),
                           ),
 
                           SizedBox(height: 12),
@@ -680,7 +827,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         .description!
                                         .isNotEmpty
                                 ? widget.userProvider.user!.description!
-                                : 'Toca editar para agregar una descripción',
+                                : 'Toca el botón "Editar Perfil" para agregar una descripción',
                             style: TextStyle(
                               fontSize: 14,
                               color:

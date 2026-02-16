@@ -5,6 +5,7 @@ class UserModel {
   final String? name;
   final String? email;
   final String? photoUrl;
+  final String? coverPhotoUrl;
   final String phoneNumber;
   final String? username;
   final bool isDeleting;
@@ -22,6 +23,7 @@ class UserModel {
     this.name,
     this.email,
     this.photoUrl,
+    this.coverPhotoUrl,
     required this.phoneNumber,
     this.username,
     this.isDeleting = false,
@@ -82,6 +84,7 @@ class UserModel {
       'name': name,
       'email': email,
       'photoUrl': photoUrl,
+      'coverPhotoUrl': coverPhotoUrl,
       'phoneNumber': phoneNumber,
       'username': username,
       'isDeleting': isDeleting,
@@ -102,6 +105,7 @@ class UserModel {
       name: map['name'],
       email: map['email'],
       photoUrl: map['photoUrl'],
+      coverPhotoUrl: map['coverPhotoUrl'],
       phoneNumber: map['phoneNumber'] ?? '',
       username: map['username'],
       isDeleting: map['isDeleting'] ?? false,
@@ -123,6 +127,7 @@ class UserModel {
     String? name,
     String? email,
     String? photoUrl,
+    String? coverPhotoUrl,
     String? phoneNumber,
     String? username,
     bool? isDeleting,
@@ -140,6 +145,7 @@ class UserModel {
       name: name ?? this.name,
       email: email ?? this.email,
       photoUrl: photoUrl ?? this.photoUrl,
+      coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       username: username ?? this.username,
       isDeleting: isDeleting ?? this.isDeleting,

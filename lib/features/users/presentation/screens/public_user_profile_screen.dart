@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 
 /// Pantalla de perfil público de usuario
-/// Muestra información básica y posts (botón de seguir removido)
+/// Muestra información básica, posts y botón de seguir/dejar de seguir
 class PublicUserProfileScreen extends StatefulWidget {
   final String userId;
 
@@ -19,6 +21,8 @@ class PublicUserProfileScreen extends StatefulWidget {
 class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     with TickerProviderStateMixin {
   TabController? _tabController;
+  bool isFollowing = false;
+  bool isCurrentUser = false;
 
   @override
   void initState() {
@@ -28,6 +32,22 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     // Cargar datos del usuario
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserProfileProvider>().loadUserProfile(widget.userId);
+      
+      // Verificar si es el usuario actual
+      final currentUserUid = FirebaseAuth.instance.currentUser?.uid;
+      setState(() {
+        isCurrentUser = currentUserUid == widget.userId;
+      });
+
+      // Verificar si ya está siguiendo a este usuario
+      if (!isCurrentUser && currentUserUid != null) {
+        final userProvider = context.read<UserProvider>();
+        if (userProvider.user?.following != null) {
+          setState(() {
+            isFollowing = userProvider.user!.following!.containsKey(widget.userId);
+          });
+        }
+      }
     });
   }
 
@@ -299,7 +319,98 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
                               const SizedBox(height: 20),
 
-                              // Botón de seguir removido
+                              // Botón de Seguir/Dejar de Seguir
+                              if (!isCurrentUser)
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0,
+                                    ),
+                                    child: isFollowing
+                                        ? OutlinedButton.icon(
+                                            onPressed: () async {
+                                              final userProvider =
+                                                  context.read<UserProvider>();
+                                              setState(() {
+                                                isFollowing = false;
+                                              });
+                                              final success =
+                                                  await userProvider
+                                                      .unfollowUser(widget.userId);
+                                              if (!success && mounted) {
+                                                setState(() {
+                                                  isFollowing = true;
+                                                });
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      userProvider.error ??
+                                                          'Error al dejar de seguir',
+                                                    ),
+                                                    backgroundColor:
+                                                        ColorTokens.error50,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            icon: const Icon(Icons.check),
+                                            label: const Text('Siguiendo'),
+                                            style: OutlinedButton.styleFrom(
+                                              foregroundColor:
+                                                  ColorTokens.primary30,
+                                              side: const BorderSide(
+                                                color: ColorTokens.primary30,
+                                                width: 1.5,
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                            ),
+                                          )
+                                        : ElevatedButton.icon(
+                                            onPressed: () async {
+                                              final userProvider =
+                                                  context.read<UserProvider>();
+                                              setState(() {
+                                                isFollowing = true;
+                                              });
+                                              final success = await userProvider
+                                                  .followUser(widget.userId);
+                                              if (!success && mounted) {
+                                                setState(() {
+                                                  isFollowing = false;
+                                                });
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      userProvider.error ??
+                                                          'Error al seguir',
+                                                    ),
+                                                    backgroundColor:
+                                                        ColorTokens.error50,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            icon: const Icon(Icons.add),
+                                            label: const Text('Seguir'),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  ColorTokens.primary30,
+                                              foregroundColor:
+                                                  ColorTokens.neutral100,
+                                              padding: const EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                            ),
+                                          ),
+                                  ),
+                                ),
+
+                              const SizedBox(height: 20),
                               const Spacer(flex: 1), // Espacio flexible abajo
                             ],
                           ),
