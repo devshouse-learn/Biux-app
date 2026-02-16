@@ -1,3 +1,4 @@
+// (conflict markers removed - keeping remote version)
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -3688,3 +3689,5 @@ extension _BenefitDialogs on _ShopScreenProState {
     );
   }
 }
+
+// End of resolved conflict
