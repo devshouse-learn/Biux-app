@@ -393,10 +393,31 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          Navigator.of(context).pop();
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            context.push('/user-profile/${user.id}');
-                          });
+                          print('🔍 DEBUG: Intentando navegar a usuario');
+                          print('  User ID: "${user.id}"');
+                          print('  User ID isEmpty: ${user.id.isEmpty}');
+                          print('  User ID length: ${user.id.length}');
+
+                          if (user.id.isNotEmpty) {
+                            final route = '/user-profile/${user.id}';
+                            print('🔍 DEBUG: Ruta a navegar: $route');
+                            Navigator.of(context).pop();
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (context.mounted) {
+                                print('🔍 DEBUG: Ejecutando navegación: $route');
+                                context.push(route);
+                              }
+                            });
+                          } else {
+                            print(
+                              '❌ ERROR: User ID está vacío, no se puede navegar',
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Error: Usuario inválido'),
+                              ),
+                            );
+                          }
                         },
                       );
                     },
@@ -487,10 +508,31 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          Navigator.of(context).pop();
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            context.push('/user-profile/${user.id}');
-                          });
+                          print('🔍 DEBUG: Intentando navegar a usuario');
+                          print('  User ID: "${user.id}"');
+                          print('  User ID isEmpty: ${user.id.isEmpty}');
+                          print('  User ID length: ${user.id.length}');
+
+                          if (user.id.isNotEmpty) {
+                            Navigator.of(context).pop();
+                            Future.delayed(
+                              const Duration(milliseconds: 200),
+                              () {
+                                final route = '/user-profile/${user.id}';
+                                print('🔍 DEBUG: Navegando a: $route');
+                                context.push(route);
+                              },
+                            );
+                          } else {
+                            print(
+                              '❌ ERROR: User ID está vacío, no se puede navegar',
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Error: Usuario inválido'),
+                              ),
+                            );
+                          }
                         },
                       );
                     },
