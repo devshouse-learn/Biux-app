@@ -399,12 +399,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           print('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
-                            final route = '/user-profile/${user.id}';
+                            final route = '/user-profile/${user.id.trim()}';
                             print('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
-                                print('🔍 DEBUG: Ejecutando navegación: $route');
+                                print(
+                                  '🔍 DEBUG: Ejecutando navegación: $route',
+                                );
                                 context.push(route);
                               }
                             });
@@ -514,15 +516,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           print('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
+                            final route = '/user-profile/${user.id.trim()}';
+                            print('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
-                            Future.delayed(
-                              const Duration(milliseconds: 200),
-                              () {
-                                final route = '/user-profile/${user.id}';
-                                print('🔍 DEBUG: Navegando a: $route');
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (context.mounted) {
+                                print(
+                                  '🔍 DEBUG: Ejecutando navegación: $route',
+                                );
                                 context.push(route);
-                              },
-                            );
+                              }
+                            });
                           } else {
                             print(
                               '❌ ERROR: User ID está vacío, no se puede navegar',
