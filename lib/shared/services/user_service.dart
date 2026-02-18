@@ -417,6 +417,17 @@ class UserService {
       print('   Followers nuevo: $followers');
       int newFollowerSCount = followers.length;
 
+      // Validación: asegurar que el contador no sea negativo
+      print('⚠️ Validación: newFollowerSCount = $newFollowerSCount');
+      if (newFollowerSCount < 0) {
+        print('🚨 ERROR: Contador negativo detectado! Fijando a 0');
+        newFollowerSCount = 0;
+      }
+      if (newFollowingCount < 0) {
+        print('🚨 ERROR: Contador de following negativo! Fijando a 0');
+        newFollowingCount = 0;
+      }
+
       // Guardar los cambios
       print('💾 Guardando cambios en usuario actual...');
       await currentUserRef.update({

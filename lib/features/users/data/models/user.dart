@@ -51,6 +51,15 @@ class BiuxUser {
   });
 
   factory BiuxUser.fromJsonMap(Map json) {
+    // Validar que followerS no sea negativo
+    int followerSCount = json["followerS"] ?? 0;
+    if (followerSCount < 0) {
+      print(
+        '🚨 ADVERTENCIA: followerS negativo detectado! Valor: $followerSCount, fijando a 0',
+      );
+      followerSCount = 0;
+    }
+
     return BiuxUser(
       id: json["id"] ?? '',
       fullName:
@@ -71,7 +80,7 @@ class BiuxUser {
           '', // Intentar primero photoUrl, luego photo
       password: json["password"] ?? '',
       profileCover: json["profileCover"] ?? '', // Removida URL por defecto
-      followerS: json["followerS"] ?? 0,
+      followerS: followerSCount,
       instagram: json["instagram"] ?? '',
       premium: json["premium"] ?? false,
       followers: json["followers"] ?? {},

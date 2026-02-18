@@ -558,10 +558,16 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           .get();
 
       if (userDoc.exists) {
-        return BiuxUser.fromJsonMap(userDoc.data() as Map<String, dynamic>);
+        final data = userDoc.data() as Map<String, dynamic>;
+        // Asegurar que el ID está incluido en los datos
+        data['id'] = userDoc.id;
+        print('✅ Usuario cargado con ID: ${userDoc.id}');
+        return BiuxUser.fromJsonMap(data);
+      } else {
+        print('❌ Usuario no encontrado: $userId');
       }
     } catch (e) {
-      print('Error cargando usuario $userId: $e');
+      print('❌ Error cargando usuario $userId: $e');
     }
     return null;
   }
