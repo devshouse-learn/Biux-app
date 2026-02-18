@@ -648,7 +648,7 @@ class Styles {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
   );
 
-  static ButtonStyle textButtonStyle = TextButton.styleFrom(
+  static ButtonStyle whiteTextButtonStyle = TextButton.styleFrom(
     foregroundColor: ColorTokens.neutral100,
     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
   );
