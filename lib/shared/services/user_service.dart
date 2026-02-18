@@ -90,13 +90,26 @@ class UserService {
         updateData['username'] = username.trim();
         print('✅ Username agregado a updateData');
       }
-      if (photoUrl != null && photoUrl.isNotEmpty) {
-        updateData['photoUrl'] = photoUrl.trim();
-        print('✅ Foto de perfil agregada a updateData');
+      // Detectar eliminación de fotos (cadena vacía)
+      if (photoUrl != null) {
+        if (photoUrl.isEmpty) {
+          // Eliminar foto: establecer como null
+          updateData['photoUrl'] = null;
+          print('✅ Foto de perfil establecida para eliminación (null)');
+        } else {
+          updateData['photoUrl'] = photoUrl.trim();
+          print('✅ Foto de perfil agregada a updateData');
+        }
       }
-      if (coverPhotoUrl != null && coverPhotoUrl.isNotEmpty) {
-        updateData['coverPhotoUrl'] = coverPhotoUrl.trim();
-        print('✅ Foto de portada agregada a updateData');
+      if (coverPhotoUrl != null) {
+        if (coverPhotoUrl.isEmpty) {
+          // Eliminar foto: establecer como null
+          updateData['coverPhotoUrl'] = null;
+          print('✅ Foto de portada establecida para eliminación (null)');
+        } else {
+          updateData['coverPhotoUrl'] = coverPhotoUrl.trim();
+          print('✅ Foto de portada agregada a updateData');
+        }
       }
 
       // Si no hay datos para actualizar, retornar false
@@ -236,13 +249,15 @@ class UserService {
       print('📱 Iniciando seguimiento de $userIdToFollow por $currentUserId');
 
       final currentUserRef = _firestore.collection('users').doc(currentUserId);
-      final userToFollowRef = _firestore.collection('users').doc(userIdToFollow);
+      final userToFollowRef = _firestore
+          .collection('users')
+          .doc(userIdToFollow);
 
       // Obtener los documentos actuales
       print('🔍 Buscando usuario actual: $currentUserId');
       final currentUserDoc = await currentUserRef.get();
       print('🔍 Usuario actual existe: ${currentUserDoc.exists}');
-      
+
       print('🔍 Buscando usuario a seguir: $userIdToFollow');
       final userToFollowDoc = await userToFollowRef.get();
       print('🔍 Usuario a seguir existe: ${userToFollowDoc.exists}');
@@ -270,7 +285,9 @@ class UserService {
 
       // Actualizar 'following' del usuario actual
       print('🔄 Actualizando "following" del usuario actual...');
-      Map<String, dynamic> following = Map<String, dynamic>.from(currentUserData['following'] ?? {});
+      Map<String, dynamic> following = Map<String, dynamic>.from(
+        currentUserData['following'] ?? {},
+      );
       print('   Following actual: $following');
       following[userIdToFollow] = true;
       print('   Following nuevo: $following');
@@ -278,7 +295,9 @@ class UserService {
 
       // Actualizar 'followers' del usuario a seguir
       print('🔄 Actualizando "followers" del usuario a seguir...');
-      Map<String, dynamic> followers = Map<String, dynamic>.from(userToFollowData['followers'] ?? {});
+      Map<String, dynamic> followers = Map<String, dynamic>.from(
+        userToFollowData['followers'] ?? {},
+      );
       print('   Followers actual: $followers');
       followers[currentUserId] = true;
       print('   Followers nuevo: $followers');
@@ -319,7 +338,9 @@ class UserService {
       print('📱 Dejando de seguir a $userIdToUnfollow por $currentUserId');
 
       final currentUserRef = _firestore.collection('users').doc(currentUserId);
-      final userToUnfollowRef = _firestore.collection('users').doc(userIdToUnfollow);
+      final userToUnfollowRef = _firestore
+          .collection('users')
+          .doc(userIdToUnfollow);
 
       // Obtener los documentos actuales
       final currentUserDoc = await currentUserRef.get();
@@ -330,18 +351,24 @@ class UserService {
         return false;
       }
 
-      Map<String, dynamic> currentUserData = currentUserDoc.data() as Map<String, dynamic>;
-      Map<String, dynamic> userToUnfollowData = userToUnfollowDoc.data() as Map<String, dynamic>;
+      Map<String, dynamic> currentUserData =
+          currentUserDoc.data() as Map<String, dynamic>;
+      Map<String, dynamic> userToUnfollowData =
+          userToUnfollowDoc.data() as Map<String, dynamic>;
 
       // Actualizar 'following' del usuario actual
-      Map<String, dynamic> following = Map<String, dynamic>.from(currentUserData['following'] ?? {});
+      Map<String, dynamic> following = Map<String, dynamic>.from(
+        currentUserData['following'] ?? {},
+      );
       print('   Following actual: $following');
       following.remove(userIdToUnfollow);
       print('   Following nuevo: $following');
       int newFollowingCount = following.length;
 
       // Actualizar 'followers' del usuario
-      Map<String, dynamic> followers = Map<String, dynamic>.from(userToUnfollowData['followers'] ?? {});
+      Map<String, dynamic> followers = Map<String, dynamic>.from(
+        userToUnfollowData['followers'] ?? {},
+      );
       print('   Followers actual: $followers');
       followers.remove(currentUserId);
       print('   Followers nuevo: $followers');

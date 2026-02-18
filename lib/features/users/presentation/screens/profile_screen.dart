@@ -318,7 +318,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   void _showFollowersModal(BuildContext context) {
     final followers = widget.userProvider.user?.followers ?? {};
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -369,9 +369,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(
-                          title: Text('Cargando...'),
-                        );
+                        return const ListTile(title: Text('Cargando...'));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -388,9 +386,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ? const Icon(Icons.person)
                               : null,
                         ),
-                        title: Text(user.fullName.isNotEmpty
-                            ? user.fullName
-                            : user.userName),
+                        title: Text(
+                          user.fullName.isNotEmpty
+                              ? user.fullName
+                              : user.userName,
+                        ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
                           context.pop();
@@ -410,7 +410,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   void _showFollowingModal(BuildContext context) {
     final following = widget.userProvider.user?.following ?? {};
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -461,9 +461,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(
-                          title: Text('Cargando...'),
-                        );
+                        return const ListTile(title: Text('Cargando...'));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -480,9 +478,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ? const Icon(Icons.person)
                               : null,
                         ),
-                        title: Text(user.fullName.isNotEmpty
-                            ? user.fullName
-                            : user.userName),
+                        title: Text(
+                          user.fullName.isNotEmpty
+                              ? user.fullName
+                              : user.userName,
+                        ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
                           context.pop();
@@ -506,7 +506,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           .collection('users')
           .doc(userId)
           .get();
-      
+
       if (userDoc.exists) {
         return BiuxUser.fromJsonMap(userDoc.data() as Map<String, dynamic>);
       }
@@ -559,12 +559,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     SizedBox(height: 12),
                     Center(
                       child: OptimizedImagePicker(
-                        currentImageUrl:
-                            selectedProfileImageUrl != null
-                                ? (selectedProfileImageUrl?.isEmpty ?? false)
-                                    ? null  // Cadena vacía = sin foto
-                                    : selectedProfileImageUrl  // Tiene URL
-                                : widget.userProvider.user?.photoUrl,  // Sin cambios = usa actual
+                        currentImageUrl: selectedProfileImageUrl != null
+                            ? (selectedProfileImageUrl?.isEmpty ?? false)
+                                  ? null // Cadena vacía = sin foto
+                                  : selectedProfileImageUrl // Tiene URL
+                            : widget
+                                  .userProvider
+                                  .user
+                                  ?.photoUrl, // Sin cambios = usa actual
                         onImageSelected: (url) {
                           setState(() {
                             selectedProfileImageUrl = url;
@@ -609,12 +611,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     SizedBox(height: 12),
                     Center(
                       child: OptimizedImagePicker(
-                        currentImageUrl:
-                            selectedCoverImageUrl != null
-                                ? (selectedCoverImageUrl?.isEmpty ?? false)
-                                    ? null  // Cadena vacía = sin foto
-                                    : selectedCoverImageUrl  // Tiene URL
-                                : widget.userProvider.user?.coverPhotoUrl,  // Sin cambios = usa actual
+                        currentImageUrl: selectedCoverImageUrl != null
+                            ? (selectedCoverImageUrl?.isEmpty ?? false)
+                                  ? null // Cadena vacía = sin foto
+                                  : selectedCoverImageUrl // Tiene URL
+                            : widget
+                                  .userProvider
+                                  .user
+                                  ?.coverPhotoUrl, // Sin cambios = usa actual
                         onImageSelected: (url) {
                           setState(() {
                             selectedCoverImageUrl = url;
@@ -736,20 +740,30 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
+                    // Guardar referencias antes de disposer
+                    final name = nameController.text.trim();
+                    final username = usernameController.text.trim();
+                    final description = descriptionController.text.trim();
+                    final profileUrl = selectedProfileImageUrl;
+                    final coverUrl = selectedCoverImageUrl;
+                    final email = widget.userProvider.user?.email ?? '';
+
                     // Actualizar todos los campos de perfil
                     bool success = await widget.userProvider.updateProfile(
-                      name: nameController.text.trim(),
-                      username: usernameController.text.trim(),
-                      description: descriptionController.text.trim(),
-                      photoUrl: selectedProfileImageUrl,
-                      coverPhotoUrl: selectedCoverImageUrl,
-                      email: widget.userProvider.user?.email ?? '',
+                      name: name,
+                      username: username,
+                      description: description,
+                      photoUrl: profileUrl,
+                      coverPhotoUrl: coverUrl,
+                      email: email,
                     );
 
+                    // Disposer los controladores y navegar
+                    nameController.dispose();
+                    usernameController.dispose();
+                    descriptionController.dispose();
+
                     if (mounted) {
-                      nameController.dispose();
-                      usernameController.dispose();
-                      descriptionController.dispose();
                       Navigator.of(dialogContext).pop();
 
                       if (success) {
