@@ -381,7 +381,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                             label: const Text('Siguiendo'),
                                             style: OutlinedButton.styleFrom(
                                               foregroundColor:
-                                                  ColorTokens.primary30,
+                                                  ColorTokens.neutral100,
                                               side: const BorderSide(
                                                 color: ColorTokens.primary30,
                                                 width: 1.5,

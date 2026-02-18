@@ -233,6 +233,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
+              style: Styles.cancelButtonStyle,
               child: Text('Cancelar'),
             ),
             TextButton(
@@ -791,6 +792,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                   },
+                  style: Styles.cancelButtonStyle,
                   child: Text('Cancelar'),
                 ),
                 ElevatedButton.icon(
