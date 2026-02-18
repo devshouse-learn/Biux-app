@@ -74,21 +74,22 @@ class UserService {
 
       Map<String, dynamic> updateData = {};
 
-      if (name != null && name.isNotEmpty) {
+      if (name != null) {
         updateData['name'] = name.trim();
-        print('✅ Nombre agregado a updateData');
+        print('✅ Nombre agregado a updateData: "${name.trim()}"');
       }
-      if (email != null && email.isNotEmpty) {
+      if (email != null) {
         updateData['email'] = email.trim();
-        print('✅ Email agregado a updateData');
+        print('✅ Email agregado a updateData: "${email.trim()}"');
       }
-      if (description != null && description.isNotEmpty) {
+      if (description != null) {
+        // Permitir descripciones vacías (cadena vacía después de trim)
         updateData['description'] = description.trim();
-        print('✅ Descripción agregada a updateData');
+        print('✅ Descripción agregada a updateData: "${description.trim()}"');
       }
-      if (username != null && username.isNotEmpty) {
+      if (username != null) {
         updateData['username'] = username.trim();
-        print('✅ Username agregado a updateData');
+        print('✅ Username agregado a updateData: "${username.trim()}"');
       }
       // Detectar eliminación de fotos (cadena vacía)
       if (photoUrl != null) {
