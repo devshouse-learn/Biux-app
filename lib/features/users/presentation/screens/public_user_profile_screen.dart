@@ -32,7 +32,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     // Cargar datos del usuario
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserProfileProvider>().loadUserProfile(widget.userId);
-      
+
       // Verificar si es el usuario actual
       final currentUserUid = FirebaseAuth.instance.currentUser?.uid;
       setState(() {
@@ -44,7 +44,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
         final userProvider = context.read<UserProvider>();
         if (userProvider.user?.following != null) {
           setState(() {
-            isFollowing = userProvider.user!.following!.containsKey(widget.userId);
+            isFollowing = userProvider.user!.following!.containsKey(
+              widget.userId,
+            );
           });
         }
       }
@@ -303,7 +305,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     ),
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () => _showFollowersModal(context, provider),
+                                        onTap: () => _showFollowersModal(
+                                          context,
+                                          provider,
+                                        ),
                                         child: _buildStatItem(
                                           'Seguidores',
                                           '${provider.followersCount}',
@@ -312,7 +317,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     ),
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () => _showFollowingModal(context, provider),
+                                        onTap: () => _showFollowingModal(
+                                          context,
+                                          provider,
+                                        ),
                                         child: _buildStatItem(
                                           'Siguiendo',
                                           '${provider.followingCount}',
@@ -336,25 +344,28 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     child: isFollowing
                                         ? OutlinedButton.icon(
                                             onPressed: () async {
-                                              final userProvider =
-                                                  context.read<UserProvider>();
-                                              final profileProvider =
-                                                  context.read<UserProfileProvider>();
+                                              final userProvider = context
+                                                  .read<UserProvider>();
+                                              final profileProvider = context
+                                                  .read<UserProfileProvider>();
                                               setState(() {
                                                 isFollowing = false;
                                               });
-                                              final success =
-                                                  await userProvider
-                                                      .unfollowUser(widget.userId);
+                                              final success = await userProvider
+                                                  .unfollowUser(widget.userId);
                                               if (success && mounted) {
                                                 // Actualización rápida del perfil para ver cambios inmediatamente
-                                                await profileProvider.refreshProfileQuick(widget.userId);
+                                                await profileProvider
+                                                    .refreshProfileQuick(
+                                                      widget.userId,
+                                                    );
                                               } else if (!success && mounted) {
                                                 setState(() {
                                                   isFollowing = true;
                                                 });
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
                                                   SnackBar(
                                                     content: Text(
                                                       userProvider.error ??
@@ -375,17 +386,18 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                                 color: ColorTokens.primary30,
                                                 width: 1.5,
                                               ),
-                                              padding: const EdgeInsets.symmetric(
-                                                vertical: 10,
-                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 10,
+                                                  ),
                                             ),
                                           )
                                         : ElevatedButton.icon(
                                             onPressed: () async {
-                                              final userProvider =
-                                                  context.read<UserProvider>();
-                                              final profileProvider =
-                                                  context.read<UserProfileProvider>();
+                                              final userProvider = context
+                                                  .read<UserProvider>();
+                                              final profileProvider = context
+                                                  .read<UserProfileProvider>();
                                               setState(() {
                                                 isFollowing = true;
                                               });
@@ -393,13 +405,17 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                                   .followUser(widget.userId);
                                               if (success && mounted) {
                                                 // Actualización rápida del perfil para ver cambios inmediatamente
-                                                await profileProvider.refreshProfileQuick(widget.userId);
+                                                await profileProvider
+                                                    .refreshProfileQuick(
+                                                      widget.userId,
+                                                    );
                                               } else if (!success && mounted) {
                                                 setState(() {
                                                   isFollowing = false;
                                                 });
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
                                                   SnackBar(
                                                     content: Text(
                                                       userProvider.error ??
@@ -418,9 +434,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                                   ColorTokens.primary30,
                                               foregroundColor:
                                                   ColorTokens.neutral100,
-                                              padding: const EdgeInsets.symmetric(
-                                                vertical: 10,
-                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 10,
+                                                  ),
                                             ),
                                           ),
                                   ),
@@ -520,9 +537,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      CircularProgressIndicator(
-                        color: ColorTokens.primary50,
-                      ),
+                      CircularProgressIndicator(color: ColorTokens.primary50),
                       SizedBox(height: 12),
                       Text('Cargando seguidores...'),
                     ],
@@ -579,13 +594,15 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                               ? const Icon(Icons.person)
                               : null,
                         ),
-                        title: Text(user.fullName.isNotEmpty
-                            ? user.fullName
-                            : user.userName),
+                        title: Text(
+                          user.fullName.isNotEmpty
+                              ? user.fullName
+                              : user.userName,
+                        ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
                           context.pop();
-                          context.push('/public-profile/${user.id}');
+                          context.push('/user-profile/${user.id}');
                         },
                       );
                     }),
@@ -618,9 +635,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      CircularProgressIndicator(
-                        color: ColorTokens.primary50,
-                      ),
+                      CircularProgressIndicator(color: ColorTokens.primary50),
                       SizedBox(height: 12),
                       Text('Cargando seguidos...'),
                     ],
@@ -677,13 +692,15 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                               ? const Icon(Icons.person)
                               : null,
                         ),
-                        title: Text(user.fullName.isNotEmpty
-                            ? user.fullName
-                            : user.userName),
+                        title: Text(
+                          user.fullName.isNotEmpty
+                              ? user.fullName
+                              : user.userName,
+                        ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
                           context.pop();
-                          context.push('/public-profile/${user.id}');
+                          context.push('/user-profile/${user.id}');
                         },
                       );
                     }),
