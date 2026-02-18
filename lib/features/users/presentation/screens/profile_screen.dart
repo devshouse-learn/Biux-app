@@ -394,7 +394,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
                           context.pop();
-                          context.push('/public-profile/${user.id}');
+                          context.push('/user-profile/${user.id}');
                         },
                       );
                     },
@@ -486,7 +486,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
                           context.pop();
-                          context.push('/public-profile/${user.id}');
+                          context.push('/user-profile/${user.id}');
                         },
                       );
                     },
