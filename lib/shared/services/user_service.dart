@@ -47,6 +47,48 @@ class UserService {
     }
   }
 
+  // Escuchar cambios en tiempo real del usuario
+  void listenToUser(String uid, Function(UserModel?) onDataChanged) {
+    try {
+      _firestore
+          .collection('users')
+          .doc(uid)
+          .snapshots()
+          .listen(
+            (doc) {
+              if (doc.exists) {
+                final data = doc.data() as Map<String, dynamic>;
+                try {
+                  final userData = UserModel.fromMap(data);
+                  onDataChanged(userData);
+                  print(
+                    '🔄 Datos del usuario actualizados en tiempo real: $uid',
+                  );
+                } catch (parseError) {
+                  print('⚠️ Error parseando datos en listener: $parseError');
+                  final userData = UserModel(
+                    uid: uid,
+                    phoneNumber: data['phoneNumber'] ?? uid,
+                    name: data['name'],
+                    email: data['email'],
+                    photoUrl: data['photoUrl'],
+                    isAdmin: data['isAdmin'] ?? false,
+                  );
+                  onDataChanged(userData);
+                }
+              } else {
+                onDataChanged(null);
+              }
+            },
+            onError: (error) {
+              print('Error en listener de usuario: $error');
+            },
+          );
+    } catch (e) {
+      print('❌ Error configurando listener: $e');
+    }
+  }
+
   Future<bool> updateUserProfile({
     required String uid,
     String? name,

@@ -393,8 +393,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          context.pop();
-                          context.push('/user-profile/${user.id}');
+                          Navigator.of(context).pop();
+                          Future.delayed(const Duration(milliseconds: 200), () {
+                            context.push('/user-profile/${user.id}');
+                          });
                         },
                       );
                     },
@@ -485,8 +487,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          context.pop();
-                          context.push('/user-profile/${user.id}');
+                          Navigator.of(context).pop();
+                          Future.delayed(const Duration(milliseconds: 200), () {
+                            context.push('/user-profile/${user.id}');
+                          });
                         },
                       );
                     },

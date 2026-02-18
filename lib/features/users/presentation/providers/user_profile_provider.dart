@@ -1,13 +1,19 @@
+import 'dart:async';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_profile_repository_impl.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   final UserProfileRepository _repository = UserProfileRepositoryImpl();
   final ExperienceRepository _experienceRepository = ExperienceRepositoryImpl();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Listener subscription para el perfil actual
+  StreamSubscription<DocumentSnapshot>? _profileStreamSubscription;
 
   // Estado de búsqueda
   List<BiuxUser> _searchResults = [];
@@ -147,6 +153,39 @@ class UserProfileProvider extends ChangeNotifier {
     } finally {
       _isLoadingProfile = false;
       notifyListeners();
+      // Configurar listener en tiempo real
+      if (_currentProfile != null) {
+        _setupProfileListener(_currentProfile!.id);
+      }
+    }
+  }
+
+  // Configurar listener en tiempo real para el perfil actual
+  void _setupProfileListener(String userId) {
+    // Cancelar listener anterior si existía
+    _profileStreamSubscription?.cancel();
+
+    try {
+      _profileStreamSubscription = _firestore
+          .collection('users')
+          .doc(userId)
+          .snapshots()
+          .listen((doc) {
+        if (doc.exists) {
+          final data = doc.data() as Map<String, dynamic>;
+          try {
+            _currentProfile = BiuxUser.fromJsonMap({...data, 'id': userId});
+            notifyListeners();
+            print('🔄 Perfil actualizado en tiempo real: $userId');
+          } catch (e) {
+            print('Error parseando perfil en listener: $e');
+          }
+        }
+      }, onError: (error) {
+        print('Error en listener de perfil: $error');
+      });
+    } catch (e) {
+      print('Error configurando listener de perfil: $e');
     }
   }
 
@@ -253,9 +292,10 @@ class UserProfileProvider extends ChangeNotifier {
         _isFollowing = true;
         // Actualizar contador de followers si tenemos el perfil cargado
         if (_currentProfile?.id == userId) {
+          int newFollowerCount = (_currentProfile!.followerS ?? 0) + 1;
           _currentProfile = BiuxUser.fromJsonMap({
             ..._currentProfile!.toJson(),
-            'followerS': _currentProfile!.followerS + 1,
+            'followerS': newFollowerCount,
           });
         }
 
@@ -299,9 +339,13 @@ class UserProfileProvider extends ChangeNotifier {
         _isFollowing = false;
         // Actualizar contador de followers si tenemos el perfil cargado
         if (_currentProfile?.id == userId) {
+          // Asegurar que no sea negativo
+          int newFollowerCount = ((_currentProfile!.followerS ?? 0) - 1)
+              .clamp(0, double.maxFinite)
+              .toInt();
           _currentProfile = BiuxUser.fromJsonMap({
             ..._currentProfile!.toJson(),
-            'followerS': _currentProfile!.followerS - 1,
+            'followerS': newFollowerCount,
           });
         }
 
@@ -354,10 +398,17 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Limpiar estado del perfil
   void clearProfileState() {
+    _profileStreamSubscription?.cancel();
     _currentProfile = null;
     _isFollowing = false;
     _followers = [];
     _following = [];
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _profileStreamSubscription?.cancel();
+    super.dispose();
   }
 }

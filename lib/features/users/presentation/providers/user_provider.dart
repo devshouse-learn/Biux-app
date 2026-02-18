@@ -122,6 +122,25 @@ class UserProvider extends ChangeNotifier {
     }
 
     _setLoading(false);
+
+    // Iniciar listener en tiempo real
+    _listenToCurrentUser();
+  }
+
+  // Escuchar cambios en tiempo real del usuario actual
+  void _listenToCurrentUser() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || _skipRemoteCalls) return;
+
+    try {
+      _userService.listenToUser(uid, (userData) {
+        _user = userData;
+        notifyListeners();
+        print('🔄 Datos de usuario actualizados en tiempo real');
+      });
+    } catch (e) {
+      print('Error configurando listener: $e');
+    }
   }
 
   Future<bool> updateProfile({
@@ -157,14 +176,15 @@ class UserProvider extends ChangeNotifier {
 
     // Validar que al menos uno de los campos tenga valor
     // Permitir null/empty para fotos (para poder eliminarlas)
-    bool hasTextUpdate = (name != null && name.isNotEmpty) ||
+    bool hasTextUpdate =
+        (name != null && name.isNotEmpty) ||
         (email != null && email.isNotEmpty) ||
         (description != null && description.isNotEmpty) ||
         (username != null && username.isNotEmpty);
-    
+
     // Una foto es actualización si: no es null (nuevo valor) O si es cadena vacía (eliminación)
     bool hasPhotoUpdate = photoUrl != null || coverPhotoUrl != null;
-    
+
     if (!hasTextUpdate && !hasPhotoUpdate) {
       print('❌ ERROR: Todos los campos vacíos');
       _error = 'Por favor ingresa al menos un campo para actualizar';
@@ -378,7 +398,9 @@ class UserProvider extends ChangeNotifier {
     }
 
     final currentUserId = currentUser.uid;
-    print('📱 followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow');
+    print(
+      '📱 followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow',
+    );
 
     _setLoading(true);
     _error = null;
@@ -419,7 +441,9 @@ class UserProvider extends ChangeNotifier {
     }
 
     final currentUserId = currentUser.uid;
-    print('📱 unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow');
+    print(
+      '📱 unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow',
+    );
 
     _setLoading(true);
     _error = null;
