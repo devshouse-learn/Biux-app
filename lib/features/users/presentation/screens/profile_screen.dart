@@ -731,16 +731,13 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    nameController.dispose();
-                    usernameController.dispose();
-                    descriptionController.dispose();
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text('Cancelar'),
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    // Guardar referencias antes de disposer
+                    // Guardar referencias antes de cerrar el diálogo
                     final name = nameController.text.trim();
                     final username = usernameController.text.trim();
                     final description = descriptionController.text.trim();
@@ -758,17 +755,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       email: email,
                     );
 
-                    // Cerrar el diálogo primero
+                    // Cerrar el diálogo
                     if (mounted) {
                       Navigator.of(dialogContext).pop();
                     }
-
-                    // Disposer los controladores DESPUÉS de cerrar el diálogo
-                    Future.delayed(Duration(milliseconds: 100), () {
-                      nameController.dispose();
-                      usernameController.dispose();
-                      descriptionController.dispose();
-                    });
 
                     // Mostrar resultado usando context principal
                     if (mounted) {
