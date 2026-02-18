@@ -264,7 +264,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   Widget _buildExperiencesList(List<ExperienceEntity> experiences) {
     final provider = context.read<ExperienceProvider>();
-    
+
     // Crear lista intercalada de posts y anuncios
     final intercaledList = _intercaleAdvertisements(experiences);
 
@@ -289,7 +289,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           // Mostrar post normal o anuncio
           if (index < intercaledList.length) {
             final item = intercaledList[index];
-            
+
             if (item is ExperienceEntity) {
               return _ExperienceCard(experience: item);
             } else if (item is AdvertisementEntity) {
@@ -342,7 +342,8 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       AdvertisementEntity(
         id: 'ad_1',
         title: 'Biux Premium',
-        description: 'Desbloquea funciones exclusivas y conecta con más ciclistas',
+        description:
+            'Desbloquea funciones exclusivas y conecta con más ciclistas',
         imageUrl:
             'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop',
         callToActionText: 'Descubrir',
@@ -594,52 +595,60 @@ class _ExperienceCard extends StatelessWidget {
         topLeft: Radius.circular(12),
         topRight: Radius.circular(12),
       ),
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Container(
-          color: theme.colorScheme.surfaceContainerHighest,
-          child: media.mediaType == MediaType.image
-              ? Image.network(
-                  media.url,
-                  fit: BoxFit.cover,
-                  errorBuilder: (ctx, error, stackTrace) {
-                    return Container(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: Center(
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: theme.iconTheme.color?.withValues(alpha: 0.5),
-                          size: 48,
+      child: GestureDetector(
+        onTap: () {
+          // Navegar al visor de post tipo Instagram
+          context.push('/social/post/${experience.id}');
+        },
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Container(
+            color: theme.colorScheme.surfaceContainerHighest,
+            child: media.mediaType == MediaType.image
+                ? Image.network(
+                    media.url,
+                    fit: BoxFit.cover,
+                    errorBuilder: (ctx, error, stackTrace) {
+                      return Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: theme.iconTheme.color?.withValues(
+                              alpha: 0.5,
+                            ),
+                            size: 48,
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : Stack(
+                    children: [
+                      if (media.thumbnailUrl != null)
+                        Image.network(
+                          media.thumbnailUrl!,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                            size: 32,
+                          ),
                         ),
                       ),
-                    );
-                  },
-                )
-              : Stack(
-                  children: [
-                    if (media.thumbnailUrl != null)
-                      Image.network(
-                        media.thumbnailUrl!,
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: const BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );
@@ -1119,7 +1128,9 @@ class _AdvertisementCard extends StatelessWidget {
                         child: Center(
                           child: Icon(
                             Icons.image_not_supported,
-                            color: theme.iconTheme.color?.withValues(alpha: 0.5),
+                            color: theme.iconTheme.color?.withValues(
+                              alpha: 0.5,
+                            ),
                             size: 48,
                           ),
                         ),
@@ -1247,8 +1258,9 @@ class _AdvertisementCard extends StatelessWidget {
                               child: Center(
                                 child: Icon(
                                   Icons.image_not_supported,
-                                  color: theme.iconTheme.color
-                                      ?.withValues(alpha: 0.5),
+                                  color: theme.iconTheme.color?.withValues(
+                                    alpha: 0.5,
+                                  ),
                                   size: 64,
                                 ),
                               ),
@@ -1310,8 +1322,9 @@ class _AdvertisementCard extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: ColorTokens.secondary50,
                                 foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -1343,8 +1356,9 @@ class _AdvertisementCard extends StatelessWidget {
                                   color: theme.dividerColor,
                                   width: 1,
                                 ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -1393,18 +1407,16 @@ class _AdvertisementCard extends StatelessWidget {
         }
       } else {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Enlace no disponible'),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Enlace no disponible')));
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
