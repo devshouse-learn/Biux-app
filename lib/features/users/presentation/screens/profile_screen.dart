@@ -856,6 +856,131 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     );
   }
 
+  // Panel para crear contenido (historias o publicaciones)
+  void _showCreateContentOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Indicador de drag
+                Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 16),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                // Título
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    'Crear contenido',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+
+                // Opción: Historias
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.primary30.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.history,
+                      color: ColorTokens.primary30,
+                      size: 24,
+                    ),
+                  ),
+                  title: const Text(
+                    'Historia',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text(
+                    'Comparte un momento que desaparece en 24h',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: ColorTokens.primary30,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/stories/create');
+                  },
+                ),
+
+                const SizedBox(height: 8),
+
+                // Divider
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Divider(color: Colors.grey[200], thickness: 1),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Opción: Publicaciones
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.secondary50.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.image,
+                      color: ColorTokens.secondary50,
+                      size: 24,
+                    ),
+                  ),
+                  title: const Text(
+                    'Publicación',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: const Text(
+                    'Comparte tu experiencia con todos tus seguidores',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: ColorTokens.secondary50,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/experiences/create');
+                  },
+                ),
+
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   // Función temporal para actualizar ciudades con departamentos
 
   @override
@@ -960,6 +1085,20 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               context.push('/account-settings');
                             },
                             tooltip: 'Configuración de cuenta',
+                          ),
+                        ),
+                        // Botón crear contenido en esquina superior izquierda
+                        Positioned(
+                          top: 12,
+                          left: 12,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.add_circle,
+                              color: ColorTokens.neutral100,
+                              size: 28,
+                            ),
+                            onPressed: _showCreateContentOptions,
+                            tooltip: 'Crear contenido',
                           ),
                         ),
                       ],
