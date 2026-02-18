@@ -758,14 +758,20 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       email: email,
                     );
 
-                    // Disposer los controladores y navegar
-                    nameController.dispose();
-                    usernameController.dispose();
-                    descriptionController.dispose();
-
+                    // Cerrar el diálogo primero
                     if (mounted) {
                       Navigator.of(dialogContext).pop();
+                    }
 
+                    // Disposer los controladores DESPUÉS de cerrar el diálogo
+                    Future.delayed(Duration(milliseconds: 100), () {
+                      nameController.dispose();
+                      usernameController.dispose();
+                      descriptionController.dispose();
+                    });
+
+                    // Mostrar resultado usando context principal
+                    if (mounted) {
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
