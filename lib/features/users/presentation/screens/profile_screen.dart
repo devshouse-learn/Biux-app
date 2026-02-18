@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/config/styles.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -110,7 +111,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Cancelar'),
+              style: Styles.cancelButtonStyle,
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
@@ -1089,15 +1091,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               onPressed: () {
                                 _showEditProfileDialog();
                               },
-                              icon: Icon(Icons.edit, size: 18),
-                              label: Text('Editar Perfil'),
+                              icon: const Icon(Icons.edit, size: 18),
+                              label: const Text('Editar Perfil'),
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: ColorTokens.primary30,
-                                side: BorderSide(
+                                foregroundColor: ColorTokens.neutral100,
+                                side: const BorderSide(
                                   color: ColorTokens.primary30,
                                   width: 1.5,
                                 ),
-                                padding: EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
                               ),
                             ),
                           ),

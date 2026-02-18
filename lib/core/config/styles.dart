@@ -626,4 +626,34 @@ class Styles {
     fontFamily: "Poppins",
     fontWeight: FontWeight.w300,
   );
+
+  // Estilos de botones con texto blanco
+  static const buttonTextWhite = TextStyle(
+    color: ColorTokens.neutral100,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
+
+  static ButtonStyle primaryButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: ColorTokens.primary30,
+    foregroundColor: ColorTokens.neutral100,
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  );
+
+  static ButtonStyle outlinedButtonStyle = OutlinedButton.styleFrom(
+    foregroundColor: ColorTokens.neutral100,
+    side: const BorderSide(color: ColorTokens.primary30, width: 1.5),
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  );
+
+  static ButtonStyle textButtonStyle = TextButton.styleFrom(
+    foregroundColor: ColorTokens.neutral100,
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+  );
+
+  static ButtonStyle cancelButtonStyle = TextButton.styleFrom(
+    foregroundColor: ColorTokens.neutral100,
+  );
 }
