@@ -13,6 +13,7 @@ class ExperienceModel {
   final String? rideId;
   final int views;
   final List<ExperienceReactionModel> reactions;
+  final List<UserModel> viewers;
 
   const ExperienceModel({
     required this.id,
@@ -25,6 +26,7 @@ class ExperienceModel {
     this.rideId,
     this.views = 0,
     this.reactions = const [],
+    this.viewers = const [],
   });
 
   /// Convertir a entidad de dominio
@@ -40,6 +42,7 @@ class ExperienceModel {
       rideId: rideId,
       views: views,
       reactions: reactions.map((e) => e.toEntity()).toList(),
+      viewers: viewers.map((e) => e.toEntity()).toList(),
     );
   }
 
@@ -59,6 +62,7 @@ class ExperienceModel {
       reactions: entity.reactions
           .map((e) => ExperienceReactionModel.fromEntity(e))
           .toList(),
+      viewers: entity.viewers.map((e) => UserModel.fromEntity(e)).toList(),
     );
   }
 
@@ -76,6 +80,7 @@ class ExperienceModel {
       'rideId': rideId,
       'views': views,
       'reactions': reactions.map((e) => e.toJson()).toList(),
+      'viewers': viewers.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -96,6 +101,9 @@ class ExperienceModel {
           .map(
             (e) => ExperienceReactionModel.fromJson(e as Map<String, dynamic>),
           )
+          .toList(),
+      viewers: (json['viewers'] as List? ?? [])
+          .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }

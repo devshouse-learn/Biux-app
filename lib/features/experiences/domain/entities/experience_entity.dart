@@ -13,6 +13,7 @@ class ExperienceEntity {
   final String? rideId; // Solo para experiencias de rodadas
   final int views;
   final List<ExperienceReactionEntity> reactions;
+  final List<UserEntity> viewers; // Usuarios que han visto la historia
 
   const ExperienceEntity({
     required this.id,
@@ -25,6 +26,7 @@ class ExperienceEntity {
     this.rideId,
     this.views = 0,
     this.reactions = const [],
+    this.viewers = const [],
   });
 
   /// Duración total de la experiencia en segundos
@@ -78,6 +80,7 @@ class ExperienceEntity {
     String? rideId,
     int? views,
     List<ExperienceReactionEntity>? reactions,
+    List<UserEntity>? viewers,
   }) {
     return ExperienceEntity(
       id: id ?? this.id,
@@ -90,6 +93,7 @@ class ExperienceEntity {
       rideId: rideId ?? this.rideId,
       views: views ?? this.views,
       reactions: reactions ?? this.reactions,
+      viewers: viewers ?? this.viewers,
     );
   }
 
@@ -106,7 +110,8 @@ class ExperienceEntity {
         other.type == type &&
         other.rideId == rideId &&
         other.views == views &&
-        other.reactions.toString() == reactions.toString();
+        other.reactions.toString() == reactions.toString() &&
+        other.viewers.toString() == viewers.toString();
   }
 
   @override
@@ -120,12 +125,13 @@ class ExperienceEntity {
         type.hashCode ^
         rideId.hashCode ^
         views.hashCode ^
-        reactions.hashCode;
+        reactions.hashCode ^
+        viewers.hashCode;
   }
 
   @override
   String toString() {
-    return 'ExperienceEntity(id: $id, description: $description, tags: $tags, user: $user, createdAt: $createdAt, media: $media, type: $type, rideId: $rideId, views: $views, reactions: $reactions)';
+    return 'ExperienceEntity(id: $id, description: $description, tags: $tags, user: $user, createdAt: $createdAt, media: $media, type: $type, rideId: $rideId, views: $views, reactions: $reactions, viewers: $viewers)';
   }
 }
 

@@ -250,15 +250,22 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             if (FirebaseAuth.instance.currentUser?.uid ==
                 widget.experience.user.id)
               Positioned(
-                bottom: MediaQuery.of(context).padding.bottom + 150,
-                left: 80,
+                bottom: MediaQuery.of(context).padding.bottom + 80,
+                left: 20,
                 child: GestureDetector(
                   onTap: () => _showViewersModal(context),
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1.5,
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -266,14 +273,14 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         const Icon(
                           Icons.visibility,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 6),
                         Text(
                           widget.experience.views.toString(),
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 12,
+                            fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -682,6 +689,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   void _showViewersModal(BuildContext context) {
     final theme = Theme.of(context);
     final viewsCount = widget.experience.views;
+    final viewers = widget.experience.viewers;
+    final hasViewers = viewers.isNotEmpty;
 
     showModalBottomSheet(
       context: context,
@@ -696,6 +705,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Encabezado
               Row(
                 children: [
                   const Icon(
@@ -708,7 +718,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Vista de tu historia',
+                        'Quién vio tu historia',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -725,42 +735,110 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ],
               ),
               const SizedBox(height: 24),
-              
-              // Información sobre los visualizadores
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: ColorTokens.primary50.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: ColorTokens.primary50.withValues(alpha: 0.2),
+
+              if (hasViewers)
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ...List.generate(viewers.length, (index) {
+                          final viewer = viewers[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              children: [
+                                // Avatar del visualizador
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundImage: viewer.photo.isNotEmpty
+                                      ? NetworkImage(viewer.photo)
+                                      : null,
+                                  child: viewer.photo.isEmpty
+                                      ? const Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                        )
+                                      : null,
+                                  backgroundColor: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 12),
+                                // Información del usuario
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        viewer.fullName.isNotEmpty
+                                            ? viewer.fullName
+                                            : (viewer.userName.isNotEmpty
+                                                  ? viewer.userName
+                                                  : 'Usuario'),
+                                        style: theme.textTheme.bodyLarge
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      if (viewer.userName.isNotEmpty)
+                                        Text(
+                                          '@${viewer.userName}',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: Colors.grey[600],
+                                              ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                // Mensaje cuando no hay visualizaciones
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: ColorTokens.primary50.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: ColorTokens.primary50.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.visibility_off,
+                        color: Colors.grey[600],
+                        size: 48,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Aún nadie ha visto tu historia',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Comparte tu historia con más amigos para que la vean',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Información de visualizadores',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      viewsCount > 0
-                          ? 'Tu historia ha sido vista $viewsCount ${viewsCount == 1 ? 'vez' : 'veces'}. Los usuarios que la vieron verán una marca junto a tu nombre.'
-                          : 'Aún no hay visualizaciones de esta historia. Comparte con más amigos para aumentar el alcance.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Botón de cerrar
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
@@ -771,10 +849,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
                 child: const Text(
                   'Entendido',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
