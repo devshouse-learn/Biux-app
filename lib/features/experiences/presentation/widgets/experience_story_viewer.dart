@@ -250,7 +250,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             if (FirebaseAuth.instance.currentUser?.uid ==
                 widget.experience.user.id)
               Positioned(
-                bottom: MediaQuery.of(context).padding.bottom + 80,
+                bottom: MediaQuery.of(context).padding.bottom + 20,
                 left: 20,
                 child: GestureDetector(
                   onTap: () => _showViewersModal(context),
