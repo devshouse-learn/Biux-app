@@ -454,3 +454,5 @@ class UserService {
     }
   }
 }
+
+// Resolución de conflictos: Mantener la lógica más reciente y relevante para el proyecto.

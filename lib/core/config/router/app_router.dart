@@ -1,3 +1,4 @@
+import 'package:biux/features/shop/presentation/screens/add_product_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -38,7 +39,6 @@ import '../../../features/social/presentation/screens/post_detail_screen.dart';
 import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
 import '../../../features/users/presentation/screens/edit_username_screen.dart';
 import '../../../features/users/presentation/screens/profile_screen.dart';
-import '../../../features/users/presentation/screens/account_settings_screen.dart';
 import '../../../features/users/presentation/screens/user_screen/user_screen.dart';
 import '../../../features/users/presentation/screens/user_search_screen.dart';
 import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
@@ -50,7 +50,7 @@ import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
 import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
 
 // Shop imports
-import '../../../features/shop/presentation/screens/shop_screen_new.dart';
+import '../../../features/shop/presentation/screens/shop_screen_pro.dart';
 import '../../../features/shop/presentation/screens/product_detail_screen.dart';
 import '../../../features/shop/presentation/screens/cart_screen.dart';
 import '../../../features/shop/presentation/screens/admin_shop_screen.dart';
@@ -605,13 +605,6 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const NotificationSettingsScreen(),
         ),
 
-        // Configuración de cuenta
-        GoRoute(
-          path: AppRoutes.accountSettings,
-          name: AppRoutes.accountSettingsName,
-          builder: (context, state) => const AccountSettingsScreen(),
-        ),
-
         // Ayuda y soporte
         GoRoute(
           path: AppRoutes.help,
@@ -775,16 +768,7 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // ⚠️ CRÍTICO: Detalle de producto DEBE IR AL FINAL después de TODAS las rutas específicas
-        // para que :id no capture rutas como 'manage-sellers', 'seller-requests', 'delete-all-products'
-        GoRoute(
-          path: '/shop/:id',
-          name: 'productDetail',
-          builder: (context, state) {
-            final productId = state.pathParameters['id']!;
-            return ProductDetailScreen(productId: productId);
-          },
-        ),
+        // ⚠️ Detalle de producto movido FUERA del ShellRoute (ver abajo)
 
         // TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
         // Escáner QR
@@ -859,6 +843,23 @@ final GoRouter _router = GoRouter(
     ),
 
     // Rutas fuera del shell principal
+
+    // Detalle de producto (fuera del shell para pantalla completa sin bottom nav)
+    // Ruta para agregar producto (debe ir ANTES de /shop/:id)
+    GoRoute(
+      path: '/shop/add-product',
+      name: 'addProduct',
+      builder: (context, state) => const AddProductScreen(),
+    ),
+    GoRoute(
+      path: '/shop/:id',
+      name: 'productDetail',
+      builder: (context, state) {
+        final productId = state.pathParameters['id']!;
+        return ProductDetailScreen(productId: productId);
+      },
+    ),
+
     GoRoute(
       path: AppRoutes.publicBikeInfo,
       name: '${AppRoutes.publicBikeInfoName}External',
