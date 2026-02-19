@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/story_groups_provider.dart';
+import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 
 /// Widget para mostrar stories agrupadas por usuario (tipo Instagram)
@@ -95,58 +97,150 @@ class _AddStoryButtonState extends State<_AddStoryButton> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return GestureDetector(
-      onTap: () => _showCreateStoryOptions(context),
-      child: Container(
-        margin: const EdgeInsets.only(right: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [ColorTokens.primary30, ColorTokens.secondary50],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+    return Consumer<ExperienceCreatorProvider>(
+      builder: (context, creatorProvider, child) {
+        final isUploading = creatorProvider.isUploading;
+        final uploadProgress = creatorProvider.uploadProgress;
+
+        return GestureDetector(
+          onTap: isUploading ? null : () => _navigateToCreateStory(context),
+          child: Container(
+            margin: const EdgeInsets.only(right: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Contenedor con indicador de progreso
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Círculo de progreso tipo Instagram
+                    if (isUploading)
+                      SizedBox(
+                        width: 70,
+                        height: 70,
+                        child: CustomPaint(
+                          painter: _CircularProgressPainter(
+                            progress: uploadProgress,
+                            strokeWidth: 3,
+                          ),
+                          child: Container(),
+                        ),
+                      ),
+                    // Círculo principal con icono
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            ColorTokens.primary30.withValues(
+                              alpha: isUploading ? 0.6 : 1.0,
+                            ),
+                            ColorTokens.secondary50.withValues(
+                              alpha: isUploading ? 0.6 : 1.0,
+                            ),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: isUploading
+                          ? Center(
+                              child: Text(
+                                '${(uploadProgress * 100).toInt()}%',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          : const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                    ),
+                  ],
                 ),
-              ),
-              child: const Icon(Icons.add, color: Colors.white, size: 28),
-            ),
-            const SizedBox(height: 4),
-            SizedBox(
-              width: 70,
-              child: Text(
-                'Tu story',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: theme.textTheme.bodySmall?.color,
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: 70,
+                  child: Text(
+                    'Tu story',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: theme.textTheme.bodySmall?.color,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  void _showCreateStoryOptions(BuildContext context) {
-    final theme = Theme.of(context);
+  void _navigateToCreateStory(BuildContext context) {
+    // Navegar directamente a la pantalla de crear historia
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => const CreateExperienceScreen(
+              experienceType: ExperienceType.general,
+              isStoryMode: true,
+            ),
+          ),
+        )
+        .then((result) {
+          // Si se creó exitosamente, recarga el feed
+          if (result == true && mounted) {
+            // Recargar historias del feed
+            context.read<StoryGroupsProvider>().groupExistingStories(
+              context.read<ExperienceProvider>().experiences,
+            );
+          }
+        });
+  }
+}
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor:
-          theme.bottomSheetTheme.backgroundColor ?? theme.cardColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => _CreateOptionsBottomSheet(),
+/// Custom painter para dibujar el indicador de progreso circular
+class _CircularProgressPainter extends CustomPainter {
+  final double progress;
+  final double strokeWidth;
+
+  _CircularProgressPainter({required this.progress, required this.strokeWidth});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - strokeWidth / 2;
+
+    // Dibujar el círculo de progreso con color blanco
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    // Dibujar arco desde la parte superior (-90 grados)
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -3.14159 / 2, // Comienza en la parte superior
+      2 * 3.14159 * progress, // Cubrimiento según el progreso
+      false,
+      paint,
     );
+  }
+
+  @override
+  bool shouldRepaint(_CircularProgressPainter oldDelegate) {
+    return oldDelegate.progress != progress;
   }
 }
 
@@ -828,10 +922,7 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: widget.onClose,
-                        ),
+                        _buildHeaderButton(currentStory),
                       ],
                     ),
                   ),
@@ -868,5 +959,92 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
         ),
       ),
     );
+  }
+
+  /// Construye el botón del header: 3 puntos si es propietario, X si no
+  Widget _buildHeaderButton(ExperienceEntity currentStory) {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final isOwner = currentUid.isNotEmpty && currentUid == currentStory.user.id;
+
+    if (isOwner) {
+      // Botón de tres puntos para eliminar
+      return IconButton(
+        icon: const Icon(Icons.more_vert, color: Colors.white),
+        onPressed: () => _confirmDeleteStory(currentStory),
+      );
+    } else {
+      // Botón X para cerrar
+      return IconButton(
+        icon: const Icon(Icons.close, color: Colors.white),
+        onPressed: widget.onClose,
+      );
+    }
+  }
+
+  /// Muestra diálogo de confirmación para eliminar historia
+  void _confirmDeleteStory(ExperienceEntity story) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text(
+          '¿Estás seguro/a que quieres eliminar esta historia?',
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'No podrás recuperar esta historia después de eliminada',
+          style: TextStyle(color: Colors.grey[300]),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteStory(story);
+            },
+            child: const Text(
+              'Eliminar historia',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Elimina la historia
+  Future<void> _deleteStory(ExperienceEntity story) async {
+    try {
+      final experienceProvider = context.read<ExperienceProvider>();
+      await experienceProvider.deleteExperience(story.id);
+
+      if (mounted) {
+        // Recargar historias
+        final storyGroupsProvider = context.read<StoryGroupsProvider>();
+        final allExperiences = experienceProvider.experiences;
+        final storyExperiences = allExperiences
+            .where((exp) => exp.isStoryFormat)
+            .toList();
+        await storyGroupsProvider.groupExistingStories(storyExperiences);
+
+        // Cerrar el viewer
+        widget.onClose();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al eliminar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

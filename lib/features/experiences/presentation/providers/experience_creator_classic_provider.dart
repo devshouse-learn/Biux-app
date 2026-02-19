@@ -131,7 +131,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         final mediaItem = MediaItem(
           filePath: image.path,
           mediaType: MediaType.image,
-          duration: 15, // 15 segundos por defecto para imágenes
+          duration: 15, // 15 segundos estándar para todas las historias
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -165,7 +165,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         final mediaItem = MediaItem(
           filePath: image.path,
           mediaType: MediaType.image,
-          duration: 15,
+          duration: 15, // 15 segundos estándar para todas las historias
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -209,10 +209,13 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           return;
         }
 
+        // Limitar duración de videos a máximo 15 segundos (estándar de historias)
+        final actualDuration = duration > 15 ? 15 : duration;
+
         final mediaItem = MediaItem(
           filePath: video.path,
           mediaType: MediaType.video,
-          duration: duration,
+          duration: actualDuration, // Máximo 15 segundos
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -255,10 +258,13 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           return;
         }
 
+        // Limitar duración de videos a máximo 15 segundos (estándar de historias)
+        final actualDuration = duration > 15 ? 15 : duration;
+
         final mediaItem = MediaItem(
           filePath: video.path,
           mediaType: MediaType.video,
-          duration: duration,
+          duration: actualDuration, // Máximo 15 segundos
         );
 
         _mediaItems = [..._mediaItems, mediaItem];
@@ -294,16 +300,16 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Crear experiencia
   Future<bool> createExperience() async {
-    // Validar descripción
-    if (_description.trim().isEmpty) {
-      _error = 'La descripción es requerida';
+    // Validar multimedia solo si NO es post de solo texto
+    if (!_isTextOnly && _mediaItems.isEmpty) {
+      _error = 'Debes agregar al menos una imagen o video';
       notifyListeners();
       return false;
     }
 
-    // Validar multimedia solo si NO es post de solo texto
-    if (!_isTextOnly && _mediaItems.isEmpty) {
-      _error = 'Debes agregar al menos una imagen o video';
+    // Validar descripción solo para posts de solo texto
+    if (_isTextOnly && _description.trim().isEmpty) {
+      _error = 'La descripción es requerida para este post';
       notifyListeners();
       return false;
     }

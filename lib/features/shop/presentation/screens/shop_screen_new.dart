@@ -41,7 +41,7 @@ class _ShopScreenProState extends State<ShopScreenPro> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: ColorTokens.primary10,
       appBar: AppBar(
         title: const Text(
           'Tienda Biux',

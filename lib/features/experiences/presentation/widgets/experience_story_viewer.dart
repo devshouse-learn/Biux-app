@@ -50,7 +50,11 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   void _initializeControllers() {
-    _progressController = AnimationController(vsync: this);
+    // Inicializar con duración estándar de 15 segundos
+    _progressController = AnimationController(
+      duration: const Duration(seconds: 15),
+      vsync: this,
+    );
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 100),
       vsync: this,
@@ -70,19 +74,23 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       isMediaReady = false; // Reset del estado de carga
     });
 
-    final currentMedia = widget.experience.media[currentMediaIndex];
+    // Todas las historias duran exactamente 15 segundos como estándar
+    const standardDuration = Duration(seconds: 15);
 
     // Solo iniciar el progreso después de que el media esté listo
     // Para imágenes, se inicia inmediatamente
     // Para videos, se inicia cuando el VideoPlayerWidget notifique que está listo
+    final currentMedia = widget.experience.media[currentMediaIndex];
     if (currentMedia.mediaType == MediaType.image) {
-      _startProgressTimer(Duration(seconds: currentMedia.duration));
+      _startProgressTimer(standardDuration);
     }
     // Para videos, el timer se iniciará desde onVideoReady callback
   }
 
   void _startProgressTimer(Duration duration) {
-    _progressController.duration = duration;
+    // La duración ya está establecida en 15 segundos en _initializeControllers
+    // Solo necesitamos resetear y forward el controlador
+    _progressController.reset();
     setState(() {
       isMediaReady = true;
     });
@@ -94,12 +102,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   void _onVideoReady() {
     // Callback para cuando el video esté listo para reproducirse
-    if (currentMediaIndex < widget.experience.media.length) {
-      final currentMedia = widget.experience.media[currentMediaIndex];
-      if (currentMedia.mediaType == MediaType.video) {
-        _startProgressTimer(Duration(seconds: currentMedia.duration));
-      }
-    }
+    // Todas las historias duran exactamente 15 segundos como estándar
+    const standardDuration = Duration(seconds: 15);
+    _startProgressTimer(standardDuration);
   }
 
   void _nextMedia() {
@@ -227,9 +232,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   constraints: BoxConstraints(
                     maxHeight: MediaQuery.of(context).size.height * 0.3,
                   ),
-                  child: SingleChildScrollView(
-                    child: _buildDescription(),
-                  ),
+                  child: SingleChildScrollView(child: _buildDescription()),
                 ),
               ),
 
@@ -243,18 +246,33 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               ),
             ),
 
-            // Botón de cerrar
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 10,
-              right: 10,
-              child: IconButton(
-                onPressed: widget.onClose,
-                icon: const Icon(Icons.close, color: Colors.white, size: 28),
-              ),
-            ),
-
             // Áreas de toque para navegación
             _buildTouchAreas(),
+
+            // Botón de TRES PUNTOS BLANCO arriba a la derecha - SOLO para propietarios
+            if (FirebaseAuth.instance.currentUser?.uid ==
+                widget.experience.user.id)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    _confirmDeleteStory(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Icon(
+                      Icons.more_vert,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -365,7 +383,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         // Avatar + información usuario (clickeable para ir al perfil)
         GestureDetector(
           onTap: () {
-            print('🔄 Header tapped - Navegando al perfil del usuario: ${user.id}');
+            print(
+              '🔄 Header tapped - Navegando al perfil del usuario: ${user.id}',
+            );
             if (user.id.isNotEmpty) {
               context.push('/user-profile/${user.id}');
             } else {
@@ -405,15 +425,17 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   if (user.userName.isNotEmpty)
                     Text(
                       '@${user.userName}',
-                      style:
-                          const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                 ],
               ),
             ],
           ),
         ),
-        
+
         const Spacer(),
 
         // Tiempo y estado
@@ -435,55 +457,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
         const SizedBox(width: 8),
 
-        // Botón de menú (solo para el autor)
-        if (isOwner)
-          IconButton(
-            onPressed: () => _showStoryMenu(context),
-            icon: const Icon(Icons.more_vert, color: Colors.white, size: 24),
-            constraints: const BoxConstraints(
-              minWidth: 40,
-              minHeight: 40,
-            ),
-            padding: EdgeInsets.zero,
-          )
-        else
-          const SizedBox(width: 40),
+        // No mostrar botón aquí - está en la esquina superior izquierda como PopupMenuButton
       ],
-    );
-  }
-
-  /// Muestra el menú de opciones para la historia
-  void _showStoryMenu(BuildContext context) {
-    final theme = Theme.of(context);
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    final isOwner = currentUserId == widget.experience.user.id;
-
-    if (!isOwner) return; // Solo mostrar para el autor
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: theme.cardColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text(
-                'Eliminar historia',
-                style: TextStyle(color: Colors.red),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _confirmDeleteStory(context);
-              },
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -496,11 +471,11 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       builder: (context) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          'Eliminar historia',
+          '¿Estás seguro/a que quieres eliminar esta historia?',
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
-          '¿Estás seguro de que deseas eliminar esta historia? Esta acción no se puede deshacer.',
+          'No podrás recuperar esta historia después de eliminada',
           style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
@@ -513,7 +488,10 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               Navigator.pop(context);
               _deleteStory(context);
             },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Eliminar historia',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -544,9 +522,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -567,7 +545,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ),
-        
+
         const SizedBox(height: 12),
 
         // Botón para agregar publicidad
@@ -586,10 +564,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             icon: const Icon(Icons.campaign, size: 20),
             label: const Text(
               'Agregar Publicidad',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -621,12 +596,12 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               const SizedBox(height: 12),
               Text(
                 'Promociona tu negocio, producto o servicio a todos los ciclistas',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
               ),
               const SizedBox(height: 24),
-              
+
               // Opción: Publicidad simple
               _AdvertisementOptionButton(
                 icon: Icons.image,
@@ -637,9 +612,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   _navigateToCreateAdvertisement(context, 'simple');
                 },
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Opción: Publicidad premium
               _AdvertisementOptionButton(
                 icon: Icons.star,
@@ -651,9 +626,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 },
                 isPremium: true,
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Botón de cerrar
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -675,73 +650,54 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       ),
     );
     // TODO: Implementar navegación a CreateAdvertisementScreen
-  }  Widget _buildTouchAreas() {
+  }
+
+  Widget _buildTouchAreas() {
     final topPadding = MediaQuery.of(context).padding.top;
-    final closeButtonHeight = 60.0; // Altura reservada para el botón de cerrar
+    final closeButtonHeight = 60.0;
 
-    return Column(
-      children: [
-        // Espacio superior para el botón de cerrar (no interceptar toques aquí)
-        SizedBox(height: topPadding + closeButtonHeight),
-
-        // Áreas táctiles en el resto de la pantalla
-        Expanded(
-          child: Row(
-            children: [
-              // Área izquierda para story anterior (30% del ancho)
-              Expanded(
-                flex: 3,
-                child: GestureDetector(
-                  onTap: () {
-                    // Si estamos en el primer media de la story, ir a la story anterior
-                    if (currentMediaIndex == 0) {
-                      widget.onPrevious?.call();
-                    } else {
-                      _previousMedia();
-                    }
-                  },
-                  child: Container(
-                    color: Colors.transparent,
-                    height: double.infinity,
-                  ),
-                ),
-              ),
-
-              // Área central para pausar/reanudar (40% del ancho)
-              Expanded(
-                flex: 4,
-                child: GestureDetector(
-                  onTap: _togglePause,
-                  child: Container(
-                    color: Colors.transparent,
-                    height: double.infinity,
-                  ),
-                ),
-              ),
-
-              // Área derecha para siguiente story (30% del ancho)
-              Expanded(
-                flex: 3,
-                child: GestureDetector(
-                  onTap: () {
-                    // Si estamos en el último media de la story, ir a la siguiente story
-                    if (currentMediaIndex ==
-                        widget.experience.media.length - 1) {
-                      widget.onNext?.call();
-                    } else {
-                      _nextMedia();
-                    }
-                  },
-                  child: Container(
-                    color: Colors.transparent,
-                    height: double.infinity,
-                  ),
-                ),
-              ),
-            ],
+    return Positioned(
+      top: topPadding + closeButtonHeight,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: GestureDetector(
+              onTap: () {
+                if (currentMediaIndex == 0) {
+                  widget.onPrevious?.call();
+                } else {
+                  _previousMedia();
+                }
+              },
+              child: Container(color: Colors.transparent),
+            ),
           ),
-        ),
-      ],
+          Expanded(
+            flex: 4,
+            child: GestureDetector(
+              onTap: _togglePause,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: GestureDetector(
+              onTap: () {
+                if (currentMediaIndex == widget.experience.media.length - 1) {
+                  widget.onNext?.call();
+                } else {
+                  _nextMedia();
+                }
+              },
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -767,6 +723,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     super.dispose();
   }
 }
+
 /// Widget para mostrar una opción de publicidad
 class _AdvertisementOptionButton extends StatelessWidget {
   final IconData icon;
@@ -816,7 +773,9 @@ class _AdvertisementOptionButton extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                color: isPremium ? ColorTokens.secondary50 : theme.iconTheme.color,
+                color: isPremium
+                    ? ColorTokens.secondary50
+                    : theme.iconTheme.color,
                 size: 24,
               ),
             ),
@@ -864,8 +823,9 @@ class _AdvertisementOptionButton extends StatelessWidget {
                     description,
                     style: TextStyle(
                       fontSize: 12,
-                      color: theme.textTheme.bodySmall?.color
-                          ?.withValues(alpha: 0.7),
+                      color: theme.textTheme.bodySmall?.color?.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                   ),
                 ],

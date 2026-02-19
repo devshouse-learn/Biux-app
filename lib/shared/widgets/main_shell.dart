@@ -20,7 +20,7 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  int _selectedIndex = 2; // Por defecto en Mis Bicis (ahora es índice 2)
+  int _selectedIndex = 0; // Por defecto en Inicio (índice 0)
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +75,8 @@ class _MainShellState extends State<MainShell> {
         unselectedFontSize: 10,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.collections, size: 24),
-            label: 'Historias',
+            icon: Icon(Icons.home, size: 24),
+            label: 'Inicio',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_bike, size: 24),
@@ -89,6 +89,10 @@ class _MainShellState extends State<MainShell> {
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag, size: 24),
             label: 'Tienda',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, size: 24),
+            label: 'Mi Perfil',
           ),
         ],
       ),
@@ -106,7 +110,7 @@ class _MainShellState extends State<MainShell> {
 
     switch (index) {
       case 0:
-        // Historias
+        // Inicio
         context.go('/stories');
         break;
       case 1:
@@ -120,6 +124,10 @@ class _MainShellState extends State<MainShell> {
       case 3:
         // Tienda
         context.go('/shop');
+        break;
+      case 4:
+        // Mi Perfil
+        context.go('/profile');
         break;
     }
   }
@@ -148,6 +156,10 @@ class _MainShellState extends State<MainShell> {
     } else if (location.startsWith('/shop')) {
       setState(() {
         _selectedIndex = 3;
+      });
+    } else if (location.startsWith('/profile')) {
+      setState(() {
+        _selectedIndex = 4;
       });
     }
   }

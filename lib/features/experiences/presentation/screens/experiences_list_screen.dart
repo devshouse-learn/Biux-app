@@ -89,11 +89,15 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
-          'Mi Feed',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
         elevation: 0,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        title: GestureDetector(
+          onTap: _loadFeed,
+          child: const Text(
+            'Mi Feed',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -381,15 +385,22 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   /// Navegar directamente a crear publicación (comportamiento original)
   void _navigateToCreatePost(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CreateExperienceScreen(
-          experienceType: ExperienceType.general,
-          isPostMode: true, // Modo publicación permanente
-          textOnly: false, // Permite multimedia
-        ),
-      ),
-    );
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => const CreateExperienceScreen(
+              experienceType: ExperienceType.general,
+              isPostMode: true, // Modo publicación permanente
+              textOnly: false, // Permite multimedia
+            ),
+          ),
+        )
+        .then((result) {
+          // Si se creó exitosamente, recargar el feed
+          if (result == true) {
+            _loadFeed();
+          }
+        });
   }
 
   /// Muestra opciones para crear POST (con multimedia o solo texto)

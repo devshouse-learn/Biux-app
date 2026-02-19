@@ -250,8 +250,8 @@ String? _guard(BuildContext context, GoRouterState state) {
   // Si está en la ruta root '/', decidir dónde ir según autenticación
   if (effectiveLocation == '/') {
     if (isLoggedIn) {
-      print('📍 Usuario logueado en root, redirigiendo a rutas');
-      return '/roads';
+      print('📍 Usuario logueado en root, redirigiendo a inicio');
+      return '/stories';
     } else {
       print('📍 Usuario no logueado en root, redirigiendo al login');
       return AppRoutes.login;

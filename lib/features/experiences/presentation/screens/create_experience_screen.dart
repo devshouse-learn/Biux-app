@@ -37,7 +37,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
   // Tipo de contenido (Story o Post)
   late String _contentType;
-  
+
   // Toggle para marcador de publicidad
   bool _isAdvertisement = false;
 
@@ -106,6 +106,29 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             backgroundColor: ColorTokens.primary30,
             elevation: 0,
             iconTheme: const IconThemeData(color: Colors.white),
+            leading: PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert, color: Colors.white),
+              onSelected: (value) {
+                if (value == 'delete') {
+                  _showDeleteDialog(context);
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_outline, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text(
+                        'Descartar Historia',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             actions: [
               if (provider.isUploading)
                 const Padding(
@@ -487,9 +510,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'La descripción es requerida';
-              }
+              // La descripción es opcional
               return null;
             },
             onChanged: provider.updateDescription,
@@ -750,8 +771,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       return false;
     }
 
-    // Posts con multimedia: multimedia opcional
-    return hasDescription && !provider.isUploading && !isProcessing;
+    // Posts con multimedia: REQUIEREN multimedia, descripción es opcional
+    return hasMedia && !provider.isUploading && !isProcessing;
   }
 
   Future<void> _publishExperience() async {
@@ -778,6 +799,34 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         provider.clearError();
       }
     }
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Descartar Historia'),
+        content: const Text(
+          '¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              // Limpiar el estado del provider antes de salir
+              final provider = context.read<ExperienceCreatorProvider>();
+              provider.reset();
+              Navigator.of(context).pop(false);
+            },
+            child: const Text('Descartar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Construye el selector de tipo de contenido (Story vs Post)

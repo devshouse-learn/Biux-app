@@ -170,20 +170,26 @@ class UserProfileProvider extends ChangeNotifier {
           .collection('users')
           .doc(userId)
           .snapshots()
-          .listen((doc) {
-        if (doc.exists) {
-          final data = doc.data() as Map<String, dynamic>;
-          try {
-            _currentProfile = BiuxUser.fromJsonMap({...data, 'id': userId});
-            notifyListeners();
-            print('🔄 Perfil actualizado en tiempo real: $userId');
-          } catch (e) {
-            print('Error parseando perfil en listener: $e');
-          }
-        }
-      }, onError: (error) {
-        print('Error en listener de perfil: $error');
-      });
+          .listen(
+            (doc) {
+              if (doc.exists) {
+                final data = doc.data() as Map<String, dynamic>;
+                try {
+                  _currentProfile = BiuxUser.fromJsonMap({
+                    ...data,
+                    'id': userId,
+                  });
+                  notifyListeners();
+                  print('🔄 Perfil actualizado en tiempo real: $userId');
+                } catch (e) {
+                  print('Error parseando perfil en listener: $e');
+                }
+              }
+            },
+            onError: (error) {
+              print('Error en listener de perfil: $error');
+            },
+          );
     } catch (e) {
       print('Error configurando listener de perfil: $e');
     }
