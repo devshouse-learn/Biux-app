@@ -166,11 +166,11 @@ class _AddStoryButtonState extends State<_AddStoryButton> {
                 ),
                 const SizedBox(height: 4),
                 SizedBox(
-                  width: 70,
+                  width: 80,
                   child: Text(
                     'Tu story',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: theme.textTheme.bodySmall?.color,
                     ),
                     textAlign: TextAlign.center,

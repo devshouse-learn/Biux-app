@@ -246,6 +246,43 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               ),
             ),
 
+            // Botón de visualizadores (ojo con número de vistas)
+            if (FirebaseAuth.instance.currentUser?.uid ==
+                widget.experience.user.id)
+              Positioned(
+                bottom: MediaQuery.of(context).padding.bottom + 150,
+                left: 80,
+                child: GestureDetector(
+                  onTap: () => _showViewersModal(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.experience.views.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
             // Áreas de toque para navegación
             _buildTouchAreas(),
 
@@ -633,6 +670,112 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text('Cancelar'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Muestra modal con información de visualizaciones
+  void _showViewersModal(BuildContext context) {
+    final theme = Theme.of(context);
+    final viewsCount = widget.experience.views;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: theme.cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.visibility,
+                    color: ColorTokens.primary50,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Vista de tu historia',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$viewsCount ${viewsCount == 1 ? 'visualización' : 'visualizaciones'}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              
+              // Información sobre los visualizadores
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: ColorTokens.primary50.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: ColorTokens.primary50.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Información de visualizadores',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      viewsCount > 0
+                          ? 'Tu historia ha sido vista $viewsCount ${viewsCount == 1 ? 'vez' : 'veces'}. Los usuarios que la vieron verán una marca junto a tu nombre.'
+                          : 'Aún no hay visualizaciones de esta historia. Comparte con más amigos para aumentar el alcance.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Botón de cerrar
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorTokens.primary50,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text(
+                  'Entendido',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
