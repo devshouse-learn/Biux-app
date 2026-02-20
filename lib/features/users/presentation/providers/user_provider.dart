@@ -483,3 +483,5 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+// Resolución de conflictos: Mantener la lógica más reciente y relevante para el proyecto.

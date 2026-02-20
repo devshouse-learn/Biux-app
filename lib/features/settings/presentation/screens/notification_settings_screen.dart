@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/color_tokens.dart';
 import '../providers/notification_settings_provider.dart';
-// import '../../../../core/debug/notification_debug_widget.dart'; // Widget de debug comentado
+// import '../../../../core/debug/notification_debug_widget.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -18,6 +18,7 @@ class _NotificationSettingsScreenState
   @override
   void initState() {
     super.initState();
+    // Cargar configuración al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationSettingsProvider>().loadSettings();
     });
@@ -63,15 +64,16 @@ class _NotificationSettingsScreenState
               );
             },
           ),
+          // Botón Salir / Volver
+          // Botón de volver (solo icono)
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             tooltip: 'Volver',
             onPressed: () {
-              if (Navigator.of(context).canPop()) {
+              if (Navigator.of(context).canPop())
                 Navigator.of(context).pop();
-              } else {
+              else
                 context.go('/profile');
-              }
             },
           ),
         ],
@@ -389,7 +391,7 @@ class _NotificationSettingsScreenState
           Switch(
             value: enabled,
             onChanged: provider.togglePushNotifications,
-            activeColor: Colors.white,
+            activeThumbColor: Colors.white,
             activeTrackColor: Colors.white.withValues(alpha: 0.5),
             inactiveThumbColor: Colors.white70,
             inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
@@ -471,7 +473,7 @@ class _NotificationSettingsScreenState
             Switch(
               value: value,
               onChanged: enabled ? onChanged : null,
-              activeColor: ColorTokens.primary30,
+              activeThumbColor: ColorTokens.primary30,
               activeTrackColor: ColorTokens.primary30.withValues(alpha: 0.5),
               inactiveThumbColor: isDark
                   ? Colors.grey.shade500
@@ -500,7 +502,11 @@ class _NotificationSettingsScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral60),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -515,8 +521,12 @@ class _NotificationSettingsScreenState
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary30,
+              foregroundColor: Colors.white,
             ),
-            child: const Text('Restaurar'),
+            child: const Text(
+              'Continuar',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

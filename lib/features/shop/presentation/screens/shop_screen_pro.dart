@@ -9,6 +9,8 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/features/shop/presentation/widgets/shop_menu_drawer_widget.dart';
+import 'package:biux/features/shop/presentation/widgets/shop_admin_dashboard_widget_v2.dart';
 import '../widgets/request_seller_permission_dialog.dart';
 // import '../widgets/recommended_for_rides_widget.dart'; // actualmente no usado
 
@@ -68,6 +70,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const ShopMenuDrawer(),
       backgroundColor: ColorTokens.neutral99, // Fondo claro y limpio
       body: CustomScrollView(
         controller: _scrollController,
@@ -75,99 +78,21 @@ class _ShopScreenProState extends State<ShopScreenPro>
           // AppBar limpio estilo Chrome
           _buildChromeStyleAppBar(),
 
-          // Categorías horizontales con chips
-          _buildCategoryChips(),
-
-          // Barra de ofertas desplegable
-          SliverToBoxAdapter(child: _buildOffersBar()),
+          // Selector de categoría desplegable
+          SliverToBoxAdapter(child: _buildCategoryDropdown()),
 
           // Productos destacados
           _buildFeaturedSection(),
 
-          // Toolbar de filtros minimalista
+          // Toolbar
           SliverToBoxAdapter(child: _buildMinimalToolbar()),
 
-          // Panel de filtros (expandible)
+          // Filtros avanzados
           if (_showFilters) SliverToBoxAdapter(child: _buildAdvancedFilters()),
 
-          // Grid de productos limpio
+          // Grid de productos
           _buildProductsGrid(),
         ],
-      ),
-
-      // Floating Action Buttons
-      floatingActionButton: Consumer<UserProvider>(
-        builder: (context, userProvider, child) {
-          final currentUser = userProvider.user;
-          final canCreateProducts = currentUser?.canCreateProducts ?? false;
-
-          // � Log simplificado (descomentar líneas abajo para más detalle)
-          if (canCreateProducts) {
-            print(
-              '✅ Botón de agregar producto VISIBLE para: ${currentUser?.name}',
-            );
-          }
-          // print('🔴 User: ${currentUser?.name ?? "NULL"}');
-          // print('🔴 UID: ${currentUser?.uid ?? "NULL"}');
-          // print('🔴 isAdmin: ${currentUser?.isAdmin ?? false}');
-          // print('🔴 canSellProducts: ${currentUser?.canSellProducts ?? false}');
-          // print('🔴 canCreateProducts: $canCreateProducts');
-
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Botón para crear/agregar producto - Solo para usuarios autorizados
-              if (canCreateProducts) ...[
-                FloatingActionButton(
-                  heroTag: 'add_product',
-                  onPressed: () {
-                    // Si el usuario puede crear productos, ir al admin
-                    if (currentUser?.isAdmin == true ||
-                        currentUser?.canSellProducts == true) {
-                      context.go('/shop/admin');
-                    } else {
-                      // Mostrar diálogo pidiendo autorización
-                      _showPermissionRequestDialog(context);
-                    }
-                  },
-                  backgroundColor: ColorTokens.secondary50,
-                  tooltip: 'Agregar Producto',
-                  child: const Icon(
-                    Icons.add_shopping_cart,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-
-              // Botón de filtros
-              FloatingActionButton.small(
-                heroTag: 'filters',
-                onPressed: () => setState(() => _showFilters = !_showFilters),
-                backgroundColor: Colors.white,
-                child: Icon(
-                  _showFilters ? Icons.filter_alt_off : Icons.filter_alt,
-                  color: ColorTokens.primary30,
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Botón scroll to top
-              FloatingActionButton.small(
-                heroTag: 'scroll_top',
-                onPressed: () {
-                  _scrollController.animateTo(
-                    0,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                backgroundColor: ColorTokens.primary30,
-                child: const Icon(Icons.arrow_upward, color: Colors.white),
-              ),
-            ],
-          );
-        },
       ),
     );
   }
@@ -181,6 +106,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
       backgroundColor: ColorTokens.neutral100,
       surfaceTintColor: Colors.transparent,
       toolbarHeight: 70,
+      leading: IconButton(
+        icon: const Icon(Icons.menu, color: ColorTokens.primary10),
+        onPressed: () => Scaffold.of(context).openDrawer(),
+      ),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           color: ColorTokens.neutral100,
@@ -298,6 +227,101 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             ),
                             textAlign: TextAlign.center,
                           ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+            // Menú de opciones (admin, ofertas, agregar producto)
+            Consumer<UserProvider>(
+              builder: (context, userProvider, child) {
+                final currentUser = userProvider.user;
+                final isAdmin = currentUser?.isAdmin ?? false;
+                final canCreateProducts =
+                    currentUser?.canCreateProducts ?? false;
+
+                return PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: ColorTokens.primary30,
+                    size: 24,
+                  ),
+                  offset: const Offset(0, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  color: Colors.white,
+                  elevation: 8,
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'offers':
+                        _showOffersBottomSheet(context);
+                        break;
+                      case 'admin':
+                        _showAdminDashboardSheet(context);
+                        break;
+                      case 'add':
+                        if (canCreateProducts) {
+                          context.push('/shop/add-product');
+                        } else {
+                          showRequestSellerPermissionDialog(context);
+                        }
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'offers',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.local_offer,
+                            color: ColorTokens.warning50,
+                            size: 22,
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Ofertas y Beneficios',
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isAdmin)
+                      PopupMenuItem(
+                        value: 'admin',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.admin_panel_settings,
+                              color: ColorTokens.primary30,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Panel Admin',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (canCreateProducts)
+                      PopupMenuItem(
+                        value: 'add',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add_circle,
+                              color: ColorTokens.success40,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Agregar Producto',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ],
                         ),
                       ),
                   ],
@@ -723,7 +747,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => context.push('/shop/product/${product.id}'),
+          onTap: () => context.push('/shop/${product.id}'),
           borderRadius: BorderRadius.circular(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1899,7 +1923,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   /// Card de producto estilo grid (Amazon/MercadoLibre)
   Widget _buildProductCardGrid(ProductEntity product) {
     return GestureDetector(
-      onTap: () => context.go('/shop/${product.id}'),
+      onTap: () => context.push('/shop/${product.id}'),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -2791,6 +2815,384 @@ class _ShopScreenProState extends State<ShopScreenPro>
     // Usar el nuevo widget de diálogo
     showRequestSellerPermissionDialog(context);
   }
+
+  /// Dropdown compacto para seleccionar categoría
+  Widget _buildCategoryDropdown() {
+    final categories = [
+      {'icon': Icons.apps, 'label': 'Todos', 'value': null},
+      {
+        'icon': Icons.pedal_bike,
+        'label': 'Bicis',
+        'value': ProductCategories.bikes,
+      },
+      {
+        'icon': Icons.checkroom,
+        'label': 'Jerseys',
+        'value': ProductCategories.jerseys,
+      },
+      {
+        'icon': Icons.sports,
+        'label': 'Culotes',
+        'value': ProductCategories.shorts,
+      },
+      {
+        'icon': Icons.sports_motorsports,
+        'label': 'Cascos',
+        'value': ProductCategories.helmets,
+      },
+      {
+        'icon': Icons.directions_run,
+        'label': 'Calzado',
+        'value': ProductCategories.shoes,
+      },
+      {
+        'icon': Icons.settings,
+        'label': 'Componentes',
+        'value': ProductCategories.components,
+      },
+      {
+        'icon': Icons.category,
+        'label': 'Accesorios',
+        'value': ProductCategories.accessories,
+      },
+    ];
+
+    return Container(
+      color: ColorTokens.neutral100,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+        decoration: BoxDecoration(
+          color: ColorTokens.neutral99,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: ColorTokens.neutral90),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<int>(
+            value: _tabController.index,
+            isExpanded: true,
+            icon: Icon(Icons.keyboard_arrow_down, color: ColorTokens.neutral50),
+            dropdownColor: ColorTokens.neutral100,
+            borderRadius: BorderRadius.circular(12),
+            items: categories.asMap().entries.map((entry) {
+              final idx = entry.key;
+              final cat = entry.value;
+              return DropdownMenuItem<int>(
+                value: idx,
+                child: Row(
+                  children: [
+                    Icon(
+                      cat['icon'] as IconData,
+                      size: 20,
+                      color: _tabController.index == idx
+                          ? ColorTokens.primary30
+                          : ColorTokens.neutral50,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      cat['label'] as String,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: _tabController.index == idx
+                            ? FontWeight.w600
+                            : FontWeight.w400,
+                        color: _tabController.index == idx
+                            ? ColorTokens.primary30
+                            : ColorTokens.neutral30,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            onChanged: (idx) {
+              if (idx != null) {
+                setState(() {
+                  _tabController.animateTo(idx);
+                });
+                final cat = categories[idx];
+                final value = cat['value'] as String?;
+                if (value == null) {
+                  context.read<ShopProvider>().loadProducts();
+                } else {
+                  context.read<ShopProvider>().filterByCategory(value);
+                }
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Bottom sheet con ofertas y beneficios
+  void _showOffersBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral90,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Row(
+              children: [
+                Icon(Icons.local_offer, color: ColorTokens.warning50, size: 24),
+                const SizedBox(width: 10),
+                Text(
+                  'Ofertas y Beneficios',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: ColorTokens.neutral10,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildOfferCard(
+                    '⚡',
+                    'Ofertas\nRelámpago',
+                    ColorTokens.warning99,
+                    ColorTokens.warning50,
+                    () {
+                      Navigator.pop(ctx);
+                      _showFlashOffersDialog(context);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildOfferCard(
+                    '🎯',
+                    'Descuentos\nGrupales',
+                    ColorTokens.info90,
+                    ColorTokens.secondary50,
+                    () {
+                      Navigator.pop(ctx);
+                      _showGroupDiscountsDialog(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildOfferCard(
+                    '🏆',
+                    'Productos\nPremium',
+                    ColorTokens.secondary99,
+                    ColorTokens.primary50,
+                    () {
+                      Navigator.pop(ctx);
+                      _showPremiumProductsDialog(context);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildOfferCard(
+                    '🚚',
+                    'Envío\nGratis',
+                    ColorTokens.success99,
+                    ColorTokens.success40,
+                    () {
+                      Navigator.pop(ctx);
+                      _showShippingDiscountsDialog(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Bottom sheet con panel de administración
+  void _showAdminDashboardSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral90,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.admin_panel_settings,
+                    color: ColorTokens.primary30,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Panel de Administración',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: ColorTokens.neutral10,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: Icon(Icons.close, color: ColorTokens.neutral50),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: ShopAdminDashboardWidget(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget FAB con menú desplegable para opciones de tienda
+class _ShopMenuFab extends StatelessWidget {
+  final bool isAdmin;
+  final bool canCreateProducts;
+  final bool showOffersExpanded;
+  final VoidCallback onToggleOffers;
+  final VoidCallback onAdminDashboard;
+  final VoidCallback onAddProduct;
+  final VoidCallback onRequestPermission;
+
+  const _ShopMenuFab({
+    required this.isAdmin,
+    required this.canCreateProducts,
+    required this.showOffersExpanded,
+    required this.onToggleOffers,
+    required this.onAdminDashboard,
+    required this.onAddProduct,
+    required this.onRequestPermission,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        switch (value) {
+          case 'offers':
+            onToggleOffers();
+            break;
+          case 'admin':
+            onAdminDashboard();
+            break;
+          case 'add':
+            if (canCreateProducts) {
+              onAddProduct();
+            } else {
+              onRequestPermission();
+            }
+            break;
+        }
+      },
+      offset: const Offset(0, -180),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      elevation: 8,
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'offers',
+          child: Row(
+            children: [
+              Icon(Icons.local_offer, color: ColorTokens.warning50, size: 22),
+              const SizedBox(width: 12),
+              const Text(
+                'Ofertas y Beneficios',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+        ),
+        if (isAdmin)
+          PopupMenuItem(
+            value: 'admin',
+            child: Row(
+              children: [
+                Icon(
+                  Icons.admin_panel_settings,
+                  color: ColorTokens.primary30,
+                  size: 22,
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Panel Admin',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+        if (canCreateProducts)
+          PopupMenuItem(
+            value: 'add',
+            child: Row(
+              children: [
+                Icon(Icons.add_circle, color: ColorTokens.success40, size: 22),
+                const SizedBox(width: 12),
+                const Text(
+                  'Agregar Producto',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+      ],
+      child: FloatingActionButton.small(
+        heroTag: 'shopMenu',
+        onPressed: null, // PopupMenuButton maneja el tap
+        backgroundColor: ColorTokens.primary30,
+        child: const Icon(Icons.more_vert, color: Colors.white, size: 22),
+      ),
+    );
+  }
 }
 
 /// Custom painter para patrón de bicicletas en el banner
@@ -2835,7 +3237,7 @@ class BikePatternPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
 // Extensión para el estado con los métodos de diálogos

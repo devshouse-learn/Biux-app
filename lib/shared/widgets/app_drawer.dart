@@ -165,18 +165,6 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: EdgeInsets.zero,
               children: [
                 ListTile(
-                  leading: Icon(
-                    Icons.person,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  title: Text('Mi Perfil'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.go(AppRoutes.profile);
-                  },
-                ),
-                Divider(),
-                ListTile(
                   leading: Icon(Icons.settings, color: ColorTokens.neutral60),
                   title: Text('Configuración'),
                   onTap: () {

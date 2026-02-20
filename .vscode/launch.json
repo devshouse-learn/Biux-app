@@ -32,11 +32,8 @@
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
-            "preLaunchTask": "flutter-ios-simulator",
-            "env": {
-                "FLUTTER_DEVICE_TYPE": "ios"
-            }
-        },
+
+        },  
         {
             "name": "biux (Web)",
             "request": "launch",

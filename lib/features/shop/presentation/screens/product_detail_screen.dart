@@ -148,8 +148,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _goBack() {
-    if (Navigator.canPop(context)) {
-      Navigator.of(context).pop();
+    if (context.canPop()) {
+      context.pop();
     } else {
       context.go('/shop');
     }
@@ -507,7 +507,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             backgroundColor: ColorTokens.primary30,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => _goBack(),
             ),
             flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
             actions: [
