@@ -246,8 +246,8 @@ class _CarouselImagesState extends State<_CarouselImages> {
           children: [
             Container(
               padding: const EdgeInsets.only(
-                top: 8,
-                bottom: 8,
+                top: 6,
+                bottom: 6,
                 left: 50,
                 right: 10,
               ),
