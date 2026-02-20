@@ -9,6 +9,7 @@ class Story {
   BiuxUser user;
   String creationDate;
   List<ReactionStory> listReactions;
+  bool isAdvertisement;
   String get fileUrl1 {
     try {
       return files.first;
@@ -41,6 +42,7 @@ class Story {
     this.files = const [],
     this.listReactions = const [],
     this.creationDate = '',
+    this.isAdvertisement = false,
   });
 
   factory Story.fromJson(Map json, String id) => Story(
@@ -57,6 +59,7 @@ class Story {
               .map((e) => ReactionStory.fromJson(e))
               .toList()
         : [],
+    isAdvertisement: json['isAdvertisement'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -66,5 +69,6 @@ class Story {
     'tags': tags,
     'creationDate': creationDate,
     'listReactions': listReactions.map((e) => e.toJson()).toList(),
+    'isAdvertisement': isAdvertisement,
   };
 }

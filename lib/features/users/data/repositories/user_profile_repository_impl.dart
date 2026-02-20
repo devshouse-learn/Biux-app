@@ -14,38 +14,51 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (query.isEmpty) return [];
 
-      // Buscar por nombre completo o nombre de usuario
-      final nameQuery = await _firestore
-          .collection('users')
-          .where('fullName', isGreaterThanOrEqualTo: query)
-          .where('fullName', isLessThanOrEqualTo: query + '\uf8ff')
-          .limit(20)
-          .get();
+      final q = query.toLowerCase().trim();
 
-      final usernameQuery = await _firestore
-          .collection('users')
-          .where('userName', isGreaterThanOrEqualTo: query)
-          .where('userName', isLessThanOrEqualTo: query + '\uf8ff')
-          .limit(20)
-          .get();
+      // Traer todos los usuarios disponibles y filtrar en memoria
+      // Esto garantiza resultados con búsqueda case-insensitive
+      final allUsers = await _firestore.collection('users').limit(1000).get();
 
-      // Combinar resultados y eliminar duplicados
-      Set<String> userIds = {};
-      List<BiuxUser> users = [];
+      List<BiuxUser> results = [];
 
-      for (var doc in [...nameQuery.docs, ...usernameQuery.docs]) {
-        if (!userIds.contains(doc.id)) {
-          userIds.add(doc.id);
-          final userData = doc.data();
+      for (var doc in allUsers.docs) {
+        if (doc.id == _currentUserId) continue;
+
+        final userData = doc.data();
+        final fullName = userData['fullName']?.toString().toLowerCase() ?? '';
+        final userName = userData['userName']?.toString().toLowerCase() ?? '';
+        final description =
+            userData['description']?.toString().toLowerCase() ?? '';
+
+        // Buscar en cualquier campo
+        if (fullName.contains(q) ||
+            userName.contains(q) ||
+            description.contains(q)) {
           userData['id'] = doc.id;
-          users.add(BiuxUser.fromJsonMap(userData));
+          results.add(BiuxUser.fromJsonMap(userData));
         }
       }
 
-      // Filtrar usuario actual de los resultados
-      users.removeWhere((user) => user.id == _currentUserId);
+      // Ordenar: prioridad a coincidencias exactas y al inicio
+      results.sort((a, b) {
+        final aFullLower = a.fullName.toLowerCase();
+        final aUserLower = a.userName.toLowerCase();
+        final bFullLower = b.fullName.toLowerCase();
+        final bUserLower = b.userName.toLowerCase();
 
-      return users;
+        // Exact match tiene máxima prioridad
+        if (aFullLower == q || aUserLower == q) return -1;
+        if (bFullLower == q || bUserLower == q) return 1;
+
+        // Starts with tiene prioridad media
+        if (aFullLower.startsWith(q) || aUserLower.startsWith(q)) return -1;
+        if (bFullLower.startsWith(q) || bUserLower.startsWith(q)) return 1;
+
+        return 0;
+      });
+
+      return results;
     } catch (e) {
       print('Error buscando usuarios: $e');
       return [];

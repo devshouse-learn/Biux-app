@@ -88,7 +88,40 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       final results = await _repository.searchUsers(query);
-      _searchResults = results;
+
+      // Aplicar filtrado adicional en memoria para mejorar resultados
+      final q = query.toLowerCase().trim();
+      final filtered = results.where((user) {
+        final fullName = user.fullName.toLowerCase();
+        final userName = user.userName.toLowerCase();
+        final description = user.description.toLowerCase();
+
+        // Dar prioridad a coincidencias exactas y al inicio
+        return fullName.startsWith(q) ||
+            userName.startsWith(q) ||
+            fullName.contains(q) ||
+            userName.contains(q) ||
+            description.contains(q);
+      }).toList();
+
+      // Ordenar: primero los que comienzan con la búsqueda, luego los que la contienen
+      filtered.sort((a, b) {
+        final aFullName = a.fullName.toLowerCase();
+        final aUserName = a.userName.toLowerCase();
+        final bFullName = b.fullName.toLowerCase();
+        final bUserName = b.userName.toLowerCase();
+
+        final aStartsWithQuery =
+            aFullName.startsWith(q) || aUserName.startsWith(q);
+        final bStartsWithQuery =
+            bFullName.startsWith(q) || bUserName.startsWith(q);
+
+        if (aStartsWithQuery && !bStartsWithQuery) return -1;
+        if (!aStartsWithQuery && bStartsWithQuery) return 1;
+        return 0;
+      });
+
+      _searchResults = filtered;
     } catch (e) {
       print('Error en búsqueda: $e');
       _searchResults = [];

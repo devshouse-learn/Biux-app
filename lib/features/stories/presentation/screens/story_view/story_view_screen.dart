@@ -22,39 +22,47 @@ class StoryViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<StoryViewBloc>();
-    
-    // Construir lista de stories con inserciones promocionales
-    final displayStories = <MapEntry<Story, bool>>[];
-    for (int i = 0; i < bloc.listStory.length; i++) {
-      displayStories.add(MapEntry(bloc.listStory[i], false)); // Story normal
-      
-      // Cada 5 stories, insertar una promocional
-      if ((i + 1) % 5 == 0 && i < bloc.listStory.length - 1) {
-        displayStories.add(MapEntry(bloc.listStory[i], true)); // Story promocional
+
+    // Separar historias publicidad de historias normales
+    final advertisementStories = <Story>[];
+    final regularStories = <Story>[];
+
+    for (final story in bloc.listStory) {
+      if (story.isAdvertisement) {
+        advertisementStories.add(story);
+      } else {
+        regularStories.add(story);
       }
     }
-    
+
+    // Combinar: primero publicidades, luego historias normales
+    final displayStories = [...advertisementStories, ...regularStories];
+
     return Scaffold(
       body: ListView.builder(
         itemCount: displayStories.length,
         itemBuilder: (context, index) {
-          final entry = displayStories[index];
+          final story = displayStories[index];
           return _StoryWidget(
-            story: entry.key,
-            isPromotion: entry.value,
+            story: story,
+            isAdvertisement: story.isAdvertisement,
           );
         },
       ),
     );
   }
 
-// --- Clases privadas movidas a top-level ---
+  // --- Clases privadas movidas a top-level ---
 }
 
 class _StoryWidget extends StatelessWidget {
   final Story story;
-  final bool isPromotion;
-  const _StoryWidget({Key? key, required this.story, this.isPromotion = false}) : super(key: key);
+  final bool isAdvertisement;
+  const _StoryWidget({
+    Key? key,
+    required this.story,
+    this.isAdvertisement = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +74,15 @@ class _StoryWidget extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(top: 30),
             width: sizeScreen.width * 0.8,
-            child: _CarouselImages(story: story, isPromotion: isPromotion),
+            child: _CarouselImages(
+              story: story,
+              isAdvertisement: isAdvertisement,
+            ),
           ),
         ),
-        _PhotoUserStory(story: story),
+        _PhotoUserStory(story: story, isAdvertisement: isAdvertisement),
+        if (isAdvertisement)
+          Positioned(top: 50, right: 20, child: _AdvertisementBadge()),
       ],
     );
   }
@@ -77,31 +90,56 @@ class _StoryWidget extends StatelessWidget {
 
 class _PhotoUserStory extends StatelessWidget {
   final Story story;
-  const _PhotoUserStory({Key? key, required this.story}) : super(key: key);
+  final bool isAdvertisement;
+  const _PhotoUserStory({
+    Key? key,
+    required this.story,
+    this.isAdvertisement = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final sizeScreen = MediaQuery.of(context).size;
-    return GestureDetector(
-      child: Container(
-        width: 80,
-        height: 80,
-        margin: EdgeInsets.only(left: sizeScreen.width * 0.1, top: 10),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            width: 4,
-          ),
-          image: DecorationImage(
-            image: CachedNetworkImageProvider(
-              story.user.photo,
-              cacheManager: OptimizedCacheManager.avatarInstance,
+    return Stack(
+      children: [
+        GestureDetector(
+          child: Container(
+            width: 80,
+            height: 80,
+            margin: EdgeInsets.only(left: sizeScreen.width * 0.1, top: 10),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: isAdvertisement
+                    ? Color(0xFFFFD700)
+                    : Theme.of(context).scaffoldBackgroundColor,
+                width: isAdvertisement ? 5 : 4,
+              ),
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(
+                  story.user.photo,
+                  cacheManager: OptimizedCacheManager.avatarInstance,
+                ),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.circular(100.0),
             ),
-            fit: BoxFit.cover,
           ),
-          borderRadius: BorderRadius.circular(100.0),
         ),
-      ),
+        if (isAdvertisement)
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Color(0xFFFFD700),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: Icon(Icons.flash_on, size: 16, color: Color(0xFF1A1A1A)),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -161,8 +199,9 @@ class _ButtonLikesStory extends StatelessWidget {
 
 class _CarouselImages extends StatefulWidget {
   final Story story;
-  final bool isPromotion;
-  _CarouselImages({Key? key, required this.story, this.isPromotion = false}) : super(key: key);
+  final bool isAdvertisement;
+  _CarouselImages({Key? key, required this.story, this.isAdvertisement = false})
+    : super(key: key);
 
   @override
   State<_CarouselImages> createState() => _CarouselImagesState();
@@ -260,26 +299,45 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     ),
                     child: Image.asset(Images.kImageShare, height: 20),
                   ),
-                  if (widget.isPromotion) ...[
+                  if (widget.isAdvertisement) ...[
                     SizedBox(width: 12),
                     GestureDetector(
-                      onTap: () => _showPromotionDialog(context),
+                      onTap: () => _showAdvertisementInfoDialog(context),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Promoción',
-                          style: Styles.accentTextThemeWhite.copyWith(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFFFFD700).withValues(alpha: 0.4),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.flash_on, color: Colors.white, size: 14),
+                            SizedBox(width: 4),
+                            Text(
+                              'PUBLICIDAD',
+                              style: Styles.accentTextThemeWhite.copyWith(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -498,58 +556,172 @@ class _CarouselImagesState extends State<_CarouselImages> {
     );
   }
 
-  void _showPromotionDialog(BuildContext context) {
+  void _showAdvertisementInfoDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.local_offer, color: Colors.orange, size: 24),
-              SizedBox(width: 8),
-              Text('Contenido Promocional'),
-            ],
+          backgroundColor: ColorTokens.neutral100,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.flash_on, color: Colors.white, size: 28),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'HISTORIA PROMOCIONADA',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      Text(
+                        'Contenido impulsado',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 8),
+                // Información del usuario
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundImage: CachedNetworkImageProvider(
+                        widget.story.user.photo,
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.story.user.fullName,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: ColorTokens.neutral90,
+                            ),
+                          ),
+                          Text(
+                            '@${widget.story.user.userName}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: ColorTokens.neutral60,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 16),
+                Divider(height: 1),
+                SizedBox(height: 16),
+
+                // Descripción
                 Text(
-                  'Este contenido es una promoción especial de ${widget.story.user.fullName}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  'Sobre esta publicidad:',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: ColorTokens.neutral80,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  widget.story.description.isNotEmpty
+                      ? widget.story.description
+                      : 'Esta historia ha sido impulsada para alcanzar a más usuarios. El creador ha elegido promocionar su contenido para obtener mayor visibilidad.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: ColorTokens.neutral80,
+                    height: 1.5,
+                  ),
+                ),
+
+                SizedBox(height: 16),
+                Divider(height: 1),
+                SizedBox(height: 16),
+
+                // Beneficios
+                Text(
+                  '✨ Ventajas de la publicidad:',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFFFD700),
+                  ),
                 ),
                 SizedBox(height: 12),
-                Text(
-                  'Descripción:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 6),
-                Text(widget.story.description),
-                SizedBox(height: 12),
-                if (widget.story.tags.isNotEmpty) ...[
-                  Text(
-                    'Categorías:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 6),
-                  Wrap(
-                    spacing: 8,
-                    children: widget.story.tags.map((tag) {
-                      return Chip(
-                        label: Text('#$tag'),
-                        backgroundColor: Colors.orange.withValues(alpha: 0.2),
-                      );
-                    }).toList(),
-                  ),
-                ],
+                ...[
+                  '🎯 Alcance 500% mayor a todos los usuarios',
+                  '⭐ Aparece destacada en el feed',
+                  '📊 Más interacciones y visibilidad',
+                  '💎 Distintivo especial de publicidad',
+                ].map((benefit) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            benefit,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: ColorTokens.neutral80,
+                              height: 1.3,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
               ],
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cerrar'),
+              style: TextButton.styleFrom(foregroundColor: Color(0xFFFFD700)),
+              child: Text(
+                'Entendido',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         );
@@ -558,4 +730,85 @@ class _CarouselImagesState extends State<_CarouselImages> {
   }
 }
 
+class _AdvertisementBadge extends StatefulWidget {
+  const _AdvertisementBadge({Key? key}) : super(key: key);
 
+  @override
+  State<_AdvertisementBadge> createState() => _AdvertisementBadgeState();
+}
+
+class _AdvertisementBadgeState extends State<_AdvertisementBadge>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _opacityAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: FadeTransition(
+        opacity: _opacityAnimation,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFFFFD700).withValues(alpha: 0.6),
+                blurRadius: 12,
+                spreadRadius: 3,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.flash_on, color: Colors.white, size: 16),
+              SizedBox(width: 6),
+              Text(
+                'PUBLICIDAD',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
