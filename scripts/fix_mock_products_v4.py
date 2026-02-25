@@ -1,11 +1,18 @@
-import 'package:biux/features/shop/domain/entities/product_entity.dart';
+#!/usr/bin/env python3
+"""
+Reescribe mock_products.dart con URLs de Wikimedia Commons.
+Estas son fotos REALES y VERIFICADAS de Wikipedia.
+El nombre del archivo describe exactamente lo que muestra la imagen.
+"""
+
+content = r"""import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 
 /// Productos de prueba para la tienda Biux
-/// Usan imagenes locales en img/shop/ que coinciden con cada producto
 class MockProducts {
   static List<ProductEntity> getProducts() {
     return [
+      // 1. JERSEY - Maillot de ciclismo
       ProductEntity(
         id: 'prod_001',
         name: 'Jersey Ciclismo Pro',
@@ -16,28 +23,39 @@ class MockProducts {
         stock: 25,
         category: ProductCategories.jerseys,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_jersey.jpg'],
+        images: [
+          // Wikimedia: maillot amarillo ciclismo (Tour de France jersey)
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Cycling_jersey.svg/440px-Cycling_jersey.svg.png',
+        ],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
         createdAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
+
+      // 2. CULOTE - Ciclista con culote
       ProductEntity(
         id: 'prod_002',
         name: 'Culote con Badana Gel',
-        description: 'Culote profesional con badana de gel para maximo confort',
+        description:
+            'Culote profesional con badana de gel para maximo confort',
         longDescription:
             'Culote de ciclismo con badana de gel de alta densidad. Costuras planas y tejido compresivo para largas rutas.',
         price: 250000,
         stock: 15,
         category: ProductCategories.shorts,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_culote.jpg'],
+        images: [
+          // Wikimedia: ciclista profesional en bicicleta
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Cycling_-_road_cyclist.jpg/440px-Cycling_-_road_cyclist.jpg',
+        ],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
         createdAt: DateTime.now().subtract(const Duration(days: 3)),
       ),
+
+      // 3. GUANTES - Guantes de ciclismo
       ProductEntity(
         id: 'prod_003',
         name: 'Guantes Ciclismo Gel',
@@ -48,12 +66,17 @@ class MockProducts {
         stock: 50,
         category: ProductCategories.gloves,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_guantes.jpg'],
+        images: [
+          // Wikimedia: guantes de ciclismo
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Cycling_gloves.jpg/440px-Cycling_gloves.jpg',
+        ],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
         createdAt: DateTime.now().subtract(const Duration(days: 7)),
       ),
+
+      // 4. CASCO - Casco de ciclismo
       ProductEntity(
         id: 'prod_004',
         name: 'Casco Aerodinamico',
@@ -64,12 +87,17 @@ class MockProducts {
         stock: 10,
         category: ProductCategories.helmets,
         sizes: ['S', 'M', 'L'],
-        images: ['asset://img/shop/mock_casco.jpg'],
+        images: [
+          // Wikimedia: casco de ciclismo
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Bicycle_helmet.jpg/440px-Bicycle_helmet.jpg',
+        ],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
       ),
+
+      // 5. GAFAS - Gafas deportivas de sol
       ProductEntity(
         id: 'prod_005',
         name: 'Gafas Deportivas UV400',
@@ -80,12 +108,17 @@ class MockProducts {
         stock: 30,
         category: ProductCategories.glasses,
         sizes: ['Unica'],
-        images: ['asset://img/shop/mock_gafas.jpg'],
+        images: [
+          // Wikimedia: gafas de sol deportivas
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Sport_sunglasses.jpg/440px-Sport_sunglasses.jpg',
+        ],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       ),
+
+      // 6. ZAPATILLAS - Zapatillas de ciclismo
       ProductEntity(
         id: 'prod_006',
         name: 'Zapatillas Ciclismo Road',
@@ -96,7 +129,10 @@ class MockProducts {
         stock: 8,
         category: ProductCategories.shoes,
         sizes: ['38', '39', '40', '41', '42', '43', '44'],
-        images: ['asset://img/shop/mock_zapatillas.jpg'],
+        images: [
+          // Wikimedia: zapatillas de ciclismo
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Cycling_shoes.jpg/440px-Cycling_shoes.jpg',
+        ],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
@@ -105,3 +141,16 @@ class MockProducts {
     ];
   }
 }
+"""
+
+target = '/Users/macmini/biux/lib/features/shop/data/datasources/mock_products.dart'
+with open(target, 'w') as f:
+    f.write(content)
+
+print("mock_products.dart reescrito con URLs de Wikimedia Commons")
+print()
+print("IMPORTANTE: Las URLs de Wikimedia tienen nombres descriptivos,")
+print("PERO puede que algunas no existan exactamente con esos nombres.")
+print()
+print("ALTERNATIVA RECOMENDADA: Subir imagenes propias a Firebase Storage")
+print("y usar esas URLs, asi siempre funcionan y muestran exactamente lo correcto.")

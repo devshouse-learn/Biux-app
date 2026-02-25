@@ -1,4 +1,38 @@
-import 'package:biux/features/shop/domain/entities/product_entity.dart';
+#!/usr/bin/env python3
+"""
+Copia las imagenes descargadas a la carpeta img/ del proyecto
+y actualiza mock_products.dart para usar assets locales.
+"""
+import shutil
+import os
+
+SOURCE_DIR = '/tmp/biux_mock_images'
+DEST_DIR = '/Users/macmini/biux/img/shop'
+
+# Crear carpeta destino
+os.makedirs(DEST_DIR, exist_ok=True)
+
+files = [
+    'mock_jersey.jpg',
+    'mock_culote.jpg', 
+    'mock_guantes.jpg',
+    'mock_casco.jpg',
+    'mock_gafas.jpg',
+    'mock_zapatillas.jpg',
+]
+
+print("Copiando imagenes a img/shop/...")
+for f in files:
+    src = os.path.join(SOURCE_DIR, f)
+    dst = os.path.join(DEST_DIR, f)
+    if os.path.exists(src):
+        shutil.copy2(src, dst)
+        print(f"  ✅ {f} -> img/shop/{f}")
+    else:
+        print(f"  ❌ No encontrado: {src}")
+
+# Actualizar mock_products.dart con assets locales
+mock_content = """import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 
 /// Productos de prueba para la tienda Biux
@@ -105,3 +139,16 @@ class MockProducts {
     ];
   }
 }
+"""
+
+mock_path = '/Users/macmini/biux/lib/features/shop/data/datasources/mock_products.dart'
+with open(mock_path, 'w') as f:
+    f.write(mock_content)
+
+print()
+print("✅ mock_products.dart actualizado con asset://img/shop/...")
+print()
+print("📌 IMPORTANTE: Agrega img/shop/ al pubspec.yaml si no esta:")
+print("   assets:")
+print("     - img/")
+print("     - img/shop/")

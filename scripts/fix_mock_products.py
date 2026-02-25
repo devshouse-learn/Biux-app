@@ -1,8 +1,11 @@
-import 'package:biux/features/shop/domain/entities/product_entity.dart';
+#!/usr/bin/env python3
+"""Script para reescribir mock_products.dart limpio"""
+
+content = """import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 
 /// Productos de prueba para la tienda Biux
-/// Usan imagenes locales en img/shop/ que coinciden con cada producto
+/// NOTA: Lista con productos de prueba habilitada temporalmente para testing
 class MockProducts {
   static List<ProductEntity> getProducts() {
     return [
@@ -11,12 +14,14 @@ class MockProducts {
         name: 'Jersey Ciclismo Pro',
         description: 'Jersey profesional para ciclismo de ruta',
         longDescription:
-            'Jersey de alta calidad con tejido respirante y tecnologia de secado rapido. Diseno aerodinamico con bolsillos traseros.',
+            'Jersey de alta calidad con tejido respirante y tecnologia de secado rapido.',
         price: 180000,
         stock: 25,
         category: ProductCategories.jerseys,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_jersey.jpg'],
+        images: [
+          'https://loremflickr.com/600/600/cycling,jersey',
+        ],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
@@ -25,14 +30,17 @@ class MockProducts {
       ProductEntity(
         id: 'prod_002',
         name: 'Culote con Badana Gel',
-        description: 'Culote profesional con badana de gel para maximo confort',
+        description:
+            'Culote profesional con badana de gel para maximo confort',
         longDescription:
-            'Culote de ciclismo con badana de gel de alta densidad. Costuras planas y tejido compresivo para largas rutas.',
+            'Culote de ciclismo con badana de gel de alta densidad. Costuras planas y tejido compresivo.',
         price: 250000,
         stock: 15,
         category: ProductCategories.shorts,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_culote.jpg'],
+        images: [
+          'https://loremflickr.com/600/600/cycling,shorts',
+        ],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
@@ -48,7 +56,9 @@ class MockProducts {
         stock: 50,
         category: ProductCategories.gloves,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_guantes.jpg'],
+        images: [
+          'https://loremflickr.com/600/600/cycling,gloves',
+        ],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
@@ -64,7 +74,9 @@ class MockProducts {
         stock: 10,
         category: ProductCategories.helmets,
         sizes: ['S', 'M', 'L'],
-        images: ['asset://img/shop/mock_casco.jpg'],
+        images: [
+          'https://loremflickr.com/600/600/bicycle,helmet',
+        ],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
@@ -80,7 +92,9 @@ class MockProducts {
         stock: 30,
         category: ProductCategories.glasses,
         sizes: ['Unica'],
-        images: ['asset://img/shop/mock_gafas.jpg'],
+        images: [
+          'https://loremflickr.com/600/600/sport,sunglasses',
+        ],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
@@ -96,7 +110,9 @@ class MockProducts {
         stock: 8,
         category: ProductCategories.shoes,
         sizes: ['38', '39', '40', '41', '42', '43', '44'],
-        images: ['asset://img/shop/mock_zapatillas.jpg'],
+        images: [
+          'https://loremflickr.com/600/600/cycling,shoes',
+        ],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
@@ -105,3 +121,11 @@ class MockProducts {
     ];
   }
 }
+"""
+
+target = '/Users/macmini/biux/lib/features/shop/data/datasources/mock_products.dart'
+with open(target, 'w') as f:
+    f.write(content)
+
+print(f"Archivo {target} reescrito correctamente")
+print(f"Tamano: {len(content)} bytes")

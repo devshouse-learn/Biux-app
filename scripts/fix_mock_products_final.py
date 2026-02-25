@@ -1,8 +1,11 @@
-import 'package:biux/features/shop/domain/entities/product_entity.dart';
+#!/usr/bin/env python3
+"""Reescribe mock_products.dart con URLs mock:// que indican la categoria"""
+
+content = '''import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 
 /// Productos de prueba para la tienda Biux
-/// Usan imagenes locales en img/shop/ que coinciden con cada producto
+/// Usan URLs mock:// que se renderizan como placeholders bonitos con icono+nombre
 class MockProducts {
   static List<ProductEntity> getProducts() {
     return [
@@ -16,7 +19,7 @@ class MockProducts {
         stock: 25,
         category: ProductCategories.jerseys,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_jersey.jpg'],
+        images: ['mock://jersey'],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
@@ -32,7 +35,7 @@ class MockProducts {
         stock: 15,
         category: ProductCategories.shorts,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_culote.jpg'],
+        images: ['mock://shorts'],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
@@ -48,7 +51,7 @@ class MockProducts {
         stock: 50,
         category: ProductCategories.gloves,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: ['asset://img/shop/mock_guantes.jpg'],
+        images: ['mock://gloves'],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
@@ -64,7 +67,7 @@ class MockProducts {
         stock: 10,
         category: ProductCategories.helmets,
         sizes: ['S', 'M', 'L'],
-        images: ['asset://img/shop/mock_casco.jpg'],
+        images: ['mock://helmet'],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
@@ -80,7 +83,7 @@ class MockProducts {
         stock: 30,
         category: ProductCategories.glasses,
         sizes: ['Unica'],
-        images: ['asset://img/shop/mock_gafas.jpg'],
+        images: ['mock://glasses'],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
@@ -96,7 +99,7 @@ class MockProducts {
         stock: 8,
         category: ProductCategories.shoes,
         sizes: ['38', '39', '40', '41', '42', '43', '44'],
-        images: ['asset://img/shop/mock_zapatillas.jpg'],
+        images: ['mock://shoes'],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
@@ -105,3 +108,11 @@ class MockProducts {
     ];
   }
 }
+'''
+
+target = '/Users/macmini/biux/lib/features/shop/data/datasources/mock_products.dart'
+with open(target, 'w') as f:
+    f.write(content)
+
+print("mock_products.dart reescrito con URLs mock://")
+print("Cada producto usa mock://categoria que se renderiza como placeholder bonito")

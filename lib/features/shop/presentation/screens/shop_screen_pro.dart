@@ -990,32 +990,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
                 child: AspectRatio(
                   aspectRatio: 1,
-                  child: CachedNetworkImage(
+                  child: _buildProductImage(
                     imageUrl: product.images.isNotEmpty
                         ? product.images.first
                         : '',
+                    productName: product.name,
+                    category: product.category,
                     fit: BoxFit.cover,
-                    filterQuality: FilterQuality.high,
-                    memCacheHeight: 400,
-                    memCacheWidth: 400,
-                    placeholder: (context, url) => Container(
-                      color: ColorTokens.neutral95,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(
-                            ColorTokens.primary30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: ColorTokens.neutral95,
-                      child: Icon(
-                        Icons.image_not_supported_outlined,
-                        color: ColorTokens.neutral70,
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -2306,21 +2287,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
-                    child: CachedNetworkImage(
+                    child: _buildProductImage(
                       imageUrl: product.mainImage,
+                      productName: product.name,
+                      category: product.category,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
-                      memCacheHeight: 500,
-                      memCacheWidth: 500,
-                      placeholder: (context, url) => Container(
-                        color: Colors.grey[200],
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey[200],
-                        child: const Icon(Icons.image_not_supported, size: 40),
-                      ),
                     ),
                   ),
 
@@ -2577,22 +2549,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
           // Imagen
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: CachedNetworkImage(
+            child: _buildProductImage(
               imageUrl: product.mainImage,
+              productName: product.name,
+              category: product.category,
               width: 80,
               height: 80,
               fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              memCacheHeight: 200,
-              memCacheWidth: 200,
-              placeholder: (context, url) => Container(
-                color: Colors.grey[200],
-                child: const Center(child: CircularProgressIndicator()),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.image_not_supported),
-              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -2702,6 +2665,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
     final lower = url.toLowerCase().trim();
 
+    // ✅ Permitir URLs mock:// (productos de prueba con placeholder visual)
+    if (lower.startsWith('mock://')) return true;
+
+    // ✅ Permitir assets locales (imágenes descargadas del proyecto)
+    if (lower.startsWith('asset://')) return true;
+
     // Debe ser una URL válida (http o https)
     if (!lower.startsWith('http://') && !lower.startsWith('https://')) {
       return false;
@@ -2717,7 +2686,6 @@ class _ShopScreenProState extends State<ShopScreenPro>
       'fakeimg.pl',
       'placekitten.com',
       'lorempixel.com',
-      'loremflickr.com',
     ];
 
     for (final domain in blockedDomains) {
@@ -2727,6 +2695,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
     // ✅ Permitir picsum.photos con ID fijo (fotos reales, no colores)
     // Formato: picsum.photos/id/NUMBER/... → siempre carga la misma foto real
     if (lower.contains('picsum.photos/id/')) return true;
+
+    // ✅ Permitir Pexels (fotos reales de productos)
+    if (lower.contains('images.pexels.com/photos/')) return true;
+
+    // ✅ Permitir Unsplash (fotos fijas por ID, siempre coinciden con producto)
+    if (lower.contains('images.unsplash.com/photo-')) return true;
 
     // Filtrar texto de placeholder genérico
     if (lower.contains('text=producto') || lower.contains('text=product')) {
@@ -2761,6 +2735,183 @@ class _ShopScreenProState extends State<ShopScreenPro>
   static bool _productHasRealImages(ProductEntity product) {
     if (product.images.isEmpty) return false;
     return product.images.any((img) => _isRealProductImage(img));
+  }
+
+  /// Widget inteligente de imagen de producto.
+  /// Si la URL es mock://, muestra un placeholder bonito con icono + nombre.
+  /// Si es URL real, usa CachedNetworkImage.
+  Widget _buildProductImage({
+    required String imageUrl,
+    required String productName,
+    required String category,
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
+    // Detectar si es mock placeholder
+    if (imageUrl.startsWith('mock://')) {
+      return _buildMockPlaceholder(
+        productName: productName,
+        category: category,
+        width: width,
+        height: height,
+      );
+    }
+
+    // Detectar si es asset local (asset://img/shop/...)
+    if (imageUrl.startsWith('asset://')) {
+      final assetPath = imageUrl.replaceFirst('asset://', '');
+      return Image.asset(
+        assetPath,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => _buildMockPlaceholder(
+          productName: productName,
+          category: category,
+          width: width,
+          height: height,
+        ),
+      );
+    }
+
+    // URL real: usar CachedNetworkImage
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      width: width,
+      height: height,
+      fit: fit,
+      filterQuality: FilterQuality.high,
+      placeholder: (context, url) => Container(
+        width: width,
+        height: height,
+        color: Colors.grey[200],
+        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      ),
+      errorWidget: (context, url, error) => _buildMockPlaceholder(
+        productName: productName,
+        category: category,
+        width: width,
+        height: height,
+      ),
+    );
+  }
+
+  /// Placeholder bonito con gradiente, icono de categoría y nombre del producto
+  Widget _buildMockPlaceholder({
+    required String productName,
+    required String category,
+    double? width,
+    double? height,
+  }) {
+    // Icono y colores por categoría
+    final categoryConfig = _getCategoryVisual(category);
+
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: categoryConfig.gradientColors,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            categoryConfig.icon,
+            size: (height ?? 120) * 0.3,
+            color: Colors.white.withOpacity(0.9),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              productName,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: (height ?? 120) * 0.08,
+                shadows: [
+                  Shadow(
+                    color: Colors.black26,
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              category,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.85),
+                fontSize: (height ?? 120) * 0.06,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Configuración visual por categoría (icono + colores de gradiente)
+  static _CategoryVisual _getCategoryVisual(String category) {
+    switch (category.toLowerCase()) {
+      case 'jerseys':
+        return _CategoryVisual(
+          icon: Icons.checkroom,
+          gradientColors: [const Color(0xFF1565C0), const Color(0xFF42A5F5)],
+        );
+      case 'shorts':
+        return _CategoryVisual(
+          icon: Icons.accessibility_new,
+          gradientColors: [const Color(0xFF2E7D32), const Color(0xFF66BB6A)],
+        );
+      case 'gloves':
+      case 'guantes':
+        return _CategoryVisual(
+          icon: Icons.back_hand,
+          gradientColors: [const Color(0xFF6A1B9A), const Color(0xFFAB47BC)],
+        );
+      case 'helmets':
+      case 'cascos':
+        return _CategoryVisual(
+          icon: Icons.sports_motorsports,
+          gradientColors: [const Color(0xFFE65100), const Color(0xFFFF9800)],
+        );
+      case 'glasses':
+      case 'gafas':
+        return _CategoryVisual(
+          icon: Icons.visibility,
+          gradientColors: [const Color(0xFF00838F), const Color(0xFF4DD0E1)],
+        );
+      case 'shoes':
+      case 'zapatillas':
+      case 'calzado':
+        return _CategoryVisual(
+          icon: Icons.directions_run,
+          gradientColors: [const Color(0xFFC62828), const Color(0xFFEF5350)],
+        );
+      default:
+        return _CategoryVisual(
+          icon: Icons.pedal_bike,
+          gradientColors: [const Color(0xFF37474F), const Color(0xFF78909C)],
+        );
+    }
   }
 
   /// Mostrar pantalla de Solicitudes de Vendedores con estado vacío
@@ -6035,3 +6186,15 @@ extension _BenefitDialogs on _ShopScreenProState {
 }
 
 // End of resolved conflict
+
+
+/// Modelo visual para representar una categoría con icono y colores
+class _CategoryVisual {
+  final IconData icon;
+  final List<Color> gradientColors;
+
+  const _CategoryVisual({
+    required this.icon,
+    required this.gradientColors,
+  });
+}
