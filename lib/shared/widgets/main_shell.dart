@@ -52,13 +52,6 @@ class _MainShellState extends State<MainShell> {
               );
             },
           ),
-
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.campaign),
-            tooltip: 'Promociones',
-            onPressed: () => context.push('/promotions'),
-          ),
         ],
       ),
       drawer: AppDrawer(),
