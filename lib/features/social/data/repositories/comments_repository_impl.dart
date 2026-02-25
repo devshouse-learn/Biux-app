@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../../domain/entities/comment_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 import '../datasources/comments_realtime_datasource.dart';
