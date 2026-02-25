@@ -186,9 +186,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
             const SizedBox(height: 24),
 
-            // === IMÁGENES ===
-            _buildSectionHeader('Imágenes', Icons.image_outlined),
-            const SizedBox(height: 12),
+            // === IMÁGENES (OBLIGATORIO) ===
+            _buildSectionHeader('Imágenes *', Icons.image_outlined),
+            const SizedBox(height: 4),
+            Text(
+              'Mínimo 1 foto obligatoria',
+              style: TextStyle(
+                fontSize: 12,
+                color: _selectedImages.isEmpty
+                    ? Colors.red.shade400
+                    : ColorTokens.neutral60,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
             _buildImagePicker(),
 
             const SizedBox(height: 24),
@@ -400,27 +411,38 @@ class _AddProductScreenState extends State<AddProductScreen> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: _selectedImages.isEmpty
+                  ? Colors.red.shade50
+                  : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: ColorTokens.neutral90,
+                color: _selectedImages.isEmpty
+                    ? Colors.red.shade300
+                    : ColorTokens.neutral90,
                 style: BorderStyle.solid,
+                width: _selectedImages.isEmpty ? 1.5 : 1.0,
               ),
             ),
             child: Column(
               children: [
                 Icon(
-                  Icons.add_photo_alternate_outlined,
+                  _selectedImages.isEmpty
+                      ? Icons.add_a_photo_outlined
+                      : Icons.add_photo_alternate_outlined,
                   size: 40,
-                  color: ColorTokens.primary30,
+                  color: _selectedImages.isEmpty
+                      ? Colors.red.shade300
+                      : ColorTokens.primary30,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   _selectedImages.isEmpty
-                      ? 'Toca para agregar imágenes'
+                      ? '📷 Toca para agregar fotos (obligatorio)'
                       : 'Agregar más imágenes (${_selectedImages.length}/5)',
                   style: TextStyle(
-                    color: ColorTokens.neutral50,
+                    color: _selectedImages.isEmpty
+                        ? Colors.red.shade400
+                        : ColorTokens.neutral50,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -484,7 +506,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     _isStolenCheckPassed = false;
                   });
                 },
-                activeColor: ColorTokens.primary30,
+                activeThumbColor: ColorTokens.primary30,
               ),
             ],
           ),
@@ -943,11 +965,36 @@ class _AddProductScreenState extends State<AddProductScreen> {
           .where((t) => t.isNotEmpty)
           .toList();
 
-      // TODO: Subir imágenes a Firebase Storage y obtener URLs
-      // Por ahora usar placeholder
-      final imageUrls = _imageUrls.isNotEmpty
-          ? _imageUrls
-          : ['https://via.placeholder.com/400x400?text=Producto'];
+      // Subir imágenes a Firebase Storage y obtener URLs
+      // Si no hay imágenes reales, no permitir publicar
+      if (_selectedImages.isEmpty && _imageUrls.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Debes agregar al menos una foto del producto'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => _isSubmitting = false);
+        return;
+      }
+
+      List<String> imageUrls;
+      if (_imageUrls.isNotEmpty) {
+        imageUrls = _imageUrls;
+      } else {
+        // TODO: Implementar subida real a Firebase Storage
+        // Por ahora, los productos sin URLs reales no se publican
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Error: No se pudieron procesar las imágenes. Inténtalo de nuevo.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => _isSubmitting = false);
+        return;
+      }
 
       final product = ProductEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),

@@ -255,12 +255,22 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   Future uploadProfileCover(String id, File fileProfileCover) async {
     try {
       FirebaseUtils firebaseUtils = FirebaseUtils();
-      firebaseUtils.uploadImage(
+      final downloadUrl = await firebaseUtils.uploadImage(
         image: fileProfileCover,
         nameImage: 'ProfileCover',
         imageFolder: 'ProfileCover',
       );
-    } catch (e) {}
+
+      // Actualizar el campo profileCover en Firestore con la URL descargada
+      if (downloadUrl.isNotEmpty) {
+        await firestore.collection(collection).doc(id).update({
+          'profileCover': downloadUrl,
+        });
+        print('✅ profileCover actualizado en Firestore: $downloadUrl');
+      }
+    } catch (e) {
+      print('❌ Error al subir foto de portada: $e');
+    }
   }
 
   Future<ResponseRepo> registerUser({required BiuxUser user}) async {

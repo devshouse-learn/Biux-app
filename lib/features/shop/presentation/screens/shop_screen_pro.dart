@@ -12,6 +12,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_menu_drawer_widget.dart';
 import 'package:biux/features/shop/presentation/screens/shop_admin_sheets.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_admin_dashboard_widget_v2.dart';
+import 'package:biux/features/shop/presentation/widgets/promotions_widget.dart';
 import '../widgets/request_seller_permission_dialog.dart';
 // import '../widgets/recommended_for_rides_widget.dart'; // actualmente no usado
 
@@ -258,6 +259,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     switch (value) {
                       case 'offers':
                         _showOffersBottomSheet(context);
+                        break;
                       case 'info':
                         _showShopInfoBottomSheet(context);
                         break;
@@ -291,16 +293,6 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             'Info de Productos',
                             style: TextStyle(color: Colors.blue[800]),
                           ),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'promociones',
-                      child: Row(
-                        children: [
-                          Icon(Icons.campaign, size: 20, color: Colors.orange),
-                          const SizedBox(width: 12),
-                          Text('Promociones'),
                         ],
                       ),
                     ),
@@ -908,11 +900,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
               .where((p) {
                 // Debe ser destacado y disponible
                 if (!p.isFeatured || !p.isAvailable) return false;
-                // Debe tener imágenes válidas
-                if (p.images.isEmpty) return false;
-                return p.images.any(
-                  (img) => img.isNotEmpty && img.trim().isNotEmpty,
-                );
+                // Debe tener imágenes REALES (no placeholders)
+                return _productHasRealImages(p);
               })
               .take(6)
               .toList();
@@ -1079,10 +1068,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           Consumer<ShopProvider>(
             builder: (context, provider, child) {
               final validCount = provider.products.where((p) {
-                if (p.images.isEmpty) return false;
-                return p.images.any(
-                  (img) => img.isNotEmpty && img.trim().isNotEmpty,
-                );
+                return _productHasRealImages(p);
               }).length;
 
               return Text(
@@ -1990,10 +1976,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           Consumer<ShopProvider>(
             builder: (context, provider, child) {
               final validCount = provider.products.where((p) {
-                if (p.images.isEmpty) return false;
-                return p.images.any(
-                  (img) => img.isNotEmpty && img.trim().isNotEmpty,
-                );
+                return _productHasRealImages(p);
               }).length;
 
               return Text(
@@ -2225,27 +2208,15 @@ class _ShopScreenProState extends State<ShopScreenPro>
           );
         }
 
-        // ✅ FILTRAR PRODUCTOS: Solo mostrar productos con al menos una imagen válida
+        // ✅ FILTRAR PRODUCTOS: Solo mostrar productos con fotos REALES (no placeholders)
         final validProducts = shopProvider.products.where((product) {
-          // Verificar que tenga imágenes Y que no estén vacías
-          if (product.images.isEmpty) {
+          if (!_productHasRealImages(product)) {
             print(
-              '🚫 Producto SIN imágenes filtrado: ${product.name} (${product.id})',
+              '🚫 Producto filtrado (sin foto real): ${product.name} (${product.id}) - imgs: ${product.images}',
             );
             return false;
           }
-          // Verificar que al menos una imagen tenga contenido válido
-          final hasValidImages = product.images.any(
-            (img) => img.isNotEmpty && img.trim().isNotEmpty,
-          );
-
-          if (!hasValidImages) {
-            print(
-              '🚫 Producto con imágenes VACÍAS filtrado: ${product.name} (${product.id})',
-            );
-          }
-
-          return hasValidImages;
+          return true;
         }).toList();
 
         print(
@@ -2722,6 +2693,70 @@ class _ShopScreenProState extends State<ShopScreenPro>
       _searchController.clear();
     });
     context.read<ShopProvider>().clearFilters();
+  }
+
+  /// ✅ Verifica si una URL de imagen es una foto REAL del producto
+  /// Filtra placeholders genéricos, fondos de color sólido, y URLs falsas
+  static bool _isRealProductImage(String url) {
+    if (url.isEmpty || url.trim().isEmpty) return false;
+
+    final lower = url.toLowerCase().trim();
+
+    // Filtrar servicios de placeholder conocidos
+    const placeholderDomains = [
+      'via.placeholder.com',
+      'placehold.it',
+      'placehold.co',
+      'placeholder.com',
+      'dummyimage.com',
+      'fakeimg.pl',
+      'placekitten.com',
+      'picsum.photos',
+      'lorempixel.com',
+      'loremflickr.com',
+    ];
+
+    for (final domain in placeholderDomains) {
+      if (lower.contains(domain)) return false;
+    }
+
+    // Filtrar URLs que son solo colores hex (ej: /FF0000, ?color=red)
+    final hexColorPattern = RegExp(r'[?&/]([0-9a-f]{6}|[0-9a-f]{3})([?&/]|$)');
+    if (hexColorPattern.hasMatch(lower) && !lower.contains('firebase')) {
+      // Solo filtrar si parece ser un servicio de placeholder con color
+      if (!lower.contains('firebasestorage') &&
+          !lower.contains('googleapis.com') &&
+          !lower.contains('cloudinary') &&
+          !lower.contains('imgbb') &&
+          !lower.contains('imgur')) {
+        // Verificar si la URL NO tiene extensión de imagen real
+        final hasImageExt =
+            lower.endsWith('.jpg') ||
+            lower.endsWith('.jpeg') ||
+            lower.endsWith('.png') ||
+            lower.endsWith('.webp') ||
+            lower.endsWith('.gif');
+        if (!hasImageExt && !lower.contains('token=')) return false;
+      }
+    }
+
+    // Filtrar texto "Producto" en placeholders
+    if (lower.contains('text=producto') || lower.contains('text=product')) {
+      return false;
+    }
+
+    // Debe ser una URL válida (http o https)
+    if (!lower.startsWith('http://') && !lower.startsWith('https://')) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /// Verifica si un producto tiene al menos una imagen REAL (no placeholder)
+  static bool _productHasRealImages(ProductEntity product) {
+    if (product.images.isEmpty) return false;
+    return product.images.any((img) => _isRealProductImage(img));
   }
 
   /// Mostrar pantalla de Solicitudes de Vendedores con estado vacío
@@ -3217,11 +3252,6 @@ class _ShopScreenProState extends State<ShopScreenPro>
         'value': ProductCategories.jerseys,
       },
       {
-        'icon': Icons.sports,
-        'label': 'Culotes',
-        'value': ProductCategories.shorts,
-      },
-      {
         'icon': Icons.sports_motorsports,
         'label': 'Cascos',
         'value': ProductCategories.helmets,
@@ -3362,14 +3392,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
               ),
               const Divider(height: 1),
-              // Content
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(16),
-                  child: _buildPromoBanner(),
-                ),
-              ),
+              // Content - Widget funcional
+              const Expanded(child: PromotionsWidget()),
             ],
           ),
         ),

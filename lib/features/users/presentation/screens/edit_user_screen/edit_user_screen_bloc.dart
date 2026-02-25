@@ -15,6 +15,7 @@ class EditUserScreenBloc extends ChangeNotifier {
   List<City> listCities = [];
   City cityId = City();
   var imageNew;
+  var profileCoverNew; // Nueva variable para la foto de portada
   final FocusNode focusNodeCity = FocusNode();
   final nameController = TextEditingController();
   final nameUserController = TextEditingController();
@@ -71,6 +72,12 @@ class EditUserScreenBloc extends ChangeNotifier {
   /// Nuevo método para manejar imagen ya procesada desde ProfileImagePicker
   void setProcessedImage(File processedImage) {
     imageNew = processedImage;
+    notifyListeners();
+  }
+
+  /// Método para establecer la foto de portada
+  void setProfileCoverImage(File coverImage) {
+    profileCoverNew = coverImage;
     notifyListeners();
   }
 
@@ -148,6 +155,19 @@ class EditUserScreenBloc extends ChangeNotifier {
         print('✅ Foto subida correctamente');
       } else {
         print('ℹ️ No hay foto nueva');
+      }
+
+      // Verificar si hay foto de portada nueva para subir
+      print('🖼️ Verificando si hay foto de portada nueva...');
+      if (profileCoverNew != null) {
+        print('📤 Subiendo foto de portada...');
+        await UserFirebaseRepository().uploadProfileCover(
+          user.id,
+          profileCoverNew,
+        );
+        print('✅ Foto de portada subida correctamente');
+      } else {
+        print('ℹ️ No hay foto de portada nueva');
       }
 
       // Recargar datos del usuario para asegurar sincronización

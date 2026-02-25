@@ -168,6 +168,11 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                             ? DecorationImage(
                                 image: NetworkImage(user.profileCover),
                                 fit: BoxFit.cover,
+                                onError: (exception, stackTrace) {
+                                  print(
+                                    '❌ Error cargando profileCover: $exception',
+                                  );
+                                },
                               )
                             : null,
                         gradient: user.profileCover.isEmpty
