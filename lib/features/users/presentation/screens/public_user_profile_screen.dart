@@ -787,38 +787,47 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       itemCount: provider.userPosts.length,
       itemBuilder: (context, index) {
         final post = provider.userPosts[index];
+
+        // ✅ VALIDACIÓN: Solo permitir acceder a posts con media disponible
+        final hasValidMedia = post.media != null && post.media.isNotEmpty;
+
         return GestureDetector(
-          onTap: () {
-            context.push('/stories/post/${post.id}');
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: ColorTokens.neutral20,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: post.media.isNotEmpty
-                  ? Image.network(
-                      post.media.first.url,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: ColorTokens.neutral30,
-                          child: const Icon(
-                            Icons.image,
-                            color: ColorTokens.neutral60,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      color: ColorTokens.neutral30,
-                      child: const Icon(
-                        Icons.image,
-                        color: ColorTokens.neutral60,
+          onTap: hasValidMedia
+              ? () {
+                  context.push('/stories/post/${post.id}');
+                }
+              : null,
+          child: Opacity(
+            opacity: hasValidMedia ? 1.0 : 0.5,
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral20,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: post.media.isNotEmpty
+                    ? Image.network(
+                        post.media.first.url,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: ColorTokens.neutral30,
+                            child: const Icon(
+                              Icons.image,
+                              color: ColorTokens.neutral60,
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        color: ColorTokens.neutral30,
+                        child: const Icon(
+                          Icons.image,
+                          color: ColorTokens.neutral60,
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
         );

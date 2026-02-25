@@ -118,16 +118,32 @@ class CommentsRepositoryImpl implements CommentsRepository {
     required String userId,
   }) async {
     // Verificar que el usuario es el autor
+    debugPrint('🔍 Verificando eliminación de comentario:');
+    debugPrint('   CommentId: $commentId');
+    debugPrint('   UserId actual: $userId');
+
     final comment = await _datasource.getComment(
       type: _typeToString(type),
       targetId: targetId,
       commentId: commentId,
     );
 
-    if (comment == null || comment.userId != userId) {
-      throw Exception('No tienes permiso para eliminar este comentario');
+    debugPrint('   Comentario encontrado: ${comment != null}');
+    if (comment != null) {
+      debugPrint('   UserId del comentario: ${comment.userId}');
     }
 
+    if (comment == null) {
+      throw Exception('El comentario no existe');
+    }
+
+    if (comment.userId != userId) {
+      throw Exception(
+        'No tienes permiso para eliminar este comentario. Tu ID: $userId, Propietario: ${comment.userId}',
+      );
+    }
+
+    debugPrint('✅ Autorización verificada, procediendo a eliminar');
     return _datasource.deleteComment(
       type: _typeToString(type),
       targetId: targetId,
