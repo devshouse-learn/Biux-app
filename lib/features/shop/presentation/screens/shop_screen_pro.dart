@@ -10,6 +10,7 @@ import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_menu_drawer_widget.dart';
+import 'package:biux/features/shop/presentation/screens/shop_admin_sheets.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_admin_dashboard_widget_v2.dart';
 import '../widgets/request_seller_permission_dialog.dart';
 // import '../widgets/recommended_for_rides_widget.dart'; // actualmente no usado
@@ -257,6 +258,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     switch (value) {
                       case 'offers':
                         _showOffersBottomSheet(context);
+                      case 'info':
+                        _showShopInfoBottomSheet(context);
+                        break;
+                      case 'promociones':
+                        _showPromotionsBottomSheet(context);
                         break;
                       case 'admin':
                         _showAdminDashboardSheet(context);
@@ -271,6 +277,43 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     }
                   },
                   itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'info',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.blue[700],
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Info de Productos',
+                            style: TextStyle(color: Colors.blue[800]),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'promociones',
+                      child: Row(
+                        children: [
+                          Icon(Icons.campaign, size: 20, color: Colors.orange),
+                          const SizedBox(width: 12),
+                          Text('Promociones'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'promociones',
+                      child: Row(
+                        children: [
+                          Icon(Icons.campaign, size: 20, color: Colors.orange),
+                          const SizedBox(width: 12),
+                          Text('Promociones'),
+                        ],
+                      ),
+                    ),
                     PopupMenuItem(
                       value: 'offers',
                       child: Row(
@@ -327,6 +370,205 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   ],
                 );
               },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Bottom sheet con información de productos y sugerencias
+  void _showShopInfoBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Título
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios, size: 20),
+                    ),
+                    Icon(
+                      Icons.info_outline,
+                      color: Theme.of(context).primaryColor,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Información de la Tienda',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              // Contenido scrollable
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    _buildInfoSection(
+                      icon: Icons.storefront,
+                      title: 'Productos Disponibles',
+                      description:
+                          'Puedes ofrecer productos relacionados con ciclismo: bicicletas, accesorios, componentes, indumentaria, nutrición y tecnología deportiva.',
+                      items: [
+                        'Bicicletas (ruta, montaña, urbanas, eléctricas)',
+                        'Cascos y protección',
+                        'Luces y reflectantes',
+                        'Herramientas y repuestos',
+                        'Ropa ciclista',
+                        'Suplementos y nutrición',
+                        'GPS y ciclocomputadores',
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildInfoSection(
+                      icon: Icons.category,
+                      title: 'Categorías Populares',
+                      description:
+                          'Las categorías más buscadas por los ciclistas en nuestra plataforma:',
+                      items: [
+                        'Bicicletas completas',
+                        'Componentes y repuestos',
+                        'Accesorios de seguridad',
+                        'Indumentaria',
+                        'Electrónica y GPS',
+                        'Nutrición deportiva',
+                        'Mantenimiento',
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildInfoSection(
+                      icon: Icons.tips_and_updates,
+                      title: 'Consejos para Vender',
+                      description:
+                          'Mejora tus ventas siguiendo estas recomendaciones:',
+                      items: [
+                        'Usa fotos de alta calidad',
+                        'Describe detalladamente el estado del producto',
+                        'Establece precios competitivos',
+                        'Responde rápido a las consultas',
+                        'Ofrece envío o entrega en mano',
+                        'Mantén tu inventario actualizado',
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildInfoSection(
+                      icon: Icons.local_offer,
+                      title: 'Ofertas y Promociones',
+                      description:
+                          'Atrae más compradores con estrategias de venta:',
+                      items: [
+                        'Descuentos por temporada',
+                        'Packs y combos de productos',
+                        'Envío gratis en compras mayores',
+                        'Programa de fidelización',
+                        'Ofertas flash por tiempo limitado',
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Widget helper para las secciones de información
+  Widget _buildInfoSection({
+    required IconData icon,
+    required String title,
+    required String description,
+    required List<String> items,
+  }) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 24, color: Colors.blue[700]),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[800],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              description,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 12),
+            ...items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: Colors.blue[400],
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(item, style: const TextStyle(fontSize: 14)),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -1200,350 +1442,494 @@ class _ShopScreenProState extends State<ShopScreenPro>
   }
 
   /// Banner promocional integrado con Biux
+  /// Banner promocional integrado con Biux - Colores claros
   Widget _buildPromoBanner() {
-    return Column(
-      children: [
-        // Banner principal de ciclismo
-        Container(
-          height: 140,
-          margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              colors: [
-                ColorTokens.primary30,
-                ColorTokens.primary30.withValues(alpha: 0.8),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Stack(
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: const Color(0xFF16242D).withOpacity(0.1)),
+      ),
+      color: const Color(0xFFF0F7FF),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
               children: [
-                // Patrón de fondo
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.1,
-                    child: CustomPaint(painter: BikePatternPainter()),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF16242D).withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.campaign_outlined,
+                    color: Color(0xFF16242D),
+                    size: 24,
                   ),
                 ),
-                // Contenido
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              '🚴 TIENDA BIUX',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            const Text(
-                              'Equípate para tus rodadas',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                height: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: ColorTokens.secondary50,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Text(
-                                    '🏷️ Hasta 30% OFF',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Envío gratis > \$100k',
-                                  style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.95),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      Text(
+                        'Promociones de la Comunidad',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF16242D),
                         ),
                       ),
-                      const Icon(
-                        Icons.pedal_bike,
-                        size: 56,
-                        color: Colors.white,
+                      SizedBox(height: 2),
+                      Text(
+                        'Comparte ofertas y eventos con otros ciclistas',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF5A7A8A),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                // (Botón movido fuera del Stack para evitar superposición)
               ],
             ),
-          ),
-        ),
-        // Botón rápido a Promociones colocado fuera del banner para evitar
-        // que se superponga a secciones siguientes (ej. cupones)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              onPressed: () => context.push('/promotions'),
-              icon: const Icon(Icons.campaign, size: 18),
-              label: const Text('Promociones'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white24,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
+            const SizedBox(height: 20),
+
+            // Campo: Título de la promoción
+            const Text(
+              'Título de la promoción',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C4A5A),
               ),
             ),
-          ),
-        ),
-        // Barra desplegable de Ofertas y Beneficios
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+            const SizedBox(height: 6),
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Ej: Descuento en cascos de ciclismo',
+                hintStyle: TextStyle(
+                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF16242D),
+                    width: 1.5,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  Icons.title,
+                  color: const Color(0xFF16242D).withOpacity(0.4),
+                  size: 20,
+                ),
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Barra desplegable - siempre visible
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _showOffersExpanded = !_showOffersExpanded;
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        // Icono con badge
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    ColorTokens.primary30.withValues(
-                                      alpha: 0.15,
-                                    ),
-                                    ColorTokens.primary30.withValues(
-                                      alpha: 0.05,
-                                    ),
+              style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+
+            // Campo: Descripción
+            const Text(
+              'Descripción',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C4A5A),
+              ),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText:
+                    'Describe tu promoción, incluye detalles importantes como ubicación, horarios, condiciones...',
+                hintStyle: TextStyle(
+                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF16242D),
+                    width: 1.5,
+                  ),
+                ),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(bottom: 40),
+                  child: Icon(
+                    Icons.description_outlined,
+                    color: const Color(0xFF16242D).withOpacity(0.4),
+                    size: 20,
+                  ),
+                ),
+              ),
+              style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+
+            // Fila: Tipo + Fecha
+            Row(
+              children: [
+                // Tipo de promoción
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Tipo',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2C4A5A),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: const Color(0xFF16242D).withOpacity(0.12),
+                          ),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: 'descuento',
+                            isExpanded: true,
+                            icon: Icon(
+                              Icons.keyboard_arrow_down,
+                              color: const Color(0xFF16242D).withOpacity(0.5),
+                            ),
+                            style: const TextStyle(
+                              color: Color(0xFF16242D),
+                              fontSize: 14,
+                            ),
+                            dropdownColor: Colors.white,
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'descuento',
+                                child: Row(
+                                  children: [
+                                    Text('🏷️', style: TextStyle(fontSize: 16)),
+                                    SizedBox(width: 8),
+                                    Text('Descuento'),
                                   ],
                                 ),
-                                borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Icon(
-                                Icons.local_offer,
-                                color: ColorTokens.primary30,
-                                size: 24,
-                              ),
-                            ),
-                            // Badge de cantidad de ofertas
-                            Positioned(
-                              top: -4,
-                              right: -4,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Text(
-                                  '4',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              DropdownMenuItem(
+                                value: 'oferta',
+                                child: Row(
+                                  children: [
+                                    Text('🎁', style: TextStyle(fontSize: 16)),
+                                    SizedBox(width: 8),
+                                    Text('Oferta'),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 14),
-                        // Título y descripción
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Ofertas y Beneficios',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                              DropdownMenuItem(
+                                value: 'evento',
+                                child: Row(
+                                  children: [
+                                    Text('🚴', style: TextStyle(fontSize: 16)),
+                                    SizedBox(width: 8),
+                                    Text('Evento'),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                _showOffersExpanded
-                                    ? 'Ocultar promociones'
-                                    : 'Ver descuentos especiales y más',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
+                              DropdownMenuItem(
+                                value: 'novedad',
+                                child: Row(
+                                  children: [
+                                    Text('✨', style: TextStyle(fontSize: 16)),
+                                    SizedBox(width: 8),
+                                    Text('Novedad'),
+                                  ],
                                 ),
                               ),
                             ],
+                            onChanged: (value) {},
                           ),
                         ),
-                        // Icono de expansión animado
-                        AnimatedRotation(
-                          turns: _showOffersExpanded ? 0.5 : 0,
-                          duration: const Duration(milliseconds: 300),
-                          child: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: ColorTokens.primary30,
-                            size: 28,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              // Contenido desplegable con animación
-              AnimatedCrossFade(
-                firstChild: const SizedBox.shrink(),
-                secondChild: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Column(
-                    children: [
-                      // Divider decorativo
-                      Container(
-                        height: 1,
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.grey.withValues(alpha: 0.1),
-                              Colors.grey.withValues(alpha: 0.3),
-                              Colors.grey.withValues(alpha: 0.1),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Grid de beneficios organizados
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildBenefitCard(
-                              '⚡',
-                              'Ofertas relámpago',
-                              Colors.orange,
-                              onTap: () {
-                                _showFlashOffersDialog(context);
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildBenefitCard(
-                              '🎯',
-                              'Descuentos para grupos',
-                              Colors.blue,
-                              onTap: () {
-                                _showGroupDiscountsDialog(context);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildBenefitCard(
-                              '🏆',
-                              'Productos premium',
-                              Colors.purple,
-                              onTap: () {
-                                _showPremiumProductsDialog(context);
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildBenefitCard(
-                              '🚚',
-                              'Envío gratis',
-                              Colors.green,
-                              onTap: () {
-                                _showShippingDiscountsDialog(context);
-                              },
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
                 ),
-                crossFadeState: _showOffersExpanded
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 300),
+                const SizedBox(width: 12),
+
+                // Fecha de expiración
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Expira',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2C4A5A),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      GestureDetector(
+                        onTap: () async {
+                          await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now().add(
+                              const Duration(days: 7),
+                            ),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 13,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color(0xFF16242D).withOpacity(0.12),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today_outlined,
+                                size: 18,
+                                color: const Color(0xFF16242D).withOpacity(0.4),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Seleccionar',
+                                style: TextStyle(
+                                  color: const Color(
+                                    0xFF16242D,
+                                  ).withOpacity(0.5),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Campo: Ubicación (nuevo)
+            const Text(
+              'Ubicación (opcional)',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C4A5A),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Ej: Tienda de ciclismo Calle 80, Bogotá',
+                hintStyle: TextStyle(
+                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF16242D),
+                    width: 1.5,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  Icons.location_on_outlined,
+                  color: const Color(0xFF16242D).withOpacity(0.4),
+                  size: 20,
+                ),
+              ),
+              style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+
+            // Campo: Enlace o contacto (nuevo)
+            const Text(
+              'Enlace o contacto (opcional)',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2C4A5A),
+              ),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Ej: https://mitienda.com o +57 300 123 4567',
+                hintStyle: TextStyle(
+                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  fontSize: 14,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF16242D).withOpacity(0.12),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF16242D),
+                    width: 1.5,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  Icons.link,
+                  color: const Color(0xFF16242D).withOpacity(0.4),
+                  size: 20,
+                ),
+              ),
+              style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+
+            // Nota informativa
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF16242D).withOpacity(0.04),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: const Color(0xFF16242D).withOpacity(0.08),
+                ),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: Color(0xFF5A7A8A)),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Las promociones serán visibles para todos los ciclistas de tu comunidad durante el tiempo seleccionado.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF5A7A8A),
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Botón publicar
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Promoción publicada exitosamente 🎉'),
+                      backgroundColor: Color(0xFF16242D),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.send_rounded, size: 18),
+                label: const Text(
+                  'Publicar Promoción',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF16242D),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -2926,6 +3312,73 @@ class _ShopScreenProState extends State<ShopScreenPro>
   }
 
   /// Bottom sheet con ofertas y beneficios
+
+  /// Bottom sheet con promociones de la comunidad
+  void _showPromotionsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header con flecha atrás
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Icon(Icons.campaign, color: Colors.orange, size: 24),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Promociones de la Comunidad',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(16),
+                  child: _buildPromoBanner(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Bottom sheet con promociones de la comunidad
+
   void _showOffersBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -2951,6 +3404,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
             Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
                 Icon(Icons.local_offer, color: ColorTokens.warning50, size: 24),
                 const SizedBox(width: 10),
                 Text(
@@ -3030,7 +3487,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Bottom sheet con panel de administración
+  ///   /// Bottom sheet con panel de administración
   void _showAdminDashboardSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -3084,7 +3541,32 @@ class _ShopScreenProState extends State<ShopScreenPro>
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                child: ShopAdminDashboardWidget(),
+                child: ShopAdminDashboardWidget(
+                  onManageProducts: () {
+                    Navigator.pop(context);
+                    ShopAdminSheets.showManageProductsSheet(context);
+                  },
+                  onManageSellers: () {
+                    Navigator.pop(context);
+                    ShopAdminSheets.showManageSellersSheet(context);
+                  },
+                  onViewReports: () {
+                    Navigator.pop(context);
+                    ShopAdminSheets.showReportsSheet(context);
+                  },
+                  onViewRequests: () {
+                    Navigator.pop(context);
+                    ShopAdminSheets.showRequestsSheet(context);
+                  },
+                  onViewStats: () {
+                    Navigator.pop(context);
+                    ShopAdminSheets.showStatsSheet(context);
+                  },
+                  onSecurityCenter: () {
+                    Navigator.pop(context);
+                    ShopAdminSheets.showSecuritySheet(context);
+                  },
+                ),
               ),
             ),
           ],
@@ -3092,6 +3574,1438 @@ class _ShopScreenProState extends State<ShopScreenPro>
       ),
     );
   }
+}
+
+/// Bottom sheet para gestionar productos de la tienda
+void _showManageProductsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Icon(Icons.inventory_2, color: Colors.blue),
+                const SizedBox(width: 8),
+                const Text(
+                  'Gestión de Productos',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Resumen de inventario
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Resumen de Inventario',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatItem(
+                                'Total',
+                                '0',
+                                Icons.shopping_bag,
+                                Colors.blue,
+                              ),
+                              _buildStatItem(
+                                'Activos',
+                                '0',
+                                Icons.check_circle,
+                                Colors.green,
+                              ),
+                              _buildStatItem(
+                                'Agotados',
+                                '0',
+                                Icons.warning,
+                                Colors.orange,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Acciones rápidas
+                  const Text(
+                    'Acciones Rápidas',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildActionTile(
+                    icon: Icons.add_circle,
+                    color: Colors.green,
+                    title: 'Agregar Producto',
+                    subtitle: 'Añadir un nuevo producto al catálogo',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Navegar a agregar producto
+                    },
+                  ),
+                  _buildActionTile(
+                    icon: Icons.edit,
+                    color: Colors.blue,
+                    title: 'Editar Productos',
+                    subtitle: 'Modificar información de productos existentes',
+                    onTap: () {},
+                  ),
+                  _buildActionTile(
+                    icon: Icons.category,
+                    color: Colors.purple,
+                    title: 'Categorías',
+                    subtitle: 'Organizar productos por categorías',
+                    onTap: () {},
+                  ),
+                  _buildActionTile(
+                    icon: Icons.local_offer,
+                    color: Colors.red,
+                    title: 'Ofertas y Descuentos',
+                    subtitle: 'Configurar promociones especiales',
+                    onTap: () {},
+                  ),
+                  _buildActionTile(
+                    icon: Icons.photo_library,
+                    color: Colors.teal,
+                    title: 'Galería de Productos',
+                    subtitle: 'Gestionar fotos y multimedia',
+                    onTap: () {},
+                  ),
+                  const SizedBox(height: 16),
+                  // Formulario rápido de precio
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Actualización Rápida de Precios',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Nombre del producto',
+                              prefixIcon: const Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Nuevo precio',
+                              prefixIcon: const Icon(Icons.attach_money),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.update),
+                              label: const Text('Actualizar Precio'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Bottom sheet para gestionar vendedores
+void _showManageSellersSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Icon(Icons.people, color: Colors.green),
+                const SizedBox(width: 8),
+                const Text(
+                  'Gestión de Vendedores',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Formulario para agregar vendedor
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Agregar Vendedor',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Nombre completo',
+                              prefixIcon: const Icon(Icons.person),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Correo electrónico',
+                              prefixIcon: const Icon(Icons.email),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Teléfono',
+                              prefixIcon: const Icon(Icons.phone),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              labelText: 'Rol',
+                              prefixIcon: const Icon(Icons.badge),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'vendedor',
+                                child: Text('Vendedor'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'supervisor',
+                                child: Text('Supervisor'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'cajero',
+                                child: Text('Cajero'),
+                              ),
+                            ],
+                            onChanged: (value) {},
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.person_add),
+                              label: const Text('Agregar Vendedor'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Vendedores Activos',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildSellerCard(
+                    'Sin vendedores registrados',
+                    'Agrega vendedores para empezar',
+                    Icons.person_off,
+                    Colors.grey,
+                  ),
+                  const SizedBox(height: 16),
+                  // Permisos
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Permisos de Vendedores',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SwitchListTile(
+                            title: const Text('Pueden modificar precios'),
+                            value: false,
+                            onChanged: (v) {},
+                            secondary: const Icon(Icons.attach_money),
+                          ),
+                          SwitchListTile(
+                            title: const Text('Pueden agregar productos'),
+                            value: false,
+                            onChanged: (v) {},
+                            secondary: const Icon(Icons.add_box),
+                          ),
+                          SwitchListTile(
+                            title: const Text('Pueden eliminar productos'),
+                            value: false,
+                            onChanged: (v) {},
+                            secondary: const Icon(Icons.delete),
+                          ),
+                          SwitchListTile(
+                            title: const Text('Pueden ver reportes'),
+                            value: false,
+                            onChanged: (v) {},
+                            secondary: const Icon(Icons.bar_chart),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Bottom sheet para reportes
+void _showReportsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Icon(Icons.assessment, color: Colors.orange),
+                const SizedBox(width: 8),
+                const Text(
+                  'Reportes',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Resumen de ventas
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Resumen de Ventas',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatItem(
+                                'Hoy',
+                                '\$0',
+                                Icons.today,
+                                Colors.blue,
+                              ),
+                              _buildStatItem(
+                                'Semana',
+                                '\$0',
+                                Icons.date_range,
+                                Colors.green,
+                              ),
+                              _buildStatItem(
+                                'Mes',
+                                '\$0',
+                                Icons.calendar_month,
+                                Colors.purple,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Filtros de reporte
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Generar Reporte',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              labelText: 'Tipo de reporte',
+                              prefixIcon: const Icon(Icons.description),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'ventas',
+                                child: Text('Ventas'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'inventario',
+                                child: Text('Inventario'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'clientes',
+                                child: Text('Clientes'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'devoluciones',
+                                child: Text('Devoluciones'),
+                              ),
+                            ],
+                            onChanged: (value) {},
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              labelText: 'Período',
+                              prefixIcon: const Icon(Icons.schedule),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'hoy',
+                                child: Text('Hoy'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'semana',
+                                child: Text('Última semana'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'mes',
+                                child: Text('Último mes'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'trimestre',
+                                child: Text('Último trimestre'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'personalizado',
+                                child: Text('Personalizado'),
+                              ),
+                            ],
+                            onChanged: (value) {},
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.download),
+                              label: const Text('Generar Reporte'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Top productos
+                  const Text(
+                    'Top Productos Vendidos',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          'Sin datos de ventas aún',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Bottom sheet para solicitudes
+void _showRequestsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Icon(Icons.inbox, color: Colors.indigo),
+                const SizedBox(width: 8),
+                const Text(
+                  'Solicitudes',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Tabs de solicitudes
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Filtrar Solicitudes',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              labelText: 'Estado',
+                              prefixIcon: const Icon(Icons.filter_list),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'todas',
+                                child: Text('Todas'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'pendientes',
+                                child: Text('Pendientes'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'aprobadas',
+                                child: Text('Aprobadas'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'rechazadas',
+                                child: Text('Rechazadas'),
+                              ),
+                            ],
+                            onChanged: (value) {},
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              labelText: 'Tipo de solicitud',
+                              prefixIcon: const Icon(Icons.category),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'todas',
+                                child: Text('Todas'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'devolucion',
+                                child: Text('Devolución'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'cambio',
+                                child: Text('Cambio'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'garantia',
+                                child: Text('Garantía'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'reclamo',
+                                child: Text('Reclamo'),
+                              ),
+                            ],
+                            onChanged: (value) {},
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatItem(
+                        'Pendientes',
+                        '0',
+                        Icons.pending,
+                        Colors.orange,
+                      ),
+                      _buildStatItem(
+                        'En Proceso',
+                        '0',
+                        Icons.hourglass_top,
+                        Colors.blue,
+                      ),
+                      _buildStatItem(
+                        'Resueltas',
+                        '0',
+                        Icons.check_circle,
+                        Colors.green,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Solicitudes Recientes',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          'No hay solicitudes pendientes',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Bottom sheet para estadísticas
+void _showStatsSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Icon(Icons.analytics, color: Colors.purple),
+                const SizedBox(width: 8),
+                const Text(
+                  'Estadísticas',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // KPIs principales
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'KPIs del Negocio',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatItem(
+                                'Visitas',
+                                '0',
+                                Icons.visibility,
+                                Colors.blue,
+                              ),
+                              _buildStatItem(
+                                'Clientes',
+                                '0',
+                                Icons.people,
+                                Colors.green,
+                              ),
+                              _buildStatItem(
+                                'Conversión',
+                                '0%',
+                                Icons.trending_up,
+                                Colors.purple,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Rendimiento de Ventas',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatItem(
+                                'Ingresos',
+                                '\$0',
+                                Icons.monetization_on,
+                                Colors.green,
+                              ),
+                              _buildStatItem(
+                                'Ticket Prom.',
+                                '\$0',
+                                Icons.receipt,
+                                Colors.orange,
+                              ),
+                              _buildStatItem(
+                                'Margen',
+                                '0%',
+                                Icons.pie_chart,
+                                Colors.red,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Período de consulta
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Consultar Período',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  readOnly: true,
+                                  decoration: InputDecoration(
+                                    labelText: 'Desde',
+                                    prefixIcon: const Icon(
+                                      Icons.calendar_today,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onTap: () {},
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: TextField(
+                                  readOnly: true,
+                                  decoration: InputDecoration(
+                                    labelText: 'Hasta',
+                                    prefixIcon: const Icon(
+                                      Icons.calendar_today,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onTap: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.search),
+                              label: const Text('Consultar'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.purple,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Productos más visitados
+                  const Text(
+                    'Productos Más Visitados',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          'Sin datos de visitas aún',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Bottom sheet para centro de seguridad
+void _showSecuritySheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                const Icon(Icons.security, color: Colors.red),
+                const SizedBox(width: 8),
+                const Text(
+                  'Centro de Seguridad',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Estado de seguridad
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    color: Colors.green[50],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.shield,
+                            color: Colors.green[700],
+                            size: 40,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Estado: Seguro',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[700],
+                                  ),
+                                ),
+                                const Text(
+                                  'No se detectaron problemas de seguridad',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Configuración de Seguridad',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        SwitchListTile(
+                          title: const Text('Autenticación de dos factores'),
+                          subtitle: const Text(
+                            'Añade una capa extra de seguridad',
+                          ),
+                          value: false,
+                          onChanged: (v) {},
+                          secondary: const Icon(Icons.lock),
+                        ),
+                        const Divider(height: 1),
+                        SwitchListTile(
+                          title: const Text(
+                            'Notificaciones de inicio de sesión',
+                          ),
+                          subtitle: const Text(
+                            'Recibe alertas cuando alguien accede',
+                          ),
+                          value: true,
+                          onChanged: (v) {},
+                          secondary: const Icon(Icons.notifications_active),
+                        ),
+                        const Divider(height: 1),
+                        SwitchListTile(
+                          title: const Text('Registro de actividad'),
+                          subtitle: const Text(
+                            'Guarda un log de todas las acciones',
+                          ),
+                          value: true,
+                          onChanged: (v) {},
+                          secondary: const Icon(Icons.history),
+                        ),
+                        const Divider(height: 1),
+                        SwitchListTile(
+                          title: const Text('Bloqueo por intentos fallidos'),
+                          subtitle: const Text(
+                            'Bloquea tras 5 intentos fallidos',
+                          ),
+                          value: false,
+                          onChanged: (v) {},
+                          secondary: const Icon(Icons.block),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Cambiar contraseña
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Cambiar Contraseña',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: 'Contraseña actual',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: 'Nueva contraseña',
+                              prefixIcon: const Icon(Icons.lock),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: 'Confirmar nueva contraseña',
+                              prefixIcon: const Icon(Icons.lock),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {},
+                              icon: const Icon(Icons.vpn_key),
+                              label: const Text('Actualizar Contraseña'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Sesiones activas
+                  const Text(
+                    'Sesiones Activas',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.phone_iphone,
+                        color: Colors.blue,
+                      ),
+                      title: const Text('Este dispositivo'),
+                      subtitle: const Text('Activo ahora'),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Actual',
+                          style: TextStyle(
+                            color: Colors.green[700],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.logout, color: Colors.red),
+                      label: const Text(
+                        'Cerrar todas las sesiones',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.red),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Helper: construir item de estadística
+Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  return Column(
+    children: [
+      Icon(icon, color: color, size: 28),
+      const SizedBox(height: 4),
+      Text(
+        value,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
+      Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+    ],
+  );
+}
+
+/// Helper: construir tile de acción
+Widget _buildActionTile({
+  required IconData icon,
+  required Color color,
+  required String title,
+  required String subtitle,
+  required VoidCallback onTap,
+}) {
+  return Card(
+    elevation: 1,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    child: ListTile(
+      leading: CircleAvatar(
+        backgroundColor: color.withOpacity(0.1),
+        child: Icon(icon, color: color),
+      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
+    ),
+  );
+}
+
+/// Helper: construir card de vendedor
+Widget _buildSellerCard(String name, String role, IconData icon, Color color) {
+  return Card(
+    elevation: 1,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    child: ListTile(
+      leading: CircleAvatar(
+        backgroundColor: color.withOpacity(0.1),
+        child: Icon(icon, color: color),
+      ),
+      title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+      subtitle: Text(role),
+    ),
+  );
 }
 
 /// Widget FAB con menú desplegable para opciones de tienda
