@@ -187,7 +187,7 @@ class CommentsRealtimeDatasource {
     final ref = _database.ref('${_getBasePath(type)}/$targetId/$commentId');
 
     // Soft delete: marcar como eliminado en lugar de borrar
-    await ref.update({'isDeleted': true, 'text': '[Comentario eliminado]'});
+    await ref.update({'isDeleted': true, 'text': ''});
   }
 
   /// Obtiene un comentario específico

@@ -991,36 +991,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mi Perfil'),
+        title: const Text('Mi Perfil'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'Post') {
-                // Navegar a la pantalla de nueva publicación
-                Navigator.pushNamed(
-                  context,
-                  '/new_post',
-                  arguments: {'type': 'post'},
-                );
-              } else if (value == 'Story') {
-                // Navegar a la pantalla de feed para historia
-                Navigator.pushNamed(
-                  context,
-                  '/feed',
-                  arguments: {'type': 'story'},
-                );
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem(value: 'Post', child: Text('Post')),
-                PopupMenuItem(value: 'Story', child: Text('Story')),
-              ];
-            },
-          ),
-        ],
       ),
       body: widget.userProvider.isLoading
           ? Center(child: CircularProgressIndicator())
