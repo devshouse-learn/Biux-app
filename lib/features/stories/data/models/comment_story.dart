@@ -6,6 +6,7 @@ class CommentStory {
   String text;
   String createdAt;
   int likesCount;
+  bool isDeleted; // Campo para marcar comentarios eliminados
 
   CommentStory({
     this.id = '',
@@ -15,6 +16,7 @@ class CommentStory {
     this.text = '',
     this.createdAt = '',
     this.likesCount = 0,
+    this.isDeleted = false,
   });
 
   factory CommentStory.fromJson(Map json) => CommentStory(
@@ -25,6 +27,7 @@ class CommentStory {
     text: json['text'],
     createdAt: json['createdAt'],
     likesCount: json['likesCount'] ?? 0,
+    isDeleted: json['isDeleted'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -35,5 +38,11 @@ class CommentStory {
     'text': text,
     'createdAt': createdAt,
     'likesCount': likesCount,
+    'isDeleted': isDeleted,
   };
+
+  /// Indica si el comentario debe ser mostrado en la UI
+  bool get shouldDisplay {
+    return !isDeleted;
+  }
 }
