@@ -164,14 +164,29 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            ColorTokens.primary30,
-                            ColorTokens.primary40,
-                          ],
-                        ),
+                        image: user.profileCover.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(user.profileCover),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                        gradient: user.profileCover.isEmpty
+                            ? LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  ColorTokens.primary30,
+                                  ColorTokens.primary40,
+                                ],
+                              )
+                            : LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.3),
+                                  Colors.black.withOpacity(0.5),
+                                ],
+                              ),
                       ),
                       child: SafeArea(
                         child: Padding(
@@ -286,6 +301,28 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     color: ColorTokens.neutral90,
                                   ),
                                 ),
+                              const SizedBox(height: 12),
+
+                              // Descripción del usuario si existe
+                              if (user.description != null &&
+                                  user.description!.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                                  child: Text(
+                                    user.description!,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: ColorTokens.neutral90,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              if (user.description == null ||
+                                  user.description!.isEmpty)
+                                const SizedBox.shrink(),
                               const SizedBox(height: 20),
 
                               // Estadísticas básicas
