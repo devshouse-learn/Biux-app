@@ -260,41 +260,28 @@ class UserProfileProvider extends ChangeNotifier {
         userId,
       );
 
-      // Filtrar posts y stories con criterios más específicos
+      // Todos los posts van a _userPosts (mostrar todo en la pestaña principal)
+      _userPosts = userExperiences;
+
+      // Stories: solo experiencias que sean claramente historias efímeras
+      // (muy recientes AND descripción corta AND 1 solo media)
       final now = DateTime.now();
       final twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
 
-      // Stories: experiencias recientes (últimas 24 horas) O que tengan solo un medio
       _userStories = userExperiences
           .where(
             (exp) =>
-                exp.createdAt.isAfter(twentyFourHoursAgo) ||
+                exp.createdAt.isAfter(twentyFourHoursAgo) &&
+                exp.description.trim().length <= 20 &&
                 exp.media.length == 1,
           )
           .toList();
 
-      // Posts: experiencias con múltiples medios O más antiguas de 24 horas
-      _userPosts = userExperiences
-          .where(
-            (exp) =>
-                exp.media.length > 1 ||
-                exp.createdAt.isBefore(twentyFourHoursAgo),
-          )
-          .toList();
-
-      // Si no hay diferenciación clara, dividir equitativamente
-      if (_userStories.length == userExperiences.length &&
-          _userPosts.length == userExperiences.length) {
-        final halfPoint = (userExperiences.length / 2).ceil();
-        _userStories = userExperiences.take(halfPoint).toList();
-        _userPosts = userExperiences.skip(halfPoint).toList();
-      }
-
       print('🔍 PROFILE: Experiencias cargadas: ${userExperiences.length}');
-      print('🔍 PROFILE: Stories: ${_userStories.length}');
-      print('🔍 PROFILE: Posts: ${_userPosts.length}');
+      print('🔍 PROFILE: Posts (todos): ${_userPosts.length}');
+      print('🔍 PROFILE: Stories (efímeras): ${_userStories.length}');
       print(
-        '🔍 PROFILE: Criterios aplicados - Stories: recientes O 1 medio, Posts: múltiples medios O antiguos',
+        '🔍 PROFILE: Lógica - Todos van a Posts, Stories = recientes + descripción corta + 1 media',
       );
     } catch (e) {
       print('❌ Error cargando contenido del usuario: $e');

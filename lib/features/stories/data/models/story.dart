@@ -1,4 +1,5 @@
 import 'package:biux/features/stories/data/models/reaction_story.dart';
+import 'package:biux/features/stories/data/models/comment_story.dart';
 import 'package:biux/features/users/data/models/user.dart';
 
 class Story {
@@ -9,6 +10,7 @@ class Story {
   BiuxUser user;
   String creationDate;
   List<ReactionStory> listReactions;
+  List<CommentStory> listComments;
   bool isAdvertisement;
   String get fileUrl1 {
     try {
@@ -41,6 +43,7 @@ class Story {
     this.tags = const [],
     this.files = const [],
     this.listReactions = const [],
+    this.listComments = const [],
     this.creationDate = '',
     this.isAdvertisement = false,
   });
@@ -59,6 +62,11 @@ class Story {
               .map((e) => ReactionStory.fromJson(e))
               .toList()
         : [],
+    listComments: json['listComments'] != null
+        ? (json['listComments'] as List<dynamic>)
+              .map((e) => CommentStory.fromJson(e))
+              .toList()
+        : [],
     isAdvertisement: json['isAdvertisement'] ?? false,
   );
 
@@ -69,6 +77,7 @@ class Story {
     'tags': tags,
     'creationDate': creationDate,
     'listReactions': listReactions.map((e) => e.toJson()).toList(),
+    'listComments': listComments.map((e) => e.toJson()).toList(),
     'isAdvertisement': isAdvertisement,
   };
 }

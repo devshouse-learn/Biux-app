@@ -43,8 +43,10 @@ class StoryViewBloc extends ChangeNotifier {
       files: story.files,
       id: story.id,
       listReactions: listReactions,
+      listComments: story.listComments,
       tags: story.tags,
       user: story.user,
+      isAdvertisement: story.isAdvertisement,
     );
     final index = listStory.indexOf(story);
     listStory[index] = storyUpdate;
@@ -62,6 +64,19 @@ class StoryViewBloc extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error eliminando historia: $e');
+    }
+  }
+
+  void updateStoryComments({required Story story}) async {
+    try {
+      final index = listStory.indexWhere((element) => element.id == story.id);
+      if (index != -1) {
+        listStory[index] = story;
+        notifyListeners();
+        await storiesFirebaseRepository.updateStory(id: story.id, story: story);
+      }
+    } catch (e) {
+      print('Error actualizando comentarios: $e');
     }
   }
 }

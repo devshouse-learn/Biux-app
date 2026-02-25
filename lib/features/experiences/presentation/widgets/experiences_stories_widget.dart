@@ -967,10 +967,27 @@ class _StoryGroupViewerScreenState extends State<_StoryGroupViewerScreen>
     final isOwner = currentUid.isNotEmpty && currentUid == currentStory.user.id;
 
     if (isOwner) {
-      // Botón de tres puntos para eliminar
-      return IconButton(
+      // PopupMenuButton con opción de eliminar
+      return PopupMenuButton<String>(
         icon: const Icon(Icons.more_vert, color: Colors.white),
-        onPressed: () => _confirmDeleteStory(currentStory),
+        color: Colors.grey[900],
+        onSelected: (value) {
+          if (value == 'delete') {
+            _confirmDeleteStory(currentStory);
+          }
+        },
+        itemBuilder: (BuildContext context) => [
+          PopupMenuItem<String>(
+            value: 'delete',
+            child: Row(
+              children: [
+                const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                const SizedBox(width: 12),
+                const Text('Eliminar', style: TextStyle(color: Colors.red)),
+              ],
+            ),
+          ),
+        ],
       );
     } else {
       // Botón X para cerrar

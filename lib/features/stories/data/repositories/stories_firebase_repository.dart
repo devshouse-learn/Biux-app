@@ -37,6 +37,8 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
           user: story.user,
           creationDate: story.creationDate,
           listReactions: story.listReactions,
+          listComments: story.listComments,
+          isAdvertisement: story.isAdvertisement,
         ),
       );
 

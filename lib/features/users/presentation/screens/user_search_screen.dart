@@ -112,8 +112,9 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
     for (final user in users) {
       final score = _calculateSearchScore(user, query);
 
-      // Incluir si la puntuación es mayor a 0.25 (25%)
-      if (score > 0.25) {
+      // Incluir si la puntuación es mayor a 0.15 (15%)
+      // Umbral bajo permite búsquedas por 1-2 caracteres (como Instagram)
+      if (score > 0.15) {
         results.add(MapEntry(user, score));
       }
     }
@@ -127,7 +128,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
+      backgroundColor: ColorTokens.primary30,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
@@ -147,13 +148,13 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
               decoration: InputDecoration(
                 hintText: 'Buscar usuarios...',
                 hintStyle: TextStyle(
-                  color: ColorTokens.neutral60,
+                  color: ColorTokens.neutral80,
                   fontSize: 16,
                 ),
-                prefixIcon: Icon(Icons.search, color: ColorTokens.neutral60),
+                prefixIcon: Icon(Icons.search, color: ColorTokens.neutral90),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: Icon(Icons.clear, color: ColorTokens.neutral60),
+                        icon: Icon(Icons.clear, color: ColorTokens.neutral90),
                         onPressed: () {
                           _searchController.clear();
                           context.read<UserProfileProvider>().clearSearch();
@@ -164,7 +165,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
                       )
                     : null,
                 filled: true,
-                fillColor: ColorTokens.neutral20,
+                fillColor: ColorTokens.primary40,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(25),
                   borderSide: BorderSide.none,
@@ -222,12 +223,12 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search, size: 80, color: ColorTokens.neutral40),
+          Icon(Icons.search, size: 80, color: ColorTokens.neutral100),
           SizedBox(height: 24),
           Text(
             'Busca usuarios',
             style: TextStyle(
-              color: ColorTokens.neutral80,
+              color: ColorTokens.neutral100,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -236,7 +237,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
           Text(
             'Escribe un nombre o usuario para encontrar amigos',
             textAlign: TextAlign.center,
-            style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
+            style: TextStyle(color: ColorTokens.neutral80, fontSize: 14),
           ),
         ],
       ),
@@ -249,12 +250,12 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
+            valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.secondary50),
           ),
           SizedBox(height: 16),
           Text(
             'Buscando usuarios...',
-            style: TextStyle(color: ColorTokens.neutral60, fontSize: 16),
+            style: TextStyle(color: ColorTokens.neutral100, fontSize: 16),
           ),
         ],
       ),
@@ -266,12 +267,12 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.person_search, size: 80, color: ColorTokens.neutral40),
+          Icon(Icons.person_search, size: 80, color: ColorTokens.neutral100),
           SizedBox(height: 24),
           Text(
             'No se encontraron usuarios',
             style: TextStyle(
-              color: ColorTokens.neutral80,
+              color: ColorTokens.neutral100,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -280,7 +281,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
           Text(
             'Intenta con otro término de búsqueda',
             textAlign: TextAlign.center,
-            style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
+            style: TextStyle(color: ColorTokens.neutral80, fontSize: 14),
           ),
         ],
       ),
@@ -357,7 +358,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
           margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: ColorTokens.neutral20, width: 1),
+            border: Border.all(color: ColorTokens.primary40, width: 1),
           ),
           child: Material(
             color: Colors.transparent,
@@ -377,7 +378,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
                     ),
                     child: CircleAvatar(
                       radius: 32,
-                      backgroundColor: ColorTokens.neutral20,
+                      backgroundColor: ColorTokens.primary40,
                       backgroundImage: widget.user.photo.isNotEmpty
                           ? CachedNetworkImageProvider(
                               widget.user.photo,
@@ -388,7 +389,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
                       child: widget.user.photo.isEmpty
                           ? Icon(
                               Icons.person_outline,
-                              color: ColorTokens.neutral60,
+                              color: ColorTokens.neutral100,
                               size: 28,
                             )
                           : null,
@@ -408,7 +409,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: ColorTokens.neutral90,
+                            color: ColorTokens.neutral100,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -420,7 +421,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
                             '@${widget.user.userName}',
                             style: TextStyle(
                               fontSize: 13,
-                              color: ColorTokens.neutral60,
+                              color: ColorTokens.neutral80,
                               fontWeight: FontWeight.w400,
                             ),
                             maxLines: 1,
@@ -433,7 +434,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
                             widget.user.description,
                             style: TextStyle(
                               fontSize: 12,
-                              color: ColorTokens.neutral70,
+                              color: ColorTokens.neutral80,
                               height: 1.3,
                             ),
                             maxLines: 1,

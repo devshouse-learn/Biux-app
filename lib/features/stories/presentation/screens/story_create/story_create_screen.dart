@@ -5,6 +5,7 @@ import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/stories/presentation/screens/story_create/story_create_bloc.dart';
+import 'package:biux/features/stories/presentation/screens/story_create/story_editor_screen.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:biux/shared/widgets/loading_widget.dart';
 import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
@@ -325,36 +326,42 @@ class _AppbarCreateStory extends StatelessWidget
             ),
             onPressed: () {
               if (bloc.imgList.isNotEmpty) {
-                showDialogCreateStory(
-                  context: context,
-                  onSave: (description, isAdvertisement) async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StoryEditorScreen(
+                      images: bloc.imgList,
+                    ),
+                  ),
+                ).then((result) async {
+                  if (result != null && result is Map) {
                     final userId = AuthenticationRepository().getUserId;
                     final user = await bloc.getUser(id: userId);
                     final creationDate = DateTime.now();
                     final story = Story(
-                      description: description,
+                      description: result['description'] ?? '',
                       tags: [],
                       creationDate: creationDate.toString(),
                       user: user,
-                      isAdvertisement: isAdvertisement,
+                      isAdvertisement: result['isAdvertisement'] ?? false,
                     );
                     bloc.changeLoading(true);
-                    final result = await bloc.createStory(
+                    final createStoryResult = await bloc.createStory(
                       story: story,
                       list: bloc.imgList,
                     );
                     bloc.changeLoading(false);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
-                        content: result
+                        content: createStoryResult
                             ? AppStrings.textSuccessfulCreateStory
                             : AppStrings.textErrorCreateStory,
-                        backgroundColor: result
+                        backgroundColor: createStoryResult
                             ? ColorTokens.secondary50
                             : ColorTokens.error50,
                       ),
                     );
-                    if (result) {
+                    if (createStoryResult) {
                       Navigator.pop(context, true);
                     }
                   },
@@ -536,291 +543,4 @@ class _CarouselImagesSelected extends StatelessWidget {
       ],
     );
   }
-}
-
-void showDialogCreateStory({
-  required context,
-  required Function(String, bool) onSave,
-}) async {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _descriptionController = TextEditingController();
-  bool _isAdvertisement = false;
-
-  return await showDialog(
-    context: context,
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            backgroundColor: ColorTokens.neutral100,
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 20,
-              horizontal: 16,
-            ),
-            insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-            alignment: Alignment.bottomCenter,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            content: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Título del diálogo
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.auto_awesome,
-                            color: ColorTokens.primary30,
-                            size: 24,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Crear Historia',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: ColorTokens.primary30,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Campo de descripción
-                    TextFormFieldBiuxWidget(
-                      text: AppStrings.descriptionStory,
-                      controller: _descriptionController,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      maxLine: 6,
-                      radiusCircular: 12,
-                      autofocus: true,
-                      validator: (value) {
-                        // Descripción es opcional
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Sección de Publicidad con diseño innovador
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: _isAdvertisement
-                              ? [
-                                  Color(0xFFFFD700),
-                                  Color(0xFFFFA500),
-                                ] // Oro a naranja
-                              : [ColorTokens.neutral10, ColorTokens.neutral20],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: _isAdvertisement
-                              ? Color(0xFFFFD700)
-                              : ColorTokens.neutral30,
-                          width: 2,
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: [
-                          // Encabezado de publicidad con animación
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.trending_up,
-                                    color: _isAdvertisement
-                                        ? Color(0xFFFFD700)
-                                        : ColorTokens.neutral60,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Impulsa tu historia',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: _isAdvertisement
-                                          ? Color(0xFF1A1A1A)
-                                          : ColorTokens.neutral80,
-                                    ),
-                                  ),
-                                  if (_isAdvertisement)
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 8),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFFFFD700),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        'PREMIUM',
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w900,
-                                          color: Color(0xFF1A1A1A),
-                                          letterSpacing: 1,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              Transform.scale(
-                                scale: 1.2,
-                                child: Switch(
-                                  value: _isAdvertisement,
-                                  activeColor: Color(0xFFFFD700),
-                                  activeTrackColor: Color(
-                                    0xFFFFD700,
-                                  ).withValues(alpha: 0.3),
-                                  inactiveTrackColor: ColorTokens.neutral30,
-                                  inactiveThumbColor: ColorTokens.neutral60,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _isAdvertisement = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          if (_isAdvertisement) ...[
-                            const SizedBox(height: 12),
-                            Divider(
-                              color: Color(0xFFFFD700).withValues(alpha: 0.3),
-                              height: 1,
-                            ),
-                            const SizedBox(height: 12),
-
-                            // Descripción y beneficios
-                            Text(
-                              '✨ Tu historia aparecerá con un distintivo especial y mayor alcance a todos los usuarios',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF1A1A1A),
-                                fontWeight: FontWeight.w500,
-                                height: 1.5,
-                              ),
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // Beneficios en chips
-                            Wrap(
-                              spacing: 6,
-                              children: [
-                                _buildAdvertisementBadge('🎯 Alcance +500%'),
-                                _buildAdvertisementBadge('⭐ Destaque premium'),
-                                _buildAdvertisementBadge(
-                                  '📊 Más interacciones',
-                                ),
-                              ],
-                            ),
-                          ] else ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              'Activa la publicidad para impulsar tu historia y alcanzar más usuarios',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: ColorTokens.neutral70,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Botón de publicar
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _isAdvertisement
-                              ? Color(0xFFFFD700)
-                              : ColorTokens.primary30,
-                          foregroundColor: _isAdvertisement
-                              ? Color(0xFF1A1A1A)
-                              : Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: _isAdvertisement ? 8 : 2,
-                          shadowColor: _isAdvertisement
-                              ? Color(0xFFFFD700).withValues(alpha: 0.5)
-                              : null,
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            onSave(
-                              _descriptionController.text,
-                              _isAdvertisement,
-                            );
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        icon: Icon(
-                          _isAdvertisement ? Icons.flash_on : Icons.send,
-                          size: 20,
-                        ),
-                        label: Text(
-                          _isAdvertisement
-                              ? 'Publicar como Publicidad'
-                              : 'Publicar',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
-Widget _buildAdvertisementBadge(String text) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-    decoration: BoxDecoration(
-      color: Color(0xFFFFD700).withValues(alpha: 0.2),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Color(0xFFFFD700), width: 1),
-    ),
-    child: Text(
-      text,
-      style: const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        color: Color(0xFF1A1A1A),
-      ),
-    ),
-  );
 }

@@ -42,6 +42,7 @@ import '../../../features/users/presentation/screens/profile_screen.dart';
 import '../../../features/users/presentation/screens/user_screen/user_screen.dart';
 import '../../../features/users/presentation/screens/user_search_screen.dart';
 import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
+import '../../../features/users/presentation/screens/account_settings_screen.dart';
 
 // Bikes imports
 import '../../../features/bikes/presentation/screens/my_bikes_screen.dart';
@@ -405,6 +406,13 @@ final GoRouter _router = GoRouter(
             final userId = state.pathParameters['userId']!;
             return PublicUserProfileScreen(userId: userId);
           },
+        ),
+
+        // Configuración de Cuenta
+        GoRoute(
+          path: AppRoutes.accountSettings,
+          name: AppRoutes.accountSettingsName,
+          builder: (context, state) => const AccountSettingsScreen(),
         ),
 
         // Grupos

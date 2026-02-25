@@ -7,6 +7,7 @@ import 'package:biux/features/authentication/data/repositories/authentication_re
 import 'package:biux/core/utils/share_utils.dart';
 import 'package:biux/core/utils/strings_utils.dart';
 import 'package:biux/features/stories/presentation/screens/story_view/story_view_bloc.dart';
+import 'package:biux/features/stories/presentation/screens/story_view/story_comments_bottom_sheet.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -515,6 +516,8 @@ class _CarouselImagesState extends State<_CarouselImages> {
             });
           },
         ),
+        // Contenedor con descripción, likes y comentarios estilo Instagram
+        _StoryActionsBar(story: widget.story),
       ],
     );
   }
@@ -805,6 +808,195 @@ class _AdvertisementBadgeState extends State<_AdvertisementBadge>
                   letterSpacing: 1,
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Barra de acciones estilo Instagram (likes, comentarios y opciones)
+class _StoryActionsBar extends StatelessWidget {
+  final Story story;
+
+  const _StoryActionsBar({Key? key, required this.story}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final idUser = AuthenticationRepository().getUserId;
+    bool userLiked = story.listReactions.any(
+      (reaction) => reaction.id == idUser,
+    );
+
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          border: Border(
+            top: BorderSide(color: Theme.of(context).dividerColor, width: 0.5),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Fila de botones de interacción (Like, Comment, Share)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Botón Like
+                    GestureDetector(
+                      onTap: () {
+                        context.read<StoryViewBloc>().updateStoryLike(
+                          idUser: idUser,
+                          story: story,
+                        );
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            userLiked ? Icons.favorite : Icons.favorite_border,
+                            color: userLiked ? Colors.red : Colors.grey,
+                            size: 28,
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            story.listReactions.length.toString(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Botón Comentarios
+                    GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (context) =>
+                              StoryCommentsBottomSheet(story: story),
+                        );
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.comment_outlined,
+                            color: Colors.grey,
+                            size: 28,
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            story.listComments.length.toString(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Botón Compartir
+                    GestureDetector(
+                      onTap: () {
+                        ShareUtils().shareFile(
+                          filePath: story.fileUrl1,
+                          text:
+                              '${story.user.userName}${AppStrings.textShareStory}',
+                          title: AppStrings.titleShareStory,
+                        );
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.share_outlined,
+                            color: Colors.grey,
+                            size: 28,
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Compartir',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Separador
+              Divider(height: 1, thickness: 0.5),
+              SizedBox(height: 12),
+              // Descripción principal
+              if (story.description.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          story.user.userName,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            story.description,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      story.creationDate.timeHaveCreated,
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),

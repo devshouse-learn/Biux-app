@@ -745,34 +745,39 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       itemCount: provider.userPosts.length,
       itemBuilder: (context, index) {
         final post = provider.userPosts[index];
-        return Container(
-          decoration: BoxDecoration(
-            color: ColorTokens.neutral20,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: post.media.isNotEmpty
-                ? Image.network(
-                    post.media.first.url,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: ColorTokens.neutral30,
-                        child: const Icon(
-                          Icons.image,
-                          color: ColorTokens.neutral60,
-                        ),
-                      );
-                    },
-                  )
-                : Container(
-                    color: ColorTokens.neutral30,
-                    child: const Icon(
-                      Icons.image,
-                      color: ColorTokens.neutral60,
+        return GestureDetector(
+          onTap: () {
+            context.push('/stories/post/${post.id}');
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral20,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: post.media.isNotEmpty
+                  ? Image.network(
+                      post.media.first.url,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: ColorTokens.neutral30,
+                          child: const Icon(
+                            Icons.image,
+                            color: ColorTokens.neutral60,
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      color: ColorTokens.neutral30,
+                      child: const Icon(
+                        Icons.image,
+                        color: ColorTokens.neutral60,
+                      ),
                     ),
-                  ),
+            ),
           ),
         );
       },
@@ -811,65 +816,70 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       itemCount: provider.userStories.length,
       itemBuilder: (context, index) {
         final story = provider.userStories[index];
-        return Container(
-          decoration: BoxDecoration(
-            color: ColorTokens.neutral20,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: story.media.isNotEmpty
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        story.media.first.url,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: ColorTokens.neutral30,
-                            child: const Icon(
+        return GestureDetector(
+          onTap: () {
+            context.push('/stories/post/${story.id}');
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral20,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: story.media.isNotEmpty
+                  ? Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(
+                          story.media.first.url,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: ColorTokens.neutral30,
+                              child: const Icon(
+                                Icons.play_circle_outline,
+                                color: ColorTokens.neutral60,
+                                size: 48,
+                              ),
+                            );
+                          },
+                        ),
+                        // Overlay con gradiente
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.5),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Icono de play si es video
+                        if (story.media.first.mediaType.toString().contains(
+                          'video',
+                        ))
+                          const Center(
+                            child: Icon(
                               Icons.play_circle_outline,
-                              color: ColorTokens.neutral60,
+                              color: ColorTokens.neutral100,
                               size: 48,
                             ),
-                          );
-                        },
-                      ),
-                      // Overlay con gradiente
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.5),
-                            ],
                           ),
-                        ),
+                      ],
+                    )
+                  : Container(
+                      color: ColorTokens.neutral30,
+                      child: const Icon(
+                        Icons.play_circle_outline,
+                        color: ColorTokens.neutral60,
+                        size: 48,
                       ),
-                      // Icono de play si es video
-                      if (story.media.first.mediaType.toString().contains(
-                        'video',
-                      ))
-                        const Center(
-                          child: Icon(
-                            Icons.play_circle_outline,
-                            color: ColorTokens.neutral100,
-                            size: 48,
-                          ),
-                        ),
-                    ],
-                  )
-                : Container(
-                    color: ColorTokens.neutral30,
-                    child: const Icon(
-                      Icons.play_circle_outline,
-                      color: ColorTokens.neutral60,
-                      size: 48,
                     ),
-                  ),
+            ),
           ),
         );
       },

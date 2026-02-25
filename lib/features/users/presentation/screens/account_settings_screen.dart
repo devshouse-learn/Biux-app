@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({Key? key}) : super(key: key);
@@ -11,231 +12,235 @@ class AccountSettingsScreen extends StatefulWidget {
 }
 
 class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
-  late TextEditingController _emailController;
-  late TextEditingController _phoneController;
-  bool _isEditing = false;
-  bool _isSaving = false;
-
   @override
   void initState() {
     super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    _emailController = TextEditingController(
-      text: userProvider.user?.email ?? '',
-    );
-    _phoneController = TextEditingController(
-      text: userProvider.user?.phoneNumber ?? '',
-    );
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _saveChanges() async {
-    if (!_isEditing) {
-      setState(() => _isEditing = true);
-      return;
-    }
-
-    setState(() => _isSaving = true);
-
-    try {
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-      // Actualizar email si cambió
-      if (_emailController.text != userProvider.user?.email) {
-        await userProvider.updateProfile(email: _emailController.text);
-      }
-
-      setState(() => _isEditing = false);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Cambios guardados'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      setState(() => _isSaving = false);
-    }
+    // Cargar datos del usuario
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProvider>().loadUserData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorTokens.primary30,
       appBar: AppBar(
-        title: const Text('Configuración de Cuenta'),
         backgroundColor: ColorTokens.primary30,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+        foregroundColor: ColorTokens.neutral100,
+        title: Text(
+          'Configuración de Cuenta',
+          style: TextStyle(
+            color: ColorTokens.neutral100,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: ColorTokens.neutral100),
+          onPressed: () => context.pop(),
+        ),
+        elevation: 0,
       ),
       body: Consumer<UserProvider>(
-        builder: (context, userProvider, _) {
+        builder: (context, userProvider, child) {
+          final user = userProvider.user;
+
+          if (user == null) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  ColorTokens.secondary50,
+                ),
+              ),
+            );
+          }
+
           return SingleChildScrollView(
+            padding: EdgeInsets.all(16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Sección de información de cuenta
-                Container(
-                  color: ColorTokens.primary50,
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Información de Cuenta',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Estos datos se utilizan para la gestión de tu cuenta',
-                        style: TextStyle(fontSize: 14, color: Colors.white70),
-                      ),
-                    ],
+                SizedBox(height: 8),
+                // Sección de Información de Cuenta
+                Text(
+                  'Información de Cuenta',
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 16),
 
-                // Campos de información
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                // Tarjeta de Correo Electrónico
+                _buildAccountInfoCard(
+                  icon: Icons.email_outlined,
+                  title: 'Correo Electrónico',
+                  value: (user.email?.isNotEmpty ?? false)
+                      ? user.email!
+                      : 'No vinculado',
+                  isLinked: user.email?.isNotEmpty ?? false,
+                  context: context,
+                ),
+                SizedBox(height: 12),
+
+                // Tarjeta de Teléfono
+                _buildAccountInfoCard(
+                  icon: Icons.phone_android_outlined,
+                  title: 'Número de Teléfono',
+                  value: user.phoneNumber.isNotEmpty
+                      ? _formatPhoneNumber(user.phoneNumber)
+                      : 'No vinculado',
+                  isLinked: user.phoneNumber.isNotEmpty,
+                  context: context,
+                ),
+                SizedBox(height: 32),
+
+                // Sección de Dispositivos
+                Text(
+                  'Dispositivos Vinculados',
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                // Tarjeta de Dispositivo Actual
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: ColorTokens.primary40,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: ColorTokens.secondary50.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
                     children: [
-                      // Campo de Email
-                      _buildInfoSection(
-                        label: 'Correo Electrónico',
-                        icon: Icons.email,
-                        controller: _emailController,
-                        isEnabled: _isEditing,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Campo de Teléfono (mostrar como información, no como input)
-                      _buildPhoneInfoSection(
-                        label: 'Número Telefónico',
-                        icon: Icons.phone,
-                        phoneNumber: _phoneController.text,
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Nota informativa
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: ColorTokens.neutral10,
+                          color: ColorTokens.secondary50.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: ColorTokens.primary30,
-                            width: 1,
-                          ),
                         ),
-                        child: const Row(
+                        child: Icon(
+                          Icons.smartphone,
+                          color: ColorTokens.secondary50,
+                          size: 24,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: Colors.blue,
-                              size: 20,
+                            Text(
+                              'Este Dispositivo',
+                              style: TextStyle(
+                                color: ColorTokens.neutral100,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Tu número telefónico está vinculado a tu cuenta y no puede ser modificado. Si necesitas cambiar tu teléfono, contacta con soporte.',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Actualmente sesión iniciada',
+                              style: TextStyle(
+                                color: ColorTokens.neutral80,
+                                fontSize: 13,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
-
-                      // Botón de guardar/editar
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isSaving ? null : _saveChanges,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorTokens.primary30,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            disabledBackgroundColor: Colors.grey[300],
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ColorTokens.success50.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Activo',
+                          style: TextStyle(
+                            color: ColorTokens.success50,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
-                          child: _isSaving
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : Text(
-                                  _isEditing ? 'Guardar Cambios' : 'Editar',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
                         ),
                       ),
-
-                      // Botón de cancelar (visible solo cuando está editando)
-                      if (_isEditing)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                // Restaurar valores originales
-                                _emailController.text =
-                                    userProvider.user?.email ?? '';
-                                setState(() => _isEditing = false);
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: ColorTokens.primary30,
-                                side: BorderSide(color: ColorTokens.primary30),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                              ),
-                              child: const Text(
-                                'Cancelar',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ),
+                SizedBox(height: 32),
+
+                // Sección de Privacidad
+                Text(
+                  'Privacidad y Seguridad',
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                // Botón para cambiar contraseña
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.lock_outline,
+                  title: 'Cambiar Contraseña',
+                  subtitle: 'Actualiza tu contraseña regularmente',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Función en desarrollo'),
+                        backgroundColor: ColorTokens.warning50,
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 12),
+
+                // Botón para ver actividad
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.history,
+                  title: 'Historial de Actividad',
+                  subtitle: 'Ve dónde iniciaste sesión',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Función en desarrollo'),
+                        backgroundColor: ColorTokens.warning50,
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 12),
+
+                // Botón para verificación de cuenta
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.verified_user,
+                  title: 'Verificar Cuenta',
+                  subtitle: 'Confirma tu identidad',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Función en desarrollo'),
+                        backgroundColor: ColorTokens.warning50,
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 32),
               ],
             ),
           );
@@ -244,112 +249,173 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  Widget _buildInfoSection({
-    required String label,
+  /// Construye una tarjeta con información de cuenta
+  Widget _buildAccountInfoCard({
     required IconData icon,
-    required TextEditingController controller,
-    required bool isEnabled,
-    required TextInputType keyboardType,
+    required String title,
+    required String value,
+    required bool isLinked,
+    required BuildContext context,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: ColorTokens.primary40,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isLinked
+              ? ColorTokens.success50.withValues(alpha: 0.3)
+              : ColorTokens.neutral60.withValues(alpha: 0.2),
+          width: 1,
         ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          enabled: isEnabled,
-          keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.black, fontSize: 16),
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: ColorTokens.primary30),
-            hintText: label,
-            hintStyle: TextStyle(color: Colors.grey[400]),
-            filled: true,
-            fillColor: isEnabled ? Colors.white : Colors.grey[100],
-            border: OutlineInputBorder(
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isLinked
+                  ? ColorTokens.success50.withValues(alpha: 0.2)
+                  : ColorTokens.neutral60.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: isEnabled
-                    ? ColorTokens.primary30
-                    : ColorTokens.neutral30,
+            ),
+            child: Icon(
+              icon,
+              color: isLinked ? ColorTokens.success50 : ColorTokens.neutral80,
+              size: 24,
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: isLinked
+                        ? ColorTokens.neutral100
+                        : ColorTokens.neutral80,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 8),
+          if (isLinked)
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: ColorTokens.success50.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.check_circle,
+                color: ColorTokens.success50,
+                size: 20,
               ),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: ColorTokens.primary30, width: 1),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: ColorTokens.neutral30, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: ColorTokens.primary30, width: 2),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildPhoneInfoSection({
-    required String label,
+  /// Construye un botón de opción de configuración
+  Widget _buildSettingOptionButton({
+    required BuildContext context,
     required IconData icon,
-    required String phoneNumber,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+            color: ColorTokens.primary40,
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: ColorTokens.primary30,
+              color: ColorTokens.neutral60.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
           child: Row(
             children: [
-              Icon(icon, color: ColorTokens.primary30),
-              const SizedBox(width: 12),
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: ColorTokens.primary50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: ColorTokens.neutral100, size: 24),
+              ),
+              SizedBox(width: 16),
               Expanded(
-                child: Text(
-                  phoneNumber.isNotEmpty ? phoneNumber : 'No disponible',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: ColorTokens.neutral100,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: ColorTokens.neutral80,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Icon(
-                Icons.lock,
-                color: Colors.grey[400],
+                Icons.arrow_forward_ios,
+                color: ColorTokens.neutral80,
                 size: 18,
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
+  }
+
+  /// Formatea el número de teléfono
+  String _formatPhoneNumber(String phoneNumber) {
+    String cleaned = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
+
+    // Si comienza con 57 (código de Colombia), remover
+    if (cleaned.startsWith('57')) {
+      cleaned = cleaned.substring(2);
+    }
+
+    // Formatear como XXX XXX XXXX
+    if (cleaned.length == 10) {
+      return '${cleaned.substring(0, 3)} ${cleaned.substring(3, 6)} ${cleaned.substring(6)}';
+    }
+
+    return phoneNumber;
   }
 }

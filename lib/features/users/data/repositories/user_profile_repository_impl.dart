@@ -9,6 +9,66 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
   String? get _currentUserId => _auth.currentUser?.uid;
 
+  // Calcular similitud entre strings usando Levenshtein
+  double _calculateSimilarity(String s1, String s2) {
+    s1 = s1.toLowerCase();
+    s2 = s2.toLowerCase();
+
+    if (s1 == s2) return 1.0;
+    if (s1.isEmpty || s2.isEmpty) return 0.0;
+
+    final List<List<int>> distances = List.generate(
+      s1.length + 1,
+      (i) => List.generate(s2.length + 1, (j) => 0),
+    );
+
+    for (int i = 0; i <= s1.length; i++) distances[i][0] = i;
+    for (int j = 0; j <= s2.length; j++) distances[0][j] = j;
+
+    for (int i = 1; i <= s1.length; i++) {
+      for (int j = 1; j <= s2.length; j++) {
+        final cost = s1[i - 1] == s2[j - 1] ? 0 : 1;
+        distances[i][j] = [
+          distances[i - 1][j] + 1,
+          distances[i][j - 1] + 1,
+          distances[i - 1][j - 1] + cost,
+        ].reduce((a, b) => a < b ? a : b);
+      }
+    }
+
+    final maxLength = s1.length > s2.length ? s1.length : s2.length;
+    return 1.0 - (distances[s1.length][s2.length] / maxLength);
+  }
+
+  // Calcula una puntuación de relevancia para cada usuario
+  double _calculateSearchScore(BiuxUser user, String query) {
+    final q = query.toLowerCase().trim();
+    if (q.isEmpty) return 0.0;
+
+    final fullName = user.fullName.toLowerCase();
+    final userName = user.userName.toLowerCase();
+
+    // 1. Coincidencia exacta (máxima prioridad: 1.0)
+    if (fullName == q || userName == q) return 1.0;
+
+    // 2. Comienza con (muy alta prioridad: 0.95)
+    if (fullName.startsWith(q) || userName.startsWith(q)) return 0.95;
+
+    // 3. Contiene (alta prioridad: 0.85)
+    if (fullName.contains(q) || userName.contains(q)) return 0.85;
+
+    // 4. Similitud fuzzy (prioridad media: 0.5 - 0.8)
+    final nameSimi = _calculateSimilarity(fullName, q);
+    final usernameSimi = _calculateSimilarity(userName, q);
+    final maxSimi = nameSimi > usernameSimi ? nameSimi : usernameSimi;
+
+    if (maxSimi > 0.5) {
+      return 0.5 + (maxSimi * 0.3); // Rango: 0.5 - 0.8
+    }
+
+    return 0.0;
+  }
+
   @override
   Future<List<BiuxUser>> searchUsers(String query) async {
     try {
@@ -16,51 +76,40 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       final q = query.toLowerCase().trim();
 
-      // Traer todos los usuarios disponibles y filtrar en memoria
-      // Esto garantiza resultados con búsqueda case-insensitive
-      final allUsers = await _firestore.collection('users').limit(1000).get();
+      // Traer todos los usuarios disponibles (limitado para rendimiento)
+      final allUsers = await _firestore.collection('users').limit(500).get();
 
-      List<BiuxUser> results = [];
+      List<MapEntry<BiuxUser, double>> resultsWithScore = [];
 
       for (var doc in allUsers.docs) {
         if (doc.id == _currentUserId) continue;
 
-        final userData = doc.data();
-        final fullName = userData['fullName']?.toString().toLowerCase() ?? '';
-        final userName = userData['userName']?.toString().toLowerCase() ?? '';
-        final description =
-            userData['description']?.toString().toLowerCase() ?? '';
-
-        // Buscar en cualquier campo
-        if (fullName.contains(q) ||
-            userName.contains(q) ||
-            description.contains(q)) {
+        try {
+          final userData = doc.data();
           userData['id'] = doc.id;
-          results.add(BiuxUser.fromJsonMap(userData));
+          final user = BiuxUser.fromJsonMap(userData);
+
+          // Calcular puntuación de relevancia
+          final score = _calculateSearchScore(user, query);
+
+          // Solo incluir si tiene relevancia mínima (15%)
+          // Umbral bajo permite búsquedas por 1-2 caracteres (como Instagram)
+          if (score > 0.15) {
+            resultsWithScore.add(MapEntry(user, score));
+          }
+        } catch (e) {
+          print('Error procesando usuario ${doc.id}: $e');
+          continue;
         }
       }
 
-      // Ordenar: prioridad a coincidencias exactas y al inicio
-      results.sort((a, b) {
-        final aFullLower = a.fullName.toLowerCase();
-        final aUserLower = a.userName.toLowerCase();
-        final bFullLower = b.fullName.toLowerCase();
-        final bUserLower = b.userName.toLowerCase();
+      // Ordenar por puntuación descendente (más relevante primero)
+      resultsWithScore.sort((a, b) => b.value.compareTo(a.value));
 
-        // Exact match tiene máxima prioridad
-        if (aFullLower == q || aUserLower == q) return -1;
-        if (bFullLower == q || bUserLower == q) return 1;
-
-        // Starts with tiene prioridad media
-        if (aFullLower.startsWith(q) || aUserLower.startsWith(q)) return -1;
-        if (bFullLower.startsWith(q) || bUserLower.startsWith(q)) return 1;
-
-        return 0;
-      });
-
-      return results;
+      // Retornar solo los usuarios (sin la puntuación)
+      return resultsWithScore.map((e) => e.key).toList();
     } catch (e) {
-      print('Error buscando usuarios: $e');
+      print('❌ Error buscando usuarios: $e');
       return [];
     }
   }

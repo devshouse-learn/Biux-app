@@ -10,6 +10,10 @@ import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
+import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -1333,45 +1337,237 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                         SizedBox(height: 16),
 
-                        // Grid de publicaciones (placeholder)
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 40),
-                          decoration: BoxDecoration(
-                            color: ColorTokens.neutral10,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: ColorTokens.neutral30,
-                              width: 1,
-                            ),
+                        // Cargar y mostrar experiencias del usuario
+                        FutureBuilder(
+                          future: ExperienceRepositoryImpl().getUserExperiences(
+                            FirebaseAuth.instance.currentUser?.uid ?? '',
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.image_not_supported,
-                                size: 48,
-                                color: ColorTokens.neutral60,
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                'Sin publicaciones aún',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: ColorTokens.neutral70,
-                                  fontWeight: FontWeight.w500,
+                          builder: (context, snapshot) {
+                            // Estado de carga
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                decoration: BoxDecoration(
+                                  color: ColorTokens.neutral10,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: ColorTokens.neutral30,
+                                    width: 1,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Comienza a compartir tus historias',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: ColorTokens.neutral60,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      ColorTokens.primary30,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              );
+                            }
+
+                            // Error
+                            if (snapshot.hasError) {
+                              return Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                decoration: BoxDecoration(
+                                  color: ColorTokens.neutral10,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: ColorTokens.neutral30,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.error_outline,
+                                      size: 48,
+                                      color: ColorTokens.error50,
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'Error cargando publicaciones',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: ColorTokens.error50,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            // Sin datos o lista vacía
+                            if (!snapshot.hasData ||
+                                snapshot.data == null ||
+                                (snapshot.data as dynamic).isEmpty) {
+                              return Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                decoration: BoxDecoration(
+                                  color: ColorTokens.neutral10,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: ColorTokens.neutral30,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_not_supported,
+                                      size: 48,
+                                      color: ColorTokens.neutral60,
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'Sin publicaciones aún',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: ColorTokens.neutral70,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Comienza a compartir tus historias',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: ColorTokens.neutral60,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            // Mostrar grid de publicaciones
+                            final experiences = snapshot.data as dynamic;
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8,
+                                    childAspectRatio: 1,
+                                  ),
+                              itemCount: experiences.length,
+                              itemBuilder: (context, index) {
+                                final experience = experiences[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    context.push(
+                                      '/stories/post/${experience.id}',
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: ColorTokens.primary30,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        // Imagen de la experiencia
+                                        experience.media.isNotEmpty
+                                            ? CachedNetworkImage(
+                                                imageUrl:
+                                                    experience.media.first.url,
+                                                fit: BoxFit.cover,
+                                                cacheManager:
+                                                    OptimizedCacheManager
+                                                        .instance,
+                                                placeholder: (context, url) => Container(
+                                                  color: ColorTokens.neutral20,
+                                                  child: Center(
+                                                    child: SizedBox(
+                                                      width: 30,
+                                                      height: 30,
+                                                      child: CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                              Color
+                                                            >(
+                                                              ColorTokens
+                                                                  .primary30,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (
+                                                      context,
+                                                      url,
+                                                      error,
+                                                    ) => Container(
+                                                      color:
+                                                          ColorTokens.neutral20,
+                                                      child: Icon(
+                                                        Icons
+                                                            .image_not_supported,
+                                                        color: ColorTokens
+                                                            .neutral60,
+                                                      ),
+                                                    ),
+                                              )
+                                            : Container(
+                                                color: ColorTokens.neutral20,
+                                                child: Icon(
+                                                  Icons.image,
+                                                  color: ColorTokens.neutral60,
+                                                ),
+                                              ),
+                                        // Overlay oscuro
+                                        Positioned.fill(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: [
+                                                  Colors.transparent,
+                                                  Colors.black54,
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // Título de la experiencia
+                                        Positioned(
+                                          bottom: 8,
+                                          left: 8,
+                                          right: 8,
+                                          child: Text(
+                                            experience.description ?? '',
+                                            style: TextStyle(
+                                              color: ColorTokens.neutral100,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
 
                         SizedBox(height: 32),
