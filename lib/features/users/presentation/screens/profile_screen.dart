@@ -1,6 +1,7 @@
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
+import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -1532,6 +1533,159 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                             maxLines: 1,
+                                          ),
+                                        ),
+                                        // Menú de tres puntos (Editar/Eliminar)
+                                        Positioned(
+                                          top: 4,
+                                          right: 4,
+                                          child: PopupMenuButton<String>(
+                                            onSelected: (value) async {
+                                              if (value == 'edit') {
+                                                // Navegar a pantalla de edición
+                                                context.push(
+                                                  '/edit-post/${experience.id}',
+                                                  extra: experience,
+                                                );
+                                              } else if (value == 'delete') {
+                                                // Mostrar confirmación de eliminación
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (ctx) => AlertDialog(
+                                                    backgroundColor:
+                                                        ColorTokens.neutral20,
+                                                    title: Text(
+                                                      '¿Eliminar publicación?',
+                                                      style: TextStyle(
+                                                        color: ColorTokens
+                                                            .neutral100,
+                                                      ),
+                                                    ),
+                                                    content: Text(
+                                                      'Esta acción no se puede deshacer',
+                                                      style: TextStyle(
+                                                        color: ColorTokens
+                                                            .neutral80,
+                                                      ),
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(ctx),
+                                                        child: Text(
+                                                          'Cancelar',
+                                                          style: TextStyle(
+                                                            color: ColorTokens
+                                                                .primary50,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () async {
+                                                          Navigator.pop(ctx);
+                                                          try {
+                                                            final provider = context
+                                                                .read<
+                                                                  ExperienceProvider
+                                                                >();
+                                                            await provider
+                                                                .deleteExperience(
+                                                                  experience.id,
+                                                                );
+                                                            if (context
+                                                                .mounted) {
+                                                              ScaffoldMessenger.of(
+                                                                context,
+                                                              ).showSnackBar(
+                                                                const SnackBar(
+                                                                  content: Text(
+                                                                    'Publicación eliminada',
+                                                                  ),
+                                                                  duration:
+                                                                      Duration(
+                                                                        seconds:
+                                                                            2,
+                                                                      ),
+                                                                ),
+                                                              );
+                                                            }
+                                                          } catch (e) {
+                                                            if (context
+                                                                .mounted) {
+                                                              ScaffoldMessenger.of(
+                                                                context,
+                                                              ).showSnackBar(
+                                                                SnackBar(
+                                                                  content: Text(
+                                                                    'Error eliminando: $e',
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                          }
+                                                        },
+                                                        child: Text(
+                                                          'Eliminar',
+                                                          style: TextStyle(
+                                                            color: ColorTokens
+                                                                .error50,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            itemBuilder: (BuildContext ctx) => [
+                                              PopupMenuItem(
+                                                value: 'edit',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.edit_outlined,
+                                                      color:
+                                                          ColorTokens.primary50,
+                                                      size: 18,
+                                                    ),
+                                                    SizedBox(width: 12),
+                                                    Text(
+                                                      'Editar publicación',
+                                                      style: TextStyle(
+                                                        color: ColorTokens
+                                                            .neutral100,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 'delete',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.delete_outline,
+                                                      color:
+                                                          ColorTokens.error50,
+                                                      size: 18,
+                                                    ),
+                                                    SizedBox(width: 12),
+                                                    Text(
+                                                      'Eliminar publicación',
+                                                      style: TextStyle(
+                                                        color:
+                                                            ColorTokens.error50,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                            color: ColorTokens.neutral30,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
                                           ),
                                         ),
                                       ],

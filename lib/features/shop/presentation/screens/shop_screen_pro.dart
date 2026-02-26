@@ -2689,7 +2689,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       'lorempixel.com',
     ];
 
-    for (final domain in placeholderDomains) {
+    for (final domain in blockedDomains) {
       if (lower.contains(domain)) return false;
     }
 
@@ -2719,12 +2719,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
     // ✅ Permitir Unsplash (fotos fijas por ID, siempre coinciden con producto)
     if (lower.contains('images.unsplash.com/photo-')) return true;
 
-    // Filtrar texto "Producto" en placeholders    if (lower.contains('text=producto') || lower.contains('text=product')) {
-      return false;
-    }
-
-    // Debe ser una URL válida (http o https)
-    if (!lower.startsWith('http://') && !lower.startsWith('https://')) {
+    // Filtrar texto "Producto" en placeholders
+    if (lower.contains('text=producto') || lower.contains('text=product')) {
       return false;
     }
 
@@ -6187,14 +6183,10 @@ extension _BenefitDialogs on _ShopScreenProState {
 
 // End of resolved conflict
 
-
 /// Modelo visual para representar una categoría con icono y colores
 class _CategoryVisual {
   final IconData icon;
   final List<Color> gradientColors;
 
-  const _CategoryVisual({
-    required this.icon,
-    required this.gradientColors,
-  });
+  const _CategoryVisual({required this.icon, required this.gradientColors});
 }

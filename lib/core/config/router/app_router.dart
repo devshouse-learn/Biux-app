@@ -17,6 +17,7 @@ import '../../../features/users/presentation/providers/user_provider.dart';
 // Feature imports (screens)
 import '../../../features/experiences/presentation/screens/experiences_list_screen.dart';
 import '../../../features/experiences/presentation/screens/create_experience_screen.dart';
+import '../../../features/experiences/presentation/screens/edit_experience_screen.dart';
 import '../../../features/experiences/domain/entities/experience_entity.dart';
 import '../../../features/groups/presentation/screens/edit_group/edit_group_screen.dart';
 import '../../../features/groups/presentation/screens/group_create/group_create_screen.dart';
@@ -493,15 +494,7 @@ final GoRouter _router = GoRouter(
                 );
               },
             ),
-            // Ver historia específica
-            GoRoute(
-              path: ':storyId',
-              name: AppRoutes.viewStoryName,
-              builder: (context, state) {
-                return StoryViewScreen();
-              },
-            ),
-            // Ver detalle de post/experiencia
+            // Ver detalle de post/experiencia (DEBE IR ANTES DE :storyId)
             GoRoute(
               path: 'post/:postId',
               name: 'postDetail',
@@ -510,7 +503,31 @@ final GoRouter _router = GoRouter(
                 return PostDetailScreen(postId: postId);
               },
             ),
+            // Ver historia específica
+            GoRoute(
+              path: ':storyId',
+              name: AppRoutes.viewStoryName,
+              builder: (context, state) {
+                return StoryViewScreen();
+              },
+            ),
           ],
+        ),
+
+        // Editar publicación/experiencia
+        GoRoute(
+          path: '/edit-post/:postId',
+          name: 'editPost',
+          builder: (context, state) {
+            final postId = state.pathParameters['postId']!;
+            final experience = state.extra as ExperienceEntity?;
+            if (experience == null) {
+              return const Scaffold(
+                body: Center(child: Text('Error: Publicación no encontrada')),
+              );
+            }
+            return EditExperienceScreen(experience: experience);
+          },
         ),
 
         // Rutas/Caminos (esta ruta permanece para rutas reales)

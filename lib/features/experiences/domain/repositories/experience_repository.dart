@@ -2,6 +2,9 @@ import 'package:biux/features/experiences/domain/entities/experience_entity.dart
 
 /// Repository abstracto para la gestión de experiencias
 abstract class ExperienceRepository {
+  /// Obtiene una experiencia por su ID
+  Future<ExperienceEntity?> getExperienceById(String experienceId);
+
   /// Obtiene todas las experiencias del usuario actual
   Future<List<ExperienceEntity>> getUserExperiences(String userId);
 
@@ -13,6 +16,12 @@ abstract class ExperienceRepository {
 
   /// Crea una nueva experiencia
   Future<ExperienceEntity> createExperience(CreateExperienceRequest request);
+
+  /// Actualiza una experiencia existente
+  Future<void> updateExperience(
+    String experienceId, {
+    required String description,
+  });
 
   /// Elimina una experiencia
   Future<void> deleteExperience(String experienceId);
