@@ -344,7 +344,7 @@ class _NotificationSettingsScreenState
           BoxShadow(
             color: enabled
                 ? ColorTokens.primary30.withValues(alpha: 0.3)
-                : Colors.grey.withOpacity(0.3),
+                : Colors.grey.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -355,7 +355,7 @@ class _NotificationSettingsScreenState
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -441,7 +441,7 @@ class _NotificationSettingsScreenState
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.15),
+                color: iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: iconColor, size: 24),

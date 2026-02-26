@@ -309,13 +309,16 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                               const SizedBox(height: 12),
 
                               // Descripción del usuario si existe
+                              // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
                               if (user.description != null &&
+                                  // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
                                   user.description!.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 20.0,
                                   ),
                                   child: Text(
+                                    // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
                                     user.description!,
                                     style: const TextStyle(
                                       fontSize: 14,
@@ -325,7 +328,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
+                              // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
                               if (user.description == null ||
+                                  // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
                                   user.description!.isEmpty)
                                 const SizedBox.shrink(),
                               const SizedBox(height: 20),

@@ -220,6 +220,7 @@ class NotificationService {
   }
 
   /// Maneja cuando se toca una notificación local
+  // ignore: unused_element
   void _onNotificationTapped(NotificationResponse response) {
     if (response.payload != null) {
       try {

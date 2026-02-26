@@ -1,4 +1,3 @@
-// @override-entire-file
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
@@ -37,7 +36,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: _kPrimaryColor.withOpacity(0.15)),
+          side: BorderSide(color: _kPrimaryColor.withValues(alpha: 0.15)),
         ),
         clipBehavior: Clip.antiAlias,
         child: Theme(
@@ -48,7 +47,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _kPrimaryColor.withOpacity(0.1),
+                color: _kPrimaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
@@ -158,8 +157,11 @@ class ShopAdminDashboardWidget extends StatelessWidget {
       leading: Stack(
         clipBehavior: Clip.none,
         children: [
-          Icon(icon,
-              size: 20, color: iconColor ?? _kPrimaryColor.withOpacity(0.7)),
+          Icon(
+            icon,
+            size: 20,
+            color: iconColor ?? _kPrimaryColor.withValues(alpha: 0.7),
+          ),
           if (badge)
             Positioned(
               right: -4,
@@ -195,260 +197,6 @@ class ShopAdminDashboardWidget extends StatelessWidget {
         color: Colors.grey.shade400,
       ),
       onTap: onTap,
-    );
-  }
-}
-
-        final isAdmin = user?.isAdmin ?? false;
-        final isSeller = user?.canSellProducts ?? false;
-
-        if (!isAdmin && !isSeller) return const SizedBox.shrink();
-
-        return Container(
-          margin = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration = BoxDecoration(
-            gradient: LinearGradient(
-              colors: [_kPrimaryColor, _kPrimaryColor.withOpacity(0.85)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: _kPrimaryColor.withOpacity(0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        isAdmin ? Icons.admin_panel_settings : Icons.store,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isAdmin
-                                ? 'Panel de Administración'
-                                : 'Panel de Vendedor',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            isAdmin
-                                ? 'Gestiona productos, vendedores y más'
-                                : 'Gestiona tus productos',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Stats rápidas
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    _buildQuickStat(
-                      'Productos',
-                      '${shopProvider.products.length}',
-                      Icons.inventory_2,
-                    ),
-                    _buildQuickStat(
-                      'En Carrito',
-                      '${shopProvider.cartItemCount}',
-                      Icons.shopping_cart,
-                    ),
-                    if (isAdmin)
-                      _buildQuickStat(
-                        'Solicitudes',
-                        '•',
-                        Icons.pending_actions,
-                        highlight: true,
-                      ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Menú de opciones
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    if (isSeller || isAdmin)
-                      _buildMenuButton(
-                        'Mis Productos',
-                        Icons.inventory,
-                        Colors.blue,
-                        onManageProducts,
-                      ),
-                    if (isAdmin)
-                      _buildMenuButton(
-                        'Vendedores',
-                        Icons.people,
-                        Colors.green,
-                        onManageSellers,
-                      ),
-                    if (isAdmin)
-                      _buildMenuButton(
-                        'Solicitudes',
-                        Icons.assignment,
-                        Colors.orange,
-                        onViewRequests,
-                      ),
-                    _buildMenuButton(
-                      'Reportes',
-                      Icons.flag,
-                      Colors.red,
-                      onViewReports,
-                    ),
-                    if (isAdmin)
-                      _buildMenuButton(
-                        'Estadísticas',
-                        Icons.bar_chart,
-                        Colors.purple,
-                        onViewStats,
-                      ),
-                    _buildMenuButton(
-                      'Seguridad',
-                      Icons.security,
-                      Colors.teal,
-                      onSecurityCenter,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildQuickStat(
-    String label,
-    String value,
-    IconData icon, {
-    bool highlight = false,
-  }) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(
-          color: highlight
-              ? Colors.orange.withOpacity(0.2)
-              : Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: highlight
-              ? Border.all(color: Colors.orange.withOpacity(0.5))
-              : null,
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: highlight ? Colors.orange : Colors.white70,
-              size: 20,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: TextStyle(
-                color: highlight ? Colors.orange : Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 11,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuButton(
-    String label,
-    IconData icon,
-    Color color,
-    VoidCallback? onTap,
-  ) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: 100,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color.withOpacity(0.3)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 24),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

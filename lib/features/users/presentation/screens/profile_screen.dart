@@ -12,7 +12,6 @@ import 'package:biux/core/config/styles.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -268,6 +267,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   // Función temporal para actualizar ciudades con departamentos
 
+  // ignore: unused_element
   Widget _buildStatCard({required String value, required String label}) {
     return Column(
       children: [

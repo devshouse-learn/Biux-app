@@ -19,17 +19,17 @@ class ShopCompactCategoriesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final categories = <Map<String, Object?>>[
       {'name': 'Todo', 'icon': Icons.pedal_bike},
-      {'name': ProductCategories.bicicletas, 'icon': Icons.pedal_bike},
-      {'name': ProductCategories.ropa, 'icon': Icons.checkroom},
-      {'name': ProductCategories.accesorios, 'icon': Icons.watch},
-      {'name': ProductCategories.componentes, 'icon': Icons.settings},
-      {'name': ProductCategories.herramientas, 'icon': Icons.build},
-      {'name': ProductCategories.nutricion, 'icon': Icons.local_drink},
+      {'name': ProductCategories.bikes, 'icon': Icons.pedal_bike},
+      {'name': ProductCategories.jerseys, 'icon': Icons.checkroom},
+      {'name': ProductCategories.accessories, 'icon': Icons.watch},
+      {'name': ProductCategories.components, 'icon': Icons.settings},
+      {'name': ProductCategories.maintenance, 'icon': Icons.build},
+      {'name': ProductCategories.nutrition, 'icon': Icons.local_drink},
       {
-        'name': ProductCategories.electronica,
+        'name': ProductCategories.electronics,
         'icon': Icons.electrical_services,
       },
-      {'name': ProductCategories.proteccion, 'icon': Icons.shield},
+      {'name': ProductCategories.safety, 'icon': Icons.shield},
     ];
 
     return SliverToBoxAdapter(

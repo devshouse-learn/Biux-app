@@ -405,7 +405,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildUserHeader() {
     final user = widget.experience.user;
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    final isOwner = currentUserId == user.id;
+    // ignore: unused_local_variable
+    final _ /* isOwner */ = currentUserId == user.id;
 
     // Log de la experiencia actual
     print('=== BUILDING HEADER FOR EXPERIENCE ===');

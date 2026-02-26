@@ -509,7 +509,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
