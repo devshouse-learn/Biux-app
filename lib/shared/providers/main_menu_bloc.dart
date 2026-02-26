@@ -1,4 +1,4 @@
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/members/data/models/user_membership.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
@@ -40,13 +40,13 @@ class MainMenuBloc extends ChangeNotifier {
   }
 
   Future<void> onTapViewProfile(BuildContext context) async {
-    await Navigator.pushNamed(context, AppRoutes.userScreenRoute);
+    await Navigator.pushNamed(context, AppRoutes.profileName);
     notifyListeners();
     getUser();
   }
 
   Future<void> onTapViewMyGroups(BuildContext context) async {
-    await Navigator.pushNamed(context, AppRoutes.myGroupsRoute);
+    await Navigator.pushNamed(context, AppRoutes.myGroupsName);
     notifyListeners();
     getUser();
   }

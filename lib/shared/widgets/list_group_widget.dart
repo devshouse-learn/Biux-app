@@ -1,6 +1,6 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/groups/data/models/group.dart';
@@ -108,7 +108,7 @@ class GroupList extends StatelessWidget {
                         onTap: () async {
                           await Navigator.pushNamed(
                             context,
-                            AppRoutes.viewGroupRoute,
+                            AppRoutes.viewGroupName,
                             arguments: {
                               'adminId': group.adminId,
                               'groupId': group.id,

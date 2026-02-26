@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:biux/features/social/data/adapters/attendees_firestore_adapter.dart';
+import 'package:biux/features/social/data/datasources/attendees_firestore_adapter.dart';
 
 /// Widget para gestionar la migración y sincronización de asistentes
 ///

@@ -1,6 +1,6 @@
 import 'package:biux/core/design_system/design_system.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/groups/presentation/screens/group_list/group_list_screen.dart';
@@ -117,7 +117,7 @@ class _ActionButton extends StatelessWidget {
                 final bloc = context.read<StoryViewBloc>();
                 final result = await Navigator.pushNamed(
                   context,
-                  AppRoutes.storyCreateRoute,
+                  AppRoutes.storyCreateName,
                 );
                 if (result as bool) {
                   bloc.getIntitalStories();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/features/shop/domain/services/stolen_bike_verification_service.dart';
+import 'package:biux/features/shop/domain/usecases/stolen_bike_verification_service.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
