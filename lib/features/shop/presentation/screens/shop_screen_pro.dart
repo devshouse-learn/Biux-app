@@ -2721,11 +2721,14 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
     // Filtrar texto "Producto" en placeholders
     if (lower.contains('text=producto') || lower.contains('text=product')) {
+<<<<<<< HEAD
       return false;
     }
 
     // Debe ser una URL válida (http o https)
     if (!lower.startsWith('http://') && !lower.startsWith('https://')) {
+=======
+>>>>>>> a52917a01c78daab9cdfef74605819626d8ffe79
       return false;
     }
 
@@ -6188,14 +6191,10 @@ extension _BenefitDialogs on _ShopScreenProState {
 
 // End of resolved conflict
 
-
 /// Modelo visual para representar una categoría con icono y colores
 class _CategoryVisual {
   final IconData icon;
   final List<Color> gradientColors;
 
-  const _CategoryVisual({
-    required this.icon,
-    required this.gradientColors,
-  });
+  const _CategoryVisual({required this.icon, required this.gradientColors});
 }

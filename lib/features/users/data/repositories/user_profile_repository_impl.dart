@@ -117,36 +117,15 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   @override
   Future<BiuxUser?> getUserProfile(String userId) async {
     try {
-      print('🔍 REPOSITORY: Consultando usuario con ID: "$userId"');
-      print('🔍 REPOSITORY: Colección: users, Documento: $userId');
-
       final doc = await _firestore.collection('users').doc(userId).get();
-
-      print('🔍 REPOSITORY: Documento existe: ${doc.exists}');
 
       if (doc.exists) {
         final userData = doc.data()!;
         userData['id'] = doc.id;
-
-        print('🔍 REPOSITORY: Datos encontrados:');
-        print('  - ID: "${userData['id']}"');
-        print('  - FullName: "${userData['fullName'] ?? 'VACÍO'}"');
-        print('  - Name: "${userData['name'] ?? 'VACÍO'}"');
-        print('  - UserName: "${userData['userName'] ?? 'VACÍO'}"');
-        print('  - Email: "${userData['email'] ?? 'VACÍO'}"');
-        print('  - Photo: "${userData['photo'] ?? 'VACÍO'}"');
-        print('  - PhotoUrl: "${userData['photoUrl'] ?? 'VACÍO'}"');
-        print('  - Todos los campos disponibles: ${userData.keys.toList()}');
-
-        final user = BiuxUser.fromJsonMap(userData);
-        print('🔍 REPOSITORY: Usuario creado exitosamente');
-        return user;
-      } else {
-        print('❌ REPOSITORY: Documento no existe para ID: "$userId"');
+        return BiuxUser.fromJsonMap(userData);
       }
       return null;
     } catch (e) {
-      print('❌ REPOSITORY: Error obteniendo perfil de usuario: $e');
       return null;
     }
   }

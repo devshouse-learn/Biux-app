@@ -138,18 +138,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             );
           }
 
-          // Debug del usuario
-          print('=== PUBLIC PROFILE USER DATA ===');
-          print('User ID: "${user.id}"');
-          print('User FullName: "${user.fullName}"');
-          print('User UserName: "${user.userName}"');
-          print('User Email: "${user.email}"');
-          print('User Photo: "${user.photo}"');
-          print('FullName isEmpty: ${user.fullName.isEmpty}');
-          print('UserName isEmpty: ${user.userName.isEmpty}');
-          print('Photo isEmpty: ${user.photo.isEmpty}');
-          print('================================');
-
+          // Contenido del perfil
           return NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
@@ -168,11 +157,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                             ? DecorationImage(
                                 image: NetworkImage(user.profileCover),
                                 fit: BoxFit.cover,
-                                onError: (exception, stackTrace) {
-                                  print(
-                                    '❌ Error cargando profileCover: $exception',
-                                  );
-                                },
                               )
                             : null,
                         gradient: user.profileCover.isEmpty
@@ -245,12 +229,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                               },
                                           errorBuilder:
                                               (context, error, stackTrace) {
-                                                print(
-                                                  '❌ Error cargando imagen: $error',
-                                                );
-                                                print(
-                                                  'URL de imagen: ${user.photo}',
-                                                );
                                                 return const CircleAvatar(
                                                   radius: 50,
                                                   backgroundColor:
