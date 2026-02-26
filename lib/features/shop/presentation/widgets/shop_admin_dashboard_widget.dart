@@ -1,4 +1,3 @@
-// @override-entire-file
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
@@ -37,7 +36,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: _kPrimaryColor.withOpacity(0.15)),
+          side: BorderSide(color: _kPrimaryColor.withValues(alpha: 0.15)),
         ),
         clipBehavior: Clip.antiAlias,
         child: Theme(
@@ -50,7 +49,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _kPrimaryColor.withOpacity(0.1),
+                color: _kPrimaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
@@ -160,7 +159,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
           Icon(
             icon,
             size: 20,
-            color: iconColor ?? _kPrimaryColor.withOpacity(0.7),
+            color: iconColor ?? _kPrimaryColor.withValues(alpha: 0.7),
           ),
           if (badge)
             Positioned(

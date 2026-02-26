@@ -8,7 +8,6 @@ import 'package:biux/features/stories/presentation/screens/story_create/story_cr
 import 'package:biux/features/stories/presentation/screens/story_create/story_editor_screen.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:biux/shared/widgets/loading_widget.dart';
-import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -364,8 +363,8 @@ class _AppbarCreateStory extends StatelessWidget
                     if (createStoryResult) {
                       Navigator.pop(context, true);
                     }
-                  },
-                );
+                  }
+                });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(

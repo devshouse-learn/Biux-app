@@ -74,6 +74,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     try {
       if (query.isEmpty) return [];
 
+      // ignore: unused_local_variable
       final q = query.toLowerCase().trim();
 
       // Traer todos los usuarios disponibles (limitado para rendimiento)

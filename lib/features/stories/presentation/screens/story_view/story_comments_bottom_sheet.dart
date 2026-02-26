@@ -1,5 +1,4 @@
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/stories/data/models/comment_story.dart';
 import 'package:biux/features/stories/data/models/story.dart';

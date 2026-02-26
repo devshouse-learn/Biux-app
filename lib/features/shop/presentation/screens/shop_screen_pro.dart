@@ -569,6 +569,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   }
 
   /// Chips de categorías horizontales estilo Chrome
+  // ignore: unused_element
   Widget _buildCategoryChips() {
     final categories = [
       {'icon': Icons.apps, 'label': 'Todos', 'value': null},
@@ -675,6 +676,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   }
 
   /// Barra de ofertas desplegable limpia
+  // ignore: unused_element
   Widget _buildOffersBar() {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -1131,6 +1133,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   }
 
   /// AppBar profesional con búsqueda integrada (antiguo)
+  // ignore: unused_element
   Widget _buildSliverAppBar() {
     return SliverAppBar(
       expandedHeight: 120,
@@ -1410,12 +1413,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Banner promocional integrado con Biux
   /// Banner promocional integrado con Biux - Colores claros
+  // ignore: unused_element
   Widget _buildPromoBanner() {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: const Color(0xFF16242D).withOpacity(0.1)),
+        side: BorderSide(color: const Color(0xFF16242D).withValues(alpha: 0.1)),
       ),
       color: const Color(0xFFF0F7FF),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1430,7 +1434,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF16242D).withOpacity(0.08),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -1481,7 +1485,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               decoration: InputDecoration(
                 hintText: 'Ej: Descuento en cascos de ciclismo',
                 hintStyle: TextStyle(
-                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
                 ),
                 filled: true,
@@ -1493,13 +1497,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -1511,7 +1515,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
                 prefixIcon: Icon(
                   Icons.title,
-                  color: const Color(0xFF16242D).withOpacity(0.4),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.4),
                   size: 20,
                 ),
               ),
@@ -1535,7 +1539,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 hintText:
                     'Describe tu promoción, incluye detalles importantes como ubicación, horarios, condiciones...',
                 hintStyle: TextStyle(
-                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
                 ),
                 filled: true,
@@ -1547,13 +1551,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -1567,7 +1571,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   padding: const EdgeInsets.only(bottom: 40),
                   child: Icon(
                     Icons.description_outlined,
-                    color: const Color(0xFF16242D).withOpacity(0.4),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.4),
                     size: 20,
                   ),
                 ),
@@ -1599,7 +1603,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFF16242D).withOpacity(0.12),
+                            color: const Color(0xFF16242D).withValues(alpha: 0.12),
                           ),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -1608,7 +1612,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             isExpanded: true,
                             icon: Icon(
                               Icons.keyboard_arrow_down,
-                              color: const Color(0xFF16242D).withOpacity(0.5),
+                              color: const Color(0xFF16242D).withValues(alpha: 0.5),
                             ),
                             style: const TextStyle(
                               color: Color(0xFF16242D),
@@ -1702,7 +1706,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color(0xFF16242D).withOpacity(0.12),
+                              color: const Color(0xFF16242D).withValues(alpha: 0.12),
                             ),
                           ),
                           child: Row(
@@ -1710,7 +1714,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 18,
-                                color: const Color(0xFF16242D).withOpacity(0.4),
+                                color: const Color(0xFF16242D).withValues(alpha: 0.4),
                               ),
                               const SizedBox(width: 8),
                               Text(
@@ -1718,7 +1722,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                 style: TextStyle(
                                   color: const Color(
                                     0xFF16242D,
-                                  ).withOpacity(0.5),
+                                  ).withValues(alpha: 0.5),
                                   fontSize: 14,
                                 ),
                               ),
@@ -1747,7 +1751,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               decoration: InputDecoration(
                 hintText: 'Ej: Tienda de ciclismo Calle 80, Bogotá',
                 hintStyle: TextStyle(
-                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
                 ),
                 filled: true,
@@ -1759,13 +1763,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -1777,7 +1781,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
                 prefixIcon: Icon(
                   Icons.location_on_outlined,
-                  color: const Color(0xFF16242D).withOpacity(0.4),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.4),
                   size: 20,
                 ),
               ),
@@ -1799,7 +1803,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               decoration: InputDecoration(
                 hintText: 'Ej: https://mitienda.com o +57 300 123 4567',
                 hintStyle: TextStyle(
-                  color: const Color(0xFF16242D).withOpacity(0.35),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
                 ),
                 filled: true,
@@ -1811,13 +1815,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: const Color(0xFF16242D).withOpacity(0.12),
+                    color: const Color(0xFF16242D).withValues(alpha: 0.12),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -1829,7 +1833,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
                 prefixIcon: Icon(
                   Icons.link,
-                  color: const Color(0xFF16242D).withOpacity(0.4),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.4),
                   size: 20,
                 ),
               ),
@@ -1841,10 +1845,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF16242D).withOpacity(0.04),
+                color: const Color(0xFF16242D).withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: const Color(0xFF16242D).withOpacity(0.08),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.08),
                 ),
               ),
               child: const Row(
@@ -1900,6 +1904,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
+  // ignore: unused_element
   Widget _buildBenefitCard(
     String emoji,
     String text,
@@ -1947,6 +1952,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   }
 
   /// Toolbar con ordenamiento y vista
+  // ignore: unused_element
   Widget _buildToolbar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -2827,7 +2833,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           Icon(
             categoryConfig.icon,
             size: (height ?? 120) * 0.3,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
           ),
           const SizedBox(height: 8),
           Padding(
@@ -2855,13 +2861,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               category,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
                 fontSize: (height ?? 120) * 0.06,
                 fontWeight: FontWeight.w500,
               ),
@@ -3391,6 +3397,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
+  // ignore: unused_element
   void _showPermissionRequestDialog(BuildContext context) {
     // Usar el nuevo widget de diálogo
     showRequestSellerPermissionDialog(context);
@@ -3760,6 +3767,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 }
 
 /// Bottom sheet para gestionar productos de la tienda
+// ignore: unused_element
 void _showManageProductsSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -3971,6 +3979,7 @@ void _showManageProductsSheet(BuildContext context) {
 }
 
 /// Bottom sheet para gestionar vendedores
+// ignore: unused_element
 void _showManageSellersSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -4184,6 +4193,7 @@ void _showManageSellersSheet(BuildContext context) {
 }
 
 /// Bottom sheet para reportes
+// ignore: unused_element
 void _showReportsSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -4413,6 +4423,7 @@ void _showReportsSheet(BuildContext context) {
 }
 
 /// Bottom sheet para solicitudes
+// ignore: unused_element
 void _showRequestsSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -4599,6 +4610,7 @@ void _showRequestsSheet(BuildContext context) {
 }
 
 /// Bottom sheet para estadísticas
+// ignore: unused_element
 void _showStatsSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -4848,6 +4860,7 @@ void _showStatsSheet(BuildContext context) {
 }
 
 /// Bottom sheet para centro de seguridad
+// ignore: unused_element
 void _showSecuritySheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -5164,7 +5177,7 @@ Widget _buildActionTile({
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     child: ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.1),
         child: Icon(icon, color: color),
       ),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -5182,7 +5195,7 @@ Widget _buildSellerCard(String name, String role, IconData icon, Color color) {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     child: ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.1),
         child: Icon(icon, color: color),
       ),
       title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -5192,6 +5205,7 @@ Widget _buildSellerCard(String name, String role, IconData icon, Color color) {
 }
 
 /// Widget FAB con menú desplegable para opciones de tienda
+// ignore: unused_element
 class _ShopMenuFab extends StatelessWidget {
   final bool isAdmin;
   final bool canCreateProducts;
