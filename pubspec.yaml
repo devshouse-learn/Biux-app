@@ -104,6 +104,8 @@ dependencies:
   # QR Scanner temporal deshabilitado por conflictos de dependencias
   # mobile_scanner: ^5.1.1
   qr_flutter: ^4.1.0  # Generador de códigos QR
+  pdf: ^3.11.3
+  printing: ^5.14.2
 
 
 dev_dependencies:
