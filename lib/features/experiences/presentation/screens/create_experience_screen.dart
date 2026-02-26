@@ -5,6 +5,9 @@ import 'package:biux/features/experiences/presentation/providers/experience_crea
 import 'package:biux/features/experiences/presentation/widgets/media_item_widget.dart';
 import 'package:biux/features/experiences/presentation/widgets/media_selector_widget.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/features/experiences/presentation/screens/image_crop_editor_screen.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 /// Pantalla para crear nuevas experiencias
 /// Soporta imágenes y videos con compresión automática
@@ -361,8 +364,13 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 // Posts SOLO permiten fotos (sin videos)
                 allowVideo:
                     widget.isStoryMode, // Solo stories pueden tener video
-                onImageFromGallery: provider.addImageFromGallery,
-                onTakePhoto: provider.takePhoto,
+                onImageFromGallery: () => _openImagePickerWithCrop(
+                  context,
+                  provider,
+                  isCamera: false,
+                ),
+                onTakePhoto: () =>
+                    _openImagePickerWithCrop(context, provider, isCamera: true),
                 onVideoFromGallery: widget.isStoryMode
                     ? provider.addVideoFromGallery
                     : null,
@@ -827,6 +835,87 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         ],
       ),
     );
+  }
+
+  /// Abre el selector de imágenes y después el editor de crop
+  Future<void> _openImagePickerWithCrop(
+    BuildContext context,
+    ExperienceCreatorProvider provider, {
+    required bool isCamera,
+  }) async {
+    try {
+      // Usar el método del provider para obtener la imagen
+      if (isCamera) {
+        // Tomar foto
+        final navigator = Navigator.of(context);
+
+        // Primero obtener la imagen usando el picker del provider
+        final imagePicker = provider.imagePicker;
+        final XFile? pickedFile = await imagePicker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 1080,
+          maxHeight: 1350,
+          imageQuality: 85,
+        );
+
+        if (pickedFile != null && mounted) {
+          final file = File(pickedFile.path);
+          if (file.existsSync()) {
+            // Abrir el editor de crop
+            final croppedFile = await navigator.push<File>(
+              MaterialPageRoute(
+                builder: (_) => ImageCropEditorScreen(
+                  imageFile: file,
+                  title: 'Ajustar foto - Formato cuadrado',
+                ),
+              ),
+            );
+
+            if (croppedFile != null) {
+              // Añadir la imagen recortada al provider
+              provider.addCroppedImage(croppedFile);
+            }
+          }
+        }
+      } else {
+        // Seleccionar desde galería
+        final navigator = Navigator.of(context);
+
+        final imagePicker = provider.imagePicker;
+        final XFile? pickedFile = await imagePicker.pickImage(
+          source: ImageSource.gallery,
+          maxWidth: 1080,
+          maxHeight: 1350,
+          imageQuality: 85,
+        );
+
+        if (pickedFile != null && mounted) {
+          final file = File(pickedFile.path);
+          if (file.existsSync()) {
+            // Abrir el editor de crop
+            final croppedFile = await navigator.push<File>(
+              MaterialPageRoute(
+                builder: (_) => ImageCropEditorScreen(
+                  imageFile: file,
+                  title: 'Ajustar imagen - Formato cuadrado',
+                ),
+              ),
+            );
+
+            if (croppedFile != null) {
+              // Añadir la imagen recortada al provider
+              provider.addCroppedImage(croppedFile);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   /// Construye el selector de tipo de contenido (Story vs Post)
