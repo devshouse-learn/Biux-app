@@ -6,6 +6,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 /// Pantalla estilo Instagram para ver publicaciones con galería
 /// Permite: ver imágenes en grande, darle like, y comentar
@@ -80,6 +81,60 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
   }
 
+  /// Formatea el tiempo relativo al formato solicitado
+  String _formatRelativeTime(DateTime? createdAt) {
+    if (createdAt == null) return '';
+
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    // Menos de un minuto
+    if (difference.inSeconds < 60) {
+      return 'hace ${difference.inSeconds} segundo${difference.inSeconds != 1 ? 's' : ''}';
+    }
+
+    // Menos de una hora
+    if (difference.inMinutes < 60) {
+      return 'hace ${difference.inMinutes} minuto${difference.inMinutes != 1 ? 's' : ''}';
+    }
+
+    // Menos de un día
+    if (difference.inHours < 24) {
+      return 'hace ${difference.inHours} hora${difference.inHours != 1 ? 's' : ''}';
+    }
+
+    // Menos de 7 días
+    if (difference.inDays < 7) {
+      return 'hace ${difference.inDays} día${difference.inDays != 1 ? 's' : ''}';
+    }
+
+    // Más de 7 días - mostrar formato DD de MM
+    if (createdAt.year == now.year) {
+      return '${createdAt.day.toString().padLeft(2, '0')} de ${_monthName(createdAt.month)}';
+    }
+
+    // Diferente año - mostrar DD de MM de AAAA
+    return '${createdAt.day.toString().padLeft(2, '0')} de ${_monthName(createdAt.month)} de ${createdAt.year}';
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+    ];
+    return months[month - 1];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,38 +200,53 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
 
     final experience = _experience!;
-
     final hasMultipleMedia = experience.media.length > 1;
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Galería de imágenes
-          _buildMediaGallery(context, experience, hasMultipleMedia),
-
-          // Información del autor
-          _buildAuthorInfo(context, experience),
-
-          // Galería de miniaturas (si hay múltiples imágenes)
-          if (hasMultipleMedia) _buildThumbnailGallery(experience),
-
-          // Descripción
-          if (experience.description.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                experience.description,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  height: 1.5,
-                ),
-              ),
+          // Usuario ARRIBA de la imagen (separado como Instagram)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: _buildUserOverlay(context, experience.user),
             ),
+          ),
+
+          // Galería de imágenes con botón de menú
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    // Galería de imágenes
+                    _buildMediaGallery(context, experience, hasMultipleMedia),
+
+                    // Botón de menú (tres puntos) en esquina superior derecha
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _buildPostOptions(context, experience),
+                    ),
+                  ],
+                ),
+
+                // Galería de miniaturas (si hay múltiples imágenes)
+                if (hasMultipleMedia) _buildThumbnailGallery(experience),
+
+                // Descripción y timestamp alineados a la izquierda, DEBAJO de la imagen
+                if (experience.description.isNotEmpty ||
+                    experience.createdAt != null)
+                  _buildDescriptionAndTimestampInline(experience),
+              ],
+            ),
+          ),
 
           // Acciones sociales (Likes y Comentarios)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
             child: PostSocialActions(
               postId: experience.id,
               postOwnerId: experience.user.id,
@@ -202,15 +272,86 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
+  Widget _buildDescriptionAndTimestamp(ExperienceEntity experience) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (experience.description.isNotEmpty)
+            Text(
+              experience.description,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          if (experience.description.isNotEmpty && experience.createdAt != null)
+            const SizedBox(height: 12),
+          if (experience.createdAt != null)
+            Text(
+              _formatRelativeTime(experience.createdAt),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.left,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescriptionAndTimestampInline(ExperienceEntity experience) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (experience.description.isNotEmpty)
+            Text(
+              experience.description,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          if (experience.description.isNotEmpty && experience.createdAt != null)
+            const SizedBox(height: 12),
+          if (experience.createdAt != null)
+            Text(
+              _formatRelativeTime(experience.createdAt),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.left,
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMediaGallery(
     BuildContext context,
     ExperienceEntity experience,
     bool hasMultipleMedia,
   ) {
+    final user = experience.user;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final galleryWidth = screenWidth - 32; // 16px padding en cada lado
+
     return Container(
-      height: 500,
-      width: double.infinity,
-      color: Colors.black,
+      height: galleryWidth, // Mantener proporción 1:1 (cuadrado)
+      width: galleryWidth,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Stack(
         children: [
           // Galería de imágenes con PageView
@@ -257,7 +398,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   },
                   child: CachedNetworkImage(
                     imageUrl: media.url,
-                    fit: BoxFit.contain,
+                    fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: Colors.grey[900],
                       child: const Center(
@@ -383,67 +524,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  Widget _buildAuthorInfo(BuildContext context, ExperienceEntity experience) {
-    final user = experience.user;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-        ),
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-              context.push('/user-profile/${user.id}');
-            },
-            child: CircleAvatar(
-              radius: 24,
-              backgroundColor: Colors.grey[800],
-              backgroundImage: user.photo.isNotEmpty
-                  ? NetworkImage(user.photo)
-                  : null,
-              child: user.photo.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white)
-                  : null,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  context.push('/user-profile/${user.id}');
-                },
-                child: Text(
-                  user.fullName.isNotEmpty ? user.fullName : user.userName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              if (user.userName.isNotEmpty)
-                Text(
-                  '@${user.userName}',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontSize: 13,
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildThumbnailGallery(ExperienceEntity experience) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -560,5 +640,203 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         ),
       ),
     );
+  }
+
+  /// Construye el overlay del usuario (sobreimpreso en la esquina superior izquierda)
+  Widget _buildUserOverlay(BuildContext context, dynamic user) {
+    return GestureDetector(
+      onTap: () {
+        context.push('/user-profile/${user.id}');
+      },
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.7),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 14,
+              backgroundColor: Colors.grey[700],
+              backgroundImage: user.photo.isNotEmpty
+                  ? NetworkImage(user.photo)
+                  : null,
+              child: user.photo.isEmpty
+                  ? const Icon(Icons.person, color: Colors.white, size: 14)
+                  : null,
+            ),
+            const SizedBox(width: 6),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  user.fullName.isNotEmpty ? user.fullName : user.userName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (user.userName.isNotEmpty)
+                  Text(
+                    '@${user.userName}',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 10,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Construye el botón de opciones (menú de tres puntos)
+  Widget _buildPostOptions(BuildContext context, ExperienceEntity experience) {
+    return PopupMenuButton<String>(
+      color: Colors.grey[800],
+      onSelected: (value) {
+        if (value == 'edit') {
+          // TODO: Implementar editar post
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Editar post - Próximamente'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (value == 'delete') {
+          _showDeletePostConfirmation(context, experience);
+        }
+      },
+      itemBuilder: (BuildContext context) => [
+        const PopupMenuItem<String>(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit, color: Colors.white, size: 18),
+              SizedBox(width: 8),
+              Text('Editar', style: TextStyle(color: Colors.white)),
+            ],
+          ),
+        ),
+        const PopupMenuItem<String>(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete, color: Colors.red, size: 18),
+              SizedBox(width: 8),
+              Text('Eliminar', style: TextStyle(color: Colors.red)),
+            ],
+          ),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.7),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(Icons.more_vert, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  /// Muestra diálogo de confirmación para eliminar el post
+  void _showDeletePostConfirmation(
+    BuildContext context,
+    ExperienceEntity experience,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text(
+          'Eliminar publicación',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              _deletePostFromFirebase(context, experience);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Elimina el post de Firebase
+  Future<void> _deletePostFromFirebase(
+    BuildContext context,
+    ExperienceEntity experience,
+  ) async {
+    try {
+      final database = FirebaseDatabase.instance;
+
+      // Intentar primero marcar como eliminado (actualización)
+      try {
+        await database.ref('experiences/${experience.id}').update({
+          'isDeleted': true,
+          'deletedAt': DateTime.now().millisecondsSinceEpoch,
+        });
+      } catch (updateError) {
+        // Si falla la actualización, intentar eliminación directa
+        if (updateError.toString().contains('Permission denied')) {
+          await database.ref('experiences/${experience.id}').remove();
+        } else {
+          rethrow;
+        }
+      }
+
+      // Mostrar éxito
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Publicación eliminada correctamente'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Navegar de vuelta después de 1 segundo
+        await Future.delayed(const Duration(seconds: 1));
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al eliminar: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 }

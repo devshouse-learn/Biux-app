@@ -78,6 +78,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   List<String> get tags => _tags;
   ExperienceType? get experienceType => _experienceType;
   String? get rideId => _rideId;
+  ImagePicker get imagePicker => _imagePicker;
   bool get isUploading => _isUploading;
   double get uploadProgress => _uploadProgress;
   String? get error => _error;
@@ -173,6 +174,30 @@ class ExperienceCreatorProvider extends ChangeNotifier {
       }
     } catch (e) {
       _error = 'Error tomando foto: $e';
+      notifyListeners();
+    }
+  }
+
+  /// Agregar imagen que ya ha sido recortada
+  void addCroppedImage(File croppedImageFile) {
+    try {
+      if (!croppedImageFile.existsSync()) {
+        _error = 'El archivo recortado no está disponible';
+        notifyListeners();
+        return;
+      }
+
+      final mediaItem = MediaItem(
+        filePath: croppedImageFile.path,
+        mediaType: MediaType.image,
+        duration: 15, // 15 segundos estándar para todas las historias
+      );
+
+      _mediaItems = [..._mediaItems, mediaItem];
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Error agregando imagen recortada: $e';
       notifyListeners();
     }
   }

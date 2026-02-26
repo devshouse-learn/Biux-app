@@ -72,6 +72,107 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     _initializeUserData();
   }
 
+  void _showExperienceMenu(BuildContext context, dynamic experience) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: ColorTokens.neutral20,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral60,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.edit_outlined, color: ColorTokens.primary50),
+              title: Text(
+                'Editar publicación',
+                style: TextStyle(color: ColorTokens.neutral100),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.push('/edit-post/${experience.id}', extra: experience);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.delete_outline, color: ColorTokens.error50),
+              title: Text(
+                'Eliminar publicación',
+                style: TextStyle(color: ColorTokens.error50),
+              ),
+              onTap: () {
+                Navigator.pop(ctx);
+                showDialog(
+                  context: context,
+                  builder: (dialogCtx) => AlertDialog(
+                    backgroundColor: ColorTokens.neutral20,
+                    title: Text(
+                      '¿Eliminar publicación?',
+                      style: TextStyle(color: ColorTokens.neutral100),
+                    ),
+                    content: Text(
+                      'Esta acción no se puede deshacer',
+                      style: TextStyle(color: ColorTokens.neutral80),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogCtx),
+                        child: Text(
+                          'Cancelar',
+                          style: TextStyle(color: ColorTokens.primary50),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          Navigator.pop(dialogCtx);
+                          try {
+                            final provider = context.read<ExperienceProvider>();
+                            await provider.deleteExperience(experience.id);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Publicación eliminada'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error eliminando: $e'),
+                                  backgroundColor: ColorTokens.error50,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: Text(
+                          'Eliminar',
+                          style: TextStyle(color: ColorTokens.error50),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _initializeUserData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final currentUser = FirebaseAuth.instance.currentUser;
@@ -1453,6 +1554,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       '/stories/post/${experience.id}',
                                     );
                                   },
+                                  onLongPress: () {
+                                    _showExperienceMenu(context, experience);
+                                  },
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
@@ -1544,159 +1648,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                             maxLines: 1,
-                                          ),
-                                        ),
-                                        // Menú de tres puntos (Editar/Eliminar)
-                                        Positioned(
-                                          top: 4,
-                                          right: 4,
-                                          child: PopupMenuButton<String>(
-                                            onSelected: (value) async {
-                                              if (value == 'edit') {
-                                                // Navegar a pantalla de edición
-                                                context.push(
-                                                  '/edit-post/${experience.id}',
-                                                  extra: experience,
-                                                );
-                                              } else if (value == 'delete') {
-                                                // Mostrar confirmación de eliminación
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (ctx) => AlertDialog(
-                                                    backgroundColor:
-                                                        ColorTokens.neutral20,
-                                                    title: Text(
-                                                      '¿Eliminar publicación?',
-                                                      style: TextStyle(
-                                                        color: ColorTokens
-                                                            .neutral100,
-                                                      ),
-                                                    ),
-                                                    content: Text(
-                                                      'Esta acción no se puede deshacer',
-                                                      style: TextStyle(
-                                                        color: ColorTokens
-                                                            .neutral80,
-                                                      ),
-                                                    ),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(ctx),
-                                                        child: Text(
-                                                          'Cancelar',
-                                                          style: TextStyle(
-                                                            color: ColorTokens
-                                                                .primary50,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () async {
-                                                          Navigator.pop(ctx);
-                                                          try {
-                                                            final provider = context
-                                                                .read<
-                                                                  ExperienceProvider
-                                                                >();
-                                                            await provider
-                                                                .deleteExperience(
-                                                                  experience.id,
-                                                                );
-                                                            if (context
-                                                                .mounted) {
-                                                              ScaffoldMessenger.of(
-                                                                context,
-                                                              ).showSnackBar(
-                                                                const SnackBar(
-                                                                  content: Text(
-                                                                    'Publicación eliminada',
-                                                                  ),
-                                                                  duration:
-                                                                      Duration(
-                                                                        seconds:
-                                                                            2,
-                                                                      ),
-                                                                ),
-                                                              );
-                                                            }
-                                                          } catch (e) {
-                                                            if (context
-                                                                .mounted) {
-                                                              ScaffoldMessenger.of(
-                                                                context,
-                                                              ).showSnackBar(
-                                                                SnackBar(
-                                                                  content: Text(
-                                                                    'Error eliminando: $e',
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }
-                                                          }
-                                                        },
-                                                        child: Text(
-                                                          'Eliminar',
-                                                          style: TextStyle(
-                                                            color: ColorTokens
-                                                                .error50,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            itemBuilder: (BuildContext ctx) => [
-                                              PopupMenuItem(
-                                                value: 'edit',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.edit_outlined,
-                                                      color:
-                                                          ColorTokens.primary50,
-                                                      size: 18,
-                                                    ),
-                                                    SizedBox(width: 12),
-                                                    Text(
-                                                      'Editar publicación',
-                                                      style: TextStyle(
-                                                        color: ColorTokens
-                                                            .neutral100,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              PopupMenuItem(
-                                                value: 'delete',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.delete_outline,
-                                                      color:
-                                                          ColorTokens.error50,
-                                                      size: 18,
-                                                    ),
-                                                    SizedBox(width: 12),
-                                                    Text(
-                                                      'Eliminar publicación',
-                                                      style: TextStyle(
-                                                        color:
-                                                            ColorTokens.error50,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                            color: ColorTokens.neutral30,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
                                           ),
                                         ),
                                       ],

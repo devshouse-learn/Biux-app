@@ -197,11 +197,32 @@ class CommentsRealtimeDatasource {
 
     try {
       // Soft delete: marcar como eliminado en lugar de borrar
-      await ref.update({'isDeleted': true, 'text': ''});
+      // Usar update en su lugar para mejor manejo de permisos
+      final updateData = {
+        'isDeleted': true,
+        'text': '[Eliminado]',
+        'updatedAt': DateTime.now().millisecondsSinceEpoch,
+      };
+
+      await ref.update(updateData);
       debugPrint('✅ Comentario marcado como eliminado en Firebase');
     } catch (e) {
       debugPrint('❌ Error al actualizar en Firebase: $e');
-      rethrow;
+
+      // Si el error es de permisos, intentar eliminación alternativa
+      if (e.toString().contains('Permission denied') ||
+          e.toString().contains('PERMISSION_DENIED')) {
+        debugPrint('🔄 Intentando eliminación completa...');
+        try {
+          await ref.remove();
+          debugPrint('✅ Comentario eliminado completamente');
+        } catch (e2) {
+          debugPrint('❌ Error en eliminación alternativa: $e2');
+          rethrow;
+        }
+      } else {
+        rethrow;
+      }
     }
   }
 
