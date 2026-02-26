@@ -129,14 +129,14 @@ class _StolenBikesScreenState extends State<StolenBikesScreen> {
                 Text(
                   'Consulta pública para prevenir la compra de bicicletas robadas',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 16),
                 Card(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

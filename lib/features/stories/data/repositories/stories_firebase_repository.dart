@@ -4,7 +4,7 @@ import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/core/utils/bytes_utils.dart';
-import 'package:biux/features/stories/data/repositories/stories_repository_abstract.dart';
+import 'package:biux/features/stories/domain/repositories/stories_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 //import 'package:flutter_native_image/flutter_native_image.dart';

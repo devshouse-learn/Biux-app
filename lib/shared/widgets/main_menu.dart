@@ -9,7 +9,7 @@ import 'package:biux/features/rides/presentation/screens/list_rides/ride_list_sc
 import 'package:biux/features/stories/presentation/screens/story_view/story_view_bloc.dart';
 import 'package:biux/features/stories/presentation/screens/story_view/story_view_screen.dart';
 import 'package:biux/shared/widgets/app_drawer.dart';
-import 'package:biux/shared/widgets/main_menu_bloc.dart';
+import 'package:biux/shared/providers/main_menu_bloc.dart';
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';

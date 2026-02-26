@@ -58,9 +58,7 @@ class NotificationService {
 
     await _localNotifications.initialize(
       settings: initSettings,
-      onDidReceiveNotificationResponse: (response) {
-        print('Notificación recibida: ${response.payload}');
-      },
+      onDidReceiveNotificationResponse: _onNotificationTapped,
     );
 
     // Canal de notificaciones para Android
