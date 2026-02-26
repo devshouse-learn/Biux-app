@@ -11,6 +11,7 @@ import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UserEditScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -337,17 +338,118 @@ class _LogoBiuxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<EditUserScreenBloc>();
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Center(
-        child: ProfileImagePicker(
-          size: 120,
-          currentImageUrl: bloc.user.photo,
-          onImageSelected: (File selectedImage) {
-            bloc.setProcessedImage(selectedImage);
-          },
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 10),
+          child: Center(
+            child: ProfileImagePicker(
+              size: 120,
+              currentImageUrl: bloc.user.photo,
+              onImageSelected: (File selectedImage) {
+                bloc.setProcessedImage(selectedImage);
+              },
+            ),
+          ),
         ),
-      ),
+        const SizedBox(height: 20),
+        // Widget para foto de portada
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Foto de Portada',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: ColorTokens.primary60,
+                ),
+              ),
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () async {
+                  final imagePicker = ImagePicker();
+                  final pickedFile = await imagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    maxWidth: 1024,
+                    maxHeight: 512,
+                    imageQuality: 85,
+                  );
+
+                  if (pickedFile != null) {
+                    bloc.setProfileCoverImage(File(pickedFile.path));
+                  }
+                },
+                child: Container(
+                  height: 150,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: ColorTokens.primary50, width: 2),
+                    borderRadius: BorderRadius.circular(12),
+                    color: ColorTokens.neutral95,
+                  ),
+                  child: bloc.profileCoverNew != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            bloc.profileCoverNew,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : (bloc.user.profileCover.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  bloc.user.profileCover,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: const [
+                                        Icon(
+                                          Icons.broken_image_outlined,
+                                          size: 40,
+                                          color: ColorTokens.neutral60,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          'Tap para cambiar foto',
+                                          style: TextStyle(
+                                            color: ColorTokens.neutral60,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.image_outlined,
+                                    size: 40,
+                                    color: ColorTokens.neutral60,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Tap para agregar foto de portada',
+                                    style: TextStyle(
+                                      color: ColorTokens.neutral60,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

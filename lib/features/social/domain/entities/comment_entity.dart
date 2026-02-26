@@ -38,7 +38,12 @@ class CommentEntity {
 
   /// Obtiene el texto para mostrar (censurado si está eliminado)
   String get displayText {
-    return isDeleted ? '[Comentario eliminado]' : text;
+    return isDeleted ? '' : text;
+  }
+
+  /// Indica si el comentario debe ser mostrado en la UI
+  bool get shouldDisplay {
+    return !isDeleted;
   }
 
   /// Crea una copia con campos modificados

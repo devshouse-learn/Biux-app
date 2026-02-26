@@ -355,6 +355,12 @@ class CommentsProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
+      debugPrint('🗑️ Intentando eliminar comentario:');
+      debugPrint('   Tipo: $type');
+      debugPrint('   TargetId: $targetId');
+      debugPrint('   CommentId: $commentId');
+      debugPrint('   UserId actual: $userId');
+
       await _repository.deleteComment(
         type: type,
         targetId: targetId,
@@ -362,10 +368,22 @@ class CommentsProvider extends ChangeNotifier {
         userId: userId,
       );
 
+      debugPrint('✅ Comentario eliminado correctamente');
       _isDeleting = false;
       notifyListeners();
-    } catch (e) {
-      _error = 'Error al eliminar comentario: $e';
+    } catch (e, st) {
+      final errorMsg = e.toString();
+      debugPrint('❌ Error al eliminar comentario: $errorMsg');
+      debugPrint('Stack trace: $st');
+
+      if (errorMsg.contains('permiso')) {
+        _error = 'No tienes permiso para eliminar este comentario';
+      } else if (errorMsg.contains('No existe')) {
+        _error = 'El comentario no existe';
+      } else {
+        _error = 'Error al eliminar: $errorMsg';
+      }
+
       _isDeleting = false;
       notifyListeners();
     }

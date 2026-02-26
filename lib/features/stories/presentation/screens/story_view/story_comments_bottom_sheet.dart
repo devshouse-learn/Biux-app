@@ -130,6 +130,10 @@ class _StoryCommentsBottomSheetState extends State<StoryCommentsBottomSheet> {
                     itemCount: widget.story.listComments.length,
                     itemBuilder: (context, index) {
                       final comment = widget.story.listComments[index];
+                      // Filtrar comentarios eliminados - no mostrarlos
+                      if (!comment.shouldDisplay) {
+                        return const SizedBox.shrink();
+                      }
                       return _CommentTile(comment: comment);
                     },
                   ),

@@ -90,12 +90,16 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: ColorTokens.primary30,
         title: GestureDetector(
           onTap: _loadFeed,
           child: const Text(
             'Mi Feed',
-            style: TextStyle(fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              fontSize: 20,
+            ),
           ),
         ),
         actions: [
@@ -103,7 +107,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             onPressed: () {
               context.push('/users/search');
             },
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Colors.white),
             tooltip: 'Buscar usuarios',
           ),
         ],

@@ -57,48 +57,60 @@ class _LikeButtonState extends State<LikeButton>
   Future<void> _onTap() async {
     final provider = context.read<LikesProvider>();
 
-    // ⛔ PROTECCIÓN MÚLTIPLE CONTRA DOBLE CLICK
-    // 1. No permitir si ya está procesando otra acción
+    // ⛔ PROTECCIÓN CONTRA DOBLE CLICK
+    // No permitir si ya está procesando otra acción
     if (provider.isProcessing) {
       debugPrint('⏳ Like ya está procesando, por favor espera');
       return;
     }
 
-    // 2. Verificar si ya ha dado like (solo permitir una vez)
+    // Obtener estado actual del like
     final isLiked = await provider
         .watchUserLiked(widget.type, widget.targetId)
         .first;
-    if (isLiked) {
-      debugPrint('✅ Ya has dado like a este contenido');
-      return; // No hacer nada si ya le dio like
-    }
 
     // Animación
     await _controller.forward();
     await _controller.reverse();
 
-    // Like (solo permite dar like, no remover)
-    switch (widget.type) {
-      case LikeableType.post:
-        await provider.likePost(
-          postId: widget.targetId,
-          postOwnerId: widget.targetOwnerId,
-          postPreview: widget.targetPreview,
-        );
-        break;
-      case LikeableType.comment:
-        await provider.likeComment(
-          commentId: widget.targetId,
-          commentOwnerId: widget.targetOwnerId,
-          commentPreview: widget.targetPreview,
-        );
-        break;
-      case LikeableType.story:
-        await provider.likeStory(
-          storyId: widget.targetId,
-          storyOwnerId: widget.targetOwnerId,
-        );
-        break;
+    // Toggle: si ya tiene like, quitarlo; si no, agregarlo
+    if (isLiked) {
+      // Remover like
+      switch (widget.type) {
+        case LikeableType.post:
+          await provider.unlikePost(widget.targetId);
+          break;
+        case LikeableType.comment:
+          await provider.unlikeComment(widget.targetId);
+          break;
+        case LikeableType.story:
+          await provider.unlikeStory(widget.targetId);
+          break;
+      }
+    } else {
+      // Agregar like
+      switch (widget.type) {
+        case LikeableType.post:
+          await provider.likePost(
+            postId: widget.targetId,
+            postOwnerId: widget.targetOwnerId,
+            postPreview: widget.targetPreview,
+          );
+          break;
+        case LikeableType.comment:
+          await provider.likeComment(
+            commentId: widget.targetId,
+            commentOwnerId: widget.targetOwnerId,
+            commentPreview: widget.targetPreview,
+          );
+          break;
+        case LikeableType.story:
+          await provider.likeStory(
+            storyId: widget.targetId,
+            storyOwnerId: widget.targetOwnerId,
+          );
+          break;
+      }
     }
   }
 
@@ -119,7 +131,7 @@ class _LikeButtonState extends State<LikeButton>
             final count = countSnapshot.data ?? 0;
 
             return InkWell(
-              onTap: (provider.isProcessing || isLiked) ? null : _onTap,
+              onTap: provider.isProcessing ? null : _onTap,
               borderRadius: BorderRadius.circular(20),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

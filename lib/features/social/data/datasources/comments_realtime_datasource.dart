@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/comment_model.dart';
 
@@ -35,8 +36,8 @@ class CommentsRealtimeDatasource {
       data.forEach((key, value) {
         if (value is Map) {
           final comment = CommentModel.fromJson(key, value);
-          // Solo comentarios principales (sin parentCommentId)
-          if (comment.parentCommentId == null) {
+          // Solo comentarios principales (sin parentCommentId) y que NO estén eliminados
+          if (comment.parentCommentId == null && !comment.isDeleted) {
             comments.add(comment);
           }
         }
@@ -69,7 +70,11 @@ class CommentsRealtimeDatasource {
 
           data.forEach((key, value) {
             if (value is Map) {
-              replies.add(CommentModel.fromJson(key, value));
+              final reply = CommentModel.fromJson(key, value);
+              // Filtrar respuestas eliminadas
+              if (!reply.isDeleted) {
+                replies.add(reply);
+              }
             }
           });
 
@@ -186,8 +191,18 @@ class CommentsRealtimeDatasource {
   }) async {
     final ref = _database.ref('${_getBasePath(type)}/$targetId/$commentId');
 
-    // Soft delete: marcar como eliminado en lugar de borrar
-    await ref.update({'isDeleted': true, 'text': '[Comentario eliminado]'});
+    debugPrint('🗑️ Eliminando comentario (soft delete)');
+    debugPrint('   Path: ${ref.path}');
+    debugPrint('   CommentId: $commentId');
+
+    try {
+      // Soft delete: marcar como eliminado en lugar de borrar
+      await ref.update({'isDeleted': true, 'text': ''});
+      debugPrint('✅ Comentario marcado como eliminado en Firebase');
+    } catch (e) {
+      debugPrint('❌ Error al actualizar en Firebase: $e');
+      rethrow;
+    }
   }
 
   /// Obtiene un comentario específico
@@ -197,12 +212,23 @@ class CommentsRealtimeDatasource {
     required String commentId,
   }) async {
     final ref = _database.ref('${_getBasePath(type)}/$targetId/$commentId');
+    debugPrint('🔍 Obteniendo comentario de: ${ref.path}');
+
     final snapshot = await ref.get();
 
-    if (snapshot.value == null) return null;
+    debugPrint('   Snapshot existe: ${snapshot.exists}');
+    if (!snapshot.exists) {
+      debugPrint('   ⚠️ Comentario no encontrado en base de datos');
+      return null;
+    }
 
     final data = snapshot.value as Map<dynamic, dynamic>;
-    return CommentModel.fromJson(commentId, data);
+    debugPrint('   Datos: $data');
+
+    final comment = CommentModel.fromJson(commentId, data);
+    debugPrint('   CommentModel creado - UserId: ${comment.userId}');
+
+    return comment;
   }
 
   /// Incrementa el contador de likes de un comentario

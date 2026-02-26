@@ -256,19 +256,33 @@ class UserProfileProvider extends ChangeNotifier {
       print('🔍 PROFILE: Cargando experiencias para usuario: $userId');
 
       // Cargar experiencias reales del usuario
-      final userExperiences = await _experienceRepository.getUserExperiences(
+      var userExperiences = await _experienceRepository.getUserExperiences(
         userId,
       );
 
-      // Todos los posts van a _userPosts (mostrar todo en la pestaña principal)
-      _userPosts = userExperiences;
+      // ✅ NUEVA: Validar que las publicaciones estén disponibles
+      // Filtrar publicaciones que no tengan media o cuya media esté vacía
+      final validExperiences = userExperiences.where((exp) {
+        final hasMedia = exp.media != null && exp.media.isNotEmpty;
+        if (!hasMedia) {
+          print('⚠️ Eliminando publicación sin media: ${exp.id}');
+        }
+        return hasMedia;
+      }).toList();
+
+      print(
+        '🔍 PROFILE: Experiencias cargadas: ${userExperiences.length}, Válidas: ${validExperiences.length}',
+      );
+
+      // Todos los posts válidos van a _userPosts
+      _userPosts = validExperiences;
 
       // Stories: solo experiencias que sean claramente historias efímeras
       // (muy recientes AND descripción corta AND 1 solo media)
       final now = DateTime.now();
       final twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
 
-      _userStories = userExperiences
+      _userStories = validExperiences
           .where(
             (exp) =>
                 exp.createdAt.isAfter(twentyFourHoursAgo) &&
@@ -277,11 +291,10 @@ class UserProfileProvider extends ChangeNotifier {
           )
           .toList();
 
-      print('🔍 PROFILE: Experiencias cargadas: ${userExperiences.length}');
-      print('🔍 PROFILE: Posts (todos): ${_userPosts.length}');
+      print('🔍 PROFILE: Posts (válidos): ${_userPosts.length}');
       print('🔍 PROFILE: Stories (efímeras): ${_userStories.length}');
       print(
-        '🔍 PROFILE: Lógica - Todos van a Posts, Stories = recientes + descripción corta + 1 media',
+        '🔍 PROFILE: Lógica - Solo posts con media, Stories = recientes + descripción corta + 1 media',
       );
     } catch (e) {
       print('❌ Error cargando contenido del usuario: $e');

@@ -2685,16 +2685,33 @@ class _ShopScreenProState extends State<ShopScreenPro>
       'dummyimage.com',
       'fakeimg.pl',
       'placekitten.com',
+      'picsum.photos',
       'lorempixel.com',
     ];
 
-    for (final domain in blockedDomains) {
+    for (final domain in placeholderDomains) {
       if (lower.contains(domain)) return false;
     }
 
-    // ✅ Permitir picsum.photos con ID fijo (fotos reales, no colores)
-    // Formato: picsum.photos/id/NUMBER/... → siempre carga la misma foto real
-    if (lower.contains('picsum.photos/id/')) return true;
+    // Filtrar URLs que son solo colores hex (ej: /FF0000, ?color=red)
+    final hexColorPattern = RegExp(r'[?&/]([0-9a-f]{6}|[0-9a-f]{3})([?&/]|$)');
+    if (hexColorPattern.hasMatch(lower) && !lower.contains('firebase')) {
+      // Solo filtrar si parece ser un servicio de placeholder con color
+      if (!lower.contains('firebasestorage') &&
+          !lower.contains('googleapis.com') &&
+          !lower.contains('cloudinary') &&
+          !lower.contains('imgbb') &&
+          !lower.contains('imgur')) {
+        // Verificar si la URL NO tiene extensión de imagen real
+        final hasImageExt =
+            lower.endsWith('.jpg') ||
+            lower.endsWith('.jpeg') ||
+            lower.endsWith('.png') ||
+            lower.endsWith('.webp') ||
+            lower.endsWith('.gif');
+        if (!hasImageExt && !lower.contains('token=')) return false;
+      }
+    }
 
     // ✅ Permitir Pexels (fotos reales de productos)
     if (lower.contains('images.pexels.com/photos/')) return true;
@@ -2702,29 +2719,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
     // ✅ Permitir Unsplash (fotos fijas por ID, siempre coinciden con producto)
     if (lower.contains('images.unsplash.com/photo-')) return true;
 
-    // Filtrar texto de placeholder genérico
-    if (lower.contains('text=producto') || lower.contains('text=product')) {
+    // Filtrar texto "Producto" en placeholders    if (lower.contains('text=producto') || lower.contains('text=product')) {
       return false;
     }
 
-    // La URL debe tener al menos una extensión de imagen o parámetro de media
-    // para considerarse imagen real
-    final looksLikeImage =
-        lower.contains('.jpg') ||
-        lower.contains('.jpeg') ||
-        lower.contains('.png') ||
-        lower.contains('.webp') ||
-        lower.contains('.gif') ||
-        lower.contains('alt=media') ||
-        lower.contains('token=') ||
-        lower.contains('/image/') ||
-        lower.contains('images/') ||
-        lower.contains('photo') ||
-        lower.contains('img') ||
-        lower.contains('upload');
-
-    if (!looksLikeImage) {
-      print('🚫 URL no parece imagen real: $url');
+    // Debe ser una URL válida (http o https)
+    if (!lower.startsWith('http://') && !lower.startsWith('https://')) {
       return false;
     }
 

@@ -164,14 +164,34 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            ColorTokens.primary30,
-                            ColorTokens.primary40,
-                          ],
-                        ),
+                        image: user.profileCover.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(user.profileCover),
+                                fit: BoxFit.cover,
+                                onError: (exception, stackTrace) {
+                                  print(
+                                    '❌ Error cargando profileCover: $exception',
+                                  );
+                                },
+                              )
+                            : null,
+                        gradient: user.profileCover.isEmpty
+                            ? LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  ColorTokens.primary30,
+                                  ColorTokens.primary40,
+                                ],
+                              )
+                            : LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.3),
+                                  Colors.black.withOpacity(0.5),
+                                ],
+                              ),
                       ),
                       child: SafeArea(
                         child: Padding(
@@ -286,6 +306,28 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     color: ColorTokens.neutral90,
                                   ),
                                 ),
+                              const SizedBox(height: 12),
+
+                              // Descripción del usuario si existe
+                              if (user.description != null &&
+                                  user.description!.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                                  child: Text(
+                                    user.description!,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: ColorTokens.neutral90,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              if (user.description == null ||
+                                  user.description!.isEmpty)
+                                const SizedBox.shrink(),
                               const SizedBox(height: 20),
 
                               // Estadísticas básicas
@@ -745,38 +787,47 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       itemCount: provider.userPosts.length,
       itemBuilder: (context, index) {
         final post = provider.userPosts[index];
+
+        // ✅ VALIDACIÓN: Solo permitir acceder a posts con media disponible
+        final hasValidMedia = post.media != null && post.media.isNotEmpty;
+
         return GestureDetector(
-          onTap: () {
-            context.push('/stories/post/${post.id}');
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: ColorTokens.neutral20,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: post.media.isNotEmpty
-                  ? Image.network(
-                      post.media.first.url,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: ColorTokens.neutral30,
-                          child: const Icon(
-                            Icons.image,
-                            color: ColorTokens.neutral60,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      color: ColorTokens.neutral30,
-                      child: const Icon(
-                        Icons.image,
-                        color: ColorTokens.neutral60,
+          onTap: hasValidMedia
+              ? () {
+                  context.push('/stories/post/${post.id}');
+                }
+              : null,
+          child: Opacity(
+            opacity: hasValidMedia ? 1.0 : 0.5,
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral20,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: post.media.isNotEmpty
+                    ? Image.network(
+                        post.media.first.url,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: ColorTokens.neutral30,
+                            child: const Icon(
+                              Icons.image,
+                              color: ColorTokens.neutral60,
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        color: ColorTokens.neutral30,
+                        child: const Icon(
+                          Icons.image,
+                          color: ColorTokens.neutral60,
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
         );
