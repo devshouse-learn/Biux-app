@@ -1,5 +1,5 @@
 import 'package:biux/features/cities/data/models/city.dart';
-import 'cities_repository_abstract.dart';
+import 'package:biux/features/cities/domain/repositories/cities_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CitiesFirebaseRepository extends CitiesRepositoryAbstract {

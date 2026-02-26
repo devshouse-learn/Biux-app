@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -240,6 +241,87 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     );
                   },
                 ),
+                SizedBox(height: 32),
+
+                // Sección de Apariencia
+                Text(
+                  'Apariencia',
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                Consumer<ThemeNotifier>(
+                  builder: (context, themeNotifier, child) {
+                    final isDark = themeNotifier.themeMode == ThemeMode.dark;
+                    return Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.primary40,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: ColorTokens.neutral60.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: ColorTokens.primary50,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              isDark ? Icons.dark_mode : Icons.light_mode,
+                              color: ColorTokens.neutral100,
+                              size: 24,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Modo Oscuro',
+                                  style: TextStyle(
+                                    color: ColorTokens.neutral100,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  isDark ? 'Activado' : 'Desactivado',
+                                  style: TextStyle(
+                                    color: ColorTokens.neutral80,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch(
+                            value: isDark,
+                            onChanged: (value) {
+                              themeNotifier.setThemeMode(
+                                value ? ThemeMode.dark : ThemeMode.light,
+                              );
+                            },
+                            activeColor: ColorTokens.secondary50,
+                            activeTrackColor: ColorTokens.secondary50
+                                .withValues(alpha: 0.4),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
                 SizedBox(height: 32),
               ],
             ),

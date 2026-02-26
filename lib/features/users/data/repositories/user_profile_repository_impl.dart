@@ -91,7 +91,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
           final user = BiuxUser.fromJsonMap(userData);
 
           // Calcular puntuación de relevancia
-          final score = _calculateSearchScore(user, query);
+          final score = _calculateSearchScore(user, q);
 
           // Solo incluir si tiene relevancia mínima (15%)
           // Umbral bajo permite búsquedas por 1-2 caracteres (como Instagram)

@@ -369,31 +369,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   // Función temporal para actualizar ciudades con departamentos
 
-  // ignore: unused_element
-  Widget _buildStatCard({required String value, required String label}) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: ColorTokens.primary30,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: ColorTokens.neutral70,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildStatCardButton({
     required String value,
     required String label,
@@ -408,7 +383,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: ColorTokens.primary30,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? ColorTokens.neutral100
+                  : ColorTokens.primary30,
             ),
           ),
           SizedBox(height: 4),
@@ -416,7 +393,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: ColorTokens.neutral70,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? ColorTokens.neutral90
+                  : ColorTokens.neutral70,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -1267,7 +1246,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: ColorTokens.neutral90,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? ColorTokens.neutral100
+                                  : ColorTokens.primary30,
                             ),
                           ),
 
@@ -1277,7 +1260,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             widget.userProvider.user?.name ?? 'Usuario',
                             style: TextStyle(
                               fontSize: 14,
-                              color: ColorTokens.neutral70,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? ColorTokens.neutral90
+                                  : ColorTokens.neutral50,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -1327,9 +1314,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               icon: const Icon(Icons.edit, size: 18),
                               label: const Text('Editar Perfil'),
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: ColorTokens.neutral100,
-                                side: const BorderSide(
-                                  color: ColorTokens.primary30,
+                                foregroundColor:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? ColorTokens.neutral100
+                                    : ColorTokens.primary30,
+                                side: BorderSide(
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? ColorTokens.neutral100
+                                      : ColorTokens.primary30,
                                   width: 1.5,
                                 ),
                                 padding: const EdgeInsets.symmetric(
@@ -1356,10 +1351,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           width: double.infinity,
                           padding: EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: ColorTokens.neutral10,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? ColorTokens.primary10
+                                : ColorTokens.neutral100,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: ColorTokens.neutral30,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? ColorTokens.primary40
+                                  : ColorTokens.neutral80,
                               width: 1,
                             ),
                           ),
@@ -1382,8 +1384,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                           .user!
                                           .description!
                                           .isNotEmpty
-                                  ? ColorTokens.neutral80
-                                  : ColorTokens.neutral60,
+                                  ? (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? ColorTokens.neutral100
+                                        : ColorTokens.neutral10)
+                                  : (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? ColorTokens.neutral80
+                                        : ColorTokens.neutral50),
                               fontStyle:
                                   widget.userProvider.user?.description ==
                                           null ||
@@ -1406,7 +1414,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: ColorTokens.neutral90,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? ColorTokens.neutral100
+                                : ColorTokens.primary30,
                           ),
                         ),
 
@@ -1658,7 +1669,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             icon: Icon(Icons.logout),
                             label: Text('Cerrar Sesión'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorTokens.neutral90,
+                              backgroundColor:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? ColorTokens.neutral30
+                                  : ColorTokens.neutral90,
                               foregroundColor: ColorTokens.neutral100,
                               padding: EdgeInsets.symmetric(vertical: 12),
                             ),

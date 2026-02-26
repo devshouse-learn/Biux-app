@@ -1,4 +1,4 @@
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/roads/data/repositories/roads_firebase_repository.dart';
 import 'package:biux/features/stories/data/models/story.dart';
@@ -48,7 +48,7 @@ class UserScreenBloc extends ChangeNotifier {
   }
 
   Future<void> onTapEdit(BuildContext context) async {
-    await Navigator.pushNamed(context, AppRoutes.editUserScreenRoute);
+    await Navigator.pushNamed(context, AppRoutes.editUserName);
     notifyListeners();
     getUser();
   }

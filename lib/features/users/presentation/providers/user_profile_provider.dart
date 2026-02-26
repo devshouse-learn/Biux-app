@@ -278,8 +278,7 @@ class UserProfileProvider extends ChangeNotifier {
         _isFollowing = true;
         // Actualizar contador de followers si tenemos el perfil cargado
         if (_currentProfile?.id == userId) {
-          // ignore: unnecessary_null_comparison, dead_null_aware_expression
-          int newFollowerCount = (_currentProfile!.followerS ?? 0) + 1;
+          int newFollowerCount = _currentProfile!.followerS + 1;
           _currentProfile = BiuxUser.fromJsonMap({
             ..._currentProfile!.toJson(),
             'followerS': newFollowerCount,
@@ -326,8 +325,7 @@ class UserProfileProvider extends ChangeNotifier {
         // Actualizar contador de followers si tenemos el perfil cargado
         if (_currentProfile?.id == userId) {
           // Asegurar que no sea negativo
-          // ignore: unnecessary_null_comparison, dead_null_aware_expression
-          int newFollowerCount = ((_currentProfile!.followerS ?? 0) - 1)
+          int newFollowerCount = (_currentProfile!.followerS - 1)
               .clamp(0, double.maxFinite)
               .toInt();
           _currentProfile = BiuxUser.fromJsonMap({

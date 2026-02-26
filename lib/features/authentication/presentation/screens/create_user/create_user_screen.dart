@@ -12,7 +12,7 @@ import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'create_user_bloc.dart';
 import 'package:biux/shared/widgets/loading_widget.dart';
-import 'package:biux/shared/widgets/textField_widget.dart';
+import 'package:biux/shared/widgets/text_field_widget.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

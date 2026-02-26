@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
@@ -79,7 +79,7 @@ class GroupCreateBloc extends ChangeNotifier {
     onTapPop(context);
     Navigator.pushNamed(
       context,
-      AppRoutes.viewGroupRoute,
+      AppRoutes.viewGroupName,
       arguments: {
         AppStrings.adminIdText: user.id,
         AppStrings.groupIdText: result,
