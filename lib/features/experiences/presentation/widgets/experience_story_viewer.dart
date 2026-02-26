@@ -405,33 +405,13 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildUserHeader() {
     final user = widget.experience.user;
 
-    // Log de la experiencia actual
-    print('=== BUILDING HEADER FOR EXPERIENCE ===');
-    print('Experience ID: ${widget.experience.id}');
-    print('Experience description: "${widget.experience.description}"');
-    print('Experience created: ${widget.experience.createdAt}');
-    print('Experience User Object: $user');
-    print('Experience User ID: "${user.id}"');
-    print('Experience User FullName: "${user.fullName}"');
-    print('Experience User UserName: "${user.userName}"');
-    print('Experience User Email: "${user.email}"');
-    print('Experience User Photo: "${user.photo}"');
-    print('FullName isEmpty: ${user.fullName.isEmpty}');
-    print('UserName isEmpty: ${user.userName.isEmpty}');
-    print('=====================================');
-
     return Row(
       children: [
         // Avatar + información usuario (clickeable para ir al perfil)
         GestureDetector(
           onTap: () {
-            print(
-              '🔄 Header tapped - Navegando al perfil del usuario: ${user.id}',
-            );
             if (user.id.isNotEmpty) {
               context.push('/user-profile/${user.id}');
-            } else {
-              print('❌ Error: User ID está vacío');
             }
           },
           child: Row(

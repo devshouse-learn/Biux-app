@@ -123,7 +123,6 @@ class UserProfileProvider extends ChangeNotifier {
 
       _searchResults = filtered;
     } catch (e) {
-      print('Error en búsqueda: $e');
       _searchResults = [];
     } finally {
       _isSearching = false;
@@ -140,9 +139,6 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Cargar perfil de usuario
   Future<void> loadUserProfile(String userId) async {
-    print('🔄 CARGANDO PERFIL DE USUARIO');
-    print('UserID solicitado: "$userId"');
-
     _isLoadingProfile = true;
     _error = null;
     _currentProfile =
@@ -150,36 +146,17 @@ class UserProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('📡 Consultando perfil desde Firestore...');
       final profile = await _repository.getUserProfile(userId);
-
-      print('📋 RESULTADO DE CONSULTA:');
-      if (profile != null) {
-        print('✅ Perfil encontrado:');
-        print('  - ID: "${profile.id}"');
-        print('  - FullName: "${profile.fullName}"');
-        print('  - UserName: "${profile.userName}"');
-        print('  - Email: "${profile.email}"');
-        print('  - Photo: "${profile.photo}"');
-        print('  - FullName isEmpty: ${profile.fullName.isEmpty}');
-        print('  - UserName isEmpty: ${profile.userName.isEmpty}');
-        print('  - Photo isEmpty: ${profile.photo.isEmpty}');
-      } else {
-        print('❌ Perfil NO encontrado para userId: "$userId"');
-      }
-
       _currentProfile = profile;
 
       if (profile != null) {
         // Verificar si ya lo sigue
         _isFollowing = await _repository.isFollowing(userId);
-        print('👥 Siguiendo usuario: $_isFollowing');
 
         // Cargar posts y stories del usuario
         await _loadUserContent(userId);
       }
     } catch (e) {
-      print('❌ ERROR cargando perfil: $e');
       _error = 'Error al cargar el perfil del usuario';
       _currentProfile = null;
       _isFollowing = false;
@@ -203,45 +180,26 @@ class UserProfileProvider extends ChangeNotifier {
           .collection('users')
           .doc(userId)
           .snapshots()
-          .listen(
-            (doc) {
-              if (doc.exists) {
-                final data = doc.data() as Map<String, dynamic>;
-                try {
-                  _currentProfile = BiuxUser.fromJsonMap({
-                    ...data,
-                    'id': userId,
-                  });
-                  notifyListeners();
-                  print('🔄 Perfil actualizado en tiempo real: $userId');
-                } catch (e) {
-                  print('Error parseando perfil en listener: $e');
-                }
-              }
-            },
-            onError: (error) {
-              print('Error en listener de perfil: $error');
-            },
-          );
-    } catch (e) {
-      print('Error configurando listener de perfil: $e');
-    }
+          .listen((doc) {
+            if (doc.exists) {
+              final data = doc.data() as Map<String, dynamic>;
+              try {
+                _currentProfile = BiuxUser.fromJsonMap({...data, 'id': userId});
+                notifyListeners();
+              } catch (e) {}
+            }
+          }, onError: (error) {});
+    } catch (e) {}
   }
 
   /// Actualización rápida del perfil sin cargar contenido (para después de follow/unfollow)
   Future<void> refreshProfileQuick(String userId) async {
     try {
-      print('⚡ ACTUALIZACIÓN RÁPIDA DEL PERFIL');
       final profile = await _repository.getUserProfile(userId);
-
       if (profile != null) {
         _currentProfile = profile;
-        print('✅ Perfil actualizado rápidamente');
-        print('   Followers: ${profile.followerS}');
-        print('   Following: ${profile.following.length}');
       }
     } catch (e) {
-      print('❌ Error en actualización rápida: $e');
     } finally {
       notifyListeners();
     }
@@ -253,32 +211,56 @@ class UserProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('🔍 PROFILE: Cargando experiencias para usuario: $userId');
-
-      // Cargar experiencias reales del usuario
+      // Cargar experiencias del usuario
       var userExperiences = await _experienceRepository.getUserExperiences(
         userId,
       );
 
-      // ✅ NUEVA: Validar que las publicaciones estén disponibles
-      // Filtrar publicaciones que no tengan media o cuya media esté vacía
-      final validExperiences = userExperiences.where((exp) {
-        final hasMedia = exp.media != null && exp.media.isNotEmpty;
-        if (!hasMedia) {
-          print('⚠️ Eliminando publicación sin media: ${exp.id}');
+      // ✅ FILTRADO AGRESIVO: Solo posts con media 100% válida
+      // ✅ FILTRADO ULTRA-AGRESIVO: Solo URLs que definitivamente van a funcionar
+      final validExperiences = <dynamic>[];
+
+      for (var exp in userExperiences) {
+        // Validar que tenga media
+        if (exp.media == null || exp.media.isEmpty) continue;
+
+        // Validar que TODAS las URLs sean realmente válidas
+        bool allUrlsValid = true;
+        for (final media in exp.media) {
+          final url = media.url.trim();
+
+          // Rechazar si:
+          if (url.isEmpty ||
+              // No empieza con http
+              (!url.startsWith('http://') && !url.startsWith('https://')) ||
+              // Contiene placeholders o null
+              url.contains('placeholder') ||
+              url.contains('null') ||
+              url.toLowerCase().contains('error') ||
+              url.toLowerCase().contains('broken') ||
+              url.toLowerCase().contains('404') ||
+              // URLs muy cortas (probablemente inválidas)
+              url.length < 20 ||
+              // URLs sin extensión de imagen o sin parámetro alt
+              (!url.contains('alt=') &&
+                  !url.contains('.jpg') &&
+                  !url.contains('.jpeg') &&
+                  !url.contains('.png') &&
+                  !url.contains('.gif') &&
+                  !url.contains('.webp'))) {
+            allUrlsValid = false;
+            break;
+          }
         }
-        return hasMedia;
-      }).toList();
 
-      print(
-        '🔍 PROFILE: Experiencias cargadas: ${userExperiences.length}, Válidas: ${validExperiences.length}',
-      );
+        if (allUrlsValid) {
+          validExperiences.add(exp);
+        }
+      }
 
-      // Todos los posts válidos van a _userPosts
       _userPosts = validExperiences;
 
-      // Stories: solo experiencias que sean claramente historias efímeras
-      // (muy recientes AND descripción corta AND 1 solo media)
+      // Stories: solo experiencias efímeras válidas
       final now = DateTime.now();
       final twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
 
@@ -287,17 +269,13 @@ class UserProfileProvider extends ChangeNotifier {
             (exp) =>
                 exp.createdAt.isAfter(twentyFourHoursAgo) &&
                 exp.description.trim().length <= 20 &&
-                exp.media.length == 1,
+                exp.media.length == 1 &&
+                exp.media.first.url.trim().isNotEmpty &&
+                (exp.media.first.url.startsWith('http://') ||
+                    exp.media.first.url.startsWith('https://')),
           )
           .toList();
-
-      print('🔍 PROFILE: Posts (válidos): ${_userPosts.length}');
-      print('🔍 PROFILE: Stories (efímeras): ${_userStories.length}');
-      print(
-        '🔍 PROFILE: Lógica - Solo posts con media, Stories = recientes + descripción corta + 1 media',
-      );
     } catch (e) {
-      print('❌ Error cargando contenido del usuario: $e');
       _userPosts = [];
       _userStories = [];
     } finally {
@@ -345,7 +323,6 @@ class UserProfileProvider extends ChangeNotifier {
 
       return success;
     } catch (e) {
-      print('Error siguiendo usuario: $e');
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -395,7 +372,6 @@ class UserProfileProvider extends ChangeNotifier {
 
       return success;
     } catch (e) {
-      print('Error dejando de seguir usuario: $e');
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -411,7 +387,6 @@ class UserProfileProvider extends ChangeNotifier {
     try {
       _followers = await _repository.getFollowers(userId);
     } catch (e) {
-      print('Error cargando followers: $e');
       _followers = [];
     } finally {
       _isLoadingFollowers = false;
@@ -427,7 +402,6 @@ class UserProfileProvider extends ChangeNotifier {
     try {
       _following = await _repository.getFollowing(userId);
     } catch (e) {
-      print('Error cargando following: $e');
       _following = [];
     } finally {
       _isLoadingFollowing = false;

@@ -80,10 +80,14 @@ class AppTheme {
       iconColor: ColorTokens.neutral30,
       textColor: ColorTokens.neutral10,
     ),
-    chipTheme: const ChipThemeData(
-      backgroundColor: ColorTokens.primary30,
-      labelStyle: TextStyle(color: ColorTokens.neutral100),
+    chipTheme: ChipThemeData(
+      backgroundColor: Colors.grey[100],
+      selectedColor: ColorTokens.primary30,
+      labelStyle: const TextStyle(color: ColorTokens.neutral20),
+      secondaryLabelStyle: const TextStyle(color: Colors.white),
       brightness: Brightness.light,
+      side: BorderSide(color: Colors.grey.shade300),
+      checkmarkColor: Colors.white,
     ),
     badgeTheme: const BadgeThemeData(
       backgroundColor: ColorTokens.primary30,
@@ -173,10 +177,14 @@ class AppTheme {
       iconColor: ColorTokens.neutral100,
       textColor: ColorTokens.neutral100,
     ),
-    chipTheme: const ChipThemeData(
-      backgroundColor: ColorTokens.primary30,
-      labelStyle: TextStyle(color: ColorTokens.neutral100),
+    chipTheme: ChipThemeData(
+      backgroundColor: ColorTokens.primary20,
+      selectedColor: ColorTokens.primary60,
+      labelStyle: const TextStyle(color: ColorTokens.neutral100),
+      secondaryLabelStyle: const TextStyle(color: Colors.white),
       brightness: Brightness.dark,
+      side: BorderSide(color: Colors.grey.shade600),
+      checkmarkColor: Colors.white,
     ),
     badgeTheme: const BadgeThemeData(
       backgroundColor: ColorTokens.primary30,

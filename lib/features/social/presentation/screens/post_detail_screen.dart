@@ -21,11 +21,39 @@ class PostDetailScreen extends StatefulWidget {
 class _PostDetailScreenState extends State<PostDetailScreen> {
   late PageController _pageController;
   int _currentImageIndex = 0;
+  ExperienceEntity? _experience;
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0, viewportFraction: 1.0);
+    _loadExperience();
+  }
+
+  Future<void> _loadExperience() async {
+    try {
+      final provider = context.read<ExperienceProvider>();
+      final experience = await provider.getExperienceById(widget.postId);
+
+      if (mounted) {
+        setState(() {
+          _experience = experience;
+          _isLoading = false;
+          if (experience == null) {
+            _error = 'Publicación no encontrada';
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Error cargando la publicación: $e';
+        });
+      }
+    }
   }
 
   @override
@@ -69,93 +97,107 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
-      body: Consumer<ExperienceProvider>(
-        builder: (context, provider, child) {
-          // Buscar la experiencia en el listado
-          ExperienceEntity? experience;
-          try {
-            experience = provider.experiences.firstWhere(
-              (exp) => exp.id == widget.postId,
-            );
-          } catch (e) {
-            experience = null;
-          }
+      body: _buildBody(),
+    );
+  }
 
-          if (experience == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.image_not_supported,
-                    color: Colors.grey[600],
-                    size: 64,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Publicación no encontrada',
-                    style: TextStyle(color: Colors.grey[400], fontSize: 16),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final hasMultipleMedia = experience.media.length > 1;
-
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                // Galería de imágenes
-                _buildMediaGallery(context, experience, hasMultipleMedia),
-
-                // Información del autor
-                _buildAuthorInfo(context, experience),
-
-                // Galería de miniaturas (si hay múltiples imágenes)
-                if (hasMultipleMedia) _buildThumbnailGallery(experience),
-
-                // Descripción
-                if (experience.description.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      experience.description,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        height: 1.5,
-                      ),
-                    ),
-                  ),
-
-                // Acciones sociales (Likes y Comentarios)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: PostSocialActions(
-                    postId: experience.id,
-                    postOwnerId: experience.user.id,
-                    postPreview: experience.description.length > 50
-                        ? experience.description.substring(0, 50)
-                        : experience.description,
-                  ),
-                ),
-
-                // Sección de comentarios
-                Container(
-                  margin: const EdgeInsets.only(top: 16),
-                  child: PostCommentsPreview(
-                    postId: experience.id,
-                    postOwnerId: experience.user.id,
-                    maxComments: 5,
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-              ],
+  Widget _buildBody() {
+    if (_isLoading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircularProgressIndicator(color: Colors.white30),
+            SizedBox(height: 16),
+            Text(
+              'Cargando publicación...',
+              style: TextStyle(color: Colors.white54, fontSize: 14),
             ),
-          );
-        },
+          ],
+        ),
+      );
+    }
+
+    if (_error != null || _experience == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.image_not_supported, color: Colors.grey[600], size: 64),
+            const SizedBox(height: 16),
+            Text(
+              _error ?? 'Publicación no encontrada',
+              style: TextStyle(color: Colors.grey[400], fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorTokens.primary50,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Volver'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final experience = _experience!;
+
+    final hasMultipleMedia = experience.media.length > 1;
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Galería de imágenes
+          _buildMediaGallery(context, experience, hasMultipleMedia),
+
+          // Información del autor
+          _buildAuthorInfo(context, experience),
+
+          // Galería de miniaturas (si hay múltiples imágenes)
+          if (hasMultipleMedia) _buildThumbnailGallery(experience),
+
+          // Descripción
+          if (experience.description.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                experience.description,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+              ),
+            ),
+
+          // Acciones sociales (Likes y Comentarios)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: PostSocialActions(
+              postId: experience.id,
+              postOwnerId: experience.user.id,
+              postPreview: experience.description.length > 50
+                  ? experience.description.substring(0, 50)
+                  : experience.description,
+            ),
+          ),
+
+          // Sección de comentarios
+          Container(
+            margin: const EdgeInsets.only(top: 16),
+            child: PostCommentsPreview(
+              postId: experience.id,
+              postOwnerId: experience.user.id,
+              maxComments: 5,
+            ),
+          ),
+
+          const SizedBox(height: 32),
+        ],
       ),
     );
   }
@@ -180,10 +222,37 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             itemCount: experience.media.length,
             itemBuilder: (context, index) {
               final media = experience.media[index];
+
+              // Validar que la URL sea válida
+              final url = media.url.trim();
+              final isValidUrl =
+                  url.isNotEmpty &&
+                  (url.startsWith('http://') || url.startsWith('https://'));
+
+              if (!isValidUrl) {
+                return Container(
+                  color: Colors.grey[900],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.broken_image,
+                        color: Colors.grey[600],
+                        size: 64,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'URL no válida',
+                        style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
               if (media.mediaType.toString().contains('image')) {
                 return GestureDetector(
                   onLongPress: () {
-                    // Opción para descargar o compartir
                     _showMediaOptions(context, media.url);
                   },
                   child: CachedNetworkImage(
@@ -197,12 +266,23 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     ),
                     errorWidget: (context, url, error) => Container(
                       color: Colors.grey[900],
-                      child: const Center(
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: Colors.grey,
-                          size: 48,
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey[600],
+                            size: 64,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No se pudo cargar',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

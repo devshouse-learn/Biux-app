@@ -48,6 +48,26 @@ class ExperienceProvider extends ChangeNotifier {
     }
   }
 
+  /// Obtiene una experiencia específica por ID
+  Future<ExperienceEntity?> getExperienceById(String experienceId) async {
+    try {
+      print('🔍 PROVIDER: Cargando experiencia por ID: $experienceId');
+      final experience = await _repository.getExperienceById(experienceId);
+
+      if (experience != null) {
+        print('✅ PROVIDER: Experiencia encontrada: ${experience.id}');
+      } else {
+        print('⚠️ PROVIDER: Experiencia no encontrada: $experienceId');
+      }
+
+      return experience;
+    } catch (e) {
+      print('❌ PROVIDER: Error cargando experiencia: $e');
+      _setError('Error cargando experiencia: ${e.toString()}');
+      return null;
+    }
+  }
+
   /// Carga experiencias de una rodada específica
   Future<void> loadRideExperiences(String rideId) async {
     try {
@@ -88,47 +108,58 @@ class ExperienceProvider extends ChangeNotifier {
       _error = null;
       _hasMorePosts = true; // Reset paginación
 
-      print('🔍 FEED: Cargando feed personalizado para usuario: $userId');
-
       // Cargar experiencias del usuario actual (mis publicaciones)
       final myExperiences = await _repository.getUserExperiences(userId);
-      print('🔍 FEED: Mis experiencias cargadas: ${myExperiences.length}');
 
       // Cargar experiencias de usuarios seguidos
       final followingExperiences = await _repository.getFollowingExperiences(
         userId,
-      );
-      print(
-        '🔍 FEED: Experiencias de seguidos cargadas: ${followingExperiences.length}',
       );
 
       // Combinar todas las experiencias y ordenar por fecha (más recientes primero)
       final allExperiences = [...myExperiences, ...followingExperiences];
       allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      print('🔍 FEED: Total experiencias en feed: ${allExperiences.length}');
+      // ✅ FILTRADO ULTRA-AGRESIVO: Solo posts con media realmente válida
+      final validExperiences = <ExperienceEntity>[];
+      for (var exp in allExperiences) {
+        if (exp.media == null || exp.media.isEmpty) continue;
 
-      // Debug: mostrar autores de las experiencias
-      for (int i = 0; i < allExperiences.length && i < 5; i++) {
-        final exp = allExperiences[i];
-        print(
-          '🔍 FEED: Experiencia ${i + 1}: Autor: "${exp.user.fullName}" (${exp.user.id})',
-        );
+        bool allUrlsValid = true;
+        for (final media in exp.media) {
+          final url = media.url.trim();
+          if (url.isEmpty ||
+              (!url.startsWith('http://') && !url.startsWith('https://')) ||
+              url.contains('placeholder') ||
+              url.contains('null') ||
+              url.toLowerCase().contains('error') ||
+              url.toLowerCase().contains('broken') ||
+              url.toLowerCase().contains('404') ||
+              url.length < 20 ||
+              (!url.contains('alt=') &&
+                  !url.contains('.jpg') &&
+                  !url.contains('.jpeg') &&
+                  !url.contains('.png') &&
+                  !url.contains('.gif') &&
+                  !url.contains('.webp'))) {
+            allUrlsValid = false;
+            break;
+          }
+        }
+        if (allUrlsValid) {
+          validExperiences.add(exp);
+        }
       }
 
       // Guardar todos los posts disponibles para paginación
-      _allExperiences = allExperiences;
+      _allExperiences = validExperiences;
 
       // Cargar posts iniciales (suficientes para llenar pantalla)
-      final initialPosts = allExperiences.take(_initialPostsCount).toList();
-      _hasMorePosts = allExperiences.length > _initialPostsCount;
+      final initialPosts = validExperiences.take(_initialPostsCount).toList();
+      _hasMorePosts = validExperiences.length > _initialPostsCount;
 
-      print(
-        '🔍 FEED: Cargando ${initialPosts.length} posts iniciales. Hay más: $_hasMorePosts',
-      );
       _setExperiences(initialPosts);
     } catch (e) {
-      print('❌ FEED: Error cargando feed personalizado: $e');
       _setError('Error cargando feed personalizado: ${e.toString()}');
     } finally {
       _setLoading(false);
@@ -144,8 +175,6 @@ class ExperienceProvider extends ChangeNotifier {
       _isLoadingMore = true;
       notifyListeners();
 
-      print('🔄 FEED: Cargando más posts... Actual: ${_experiences.length}');
-
       // Obtener los siguientes posts de la lista completa ya cargada
       final currentLength = _experiences.length;
       final newPosts = _allExperiences
@@ -155,17 +184,12 @@ class ExperienceProvider extends ChangeNotifier {
 
       if (newPosts.isEmpty) {
         _hasMorePosts = false;
-        print('✅ FEED: No hay más posts para cargar');
       } else {
         _experiences.addAll(newPosts);
         _hasMorePosts = _experiences.length < _allExperiences.length;
-        print(
-          '✅ FEED: ${newPosts.length} posts más cargados. Total: ${_experiences.length}/${_allExperiences.length}',
-        );
         notifyListeners();
       }
     } catch (e) {
-      print('❌ FEED: Error cargando más posts: $e');
       _setError('Error cargando más posts: ${e.toString()}');
     } finally {
       _isLoadingMore = false;
@@ -205,6 +229,31 @@ class ExperienceProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _setError('Error eliminando experiencia: ${e.toString()}');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Actualiza una experiencia
+  Future<bool> updateExperience(
+    String experienceId, {
+    required String description,
+  }) async {
+    try {
+      _setLoading(true);
+      _error = null;
+
+      await _repository.updateExperience(
+        experienceId,
+        description: description,
+      );
+
+      // Actualizar en las listas locales
+      _updateExperienceInLists(experienceId, description);
+      return true;
+    } catch (e) {
+      _setError('Error actualizando experiencia: ${e.toString()}');
       return false;
     } finally {
       _setLoading(false);
@@ -298,6 +347,35 @@ class ExperienceProvider extends ChangeNotifier {
     // Agregar a experiencias de rodada si corresponde
     if (newExperience.rideId != null) {
       _rideExperiences = [newExperience, ..._rideExperiences];
+    }
+
+    notifyListeners();
+  }
+
+  void _updateExperienceInLists(String experienceId, String newDescription) {
+    // Actualizar en _experiences
+    for (int i = 0; i < _experiences.length; i++) {
+      if (_experiences[i].id == experienceId) {
+        _experiences[i] = _experiences[i].copyWith(description: newDescription);
+      }
+    }
+
+    // Actualizar en _userExperiences
+    for (int i = 0; i < _userExperiences.length; i++) {
+      if (_userExperiences[i].id == experienceId) {
+        _userExperiences[i] = _userExperiences[i].copyWith(
+          description: newDescription,
+        );
+      }
+    }
+
+    // Actualizar en _rideExperiences
+    for (int i = 0; i < _rideExperiences.length; i++) {
+      if (_rideExperiences[i].id == experienceId) {
+        _rideExperiences[i] = _rideExperiences[i].copyWith(
+          description: newDescription,
+        );
+      }
     }
 
     notifyListeners();

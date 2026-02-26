@@ -77,8 +77,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       await context.read<ExperienceProvider>().loadPersonalizedFeed(userId);
       // Cargar grupos que sigue el usuario
       context.read<GroupProvider>().loadUserGroups();
-    } else {
-      print('⚠️ Usuario no autenticado, no se puede cargar el feed');
     }
   }
 
@@ -215,8 +213,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               final userId = _currentUserId;
               if (userId != null) {
                 provider.loadPersonalizedFeed(userId);
-              } else {
-                print('⚠️ Usuario no autenticado, no se puede recargar');
               }
             },
             child: const Text('Reintentar'),
@@ -720,13 +716,8 @@ class _ExperienceCard extends StatelessWidget {
           // Avatar y nombre del autor - con navegación al perfil
           GestureDetector(
             onTap: () {
-              print(
-                '🔄 Post author tapped - Navegando al perfil del usuario: ${user.id}',
-              );
               if (user.id.isNotEmpty) {
                 context.push('/user-profile/${user.id}');
-              } else {
-                print('❌ Error: User ID está vacío');
               }
             },
             child: Row(

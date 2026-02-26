@@ -92,6 +92,29 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   }
 
   @override
+  Future<ExperienceEntity?> getExperienceById(String experienceId) async {
+    try {
+      final doc = await _firestore
+          .collection('experiences')
+          .doc(experienceId)
+          .get();
+
+      if (!doc.exists) {
+        print('⚠️ REPO: Experiencia no encontrada: $experienceId');
+        return null;
+      }
+
+      return ExperienceModel.fromJson({
+        'id': doc.id,
+        ...doc.data()!,
+      }).toEntity();
+    } catch (e) {
+      print('❌ REPO: Error obteniendo experiencia por ID: $e');
+      throw Exception('Error obteniendo experiencia: $e');
+    }
+  }
+
+  @override
   Future<List<ExperienceEntity>> getRideExperiences(String rideId) async {
     try {
       final snapshot = await _firestore
@@ -303,6 +326,40 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       await _firestore.collection('experiences').doc(experienceId).delete();
     } catch (e) {
       throw Exception('Error eliminando experiencia: $e');
+    }
+  }
+
+  @override
+  Future<void> updateExperience(
+    String experienceId, {
+    required String description,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        throw Exception('Usuario no autenticado');
+      }
+
+      // Verificar que la experiencia pertenece al usuario
+      final doc = await _firestore
+          .collection('experiences')
+          .doc(experienceId)
+          .get();
+      if (!doc.exists) {
+        throw Exception('Experiencia no encontrada');
+      }
+
+      final data = doc.data()!;
+      if (data['user']['id'] != user.uid) {
+        throw Exception('No tienes permisos para editar esta experiencia');
+      }
+
+      // Actualizar la descripción
+      await _firestore.collection('experiences').doc(experienceId).update({
+        'description': description,
+      });
+    } catch (e) {
+      throw Exception('Error actualizando experiencia: $e');
     }
   }
 

@@ -506,7 +506,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             pinned: true,
             backgroundColor: ColorTokens.primary30,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+              ),
               onPressed: () => _goBack(),
             ),
             flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
@@ -668,15 +675,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               _selectedSize = size;
                             });
                           },
-                          // Usar un token de la misma paleta pero mucho más claro
-                          // para que sea claramente visible en el simulador
-                          selectedColor: ColorTokens.secondary95,
+                          // ✅ Colores con buen contraste para leer las tallas
+                          selectedColor: ColorTokens.primary30,
+                          backgroundColor: Colors.grey[100],
                           labelStyle: TextStyle(
                             color: isSelected
-                                ? ColorTokens.primary30
-                                : Colors.black,
+                                ? Colors.white
+                                : Colors.grey[800],
                             fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
+                          side: BorderSide(
+                            color: isSelected
+                                ? ColorTokens.primary30
+                                : Colors.grey.shade400,
+                          ),
+                          checkmarkColor: Colors.white,
                         );
                       }).toList(),
                     ),
@@ -736,8 +750,46 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         }
 
         // Mostrar imágenes
+        final imageUrl = _product!.images[index];
+
+        // ✅ Soportar imágenes locales con protocolo asset://
+        if (imageUrl.startsWith('asset://')) {
+          final assetPath = imageUrl.replaceFirst('asset://', '');
+          return Image.asset(
+            assetPath,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Container(
+              color: Colors.grey[200],
+              child: const Icon(
+                Icons.shopping_bag,
+                size: 100,
+                color: Colors.grey,
+              ),
+            ),
+          );
+        }
+
+        // ✅ Soportar mock placeholders
+        if (imageUrl.startsWith('mock://')) {
+          return Container(
+            color: Colors.grey[200],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.shopping_bag, size: 100, color: Colors.grey),
+                const SizedBox(height: 8),
+                Text(
+                  _product!.name,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // URLs normales (http/https)
         return CachedNetworkImage(
-          imageUrl: _product!.images[index],
+          imageUrl: imageUrl,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
             color: Colors.grey[200],
