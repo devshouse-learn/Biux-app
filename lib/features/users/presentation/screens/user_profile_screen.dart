@@ -45,442 +45,320 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorTokens.neutral100,
-      body: Consumer<UserProfileProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoadingProfile) {
-            return _buildLoadingState();
-          }
-
-          if (provider.currentProfile == null) {
-            return _buildErrorState();
-          }
-
-          return _buildProfileContent(provider.currentProfile!, provider);
-        },
-      ),
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-      ),
-      body: Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: ColorTokens.neutral100),
+          onPressed: () => context.pop(),
         ),
-      ),
-    );
-  }
-
-  Widget _buildErrorState() {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: ColorTokens.primary30,
-        foregroundColor: ColorTokens.neutral100,
-        title: Text('Error'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: ColorTokens.neutral60),
-            SizedBox(height: 16),
-            Text(
-              'No se pudo cargar el perfil',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: ColorTokens.neutral80,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Verifica tu conexión e intenta nuevamente',
-              style: TextStyle(color: ColorTokens.neutral60),
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                context.read<UserProfileProvider>().loadUserProfile(
-                  widget.userId,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.primary30,
-                foregroundColor: ColorTokens.neutral100,
-              ),
-              child: Text('Reintentar'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileContent(BiuxUser user, UserProfileProvider provider) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            backgroundColor: ColorTokens.primary30,
-            foregroundColor: ColorTokens.neutral100,
-            expandedHeight: 220,
-            pinned: true,
-            actions: [
-              // Botón de compartir perfil
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () => _shareProfile(user),
-                tooltip: 'Compartir perfil',
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: _buildProfileHeader(user, provider),
-            ),
-          ),
-        ];
-      },
-      body: Column(
-        children: [
-          // Tabs
-          Container(
-            color: ColorTokens.neutral100,
-            child: TabBar(
-              controller: _tabController,
-              labelColor: ColorTokens.primary30,
-              unselectedLabelColor: ColorTokens.neutral60,
-              indicatorColor: ColorTokens.primary30,
-              tabs: [
-                Tab(text: 'Publicaciones'),
-                Tab(text: 'Seguidores'),
-                Tab(text: 'Siguiendo'),
-              ],
-            ),
-          ),
-          // Tab content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildPostsTab(user),
-                _buildFollowersTab(user, provider),
-                _buildFollowingTab(user, provider),
-              ],
-            ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () {
+              context.read<UserProfileProvider>().loadUserProfile(
+                widget.userId,
+              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.read<UserProfileProvider>().currentProfile !=
+                    null) {
+                  _shareProfile(
+                    context.read<UserProfileProvider>().currentProfile!,
+                  );
+                }
+              });
+            },
+            tooltip: 'Compartir perfil',
           ),
         ],
       ),
-    );
-  }
+      body: Consumer<UserProfileProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoadingProfile) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  ColorTokens.primary30,
+                ),
+              ),
+            );
+          }
 
-  Widget _buildProfileHeader(BiuxUser user, UserProfileProvider provider) {
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    final isOwnProfile = currentUserId == user.id;
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ColorTokens.primary30,
-            ColorTokens.primary30.withValues(alpha: 0.8),
-          ],
-        ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
-          child: Column(
-            children: [
-              // Primera fila: Botón (+) izquierda (si es perfil propio) y controles derecha
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          if (provider.currentProfile == null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  //Menú izquierdo: Story + Post (solo si es perfil propio)
-                  if (isOwnProfile)
-                    PopupMenuButton<String>(
-                      icon: Icon(
-                        Icons.add_circle_outline,
-                        color: ColorTokens.neutral100,
-                        size: 24,
-                      ),
-                      onSelected: (value) {
-                        if (value == 'story') {
-                          context.go('/create-story');
-                        } else if (value == 'post') {
-                          context.go('/create-post');
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem<String>(
-                          value: 'story',
-                          child: Row(
-                            children: [
-                              Icon(Icons.add_photo_alternate, size: 20),
-                              SizedBox(width: 10),
-                              Text('Agregar Historia'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'post',
-                          child: Row(
-                            children: [
-                              Icon(Icons.image_search, size: 20),
-                              SizedBox(width: 10),
-                              Text('Nueva Publicación'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    SizedBox(width: 24),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: ColorTokens.neutral60,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'No se pudo cargar el perfil',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: ColorTokens.neutral80,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Verifica tu conexión e intenta nuevamente',
+                    style: TextStyle(color: ColorTokens.neutral60),
+                  ),
+                  SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      provider.loadUserProfile(widget.userId);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorTokens.primary30,
+                      foregroundColor: ColorTokens.neutral100,
+                    ),
+                    child: Text('Reintentar'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-                  // Botones derechos
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isOwnProfile) ...[
-                        // Editar + Configuración (solo para perfil propio)
-                        Tooltip(
-                          message: 'Editar perfil',
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit_outlined,
-                              color: ColorTokens.neutral100,
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              // Mostrar opciones de editar perfil
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (ctx) => Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 16,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(Icons.edit),
-                                        title: Text('Editar perfil'),
-                                        onTap: () {
-                                          Navigator.pop(ctx);
-                                          context.go('/profile');
-                                        },
-                                      ),
-                                    ],
+          final user = provider.currentProfile!;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // ========== SECCIÓN DE PERFIL TIPO INSTAGRAM ==========
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        ColorTokens.primary30,
+                        ColorTokens.primary30.withValues(alpha: 0.8),
+                      ],
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
+                      child: Column(
+                        children: [
+                          // Primera fila: Espacio izquierda y botón Seguir derecha
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(width: 24),
+                              // Botón Seguir (para otros perfiles)
+                              _buildFollowButton(provider, user.id),
+                            ],
+                          ),
+
+                          SizedBox(height: 16),
+
+                          // Segunda fila: Foto + Nombre/Usuario
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Foto
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: ColorTokens.neutral100,
+                                    width: 2,
                                   ),
                                 ),
-                              );
-                            },
-                            constraints: BoxConstraints(
-                              minWidth: 32,
-                              minHeight: 32,
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ),
-                        Tooltip(
-                          message: 'Configuración',
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.settings_outlined,
-                              color: ColorTokens.neutral100,
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              context.go('/account-settings');
-                            },
-                            constraints: BoxConstraints(
-                              minWidth: 32,
-                              minHeight: 32,
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ),
-                      ] else
-                        // Botón Seguir (para otros perfiles)
-                        _buildFollowButton(provider, user.id),
-                    ],
-                  ),
-                ],
-              ),
+                                child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: ColorTokens.neutral20,
+                                  backgroundImage: user.photo.isNotEmpty
+                                      ? CachedNetworkImageProvider(
+                                          user.photo,
+                                          cacheManager: OptimizedCacheManager
+                                              .avatarInstance,
+                                        )
+                                      : null,
+                                  child: user.photo.isEmpty
+                                      ? Icon(
+                                          Icons.person,
+                                          size: 40,
+                                          color: ColorTokens.neutral60,
+                                        )
+                                      : null,
+                                ),
+                              ),
+                              SizedBox(width: 16),
 
-              SizedBox(height: 16),
-
-              // Segunda fila: Foto + Nombre/Usuario
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Foto
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: ColorTokens.neutral100,
-                        width: 2,
-                      ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundColor: ColorTokens.neutral20,
-                      backgroundImage: user.photo.isNotEmpty
-                          ? CachedNetworkImageProvider(
-                              user.photo,
-                              cacheManager:
-                                  OptimizedCacheManager.avatarInstance,
-                            )
-                          : null,
-                      child: user.photo.isEmpty
-                          ? Icon(
-                              Icons.person,
-                              size: 40,
-                              color: ColorTokens.neutral60,
-                            )
-                          : null,
-                    ),
-                  ),
-                  SizedBox(width: 16),
-
-                  // Nombre y username
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user.fullName.isNotEmpty
-                              ? user.fullName
-                              : 'Sin nombre',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: ColorTokens.neutral100,
+                              // Nombre y username
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      user.fullName.isNotEmpty
+                                          ? user.fullName
+                                          : 'Sin nombre',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 4),
+                                    if (user.userName.isNotEmpty)
+                                      Text(
+                                        '@${user.userName}',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: ColorTokens.neutral100
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 4),
-                        if (user.userName.isNotEmpty)
-                          Text(
-                            '@${user.userName}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: ColorTokens.neutral100.withValues(
-                                alpha: 0.7,
+
+                          SizedBox(height: 16),
+
+                          // Tercera fila: Estadísticas
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    '0',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: ColorTokens.neutral100,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Posts',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: ColorTokens.neutral100.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _showFollowersModal(context, user);
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      user.followerS.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Seguidores',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _showFollowingModal(context, user);
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      user.following.length.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Siguiendo',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: 12),
+
+                          // Descripción
+                          if (user.description.isNotEmpty)
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                user.description,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: ColorTokens.neutral100.withValues(
+                                    alpha: 0.9,
+                                  ),
+                                  height: 1.4,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16),
-
-              // Tercera fila: Estadísticas
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        '0',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: ColorTokens.neutral100,
-                        ),
+                        ],
                       ),
-                      Text(
-                        'Posts',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: ColorTokens.neutral100.withValues(alpha: 0.8),
-                        ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _showFollowersModal(context, user);
-                    },
-                    child: Column(
-                      children: [
-                        Text(
-                          user.followerS.toString(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: ColorTokens.neutral100,
-                          ),
-                        ),
-                        Text(
-                          'Seguidores',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: ColorTokens.neutral100.withValues(alpha: 0.8),
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _showFollowingModal(context, user);
-                    },
-                    child: Column(
-                      children: [
-                        Text(
-                          user.following.length.toString(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: ColorTokens.neutral100,
-                          ),
-                        ),
-                        Text(
-                          'Siguiendo',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: ColorTokens.neutral100.withValues(alpha: 0.8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 12),
-
-              // Descripción
-              if (user.description.isNotEmpty)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    user.description,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: ColorTokens.neutral100.withValues(alpha: 0.9),
-                      height: 1.4,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-            ],
-          ),
-        ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      // ========== SECCIÓN DE PUBLICACIONES ==========
+                      Text(
+                        'Publicaciones',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: ColorTokens.primary30,
+                        ),
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // Mostrar publicaciones del usuario
+                      _buildPublicationsSection(user),
+
+                      SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -551,203 +429,186 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildPostsTab(BiuxUser user) {
-    return Consumer<ExperienceProvider>(
-      builder: (context, expProvider, child) {
-        // Cargar experiencias del usuario si no están cargadas
-        if (expProvider.userExperiences.isEmpty && !expProvider.isLoading) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            expProvider.loadUserExperiences(widget.userId);
-          });
-        }
-
-        if (expProvider.isLoading) {
-          return Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
+  Widget _buildPublicationsSection(BiuxUser user) {
+    return FutureBuilder(
+      future: ExperienceRepositoryImpl().getUserExperiences(widget.userId),
+      builder: (context, snapshot) {
+        // Estado de carga
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  ColorTokens.primary30,
+                ),
+              ),
             ),
           );
         }
 
-        // Filtrar experiencias con media (fotos/videos)
-        final experiencesWithMedia = expProvider.userExperiences
-            .where((exp) => exp.media.isNotEmpty)
-            .toList();
-
-        if (experiencesWithMedia.isEmpty) {
-          return Center(
+        // Error
+        if (snapshot.hasError) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.photo_library_outlined,
-                  size: 64,
-                  color: ColorTokens.neutral60,
-                ),
-                SizedBox(height: 16),
+                Icon(Icons.error_outline, size: 48, color: ColorTokens.error50),
+                SizedBox(height: 12),
                 Text(
-                  'Sin publicaciones aún',
-                  style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
+                  'Error cargando publicaciones',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.error50,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
           );
         }
 
-        // Obtener todas las URLs de media
-        final List<String> allMediaUrls = [];
-        for (var exp in experiencesWithMedia) {
-          allMediaUrls.addAll(exp.media.map((m) => m.url));
-        }
-
-        // Mostrar grid de fotos
-        return GridView.builder(
-          padding: EdgeInsets.all(2),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 2,
-          ),
-          itemCount: allMediaUrls.length,
-          itemBuilder: (context, index) {
-            final mediaUrl = allMediaUrls[index];
-            return GestureDetector(
-              onTap: () {
-                // Ir al detalle de la experiencia
-                final experience = experiencesWithMedia.firstWhere(
-                  (exp) => exp.media.any((m) => m.url == mediaUrl),
-                );
-                // Navegar según el tipo
-                if (experience.isStoryFormat) {
-                  // TODO: Navegar a vista de historia
-                  context.push('/stories');
-                } else {
-                  // TODO: Navegar a vista de post
-                  context.push('/stories');
-                }
-              },
-              child: CachedNetworkImage(
-                imageUrl: mediaUrl,
-                cacheManager: OptimizedCacheManager.instance,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: ColorTokens.neutral20,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        ColorTokens.primary30,
-                      ),
-                    ),
+        // Sin datos o lista vacía
+        if (!snapshot.hasData ||
+            snapshot.data == null ||
+            (snapshot.data as dynamic).isEmpty) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.image_not_supported,
+                  size: 48,
+                  color: ColorTokens.neutral60,
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Sin publicaciones aún',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.neutral70,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                errorWidget: (context, url, error) => Container(
-                  color: ColorTokens.neutral20,
-                  child: Icon(
-                    Icons.error_outline,
-                    color: ColorTokens.neutral60,
-                  ),
+              ],
+            ),
+          );
+        }
+
+        // Mostrar grid de publicaciones
+        final experiences = snapshot.data as dynamic;
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1,
+          ),
+          itemCount: experiences.length,
+          itemBuilder: (context, index) {
+            final experience = experiences[index];
+            return GestureDetector(
+              onTap: () {
+                context.push('/stories/post/${experience.id}');
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: ColorTokens.primary30, width: 1),
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Imagen de la experiencia
+                    experience.media.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: experience.media.first.url,
+                            fit: BoxFit.cover,
+                            cacheManager: OptimizedCacheManager.instance,
+                            placeholder: (context, url) => Container(
+                              color: ColorTokens.neutral20,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      ColorTokens.primary30,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: ColorTokens.neutral20,
+                              child: Icon(
+                                Icons.image_not_supported,
+                                color: ColorTokens.neutral60,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: ColorTokens.neutral20,
+                            child: Icon(
+                              Icons.image,
+                              color: ColorTokens.neutral60,
+                            ),
+                          ),
+                    // Overlay oscuro
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Colors.black54],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Título de la experiencia
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                      child: Text(
+                        experience.description ?? '',
+                        style: TextStyle(
+                          color: ColorTokens.neutral100,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildFollowersTab(BiuxUser user, UserProfileProvider provider) {
-    // Cargar followers si no están cargados
-    if (provider.followers.isEmpty && !provider.isLoadingFollowers) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        provider.loadFollowers(widget.userId);
-      });
-    }
-
-    if (provider.isLoadingFollowers) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
-        ),
-      );
-    }
-
-    if (provider.followers.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.people_outline, size: 64, color: ColorTokens.neutral60),
-            SizedBox(height: 16),
-            Text(
-              'Sin seguidores aún',
-              style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: provider.followers.length,
-      itemBuilder: (context, index) {
-        final follower = provider.followers[index];
-        return _UserListItem(
-          user: follower,
-          onTap: () {
-            context.push('/user-profile/${follower.id}');
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildFollowingTab(BiuxUser user, UserProfileProvider provider) {
-    // Cargar following si no están cargados
-    if (provider.following.isEmpty && !provider.isLoadingFollowing) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        provider.loadFollowing(widget.userId);
-      });
-    }
-
-    if (provider.isLoadingFollowing) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
-        ),
-      );
-    }
-
-    if (provider.following.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.person_add_outlined,
-              size: 64,
-              color: ColorTokens.neutral60,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'No sigue a nadie aún',
-              style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: provider.following.length,
-      itemBuilder: (context, index) {
-        final following = provider.following[index];
-        return _UserListItem(
-          user: following,
-          onTap: () {
-            context.push('/user-profile/${following.id}');
           },
         );
       },
@@ -785,7 +646,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.close, color: ColorTokens.neutral100),
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -804,8 +668,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               followerId,
                               style: TextStyle(color: ColorTokens.neutral100),
                             ),
-                            trailing: Icon(Icons.arrow_forward_ios,
-                                size: 16, color: ColorTokens.neutral80),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: ColorTokens.neutral80,
+                            ),
                             onTap: () {
                               Navigator.pop(context);
                               context.push('/user-profile/$followerId');
@@ -855,7 +722,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.close, color: ColorTokens.neutral100),
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -874,8 +744,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               followingId,
                               style: TextStyle(color: ColorTokens.neutral100),
                             ),
-                            trailing: Icon(Icons.arrow_forward_ios,
-                                size: 16, color: ColorTokens.neutral80),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: ColorTokens.neutral80,
+                            ),
                             onTap: () {
                               Navigator.pop(context);
                               context.push('/user-profile/$followingId');
