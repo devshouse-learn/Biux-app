@@ -292,30 +292,36 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   Widget _buildDescriptionAndTimestampInline(ExperienceEntity experience) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (experience.description.isNotEmpty)
-            Text(
-              experience.description,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                height: 1.5,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
+              child: Text(
+                experience.description,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.left,
               ),
-              textAlign: TextAlign.left,
             ),
           if (experience.description.isNotEmpty && experience.createdAt != null)
             const SizedBox(height: 12),
           if (experience.createdAt != null)
-            Text(
-              _formatRelativeTime(experience.createdAt),
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.6),
-                fontSize: 13,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
+              child: Text(
+                _formatRelativeTime(experience.createdAt),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.6),
+                  fontSize: 13,
+                ),
+                textAlign: TextAlign.left,
               ),
-              textAlign: TextAlign.left,
             ),
         ],
       ),
