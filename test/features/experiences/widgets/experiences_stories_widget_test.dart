@@ -11,6 +11,14 @@ import 'package:biux/features/experiences/presentation/widgets/experiences_stori
 
 // Mock Repository para testing
 class MockExperienceRepository implements ExperienceRepository {
+  @override
+  Future<ExperienceEntity?> getExperienceById(String experienceId) async {
+    return null;
+  }
+
+  @override
+  Future<void> updateExperience(String experienceId, {required String description}) async {}
+
   final Map<String, List<ExperienceEntity>> _userExperiences = {};
   final List<ExperienceEntity> _generalExperiences = [];
   bool _shouldThrowError = false;

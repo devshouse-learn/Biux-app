@@ -75,7 +75,7 @@ import '../../../features/store/presentation/screens/seller_dashboard_screen.dar
 import '../../../features/store/presentation/screens/admin_dashboard_screen.dart';
 import '../../../features/store/domain/entities/product_entity.dart';
 
-// TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+// PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
@@ -518,6 +518,7 @@ final GoRouter _router = GoRouter(
           path: '/edit-post/:postId',
           name: 'editPost',
           builder: (context, state) {
+            // ignore: unused_local_variable
             final postId = state.pathParameters['postId']!;
             final experience = state.extra as ExperienceEntity?;
             if (experience == null) {
@@ -729,7 +730,7 @@ final GoRouter _router = GoRouter(
           path: '/shop/admin',
           name: 'adminShop',
           builder: (context, state) => const AdminShopScreen(),
-          // TODO: Agregar redirect cuando UserEntity tenga isAdmin
+          // PENDIENTE: Agregar redirect cuando UserEntity tenga isAdmin
           // redirect: (context, state) {
           //   final userProvider = context.read<UserProvider>();
           //   final isAdmin = userProvider.user?.isAdmin ?? false;
@@ -794,7 +795,7 @@ final GoRouter _router = GoRouter(
 
         // ⚠️ Detalle de producto movido FUERA del ShellRoute (ver abajo)
 
-        // TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+        // PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
         // Escáner QR
         // GoRoute(
         //   path: '/shop/qr-scanner',

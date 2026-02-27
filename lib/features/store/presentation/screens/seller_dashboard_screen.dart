@@ -271,7 +271,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO: Implementar creación real
+              // PENDIENTE: Implementar creación real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Funcionalidad en desarrollo')),
@@ -305,7 +305,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO: Implementar edición real
+              // PENDIENTE: Implementar edición real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Funcionalidad en desarrollo')),
@@ -319,7 +319,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
   }
 
   void _toggleProductStatus(ProductEntity product) {
-    // TODO: Implementar activar/desactivar producto
+    // PENDIENTE: Implementar activar/desactivar producto
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

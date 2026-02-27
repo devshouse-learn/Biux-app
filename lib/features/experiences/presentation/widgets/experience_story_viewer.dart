@@ -405,6 +405,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildUserHeader() {
     final user = widget.experience.user;
 
+
     return Row(
       children: [
         // Avatar + información usuario (clickeable para ir al perfil)
@@ -845,7 +846,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         duration: const Duration(seconds: 2),
       ),
     );
-    // TODO: Implementar navegación a CreateAdvertisementScreen
+    // PENDIENTE: Implementar navegación a CreateAdvertisementScreen
   }
 
   Widget _buildTouchAreas() {

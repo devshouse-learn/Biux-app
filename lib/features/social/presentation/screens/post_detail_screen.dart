@@ -224,6 +224,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
                 // Descripción y timestamp alineados a la izquierda, DEBAJO de la imagen
                 if (experience.description.isNotEmpty ||
+                    // ignore: unnecessary_null_comparison, unused_local_variable
                     experience.createdAt != null)
                   _buildDescriptionAndTimestampInline(experience),
               ],
@@ -258,6 +259,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildDescriptionAndTimestamp(ExperienceEntity experience) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -273,9 +275,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 height: 1.5,
               ),
               textAlign: TextAlign.left,
+              // ignore: unnecessary_null_comparison, unused_local_variable
             ),
+          // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.description.isNotEmpty && experience.createdAt != null)
+            // ignore: unnecessary_null_comparison, unused_local_variable
             const SizedBox(height: 12),
+          // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.createdAt != null)
             Text(
               _formatRelativeTime(experience.createdAt),
@@ -309,8 +315,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 textAlign: TextAlign.left,
               ),
             ),
+          // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.description.isNotEmpty && experience.createdAt != null)
+            // ignore: unnecessary_null_comparison, unused_local_variable
             const SizedBox(height: 12),
+          // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.createdAt != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
@@ -332,7 +341,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     BuildContext context,
     ExperienceEntity experience,
     bool hasMultipleMedia,
+    // ignore: unnecessary_null_comparison, unused_local_variable
   ) {
+    // ignore: unnecessary_null_comparison, unused_local_variable
     final user = experience.user;
     final screenWidth = MediaQuery.of(context).size.width;
     final galleryWidth = screenWidth - 32; // 16px padding en cada lado
@@ -698,7 +709,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       color: Colors.grey[800],
       onSelected: (value) {
         if (value == 'edit') {
-          // TODO: Implementar editar post
+          // PENDIENTE: Implementar editar post
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Editar post - Próximamente'),

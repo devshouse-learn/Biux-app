@@ -216,7 +216,7 @@ class UserProfileProvider extends ChangeNotifier {
         userId,
       );
 
-      // ✅ NUEVA: Validar que las publicaciones estén disponibles
+      // ✅ Validar que las publicaciones estén disponibles
       // Filtrar publicaciones que no tengan media o cuya media esté vacía
       final validExperiences = userExperiences.where((exp) {
         // ignore: unnecessary_null_comparison, dead_null_aware_expression

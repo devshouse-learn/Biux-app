@@ -8,6 +8,14 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 
 // Mock repository que simula Firebase
 class MockFirebaseExperienceRepository implements ExperienceRepository {
+  @override
+  Future<ExperienceEntity?> getExperienceById(String experienceId) async {
+    return null;
+  }
+
+  @override
+  Future<void> updateExperience(String experienceId, {required String description}) async {}
+
   List<ExperienceEntity> _firebaseDatabase = [];
   bool shouldThrowError = false;
 

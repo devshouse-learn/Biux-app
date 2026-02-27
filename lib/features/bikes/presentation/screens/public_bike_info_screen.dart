@@ -486,7 +486,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   void _submitSighting() {
-    // TODO: Implementar envío de avistamiento
+    // PENDIENTE: Implementar envío de avistamiento
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(

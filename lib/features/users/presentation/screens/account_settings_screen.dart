@@ -312,7 +312,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                                 value ? ThemeMode.dark : ThemeMode.light,
                               );
                             },
-                            activeColor: ColorTokens.secondary50,
+                            activeThumbColor: ColorTokens.secondary50,
                             activeTrackColor: ColorTokens.secondary50
                                 .withValues(alpha: 0.4),
                           ),

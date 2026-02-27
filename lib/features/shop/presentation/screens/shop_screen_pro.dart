@@ -187,7 +187,65 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
+            // Favoritos
+            Consumer2<ShopProvider, UserProvider>(
+              builder: (context, shopProvider, userProvider, child) {
+                final uid = userProvider.user?.uid ?? '';
+                final favCount = uid.isEmpty
+                    ? 0
+                    : shopProvider.products
+                        .where((p) => p.isLikedBy(uid))
+                        .length;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        favCount > 0
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        size: 24,
+                        color: favCount > 0
+                            ? Colors.red
+                            : ColorTokens.primary30,
+                      ),
+                      onPressed: () => context.push('/shop/favorites'),
+                      tooltip: 'Mis Favoritos',
+                      style: IconButton.styleFrom(
+                        backgroundColor: ColorTokens.neutral99,
+                      ),
+                    ),
+                    if (favCount > 0)
+                      Positioned(
+                        right: 6,
+                        top: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '$favCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(width: 4),
             // Carrito
             Consumer<ShopProvider>(
               builder: (context, shopProvider, child) {
@@ -1197,7 +1255,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               setState(() {});
                             },
                           )
-                        // TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+                        // PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
                         : null,
                     // : IconButton(
                     //     icon: const Icon(Icons.qr_code_scanner, color: Colors.grey),
@@ -2336,42 +2394,28 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         final isLiked =
                             currentUser != null &&
                             product.isLikedBy(currentUser.uid);
-                        final canLike = product.isAvailable;
-
                         return GestureDetector(
-                          onTap: canLike && currentUser != null
+                          onTap: currentUser != null
                               ? () async {
-                                  final success = await context
+                                  await context
                                       .read<ShopProvider>()
                                       .toggleProductLike(
                                         product.id,
                                         currentUser.uid,
                                       );
-                                  if (!success && context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'No puedes dar me gusta a este producto',
-                                        ),
-                                        backgroundColor: Colors.orange,
-                                      ),
-                                    );
-                                  }
                                 }
                               : null,
                           child: CircleAvatar(
                             radius: 16,
                             backgroundColor: Colors.white.withValues(
-                              alpha: canLike ? 0.9 : 0.5,
+                              alpha: 0.9,
                             ),
                             child: Icon(
                               isLiked ? Icons.favorite : Icons.favorite_border,
                               size: 18,
                               color: isLiked
                                   ? Colors.red
-                                  : (canLike
-                                        ? Colors.grey[700]
-                                        : Colors.grey[400]),
+                                  : Colors.grey[700],
                             ),
                           ),
                         );

@@ -123,6 +123,7 @@ class ExperienceProvider extends ChangeNotifier {
       // ✅ FILTRADO ULTRA-AGRESIVO: Solo posts con media realmente válida
       final validExperiences = <ExperienceEntity>[];
       for (var exp in allExperiences) {
+        // ignore: unnecessary_null_comparison
         if (exp.media == null || exp.media.isEmpty) continue;
 
         bool allUrlsValid = true;

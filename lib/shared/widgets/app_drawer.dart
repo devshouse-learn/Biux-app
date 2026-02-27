@@ -73,7 +73,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     end: Alignment.bottomRight,
                     colors: [
                       ColorTokens.primary30,
-                      ColorTokens.primary30.withOpacity(0.85),
+                      ColorTokens.primary30.withValues(alpha: 0.85),
                     ],
                   ),
                 ),
@@ -86,7 +86,7 @@ class _AppDrawerState extends State<AppDrawer> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                               width: 2,
                             ),
                           ),
@@ -123,7 +123,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                         const Spacer(),
                         Material(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(12),
@@ -164,7 +164,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     Text(
                       user?.email ?? cu?.phoneNumber ?? '',
                       style: TextStyle(
-                          color: Colors.white.withOpacity(0.7), fontSize: 13),
+                          color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
                     ),
                   ],
                 ),
@@ -178,8 +178,8 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 _sec('COMUNIDAD'),
-                _item(Icons.campaign, Colors.orange, 'Promociones',
-                    'Ofertas de la comunidad ciclista', () {
+                _item(Icons.storefront, Colors.deepPurple, 'Negocios y Eventos',
+                    'Publicidad y eventos con registro', () {
                   Navigator.pop(context);
                   context.push('/promotions');
                 }),
@@ -214,12 +214,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(Icons.settings_outlined, ColorTokens.neutral50,
                     'Configuracion', 'Notificaciones y preferencias', () {
                   Navigator.pop(context);
-                  context.go(AppRoutes.notificationSettings);
+                  context.push(AppRoutes.notificationSettings);
                 }),
                 _item(Icons.help_outline, ColorTokens.neutral50,
                     'Centro de Ayuda', 'Soporte y preguntas frecuentes', () {
                   Navigator.pop(context);
-                  context.go(AppRoutes.help);
+                  context.push(AppRoutes.help);
                 }),
               ],
             ),
@@ -240,7 +240,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                        color: ColorTokens.error50.withOpacity(0.1),
+                        color: ColorTokens.error50.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10)),
                     child: Icon(Icons.logout,
                         color: ColorTokens.error50, size: 20),
@@ -283,7 +283,7 @@ class _AppDrawerState extends State<AppDrawer> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10)),
         child: Icon(icon, color: color, size: 20),
       ),

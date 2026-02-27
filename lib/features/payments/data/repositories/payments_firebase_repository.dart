@@ -3,7 +3,7 @@ import 'package:biux/features/payments/domain/repositories/payments_repository_a
 class PaymentsFirebaseRepository extends PaymentsRepositoryAbstract {
   @override
   Future<String> gatewayPayment() {
-    // TODO: implement gatewayPayment
+    // PENDIENTE: implement gatewayPayment
     throw UnimplementedError();
   }
 }

@@ -346,7 +346,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
                         ),
                         Switch(
                           value: _isAdvertisement,
-                          activeColor: Color(0xFFFFD700),
+                          activeThumbColor: Color(0xFFFFD700),
                           onChanged: (value) {
                             setState(() => _isAdvertisement = value);
                           },

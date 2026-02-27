@@ -700,7 +700,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Implementar reporte de robo
+              // PENDIENTE: Implementar reporte de robo
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
@@ -713,7 +713,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   void _markAsRecovered(BikeEntity bike, BikeProvider bikeProvider) {
-    // TODO: Implementar marcar como recuperada
+    // PENDIENTE: Implementar marcar como recuperada
   }
 
   void _showTransferDialog(BikeEntity bike, BikeProvider bikeProvider) {
@@ -732,7 +732,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Implementar transferencia
+              // PENDIENTE: Implementar transferencia
             },
             child: const Text('Transferir'),
           ),

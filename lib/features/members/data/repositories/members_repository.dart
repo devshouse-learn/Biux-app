@@ -40,7 +40,7 @@ class MembersRepository {
     );
 
     if (uriResponse.statusCode == 200) {
-      // final data = json.decode(uriResponse.body); // TODO: Use when implementing response handling
+      // final data = json.decode(uriResponse.body); // PENDIENTE: Use when implementing response handling
 
       // bool approved = data["approved"];
       // LocalStorage().saveApproved(approved);

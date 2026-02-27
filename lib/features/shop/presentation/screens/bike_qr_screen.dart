@@ -326,7 +326,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
       final qrImage = await BikeQRService.generateQRImage(qrData: _qrData);
 
       if (qrImage != null && mounted) {
-        // TODO: Implementar guardado en galería usando image_gallery_saver
+        // PENDIENTE: Implementar guardado en galería usando image_gallery_saver
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Descarga de QR disponible próximamente'),

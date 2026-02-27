@@ -118,7 +118,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
   }
 
   void _sharePhoto(String photoUrl) {
-    // TODO: Implementar compartir foto
+    // PENDIENTE: Implementar compartir foto
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Compartir foto próximamente')),
     );

@@ -661,12 +661,7 @@ class ShopProvider with ChangeNotifier {
 
       final product = _allProducts[productIndex];
 
-      // Solo permitir like si el producto está disponible
-      if (!product.isAvailable) {
-        _errorMessage = 'No puedes dar me gusta a un producto no disponible';
-        notifyListeners();
-        return false;
-      }
+      // Permitir like a cualquier producto (no depende de disponibilidad)
 
       final likedByUsers = List<String>.from(product.likedByUsers);
 
