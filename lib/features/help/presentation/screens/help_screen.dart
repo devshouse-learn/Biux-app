@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Pantalla de Ayuda con información importante para los usuarios
@@ -11,20 +10,14 @@ class HelpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text('Ayuda y Soporte'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            tooltip: 'Volver',
-            onPressed: () {
-              if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-              else context.go('/profile');
-            },
-          ),
-        ],
       ),
       body: ListView(
         padding: EdgeInsets.all(16),

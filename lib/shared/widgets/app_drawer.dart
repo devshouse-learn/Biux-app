@@ -214,12 +214,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(Icons.settings_outlined, ColorTokens.neutral50,
                     'Configuracion', 'Notificaciones y preferencias', () {
                   Navigator.pop(context);
-                  context.go(AppRoutes.notificationSettings);
+                  context.push(AppRoutes.notificationSettings);
                 }),
                 _item(Icons.help_outline, ColorTokens.neutral50,
                     'Centro de Ayuda', 'Soporte y preguntas frecuentes', () {
                   Navigator.pop(context);
-                  context.go(AppRoutes.help);
+                  context.push(AppRoutes.help);
                 }),
               ],
             ),
