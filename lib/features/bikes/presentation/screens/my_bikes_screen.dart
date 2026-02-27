@@ -50,7 +50,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.primary10,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           AppStrings.myBikes,
