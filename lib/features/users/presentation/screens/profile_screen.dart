@@ -1226,20 +1226,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              widget
-                                                              .userProvider
-                                                              .user
-                                                              ?.fullName !=
+                                              widget.userProvider.user?.name !=
                                                           null &&
                                                       widget
                                                           .userProvider
                                                           .user!
-                                                          .fullName!
+                                                          .name!
                                                           .isNotEmpty
                                                   ? widget
                                                         .userProvider
                                                         .user!
-                                                        .fullName!
+                                                        .name!
                                                   : 'Sin nombre',
                                               style: TextStyle(
                                                 fontSize: 14,
@@ -1253,15 +1250,15 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             if (widget
                                                         .userProvider
                                                         .user
-                                                        ?.userName !=
+                                                        ?.username !=
                                                     null &&
                                                 widget
                                                     .userProvider
                                                     .user!
-                                                    .userName!
+                                                    .username!
                                                     .isNotEmpty)
                                               Text(
-                                                '@${widget.userProvider.user!.userName}',
+                                                '@${widget.userProvider.user!.username}',
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: ColorTokens.neutral100
