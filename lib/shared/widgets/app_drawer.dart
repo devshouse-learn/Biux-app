@@ -178,8 +178,8 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 _sec('COMUNIDAD'),
-                _item(Icons.campaign, Colors.orange, 'Promociones',
-                    'Ofertas de la comunidad ciclista', () {
+                _item(Icons.storefront, Colors.deepPurple, 'Negocios y Eventos',
+                    'Publicidad y eventos con registro', () {
                   Navigator.pop(context);
                   context.push('/promotions');
                 }),
