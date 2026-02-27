@@ -1075,6 +1075,24 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         title: const Text('Mi Perfil'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
+        actions: [
+          // Botón Editar Perfil (tres puntos)
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {
+              _showEditProfileDialog();
+            },
+            tooltip: 'Editar perfil',
+          ),
+          // Botón Configuración (ruedita)
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              context.push('/account-settings');
+            },
+            tooltip: 'Configuración',
+          ),
+        ],
       ),
       body: widget.userProvider.isLoading
           ? Center(child: CircularProgressIndicator())
@@ -1114,9 +1132,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
                         child: Column(
                           children: [
-                            // Primera fila: foto + nombre/username + stats + botones
+                            // Primera fila: foto + nombre/username + stats
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 // Foto de perfil - Izquierda
                                 Container(
@@ -1130,31 +1148,26 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                   child: CircleAvatar(
                                     radius: 40,
                                     backgroundColor: ColorTokens.neutral20,
-                                    backgroundImage: widget
+                                    backgroundImage:
+                                        widget.userProvider.user?.photoUrl !=
+                                                null &&
+                                            widget
                                                 .userProvider
-                                                .user
-                                                ?.photoUrl !=
-                                            null &&
-                                        widget
-                                            .userProvider
-                                            .user!
-                                            .photoUrl!
-                                            .isNotEmpty
+                                                .user!
+                                                .photoUrl!
+                                                .isNotEmpty
                                         ? NetworkImage(
-                                            widget.userProvider.user!
-                                                .photoUrl!,
+                                            widget.userProvider.user!.photoUrl!,
                                           )
                                         : null,
-                                    child: widget
+                                    child:
+                                        widget.userProvider.user?.photoUrl ==
+                                                null ||
+                                            widget
                                                 .userProvider
-                                                .user
-                                                ?.photoUrl ==
-                                            null ||
-                                        widget
-                                            .userProvider
-                                            .user!
-                                            .photoUrl!
-                                            .isEmpty
+                                                .user!
+                                                .photoUrl!
+                                                .isEmpty
                                         ? Icon(
                                             Icons.person,
                                             size: 40,
@@ -1165,11 +1178,13 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 ),
                                 SizedBox(width: 16),
 
-                                // Nombre y username - Centro izquierda
+                                // Nombre y username - Centro izquierda (Expanded)
                                 Expanded(
+                                  flex: 1,
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       // Nombre
                                       Text(
@@ -1180,12 +1195,16 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                           fontWeight: FontWeight.bold,
                                           color: ColorTokens.neutral100,
                                         ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      SizedBox(height: 2),
+                                      SizedBox(height: 4),
                                       // Username
                                       if (widget.userProvider.user?.username !=
                                               null &&
-                                          widget.userProvider.user!.username!
+                                          widget
+                                              .userProvider
+                                              .user!
+                                              .username!
                                               .isNotEmpty)
                                         Text(
                                           '@${widget.userProvider.user!.username}',
@@ -1194,10 +1213,13 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             color: ColorTokens.neutral100
                                                 .withValues(alpha: 0.8),
                                           ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                     ],
                                   ),
                                 ),
+
+                                SizedBox(width: 12),
 
                                 // Estadísticas - Derecha
                                 Row(
@@ -1227,9 +1249,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     Column(
                                       children: [
                                         Text(
-                                          (widget.userProvider.user?.followers
-                                                  ?.length ??
-                                              0)
+                                          (widget
+                                                      .userProvider
+                                                      .user
+                                                      ?.followers
+                                                      ?.length ??
+                                                  0)
                                               .toString(),
                                           style: TextStyle(
                                             fontSize: 14,
@@ -1251,9 +1276,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     Column(
                                       children: [
                                         Text(
-                                          (widget.userProvider.user
-                                                  ?.following?.length ??
-                                              0)
+                                          (widget
+                                                      .userProvider
+                                                      .user
+                                                      ?.following
+                                                      ?.length ??
+                                                  0)
                                               .toString(),
                                           style: TextStyle(
                                             fontSize: 14,
@@ -1279,9 +1307,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             SizedBox(height: 12),
 
                             // Descripción - Debajo de la foto, alineada a izquierda
-                            if (widget.userProvider.user?.description !=
-                                    null &&
-                                widget.userProvider.user!.description!
+                            if (widget.userProvider.user?.description != null &&
+                                widget
+                                    .userProvider
+                                    .user!
+                                    .description!
                                     .isNotEmpty)
                               Align(
                                 alignment: Alignment.centerLeft,
@@ -1289,8 +1319,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                   widget.userProvider.user!.description!,
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: ColorTokens.neutral100
-                                        .withValues(alpha: 0.9),
+                                    color: ColorTokens.neutral100.withValues(
+                                      alpha: 0.9,
+                                    ),
                                     height: 1.4,
                                   ),
                                   maxLines: 2,
@@ -1299,56 +1330,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ),
 
                             SizedBox(height: 12),
-
-                            // Botones - Ancho completo
-                            Row(
-                              children: [
-                                // Botón Editar Perfil
-                                Expanded(
-                                  child: OutlinedButton.icon(
-                                    onPressed: () {
-                                      _showEditProfileDialog();
-                                    },
-                                    icon:
-                                        const Icon(Icons.edit, size: 18),
-                                    label: const Text('Editar'),
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor:
-                                          ColorTokens.neutral100,
-                                      side: BorderSide(
-                                        color: ColorTokens.neutral100,
-                                        width: 1.5,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                // Botón más opciones (configuración)
-                                OutlinedButton.icon(
-                                  onPressed: () {
-                                    context.push('/account-settings');
-                                  },
-                                  icon: const Icon(Icons.more_horiz,
-                                      size: 18),
-                                  label: const Text(''),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor:
-                                        ColorTokens.neutral100,
-                                    side: BorderSide(
-                                      color: ColorTokens.neutral100,
-                                      width: 1.5,
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                      horizontal: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),

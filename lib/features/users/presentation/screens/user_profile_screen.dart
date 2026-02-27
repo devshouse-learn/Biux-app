@@ -194,7 +194,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             children: [
               // Primera fila: foto + nombre/username + stats + botón
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Foto de perfil - Izquierda
                   Container(
@@ -228,8 +228,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                   // Nombre y username - Centro izquierda
                   Expanded(
+                    flex: 1,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Nombre
                         Text(
@@ -241,8 +243,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             fontWeight: FontWeight.bold,
                             color: ColorTokens.neutral100,
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 2),
+                        SizedBox(height: 4),
                         // Username
                         if (user.userName.isNotEmpty)
                           Text(
@@ -253,10 +256,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 alpha: 0.8,
                               ),
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),
                   ),
+
+                  SizedBox(width: 12),
 
                   // Estadísticas - Derecha
                   Row(
@@ -352,7 +358,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
               SizedBox(height: 12),
 
-              // Botón de seguir/editar - Ancho completo
+              // Botón de seguir - Ancho completo
               SizedBox(
                 width: double.infinity,
                 child: _buildFollowButton(provider, widget.userId),
