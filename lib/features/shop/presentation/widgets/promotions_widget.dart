@@ -287,8 +287,8 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
           borderRadius: BorderRadius.circular(14),
           side: BorderSide(
             color: isExpired
-                ? Colors.grey.withOpacity(0.2)
-                : const Color(0xFF16242D).withOpacity(0.1),
+                ? Colors.grey.withValues(alpha: 0.2)
+                : const Color(0xFF16242D).withValues(alpha: 0.1),
           ),
         ),
         color: isExpired ? Colors.grey[50] : Colors.white,
@@ -340,7 +340,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                               decoration: BoxDecoration(
                                 color: const Color(
                                   0xFF16242D,
-                                ).withOpacity(0.07),
+                                ).withValues(alpha: 0.07),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -582,7 +582,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                 color: const Color(0xFFF0F7FF),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF16242D).withOpacity(0.08),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.08),
                 ),
               ),
               child: const Row(
@@ -672,7 +672,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFF16242D).withOpacity(0.12),
+                            color: const Color(0xFF16242D).withValues(alpha: 0.12),
                           ),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -681,7 +681,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                             isExpanded: true,
                             icon: Icon(
                               Icons.keyboard_arrow_down,
-                              color: const Color(0xFF16242D).withOpacity(0.5),
+                              color: const Color(0xFF16242D).withValues(alpha: 0.5),
                             ),
                             style: const TextStyle(
                               color: Color(0xFF16242D),
@@ -761,7 +761,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color(0xFF16242D).withOpacity(0.12),
+                              color: const Color(0xFF16242D).withValues(alpha: 0.12),
                             ),
                           ),
                           child: Row(
@@ -769,7 +769,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 18,
-                                color: const Color(0xFF16242D).withOpacity(0.4),
+                                color: const Color(0xFF16242D).withValues(alpha: 0.4),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -784,7 +784,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                         ? const Color(0xFF16242D)
                                         : const Color(
                                             0xFF16242D,
-                                          ).withOpacity(0.5),
+                                          ).withValues(alpha: 0.5),
                                     fontSize: 14,
                                     fontWeight: _selectedDate != null
                                         ? FontWeight.w600
@@ -844,10 +844,10 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF16242D).withOpacity(0.04),
+                color: const Color(0xFF16242D).withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: const Color(0xFF16242D).withOpacity(0.08),
+                  color: const Color(0xFF16242D).withValues(alpha: 0.08),
                 ),
               ),
               child: const Row(
@@ -929,7 +929,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                       foregroundColor: Colors.white,
                       disabledBackgroundColor: const Color(
                         0xFF16242D,
-                      ).withOpacity(0.6),
+                      ).withValues(alpha: 0.6),
                       disabledForegroundColor: Colors.white70,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -969,7 +969,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
     return InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(
-        color: const Color(0xFF16242D).withOpacity(0.35),
+        color: const Color(0xFF16242D).withValues(alpha: 0.35),
         fontSize: 14,
       ),
       filled: true,
@@ -978,13 +978,13 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
-          color: const Color(0xFF16242D).withOpacity(0.12),
+          color: const Color(0xFF16242D).withValues(alpha: 0.12),
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
-          color: const Color(0xFF16242D).withOpacity(0.12),
+          color: const Color(0xFF16242D).withValues(alpha: 0.12),
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -1004,13 +1004,13 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
               padding: const EdgeInsets.only(bottom: 40),
               child: Icon(
                 icon,
-                color: const Color(0xFF16242D).withOpacity(0.4),
+                color: const Color(0xFF16242D).withValues(alpha: 0.4),
                 size: 20,
               ),
             )
           : Icon(
               icon,
-              color: const Color(0xFF16242D).withOpacity(0.4),
+              color: const Color(0xFF16242D).withValues(alpha: 0.4),
               size: 20,
             ),
     );

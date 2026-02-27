@@ -6,6 +6,14 @@ import 'package:biux/features/users/domain/entities/user_entity.dart';
 
 /// Mock repository simplificado para pruebas que no usa Firebase real
 class MockExperienceRepository implements ExperienceRepository {
+  @override
+  Future<ExperienceEntity?> getExperienceById(String experienceId) async {
+    return null;
+  }
+
+  @override
+  Future<void> updateExperience(String experienceId, {required String description}) async {}
+
   List<ExperienceEntity> _mockExperiences = [];
   bool _shouldThrowError = false;
   String? _errorMessage;

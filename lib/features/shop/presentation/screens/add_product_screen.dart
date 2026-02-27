@@ -227,7 +227,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: ColorTokens.primary30.withOpacity(0.1),
+            color: ColorTokens.primary30.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: ColorTokens.primary30, size: 20),
@@ -522,7 +522,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             decoration: BoxDecoration(
               color: ColorTokens.warning99,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: ColorTokens.warning50.withOpacity(0.3)),
+              border: Border.all(color: ColorTokens.warning50.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -620,7 +620,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         decoration: BoxDecoration(
           color: ColorTokens.success95,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ColorTokens.success40.withOpacity(0.3)),
+          border: Border.all(color: ColorTokens.success40.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -660,7 +660,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         decoration: BoxDecoration(
           color: ColorTokens.error95,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ColorTokens.error50.withOpacity(0.3)),
+          border: Border.all(color: ColorTokens.error50.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [

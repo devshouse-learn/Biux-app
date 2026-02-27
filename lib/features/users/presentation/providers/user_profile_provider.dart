@@ -217,11 +217,11 @@ class UserProfileProvider extends ChangeNotifier {
       );
 
       // ✅ FILTRADO AGRESIVO: Solo posts con media 100% válida
-      // ✅ FILTRADO ULTRA-AGRESIVO: Solo URLs que definitivamente van a funcionar
       final validExperiences = <dynamic>[];
 
       for (var exp in userExperiences) {
         // Validar que tenga media
+        // ignore: unnecessary_null_comparison
         if (exp.media == null || exp.media.isEmpty) continue;
 
         // Validar que TODAS las URLs sean realmente válidas
@@ -309,6 +309,7 @@ class UserProfileProvider extends ChangeNotifier {
         _isFollowing = true;
         // Actualizar contador de followers si tenemos el perfil cargado
         if (_currentProfile?.id == userId) {
+          // ignore: unnecessary_null_comparison, dead_null_aware_expression
           int newFollowerCount = (_currentProfile!.followerS ?? 0) + 1;
           _currentProfile = BiuxUser.fromJsonMap({
             ..._currentProfile!.toJson(),
@@ -356,6 +357,7 @@ class UserProfileProvider extends ChangeNotifier {
         // Actualizar contador de followers si tenemos el perfil cargado
         if (_currentProfile?.id == userId) {
           // Asegurar que no sea negativo
+          // ignore: unnecessary_null_comparison, dead_null_aware_expression
           int newFollowerCount = ((_currentProfile!.followerS ?? 0) - 1)
               .clamp(0, double.maxFinite)
               .toInt();

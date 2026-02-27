@@ -245,6 +245,7 @@ class _CircularProgressPainter extends CustomPainter {
 }
 
 /// Bottom sheet simplificado para opciones adicionales
+// ignore: unused_element
 class _CreateOptionsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

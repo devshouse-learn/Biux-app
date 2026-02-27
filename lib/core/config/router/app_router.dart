@@ -519,6 +519,7 @@ final GoRouter _router = GoRouter(
           path: '/edit-post/:postId',
           name: 'editPost',
           builder: (context, state) {
+            // ignore: unused_local_variable
             final postId = state.pathParameters['postId']!;
             final experience = state.extra as ExperienceEntity?;
             if (experience == null) {
