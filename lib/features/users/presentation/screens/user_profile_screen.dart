@@ -410,43 +410,53 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ),
                     ],
                   ),
-                  Column(
-                    children: [
-                      Text(
-                        user.followerS.toString(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: ColorTokens.neutral100,
+                  GestureDetector(
+                    onTap: () {
+                      _showFollowersModal(context, user);
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          user.followerS.toString(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Seguidores',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: ColorTokens.neutral100.withValues(alpha: 0.8),
+                        Text(
+                          'Seguidores',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: ColorTokens.neutral100.withValues(alpha: 0.8),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: [
-                      Text(
-                        user.following.length.toString(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: ColorTokens.neutral100,
+                  GestureDetector(
+                    onTap: () {
+                      _showFollowingModal(context, user);
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          user.following.length.toString(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Siguiendo',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: ColorTokens.neutral100.withValues(alpha: 0.8),
+                        Text(
+                          'Siguiendo',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: ColorTokens.neutral100.withValues(alpha: 0.8),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -738,6 +748,146 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           user: following,
           onTap: () {
             context.push('/user-profile/${following.id}');
+          },
+        );
+      },
+    );
+  }
+
+  void _showFollowersModal(BuildContext context, BiuxUser user) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              color: ColorTokens.neutral10,
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.neutral20,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Seguidores (${user.followerS})',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: ColorTokens.neutral100),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: user.followers.length,
+                      itemBuilder: (context, index) {
+                        final followerId = user.followers.keys.toList()[index];
+                        return Container(
+                          color: ColorTokens.neutral10,
+                          child: ListTile(
+                            title: Text(
+                              followerId,
+                              style: TextStyle(color: ColorTokens.neutral100),
+                            ),
+                            trailing: Icon(Icons.arrow_forward_ios,
+                                size: 16, color: ColorTokens.neutral80),
+                            onTap: () {
+                              Navigator.pop(context);
+                              context.push('/user-profile/$followerId');
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showFollowingModal(BuildContext context, BiuxUser user) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              color: ColorTokens.neutral10,
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.neutral20,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Siguiendo (${user.following.length})',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: ColorTokens.neutral100),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: user.following.length,
+                      itemBuilder: (context, index) {
+                        final followingId = user.following[index];
+                        return Container(
+                          color: ColorTokens.neutral10,
+                          child: ListTile(
+                            title: Text(
+                              followingId,
+                              style: TextStyle(color: ColorTokens.neutral100),
+                            ),
+                            trailing: Icon(Icons.arrow_forward_ios,
+                                size: 16, color: ColorTokens.neutral80),
+                            onTap: () {
+                              Navigator.pop(context);
+                              context.push('/user-profile/$followingId');
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
           },
         );
       },
