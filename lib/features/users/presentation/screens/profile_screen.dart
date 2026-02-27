@@ -1188,82 +1188,84 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                   ],
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                              ],
+                            ),
+
+                            SizedBox(height: 12),
+
+                            // Segunda fila: Estadísticas - Ancho completo
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(
                                   children: [
-                                    Column(
-                                      children: [
-                                        Text(
-                                          '0',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: ColorTokens.neutral100,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Posts',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: ColorTokens.neutral100
-                                                .withValues(alpha: 0.8),
-                                          ),
-                                        ),
-                                      ],
+                                    Text(
+                                      '0',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
                                     ),
-                                    SizedBox(width: 16),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          (widget
-                                                      .userProvider
-                                                      .user
-                                                      ?.followers
-                                                      ?.length ??
-                                                  0)
-                                              .toString(),
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: ColorTokens.neutral100,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Segs',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: ColorTokens.neutral100
-                                                .withValues(alpha: 0.8),
-                                          ),
-                                        ),
-                                      ],
+                                    Text(
+                                      'Posts',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
                                     ),
-                                    SizedBox(width: 16),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          (widget
-                                                      .userProvider
-                                                      .user
-                                                      ?.following
-                                                      ?.length ??
-                                                  0)
-                                              .toString(),
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: ColorTokens.neutral100,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Siguiendo',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: ColorTokens.neutral100
-                                                .withValues(alpha: 0.8),
-                                          ),
-                                        ),
-                                      ],
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      (widget
+                                                  .userProvider
+                                                  .user
+                                                  ?.followers
+                                                  ?.length ??
+                                              0)
+                                          .toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Seguidores',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      (widget
+                                                  .userProvider
+                                                  .user
+                                                  ?.following
+                                                  ?.length ??
+                                              0)
+                                          .toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Siguiendo',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
                                     ),
                                   ],
                                 ),
