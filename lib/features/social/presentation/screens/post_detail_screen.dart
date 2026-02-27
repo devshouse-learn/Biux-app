@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
@@ -201,6 +202,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
     final experience = _experience!;
     final hasMultipleMedia = experience.media.length > 1;
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final isOwner = currentUserId == experience.user.id;
 
     return SingleChildScrollView(
       child: Column(
@@ -224,12 +227,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     // Galería de imágenes
                     _buildMediaGallery(context, experience, hasMultipleMedia),
 
-                    // Botón de menú (tres puntos) en esquina superior derecha
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: _buildPostOptions(context, experience),
-                    ),
+                    // Botón de menú (tres puntos) - Solo visible si eres el dueño
+                    if (isOwner)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: _buildPostOptions(context, experience),
+                      ),
                   ],
                 ),
 
