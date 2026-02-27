@@ -1,4 +1,4 @@
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -53,7 +53,7 @@ class MyGroupsBloc extends ChangeNotifier {
   }
 
   Future<void> onTapViewGroup(BuildContext context) async {
-    await Navigator.pushNamed(context, AppRoutes.groupCreateRoute);
+    await Navigator.pushNamed(context, AppRoutes.groupCreateName);
     notifyListeners();
     getUser();
   }

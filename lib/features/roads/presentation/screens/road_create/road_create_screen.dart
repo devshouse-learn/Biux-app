@@ -1,6 +1,6 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/router/router_path.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/cities/data/models/city.dart';
@@ -111,7 +111,7 @@ class RoadCreateScreen extends StatelessWidget {
                     onTap: () async {
                       final result = await Navigator.pushNamed(
                         context,
-                        AppRoutes.roadMapRoute,
+                        AppRoutes.roadMapName,
                       );
                       if (result != null) {
                         final locationData = result as LocationData;

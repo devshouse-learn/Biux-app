@@ -65,12 +65,12 @@ class GroupRepository {
   }
 
   // NUEVO: Obtener grupos por ciudad
+  // No filtramos isActive en query para incluir docs antiguos sin ese campo
   Stream<List<GroupModel>> getGroupsByCity(String cityId) {
     print('🔍 Obteniendo grupos de la ciudad: $cityId');
 
     return _firestore
         .collection(_collection)
-        .where('isActive', isEqualTo: true)
         .where('cityId', isEqualTo: cityId)
         .snapshots()
         .map((snapshot) {
@@ -87,6 +87,7 @@ class GroupRepository {
               })
               .where((group) => group != null)
               .cast<GroupModel>()
+              .where((group) => group.isActive) // Filtrar en memoria
               .toList();
 
           // Ordenar por fecha en memoria
@@ -98,47 +99,48 @@ class GroupRepository {
   }
 
   // Obtener todos los grupos activos - MANTENER PARA COMPATIBILIDAD
+  // NOTA: No filtramos por 'isActive' en la query de Firestore porque
+  // documentos antiguos pueden no tener ese campo y serían excluidos.
+  // En su lugar, filtramos en memoria tratando ausencia como true.
   Stream<List<GroupModel>> getGroups() {
     print('🔍 Obteniendo todos los grupos...');
 
-    return _firestore
-        .collection(_collection)
-        .where('isActive', isEqualTo: true)
-        .snapshots()
-        .map((snapshot) {
-          print('📊 Grupos encontrados: ${snapshot.docs.length}');
+    return _firestore.collection(_collection).snapshots().map((snapshot) {
+      print('📊 Grupos encontrados: ${snapshot.docs.length}');
 
-          final groups = snapshot.docs
-              .map((doc) {
-                try {
-                  return GroupModel.fromFirestore(doc);
-                } catch (e) {
-                  print('❌ Error parseando grupo ${doc.id}: $e');
-                  return null;
-                }
-              })
-              .where((group) => group != null)
-              .cast<GroupModel>()
-              .toList();
+      final groups = snapshot.docs
+          .map((doc) {
+            try {
+              return GroupModel.fromFirestore(doc);
+            } catch (e) {
+              print('❌ Error parseando grupo ${doc.id}: $e');
+              return null;
+            }
+          })
+          .where((group) => group != null)
+          .cast<GroupModel>()
+          .where((group) => group.isActive) // Filtrar en memoria
+          .toList();
 
-          // Ordenar por fecha en memoria
-          groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      // Ordenar por fecha en memoria
+      groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-          print('✅ Grupos procesados correctamente: ${groups.length}');
-          return groups;
-        });
+      print('✅ Grupos procesados correctamente: ${groups.length}');
+      return groups;
+    });
   }
 
   // Obtener grupos donde el usuario es miembro
+  // No filtramos isActive en query para incluir docs antiguos sin ese campo
   Stream<List<GroupModel>> getUserGroups(String userId) {
     return _firestore
         .collection(_collection)
         .where('memberIds', arrayContains: userId)
-        .where('isActive', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
           final groups = snapshot.docs
               .map((doc) => GroupModel.fromFirestore(doc))
+              .where((group) => group.isActive)
               .toList();
           groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return groups;
@@ -146,15 +148,16 @@ class GroupRepository {
   }
 
   // Obtener grupos administrados por el usuario
+  // No filtramos isActive en query para incluir docs antiguos sin ese campo
   Stream<List<GroupModel>> getAdminGroups(String userId) {
     return _firestore
         .collection(_collection)
         .where('adminId', isEqualTo: userId)
-        .where('isActive', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
           final groups = snapshot.docs
               .map((doc) => GroupModel.fromFirestore(doc))
+              .where((group) => group.isActive)
               .toList();
           groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return groups;

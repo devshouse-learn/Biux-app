@@ -59,7 +59,7 @@ import 'package:biux/features/store/presentation/providers/product_provider.dart
 import 'package:biux/features/store/presentation/providers/cart_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:biux/features/social/social_providers_config.dart';
+import 'package:biux/features/social/presentation/providers/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
 

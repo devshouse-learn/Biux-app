@@ -3,7 +3,7 @@ import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'dart:io';
 import 'package:biux/core/utils/firebase_utils.dart';
-import 'package:biux/features/roads/data/repositories/roads_repository_abstract.dart';
+import 'package:biux/features/roads/domain/repositories/roads_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RoadsFirebaseRepository extends RoadsRepositoryAbstract {

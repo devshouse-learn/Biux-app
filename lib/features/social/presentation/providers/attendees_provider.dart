@@ -5,7 +5,7 @@ import '../../domain/entities/attendee_entity.dart';
 import '../../domain/repositories/attendees_repository.dart';
 // import '../../domain/repositories/notifications_repository.dart'; // ✅ Not needed - Cloud Functions handle notifications
 // import '../../domain/entities/notification_entity.dart'; // ✅ Not needed - Cloud Functions handle notifications
-import '../../data/adapters/attendees_firestore_adapter.dart';
+import '../../data/datasources/attendees_firestore_adapter.dart';
 import '../../../users/domain/repositories/user_repository.dart';
 
 /// Provider para gestionar asistentes a rodadas

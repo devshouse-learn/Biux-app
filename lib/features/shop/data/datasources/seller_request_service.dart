@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/seller_request_model.dart';
 import '../../domain/entities/seller_request_entity.dart';
 
@@ -6,11 +6,11 @@ import '../../domain/entities/seller_request_entity.dart';
 class SellerRequestService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Colección de solicitudes
+  /// Colecci├│n de solicitudes
   CollectionReference get _requestsCollection =>
       _firestore.collection('seller_requests');
 
-  /// Colección de usuarios
+  /// Colecci├│n de usuarios
   CollectionReference get _usersCollection => _firestore.collection('users');
 
   /// Crea una nueva solicitud de vendedor
@@ -22,7 +22,7 @@ class SellerRequestService {
     required String message,
   }) async {
     try {
-      print('📝 Creando solicitud de vendedor para: $userName');
+      print('­ƒôØ Creando solicitud de vendedor para: $userName');
 
       // Verificar si ya existe una solicitud pendiente
       final existingRequest = await _requestsCollection
@@ -32,12 +32,12 @@ class SellerRequestService {
           .get();
 
       if (existingRequest.docs.isNotEmpty) {
-        print('⚠️ Ya existe una solicitud pendiente');
-        throw Exception('Ya tienes una solicitud pendiente de revisión');
+        print('ÔÜá´©Å Ya existe una solicitud pendiente');
+        throw Exception('Ya tienes una solicitud pendiente de revisi├│n');
       }
 
       final request = SellerRequestModel(
-        id: '', // Se generará automáticamente
+        id: '', // Se generar├í autom├íticamente
         userId: userId,
         userName: userName,
         userPhoto: userPhoto,
@@ -49,10 +49,10 @@ class SellerRequestService {
 
       final docRef = await _requestsCollection.add(request.toMap());
 
-      print('✅ Solicitud creada con ID: ${docRef.id}');
+      print('Ô£à Solicitud creada con ID: ${docRef.id}');
       return docRef.id;
     } catch (e) {
-      print('❌ Error creando solicitud: $e');
+      print('ÔØî Error creando solicitud: $e');
       rethrow;
     }
   }
@@ -82,7 +82,7 @@ class SellerRequestService {
         });
   }
 
-  /// Obtiene las solicitudes de un usuario específico
+  /// Obtiene las solicitudes de un usuario espec├¡fico
   Stream<List<SellerRequestEntity>> getUserRequests(String userId) {
     return _requestsCollection
         .where('userId', isEqualTo: userId)
@@ -102,7 +102,7 @@ class SellerRequestService {
     String? comment,
   }) async {
     try {
-      print('✅ Aprobando solicitud: $requestId');
+      print('Ô£à Aprobando solicitud: $requestId');
 
       // Obtener la solicitud
       final requestDoc = await _requestsCollection.doc(requestId).get();
@@ -129,9 +129,9 @@ class SellerRequestService {
         'authorizedBy': adminId,
       });
 
-      print('✅ Usuario ${request.userName} ahora es vendedor autorizado');
+      print('Ô£à Usuario ${request.userName} ahora es vendedor autorizado');
     } catch (e) {
-      print('❌ Error aprobando solicitud: $e');
+      print('ÔØî Error aprobando solicitud: $e');
       rethrow;
     }
   }
@@ -143,7 +143,7 @@ class SellerRequestService {
     String? comment,
   }) async {
     try {
-      print('❌ Rechazando solicitud: $requestId');
+      print('ÔØî Rechazando solicitud: $requestId');
 
       await _requestsCollection.doc(requestId).update({
         'status': 'rejected',
@@ -152,9 +152,9 @@ class SellerRequestService {
         'reviewComment': comment ?? 'Solicitud rechazada',
       });
 
-      print('✅ Solicitud rechazada');
+      print('Ô£à Solicitud rechazada');
     } catch (e) {
-      print('❌ Error rechazando solicitud: $e');
+      print('ÔØî Error rechazando solicitud: $e');
       rethrow;
     }
   }
@@ -163,9 +163,9 @@ class SellerRequestService {
   Future<void> deleteRequest(String requestId) async {
     try {
       await _requestsCollection.doc(requestId).delete();
-      print('🗑️ Solicitud eliminada: $requestId');
+      print('­ƒùæ´©Å Solicitud eliminada: $requestId');
     } catch (e) {
-      print('❌ Error eliminando solicitud: $e');
+      print('ÔØî Error eliminando solicitud: $e');
       rethrow;
     }
   }
@@ -181,7 +181,7 @@ class SellerRequestService {
 
       return snapshot.docs.isNotEmpty;
     } catch (e) {
-      print('❌ Error verificando solicitud pendiente: $e');
+      print('ÔØî Error verificando solicitud pendiente: $e');
       return false;
     }
   }

@@ -25,7 +25,7 @@ import '../../../features/groups/presentation/screens/group_list/group_list_scre
 import '../../../features/groups/presentation/screens/my_groups/my_groups_screen.dart';
 import '../../../features/groups/presentation/screens/view_group/view_group_screen.dart';
 import '../../../features/authentication/presentation/screens/create_user/create_user_screen.dart';
-import '../../../features/authentication/presentation/screens/login_phone.dart';
+import '../../../features/authentication/presentation/screens/login_phone_screen.dart';
 import '../../../features/maps/presentation/screens/map_screen.dart';
 import '../../../features/rides/presentation/screens/create_ride/ride_create_screen.dart';
 import '../../../features/rides/presentation/screens/detail_ride/ride_detail_screen.dart';
@@ -76,7 +76,6 @@ import '../../../features/store/presentation/screens/admin_dashboard_screen.dart
 import '../../../features/store/domain/entities/product_entity.dart';
 
 // TODO: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
-// import '../../../features/shop/presentation/screens/qr_scanner_screen.dart';
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
@@ -93,7 +92,7 @@ import '../../../features/social/presentation/screens/attendees_screen.dart';
 
 // Shared imports
 import '../../../shared/widgets/main_shell.dart';
-import '../../../shared/widgets/splash_screen.dart';
+import '../../../shared/screens/splash_screen.dart';
 
 import 'app_routes.dart';
 import 'auth_notifier.dart';

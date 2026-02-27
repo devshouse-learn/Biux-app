@@ -3,20 +3,20 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 // Auth
-import '../authentication/presentation/providers/auth_provider.dart'
+import 'package:biux/features/authentication/presentation/providers/auth_provider.dart'
     as app_auth;
 
 // Data
-import 'data/repositories/notifications_repository_impl.dart';
-import 'data/repositories/likes_repository_impl.dart';
-import 'data/repositories/comments_repository_impl.dart';
-import 'data/repositories/attendees_repository_impl.dart';
+import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
+import 'package:biux/features/social/data/repositories/likes_repository_impl.dart';
+import 'package:biux/features/social/data/repositories/comments_repository_impl.dart';
+import 'package:biux/features/social/data/repositories/attendees_repository_impl.dart';
 
 // Providers
-import 'presentation/providers/notifications_provider.dart';
-import 'presentation/providers/likes_provider.dart';
-import 'presentation/providers/comments_provider.dart';
-import 'presentation/providers/attendees_provider.dart';
+import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
+import 'package:biux/features/social/presentation/providers/likes_provider.dart';
+import 'package:biux/features/social/presentation/providers/comments_provider.dart';
+import 'package:biux/features/social/presentation/providers/attendees_provider.dart';
 
 /// Configuración de providers del feature social
 class SocialProvidersConfig {

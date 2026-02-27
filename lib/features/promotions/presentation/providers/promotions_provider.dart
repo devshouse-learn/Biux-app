@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../domain/models/promotion_request_model.dart';
+import '../../data/models/promotion_request_model.dart';
 
 class PromotionsProvider with ChangeNotifier {
   final FirebaseFirestore firestore;
@@ -10,7 +10,7 @@ class PromotionsProvider with ChangeNotifier {
   /// Collection used to store promotion requests. Assumption: collection
   /// named `promotions_requests` (can be changed if project uses another).
   PromotionsProvider({FirebaseFirestore? firestore})
-      : firestore = firestore ?? FirebaseFirestore.instance {
+    : firestore = firestore ?? FirebaseFirestore.instance {
     _col = this.firestore.collection('promotions_requests');
     // cargar las solicitudes existentes (no await en constructor)
     fetchRequests();

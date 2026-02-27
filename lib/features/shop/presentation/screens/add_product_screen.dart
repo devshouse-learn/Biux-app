@@ -522,7 +522,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
             decoration: BoxDecoration(
               color: ColorTokens.warning99,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: ColorTokens.warning50.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: ColorTokens.warning50.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
@@ -620,7 +622,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
         decoration: BoxDecoration(
           color: ColorTokens.success95,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ColorTokens.success40.withValues(alpha: 0.3)),
+          border: Border.all(
+            color: ColorTokens.success40.withValues(alpha: 0.3),
+          ),
         ),
         child: Row(
           children: [

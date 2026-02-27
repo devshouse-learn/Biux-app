@@ -3,7 +3,7 @@ import 'package:biux/features/members/data/models/member.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'dart:io';
 
-import 'groups_repository_abstract.dart';
+import 'package:biux/features/groups/domain/repositories/groups_repository_abstract.dart';
 import 'package:biux/core/utils/firebase_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
