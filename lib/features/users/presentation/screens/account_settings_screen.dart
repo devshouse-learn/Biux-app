@@ -323,6 +323,42 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
 
                 SizedBox(height: 32),
+
+                // Sección de Opciones de Cuenta
+                Text(
+                  'Opciones de Cuenta',
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                // Botón Cerrar Sesión
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.logout,
+                  title: 'Cerrar Sesión',
+                  subtitle: 'Cierra tu sesión actual',
+                  onTap: () {
+                    _showLogoutDialog();
+                  },
+                ),
+                SizedBox(height: 12),
+
+                // Botón Eliminar Cuenta
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.delete_forever,
+                  title: 'Eliminar Cuenta',
+                  subtitle: 'Elimina permanentemente tu cuenta',
+                  onTap: () {
+                    _showDeleteAccountDialog();
+                  },
+                ),
+
+                SizedBox(height: 32),
               ],
             ),
           );
@@ -499,5 +535,76 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     }
 
     return phoneNumber;
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Cerrar Sesión'),
+          content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                final userProvider = context.read<UserProvider>();
+                await userProvider.signOut();
+                if (mounted) {
+                  context.go('/login');
+                }
+              },
+              child: const Text(
+                'Confirmar',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteAccountDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Eliminar Cuenta'),
+          content: const Text(
+            '¿Estás seguro de que deseas eliminar tu cuenta? '
+            'Esta acción no se puede deshacer.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                final userProvider = context.read<UserProvider>();
+                await userProvider.requestAccountDeletion();
+                if (mounted) {
+                  context.go('/login');
+                }
+              },
+              child: const Text(
+                'Confirmar',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

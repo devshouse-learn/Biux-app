@@ -672,7 +672,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     );
 
     String? selectedProfileImageUrl;
-    String? selectedCoverImageUrl;
 
     showDialog(
       context: context,
@@ -736,58 +735,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           ),
                           child: Icon(
                             Icons.camera_alt,
-                            size: 40,
-                            color: ColorTokens.neutral60,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
-                    // ========== FOTO DE PORTADA ==========
-                    Text(
-                      'Foto de Portada',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: 12),
-                    Center(
-                      child: OptimizedImagePicker(
-                        currentImageUrl: selectedCoverImageUrl != null
-                            ? (selectedCoverImageUrl?.isEmpty ?? false)
-                                  ? null // Cadena vacía = sin foto
-                                  : selectedCoverImageUrl // Tiene URL
-                            : widget
-                                  .userProvider
-                                  .user
-                                  ?.coverPhotoUrl, // Sin cambios = usa actual
-                        onImageSelected: (url) {
-                          setState(() {
-                            selectedCoverImageUrl = url;
-                          });
-                        },
-                        imageType: 'cover',
-                        entityId:
-                            FirebaseAuth.instance.currentUser?.uid ??
-                            'temp_user',
-                        width: 200,
-                        height: 100,
-                        borderRadius: BorderRadius.circular(8),
-                        placeholder: Container(
-                          width: 200,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: ColorTokens.neutral20,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: ColorTokens.neutral100,
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.image,
                             size: 40,
                             color: ColorTokens.neutral60,
                           ),
@@ -887,7 +834,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     final username = usernameController.text.trim();
                     final description = descriptionController.text.trim();
                     final profileUrl = selectedProfileImageUrl;
-                    final coverUrl = selectedCoverImageUrl;
                     final email = widget.userProvider.user?.email ?? '';
 
                     // Actualizar todos los campos de perfil
@@ -896,7 +842,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       username: username,
                       description: description,
                       photoUrl: profileUrl,
-                      coverPhotoUrl: coverUrl,
                       email: email,
                     );
 
@@ -1326,57 +1271,67 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                   ],
                                 ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      (widget
-                                                  .userProvider
-                                                  .user
-                                                  ?.followers
-                                                  ?.length ??
-                                              0)
-                                          .toString(),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: ColorTokens.neutral100,
+                                GestureDetector(
+                                  onTap: () {
+                                    _showFollowersModal(context);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        (widget
+                                                    .userProvider
+                                                    .user
+                                                    ?.followers
+                                                    ?.length ??
+                                                0)
+                                            .toString(),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorTokens.neutral100,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      'Seguidores',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: ColorTokens.neutral100
-                                            .withValues(alpha: 0.8),
+                                      Text(
+                                        'Seguidores',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: ColorTokens.neutral100
+                                              .withValues(alpha: 0.8),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      (widget
-                                                  .userProvider
-                                                  .user
-                                                  ?.following
-                                                  ?.length ??
-                                              0)
-                                          .toString(),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: ColorTokens.neutral100,
+                                GestureDetector(
+                                  onTap: () {
+                                    _showFollowingModal(context);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        (widget
+                                                    .userProvider
+                                                    .user
+                                                    ?.following
+                                                    ?.length ??
+                                                0)
+                                            .toString(),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorTokens.neutral100,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      'Siguiendo',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: ColorTokens.neutral100
-                                            .withValues(alpha: 0.8),
+                                      Text(
+                                        'Siguiendo',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: ColorTokens.neutral100
+                                              .withValues(alpha: 0.8),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
