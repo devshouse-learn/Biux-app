@@ -73,7 +73,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     end: Alignment.bottomRight,
                     colors: [
                       ColorTokens.primary30,
-                      ColorTokens.primary30.withOpacity(0.85),
+                      ColorTokens.primary30.withValues(alpha: 0.85),
                     ],
                   ),
                 ),
@@ -86,7 +86,7 @@ class _AppDrawerState extends State<AppDrawer> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                               width: 2,
                             ),
                           ),
@@ -123,7 +123,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                         const Spacer(),
                         Material(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(12),
@@ -164,7 +164,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     Text(
                       user?.email ?? cu?.phoneNumber ?? '',
                       style: TextStyle(
-                          color: Colors.white.withOpacity(0.7), fontSize: 13),
+                          color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
                     ),
                   ],
                 ),
@@ -240,7 +240,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                        color: ColorTokens.error50.withOpacity(0.1),
+                        color: ColorTokens.error50.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10)),
                     child: Icon(Icons.logout,
                         color: ColorTokens.error50, size: 20),
@@ -283,7 +283,7 @@ class _AppDrawerState extends State<AppDrawer> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10)),
         child: Icon(icon, color: color, size: 20),
       ),
