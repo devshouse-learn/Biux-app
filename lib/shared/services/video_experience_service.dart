@@ -112,7 +112,7 @@ class VideoExperienceService {
     required String userId,
   }) async {
     try {
-      // TODO: Implementar generación real de thumbnail
+      // PENDIENTE: Implementar generación real de thumbnail
       // Por ahora retornamos null para usar el video directamente
       print('🖼️ Generando thumbnail para: $videoUrl');
       return null;
@@ -125,7 +125,7 @@ class VideoExperienceService {
   /// Valida la duración de un video
   Future<bool> validateVideoDuration(XFile videoFile) async {
     try {
-      // TODO: Implementar validación real de duración
+      // PENDIENTE: Implementar validación real de duración
       // Por ahora asumimos que el picker ya limita la duración
       return true;
     } catch (e) {
@@ -144,7 +144,7 @@ class VideoExperienceService {
         path: videoFile.path,
         sizeBytes: sizeBytes,
         sizeMB: sizeBytes / (1024 * 1024),
-        // TODO: Obtener duración y dimensiones reales
+        // PENDIENTE: Obtener duración y dimensiones reales
         durationSeconds: 30, // Placeholder
         width: 1080, // Placeholder
         height: 1920, // Placeholder

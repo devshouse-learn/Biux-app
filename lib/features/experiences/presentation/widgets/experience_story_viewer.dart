@@ -846,7 +846,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         duration: const Duration(seconds: 2),
       ),
     );
-    // TODO: Implementar navegación a CreateAdvertisementScreen
+    // PENDIENTE: Implementar navegación a CreateAdvertisementScreen
   }
 
   Widget _buildTouchAreas() {

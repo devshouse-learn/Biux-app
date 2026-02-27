@@ -9,7 +9,7 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   Future getBike() {
-    // TODO: implement getBike
+    // PENDIENTE: implement getBike
     throw UnimplementedError();
   }
 

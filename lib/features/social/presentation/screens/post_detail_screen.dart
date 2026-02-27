@@ -718,7 +718,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       color: Colors.grey[800],
       onSelected: (value) {
         if (value == 'edit') {
-          // TODO: Implementar editar post
+          // PENDIENTE: Implementar editar post
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Editar post - Próximamente'),

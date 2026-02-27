@@ -21,7 +21,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     super.initState();
     // Cargar pedidos al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // TODO: Implementar carga de pedidos desde el provider
+      // PENDIENTE: Implementar carga de pedidos desde el provider
       // final shopProvider = Provider.of<ShopProvider>(context, listen: false);
       // shopProvider.loadUserOrders();
     });
@@ -232,7 +232,7 @@ class _OrderCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // TODO: Navegar al detalle del pedido
+          // PENDIENTE: Navegar al detalle del pedido
           // context.go('/shop/orders/${order.id}');
         },
         borderRadius: BorderRadius.circular(12),

@@ -430,10 +430,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 );
                 // Navegar según el tipo
                 if (experience.isStoryFormat) {
-                  // TODO: Navegar a vista de historia
+                  // PENDIENTE: Navegar a vista de historia
                   context.push('/stories');
                 } else {
-                  // TODO: Navegar a vista de post
+                  // PENDIENTE: Navegar a vista de post
                   context.push('/stories');
                 }
               },

@@ -203,8 +203,27 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       ),
       child: Row(
         children: [
-          // Solo botón Siguiente/Finalizar (alineado a la derecha)
-          const Spacer(),
+          // Botón Cancelar
+          Expanded(
+            flex: 2,
+            child: OutlinedButton(
+              onPressed: () => _showCancelDialog(bikeProvider),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: ColorTokens.error50,
+                side: const BorderSide(color: ColorTokens.error50),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Botón Siguiente/Finalizar
           Expanded(
             flex: 2,
             child: ElevatedButton(
@@ -247,6 +266,43 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       default:
         return AppStrings.next;
     }
+  }
+
+  void _showCancelDialog(BikeProvider bikeProvider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancelar registro'),
+        content: const Text(
+          '¿Estás seguro de que deseas cancelar el registro de la bicicleta? Se perderán todos los datos ingresados.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral60),
+            child: const Text(
+              'Continuar editando',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // Cerrar diálogo
+              bikeProvider.resetRegistrationForm();
+              this.context.pop(); // Volver a Mis Bicis
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.error50,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              'Cancelar registro',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _handleNextStep(BikeProvider bikeProvider) async {
