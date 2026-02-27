@@ -2394,42 +2394,28 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         final isLiked =
                             currentUser != null &&
                             product.isLikedBy(currentUser.uid);
-                        final canLike = product.isAvailable;
-
                         return GestureDetector(
-                          onTap: canLike && currentUser != null
+                          onTap: currentUser != null
                               ? () async {
-                                  final success = await context
+                                  await context
                                       .read<ShopProvider>()
                                       .toggleProductLike(
                                         product.id,
                                         currentUser.uid,
                                       );
-                                  if (!success && context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'No puedes dar me gusta a este producto',
-                                        ),
-                                        backgroundColor: Colors.orange,
-                                      ),
-                                    );
-                                  }
                                 }
                               : null,
                           child: CircleAvatar(
                             radius: 16,
                             backgroundColor: Colors.white.withValues(
-                              alpha: canLike ? 0.9 : 0.5,
+                              alpha: 0.9,
                             ),
                             child: Icon(
                               isLiked ? Icons.favorite : Icons.favorite_border,
                               size: 18,
                               color: isLiked
                                   ? Colors.red
-                                  : (canLike
-                                        ? Colors.grey[700]
-                                        : Colors.grey[400]),
+                                  : Colors.grey[700],
                             ),
                           ),
                         );
