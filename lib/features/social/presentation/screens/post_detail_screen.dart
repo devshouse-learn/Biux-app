@@ -109,31 +109,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       return 'hace ${difference.inDays} día${difference.inDays != 1 ? 's' : ''}';
     }
 
-    // Más de 7 días - mostrar formato DD de MM
+    // Más de 7 días - mostrar formato DD-MM
     if (createdAt.year == now.year) {
-      return '${createdAt.day.toString().padLeft(2, '0')} de ${_monthName(createdAt.month)}';
+      return '${createdAt.day.toString().padLeft(2, '0')}-${createdAt.month.toString().padLeft(2, '0')}';
     }
 
-    // Diferente año - mostrar DD de MM de AAAA
-    return '${createdAt.day.toString().padLeft(2, '0')} de ${_monthName(createdAt.month)} de ${createdAt.year}';
-  }
-
-  String _monthName(int month) {
-    const months = [
-      'enero',
-      'febrero',
-      'marzo',
-      'abril',
-      'mayo',
-      'junio',
-      'julio',
-      'agosto',
-      'septiembre',
-      'octubre',
-      'noviembre',
-      'diciembre',
-    ];
-    return months[month - 1];
+    // Diferente año - mostrar DD-MM-YYYY
+    return '${createdAt.day.toString().padLeft(2, '0')}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.year}';
   }
 
   @override
@@ -310,7 +292,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   Widget _buildDescriptionAndTimestampInline(ExperienceEntity experience) {
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
