@@ -1098,316 +1098,268 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
               child: Column(
                 children: [
                   // ========== SECCIÓN DE PERFIL TIPO INSTAGRAM ==========
-                  // Foto de portada (cover photo)
                   Container(
-                    width: double.infinity,
-                    height: 150,
                     decoration: BoxDecoration(
-                      color: ColorTokens.primary30,
                       gradient: LinearGradient(
-                        colors: [ColorTokens.primary30, ColorTokens.primary50],
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        // Imagen de portada del usuario o gradiente por defecto
-                        Positioned.fill(
-                          child:
-                              widget.userProvider.user?.coverPhotoUrl != null &&
-                                  widget
-                                      .userProvider
-                                      .user!
-                                      .coverPhotoUrl!
-                                      .isNotEmpty
-                              ? Image.network(
-                                  widget.userProvider.user!.coverPhotoUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Opacity(
-                                        opacity: 0.1,
-                                        child: Image.network(
-                                          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                )
-                              : Opacity(
-                                  opacity: 0.1,
-                                  child: Image.network(
-                                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600',
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            SizedBox.shrink(),
-                                  ),
-                                ),
-                        ),
-                        // Botón configuración en esquina superior derecha
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.settings,
-                              color: ColorTokens.neutral100,
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              context.push('/account-settings');
-                            },
-                            tooltip: 'Configuración de cuenta',
-                          ),
-                        ),
-                        // Botón crear contenido en esquina superior izquierda
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.add_circle,
-                              color: ColorTokens.neutral100,
-                              size: 28,
-                            ),
-                            onPressed: _showCreateContentOptions,
-                            tooltip: 'Crear contenido',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Foto de perfil con overlap
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Transform.translate(
-                      offset: const Offset(0, -50),
-                      child: Column(
-                        children: [
-                          // Foto de perfil
-                          Container(
-                            width: 110,
-                            height: 110,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: ColorTokens.neutral20,
-                              border: Border.all(
-                                color: ColorTokens.neutral100,
-                                width: 3,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: ColorTokens.neutral60.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  spreadRadius: 2,
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child:
-                                widget.userProvider.user?.photoUrl != null &&
-                                    widget
-                                        .userProvider
-                                        .user!
-                                        .photoUrl!
-                                        .isNotEmpty
-                                ? ClipOval(
-                                    child: Image.network(
-                                      widget.userProvider.user!.photoUrl!,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) => Icon(
-                                            Icons.person,
-                                            size: 50,
-                                            color: ColorTokens.neutral60,
-                                          ),
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: ColorTokens.neutral60,
-                                  ),
-                          ),
-
-                          SizedBox(height: 12),
-
-                          // Username y nombre
-                          Text(
-                            widget.userProvider.user?.username != null &&
-                                    widget
-                                        .userProvider
-                                        .user!
-                                        .username!
-                                        .isNotEmpty
-                                ? '@${widget.userProvider.user!.username}'
-                                : 'usuario',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.neutral100
-                                  : ColorTokens.primary30,
-                            ),
-                          ),
-
-                          SizedBox(height: 4),
-
-                          Text(
-                            widget.userProvider.user?.name ?? 'Usuario',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.neutral90
-                                  : ColorTokens.neutral50,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-
-                          SizedBox(height: 16),
-
-                          // Estadísticas (Seguidores, Seguidos)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildStatCardButton(
-                                value:
-                                    (widget
-                                                .userProvider
-                                                .user
-                                                ?.followers
-                                                ?.length ??
-                                            0)
-                                        .toString(),
-                                label: 'Seguidores',
-                                onTap: () => _showFollowersModal(context),
-                              ),
-                              _buildStatCardButton(
-                                value:
-                                    (widget
-                                                .userProvider
-                                                .user
-                                                ?.following
-                                                ?.length ??
-                                            0)
-                                        .toString(),
-                                label: 'Siguiendo',
-                                onTap: () => _showFollowingModal(context),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: 16),
-
-                          // Botón Editar Perfil
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                _showEditProfileDialog();
-                              },
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: const Text('Editar Perfil'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? ColorTokens.neutral100
-                                    : ColorTokens.primary30,
-                                side: BorderSide(
-                                  color:
-                                      Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? ColorTokens.neutral100
-                                      : ColorTokens.primary30,
-                                  width: 1.5,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 16),
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          ColorTokens.primary30,
+                          ColorTokens.primary30.withValues(alpha: 0.8),
                         ],
                       ),
                     ),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
+                        child: Column(
+                          children: [
+                            // Primera fila: foto + nombre/username + stats + botones
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Foto de perfil - Izquierda
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: ColorTokens.neutral100,
+                                      width: 3,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: ColorTokens.neutral20,
+                                    backgroundImage: widget
+                                                .userProvider
+                                                .user
+                                                ?.photoUrl !=
+                                            null &&
+                                        widget
+                                            .userProvider
+                                            .user!
+                                            .photoUrl!
+                                            .isNotEmpty
+                                        ? NetworkImage(
+                                            widget.userProvider.user!
+                                                .photoUrl!,
+                                          )
+                                        : null,
+                                    child: widget
+                                                .userProvider
+                                                .user
+                                                ?.photoUrl ==
+                                            null ||
+                                        widget
+                                            .userProvider
+                                            .user!
+                                            .photoUrl!
+                                            .isEmpty
+                                        ? Icon(
+                                            Icons.person,
+                                            size: 40,
+                                            color: ColorTokens.neutral60,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                SizedBox(width: 16),
+
+                                // Nombre y username - Centro izquierda
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Nombre
+                                      Text(
+                                        widget.userProvider.user?.name ??
+                                            'Sin nombre',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorTokens.neutral100,
+                                        ),
+                                      ),
+                                      SizedBox(height: 2),
+                                      // Username
+                                      if (widget.userProvider.user?.username !=
+                                              null &&
+                                          widget.userProvider.user!.username!
+                                              .isNotEmpty)
+                                        Text(
+                                          '@${widget.userProvider.user!.username}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: ColorTokens.neutral100
+                                                .withValues(alpha: 0.8),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Estadísticas - Derecha
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          '0',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: ColorTokens.neutral100,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Posts',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: ColorTokens.neutral100
+                                                .withValues(alpha: 0.8),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 16),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          (widget.userProvider.user?.followers
+                                                  ?.length ??
+                                              0)
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: ColorTokens.neutral100,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Segs',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: ColorTokens.neutral100
+                                                .withValues(alpha: 0.8),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: 16),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          (widget.userProvider.user
+                                                  ?.following?.length ??
+                                              0)
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: ColorTokens.neutral100,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Siguiendo',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: ColorTokens.neutral100
+                                                .withValues(alpha: 0.8),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 12),
+
+                            // Descripción - Debajo de la foto, alineada a izquierda
+                            if (widget.userProvider.user?.description !=
+                                    null &&
+                                widget.userProvider.user!.description!
+                                    .isNotEmpty)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  widget.userProvider.user!.description!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: ColorTokens.neutral100
+                                        .withValues(alpha: 0.9),
+                                    height: 1.4,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+
+                            SizedBox(height: 12),
+
+                            // Botones - Ancho completo
+                            Row(
+                              children: [
+                                // Botón Editar Perfil
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () {
+                                      _showEditProfileDialog();
+                                    },
+                                    icon:
+                                        const Icon(Icons.edit, size: 18),
+                                    label: const Text('Editar'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor:
+                                          ColorTokens.neutral100,
+                                      side: BorderSide(
+                                        color: ColorTokens.neutral100,
+                                        width: 1.5,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                // Botón más opciones (configuración)
+                                OutlinedButton.icon(
+                                  onPressed: () {
+                                    context.push('/account-settings');
+                                  },
+                                  icon: const Icon(Icons.more_horiz,
+                                      size: 18),
+                                  label: const Text(''),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor:
+                                        ColorTokens.neutral100,
+                                    side: BorderSide(
+                                      color: ColorTokens.neutral100,
+                                      width: 1.5,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
 
-                  // ========== SECCIÓN DE DESCRIPCIÓN BIO ==========
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Descripción/Bio
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? ColorTokens.primary10
-                                : ColorTokens.neutral100,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.primary40
-                                  : ColorTokens.neutral80,
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            widget.userProvider.user?.description != null &&
-                                    widget
-                                        .userProvider
-                                        .user!
-                                        .description!
-                                        .isNotEmpty
-                                ? widget.userProvider.user!.description!
-                                : 'Toca el botón "Editar Perfil" para agregar una descripción',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  widget.userProvider.user?.description !=
-                                          null &&
-                                      widget
-                                          .userProvider
-                                          .user!
-                                          .description!
-                                          .isNotEmpty
-                                  ? (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? ColorTokens.neutral100
-                                        : ColorTokens.neutral10)
-                                  : (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? ColorTokens.neutral80
-                                        : ColorTokens.neutral50),
-                              fontStyle:
-                                  widget.userProvider.user?.description ==
-                                          null ||
-                                      widget
-                                          .userProvider
-                                          .user!
-                                          .description!
-                                          .isEmpty
-                                  ? FontStyle.italic
-                                  : FontStyle.normal,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 24),
-
+                        SizedBox(height: 20),
                         // ========== SECCIÓN DE PUBLICACIONES ==========
                         Text(
                           'Publicaciones',
