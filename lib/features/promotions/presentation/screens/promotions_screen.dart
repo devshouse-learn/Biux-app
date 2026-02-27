@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import '../../data/models/promotion_request_model.dart';
 import '../providers/promotions_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -97,12 +96,7 @@ class PromotionsScreen extends StatelessWidget {
         backgroundColor: ColorTokens.primary30,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (Navigator.of(context).canPop())
-              Navigator.of(context).pop();
-            else
-              context.go('/stories');
-          },
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Consumer<PromotionsProvider>(

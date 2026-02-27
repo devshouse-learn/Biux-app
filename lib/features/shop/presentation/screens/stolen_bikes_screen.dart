@@ -457,6 +457,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         backgroundColor: ColorTokens.error50,
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
