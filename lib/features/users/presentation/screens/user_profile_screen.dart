@@ -126,7 +126,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           SliverAppBar(
             backgroundColor: ColorTokens.primary30,
             foregroundColor: ColorTokens.neutral100,
-            expandedHeight: 300,
+            expandedHeight: 220,
             pinned: true,
             actions: [
               // Botón de compartir perfil
@@ -189,110 +189,178 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.fromLTRB(16, 60, 16, 12),
           child: Column(
             children: [
-              SizedBox(height: 60), // Espacio para el AppBar
-              // Foto de perfil
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: ColorTokens.neutral100, width: 4),
-                ),
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: ColorTokens.neutral20,
-                  backgroundImage: user.photo.isNotEmpty
-                      ? CachedNetworkImageProvider(
-                          user.photo,
-                          cacheManager: OptimizedCacheManager.avatarInstance,
-                        )
-                      : null,
-                  child: user.photo.isEmpty
-                      ? Icon(
-                          Icons.person,
-                          size: 50,
-                          color: ColorTokens.neutral60,
-                        )
-                      : null,
-                ),
+              // Primera fila: foto + nombre/username + stats + botón
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Foto de perfil - Izquierda
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: ColorTokens.neutral100,
+                        width: 3,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: ColorTokens.neutral20,
+                      backgroundImage: user.photo.isNotEmpty
+                          ? CachedNetworkImageProvider(
+                              user.photo,
+                              cacheManager:
+                                  OptimizedCacheManager.avatarInstance,
+                            )
+                          : null,
+                      child: user.photo.isEmpty
+                          ? Icon(
+                              Icons.person,
+                              size: 40,
+                              color: ColorTokens.neutral60,
+                            )
+                          : null,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+
+                  // Nombre y username - Centro izquierda
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Nombre
+                        Text(
+                          user.fullName.isNotEmpty
+                              ? user.fullName
+                              : 'Sin nombre',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        // Username
+                        if (user.userName.isNotEmpty)
+                          Text(
+                            '@${user.userName}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: ColorTokens.neutral100.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  // Estadísticas - Derecha
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            '0',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: ColorTokens.neutral100,
+                            ),
+                          ),
+                          Text(
+                            'Posts',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: ColorTokens.neutral100.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 16),
+                      Column(
+                        children: [
+                          Text(
+                            user.followerS.toString(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: ColorTokens.neutral100,
+                            ),
+                          ),
+                          Text(
+                            'Segs',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: ColorTokens.neutral100.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 16),
+                      Column(
+                        children: [
+                          Text(
+                            user.following.length.toString(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: ColorTokens.neutral100,
+                            ),
+                          ),
+                          Text(
+                            'Siguiendo',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: ColorTokens.neutral100.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
 
-              SizedBox(height: 16),
+              SizedBox(height: 12),
 
-              // Nombre
-              Text(
-                user.fullName.isNotEmpty ? user.fullName : 'Sin nombre',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: ColorTokens.neutral100,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              // Username
-              if (user.userName.isNotEmpty)
-                Text(
-                  '@${user.userName}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: ColorTokens.neutral100.withValues(alpha: 0.8),
+              // Descripción - Debajo de la foto, alineada a izquierda
+              if (user.description.isNotEmpty)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    user.description,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: ColorTokens.neutral100.withValues(alpha: 0.9),
+                      height: 1.4,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
 
               SizedBox(height: 12),
 
-              // Descripción
-              if (user.description.isNotEmpty)
-                Text(
-                  user.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: ColorTokens.neutral100.withValues(alpha: 0.9),
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-              SizedBox(height: 16),
-
-              // Estadísticas y botón
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildStatItem('Seguidores', user.followerS.toString()),
-                  _buildStatItem('Siguiendo', user.following.length.toString()),
-                  _buildFollowButton(provider, widget.userId),
-                ],
+              // Botón de seguir/editar - Ancho completo
+              SizedBox(
+                width: double.infinity,
+                child: _buildFollowButton(provider, widget.userId),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String count) {
-    return Column(
-      children: [
-        Text(
-          count,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: ColorTokens.neutral100,
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: ColorTokens.neutral100.withValues(alpha: 0.8),
-          ),
-        ),
-      ],
     );
   }
 
