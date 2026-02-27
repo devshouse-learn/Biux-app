@@ -176,6 +176,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget _buildProfileHeader(BiuxUser user, UserProfileProvider provider) {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final isOwnProfile = currentUserId == user.id;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -189,12 +192,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16, 60, 16, 12),
+          padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
           child: Column(
             children: [
-              // Primera fila: foto + nombre/username + stats + botón
+              // Primera fila: foto + nombre/username + botones (para perfil propio)
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Foto de perfil - Izquierda
                   Container(
@@ -228,10 +231,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                   // Nombre y username - Centro izquierda
                   Expanded(
-                    flex: 1,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Nombre
                         Text(
@@ -243,9 +244,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             fontWeight: FontWeight.bold,
                             color: ColorTokens.neutral100,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 2),
                         // Username
                         if (user.userName.isNotEmpty)
                           Text(
@@ -256,82 +256,125 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 alpha: 0.8,
                               ),
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),
                   ),
 
-                  SizedBox(width: 12),
+                  // Botones en esquina superior derecha (solo en perfil propio)
+                  if (isOwnProfile)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.more_horiz,
+                            color: ColorTokens.neutral100,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            // Mostrar opciones de editar perfil
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (ctx) => Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 16,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(Icons.edit),
+                                      title: Text('Editar perfil'),
+                                      onTap: () {
+                                        Navigator.pop(ctx);
+                                        context.go('/profile');
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          tooltip: 'Opciones',
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.settings,
+                            color: ColorTokens.neutral100,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            context.go('/account-settings');
+                          },
+                          tooltip: 'Configuración',
+                        ),
+                      ],
+                    ),
+                ],
+              ),
 
-                  // Estadísticas - Derecha
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+              SizedBox(height: 12),
+
+              // Segunda fila: Estadísticas - Ancho completo
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
                     children: [
-                      Column(
-                        children: [
-                          Text(
-                            '0',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: ColorTokens.neutral100,
-                            ),
-                          ),
-                          Text(
-                            'Posts',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: ColorTokens.neutral100.withValues(
-                                alpha: 0.8,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        '0',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: ColorTokens.neutral100,
+                        ),
                       ),
-                      SizedBox(width: 16),
-                      Column(
-                        children: [
-                          Text(
-                            user.followerS.toString(),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: ColorTokens.neutral100,
-                            ),
-                          ),
-                          Text(
-                            'Segs',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: ColorTokens.neutral100.withValues(
-                                alpha: 0.8,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Posts',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: ColorTokens.neutral100.withValues(alpha: 0.8),
+                        ),
                       ),
-                      SizedBox(width: 16),
-                      Column(
-                        children: [
-                          Text(
-                            user.following.length.toString(),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: ColorTokens.neutral100,
-                            ),
-                          ),
-                          Text(
-                            'Siguiendo',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: ColorTokens.neutral100.withValues(
-                                alpha: 0.8,
-                              ),
-                            ),
-                          ),
-                        ],
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        user.followerS.toString(),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: ColorTokens.neutral100,
+                        ),
+                      ),
+                      Text(
+                        'Seguidores',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: ColorTokens.neutral100.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        user.following.length.toString(),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: ColorTokens.neutral100,
+                        ),
+                      ),
+                      Text(
+                        'Siguiendo',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: ColorTokens.neutral100.withValues(alpha: 0.8),
+                        ),
                       ),
                     ],
                   ),
@@ -358,7 +401,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
               SizedBox(height: 12),
 
-              // Botón de seguir - Ancho completo
+              // Botón de seguir/editar - Ancho completo
               SizedBox(
                 width: double.infinity,
                 child: _buildFollowButton(provider, widget.userId),

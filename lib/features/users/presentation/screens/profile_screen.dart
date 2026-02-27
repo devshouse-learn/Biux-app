@@ -1075,24 +1075,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         title: const Text('Mi Perfil'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-        actions: [
-          // Botón Editar Perfil (tres puntos)
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              _showEditProfileDialog();
-            },
-            tooltip: 'Editar perfil',
-          ),
-          // Botón Configuración (ruedita)
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              context.push('/account-settings');
-            },
-            tooltip: 'Configuración',
-          ),
-        ],
       ),
       body: widget.userProvider.isLoading
           ? Center(child: CircularProgressIndicator())
@@ -1132,9 +1114,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
                         child: Column(
                           children: [
-                            // Primera fila: foto + nombre/username + stats
+                            // Primera fila: foto + nombre/username + stats + botones
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Foto de perfil - Izquierda
                                 Container(
@@ -1178,50 +1160,34 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 ),
                                 SizedBox(width: 16),
 
-                                // Nombre y username - Centro izquierda (Expanded)
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // Nombre
-                                      Text(
-                                        widget.userProvider.user?.name ??
-                                            'Sin nombre',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: ColorTokens.neutral100,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
+                                // Botones en esquina superior derecha
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.more_horiz,
+                                        color: ColorTokens.neutral100,
+                                        size: 24,
                                       ),
-                                      SizedBox(height: 4),
-                                      // Username
-                                      if (widget.userProvider.user?.username !=
-                                              null &&
-                                          widget
-                                              .userProvider
-                                              .user!
-                                              .username!
-                                              .isNotEmpty)
-                                        Text(
-                                          '@${widget.userProvider.user!.username}',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: ColorTokens.neutral100
-                                                .withValues(alpha: 0.8),
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                    ],
-                                  ),
+                                      onPressed: () {
+                                        _showEditProfileDialog();
+                                      },
+                                      tooltip: 'Editar perfil',
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.settings,
+                                        color: ColorTokens.neutral100,
+                                        size: 24,
+                                      ),
+                                      onPressed: () {
+                                        context.go('/account-settings');
+                                      },
+                                      tooltip: 'Configuración',
+                                    ),
+                                  ],
                                 ),
-
-                                SizedBox(width: 12),
-
-                                // Estadísticas - Derecha
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -1330,6 +1296,52 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ),
 
                             SizedBox(height: 12),
+
+                            // Botones - Ancho completo
+                            Row(
+                              children: [
+                                // Botón Editar Perfil
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () {
+                                      _showEditProfileDialog();
+                                    },
+                                    icon: const Icon(Icons.edit, size: 18),
+                                    label: const Text('Editar'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: ColorTokens.neutral100,
+                                      side: BorderSide(
+                                        color: ColorTokens.neutral100,
+                                        width: 1.5,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                // Botón más opciones (configuración)
+                                OutlinedButton.icon(
+                                  onPressed: () {
+                                    context.push('/account-settings');
+                                  },
+                                  icon: const Icon(Icons.more_horiz, size: 18),
+                                  label: const Text(''),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: ColorTokens.neutral100,
+                                    side: BorderSide(
+                                      color: ColorTokens.neutral100,
+                                      width: 1.5,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
