@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/design_system/color_tokens.dart';
 import '../providers/notification_settings_provider.dart';
@@ -122,6 +123,12 @@ class _NotificationSettingsScreenState
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // Sección: Apariencia
+              _buildSectionTitle('Apariencia', isDark),
+              const SizedBox(height: 12),
+              _buildThemeToggleCard(context, isDark),
+              const SizedBox(height: 24),
+
               // Switch principal
               _buildMainToggleCard(
                 context,
@@ -308,6 +315,113 @@ class _NotificationSettingsScreenState
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildThemeToggleCard(BuildContext context, bool isDark) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final isLightMode = themeNotifier.themeMode == ThemeMode.light ||
+        (themeNotifier.themeMode == ThemeMode.system &&
+            MediaQuery.of(context).platformBrightness == Brightness.light);
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isLightMode
+              ? [const Color(0xFFFFA726), const Color(0xFFFF9800)]
+              : [const Color(0xFF1A237E), const Color(0xFF283593)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: isLightMode
+                ? Colors.orange.withValues(alpha: 0.3)
+                : Colors.indigo.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              isLightMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Tema de la App',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isLightMode ? 'Modo Claro' : 'Modo Oscuro',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              themeNotifier.toggleTheme();
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 64,
+              height: 34,
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(17),
+                color: Colors.white.withValues(alpha: 0.3),
+              ),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                alignment:
+                    isLightMode ? Alignment.centerLeft : Alignment.centerRight,
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: Icon(
+                    isLightMode
+                        ? Icons.wb_sunny_rounded
+                        : Icons.nightlight_round,
+                    size: 18,
+                    color: isLightMode
+                        ? const Color(0xFFFF9800)
+                        : const Color(0xFF1A237E),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
