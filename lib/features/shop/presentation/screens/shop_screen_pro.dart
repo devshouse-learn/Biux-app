@@ -187,7 +187,65 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
+            // Favoritos
+            Consumer2<ShopProvider, UserProvider>(
+              builder: (context, shopProvider, userProvider, child) {
+                final uid = userProvider.user?.uid ?? '';
+                final favCount = uid.isEmpty
+                    ? 0
+                    : shopProvider.products
+                        .where((p) => p.isLikedBy(uid))
+                        .length;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        favCount > 0
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        size: 24,
+                        color: favCount > 0
+                            ? Colors.red
+                            : ColorTokens.primary30,
+                      ),
+                      onPressed: () => context.push('/shop/favorites'),
+                      tooltip: 'Mis Favoritos',
+                      style: IconButton.styleFrom(
+                        backgroundColor: ColorTokens.neutral99,
+                      ),
+                    ),
+                    if (favCount > 0)
+                      Positioned(
+                        right: 6,
+                        top: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '$favCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(width: 4),
             // Carrito
             Consumer<ShopProvider>(
               builder: (context, shopProvider, child) {
