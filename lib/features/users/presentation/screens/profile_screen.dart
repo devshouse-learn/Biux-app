@@ -1114,9 +1114,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
                         child: Column(
                           children: [
-                            // Primera fila: menú(izq) + foto + nombre/username + controles(der)
+                            // Primera fila: Botón (+) izquierda y controles derecha
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 // Menú izquierdo: Story + Post
                                 PopupMenuButton<String>(
@@ -1127,10 +1127,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                   ),
                                   onSelected: (value) {
                                     if (value == 'story') {
-                                      // Navegar a crear historia
                                       context.go('/create-story');
                                     } else if (value == 'post') {
-                                      // Navegar a crear post
                                       context.go('/create-post');
                                     }
                                   },
@@ -1159,119 +1157,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       ),
                                     ),
                                   ],
-                                ),
-
-                                // Foto de perfil y nombre/username - Centro
-                                Expanded(
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Foto
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: ColorTokens.neutral100,
-                                            width: 2,
-                                          ),
-                                        ),
-                                        child: CircleAvatar(
-                                          radius: 32,
-                                          backgroundColor:
-                                              ColorTokens.neutral20,
-                                          backgroundImage:
-                                              widget
-                                                          .userProvider
-                                                          .user
-                                                          ?.photoUrl !=
-                                                      null &&
-                                                  widget
-                                                      .userProvider
-                                                      .user!
-                                                      .photoUrl!
-                                                      .isNotEmpty
-                                              ? NetworkImage(
-                                                  widget
-                                                      .userProvider
-                                                      .user!
-                                                      .photoUrl!,
-                                                )
-                                              : null,
-                                          child:
-                                              widget
-                                                          .userProvider
-                                                          .user
-                                                          ?.photoUrl ==
-                                                      null ||
-                                                  widget
-                                                      .userProvider
-                                                      .user!
-                                                      .photoUrl!
-                                                      .isEmpty
-                                              ? Icon(
-                                                  Icons.person,
-                                                  size: 32,
-                                                  color: ColorTokens.neutral60,
-                                                )
-                                              : null,
-                                        ),
-                                      ),
-                                      SizedBox(width: 12),
-
-                                      // Nombre y username
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              widget.userProvider.user?.name !=
-                                                          null &&
-                                                      widget
-                                                          .userProvider
-                                                          .user!
-                                                          .name!
-                                                          .isNotEmpty
-                                                  ? widget
-                                                        .userProvider
-                                                        .user!
-                                                        .name!
-                                                  : 'Sin nombre',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: ColorTokens.neutral100,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            SizedBox(height: 2),
-                                            if (widget
-                                                        .userProvider
-                                                        .user
-                                                        ?.username !=
-                                                    null &&
-                                                widget
-                                                    .userProvider
-                                                    .user!
-                                                    .username!
-                                                    .isNotEmpty)
-                                              Text(
-                                                '@${widget.userProvider.user!.username}',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: ColorTokens.neutral100
-                                                      .withValues(alpha: 0.7),
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
 
                                 // Botones derechos: Editar + Configuración
@@ -1319,9 +1204,105 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ],
                             ),
 
-                            SizedBox(height: 12),
+                            SizedBox(height: 16),
 
-                            // Segunda fila: Estadísticas - Ancho completo
+                            // Segunda fila: Foto + Nombre/Usuario
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Foto de perfil
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: ColorTokens.neutral100,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: ColorTokens.neutral20,
+                                    backgroundImage:
+                                        widget.userProvider.user?.photoUrl !=
+                                                null &&
+                                            widget
+                                                .userProvider
+                                                .user!
+                                                .photoUrl!
+                                                .isNotEmpty
+                                        ? NetworkImage(
+                                            widget.userProvider.user!.photoUrl!,
+                                          )
+                                        : null,
+                                    child:
+                                        widget.userProvider.user?.photoUrl ==
+                                                null ||
+                                            widget
+                                                .userProvider
+                                                .user!
+                                                .photoUrl!
+                                                .isEmpty
+                                        ? Icon(
+                                            Icons.person,
+                                            size: 40,
+                                            color: ColorTokens.neutral60,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                SizedBox(width: 16),
+
+                                // Nombre y usuario - Columna al lado de la foto
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.userProvider.user?.name !=
+                                                    null &&
+                                                widget
+                                                    .userProvider
+                                                    .user!
+                                                    .name!
+                                                    .isNotEmpty
+                                            ? widget.userProvider.user!.name!
+                                            : 'Sin nombre',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorTokens.neutral100,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(height: 4),
+                                      if (widget.userProvider.user?.username !=
+                                              null &&
+                                          widget
+                                              .userProvider
+                                              .user!
+                                              .username!
+                                              .isNotEmpty)
+                                        Text(
+                                          '@${widget.userProvider.user!.username}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: ColorTokens.neutral100
+                                                .withValues(alpha: 0.7),
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 16),
+
+                            // Tercera fila: Estadísticas
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
