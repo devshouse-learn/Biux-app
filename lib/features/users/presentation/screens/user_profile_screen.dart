@@ -195,123 +195,193 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
           child: Column(
             children: [
-              // Primera fila: foto + nombre/username + botones (para perfil propio)
+              // Primera fila: menú(izq) + foto + nombre/username + controles(der)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Foto de perfil - Izquierda
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
+                  // Menú izquierdo: Story + Post (solo si es perfil propio)
+                  if (isOwnProfile)
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.add_circle_outline,
                         color: ColorTokens.neutral100,
-                        width: 3,
+                        size: 24,
                       ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundColor: ColorTokens.neutral20,
-                      backgroundImage: user.photo.isNotEmpty
-                          ? CachedNetworkImageProvider(
-                              user.photo,
-                              cacheManager:
-                                  OptimizedCacheManager.avatarInstance,
-                            )
-                          : null,
-                      child: user.photo.isEmpty
-                          ? Icon(
-                              Icons.person,
-                              size: 40,
-                              color: ColorTokens.neutral60,
-                            )
-                          : null,
-                    ),
-                  ),
-                  SizedBox(width: 16),
-
-                  // Nombre y username - Centro izquierda
+                      onSelected: (value) {
+                        if (value == 'story') {
+                          context.go('/create-story');
+                        } else if (value == 'post') {
+                          context.go('/create-post');
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        PopupMenuItem<String>(
+                          value: 'story',
+                          child: Row(
+                            children: [
+                              Icon(Icons.add_photo_alternate, size: 20),
+                              SizedBox(width: 10),
+                              Text('Agregar Historia'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'post',
+                          child: Row(
+                            children: [
+                              Icon(Icons.image_search, size: 20),
+                              SizedBox(width: 10),
+                              Text('Nueva Publicación'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    SizedBox(
+                      width: 24,
+                    ), // Espaciador cuando no es perfil propio
+                  // Foto de perfil y nombre/username - Centro
                   Expanded(
-                    child: Column(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Nombre
-                        Text(
-                          user.fullName.isNotEmpty
-                              ? user.fullName
-                              : 'Sin nombre',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: ColorTokens.neutral100,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        // Username
-                        if (user.userName.isNotEmpty)
-                          Text(
-                            '@${user.userName}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: ColorTokens.neutral100.withValues(
-                                alpha: 0.8,
-                              ),
+                        // Foto
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: ColorTokens.neutral100,
+                              width: 2,
                             ),
                           ),
+                          child: CircleAvatar(
+                            radius: 32,
+                            backgroundColor: ColorTokens.neutral20,
+                            backgroundImage: user.photo.isNotEmpty
+                                ? CachedNetworkImageProvider(
+                                    user.photo,
+                                    cacheManager:
+                                        OptimizedCacheManager.avatarInstance,
+                                  )
+                                : null,
+                            child: user.photo.isEmpty
+                                ? Icon(
+                                    Icons.person,
+                                    size: 32,
+                                    color: ColorTokens.neutral60,
+                                  )
+                                : null,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+
+                        // Nombre y username
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                user.fullName.isNotEmpty
+                                    ? user.fullName
+                                    : 'Sin nombre',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorTokens.neutral100,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 2),
+                              if (user.userName.isNotEmpty)
+                                Text(
+                                  '@${user.userName}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: ColorTokens.neutral100.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
 
-                  // Botones en esquina superior derecha (solo en perfil propio)
-                  if (isOwnProfile)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.more_horiz,
-                            color: ColorTokens.neutral100,
-                            size: 24,
-                          ),
-                          onPressed: () {
-                            // Mostrar opciones de editar perfil
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (ctx) => Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 8,
-                                  horizontal: 16,
+                  // Botones derechos
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isOwnProfile) ...[
+                        // Editar + Configuración (solo para perfil propio)
+                        Tooltip(
+                          message: 'Editar perfil',
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.edit_outlined,
+                              color: ColorTokens.neutral100,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              // Mostrar opciones de editar perfil
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (ctx) => Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 16,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('Editar perfil'),
+                                        onTap: () {
+                                          Navigator.pop(ctx);
+                                          context.go('/profile');
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('Editar perfil'),
-                                      onTap: () {
-                                        Navigator.pop(ctx);
-                                        context.go('/profile');
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                          tooltip: 'Opciones',
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.settings,
-                            color: ColorTokens.neutral100,
-                            size: 24,
+                              );
+                            },
+                            constraints: BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            padding: EdgeInsets.zero,
                           ),
-                          onPressed: () {
-                            context.go('/account-settings');
-                          },
-                          tooltip: 'Configuración',
                         ),
-                      ],
-                    ),
+                        Tooltip(
+                          message: 'Configuración',
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.settings_outlined,
+                              color: ColorTokens.neutral100,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              context.go('/account-settings');
+                            },
+                            constraints: BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ] else
+                        // Botón Seguir (para otros perfiles)
+                        _buildFollowButton(provider, user.id),
+                    ],
+                  ),
                 ],
               ),
 
@@ -398,14 +468,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-
-              SizedBox(height: 12),
-
-              // Botón de seguir/editar - Ancho completo
-              SizedBox(
-                width: double.infinity,
-                child: _buildFollowButton(provider, widget.userId),
-              ),
             ],
           ),
         ),
