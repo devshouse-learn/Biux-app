@@ -57,12 +57,15 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       _contentType = 'story'; // Default
     }
 
-    // Inicializar el tipo de experiencia
+    // Inicializar el tipo de experiencia con el formato correcto
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExperienceCreatorProvider>().setExperienceType(
         widget.experienceType,
         rideId: widget.rideId,
         isTextOnly: widget.textOnly,
+        format: widget.isStoryMode
+            ? ExperienceFormat.story
+            : ExperienceFormat.post,
       );
     });
   }
@@ -78,21 +81,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   Widget build(BuildContext context) {
     return Consumer<ExperienceCreatorProvider>(
       builder: (context, provider, child) {
-        // 🔥 LÓGICA AUTOMÁTICA: Si se añaden medios y no estamos en modo fijo, cambiar a historia
-        if (!widget.isStoryMode &&
-            !widget.isPostMode &&
-            provider.mediaItems.isNotEmpty &&
-            _contentType != 'story') {
-          // Usar Future.microtask para evitar setState durante build
-          Future.microtask(() {
-            if (mounted) {
-              setState(() {
-                _contentType = 'story';
-              });
-            }
-          });
-        }
-
         return Scaffold(
           backgroundColor: ColorTokens.neutral10,
           appBar: AppBar(
@@ -314,7 +302,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         child: Text(
                           _contentType == 'story'
                               ? 'Historia requiere imagen o video (máximo 30 segundos)'
-                              : 'Publicación: Si agregas multimedia, se publicará como HISTORIA',
+                              : 'Agrega fotos o videos a tu publicación',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
@@ -360,10 +348,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: MediaSelectorWidget(
-                // Stories permiten videos (máximo 30s)
-                // Posts SOLO permiten fotos (sin videos)
-                allowVideo:
-                    widget.isStoryMode, // Solo stories pueden tener video
+                allowVideo: true,
                 onImageFromGallery: () => _openImagePickerWithCrop(
                   context,
                   provider,
@@ -371,10 +356,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 ),
                 onTakePhoto: () =>
                     _openImagePickerWithCrop(context, provider, isCamera: true),
-                onVideoFromGallery: widget.isStoryMode
-                    ? provider.addVideoFromGallery
-                    : null,
-                onRecordVideo: widget.isStoryMode ? provider.recordVideo : null,
+                onVideoFromGallery: provider.addVideoFromGallery,
+                onRecordVideo: provider.recordVideo,
               ),
             ),
         ],

@@ -71,6 +71,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   bool _isRecording = false;
   VideoPlayerController? _videoController;
   bool _isTextOnly = false; // Post de solo texto (sin multimedia)
+  ExperienceFormat _format = ExperienceFormat.post;
 
   // Getters
   List<MediaItem> get mediaItems => _mediaItems;
@@ -85,6 +86,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   bool get isRecording => _isRecording;
   VideoPlayerController? get videoController => _videoController;
   bool get isTextOnly => _isTextOnly;
+  ExperienceFormat get format => _format;
 
   /// Actualizar descripción
   void updateDescription(String description) {
@@ -103,10 +105,12 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     ExperienceType type, {
     String? rideId,
     bool isTextOnly = false,
+    ExperienceFormat format = ExperienceFormat.post,
   }) {
     _experienceType = type;
     _rideId = rideId;
     _isTextOnly = isTextOnly;
+    _format = format;
     notifyListeners();
   }
 
@@ -357,23 +361,13 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           )
           .toList();
 
-      // 🔥 NUEVA LÓGICA: Si tiene multimedia, se publica como HISTORIA
-      // Las historias tienen descripción corta (máx 20 caracteres)
-      // Si hay multimedia, recortamos la descripción a 20 caracteres
-      String finalDescription = _description;
-      if (_mediaItems.isNotEmpty) {
-        // Forzar formato de historia limitando descripción a 20 chars
-        if (_description.length > 20) {
-          finalDescription = _description.substring(0, 20);
-        }
-      }
-
-      // Crear request de experiencia
+      // Crear request de experiencia con el formato explícito
       final request = CreateExperienceRequest(
-        description: finalDescription,
+        description: _description,
         tags: _tags,
         mediaFiles: mediaRequests,
         type: _experienceType ?? ExperienceType.general,
+        format: _format,
         rideId: _rideId,
       );
 
@@ -425,6 +419,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     _isRecording = false;
     _videoController?.dispose();
     _videoController = null;
+    _format = ExperienceFormat.post;
     notifyListeners();
   }
 

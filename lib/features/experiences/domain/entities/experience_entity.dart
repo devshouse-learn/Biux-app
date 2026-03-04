@@ -10,6 +10,7 @@ class ExperienceEntity {
   final DateTime createdAt;
   final List<ExperienceMediaEntity> media;
   final ExperienceType type;
+  final ExperienceFormat format;
   final String? rideId; // Solo para experiencias de rodadas
   final int views;
   final List<ExperienceReactionEntity> reactions;
@@ -23,6 +24,7 @@ class ExperienceEntity {
     required this.createdAt,
     required this.media,
     required this.type,
+    this.format = ExperienceFormat.post,
     this.rideId,
     this.views = 0,
     this.reactions = const [],
@@ -45,27 +47,13 @@ class ExperienceEntity {
   }
 
   /// Verifica si debe mostrarse como Story (contenido efímero en círculos arriba)
-  /// Stories son SOLO contenido muy breve y visual sin contexto elaborado
   bool get isStoryFormat {
-    // Las stories son contenido efímero tipo Instagram/Snapchat:
-    // - Tienen media (imagen o video)
-    // - Descripción MUY corta o vacía (<=20 chars después de trim)
-    // - NO son experiencias de rodadas (esas siempre son posts con contexto)
-    //
-    // Cualquier post con imagen/video Y texto descriptivo va al feed vertical
-    return media.isNotEmpty &&
-        description.trim().length <= 20 &&
-        type != ExperienceType.ride;
+    return format == ExperienceFormat.story;
   }
 
   /// Verifica si debe mostrarse como Post regular en feed vertical
-  /// Incluye:
-  /// - Posts de texto solo
-  /// - Posts con imágenes/videos (con o sin descripción larga)
-  /// - Posts de rodadas (siempre van al feed)
-  /// - Cualquier contenido con descripción >20 caracteres
   bool get isPostFormat {
-    return !isStoryFormat;
+    return format == ExperienceFormat.post;
   }
 
   /// Crear copia con campos modificados
@@ -77,6 +65,7 @@ class ExperienceEntity {
     DateTime? createdAt,
     List<ExperienceMediaEntity>? media,
     ExperienceType? type,
+    ExperienceFormat? format,
     String? rideId,
     int? views,
     List<ExperienceReactionEntity>? reactions,
@@ -90,6 +79,7 @@ class ExperienceEntity {
       createdAt: createdAt ?? this.createdAt,
       media: media ?? this.media,
       type: type ?? this.type,
+      format: format ?? this.format,
       rideId: rideId ?? this.rideId,
       views: views ?? this.views,
       reactions: reactions ?? this.reactions,
@@ -108,6 +98,7 @@ class ExperienceEntity {
         other.createdAt == createdAt &&
         other.media.toString() == media.toString() &&
         other.type == type &&
+        other.format == format &&
         other.rideId == rideId &&
         other.views == views &&
         other.reactions.toString() == reactions.toString() &&
@@ -123,6 +114,7 @@ class ExperienceEntity {
         createdAt.hashCode ^
         media.hashCode ^
         type.hashCode ^
+        format.hashCode ^
         rideId.hashCode ^
         views.hashCode ^
         reactions.hashCode ^
@@ -131,7 +123,7 @@ class ExperienceEntity {
 
   @override
   String toString() {
-    return 'ExperienceEntity(id: $id, description: $description, tags: $tags, user: $user, createdAt: $createdAt, media: $media, type: $type, rideId: $rideId, views: $views, reactions: $reactions, viewers: $viewers)';
+    return 'ExperienceEntity(id: $id, description: $description, tags: $tags, user: $user, createdAt: $createdAt, media: $media, type: $type, format: $format, rideId: $rideId, views: $views, reactions: $reactions, viewers: $viewers)';
   }
 }
 
@@ -254,6 +246,12 @@ class ExperienceReactionEntity {
 enum ExperienceType {
   general, // Experiencias normales de usuarios
   ride, // Experiencias de rodadas (pueden tener videos)
+}
+
+/// Formato de publicación: historia efímera o publicación permanente
+enum ExperienceFormat {
+  story, // Historia efímera (círculos arriba)
+  post, // Publicación permanente (perfil + feed)
 }
 
 /// Tipos de medios soportados

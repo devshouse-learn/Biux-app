@@ -81,8 +81,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       return snapshot.docs
           .map(
             (doc) => ExperienceModel.fromJson({
-              'id': doc.id,
               ...doc.data(),
+              'id': doc.id,
             }).toEntity(),
           )
           .toList();
@@ -105,8 +105,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       }
 
       return ExperienceModel.fromJson({
-        'id': doc.id,
         ...doc.data()!,
+        'id': doc.id,
       }).toEntity();
     } catch (e) {
       print('❌ REPO: Error obteniendo experiencia por ID: $e');
@@ -126,8 +126,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       return snapshot.docs
           .map(
             (doc) => ExperienceModel.fromJson({
-              'id': doc.id,
               ...doc.data(),
+              'id': doc.id,
             }).toEntity(),
           )
           .toList();
@@ -199,8 +199,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       return snapshot.docs
           .map(
             (doc) => ExperienceModel.fromJson({
-              'id': doc.id,
               ...doc.data(),
+              'id': doc.id,
             }).toEntity(),
           )
           .toList();
@@ -208,6 +208,22 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       print('❌ REPO: Error obteniendo experiencias de seguidores: $e');
       throw Exception('Error obteniendo experiencias de seguidores: $e');
     }
+  }
+
+  @override
+  Stream<DateTime?> watchLatestExperienceTimestamp() {
+    return _firestore
+        .collection('experiences')
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) return null;
+      final data = snapshot.docs.first.data();
+      final createdAt = data['createdAt'];
+      if (createdAt is Timestamp) return createdAt.toDate();
+      return null;
+    });
   }
 
   @override
@@ -270,6 +286,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         createdAt: DateTime.now(),
         media: mediaList,
         type: request.type,
+        format: request.format,
         rideId: request.rideId,
         views: 0,
         reactions: [],
@@ -295,16 +312,31 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('Usuario no autenticado');
       }
 
-      // Verificar que la experiencia pertenece al usuario
-      final doc = await _firestore
+      // Intentar obtener el documento directamente por ID
+      var doc = await _firestore
           .collection('experiences')
           .doc(experienceId)
           .get();
+
+      // Si no existe por doc ID, buscar por el campo 'id' interno
+      if (!doc.exists) {
+        final query = await _firestore
+            .collection('experiences')
+            .where('id', isEqualTo: experienceId)
+            .limit(1)
+            .get();
+        if (query.docs.isNotEmpty) {
+          doc = query.docs.first;
+        }
+      }
+
       if (!doc.exists) {
         throw Exception('Experiencia no encontrada');
       }
 
       final data = doc.data()!;
+      final actualDocId = doc.id;
+
       if (data['user']['id'] != user.uid) {
         throw Exception('No tienes permisos para eliminar esta experiencia');
       }
@@ -317,13 +349,12 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           final ref = FirebaseStorage.instance.refFromURL(url);
           await ref.delete();
         } catch (e) {
-          // Continuar aunque falle eliminación de archivo
           print('Error eliminando archivo: $e');
         }
       }
 
-      // Eliminar documento de Firestore
-      await _firestore.collection('experiences').doc(experienceId).delete();
+      // Eliminar documento de Firestore usando el ID real del documento
+      await _firestore.collection('experiences').doc(actualDocId).delete();
     } catch (e) {
       throw Exception('Error eliminando experiencia: $e');
     }

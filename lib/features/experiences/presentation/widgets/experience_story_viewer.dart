@@ -491,7 +491,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
           '¿Estás seguro/a que quieres eliminar esta historia?',
@@ -503,12 +503,12 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               _deleteStory(context);
             },
             child: const Text(
@@ -532,11 +532,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Historia eliminada correctamente')),
           );
-          // Cerrar el visor
-          Navigator.pop(context);
-          if (widget.onClose != null) {
-            widget.onClose!();
-          }
+          // Cerrar el visor de stories (un solo pop)
+          Navigator.of(context).pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Error al eliminar la historia')),

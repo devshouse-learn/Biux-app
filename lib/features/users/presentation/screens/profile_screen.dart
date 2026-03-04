@@ -14,6 +14,7 @@ import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -63,12 +64,17 @@ class ProfileScreenContent extends StatefulWidget {
 }
 
 class _ProfileScreenContentState extends State<ProfileScreenContent> {
+  final Set<String> _failedImageIds = {};
+  late final Future<dynamic> _experiencesFuture;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _experiencesFuture = ExperienceRepositoryImpl().getUserExperiences(
+      FirebaseAuth.instance.currentUser?.uid ?? '',
+    );
     _initializeUserData();
   }
 
@@ -1388,9 +1394,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                         // Cargar y mostrar experiencias del usuario
                         FutureBuilder(
-                          future: ExperienceRepositoryImpl().getUserExperiences(
-                            FirebaseAuth.instance.currentUser?.uid ?? '',
-                          ),
+                          future: _experiencesFuture,
                           builder: (context, snapshot) {
                             // Estado de carga
                             if (snapshot.connectionState ==
@@ -1496,8 +1500,81 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               );
                             }
 
+                            // Filtrar: solo PUBLICACIONES (no historias) con media válido
+                            final allExperiences = snapshot.data as dynamic;
+                            final experiences = allExperiences.where((exp) {
+                              // Excluir historias — solo publicaciones en el perfil
+                              if (exp.isStoryFormat == true) return false;
+                              try {
+                                if (exp.media == null || exp.media.isEmpty)
+                                  return false;
+                                if (exp.media.first == null) return false;
+                                final media = exp.media.first;
+                                final url = media.url ?? '';
+                                if (url.isEmpty) return false;
+                                if (!url.startsWith('http://') &&
+                                    !url.startsWith('https://'))
+                                  return false;
+                                // Para videos: validar que tenga thumbnail o URL válida
+                                if (media.mediaType == MediaType.video) {
+                                  final thumb = media.thumbnailUrl ?? '';
+                                  return thumb.isNotEmpty && thumb.startsWith('http') || url.isNotEmpty;
+                                }
+                                return true;
+                              } catch (e) {
+                                return false;
+                              }
+                            }).toList();
+
+                            // Eliminar publicaciones con imágenes que fallaron al cargar
+                            experiences.removeWhere(
+                              (exp) => _failedImageIds.contains(exp.id.toString()),
+                            );
+
+                            // Si después de filtrar no hay experiencias, mostrar el mensaje
+                            if (experiences.isEmpty) {
+                              return Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                decoration: BoxDecoration(
+                                  color: ColorTokens.neutral10,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: ColorTokens.neutral30,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_not_supported,
+                                      size: 48,
+                                      color: ColorTokens.neutral60,
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'Sin publicaciones válidas',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: ColorTokens.neutral70,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Comienza a compartir tus historias',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: ColorTokens.neutral60,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
                             // Mostrar grid de publicaciones
-                            final experiences = snapshot.data as dynamic;
                             return GridView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
@@ -1531,50 +1608,79 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     child: Stack(
                                       fit: StackFit.expand,
                                       children: [
-                                        // Imagen de la experiencia
+                                        // Imagen/thumbnail de la experiencia optimizada
                                         experience.media.isNotEmpty
-                                            ? CachedNetworkImage(
-                                                imageUrl:
-                                                    experience.media.first.url,
-                                                fit: BoxFit.cover,
-                                                cacheManager:
-                                                    OptimizedCacheManager
-                                                        .instance,
-                                                placeholder: (context, url) => Container(
-                                                  color: ColorTokens.neutral20,
-                                                  child: Center(
-                                                    child: SizedBox(
-                                                      width: 30,
-                                                      height: 30,
-                                                      child: CircularProgressIndicator(
-                                                        strokeWidth: 2,
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                              Color
-                                                            >(
-                                                              ColorTokens
-                                                                  .primary30,
+                                            ? Builder(builder: (context) {
+                                                final media = experience.media.first;
+                                                final isVideo = media.mediaType == MediaType.video;
+                                                final displayUrl = isVideo
+                                                    ? (media.thumbnailUrl?.isNotEmpty == true
+                                                        ? media.thumbnailUrl!
+                                                        : media.url)
+                                                    : media.url;
+                                                return Stack(
+                                                  fit: StackFit.expand,
+                                                  children: [
+                                                    CachedNetworkImage(
+                                                      imageUrl: displayUrl,
+                                                      fit: BoxFit.cover,
+                                                      cacheManager:
+                                                          OptimizedCacheManager
+                                                              .instance,
+                                                      memCacheWidth: 400,
+                                                      memCacheHeight: 400,
+                                                      fadeInDuration: const Duration(
+                                                        milliseconds: 100,
+                                                      ),
+                                                      fadeOutDuration: const Duration(
+                                                        milliseconds: 50,
+                                                      ),
+                                                      placeholder: (context, url) =>
+                                                          Container(
+                                                            color:
+                                                                ColorTokens.neutral20,
+                                                            child: Center(
+                                                              child: Icon(
+                                                                isVideo ? Icons.videocam : Icons.image,
+                                                                color: ColorTokens
+                                                                    .neutral60,
+                                                                size: 32,
+                                                              ),
                                                             ),
-                                                      ),
+                                                          ),
+                                                      errorWidget:
+                                                          (context, url, error) {
+                                                        final expId = experience.id.toString();
+                                                        if (!_failedImageIds.contains(expId)) {
+                                                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                            if (mounted) {
+                                                              setState(() {
+                                                                _failedImageIds.add(expId);
+                                                              });
+                                                            }
+                                                          });
+                                                        }
+                                                        return SizedBox.shrink();
+                                                      },
                                                     ),
-                                                  ),
-                                                ),
-                                                errorWidget:
-                                                    (
-                                                      context,
-                                                      url,
-                                                      error,
-                                                    ) => Container(
-                                                      color:
-                                                          ColorTokens.neutral20,
-                                                      child: Icon(
-                                                        Icons
-                                                            .image_not_supported,
-                                                        color: ColorTokens
-                                                            .neutral60,
+                                                    if (isVideo)
+                                                      Center(
+                                                        child: Container(
+                                                          padding: const EdgeInsets.all(8),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.black.withValues(alpha: 0.5),
+                                                            shape: BoxShape.circle,
+                                                          ),
+                                                          child: const Icon(
+                                                            Icons.play_arrow,
+                                                            color: Colors.white,
+                                                            size: 24,
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
-                                              )
+                                                  ],
+                                                );
+                                              })
                                             : Container(
                                                 color: ColorTokens.neutral20,
                                                 child: Icon(
@@ -1582,37 +1688,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                   color: ColorTokens.neutral60,
                                                 ),
                                               ),
-                                        // Overlay oscuro
-                                        Positioned.fill(
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                                colors: [
-                                                  Colors.transparent,
-                                                  Colors.black54,
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        // Título de la experiencia
-                                        Positioned(
-                                          bottom: 8,
-                                          left: 8,
-                                          right: 8,
-                                          child: Text(
-                                            experience.description ?? '',
-                                            style: TextStyle(
-                                              color: ColorTokens.neutral100,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            maxLines: 1,
-                                          ),
-                                        ),
+
                                       ],
                                     ),
                                   ),

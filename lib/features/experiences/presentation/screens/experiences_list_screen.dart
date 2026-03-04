@@ -39,7 +39,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     // Cargar feed personalizado al inicializar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadFeed();
-      _startAutoRefresh();
+      _startFeedListener();
     });
   }
 
@@ -47,19 +47,30 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _autoRefreshTimer?.cancel();
+    context.read<ExperienceProvider>().stopFeedListener();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // App vuelve a primer plano - recargar y reiniciar timer
+      // App vuelve a primer plano - recargar y reiniciar listener
       _loadFeed();
-      _startAutoRefresh();
+      _startFeedListener();
     } else if (state == AppLifecycleState.paused) {
-      // App va a segundo plano - pausar timer
+      // App va a segundo plano - pausar listener
       _autoRefreshTimer?.cancel();
+      context.read<ExperienceProvider>().stopFeedListener();
     }
+  }
+
+  void _startFeedListener() {
+    final userId = _currentUserId;
+    if (userId != null) {
+      context.read<ExperienceProvider>().startFeedListener(userId);
+    }
+    // Mantener timer como respaldo cada 5 minutos
+    _startAutoRefresh();
   }
 
   void _startAutoRefresh() {
@@ -145,14 +156,13 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final allExperiences = provider.experiences; // Feed personalizado
 
     // POSTS: Experiencias que van en el feed principal vertical
-    // - Pueden tener media (SOLO FOTOS, sin videos)
+    // - Incluye fotos y videos con contenido válido
     // - Cualquier longitud de descripción
     // - EXCLUYE las que ya se muestran como stories
-    // - EXCLUYE posts con videos (temporalmente deshabilitados)
     final posts = allExperiences
         .where(
-          (exp) => exp.isPostFormat && !exp.hasVideo,
-        ) // Filtrar posts con video
+          (exp) => exp.isPostFormat,
+        )
         .toList();
 
     // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
