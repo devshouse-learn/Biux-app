@@ -653,35 +653,35 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Dar like a un producto (solo si está disponible)
+  /// Dar like/unlike a un producto (operación atómica en Firestore)
   Future<bool> toggleProductLike(String productId, String userId) async {
     try {
       final productIndex = _allProducts.indexWhere((p) => p.id == productId);
       if (productIndex == -1) return false;
 
       final product = _allProducts[productIndex];
-
-      // Permitir like a cualquier producto (no depende de disponibilidad)
-
       final likedByUsers = List<String>.from(product.likedByUsers);
 
+      // Actualizar localmente PRIMERO (respuesta instantánea)
       if (likedByUsers.contains(userId)) {
-        likedByUsers.remove(userId); // Quitar like
+        likedByUsers.remove(userId);
       } else {
-        likedByUsers.add(userId); // Agregar like
+        likedByUsers.add(userId);
       }
 
       final updatedProduct = product.copyWith(likedByUsers: likedByUsers);
-      await productRepository.updateProduct(updatedProduct);
-
-      // Actualizar localmente
       _allProducts[productIndex] = updatedProduct;
       _applyFilters();
       notifyListeners();
 
+      // Luego guardar en Firestore con operación atómica
+      await productRepository.toggleProductLike(productId, userId);
+
       return true;
     } catch (e) {
-      _errorMessage = 'Error al dar me gusta: $e';
+      // Revertir cambio local si falla Firestore
+      await loadProducts();
+      _errorMessage = 'Error al dar me gusta: \$e';
       notifyListeners();
       return false;
     }

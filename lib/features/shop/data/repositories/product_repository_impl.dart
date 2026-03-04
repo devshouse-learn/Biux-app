@@ -55,4 +55,10 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<List<ProductEntity>> getProductsBySeller(String sellerId) async {
     return await remoteDataSource.getProductsBySeller(sellerId);
   }
+
+  @override
+  Future<void> toggleProductLike(String productId, String userId) async {
+    await remoteDataSource.toggleProductLike(productId, userId);
+  }
+
 }

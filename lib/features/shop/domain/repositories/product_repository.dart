@@ -25,6 +25,7 @@ abstract class ProductRepository {
 
   /// Actualizar stock de un producto
   Future<void> updateStock(String productId, int newStock);
+  Future<void> toggleProductLike(String productId, String userId);
 
   /// Obtener productos del vendedor
   Future<List<ProductEntity>> getProductsBySeller(String sellerId);

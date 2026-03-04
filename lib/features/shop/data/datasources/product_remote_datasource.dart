@@ -152,6 +152,31 @@ class ProductRemoteDataSource {
     }
   }
 
+
+  /// Toggle like de un producto usando operaciones atomicas de Firestore
+  Future<void> toggleProductLike(String productId, String userId) async {
+    try {
+      final docRef = _firestore.collection(_collection).doc(productId);
+      final doc = await docRef.get();
+      if (!doc.exists) throw Exception('Producto no encontrado');
+
+      final data = doc.data()!;
+      final likedByUsers = List<String>.from(data['likedByUsers'] ?? []);
+
+      if (likedByUsers.contains(userId)) {
+        await docRef.update({
+          'likedByUsers': FieldValue.arrayRemove([userId]),
+        });
+      } else {
+        await docRef.update({
+          'likedByUsers': FieldValue.arrayUnion([userId]),
+        });
+      }
+    } catch (e) {
+      throw Exception('Error al dar me gusta: \$e');
+    }
+  }
+
   /// Obtener productos del vendedor
   Future<List<ProductModel>> getProductsBySeller(String sellerId) async {
     try {
