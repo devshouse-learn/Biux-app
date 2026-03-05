@@ -21,6 +21,9 @@ abstract class ExperienceRepository {
   Future<void> updateExperience(
     String experienceId, {
     required String description,
+    bool isEdited = true,
+    List<CreateMediaRequest>? newMediaFiles,
+    List<String>? existingMediaUrls,
   });
 
   /// Elimina una experiencia
@@ -34,6 +37,9 @@ abstract class ExperienceRepository {
 
   /// Marca una experiencia como vista
   Future<void> markAsViewed(String experienceId);
+
+  /// Observa cambios en la colección de experiencias (última publicación)
+  Stream<DateTime?> watchLatestExperienceTimestamp();
 
   /// Sube un archivo multimedia y retorna la URL
   Future<String> uploadMedia({
@@ -50,6 +56,7 @@ class CreateExperienceRequest {
   final List<String> tags;
   final List<CreateMediaRequest> mediaFiles;
   final ExperienceType type;
+  final ExperienceFormat format;
   final String? rideId;
 
   const CreateExperienceRequest({
@@ -57,6 +64,7 @@ class CreateExperienceRequest {
     required this.tags,
     required this.mediaFiles,
     required this.type,
+    this.format = ExperienceFormat.post,
     this.rideId,
   });
 
@@ -66,6 +74,7 @@ class CreateExperienceRequest {
     List<String>? tags,
     List<CreateMediaRequest>? mediaFiles,
     ExperienceType? type,
+    ExperienceFormat? format,
     String? rideId,
   }) {
     return CreateExperienceRequest(
@@ -73,6 +82,7 @@ class CreateExperienceRequest {
       tags: tags ?? this.tags,
       mediaFiles: mediaFiles ?? this.mediaFiles,
       type: type ?? this.type,
+      format: format ?? this.format,
       rideId: rideId ?? this.rideId,
     );
   }
@@ -85,6 +95,7 @@ class CreateExperienceRequest {
         other.tags.toString() == tags.toString() &&
         other.mediaFiles.toString() == mediaFiles.toString() &&
         other.type == type &&
+        other.format == format &&
         other.rideId == rideId;
   }
 
@@ -94,12 +105,13 @@ class CreateExperienceRequest {
         tags.hashCode ^
         mediaFiles.hashCode ^
         type.hashCode ^
+        format.hashCode ^
         rideId.hashCode;
   }
 
   @override
   String toString() {
-    return 'CreateExperienceRequest(description: $description, tags: $tags, mediaFiles: $mediaFiles, type: $type, rideId: $rideId)';
+    return 'CreateExperienceRequest(description: $description, tags: $tags, mediaFiles: $mediaFiles, type: $type, format: $format, rideId: $rideId)';
   }
 }
 

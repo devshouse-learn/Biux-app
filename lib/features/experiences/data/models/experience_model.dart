@@ -10,10 +10,12 @@ class ExperienceModel {
   final DateTime createdAt;
   final List<ExperienceMediaModel> media;
   final ExperienceType type;
+  final ExperienceFormat format;
   final String? rideId;
   final int views;
   final List<ExperienceReactionModel> reactions;
   final List<UserModel> viewers;
+  final bool isEdited;
 
   const ExperienceModel({
     required this.id,
@@ -23,10 +25,12 @@ class ExperienceModel {
     required this.createdAt,
     required this.media,
     required this.type,
+    this.format = ExperienceFormat.post,
     this.rideId,
     this.views = 0,
     this.reactions = const [],
     this.viewers = const [],
+    this.isEdited = false,
   });
 
   /// Convertir a entidad de dominio
@@ -39,10 +43,12 @@ class ExperienceModel {
       createdAt: createdAt,
       media: media.map((e) => e.toEntity()).toList(),
       type: type,
+      format: format,
       rideId: rideId,
       views: views,
       reactions: reactions.map((e) => e.toEntity()).toList(),
       viewers: viewers.map((e) => e.toEntity()).toList(),
+      isEdited: isEdited,
     );
   }
 
@@ -57,12 +63,14 @@ class ExperienceModel {
           .map((e) => ExperienceMediaModel.fromEntity(e))
           .toList(),
       type: entity.type,
+      format: entity.format,
       rideId: entity.rideId,
       views: entity.views,
       reactions: entity.reactions
           .map((e) => ExperienceReactionModel.fromEntity(e))
           .toList(),
       viewers: entity.viewers.map((e) => UserModel.fromEntity(e)).toList(),
+      isEdited: entity.isEdited,
     );
   }
 
@@ -77,10 +85,12 @@ class ExperienceModel {
       'createdAt': createdAt.toIso8601String(),
       'media': media.map((e) => e.toJson()).toList(),
       'type': type.name,
+      'format': format.name,
       'rideId': rideId,
       'views': views,
       'reactions': reactions.map((e) => e.toJson()).toList(),
       'viewers': viewers.map((e) => e.toJson()).toList(),
+      'isEdited': isEdited,
     };
   }
 
@@ -95,6 +105,7 @@ class ExperienceModel {
           .map((e) => ExperienceMediaModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       type: ExperienceType.values.firstWhere((e) => e.name == json['type']),
+      format: _parseFormat(json),
       rideId: json['rideId'] as String?,
       views: json['views'] as int? ?? 0,
       reactions: (json['reactions'] as List? ?? [])
@@ -105,7 +116,31 @@ class ExperienceModel {
       viewers: (json['viewers'] as List? ?? [])
           .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      isEdited: json['isEdited'] as bool? ?? false,
     );
+  }
+
+  /// Parsea el formato desde JSON con compatibilidad hacia atrás.
+  /// Documentos legacy sin campo 'format' usan la heurística original:
+  /// media + descripción corta + no ride → story; todo lo demás → post.
+  static ExperienceFormat _parseFormat(Map<String, dynamic> json) {
+    final formatStr = json['format'] as String?;
+    if (formatStr != null) {
+      return ExperienceFormat.values.firstWhere(
+        (e) => e.name == formatStr,
+        orElse: () => ExperienceFormat.post,
+      );
+    }
+    // Backwards compatibility: documentos sin el campo 'format'
+    final description = json['description'] as String? ?? '';
+    final media = json['media'] as List? ?? [];
+    final typeStr = json['type'] as String? ?? 'general';
+    if (media.isNotEmpty &&
+        description.trim().length <= 20 &&
+        typeStr != 'ride') {
+      return ExperienceFormat.story;
+    }
+    return ExperienceFormat.post;
   }
 }
 

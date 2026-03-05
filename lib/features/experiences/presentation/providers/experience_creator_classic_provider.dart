@@ -15,6 +15,7 @@ class MediaItem {
   final double? aspectRatio;
   final String? thumbnailPath;
   final bool isProcessing;
+  final String? url; // URL remota para media ya subida (modo edición)
 
   const MediaItem({
     required this.filePath,
@@ -23,10 +24,12 @@ class MediaItem {
     this.aspectRatio,
     this.thumbnailPath,
     this.isProcessing = false,
+    this.url,
   });
 
   bool get isVideo => mediaType == MediaType.video;
   bool get isImage => mediaType == MediaType.image;
+  bool get isRemote => url != null && url!.isNotEmpty;
 
   MediaItem copyWith({
     String? filePath,
@@ -35,6 +38,7 @@ class MediaItem {
     double? aspectRatio,
     String? thumbnailPath,
     bool? isProcessing,
+    String? url,
   }) {
     return MediaItem(
       filePath: filePath ?? this.filePath,
@@ -43,6 +47,7 @@ class MediaItem {
       aspectRatio: aspectRatio ?? this.aspectRatio,
       thumbnailPath: thumbnailPath ?? this.thumbnailPath,
       isProcessing: isProcessing ?? this.isProcessing,
+      url: url ?? this.url,
     );
   }
 }
@@ -71,6 +76,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   bool _isRecording = false;
   VideoPlayerController? _videoController;
   bool _isTextOnly = false; // Post de solo texto (sin multimedia)
+  ExperienceFormat _format = ExperienceFormat.post;
 
   // Getters
   List<MediaItem> get mediaItems => _mediaItems;
@@ -85,6 +91,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   bool get isRecording => _isRecording;
   VideoPlayerController? get videoController => _videoController;
   bool get isTextOnly => _isTextOnly;
+  ExperienceFormat get format => _format;
 
   /// Actualizar descripción
   void updateDescription(String description) {
@@ -103,10 +110,12 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     ExperienceType type, {
     String? rideId,
     bool isTextOnly = false,
+    ExperienceFormat format = ExperienceFormat.post,
   }) {
     _experienceType = type;
     _rideId = rideId;
     _isTextOnly = isTextOnly;
+    _format = format;
     notifyListeners();
   }
 
@@ -357,23 +366,13 @@ class ExperienceCreatorProvider extends ChangeNotifier {
           )
           .toList();
 
-      // 🔥 NUEVA LÓGICA: Si tiene multimedia, se publica como HISTORIA
-      // Las historias tienen descripción corta (máx 20 caracteres)
-      // Si hay multimedia, recortamos la descripción a 20 caracteres
-      String finalDescription = _description;
-      if (_mediaItems.isNotEmpty) {
-        // Forzar formato de historia limitando descripción a 20 chars
-        if (_description.length > 20) {
-          finalDescription = _description.substring(0, 20);
-        }
-      }
-
-      // Crear request de experiencia
+      // Crear request de experiencia con el formato explícito
       final request = CreateExperienceRequest(
-        description: finalDescription,
+        description: _description,
         tags: _tags,
         mediaFiles: mediaRequests,
         type: _experienceType ?? ExperienceType.general,
+        format: _format,
         rideId: _rideId,
       );
 
@@ -412,6 +411,23 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Cargar media existente de una experiencia (para modo edición)
+  void loadExistingMedia(List<ExperienceMediaEntity> existingMedia) {
+    _mediaItems = existingMedia
+        .map(
+          (m) => MediaItem(
+            filePath: '', // No hay archivo local
+            mediaType: m.mediaType,
+            duration: m.duration,
+            aspectRatio: m.aspectRatio,
+            thumbnailPath: null,
+            url: m.url,
+          ),
+        )
+        .toList();
+    notifyListeners();
+  }
+
   /// Resetear estado
   void reset() {
     _mediaItems = [];
@@ -425,6 +441,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     _isRecording = false;
     _videoController?.dispose();
     _videoController = null;
+    _format = ExperienceFormat.post;
     notifyListeners();
   }
 

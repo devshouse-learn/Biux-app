@@ -3,11 +3,16 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
+import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
+import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:biux/features/users/data/models/user.dart';
 
-/// Pantalla de perfil público de usuario
-/// Muestra información básica, posts y botón de seguir/dejar de seguir
+/// Pantalla de perfil público de usuario - MISMO DISEÑO QUE MI PERFIL
 class PublicUserProfileScreen extends StatefulWidget {
   final String userId;
 
@@ -19,496 +24,428 @@ class PublicUserProfileScreen extends StatefulWidget {
 }
 
 class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
-    with TickerProviderStateMixin {
-  TabController? _tabController;
-  bool isFollowing = false;
-  bool isCurrentUser = false;
+    with SingleTickerProviderStateMixin {
+  final Set<String> _failedImageIds = {};
+  late final Future<dynamic> _experiencesFuture;
+  int _postCount = 0;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    _experiencesFuture = ExperienceRepositoryImpl().getUserExperiences(
+      widget.userId,
+    );
 
-    // Cargar datos del usuario
+    // Cargar perfil del usuario
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserProfileProvider>().loadUserProfile(widget.userId);
-
-      // Verificar si es el usuario actual
-      final currentUserUid = FirebaseAuth.instance.currentUser?.uid;
-      setState(() {
-        isCurrentUser = currentUserUid == widget.userId;
-      });
-
-      // Verificar si ya está siguiendo a este usuario
-      if (!isCurrentUser && currentUserUid != null) {
-        final userProvider = context.read<UserProvider>();
-        if (userProvider.user?.following != null) {
-          setState(() {
-            isFollowing = userProvider.user!.following!.containsKey(
-              widget.userId,
-            );
-          });
-        }
-      }
     });
   }
 
   @override
   void dispose() {
-    _tabController?.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: ColorTokens.neutral100),
+          onPressed: () => context.pop(),
+        ),
+      ),
       body: Consumer<UserProfileProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Scaffold(
-              backgroundColor: ColorTokens.neutral10,
-              body: Center(
-                child: CircularProgressIndicator(color: ColorTokens.primary50),
-              ),
-            );
-          }
-
-          if (provider.error != null) {
-            return Scaffold(
-              backgroundColor: ColorTokens.neutral10,
-              appBar: AppBar(
-                backgroundColor: ColorTokens.primary30,
-                foregroundColor: ColorTokens.neutral100,
-                title: const Text('Perfil de Usuario'),
-              ),
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: ColorTokens.error50,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Error al cargar el perfil',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: ColorTokens.neutral90,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      provider.error!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: ColorTokens.neutral70),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () => context.pop(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorTokens.primary50,
-                        foregroundColor: ColorTokens.neutral100,
-                      ),
-                      child: const Text('Volver'),
-                    ),
-                  ],
+          if (provider.isLoadingProfile) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  ColorTokens.primary30,
                 ),
               ),
             );
           }
 
-          final user = provider.currentUser;
-          if (user == null) {
-            return Scaffold(
-              backgroundColor: ColorTokens.neutral10,
-              appBar: AppBar(
-                backgroundColor: ColorTokens.primary30,
-                foregroundColor: ColorTokens.neutral100,
-                title: const Text('Perfil de Usuario'),
-              ),
-              body: const Center(
-                child: Text(
-                  'Usuario no encontrado',
-                  style: TextStyle(fontSize: 18, color: ColorTokens.neutral70),
-                ),
+          if (provider.currentProfile == null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: ColorTokens.neutral60,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'No se pudo cargar el perfil',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: ColorTokens.neutral80,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Verifica tu conexión e intenta nuevamente',
+                    style: TextStyle(color: ColorTokens.neutral60),
+                  ),
+                  SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      provider.loadUserProfile(widget.userId);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorTokens.primary30,
+                      foregroundColor: ColorTokens.neutral100,
+                    ),
+                    child: Text('Reintentar'),
+                  ),
+                ],
               ),
             );
           }
 
-          // Contenido del perfil
-          return NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                // Header del perfil
-                SliverAppBar(
-                  expandedHeight:
-                      450, // Incrementado de 420 a 450 para eliminar el overflow
-                  floating: false,
-                  pinned: true,
-                  backgroundColor: ColorTokens.primary30,
-                  foregroundColor: ColorTokens.neutral100,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      decoration: BoxDecoration(
-                        image: user.profileCover.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(user.profileCover),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                        gradient: user.profileCover.isEmpty
-                            ? LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  ColorTokens.primary30,
-                                  ColorTokens.primary40,
-                                ],
-                              )
-                            : LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.black.withValues(alpha: 0.3),
-                                  Colors.black.withValues(alpha: 0.5),
+          final user = provider.currentProfile!;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // ========== SECCIÓN DE PERFIL TIPO INSTAGRAM ==========
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        ColorTokens.primary30,
+                        ColorTokens.primary30.withValues(alpha: 0.8),
+                      ],
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
+                      child: Column(
+                        children: [
+                          // Primera fila: Botones izquierda y Compartir + Seguir derecha
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Menú izquierdo: Story + Post (solo si es el usuario actual)
+                              if (AuthenticationRepository().getUserId ==
+                                  user.id)
+                                PopupMenuButton<String>(
+                                  icon: Icon(
+                                    Icons.add_circle_outline,
+                                    color: ColorTokens.neutral100,
+                                    size: 24,
+                                  ),
+                                  onSelected: (value) {
+                                    if (value == 'story') {
+                                      context.go('/create-story');
+                                    } else if (value == 'post') {
+                                      context.go('/experiences/create');
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) => [
+                                    PopupMenuItem<String>(
+                                      value: 'story',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.add_photo_alternate,
+                                            size: 20,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text('Agregar Historia'),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem<String>(
+                                      value: 'post',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.image_search, size: 20),
+                                          SizedBox(width: 10),
+                                          Text('Nueva Publicación'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              else
+                                SizedBox(
+                                  width: 24,
+                                ), // Espacio cuando no es el usuario actual
+                              // Botones derechos: Seguir/Editar
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (AuthenticationRepository().getUserId ==
+                                      user.id)
+                                    Tooltip(
+                                      message: 'Editar perfil',
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.edit_outlined,
+                                          color: ColorTokens.neutral100,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          // Navegar a editar perfil
+                                          context.go('/edit-profile');
+                                        },
+                                        constraints: BoxConstraints(
+                                          minWidth: 32,
+                                          minHeight: 32,
+                                        ),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    )
+                                  else
+                                    SizedBox(width: 8),
+                                  if (AuthenticationRepository().getUserId ==
+                                      user.id)
+                                    Tooltip(
+                                      message: 'Configuración',
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.settings_outlined,
+                                          color: ColorTokens.neutral100,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          context.go('/account-settings');
+                                        },
+                                        constraints: BoxConstraints(
+                                          minWidth: 32,
+                                          minHeight: 32,
+                                        ),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ),
                                 ],
                               ),
-                      ),
-                      child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            ],
+                          ),
+
+                          SizedBox(height: 16),
+
+                          // Segunda fila: Foto + Nombre/Usuario + Botón Seguir (si es otro usuario)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(
-                                height: 40,
-                              ), // Espacio para el AppBar
-                              const Spacer(flex: 1), // Espacio flexible arriba
-                              // Foto de perfil
+                              // Foto
                               Container(
-                                width: 100,
-                                height: 100,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                     color: ColorTokens.neutral100,
-                                    width: 3,
+                                    width: 2,
                                   ),
                                 ),
-                                child: ClipOval(
-                                  child: user.photo.isNotEmpty
-                                      ? Image.network(
+                                child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: ColorTokens.neutral20,
+                                  backgroundImage: user.photo.isNotEmpty
+                                      ? CachedNetworkImageProvider(
                                           user.photo,
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder:
-                                              (
-                                                context,
-                                                child,
-                                                loadingProgress,
-                                              ) {
-                                                if (loadingProgress == null)
-                                                  return child;
-                                                return Container(
-                                                  width: 100,
-                                                  height: 100,
-                                                  color: ColorTokens.neutral30,
-                                                  child: const Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                          color: ColorTokens
-                                                              .primary50,
-                                                          strokeWidth: 2,
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                                return const CircleAvatar(
-                                                  radius: 50,
-                                                  backgroundColor:
-                                                      ColorTokens.neutral60,
-                                                  child: Icon(
-                                                    Icons.person,
-                                                    size: 50,
-                                                    color:
-                                                        ColorTokens.neutral100,
-                                                  ),
-                                                );
-                                              },
+                                          cacheManager: OptimizedCacheManager
+                                              .avatarInstance,
                                         )
-                                      : Container(
-                                          width: 100,
-                                          height: 100,
-                                          decoration: const BoxDecoration(
-                                            color: ColorTokens.neutral60,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.person,
-                                            size: 50,
-                                            color: ColorTokens.neutral100,
-                                          ),
-                                        ),
+                                      : null,
+                                  child: user.photo.isEmpty
+                                      ? Icon(
+                                          Icons.person,
+                                          size: 40,
+                                          color: ColorTokens.neutral60,
+                                        )
+                                      : null,
                                 ),
                               ),
+                              SizedBox(width: 16),
 
-                              const SizedBox(height: 16),
-
-                              // Nombre del usuario
-                              Text(
-                                user.fullName.isNotEmpty
-                                    ? user.fullName
-                                    : (user.userName.isNotEmpty
-                                          ? user.userName
-                                          : 'Usuario sin nombre'), // Solo mostrar info pública
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorTokens.neutral100,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-
-                              // Solo mostrar username si existe, NUNCA email (privado)
-                              if (user.userName.isNotEmpty)
-                                Text(
-                                  '@${user.userName}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: ColorTokens.neutral90,
-                                  ),
-                                ),
-                              const SizedBox(height: 12),
-
-                              // Descripción del usuario si existe
-                              // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
-                              if (user.description != null &&
-                                  // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
-                                  user.description!.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                                  child: Text(
-                                    // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
-                                    user.description!,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: ColorTokens.neutral90,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
-                              if (user.description == null ||
-                                  // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
-                                  user.description!.isEmpty)
-                                const SizedBox.shrink(),
-                              const SizedBox(height: 20),
-
-                              // Estadísticas básicas
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                              // Nombre y usuario
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: _buildStatItem(
-                                        'Posts',
-                                        '${provider.userPosts.length}',
+                                    Text(
+                                      user.fullName.isNotEmpty
+                                          ? user.fullName
+                                          : 'Sin nombre',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 4),
+                                    if (user.userName.isNotEmpty)
+                                      Text(
+                                        '@${user.userName}',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: ColorTokens.neutral100
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                  ],
+                                ),
+                              ),
+
+                              // Botón Seguir (para otros perfiles, no para el usuario actual)
+                              if (AuthenticationRepository().getUserId !=
+                                  user.id)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8),
+                                  child: _buildFollowButton(provider, user.id),
+                                ),
+                            ],
+                          ),
+
+                          SizedBox(height: 16),
+
+                          // Tercera fila: Estadísticas
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    _postCount.toString(),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: ColorTokens.neutral100,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Posts',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: ColorTokens.neutral100.withValues(
+                                        alpha: 0.8,
                                       ),
                                     ),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () => _showFollowersModal(
-                                          context,
-                                          provider,
-                                        ),
-                                        child: _buildStatItem(
-                                          'Seguidores',
-                                          '${provider.followersCount}',
-                                        ),
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _showFollowersModal(context, user);
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      user.followers.length.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
                                       ),
                                     ),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () => _showFollowingModal(
-                                          context,
-                                          provider,
-                                        ),
-                                        child: _buildStatItem(
-                                          'Siguiendo',
-                                          '${provider.followingCount}',
-                                        ),
+                                    Text(
+                                      'Seguidores',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-
-                              const SizedBox(height: 20),
-
-                              // Botón de Seguir/Dejar de Seguir
-                              if (!isCurrentUser)
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0,
+                              GestureDetector(
+                                onTap: () {
+                                  _showFollowingModal(context, user);
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      user.following.length.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
                                     ),
-                                    child: isFollowing
-                                        ? OutlinedButton.icon(
-                                            onPressed: () async {
-                                              final userProvider = context
-                                                  .read<UserProvider>();
-                                              final profileProvider = context
-                                                  .read<UserProfileProvider>();
-                                              setState(() {
-                                                isFollowing = false;
-                                              });
-                                              final success = await userProvider
-                                                  .unfollowUser(widget.userId);
-                                              if (success && mounted) {
-                                                // Actualización rápida del perfil para ver cambios inmediatamente
-                                                await profileProvider
-                                                    .refreshProfileQuick(
-                                                      widget.userId,
-                                                    );
-                                              } else if (!success && mounted) {
-                                                setState(() {
-                                                  isFollowing = true;
-                                                });
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      userProvider.error ??
-                                                          'Error al dejar de seguir',
-                                                    ),
-                                                    backgroundColor:
-                                                        ColorTokens.error50,
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            icon: const Icon(Icons.check),
-                                            label: const Text('Siguiendo'),
-                                            style: OutlinedButton.styleFrom(
-                                              foregroundColor:
-                                                  ColorTokens.neutral100,
-                                              side: const BorderSide(
-                                                color: ColorTokens.primary30,
-                                                width: 1.5,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                  ),
-                                            ),
-                                          )
-                                        : ElevatedButton.icon(
-                                            onPressed: () async {
-                                              final userProvider = context
-                                                  .read<UserProvider>();
-                                              final profileProvider = context
-                                                  .read<UserProfileProvider>();
-                                              setState(() {
-                                                isFollowing = true;
-                                              });
-                                              final success = await userProvider
-                                                  .followUser(widget.userId);
-                                              if (success && mounted) {
-                                                // Actualización rápida del perfil para ver cambios inmediatamente
-                                                await profileProvider
-                                                    .refreshProfileQuick(
-                                                      widget.userId,
-                                                    );
-                                              } else if (!success && mounted) {
-                                                setState(() {
-                                                  isFollowing = false;
-                                                });
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      userProvider.error ??
-                                                          'Error al seguir',
-                                                    ),
-                                                    backgroundColor:
-                                                        ColorTokens.error50,
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            icon: const Icon(Icons.add),
-                                            label: const Text('Seguir'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  ColorTokens.primary30,
-                                              foregroundColor:
-                                                  ColorTokens.neutral100,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                  ),
-                                            ),
-                                          ),
-                                  ),
+                                    Text(
+                                      'Siguiendo',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-
-                              const SizedBox(height: 20),
-                              const Spacer(flex: 1), // Espacio flexible abajo
+                              ),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
 
-                // Tabs
-                SliverPersistentHeader(
-                  delegate: _TabHeaderDelegate(
-                    child: Container(
-                      color: ColorTokens.neutral10,
-                      child: TabBar(
-                        controller: _tabController,
-                        indicatorColor: ColorTokens.primary50,
-                        labelColor: ColorTokens.primary50,
-                        unselectedLabelColor: ColorTokens.neutral60,
-                        tabs: const [
-                          Tab(icon: Icon(Icons.grid_on), text: 'Posts'),
-                          Tab(
-                            icon: Icon(Icons.play_circle_outline),
-                            text: 'Historias',
-                          ),
+                          SizedBox(height: 12),
+
+                          // Descripción
+                          if (user.description.isNotEmpty)
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                user.description,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: ColorTokens.neutral100.withValues(
+                                    alpha: 0.9,
+                                  ),
+                                  height: 1.4,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                         ],
                       ),
                     ),
                   ),
-                  pinned: true,
                 ),
-              ];
-            },
-            body: TabBarView(
-              controller: _tabController,
-              children: [
-                // Tab de Posts
-                _buildPostsTab(provider),
-                // Tab de Historias
-                _buildStoriesTab(provider),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      // ========== SECCIÓN DE PUBLICACIONES ==========
+                      Text(
+                        'Publicaciones',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? ColorTokens.neutral100
+                              : ColorTokens.primary30,
+                        ),
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // Mostrar publicaciones del usuario
+                      _buildPublicationsSection(user),
+
+                      SizedBox(height: 32),
+                    ],
+                  ),
+                ),
               ],
             ),
           );
@@ -517,433 +454,632 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     );
   }
 
-  Widget _buildStatItem(String label, String count) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          count,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: ColorTokens.neutral100,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12, // Reducido de 14 a 12 para evitar overflow
-            color: ColorTokens.neutral90,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
+  Widget _buildFollowButton(
+    UserProfileProvider provider,
+    String profileUserId,
+  ) {
+    final currentUserId = AuthenticationRepository().getUserId;
+    final isOwnProfile = currentUserId == profileUserId;
 
-  void _showFollowersModal(BuildContext context, UserProfileProvider provider) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return FutureBuilder<void>(
-          future: provider.loadFollowers(widget.userId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(color: ColorTokens.primary50),
-                      SizedBox(height: 12),
-                      Text('Cargando seguidores...'),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            final followers = provider.followers;
-            if (followers.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.people_outline,
-                        size: 48,
-                        color: ColorTokens.neutral60,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text('Sin seguidores aún'),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return DraggableScrollableSheet(
-              expand: false,
-              builder: (context, scrollController) {
-                return ListView(
-                  controller: scrollController,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'Seguidores (${followers.length})',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    ...followers.map((user) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: user.photo.isNotEmpty
-                              ? NetworkImage(user.photo)
-                              : null,
-                          child: user.photo.isEmpty
-                              ? const Icon(Icons.person)
-                              : null,
-                        ),
-                        title: Text(
-                          user.fullName.isNotEmpty
-                              ? user.fullName
-                              : user.userName,
-                        ),
-                        subtitle: Text('@${user.userName}'),
-                        onTap: () {
-                          context.pop();
-                          context.push('/user-profile/${user.id}');
-                        },
-                      );
-                    }),
-                  ],
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showFollowingModal(BuildContext context, UserProfileProvider provider) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return FutureBuilder<void>(
-          future: provider.loadFollowing(widget.userId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(color: ColorTokens.primary50),
-                      SizedBox(height: 12),
-                      Text('Cargando seguidos...'),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            final following = provider.following;
-            if (following.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.people_outline,
-                        size: 48,
-                        color: ColorTokens.neutral60,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text('No sigue a nadie aún'),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return DraggableScrollableSheet(
-              expand: false,
-              builder: (context, scrollController) {
-                return ListView(
-                  controller: scrollController,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'Siguiendo (${following.length})',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    ...following.map((user) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: user.photo.isNotEmpty
-                              ? NetworkImage(user.photo)
-                              : null,
-                          child: user.photo.isEmpty
-                              ? const Icon(Icons.person)
-                              : null,
-                        ),
-                        title: Text(
-                          user.fullName.isNotEmpty
-                              ? user.fullName
-                              : user.userName,
-                        ),
-                        subtitle: Text('@${user.userName}'),
-                        onTap: () {
-                          context.pop();
-                          context.push('/user-profile/${user.id}');
-                        },
-                      );
-                    }),
-                  ],
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildPostsTab(UserProfileProvider provider) {
-    if (provider.userPosts.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.photo_library_outlined,
-              size: 64,
-              color: ColorTokens.neutral60,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'No hay posts aún',
-              style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
-            ),
-          ],
-        ),
-      );
+    // Si es el perfil propio, no mostrar botón de seguir
+    if (isOwnProfile) {
+      return SizedBox.shrink();
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 4,
-        mainAxisSpacing: 4,
-      ),
-      itemCount: provider.userPosts.length,
-      itemBuilder: (context, index) {
-        final post = provider.userPosts[index];
+    // Deshabilitar si está procesando
+    final isDisabled = provider.isProcessingFollow;
 
-        // ✅ VALIDACIÓN: Solo permitir acceder a posts con media disponible
-        final hasValidMedia = post.media != null && post.media.isNotEmpty;
-
-        return GestureDetector(
-          onTap: hasValidMedia
-              ? () {
-                  context.push('/stories/post/${post.id}');
+    return SizedBox(
+      width: 100,
+      height: 36,
+      child: ElevatedButton(
+        onPressed: isDisabled
+            ? null
+            : () async {
+                if (provider.isFollowing) {
+                  await provider.unfollowUser(profileUserId);
+                } else {
+                  await provider.followUser(profileUserId);
                 }
-              : null,
-          child: Opacity(
-            opacity: hasValidMedia ? 1.0 : 0.5,
-            child: Container(
-              decoration: BoxDecoration(
-                color: ColorTokens.neutral20,
-                borderRadius: BorderRadius.circular(8),
+              },
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          backgroundColor: provider.isFollowing
+              ? ColorTokens.neutral100.withValues(alpha: 0.2)
+              : ColorTokens.neutral100,
+          foregroundColor: provider.isFollowing
+              ? ColorTokens.neutral100
+              : ColorTokens.primary30,
+          side: BorderSide(
+            color: ColorTokens.neutral100,
+            width: provider.isFollowing ? 1 : 0,
+          ),
+          disabledBackgroundColor: ColorTokens.neutral100.withValues(
+            alpha: 0.5,
+          ),
+        ),
+        child: provider.isProcessingFollow
+            ? SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    provider.isFollowing
+                        ? ColorTokens.neutral100
+                        : ColorTokens.primary30,
+                  ),
+                ),
+              )
+            : Text(
+                provider.isFollowing ? 'Siguiendo' : 'Seguir',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: post.media.isNotEmpty
-                    ? Image.network(
-                        post.media.first.url,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: ColorTokens.neutral30,
-                            child: const Icon(
+      ),
+    );
+  }
+
+  Widget _buildPublicationsSection(BiuxUser user) {
+    return FutureBuilder(
+      future: _experiencesFuture,
+      builder: (context, snapshot) {
+        // Estado de carga
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  ColorTokens.primary30,
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Error
+        if (snapshot.hasError) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: ColorTokens.error50),
+                SizedBox(height: 12),
+                Text(
+                  'Error cargando publicaciones',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.error50,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Sin datos o lista vacía
+        if (!snapshot.hasData ||
+            snapshot.data == null ||
+            (snapshot.data as dynamic).isEmpty) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.image_not_supported,
+                  size: 48,
+                  color: ColorTokens.neutral60,
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Sin publicaciones aún',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.neutral70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Filtrar: solo PUBLICACIONES (no historias) con media válido
+        final allExperiences = snapshot.data as dynamic;
+        final experiences = allExperiences.where((exp) {
+          // Excluir historias — solo publicaciones en el perfil
+          if (exp.isStoryFormat == true) return false;
+          try {
+            if (exp.media == null || exp.media.isEmpty) return false;
+            if (exp.media.first == null) return false;
+            final media = exp.media.first;
+            final url = media.url ?? '';
+            if (url.isEmpty) return false;
+            if (!url.startsWith('http://') && !url.startsWith('https://'))
+              return false;
+            // Para videos: validar que tenga thumbnail o URL válida
+            if (media.mediaType == MediaType.video) {
+              final thumb = media.thumbnailUrl ?? '';
+              return thumb.isNotEmpty && thumb.startsWith('http') ||
+                  url.isNotEmpty;
+            }
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }).toList();
+
+        // Eliminar publicaciones con imágenes que fallaron al cargar
+        experiences.removeWhere(
+          (exp) => _failedImageIds.contains(exp.id.toString()),
+        );
+
+        // Actualizar contador de posts
+        if (_postCount != experiences.length) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _postCount = experiences.length);
+          });
+        }
+
+        // Si después de filtrar no hay experiencias, mostrar el mensaje
+        if (experiences.isEmpty) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.image_not_supported,
+                  size: 48,
+                  color: ColorTokens.neutral60,
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Sin publicaciones válidas',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.neutral70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Mostrar grid de publicaciones
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1,
+          ),
+          itemCount: experiences.length,
+          itemBuilder: (context, index) {
+            final experience = experiences[index];
+            return GestureDetector(
+              onTap: () {
+                context.push('/stories/post/${experience.id}');
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: ColorTokens.primary30, width: 1),
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Imagen/thumbnail de la experiencia optimizada
+                    experience.media.isNotEmpty
+                        ? Builder(
+                            builder: (context) {
+                              final media = experience.media.first;
+                              final isVideo =
+                                  media.mediaType == MediaType.video;
+                              final displayUrl = isVideo
+                                  ? (media.thumbnailUrl?.isNotEmpty == true
+                                        ? media.thumbnailUrl!
+                                        : media.url)
+                                  : media.url;
+                              return Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: displayUrl,
+                                    fit: BoxFit.cover,
+                                    cacheManager:
+                                        OptimizedCacheManager.instance,
+                                    memCacheWidth: 400,
+                                    memCacheHeight: 400,
+                                    fadeInDuration: const Duration(
+                                      milliseconds: 100,
+                                    ),
+                                    fadeOutDuration: const Duration(
+                                      milliseconds: 50,
+                                    ),
+                                    placeholder: (context, url) => Container(
+                                      color: ColorTokens.neutral20,
+                                      child: Center(
+                                        child: Icon(
+                                          isVideo
+                                              ? Icons.videocam
+                                              : Icons.image,
+                                          color: ColorTokens.neutral60,
+                                          size: 32,
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) {
+                                      final expId = experience.id.toString();
+                                      if (!_failedImageIds.contains(expId)) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              if (mounted) {
+                                                setState(() {
+                                                  _failedImageIds.add(expId);
+                                                });
+                                              }
+                                            });
+                                      }
+                                      return SizedBox.shrink();
+                                    },
+                                  ),
+                                  if (isVideo)
+                                    Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.5,
+                                          ),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.play_arrow,
+                                          color: Colors.white,
+                                          size: 24,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          )
+                        : Container(
+                            color: ColorTokens.neutral20,
+                            child: Icon(
                               Icons.image,
                               color: ColorTokens.neutral60,
                             ),
-                          );
-                        },
-                      )
-                    : Container(
-                        color: ColorTokens.neutral30,
-                        child: const Icon(
-                          Icons.image,
-                          color: ColorTokens.neutral60,
-                        ),
-                      ),
+                          ),
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildStoriesTab(UserProfileProvider provider) {
-    if (provider.userStories.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.play_circle_outline,
-              size: 64,
-              color: ColorTokens.neutral60,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'No hay historias aún',
-              style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
-            ),
-          ],
-        ),
-      );
-    }
+  void _showFollowersModal(BuildContext context, BiuxUser user) {
+    final provider = context.read<UserProfileProvider>();
+    provider.loadFollowers(user.id);
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 9 / 16,
-      ),
-      itemCount: provider.userStories.length,
-      itemBuilder: (context, index) {
-        final story = provider.userStories[index];
-        return GestureDetector(
-          onTap: () {
-            context.push('/stories/post/${story.id}');
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: ColorTokens.neutral20,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: story.media.isNotEmpty
-                  ? Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.network(
-                          story.media.first.url,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: ColorTokens.neutral30,
-                              child: const Icon(
-                                Icons.play_circle_outline,
-                                color: ColorTokens.neutral60,
-                                size: 48,
-                              ),
-                            );
-                          },
-                        ),
-                        // Overlay con gradiente
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.5),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Icono de play si es video
-                        if (story.media.first.mediaType.toString().contains(
-                          'video',
-                        ))
-                          const Center(
-                            child: Icon(
-                              Icons.play_circle_outline,
-                              color: ColorTokens.neutral100,
-                              size: 48,
-                            ),
-                          ),
-                      ],
-                    )
-                  : Container(
-                      color: ColorTokens.neutral30,
-                      child: const Icon(
-                        Icons.play_circle_outline,
-                        color: ColorTokens.neutral60,
-                        size: 48,
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral10,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.neutral20,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
                       ),
                     ),
-            ),
-          ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Seguidores',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
+                          onPressed: () => Navigator.pop(modalContext),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListenableBuilder(
+                      listenable: provider,
+                      builder: (context, _) {
+                        if (provider.isLoadingFollowers) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorTokens.primary30,
+                              ),
+                            ),
+                          );
+                        }
+                        if (provider.followers.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'Sin seguidores aún',
+                              style: TextStyle(
+                                color: ColorTokens.neutral60,
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: provider.followers.length,
+                          itemBuilder: (context, index) {
+                            final follower = provider.followers[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                radius: 20,
+                                backgroundColor: ColorTokens.neutral20,
+                                backgroundImage: follower.photo.isNotEmpty
+                                    ? CachedNetworkImageProvider(
+                                        follower.photo,
+                                        cacheManager: OptimizedCacheManager
+                                            .avatarInstance,
+                                      )
+                                    : null,
+                                child: follower.photo.isEmpty
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 20,
+                                        color: ColorTokens.neutral60,
+                                      )
+                                    : null,
+                              ),
+                              title: Text(
+                                follower.fullName.isNotEmpty
+                                    ? follower.fullName
+                                    : 'Usuario',
+                                style: TextStyle(
+                                  color: ColorTokens.neutral100,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: follower.userName.isNotEmpty
+                                  ? Text(
+                                      '@${follower.userName}',
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral60,
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  : null,
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: ColorTokens.neutral60,
+                              ),
+                              onTap: () {
+                                Navigator.pop(modalContext);
+                                context.push('/user-profile/${follower.id}');
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
   }
-}
 
-// Delegate para el header persistente de las tabs
-class _TabHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
+  void _showFollowingModal(BuildContext context, BiuxUser user) {
+    final provider = context.read<UserProfileProvider>();
+    provider.loadFollowing(user.id);
 
-  _TabHeaderDelegate({required this.child});
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return child;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral10,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.neutral20,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Siguiendo',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
+                          onPressed: () => Navigator.pop(modalContext),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListenableBuilder(
+                      listenable: provider,
+                      builder: (context, _) {
+                        if (provider.isLoadingFollowing) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorTokens.primary30,
+                              ),
+                            ),
+                          );
+                        }
+                        if (provider.following.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No sigue a nadie aún',
+                              style: TextStyle(
+                                color: ColorTokens.neutral60,
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: provider.following.length,
+                          itemBuilder: (context, index) {
+                            final followingUser = provider.following[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                radius: 20,
+                                backgroundColor: ColorTokens.neutral20,
+                                backgroundImage: followingUser.photo.isNotEmpty
+                                    ? CachedNetworkImageProvider(
+                                        followingUser.photo,
+                                        cacheManager: OptimizedCacheManager
+                                            .avatarInstance,
+                                      )
+                                    : null,
+                                child: followingUser.photo.isEmpty
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 20,
+                                        color: ColorTokens.neutral60,
+                                      )
+                                    : null,
+                              ),
+                              title: Text(
+                                followingUser.fullName.isNotEmpty
+                                    ? followingUser.fullName
+                                    : 'Usuario',
+                                style: TextStyle(
+                                  color: ColorTokens.neutral100,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: followingUser.userName.isNotEmpty
+                                  ? Text(
+                                      '@${followingUser.userName}',
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral60,
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  : null,
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: ColorTokens.neutral60,
+                              ),
+                              onTap: () {
+                                Navigator.pop(modalContext);
+                                context.push(
+                                  '/user-profile/${followingUser.id}',
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
-  @override
-  double get maxExtent => 60;
-
-  @override
-  double get minExtent => 60;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
+  Future<void> _shareProfile(BiuxUser user) async {
+    await Share.share(
+      'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
+      subject: 'Perfil de ${user.fullName}',
+    );
   }
 }
