@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
+import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/widgets/media_item_widget.dart';
 import 'package:biux/features/experiences/presentation/widgets/media_selector_widget.dart';
@@ -19,6 +21,7 @@ class CreateExperienceScreen extends StatefulWidget {
   final bool isPostMode; // true = solo posts, false/null = modo completo
   final bool
   textOnly; // true = post solo texto (sin multimedia), false = permite multimedia
+  final ExperienceEntity? experienceToEdit; // Para modo edición
 
   const CreateExperienceScreen({
     super.key,
@@ -27,6 +30,7 @@ class CreateExperienceScreen extends StatefulWidget {
     this.isStoryMode = false,
     this.isPostMode = false,
     this.textOnly = false,
+    this.experienceToEdit,
   });
 
   @override
@@ -44,6 +48,9 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   // Toggle para marcador de publicidad
   bool _isAdvertisement = false;
 
+  // Modo edición
+  bool get _isEditMode => widget.experienceToEdit != null;
+
   @override
   void initState() {
     super.initState();
@@ -57,9 +64,15 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       _contentType = 'story'; // Default
     }
 
+    // Pre-llenar datos si estamos en modo edición
+    if (_isEditMode) {
+      _descriptionController.text = widget.experienceToEdit!.description;
+    }
+
     // Inicializar el tipo de experiencia con el formato correcto
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExperienceCreatorProvider>().setExperienceType(
+      final creatorProvider = context.read<ExperienceCreatorProvider>();
+      creatorProvider.setExperienceType(
         widget.experienceType,
         rideId: widget.rideId,
         isTextOnly: widget.textOnly,
@@ -67,6 +80,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             ? ExperienceFormat.story
             : ExperienceFormat.post,
       );
+
+      // En modo edición, pre-cargar la descripción y media en el provider
+      if (_isEditMode) {
+        creatorProvider.updateDescription(widget.experienceToEdit!.description);
+        creatorProvider.loadExistingMedia(widget.experienceToEdit!.media);
+      }
     });
   }
 
@@ -81,123 +100,136 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   Widget build(BuildContext context) {
     return Consumer<ExperienceCreatorProvider>(
       builder: (context, provider, child) {
-        return Scaffold(
-          backgroundColor: ColorTokens.neutral10,
-          appBar: AppBar(
-            title: Text(
-              widget.isStoryMode
-                  ? 'Nueva Historia'
-                  : widget.isPostMode
-                  ? 'Nueva Publicación'
-                  : widget.experienceType == ExperienceType.ride
-                  ? 'Nueva Experiencia de Rodada'
-                  : 'Nueva Experiencia',
-              style: const TextStyle(color: Colors.white),
-            ),
-            backgroundColor: ColorTokens.primary30,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
-            leading: PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert, color: Colors.white),
-              onSelected: (value) {
-                if (value == 'delete') {
-                  _showDeleteDialog(context);
-                }
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete_outline, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text(
-                        'Descartar Historia',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              if (provider.isUploading)
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                )
-              else
-                TextButton(
-                  onPressed: _canPublish(provider) ? _publishExperience : null,
-                  child: Text(
-                    'Publicar',
-                    style: TextStyle(
-                      color: _canPublish(provider)
-                          ? Colors.white
-                          : Colors.white54,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          body: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                // Indicador de progreso
-                if (provider.isUploading)
-                  LinearProgressIndicator(
-                    value: provider.uploadProgress > 0
-                        ? provider.uploadProgress
-                        : null,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      ColorTokens.primary50,
-                    ),
-                  ),
-
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            _showDeleteDialog(context);
+          },
+          child: Scaffold(
+            backgroundColor: ColorTokens.neutral10,
+            appBar: AppBar(
+              title: Text(
+                _isEditMode
+                    ? 'Editar Publicación'
+                    : widget.isStoryMode
+                    ? 'Nueva Historia'
+                    : widget.isPostMode
+                    ? 'Nueva Publicación'
+                    : widget.experienceType == ExperienceType.ride
+                    ? 'Nueva Experiencia de Rodada'
+                    : 'Nueva Experiencia',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: ColorTokens.primary30,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.white),
+              leading: PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, color: Colors.white),
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    _showDeleteDialog(context);
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Row(
                       children: [
-                        // Selector de tipo de contenido (solo si no está en modo fijo)
-                        if (!widget.isStoryMode && !widget.isPostMode) ...[
-                          _buildContentTypeSelector(),
-                          const SizedBox(height: 24),
-                        ],
-
-                        // Selector de multimedia (oculto para posts de solo texto)
-                        if (!widget.textOnly) ...[
-                          _buildMediaSection(provider),
-                          const SizedBox(height: 24),
-                        ],
-
-                        // Descripción
-                        _buildDescriptionSection(provider),
-
-                        const SizedBox(height: 24),
-
-                        // Tags - REMOVIDO (no se necesita)
-                        // _buildTagsSection(provider),
-                        // const SizedBox(height: 24),
-
-                        // Información adicional
-                        _buildInfoSection(),
+                        Icon(Icons.delete_outline, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text(
+                          widget.isPostMode
+                              ? 'Descartar Publicación'
+                              : 'Descartar Historia',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ],
                     ),
                   ),
-                ),
+                ],
+              ),
+              actions: [
+                if (provider.isUploading)
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    ),
+                  )
+                else
+                  TextButton(
+                    onPressed: _canPublish(provider)
+                        ? _publishExperience
+                        : null,
+                    child: Text(
+                      _isEditMode ? 'Guardar y publicar cambios' : 'Publicar',
+                      style: TextStyle(
+                        color: _canPublish(provider)
+                            ? Colors.white
+                            : Colors.white54,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
               ],
+            ),
+            body: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // Indicador de progreso
+                  if (provider.isUploading)
+                    LinearProgressIndicator(
+                      value: provider.uploadProgress > 0
+                          ? provider.uploadProgress
+                          : null,
+                      backgroundColor: Colors.grey[300],
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        ColorTokens.primary50,
+                      ),
+                    ),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Selector de tipo de contenido (solo si no está en modo fijo)
+                          if (!widget.isStoryMode && !widget.isPostMode) ...[
+                            _buildContentTypeSelector(),
+                            const SizedBox(height: 24),
+                          ],
+
+                          // Selector de multimedia (oculto para posts de solo texto)
+                          if (!widget.textOnly) ...[
+                            _buildMediaSection(provider),
+                            const SizedBox(height: 24),
+                          ],
+
+                          // Descripción
+                          _buildDescriptionSection(provider),
+
+                          const SizedBox(height: 24),
+
+                          // Tags - REMOVIDO (no se necesita)
+                          // _buildTagsSection(provider),
+                          // const SizedBox(height: 24),
+
+                          // Información adicional
+                          _buildInfoSection(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -506,61 +538,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             },
             onChanged: provider.updateDescription,
           ),
-          const SizedBox(height: 16),
-          // Toggle para marcador de publicidad
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.grey[800] : Colors.grey[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: isDark ? Colors.grey[600]! : Colors.grey[300]!,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Marcar como publicidad',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isAdvertisement = !_isAdvertisement;
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 60,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: _isAdvertisement ? Colors.green : Colors.black87,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Icon(
-                        _isAdvertisement ? Icons.check : Icons.close,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -752,6 +729,11 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     final hasMedia = provider.mediaItems.isNotEmpty;
     final isProcessing = provider.mediaItems.any((item) => item.isProcessing);
 
+    // Modo edición: solo requiere que no esté subiendo
+    if (_isEditMode) {
+      return !provider.isUploading && !isProcessing;
+    }
+
     // Posts de solo texto: NO requieren ni permiten multimedia
     if (widget.textOnly) {
       return hasDescription && !provider.isUploading && !isProcessing;
@@ -771,35 +753,97 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       return;
     }
 
-    final provider = context.read<ExperienceCreatorProvider>();
-    final success = await provider.createExperience();
+    if (_isEditMode) {
+      // Modo edición: actualizar experiencia existente
+      final experienceProvider = context.read<ExperienceProvider>();
+      final creatorProvider = context.read<ExperienceCreatorProvider>();
+      final newDescription = _descriptionController.text.trim();
 
-    if (success && mounted) {
-      Navigator.of(context).pop(true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('¡Experiencia publicada exitosamente!'),
-          backgroundColor: Colors.green,
-        ),
+      // Separar media existente (remota) de media nueva (local)
+      final existingMediaUrls = <String>[];
+      final newMediaFiles = <CreateMediaRequest>[];
+
+      for (final item in creatorProvider.mediaItems) {
+        if (item.isRemote) {
+          existingMediaUrls.add(item.url!);
+        } else {
+          newMediaFiles.add(
+            CreateMediaRequest(
+              filePath: item.filePath,
+              mediaType: item.mediaType,
+              duration: item.duration,
+              aspectRatio: item.aspectRatio,
+            ),
+          );
+        }
+      }
+
+      final success = await experienceProvider.updateExperience(
+        widget.experienceToEdit!.id,
+        description: newDescription,
+        existingMediaUrls: existingMediaUrls,
+        newMediaFiles: newMediaFiles.isNotEmpty ? newMediaFiles : null,
       );
-    } else {
-      if (provider.error != null && mounted) {
+
+      if (success && mounted) {
+        final provider = context.read<ExperienceCreatorProvider>();
+        provider.reset();
+        Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.error!), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('¡Publicación actualizada exitosamente!'),
+            backgroundColor: Colors.green,
+          ),
         );
-        provider.clearError();
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(experienceProvider.error ?? 'Error al actualizar'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      // Modo creación: crear nueva experiencia
+      final provider = context.read<ExperienceCreatorProvider>();
+      final success = await provider.createExperience();
+
+      if (success && mounted) {
+        Navigator.of(context).pop(true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Experiencia publicada exitosamente!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        if (provider.error != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(provider.error!),
+              backgroundColor: Colors.red,
+            ),
+          );
+          provider.clearError();
+        }
       }
     }
   }
 
   void _showDeleteDialog(BuildContext context) {
+    final title = widget.isPostMode
+        ? 'Descartar Publicación'
+        : 'Descartar Historia';
+    final content = widget.isPostMode
+        ? '¿Estás seguro de que deseas descartar esta publicación? Se perderán todos los cambios.'
+        : '¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios.';
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Descartar Historia'),
-        content: const Text(
-          '¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios.',
-        ),
+        title: Text(title),
+        content: Text(content),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),

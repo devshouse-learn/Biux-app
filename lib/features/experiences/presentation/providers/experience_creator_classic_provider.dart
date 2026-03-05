@@ -15,6 +15,7 @@ class MediaItem {
   final double? aspectRatio;
   final String? thumbnailPath;
   final bool isProcessing;
+  final String? url; // URL remota para media ya subida (modo edición)
 
   const MediaItem({
     required this.filePath,
@@ -23,10 +24,12 @@ class MediaItem {
     this.aspectRatio,
     this.thumbnailPath,
     this.isProcessing = false,
+    this.url,
   });
 
   bool get isVideo => mediaType == MediaType.video;
   bool get isImage => mediaType == MediaType.image;
+  bool get isRemote => url != null && url!.isNotEmpty;
 
   MediaItem copyWith({
     String? filePath,
@@ -35,6 +38,7 @@ class MediaItem {
     double? aspectRatio,
     String? thumbnailPath,
     bool? isProcessing,
+    String? url,
   }) {
     return MediaItem(
       filePath: filePath ?? this.filePath,
@@ -43,6 +47,7 @@ class MediaItem {
       aspectRatio: aspectRatio ?? this.aspectRatio,
       thumbnailPath: thumbnailPath ?? this.thumbnailPath,
       isProcessing: isProcessing ?? this.isProcessing,
+      url: url ?? this.url,
     );
   }
 }
@@ -403,6 +408,23 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   /// Limpiar error
   void clearError() {
     _error = null;
+    notifyListeners();
+  }
+
+  /// Cargar media existente de una experiencia (para modo edición)
+  void loadExistingMedia(List<ExperienceMediaEntity> existingMedia) {
+    _mediaItems = existingMedia
+        .map(
+          (m) => MediaItem(
+            filePath: '', // No hay archivo local
+            mediaType: m.mediaType,
+            duration: m.duration,
+            aspectRatio: m.aspectRatio,
+            thumbnailPath: null,
+            url: m.url,
+          ),
+        )
+        .toList();
     notifyListeners();
   }
 

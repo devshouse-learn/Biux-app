@@ -8,6 +8,10 @@ import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/presentation/widgets/video_player_widget.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
+import 'package:biux/features/social/presentation/providers/likes_provider.dart';
+import 'package:biux/features/social/domain/entities/like_entity.dart';
+import 'package:biux/features/social/domain/repositories/likes_repository.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story
 /// Soporta reproducción automática de videos e imágenes con duración
@@ -32,9 +36,8 @@ class ExperienceStoryViewer extends StatefulWidget {
 }
 
 class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController _progressController;
-  late AnimationController _scaleController;
 
   int currentMediaIndex = 0;
   bool isPaused = false;
@@ -53,10 +56,6 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     // Inicializar con duración estándar de 15 segundos
     _progressController = AnimationController(
       duration: const Duration(seconds: 15),
-      vsync: this,
-    );
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 100),
       vsync: this,
     );
 
@@ -146,32 +145,19 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     }
   }
 
-  void _onTapDown(TapDownDetails details) {
+  void _onLongPressStart(LongPressStartDetails details) {
     setState(() {
       isPressed = true;
     });
-    _scaleController.forward();
     _progressController.stop();
   }
 
-  void _onTapUp(TapUpDetails details) {
+  void _onLongPressEnd(LongPressEndDetails details) {
     setState(() {
       isPressed = false;
     });
-    _scaleController.reverse();
 
-    if (!isPaused) {
-      _progressController.forward();
-    }
-  }
-
-  void _onTapCancel() {
-    setState(() {
-      isPressed = false;
-    });
-    _scaleController.reverse();
-
-    if (!isPaused) {
+    if (!isPaused && isMediaReady) {
       _progressController.forward();
     }
   }
@@ -187,24 +173,12 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
-        onTapDown: _onTapDown,
-        onTapUp: _onTapUp,
-        onTapCancel: _onTapCancel,
-        onTap: widget.onTap,
+        onLongPressStart: _onLongPressStart,
+        onLongPressEnd: _onLongPressEnd,
         child: Stack(
           children: [
             // Contenido principal
-            Center(
-              child: AnimatedBuilder(
-                animation: _scaleController,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: 1.0 - (_scaleController.value * 0.05),
-                    child: _buildMediaContent(currentMedia),
-                  );
-                },
-              ),
-            ),
+            Center(child: _buildMediaContent(currentMedia)),
 
             // Barra de progreso superior
             Positioned(
@@ -222,7 +196,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               child: _buildUserHeader(),
             ),
 
-            // Footer con descripción y botón de publicidad
+            // Footer con descripción centrada
             if (widget.experience.description.isNotEmpty)
               Positioned(
                 bottom: MediaQuery.of(context).padding.bottom + 10,
@@ -236,22 +210,24 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ),
 
-            // Botón de like para la historia
-            Positioned(
-              bottom: MediaQuery.of(context).padding.bottom + 150,
-              left: 20,
-              child: StoryLikeButton(
-                storyId: widget.experience.id,
-                storyOwnerId: widget.experience.user.id,
+            // Botón de like para la historia (solo para otros usuarios, no para el propietario)
+            if (FirebaseAuth.instance.currentUser?.uid !=
+                widget.experience.user.id)
+              Positioned(
+                bottom: MediaQuery.of(context).padding.bottom + 150,
+                left: 20,
+                child: StoryLikeButton(
+                  storyId: widget.experience.id,
+                  storyOwnerId: widget.experience.user.id,
+                ),
               ),
-            ),
 
-            // Botón de visualizadores (ojo con número de vistas)
+            // Botón de visualizadores (ojo con número de vistas) - abajo a la derecha
             if (FirebaseAuth.instance.currentUser?.uid ==
                 widget.experience.user.id)
               Positioned(
-                bottom: MediaQuery.of(context).padding.bottom + 210,
-                left: 20,
+                bottom: MediaQuery.of(context).padding.bottom + 20,
+                right: 20,
                 child: GestureDetector(
                   onTap: () => _showViewersModal(context),
                   child: Container(
@@ -277,7 +253,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          widget.experience.views.toString(),
+                          widget.experience.viewers.length.toString(),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -300,9 +276,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 top: MediaQuery.of(context).padding.top + 10,
                 right: 10,
                 child: GestureDetector(
-                  onTap: () {
-                    _confirmDeleteStory(context);
-                  },
+                  onTap: () => _showStoryOptions(context),
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -326,16 +300,23 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildMediaContent(ExperienceMediaEntity media) {
     switch (media.mediaType) {
       case MediaType.image:
-        return OptimizedNetworkImage(
-          imageUrl: media.url,
-          fit: BoxFit.cover,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          imageType: 'experience',
-          placeholder: Container(
-            color: Colors.grey[900],
-            child: const Center(
-              child: CircularProgressIndicator(color: ColorTokens.primary50),
+        return Container(
+          color: Colors.black,
+          child: Center(
+            child: OptimizedNetworkImage(
+              imageUrl: media.url,
+              fit: BoxFit.contain,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              imageType: 'experience',
+              placeholder: Container(
+                color: Colors.grey[900],
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: ColorTokens.primary50,
+                  ),
+                ),
+              ),
             ),
           ),
         );
@@ -405,57 +386,67 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildUserHeader() {
     final user = widget.experience.user;
 
-
     return Row(
       children: [
         // Avatar + información usuario (clickeable para ir al perfil)
-        GestureDetector(
-          onTap: () {
-            if (user.id.isNotEmpty) {
-              context.push('/user-profile/${user.id}');
-            }
-          },
-          child: Row(
-            children: [
-              // Avatar simple
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: user.photo.isNotEmpty
-                    ? NetworkImage(user.photo)
-                    : null,
-                child: user.photo.isEmpty
-                    ? const Icon(Icons.person, color: Colors.white)
-                    : null,
-                backgroundColor: Colors.grey[600],
-              ),
-              const SizedBox(width: 12),
-              // Información directa del usuario
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user.fullName.isNotEmpty
-                        ? user.fullName
-                        : (user.userName.isNotEmpty
-                              ? user.userName
-                              : 'Usuario sin datos'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  if (user.userName.isNotEmpty)
-                    Text(
-                      '@${user.userName}',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
+        Flexible(
+          child: GestureDetector(
+            onTap: () {
+              if (user.id.isNotEmpty) {
+                context.push('/user-profile/${user.id}');
+              }
+            },
+            child: Row(
+              children: [
+                // Avatar simple
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: user.photo.isNotEmpty
+                      ? NetworkImage(user.photo)
+                      : null,
+                  child: user.photo.isEmpty
+                      ? const Icon(Icons.person, color: Colors.white)
+                      : null,
+                  backgroundColor: Colors.grey[600],
+                ),
+                const SizedBox(width: 12),
+                // Información directa del usuario
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        user.fullName.isNotEmpty
+                            ? user.fullName
+                            : (user.userName.isNotEmpty
+                                  ? user.userName
+                                  : 'Usuario sin datos'),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          height: 1.2,
+                        ),
                       ),
-                    ),
-                ],
-              ),
-            ],
+                      if (user.userName.isNotEmpty)
+                        Text(
+                          '@${user.userName}',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                            height: 1.2,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
 
@@ -464,6 +455,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         // Tiempo y estado
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               _getTimeAgo(widget.experience.createdAt),
@@ -550,51 +542,26 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   Widget _buildDescription() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Descripción de la historia
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.black.withValues(alpha: 0.5),
-          ),
-          child: Text(
-            widget.experience.description,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        // Botón para agregar publicidad
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ElevatedButton.icon(
-            onPressed: () => _showAddAdvertisementOptions(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.secondary50.withValues(alpha: 0.8),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            icon: const Icon(Icons.campaign, size: 20),
-            label: const Text(
-              'Agregar Publicidad',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.black.withValues(alpha: 0.5),
+      ),
+      child: Text(
+        widget.experience.description,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
     );
   }
 
-  /// Muestra opciones para agregar una publicidad
-  void _showAddAdvertisementOptions(BuildContext context) {
+  /// Muestra opciones de la historia (eliminar, compartir)
+  void _showStoryOptions(BuildContext context) {
     final theme = Theme.of(context);
+
+    // Pausar el progreso mientras se muestra el menú
+    _progressController.stop();
 
     showModalBottomSheet(
       context: context,
@@ -602,248 +569,362 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => SafeArea(
+      builder: (modalContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Crear Publicidad',
-                style: Theme.of(context).textTheme.headlineSmall,
+              // Barra de arrastre
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Promociona tu negocio, producto o servicio a todos los ciclistas',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Opción: Publicidad simple
-              _AdvertisementOptionButton(
-                icon: Icons.image,
-                title: 'Publicidad Simple',
-                description: 'Imagen + Título + Descripción',
+              // Opción: Compartir
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: ColorTokens.primary50.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.share, color: ColorTokens.primary50),
+                ),
+                title: const Text(
+                  'Compartir',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: const Text('Comparte esta historia'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 onTap: () {
-                  Navigator.pop(context);
-                  _navigateToCreateAdvertisement(context, 'simple');
+                  Navigator.pop(modalContext);
+                  _shareStory(context);
+                },
+              ),
+
+              const SizedBox(height: 8),
+
+              // Opción: Eliminar
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.delete_outline, color: Colors.red),
+                ),
+                title: const Text(
+                  'Eliminar historia',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.red,
+                  ),
+                ),
+                subtitle: const Text('Esta acción no se puede deshacer'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                onTap: () {
+                  Navigator.pop(modalContext);
+                  _confirmDeleteStory(context);
                 },
               ),
 
               const SizedBox(height: 12),
 
-              // Opción: Publicidad premium
-              _AdvertisementOptionButton(
-                icon: Icons.star,
-                title: 'Publicidad Premium',
-                description: 'Con enlace directo y más visibilidad',
-                onTap: () {
-                  Navigator.pop(context);
-                  _navigateToCreateAdvertisement(context, 'premium');
-                },
-                isPremium: true,
-              ),
-
-              const SizedBox(height: 12),
-
-              // Botón de cerrar
+              // Cancelar
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.pop(modalContext),
                 child: const Text('Cancelar'),
               ),
             ],
           ),
         ),
       ),
-    );
+    ).whenComplete(() {
+      // Reanudar el progreso cuando se cierre el menú
+      if (!isPaused && isMediaReady) {
+        _progressController.forward();
+      }
+    });
   }
 
-  /// Muestra modal con información de visualizaciones
+  /// Comparte la historia
+  void _shareStory(BuildContext context) {
+    final user = widget.experience.user;
+    final description = widget.experience.description;
+    final mediaUrl = widget.experience.media.isNotEmpty
+        ? widget.experience.media[currentMediaIndex].url
+        : '';
+
+    final shareText = StringBuffer();
+    if (user.fullName.isNotEmpty) {
+      shareText.write('Historia de ${user.fullName}');
+    } else {
+      shareText.write('Historia de @${user.userName}');
+    }
+    if (description.isNotEmpty) {
+      shareText.write('\n\n$description');
+    }
+    if (mediaUrl.isNotEmpty) {
+      shareText.write('\n\n$mediaUrl');
+    }
+    shareText.write('\n\nCompartido desde Biux');
+
+    SharePlus.instance.share(ShareParams(text: shareText.toString()));
+  }
+
+  /// Muestra modal con información de visualizaciones y likes
   void _showViewersModal(BuildContext context) {
     final theme = Theme.of(context);
-    final viewsCount = widget.experience.views;
     final viewers = widget.experience.viewers;
+    final viewsCount = viewers.length;
     final hasViewers = viewers.isNotEmpty;
+    final likesProvider = context.read<LikesProvider>();
 
     showModalBottomSheet(
       context: context,
       backgroundColor: theme.cardColor,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Encabezado
-              Row(
-                children: [
-                  const Icon(
-                    Icons.visibility,
-                    color: ColorTokens.primary50,
-                    size: 28,
+      builder: (modalContext) => DraggableScrollableSheet(
+        initialChildSize: hasViewers ? 0.5 : 0.35,
+        minChildSize: 0.25,
+        maxChildSize: hasViewers ? 0.85 : 0.4,
+        expand: false,
+        builder: (sheetContext, scrollController) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Barra de arrastre
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Quién vio tu historia',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$viewsCount ${viewsCount == 1 ? 'visualización' : 'visualizaciones'}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
+                ),
+                const SizedBox(height: 16),
 
-              if (hasViewers)
-                Flexible(
-                  child: SingleChildScrollView(
+                // Encabezado
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.visibility,
+                      color: ColorTokens.primary50,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Quién vio tu historia',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$viewsCount ${viewsCount == 1 ? 'visualización' : 'visualizaciones'}',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                if (hasViewers)
+                  Expanded(
+                    child: StreamBuilder<List<LikeEntity>>(
+                      stream: likesProvider.watchLikes(
+                        LikeableType.story,
+                        widget.experience.id,
+                      ),
+                      builder: (context, likesSnapshot) {
+                        final likerIds = <String>{};
+                        if (likesSnapshot.hasData) {
+                          for (final like in likesSnapshot.data!) {
+                            if (!like.isExpired) {
+                              likerIds.add(like.userId);
+                            }
+                          }
+                        }
+
+                        return ListView.separated(
+                          controller: scrollController,
+                          itemCount: viewers.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 8),
+                          itemBuilder: (context, index) {
+                            final viewer = viewers[index];
+                            final hasLiked = likerIds.contains(viewer.id);
+
+                            return InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () {
+                                Navigator.pop(modalContext);
+                                final currentUid =
+                                    FirebaseAuth.instance.currentUser?.uid;
+                                if (viewer.id == currentUid) {
+                                  context.push('/profile');
+                                } else {
+                                  context.push('/user-profile/${viewer.id}');
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6,
+                                  horizontal: 4,
+                                ),
+                                child: Row(
+                                  children: [
+                                    // Avatar con corazón superpuesto si dio like
+                                    Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 24,
+                                          backgroundImage:
+                                              viewer.photo.isNotEmpty
+                                              ? NetworkImage(viewer.photo)
+                                              : null,
+                                          backgroundColor: Colors.grey[600],
+                                          child: viewer.photo.isEmpty
+                                              ? const Icon(
+                                                  Icons.person,
+                                                  color: Colors.white,
+                                                )
+                                              : null,
+                                        ),
+                                        if (hasLiked)
+                                          Positioned(
+                                            bottom: -2,
+                                            right: -2,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                color: theme.cardColor,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.favorite,
+                                                color: Colors.red,
+                                                size: 16,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(width: 12),
+                                    // Información del usuario
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            viewer.fullName.isNotEmpty
+                                                ? viewer.fullName
+                                                : (viewer.userName.isNotEmpty
+                                                      ? viewer.userName
+                                                      : 'Usuario'),
+                                            style: theme.textTheme.bodyLarge
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                          if (viewer.userName.isNotEmpty)
+                                            Text(
+                                              '@${viewer.userName}',
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                    color: Colors.grey[600],
+                                                  ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Icono de flecha para indicar navegación
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: Colors.grey[400],
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  )
+                else
+                  // Mensaje cuando no hay visualizaciones
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.primary50.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: ColorTokens.primary50.withValues(alpha: 0.2),
+                      ),
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        ...List.generate(viewers.length, (index) {
-                          final viewer = viewers[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Row(
-                              children: [
-                                // Avatar del visualizador
-                                CircleAvatar(
-                                  radius: 24,
-                                  backgroundImage: viewer.photo.isNotEmpty
-                                      ? NetworkImage(viewer.photo)
-                                      : null,
-                                  child: viewer.photo.isEmpty
-                                      ? const Icon(
-                                          Icons.person,
-                                          color: Colors.white,
-                                        )
-                                      : null,
-                                  backgroundColor: Colors.grey[600],
-                                ),
-                                const SizedBox(width: 12),
-                                // Información del usuario
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        viewer.fullName.isNotEmpty
-                                            ? viewer.fullName
-                                            : (viewer.userName.isNotEmpty
-                                                  ? viewer.userName
-                                                  : 'Usuario'),
-                                        style: theme.textTheme.bodyLarge
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                      ),
-                                      if (viewer.userName.isNotEmpty)
-                                        Text(
-                                          '@${viewer.userName}',
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: Colors.grey[600],
-                                              ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
+                        Icon(
+                          Icons.visibility_off,
+                          color: Colors.grey[600],
+                          size: 48,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Nadie ha visto tu historia aún',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Comparte tu historia con más amigos para que la vean',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                )
-              else
-                // Mensaje cuando no hay visualizaciones
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: ColorTokens.primary50.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: ColorTokens.primary50.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.visibility_off,
-                        color: Colors.grey[600],
-                        size: 48,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Aún nadie ha visto tu historia',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Comparte tu historia con más amigos para que la vean',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              const SizedBox(height: 20),
-
-              // Botón de cerrar
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorTokens.primary50,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text(
-                  'Entendido',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  /// Navega a la pantalla de crear publicidad
-  void _navigateToCreateAdvertisement(BuildContext context, String type) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Función de crear publicidad $type en desarrollo'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-    // PENDIENTE: Implementar navegación a CreateAdvertisementScreen
   }
 
   Widget _buildTouchAreas() {
@@ -913,126 +994,6 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   @override
   void dispose() {
     _progressController.dispose();
-    _scaleController.dispose();
     super.dispose();
-  }
-}
-
-/// Widget para mostrar una opción de publicidad
-class _AdvertisementOptionButton extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final VoidCallback onTap;
-  final bool isPremium;
-
-  const _AdvertisementOptionButton({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.onTap,
-    this.isPremium = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isPremium
-                ? ColorTokens.secondary50.withValues(alpha: 0.5)
-                : theme.dividerColor,
-            width: isPremium ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(12),
-          color: isPremium
-              ? ColorTokens.secondary50.withValues(alpha: 0.05)
-              : theme.colorScheme.surface,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isPremium
-                    ? ColorTokens.secondary50.withValues(alpha: 0.2)
-                    : theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                icon,
-                color: isPremium
-                    ? ColorTokens.secondary50
-                    : theme.iconTheme.color,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: theme.textTheme.bodyLarge?.color,
-                        ),
-                      ),
-                      if (isPremium) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: ColorTokens.secondary50,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'PREMIUM',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.textTheme.bodySmall?.color?.withValues(
-                        alpha: 0.7,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: theme.iconTheme.color?.withValues(alpha: 0.5),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

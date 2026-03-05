@@ -12,6 +12,7 @@ import 'package:biux/features/experiences/presentation/screens/create_experience
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/shared/widgets/post_card.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: ColorTokens.primary30,
@@ -126,20 +127,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           return _buildBody(provider);
         },
       ),
-      floatingActionButton: GestureDetector(
-        // Tap principal: crear publicación directamente (como antes)
-        onTap: () => _navigateToCreatePost(context),
-        // Long press: mostrar opciones adicionales
-        onLongPress: () => _showCreatePostOptions(context),
-        child: FloatingActionButton(
-          onPressed: () => _navigateToCreatePost(context),
-          backgroundColor:
-              theme.floatingActionButtonTheme.backgroundColor ??
-              theme.primaryColor,
-          child: const Icon(Icons.add, color: Colors.white),
-          heroTag: "create_post_fab",
-        ),
-      ),
     );
   }
 
@@ -159,11 +146,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     // - Incluye fotos y videos con contenido válido
     // - Cualquier longitud de descripción
     // - EXCLUYE las que ya se muestran como stories
-    final posts = allExperiences
-        .where(
-          (exp) => exp.isPostFormat,
-        )
-        .toList();
+    final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
 
     // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
     return RefreshIndicator(
@@ -297,7 +280,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         return false;
       },
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.zero,
         itemCount: intercaledList.length + (provider.hasMorePosts ? 1 : 0),
         itemBuilder: (context, index) {
           // Mostrar post normal o anuncio
@@ -535,272 +518,53 @@ class _ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final imageUrls = experience.media.map((m) => m.url).toList();
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final isOwner = currentUserId == experience.user.id;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: theme.shadowColor.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header con información del autor del post
-          _buildAuthorHeader(context),
-
-          // Media section
-          if (experience.media.isNotEmpty) _buildMediaSection(context),
-
-          // Content section
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Description
-                if (experience.description.isNotEmpty)
-                  Text(
-                    experience.description,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: theme.textTheme.bodyMedium?.color,
-                      height: 1.4,
-                    ),
-                  ),
-
-                const SizedBox(height: 12),
-
-                // Metadata (tags removidos)
-                _buildMetadata(),
-              ],
-            ),
-          ),
-
-          // Divider
-          const Divider(height: 1),
-
-          // Acciones sociales (Likes y Comentarios)
-          PostSocialActions(
-            postId: experience.id,
-            postOwnerId: experience.user.id,
-            postPreview: experience.description.length > 50
-                ? experience.description.substring(0, 50)
-                : experience.description,
-          ),
-
-          // Vista previa de comentarios
-          PostCommentsPreview(
-            postId: experience.id,
-            postOwnerId: experience.user.id,
-            maxComments: 2,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMediaSection(BuildContext context) {
-    final theme = Theme.of(context);
-    final media = experience.media.first;
-
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(12),
-        topRight: Radius.circular(12),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          // Navegar al visor de post tipo Instagram
+      margin: const EdgeInsets.only(bottom: 12),
+      child: PostCard(
+        user: PostCardUser(
+          id: experience.user.id,
+          fullName: experience.user.fullName,
+          userName: experience.user.userName,
+          photo: experience.user.photo,
+        ),
+        imageUrls: imageUrls,
+        description: experience.description,
+        timestamp: _formatDate(experience.createdAt),
+        isEdited: experience.isEdited,
+        onUserTap: () {
+          if (experience.user.id.isNotEmpty) {
+            if (currentUserId == experience.user.id) {
+              context.push('/profile');
+            } else {
+              context.push('/user-profile/${experience.user.id}');
+            }
+          }
+        },
+        onImageTap: (_) {
           context.push('/social/post/${experience.id}');
         },
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: media.mediaType == MediaType.image
-                ? Image.network(
-                    media.url,
-                    fit: BoxFit.cover,
-                    errorBuilder: (ctx, error, stackTrace) {
-                      return Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            color: theme.iconTheme.color?.withValues(
-                              alpha: 0.5,
-                            ),
-                            size: 48,
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                : Stack(
-                    children: [
-                      if (media.thumbnailUrl != null)
-                        Image.network(
-                          media.thumbnailUrl!,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: Colors.black54,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMetadata() {
-    return Builder(
-      builder: (context) {
-        final theme = Theme.of(context);
-        return Row(
-          children: [
-            const SizedBox(width: 12),
-
-            // Media count
-            if (experience.media.length > 1) ...[
-              const SizedBox(width: 12),
-              Row(
-                children: [
-                  Icon(
-                    Icons.photo_library,
-                    size: 16,
-                    color: theme.textTheme.bodySmall?.color?.withValues(
-                      alpha: 0.7,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${experience.media.length}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.textTheme.bodySmall?.color?.withValues(
-                        alpha: 0.7,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildAuthorHeader(BuildContext context) {
-    final theme = Theme.of(context);
-    final user = experience.user;
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          // Avatar y nombre del autor - con navegación al perfil
+        headerTrailing: [
           GestureDetector(
-            onTap: () {
-              if (user.id.isNotEmpty) {
-                context.push('/user-profile/${user.id}');
-              }
-            },
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: user.photo.isNotEmpty
-                      ? NetworkImage(user.photo)
-                      : null,
-                  child: user.photo.isEmpty
-                      ? const Icon(Icons.person, color: Colors.white)
-                      : null,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.fullName.isNotEmpty
-                          ? user.fullName
-                          : (user.userName.isNotEmpty
-                                ? user.userName
-                                : 'Usuario sin nombre'),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        if (user.userName.isNotEmpty)
-                          Text(
-                            '@${user.userName}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: isDark
-                                  ? Colors.grey[400]
-                                  : Colors.grey[600],
-                            ),
-                          ),
-                        if (user.userName.isNotEmpty)
-                          Text(
-                            ' • ',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: isDark
-                                  ? Colors.grey[400]
-                                  : Colors.grey[600],
-                            ),
-                          ),
-                        Text(
-                          _formatDate(experience.createdAt),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Expanded(child: SizedBox()),
-          // Botón de menú (3 puntos) - alineado a la derecha con padding
-          IconButton(
-            icon: Icon(Icons.more_vert, color: theme.iconTheme.color, size: 20),
-            onPressed: () => _showPostMenu(context),
+            onTap: () => _showPostMenu(context),
+            child: const Icon(Icons.more_vert, color: Colors.white70, size: 20),
           ),
         ],
+        actionsWidget: PostSocialActions(
+          postId: experience.id,
+          postOwnerId: experience.user.id,
+          postPreview: experience.description.length > 50
+              ? experience.description.substring(0, 50)
+              : experience.description,
+        ),
+        bottomWidget: PostCommentsPreview(
+          postId: experience.id,
+          postOwnerId: experience.user.id,
+          maxComments: 2,
+        ),
       ),
     );
   }
@@ -856,10 +620,9 @@ class _ExperienceCard extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Función de editar próximamente'),
-                    ),
+                  context.push(
+                    '/edit-post/${experience.id}',
+                    extra: experience,
                   );
                 },
               ),

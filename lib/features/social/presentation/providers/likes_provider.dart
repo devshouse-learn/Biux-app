@@ -90,8 +90,8 @@ class LikesProvider extends ChangeNotifier {
   // Map para rastrear cooldown por targetId (tiempo de espera entre acciones)
   final Map<String, DateTime> _cooldowns = {};
 
-  // Duración del cooldown (2 segundos)
-  static const Duration _cooldownDuration = Duration(seconds: 2);
+  // Duración del cooldown (500ms para evitar spam pero permitir uso ágil)
+  static const Duration _cooldownDuration = Duration(milliseconds: 500);
 
   bool get isProcessing => _isProcessing;
   String? get error => _error;

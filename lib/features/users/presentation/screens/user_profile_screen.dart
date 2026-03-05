@@ -24,13 +24,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   final Set<String> _failedImageIds = {};
   late final Future<dynamic> _experiencesFuture;
+  int _postCount = 0;
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _experiencesFuture = ExperienceRepositoryImpl().getUserExperiences(widget.userId);
+    _experiencesFuture = ExperienceRepositoryImpl().getUserExperiences(
+      widget.userId,
+    );
 
     // Cargar perfil del usuario
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -47,7 +50,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
@@ -319,7 +321,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               Column(
                                 children: [
                                   Text(
-                                    '0',
+                                    _postCount.toString(),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -426,7 +428,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: ColorTokens.primary30,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? ColorTokens.neutral100
+                              : ColorTokens.primary30,
                         ),
                       ),
 
@@ -614,7 +618,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             // Para videos: validar que tenga thumbnail o URL válida
             if (media.mediaType == MediaType.video) {
               final thumb = media.thumbnailUrl ?? '';
-              return thumb.isNotEmpty && thumb.startsWith('http') || url.isNotEmpty;
+              return thumb.isNotEmpty && thumb.startsWith('http') ||
+                  url.isNotEmpty;
             }
             return true;
           } catch (e) {
@@ -626,6 +631,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         experiences.removeWhere(
           (exp) => _failedImageIds.contains(exp.id.toString()),
         );
+
+        // Actualizar contador de posts
+        if (_postCount != experiences.length) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _postCount = experiences.length);
+          });
+        }
 
         // Si después de filtrar no hay experiencias, mostrar el mensaje
         if (experiences.isEmpty) {
@@ -686,67 +698,80 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   children: [
                     // Imagen/thumbnail de la experiencia optimizada
                     experience.media.isNotEmpty
-                        ? Builder(builder: (context) {
-                            final media = experience.media.first;
-                            final isVideo = media.mediaType == MediaType.video;
-                            final displayUrl = isVideo
-                                ? (media.thumbnailUrl?.isNotEmpty == true
-                                    ? media.thumbnailUrl!
-                                    : media.url)
-                                : media.url;
-                            return Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                CachedNetworkImage(
-                                  imageUrl: displayUrl,
-                                  fit: BoxFit.cover,
-                                  cacheManager: OptimizedCacheManager.instance,
-                                  memCacheWidth: 400,
-                                  memCacheHeight: 400,
-                                  fadeInDuration: const Duration(milliseconds: 100),
-                                  fadeOutDuration: const Duration(milliseconds: 50),
-                                  placeholder: (context, url) => Container(
-                                    color: ColorTokens.neutral20,
-                                    child: Center(
-                                      child: Icon(
-                                        isVideo ? Icons.videocam : Icons.image,
-                                        color: ColorTokens.neutral60,
-                                        size: 32,
+                        ? Builder(
+                            builder: (context) {
+                              final media = experience.media.first;
+                              final isVideo =
+                                  media.mediaType == MediaType.video;
+                              final displayUrl = isVideo
+                                  ? (media.thumbnailUrl?.isNotEmpty == true
+                                        ? media.thumbnailUrl!
+                                        : media.url)
+                                  : media.url;
+                              return Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: displayUrl,
+                                    fit: BoxFit.cover,
+                                    cacheManager:
+                                        OptimizedCacheManager.instance,
+                                    memCacheWidth: 400,
+                                    memCacheHeight: 400,
+                                    fadeInDuration: const Duration(
+                                      milliseconds: 100,
+                                    ),
+                                    fadeOutDuration: const Duration(
+                                      milliseconds: 50,
+                                    ),
+                                    placeholder: (context, url) => Container(
+                                      color: ColorTokens.neutral20,
+                                      child: Center(
+                                        child: Icon(
+                                          isVideo
+                                              ? Icons.videocam
+                                              : Icons.image,
+                                          color: ColorTokens.neutral60,
+                                          size: 32,
+                                        ),
                                       ),
                                     ),
+                                    errorWidget: (context, url, error) {
+                                      final expId = experience.id.toString();
+                                      if (!_failedImageIds.contains(expId)) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              if (mounted) {
+                                                setState(() {
+                                                  _failedImageIds.add(expId);
+                                                });
+                                              }
+                                            });
+                                      }
+                                      return SizedBox.shrink();
+                                    },
                                   ),
-                                  errorWidget: (context, url, error) {
-                                    final expId = experience.id.toString();
-                                    if (!_failedImageIds.contains(expId)) {
-                                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                                        if (mounted) {
-                                          setState(() {
-                                            _failedImageIds.add(expId);
-                                          });
-                                        }
-                                      });
-                                    }
-                                    return SizedBox.shrink();
-                                  },
-                                ),
-                                if (isVideo)
-                                  Center(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withValues(alpha: 0.5),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.play_arrow,
-                                        color: Colors.white,
-                                        size: 24,
+                                  if (isVideo)
+                                    Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.5,
+                                          ),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.play_arrow,
+                                          color: Colors.white,
+                                          size: 24,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                              ],
-                            );
-                          })
+                                ],
+                              );
+                            },
+                          )
                         : Container(
                             color: ColorTokens.neutral20,
                             child: Icon(
@@ -754,7 +779,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               color: ColorTokens.neutral60,
                             ),
                           ),
-
                   ],
                 ),
               ),
@@ -807,7 +831,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.close, color: ColorTokens.neutral100),
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
                           onPressed: () => Navigator.pop(modalContext),
                         ),
                       ],
@@ -820,7 +847,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         if (provider.isLoadingFollowers) {
                           return Center(
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorTokens.primary30,
+                              ),
                             ),
                           );
                         }
@@ -828,7 +857,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           return Center(
                             child: Text(
                               'Sin seguidores aún',
-                              style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
+                              style: TextStyle(
+                                color: ColorTokens.neutral60,
+                                fontSize: 14,
+                              ),
                             ),
                           );
                         }
@@ -844,24 +876,41 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 backgroundImage: follower.photo.isNotEmpty
                                     ? CachedNetworkImageProvider(
                                         follower.photo,
-                                        cacheManager: OptimizedCacheManager.avatarInstance,
+                                        cacheManager: OptimizedCacheManager
+                                            .avatarInstance,
                                       )
                                     : null,
                                 child: follower.photo.isEmpty
-                                    ? Icon(Icons.person, size: 20, color: ColorTokens.neutral60)
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 20,
+                                        color: ColorTokens.neutral60,
+                                      )
                                     : null,
                               ),
                               title: Text(
-                                follower.fullName.isNotEmpty ? follower.fullName : 'Usuario',
-                                style: TextStyle(color: ColorTokens.neutral100, fontWeight: FontWeight.w500),
+                                follower.fullName.isNotEmpty
+                                    ? follower.fullName
+                                    : 'Usuario',
+                                style: TextStyle(
+                                  color: ColorTokens.neutral100,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               subtitle: follower.userName.isNotEmpty
                                   ? Text(
                                       '@${follower.userName}',
-                                      style: TextStyle(color: ColorTokens.neutral60, fontSize: 12),
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral60,
+                                        fontSize: 12,
+                                      ),
                                     )
                                   : null,
-                              trailing: Icon(Icons.arrow_forward_ios, size: 14, color: ColorTokens.neutral60),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: ColorTokens.neutral60,
+                              ),
                               onTap: () {
                                 Navigator.pop(modalContext);
                                 context.push('/user-profile/${follower.id}');
@@ -923,7 +972,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.close, color: ColorTokens.neutral100),
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
                           onPressed: () => Navigator.pop(modalContext),
                         ),
                       ],
@@ -936,7 +988,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         if (provider.isLoadingFollowing) {
                           return Center(
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(ColorTokens.primary30),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorTokens.primary30,
+                              ),
                             ),
                           );
                         }
@@ -944,7 +998,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           return Center(
                             child: Text(
                               'No sigue a nadie aún',
-                              style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
+                              style: TextStyle(
+                                color: ColorTokens.neutral60,
+                                fontSize: 14,
+                              ),
                             ),
                           );
                         }
@@ -960,27 +1017,46 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 backgroundImage: followingUser.photo.isNotEmpty
                                     ? CachedNetworkImageProvider(
                                         followingUser.photo,
-                                        cacheManager: OptimizedCacheManager.avatarInstance,
+                                        cacheManager: OptimizedCacheManager
+                                            .avatarInstance,
                                       )
                                     : null,
                                 child: followingUser.photo.isEmpty
-                                    ? Icon(Icons.person, size: 20, color: ColorTokens.neutral60)
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 20,
+                                        color: ColorTokens.neutral60,
+                                      )
                                     : null,
                               ),
                               title: Text(
-                                followingUser.fullName.isNotEmpty ? followingUser.fullName : 'Usuario',
-                                style: TextStyle(color: ColorTokens.neutral100, fontWeight: FontWeight.w500),
+                                followingUser.fullName.isNotEmpty
+                                    ? followingUser.fullName
+                                    : 'Usuario',
+                                style: TextStyle(
+                                  color: ColorTokens.neutral100,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               subtitle: followingUser.userName.isNotEmpty
                                   ? Text(
                                       '@${followingUser.userName}',
-                                      style: TextStyle(color: ColorTokens.neutral60, fontSize: 12),
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral60,
+                                        fontSize: 12,
+                                      ),
                                     )
                                   : null,
-                              trailing: Icon(Icons.arrow_forward_ios, size: 14, color: ColorTokens.neutral60),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: ColorTokens.neutral60,
+                              ),
                               onTap: () {
                                 Navigator.pop(modalContext);
-                                context.push('/user-profile/${followingUser.id}');
+                                context.push(
+                                  '/user-profile/${followingUser.id}',
+                                );
                               },
                             );
                           },

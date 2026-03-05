@@ -218,12 +218,12 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         .limit(1)
         .snapshots()
         .map((snapshot) {
-      if (snapshot.docs.isEmpty) return null;
-      final data = snapshot.docs.first.data();
-      final createdAt = data['createdAt'];
-      if (createdAt is Timestamp) return createdAt.toDate();
-      return null;
-    });
+          if (snapshot.docs.isEmpty) return null;
+          final data = snapshot.docs.first.data();
+          final createdAt = data['createdAt'];
+          if (createdAt is Timestamp) return createdAt.toDate();
+          return null;
+        });
   }
 
   @override
@@ -364,6 +364,9 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   Future<void> updateExperience(
     String experienceId, {
     required String description,
+    bool isEdited = true,
+    List<CreateMediaRequest>? newMediaFiles,
+    List<String>? existingMediaUrls,
   }) async {
     try {
       final user = _auth.currentUser;
@@ -385,10 +388,76 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('No tienes permisos para editar esta experiencia');
       }
 
-      // Actualizar la descripción
-      await _firestore.collection('experiences').doc(experienceId).update({
+      // Preparar campos a actualizar
+      final Map<String, dynamic> updateData = {
         'description': description,
-      });
+        'isEdited': isEdited,
+      };
+
+      // Si hay cambios de media
+      final bool hasNewMedia =
+          newMediaFiles != null && newMediaFiles.isNotEmpty;
+      final bool hasExistingUrls = existingMediaUrls != null;
+
+      if (hasNewMedia || hasExistingUrls) {
+        final mediaList = <Map<String, dynamic>>[];
+
+        // Mantener media existente que no fue eliminada
+        if (existingMediaUrls != null) {
+          final oldMedia = data['media'] as List;
+          for (final oldItem in oldMedia) {
+            final oldUrl = oldItem['url'] as String;
+            if (existingMediaUrls.contains(oldUrl)) {
+              mediaList.add(Map<String, dynamic>.from(oldItem as Map));
+            } else {
+              // Eliminar del storage el archivo que ya no se usa
+              try {
+                final ref = FirebaseStorage.instance.refFromURL(oldUrl);
+                await ref.delete();
+              } catch (e) {
+                print('Error eliminando archivo antiguo: $e');
+              }
+            }
+          }
+        }
+
+        // Subir nuevos archivos
+        if (hasNewMedia) {
+          for (int i = 0; i < newMediaFiles!.length; i++) {
+            final mediaFile = newMediaFiles[i];
+            final mediaId =
+                '${experienceId}_media_edit_${DateTime.now().millisecondsSinceEpoch}_$i';
+
+            final url = await uploadMedia(
+              filePath: mediaFile.filePath,
+              mediaType: mediaFile.mediaType,
+              experienceId: experienceId,
+            );
+
+            String? thumbnailUrl;
+            if (mediaFile.mediaType == MediaType.video) {
+              thumbnailUrl = url;
+            }
+
+            mediaList.add({
+              'id': mediaId,
+              'url': url,
+              'mediaType': mediaFile.mediaType.name,
+              'duration': mediaFile.duration,
+              'aspectRatio': mediaFile.aspectRatio,
+              'thumbnailUrl': thumbnailUrl,
+            });
+          }
+        }
+
+        updateData['media'] = mediaList;
+      }
+
+      // Actualizar en Firestore
+      await _firestore
+          .collection('experiences')
+          .doc(experienceId)
+          .update(updateData);
     } catch (e) {
       throw Exception('Error actualizando experiencia: $e');
     }

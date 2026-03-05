@@ -21,6 +21,9 @@ abstract class ExperienceRepository {
   Future<void> updateExperience(
     String experienceId, {
     required String description,
+    bool isEdited = true,
+    List<CreateMediaRequest>? newMediaFiles,
+    List<String>? existingMediaUrls,
   });
 
   /// Elimina una experiencia

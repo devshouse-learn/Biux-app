@@ -15,6 +15,7 @@ import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -65,17 +66,42 @@ class ProfileScreenContent extends StatefulWidget {
 
 class _ProfileScreenContentState extends State<ProfileScreenContent> {
   final Set<String> _failedImageIds = {};
-  late final Future<dynamic> _experiencesFuture;
+  late Future<dynamic> _experiencesFuture;
+  int _postCount = 0;
+  int _lastKnownFeedLength = -1;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _experiencesFuture = ExperienceRepositoryImpl().getUserExperiences(
+    _experiencesFuture = _loadExperiences();
+    _initializeUserData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Detectar si el feed cambió (nuevo post creado) para refrescar experiencias
+    final feedLength = context.watch<ExperienceProvider>().experiences.length;
+    if (_lastKnownFeedLength >= 0 && feedLength != _lastKnownFeedLength) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _refreshExperiences();
+      });
+    }
+    _lastKnownFeedLength = feedLength;
+  }
+
+  Future<dynamic> _loadExperiences() {
+    return ExperienceRepositoryImpl().getUserExperiences(
       FirebaseAuth.instance.currentUser?.uid ?? '',
     );
-    _initializeUserData();
+  }
+
+  void _refreshExperiences() {
+    setState(() {
+      _experiencesFuture = _loadExperiences();
+    });
   }
 
   void _showExperienceMenu(BuildContext context, dynamic experience) {
@@ -1078,9 +1104,28 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                   ),
                                   onSelected: (value) {
                                     if (value == 'story') {
-                                      context.go('/create-story');
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CreateExperienceScreen(
+                                                experienceType:
+                                                    ExperienceType.general,
+                                                isStoryMode: true,
+                                              ),
+                                        ),
+                                      );
                                     } else if (value == 'post') {
-                                      context.go('/create-post');
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CreateExperienceScreen(
+                                                experienceType:
+                                                    ExperienceType.general,
+                                                isPostMode: true,
+                                                textOnly: false,
+                                              ),
+                                        ),
+                                      );
                                     }
                                   },
                                   itemBuilder: (BuildContext context) => [
@@ -1260,7 +1305,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 Column(
                                   children: [
                                     Text(
-                                      '0',
+                                      _postCount.toString(),
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
@@ -1518,7 +1563,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 // Para videos: validar que tenga thumbnail o URL válida
                                 if (media.mediaType == MediaType.video) {
                                   final thumb = media.thumbnailUrl ?? '';
-                                  return thumb.isNotEmpty && thumb.startsWith('http') || url.isNotEmpty;
+                                  return thumb.isNotEmpty &&
+                                          thumb.startsWith('http') ||
+                                      url.isNotEmpty;
                                 }
                                 return true;
                               } catch (e) {
@@ -1528,8 +1575,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                             // Eliminar publicaciones con imágenes que fallaron al cargar
                             experiences.removeWhere(
-                              (exp) => _failedImageIds.contains(exp.id.toString()),
+                              (exp) =>
+                                  _failedImageIds.contains(exp.id.toString()),
                             );
+
+                            // Actualizar contador de posts
+                            if (_postCount != experiences.length) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (mounted)
+                                  setState(
+                                    () => _postCount = experiences.length,
+                                  );
+                              });
+                            }
 
                             // Si después de filtrar no hay experiencias, mostrar el mensaje
                             if (experiences.isEmpty) {
@@ -1610,77 +1668,117 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       children: [
                                         // Imagen/thumbnail de la experiencia optimizada
                                         experience.media.isNotEmpty
-                                            ? Builder(builder: (context) {
-                                                final media = experience.media.first;
-                                                final isVideo = media.mediaType == MediaType.video;
-                                                final displayUrl = isVideo
-                                                    ? (media.thumbnailUrl?.isNotEmpty == true
-                                                        ? media.thumbnailUrl!
-                                                        : media.url)
-                                                    : media.url;
-                                                return Stack(
-                                                  fit: StackFit.expand,
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      imageUrl: displayUrl,
-                                                      fit: BoxFit.cover,
-                                                      cacheManager:
-                                                          OptimizedCacheManager
-                                                              .instance,
-                                                      memCacheWidth: 400,
-                                                      memCacheHeight: 400,
-                                                      fadeInDuration: const Duration(
-                                                        milliseconds: 100,
-                                                      ),
-                                                      fadeOutDuration: const Duration(
-                                                        milliseconds: 50,
-                                                      ),
-                                                      placeholder: (context, url) =>
-                                                          Container(
-                                                            color:
-                                                                ColorTokens.neutral20,
-                                                            child: Center(
-                                                              child: Icon(
-                                                                isVideo ? Icons.videocam : Icons.image,
-                                                                color: ColorTokens
-                                                                    .neutral60,
-                                                                size: 32,
+                                            ? Builder(
+                                                builder: (context) {
+                                                  final media =
+                                                      experience.media.first;
+                                                  final isVideo =
+                                                      media.mediaType ==
+                                                      MediaType.video;
+                                                  final displayUrl = isVideo
+                                                      ? (media
+                                                                    .thumbnailUrl
+                                                                    ?.isNotEmpty ==
+                                                                true
+                                                            ? media
+                                                                  .thumbnailUrl!
+                                                            : media.url)
+                                                      : media.url;
+                                                  return Stack(
+                                                    fit: StackFit.expand,
+                                                    children: [
+                                                      CachedNetworkImage(
+                                                        imageUrl: displayUrl,
+                                                        fit: BoxFit.cover,
+                                                        cacheManager:
+                                                            OptimizedCacheManager
+                                                                .instance,
+                                                        memCacheWidth: 400,
+                                                        memCacheHeight: 400,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                              milliseconds: 100,
+                                                            ),
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                              milliseconds: 50,
+                                                            ),
+                                                        placeholder:
+                                                            (
+                                                              context,
+                                                              url,
+                                                            ) => Container(
+                                                              color: ColorTokens
+                                                                  .neutral20,
+                                                              child: Center(
+                                                                child: Icon(
+                                                                  isVideo
+                                                                      ? Icons
+                                                                            .videocam
+                                                                      : Icons
+                                                                            .image,
+                                                                  color: ColorTokens
+                                                                      .neutral60,
+                                                                  size: 32,
+                                                                ),
                                                               ),
                                                             ),
-                                                          ),
-                                                      errorWidget:
-                                                          (context, url, error) {
-                                                        final expId = experience.id.toString();
-                                                        if (!_failedImageIds.contains(expId)) {
-                                                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                            if (mounted) {
-                                                              setState(() {
-                                                                _failedImageIds.add(expId);
-                                                              });
-                                                            }
-                                                          });
-                                                        }
-                                                        return SizedBox.shrink();
-                                                      },
-                                                    ),
-                                                    if (isVideo)
-                                                      Center(
-                                                        child: Container(
-                                                          padding: const EdgeInsets.all(8),
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.black.withValues(alpha: 0.5),
-                                                            shape: BoxShape.circle,
-                                                          ),
-                                                          child: const Icon(
-                                                            Icons.play_arrow,
-                                                            color: Colors.white,
-                                                            size: 24,
+                                                        errorWidget: (context, url, error) {
+                                                          final expId =
+                                                              experience.id
+                                                                  .toString();
+                                                          if (!_failedImageIds
+                                                              .contains(
+                                                                expId,
+                                                              )) {
+                                                            WidgetsBinding
+                                                                .instance
+                                                                .addPostFrameCallback((
+                                                                  _,
+                                                                ) {
+                                                                  if (mounted) {
+                                                                    setState(() {
+                                                                      _failedImageIds
+                                                                          .add(
+                                                                            expId,
+                                                                          );
+                                                                    });
+                                                                  }
+                                                                });
+                                                          }
+                                                          return SizedBox.shrink();
+                                                        },
+                                                      ),
+                                                      if (isVideo)
+                                                        Center(
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  8,
+                                                                ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.5,
+                                                                      ),
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                ),
+                                                            child: const Icon(
+                                                              Icons.play_arrow,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 24,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                  ],
-                                                );
-                                              })
+                                                    ],
+                                                  );
+                                                },
+                                              )
                                             : Container(
                                                 color: ColorTokens.neutral20,
                                                 child: Icon(
@@ -1688,7 +1786,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                   color: ColorTokens.neutral60,
                                                 ),
                                               ),
-
                                       ],
                                     ),
                                   ),

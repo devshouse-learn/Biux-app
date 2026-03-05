@@ -169,14 +169,16 @@ class ExperienceProvider extends ChangeNotifier {
           // Para videos: validar que tenga URL de video o thumbnail válido
           if (media.mediaType == MediaType.video) {
             final thumb = media.thumbnailUrl?.trim() ?? '';
-            final hasValidVideo = url.contains('.mp4') ||
+            final hasValidVideo =
+                url.contains('.mp4') ||
                 url.contains('.mov') ||
                 url.contains('.avi') ||
                 url.contains('.webm') ||
                 url.contains('.3gp') ||
                 url.contains('alt=') ||
                 url.contains('firebasestorage');
-            final hasValidThumb = thumb.isNotEmpty &&
+            final hasValidThumb =
+                thumb.isNotEmpty &&
                 thumb.startsWith('http') &&
                 thumb.length >= 20;
             if (!hasValidVideo && !hasValidThumb) {
@@ -283,6 +285,8 @@ class ExperienceProvider extends ChangeNotifier {
   Future<bool> updateExperience(
     String experienceId, {
     required String description,
+    List<CreateMediaRequest>? newMediaFiles,
+    List<String>? existingMediaUrls,
   }) async {
     try {
       _setLoading(true);
@@ -291,6 +295,9 @@ class ExperienceProvider extends ChangeNotifier {
       await _repository.updateExperience(
         experienceId,
         description: description,
+        isEdited: true,
+        newMediaFiles: newMediaFiles,
+        existingMediaUrls: existingMediaUrls,
       );
 
       // Actualizar en las listas locales
@@ -349,15 +356,15 @@ class ExperienceProvider extends ChangeNotifier {
     _feedStreamSubscription = _repository
         .watchLatestExperienceTimestamp()
         .listen((latestTimestamp) {
-      if (latestTimestamp == null) return;
-      if (_latestKnownTimestamp == null ||
-          latestTimestamp.isAfter(_latestKnownTimestamp!)) {
-        // Hay contenido nuevo, recargar feed silenciosamente
-        if (!_isLoading && _currentFeedUserId != null) {
-          loadPersonalizedFeed(_currentFeedUserId!);
-        }
-      }
-    });
+          if (latestTimestamp == null) return;
+          if (_latestKnownTimestamp == null ||
+              latestTimestamp.isAfter(_latestKnownTimestamp!)) {
+            // Hay contenido nuevo, recargar feed silenciosamente
+            if (!_isLoading && _currentFeedUserId != null) {
+              loadPersonalizedFeed(_currentFeedUserId!);
+            }
+          }
+        });
   }
 
   /// Detiene el listener en tiempo real
@@ -431,7 +438,10 @@ class ExperienceProvider extends ChangeNotifier {
     // Actualizar en _experiences
     for (int i = 0; i < _experiences.length; i++) {
       if (_experiences[i].id == experienceId) {
-        _experiences[i] = _experiences[i].copyWith(description: newDescription);
+        _experiences[i] = _experiences[i].copyWith(
+          description: newDescription,
+          isEdited: true,
+        );
       }
     }
 
@@ -440,6 +450,7 @@ class ExperienceProvider extends ChangeNotifier {
       if (_userExperiences[i].id == experienceId) {
         _userExperiences[i] = _userExperiences[i].copyWith(
           description: newDescription,
+          isEdited: true,
         );
       }
     }
@@ -449,6 +460,7 @@ class ExperienceProvider extends ChangeNotifier {
       if (_rideExperiences[i].id == experienceId) {
         _rideExperiences[i] = _rideExperiences[i].copyWith(
           description: newDescription,
+          isEdited: true,
         );
       }
     }

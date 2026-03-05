@@ -15,6 +15,7 @@ class ExperienceModel {
   final int views;
   final List<ExperienceReactionModel> reactions;
   final List<UserModel> viewers;
+  final bool isEdited;
 
   const ExperienceModel({
     required this.id,
@@ -29,6 +30,7 @@ class ExperienceModel {
     this.views = 0,
     this.reactions = const [],
     this.viewers = const [],
+    this.isEdited = false,
   });
 
   /// Convertir a entidad de dominio
@@ -46,6 +48,7 @@ class ExperienceModel {
       views: views,
       reactions: reactions.map((e) => e.toEntity()).toList(),
       viewers: viewers.map((e) => e.toEntity()).toList(),
+      isEdited: isEdited,
     );
   }
 
@@ -67,6 +70,7 @@ class ExperienceModel {
           .map((e) => ExperienceReactionModel.fromEntity(e))
           .toList(),
       viewers: entity.viewers.map((e) => UserModel.fromEntity(e)).toList(),
+      isEdited: entity.isEdited,
     );
   }
 
@@ -86,6 +90,7 @@ class ExperienceModel {
       'views': views,
       'reactions': reactions.map((e) => e.toJson()).toList(),
       'viewers': viewers.map((e) => e.toJson()).toList(),
+      'isEdited': isEdited,
     };
   }
 
@@ -111,6 +116,7 @@ class ExperienceModel {
       viewers: (json['viewers'] as List? ?? [])
           .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      isEdited: json['isEdited'] as bool? ?? false,
     );
   }
 
