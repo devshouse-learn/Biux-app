@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/design_system/color_tokens.dart';
+import '../../../../core/design_system/locale_notifier.dart';
 import '../../domain/entities/order_entity.dart';
 import '../providers/shop_provider.dart';
 import '../widgets/price_tag.dart';
@@ -29,9 +30,10 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis Pedidos'),
+        title: Text(l.t('my_orders')),
         backgroundColor: ColorTokens.primary30,
       ),
       body: Consumer<ShopProvider>(
@@ -58,10 +60,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                               Container(
                                 padding: const EdgeInsets.all(24),
                                 decoration: BoxDecoration(
-                                  color: ColorTokens.primary30.withValues(alpha: 0.1),
+                                  color: ColorTokens.primary30.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: ColorTokens.primary30.withValues(alpha: 0.2),
+                                    color: ColorTokens.primary30.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     width: 2,
                                   ),
                                 ),
@@ -72,19 +78,19 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                 ),
                               ),
                               const SizedBox(height: 24),
-                              const Text(
-                                '¡Aún no tienes pedidos!',
-                                style: TextStyle(
+                              Text(
+                                l.t('no_orders_yet'),
+                                style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              const Text(
-                                '¡Es hora de encontrar productos increíbles!',
+                              Text(
+                                l.t('time_to_find_products'),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black54,
@@ -92,7 +98,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Explora nuestra tienda llena de productos\nde ciclismo de alta calidad y encuentra\ntodo lo que necesitas para tu próxima aventura.',
+                                l.t('explore_store_cycling'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 15,
@@ -106,7 +112,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                   context.go('/shop');
                                 },
                                 icon: const Icon(Icons.store, size: 22),
-                                label: const Text('Explorar Productos'),
+                                label: Text(l.t('explore_products')),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: ColorTokens.primary30,
                                   foregroundColor: Colors.white,
@@ -126,10 +132,12 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                   context.go('/shop');
                                 },
                                 icon: const Icon(Icons.pedal_bike, size: 20),
-                                label: const Text('Ver Ofertas'),
+                                label: Text(l.t('view_offers')),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: ColorTokens.primary30,
-                                  side: BorderSide(color: ColorTokens.primary30),
+                                  side: BorderSide(
+                                    color: ColorTokens.primary30,
+                                  ),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 24,
                                     vertical: 12,
@@ -174,7 +182,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Total de pedidos:',
+                              l.t('total_orders'),
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[600],
@@ -193,9 +201,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Total gastado:',
-                              style: TextStyle(
+                            Text(
+                              l.t('total_spent'),
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -227,6 +235,7 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -250,7 +259,7 @@ class _OrderCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Pedido #${order.id.substring(0, 8).toUpperCase()}',
+                          '${l.t('order_number_prefix')} #${order.id.substring(0, 8).toUpperCase()}',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -300,7 +309,7 @@ class _OrderCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
-                    '+ ${order.items.length - 2} producto${order.items.length - 2 != 1 ? 's' : ''} más',
+                    '+ ${order.items.length - 2} ${l.t('products_label')} ${l.t('more_products_suffix')}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -315,9 +324,12 @@ class _OrderCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Total:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('total_colon'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   LargePriceTag(price: order.total),
                 ],
@@ -341,6 +353,7 @@ class _OrderStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     Color backgroundColor;
     Color textColor;
     String label;
@@ -349,22 +362,22 @@ class _OrderStatusBadge extends StatelessWidget {
       case OrderStatus.pending:
         backgroundColor = Colors.orange[100]!;
         textColor = Colors.orange[900]!;
-        label = 'Pendiente';
+        label = l.t('order_pending');
         break;
       case OrderStatus.processing:
         backgroundColor = Colors.blue[100]!;
         textColor = Colors.blue[900]!;
-        label = 'Procesando';
+        label = l.t('order_processing');
         break;
       case OrderStatus.completed:
         backgroundColor = Colors.green[100]!;
         textColor = Colors.green[900]!;
-        label = 'Completado';
+        label = l.t('order_completed');
         break;
       case OrderStatus.cancelled:
         backgroundColor = Colors.red[100]!;
         textColor = Colors.red[900]!;
-        label = 'Cancelado';
+        label = l.t('order_cancelled');
         break;
       default:
         backgroundColor = Colors.grey[100]!;

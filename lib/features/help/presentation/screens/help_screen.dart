@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Pantalla de Ayuda con información importante para los usuarios
@@ -8,6 +10,7 @@ class HelpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -15,7 +18,7 @@ class HelpScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Ayuda y Soporte'),
+        title: Text(l.t('help_support')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
       ),
@@ -23,119 +26,92 @@ class HelpScreen extends StatelessWidget {
         padding: EdgeInsets.all(16),
         children: [
           // Bienvenida
-          _buildWelcomeCard(),
+          _buildWelcomeCard(l),
           SizedBox(height: 16),
 
           // Preguntas Frecuentes
-          _buildSectionTitle('Preguntas Frecuentes'),
-          _buildFAQItem(
-            '¿Cómo crear una historia?',
-            'Ve a la sección de Experiencias, toca el botón +, agrega una foto o video (máx. 30 segundos), escribe una descripción corta y publica. Las historias desaparecen en 24 horas.',
-          ),
-          _buildFAQItem(
-            '¿Cómo registrar mi bicicleta?',
-            'Ve a "Mis Bicis", toca el botón +, completa la información de tu bici (marca, modelo, color, número de serie). Esto te ayudará si la pierdes o es robada.',
-          ),
-          _buildFAQItem(
-            '¿Cómo unirme a una rodada?',
-            'Ve a la sección de Rodadas, busca una que te interese, toca en ella y presiona "Unirse". Recibirás notificaciones sobre actualizaciones de la rodada.',
-          ),
-          _buildFAQItem(
-            '¿Cómo crear un grupo?',
-            'Ve a Grupos, toca "Crear Grupo", completa la información (nombre, descripción, foto) y decide si será público o privado. Luego invita a otros ciclistas.',
-          ),
-          _buildFAQItem(
-            '¿Las fotos y videos ocupan mucho espacio?',
-            'No. La app comprime automáticamente las fotos a 1080x1350px y los videos se limitan a 30 segundos para optimizar el almacenamiento.',
-          ),
-          _buildFAQItem(
-            '¿Puedo publicar posts sin fotos?',
-            'Sí, pero solo los posts de texto son permanentes. Si agregas multimedia, se publicará automáticamente como historia (24 horas).',
-          ),
+          _buildSectionTitle(l.t('faq')),
+          _buildFAQItem(l.t('faq_create_story_q'), l.t('faq_create_story_a')),
+          _buildFAQItem(l.t('faq_register_bike_q'), l.t('faq_register_bike_a')),
+          _buildFAQItem(l.t('faq_join_ride_q'), l.t('faq_join_ride_a')),
+          _buildFAQItem(l.t('faq_create_group_q'), l.t('faq_create_group_a')),
+          _buildFAQItem(l.t('faq_media_space_q'), l.t('faq_media_space_a')),
+          _buildFAQItem(l.t('faq_text_posts_q'), l.t('faq_text_posts_a')),
 
           SizedBox(height: 24),
 
           // Características Principales
-          _buildSectionTitle('Características Principales'),
+          _buildSectionTitle(l.t('main_features')),
           _buildFeatureCard(
             icon: Icons.camera_alt,
-            title: 'Historias y Experiencias',
-            description:
-                'Comparte momentos de tus rodadas con fotos y videos. Las historias duran 24 horas.',
+            title: l.t('feature_stories_title'),
+            description: l.t('feature_stories_desc'),
             color: ColorTokens.primary50,
           ),
           _buildFeatureCard(
             icon: Icons.directions_bike,
-            title: 'Rodadas Organizadas',
-            description:
-                'Crea o únete a rodadas con otros ciclistas. Coordina rutas, horarios y puntos de encuentro.',
+            title: l.t('feature_rides_title'),
+            description: l.t('feature_rides_desc'),
             color: ColorTokens.secondary50,
           ),
           _buildFeatureCard(
             icon: Icons.pedal_bike,
-            title: 'Registro de Bicicletas',
-            description:
-                'Registra tus bicis con QR único. Si la pierdes, otros usuarios pueden ayudarte a encontrarla.',
+            title: l.t('feature_bikes_title'),
+            description: l.t('feature_bikes_desc'),
             color: Colors.green,
           ),
           _buildFeatureCard(
             icon: Icons.group,
-            title: 'Grupos y Comunidad',
-            description:
-                'Crea grupos de ciclismo, comparte rutas, organiza eventos y conecta con otros riders.',
+            title: l.t('feature_groups_title'),
+            description: l.t('feature_groups_desc'),
             color: ColorTokens.primary30,
           ),
           _buildFeatureCard(
             icon: Icons.map,
-            title: 'Mapas y Rutas',
-            description:
-                'Explora rutas de ciclismo, guarda tus favoritas y compártelas con la comunidad.',
+            title: l.t('feature_maps_title'),
+            description: l.t('feature_maps_desc'),
             color: ColorTokens.secondary30,
           ),
           _buildFeatureCard(
             icon: Icons.favorite,
-            title: 'Interacción Social',
-            description:
-                'Da like, comenta y sigue a otros ciclistas. Recibe notificaciones de actividad.',
+            title: l.t('feature_social_title'),
+            description: l.t('feature_social_desc'),
             color: Colors.pink,
           ),
 
           SizedBox(height: 24),
 
           // Consejos de Seguridad
-          _buildSectionTitle('Consejos de Seguridad'),
+          _buildSectionTitle(l.t('safety_tips_title')),
           _buildSafetyTip(
-            '🚴‍♂️ Usa siempre casco',
-            'El casco puede salvar tu vida. Es obligatorio para rodadas organizadas.',
+            l.t('safety_helmet_title'),
+            l.t('safety_helmet_desc'),
           ),
           _buildSafetyTip(
-            '🦺 Usa ropa visible',
-            'Colores brillantes y reflectivos te hacen más visible, especialmente de noche.',
+            l.t('safety_visible_title'),
+            l.t('safety_visible_desc'),
           ),
           _buildSafetyTip(
-            '💡 Luces en tu bici',
-            'Luz blanca adelante, roja atrás. Obligatorio para rodadas nocturnas.',
+            l.t('safety_lights_title'),
+            l.t('safety_lights_desc'),
           ),
           _buildSafetyTip(
-            '📱 Registra tu bici',
-            'Si registras tu bicicleta en la app, será más fácil recuperarla si la pierdes.',
+            l.t('safety_register_title'),
+            l.t('safety_register_desc'),
           ),
+          _buildSafetyTip(l.t('safety_group_title'), l.t('safety_group_desc')),
           _buildSafetyTip(
-            '👥 Rueda en grupo',
-            'Es más seguro rodar con otros. Usa las rodadas organizadas de la app.',
-          ),
-          _buildSafetyTip(
-            '🛣️ Respeta las señales',
-            'Los ciclistas también deben respetar semáforos y señales de tránsito.',
+            l.t('safety_signals_title'),
+            l.t('safety_signals_desc'),
           ),
 
           SizedBox(height: 24),
 
           // Soporte y Contacto
-          _buildSectionTitle('Soporte y Contacto'),
+          _buildSectionTitle(l.t('support_contact')),
           _buildContactCard(
             icon: Icons.email,
-            title: 'Email de Soporte',
+            title: l.t('email_support'),
             subtitle: 'soporte@biux.app',
             onTap: () => _launchEmail('soporte@biux.app'),
           ),
@@ -147,14 +123,14 @@ class HelpScreen extends StatelessWidget {
           ),
           _buildContactCard(
             icon: Icons.web,
-            title: 'Sitio Web',
+            title: l.t('website'),
             subtitle: 'www.biux.app',
             onTap: () => _launchURL('https://biux.devshouse.org'),
           ),
           _buildContactCard(
             icon: Icons.bug_report,
-            title: 'Reportar un Error',
-            subtitle: 'Ayúdanos a mejorar reportando bugs',
+            title: l.t('report_bug'),
+            subtitle: l.t('report_bug_subtitle'),
             onTap: () => _launchEmail(
               'bugs@biux.app',
               subject: 'Reporte de Error - BiUX App',
@@ -164,14 +140,14 @@ class HelpScreen extends StatelessWidget {
           SizedBox(height: 24),
 
           // Información Legal
-          _buildSectionTitle('Información Legal'),
-          _buildLegalItem('Términos y Condiciones', () {
+          _buildSectionTitle(l.t('legal_info')),
+          _buildLegalItem(l.t('terms_conditions'), () {
             _showTermsDialog(context);
           }),
-          _buildLegalItem('Política de Privacidad', () {
+          _buildLegalItem(l.t('privacy_policy'), () {
             _showPrivacyDialog(context);
           }),
-          _buildLegalItem('Licencias de Software', () {
+          _buildLegalItem(l.t('software_licenses'), () {
             showLicensePage(
               context: context,
               applicationName: 'BiUX',
@@ -190,7 +166,7 @@ class HelpScreen extends StatelessWidget {
                 Icon(Icons.pedal_bike, size: 48, color: ColorTokens.primary50),
                 SizedBox(height: 8),
                 Text(
-                  'BiUX - App para Ciclistas',
+                  l.t('biux_app_cyclists'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -204,7 +180,7 @@ class HelpScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  '© 2025 BiUX. Todos los derechos reservados.',
+                  l.t('all_rights_reserved'),
                   style: TextStyle(fontSize: 10, color: ColorTokens.neutral60),
                   textAlign: TextAlign.center,
                 ),
@@ -218,7 +194,7 @@ class HelpScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeCard() {
+  Widget _buildWelcomeCard(LocaleNotifier l) {
     return Card(
       color: ColorTokens.primary50,
       child: Padding(
@@ -232,7 +208,7 @@ class HelpScreen extends StatelessWidget {
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '¡Bienvenido a BiUX!',
+                    l.t('welcome_biux'),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -244,7 +220,7 @@ class HelpScreen extends StatelessWidget {
             ),
             SizedBox(height: 12),
             Text(
-              'Aquí encontrarás respuestas a las preguntas más frecuentes, consejos de seguridad y cómo contactarnos si necesitas ayuda.',
+              l.t('welcome_biux_desc'),
               style: TextStyle(fontSize: 14, color: Colors.white, height: 1.4),
             ),
           ],

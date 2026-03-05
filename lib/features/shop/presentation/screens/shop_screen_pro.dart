@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/presentation/providers/seller_request_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
@@ -71,6 +72,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       drawer: const ShopMenuDrawer(),
       backgroundColor: ColorTokens.neutral99, // Fondo claro y limpio
@@ -154,7 +156,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     context.read<ShopProvider>().searchProducts(query);
                   },
                   decoration: InputDecoration(
-                    hintText: 'Buscar productos...',
+                    hintText: Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('search_products'),
                     hintStyle: TextStyle(
                       color: ColorTokens.neutral70,
                       fontSize: 14,
@@ -1182,7 +1187,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     context.read<ShopProvider>().searchProducts(query);
                   },
                   decoration: InputDecoration(
-                    hintText: 'Buscar productos, marcas, categorías...',
+                    hintText: Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('search_products'),
                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                     prefixIcon: Icon(
                       Icons.search,
@@ -1603,7 +1611,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                            color: const Color(
+                              0xFF16242D,
+                            ).withValues(alpha: 0.12),
                           ),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -1612,7 +1622,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             isExpanded: true,
                             icon: Icon(
                               Icons.keyboard_arrow_down,
-                              color: const Color(0xFF16242D).withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.5),
                             ),
                             style: const TextStyle(
                               color: Color(0xFF16242D),
@@ -1706,7 +1718,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.12),
                             ),
                           ),
                           child: Row(
@@ -1714,7 +1728,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 18,
-                                color: const Color(0xFF16242D).withValues(alpha: 0.4),
+                                color: const Color(
+                                  0xFF16242D,
+                                ).withValues(alpha: 0.4),
                               ),
                               const SizedBox(width: 8),
                               Text(
@@ -2180,15 +2196,16 @@ class _ShopScreenProState extends State<ShopScreenPro>
   Widget _buildProductsGrid() {
     return Consumer<ShopProvider>(
       builder: (context, shopProvider, child) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         if (shopProvider.isLoadingProducts) {
-          return const SliverFillRemaining(
+          return SliverFillRemaining(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Cargando productos...'),
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(l.t('loading_products')),
                 ],
               ),
             ),
@@ -5447,16 +5464,19 @@ extension _BenefitDialogs on _ShopScreenProState {
                       Navigator.pop(context);
                       // Aquí podrías navegar a una pantalla de creación de grupo
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            'Contacta a un administrador para crear tu grupo de compra',
+                            Provider.of<LocaleNotifier>(
+                              context,
+                              listen: false,
+                            ).t('contact_admin_purchase_group'),
                           ),
                           backgroundColor: Colors.blue,
                         ),
                       );
                     },
                     icon: const Icon(Icons.add_circle),
-                    label: const Text('Crear Grupo de Compra'),
+                    label: Text(l.t('create_purchase_group')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,

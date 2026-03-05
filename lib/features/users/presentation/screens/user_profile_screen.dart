@@ -1,4 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
@@ -42,6 +43,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral100,
       body: Consumer<UserProfileProvider>(
@@ -51,10 +53,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           }
 
           if (provider.currentProfile == null) {
-            return _buildErrorState();
+            return _buildErrorState(l);
           }
 
-          return _buildProfileContent(provider.currentProfile!, provider);
+          return _buildProfileContent(provider.currentProfile!, provider, l);
         },
       ),
     );
@@ -74,12 +76,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(LocaleNotifier l) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-        title: Text('Error'),
+        title: Text(l.t('error')),
       ),
       body: Center(
         child: Column(
@@ -88,7 +90,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             Icon(Icons.error_outline, size: 64, color: ColorTokens.neutral60),
             SizedBox(height: 16),
             Text(
-              'No se pudo cargar el perfil',
+              l.t('could_not_load_profile'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -97,7 +99,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ),
             SizedBox(height: 8),
             Text(
-              'Verifica tu conexión e intenta nuevamente',
+              l.t('check_connection_retry'),
               style: TextStyle(color: ColorTokens.neutral60),
             ),
             SizedBox(height: 24),
@@ -111,7 +113,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: ColorTokens.neutral100,
               ),
-              child: Text('Reintentar'),
+              child: Text(l.t('retry')),
             ),
           ],
         ),
@@ -119,7 +121,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildProfileContent(BiuxUser user, UserProfileProvider provider) {
+  Widget _buildProfileContent(
+    BiuxUser user,
+    UserProfileProvider provider,
+    LocaleNotifier l,
+  ) {
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
@@ -133,7 +139,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               IconButton(
                 icon: Icon(Icons.share),
                 onPressed: () => _shareProfile(user),
-                tooltip: 'Compartir perfil',
+                tooltip: l.t('share_profile'),
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -153,9 +159,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               unselectedLabelColor: ColorTokens.neutral60,
               indicatorColor: ColorTokens.primary30,
               tabs: [
-                Tab(text: 'Publicaciones'),
-                Tab(text: 'Seguidores'),
-                Tab(text: 'Siguiendo'),
+                Tab(text: l.t('posts')),
+                Tab(text: l.t('followers')),
+                Tab(text: l.t('following')),
               ],
             ),
           ),
@@ -164,9 +170,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildPostsTab(user),
-                _buildFollowersTab(user, provider),
-                _buildFollowingTab(user, provider),
+                _buildPostsTab(user, l),
+                _buildFollowersTab(user, provider, l),
+                _buildFollowingTab(user, provider, l),
               ],
             ),
           ),
@@ -222,7 +228,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
               // Nombre
               Text(
-                user.fullName.isNotEmpty ? user.fullName : 'Sin nombre',
+                user.fullName.isNotEmpty ? user.fullName : l.t('no_name'),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -262,9 +268,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildStatItem('Seguidores', user.followerS.toString()),
-                  _buildStatItem('Siguiendo', user.following.length.toString()),
-                  _buildFollowButton(provider, widget.userId),
+                  _buildStatItem(l.t('followers'), user.followerS.toString()),
+                  _buildStatItem(
+                    l.t('following'),
+                    user.following.length.toString(),
+                  ),
+                  _buildFollowButton(provider, widget.userId, l),
                 ],
               ),
             ],
@@ -299,6 +308,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget _buildFollowButton(
     UserProfileProvider provider,
     String profileUserId,
+    LocaleNotifier l,
   ) {
     final currentUserId = AuthenticationRepository().getUserId;
     final isOwnProfile = currentUserId == profileUserId;
@@ -315,7 +325,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           foregroundColor: ColorTokens.primary30,
         ),
         child: Text(
-          'Editar perfil',
+          l.t('edit_profile'),
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       );
@@ -356,13 +366,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ),
             )
           : Text(
-              provider.isFollowing ? 'Siguiendo' : 'Seguir',
+              provider.isFollowing ? l.t('following') : l.t('follow'),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
     );
   }
 
-  Widget _buildPostsTab(BiuxUser user) {
+  Widget _buildPostsTab(BiuxUser user, LocaleNotifier l) {
     return Consumer<ExperienceProvider>(
       builder: (context, expProvider, child) {
         // Cargar experiencias del usuario si no están cargadas
@@ -397,7 +407,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Sin publicaciones aún',
+                  l.t('no_posts_yet'),
                   style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
                 ),
               ],
@@ -467,7 +477,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildFollowersTab(BiuxUser user, UserProfileProvider provider) {
+  Widget _buildFollowersTab(
+    BiuxUser user,
+    UserProfileProvider provider,
+    LocaleNotifier l,
+  ) {
     // Cargar followers si no están cargados
     if (provider.followers.isEmpty && !provider.isLoadingFollowers) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -491,7 +505,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             Icon(Icons.people_outline, size: 64, color: ColorTokens.neutral60),
             SizedBox(height: 16),
             Text(
-              'Sin seguidores aún',
+              l.t('no_followers_yet'),
               style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
             ),
           ],
@@ -514,7 +528,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget _buildFollowingTab(BiuxUser user, UserProfileProvider provider) {
+  Widget _buildFollowingTab(
+    BiuxUser user,
+    UserProfileProvider provider,
+    LocaleNotifier l,
+  ) {
     // Cargar following si no están cargados
     if (provider.following.isEmpty && !provider.isLoadingFollowing) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -542,7 +560,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ),
             SizedBox(height: 16),
             Text(
-              'No sigue a nadie aún',
+              l.t('not_following_anyone'),
               style: TextStyle(fontSize: 16, color: ColorTokens.neutral60),
             ),
           ],
@@ -567,11 +585,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   // Método para compartir el perfil del usuario
   Future<void> _shareProfile(BiuxUser user) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final userName = user.userName.isNotEmpty ? user.userName : user.fullName;
       final shareUrl = 'https://biux.devshouse.org/user/${user.id}';
 
-      final shareText = '🚴 Mira el perfil de $userName en Biux\n\n$shareUrl';
+      final shareText =
+          '🚴 ${l.t('look_at_profile')} $userName en Biux\n\n$shareUrl';
 
       await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
@@ -589,6 +609,7 @@ class _UserListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       margin: EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -605,7 +626,7 @@ class _UserListItem extends StatelessWidget {
               : null,
         ),
         title: Text(
-          user.fullName.isNotEmpty ? user.fullName : 'Sin nombre',
+          user.fullName.isNotEmpty ? user.fullName : l.t('no_name'),
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: user.userName.isNotEmpty ? Text('@${user.userName}') : null,

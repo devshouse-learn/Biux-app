@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
 
@@ -158,6 +159,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
   Widget build(BuildContext context) {
     return Consumer<ShopProvider>(
       builder: (context, shopProvider, _) {
+        final l = Provider.of<LocaleNotifier>(context);
         final products = shopProvider.products;
         final activeProducts = products.where((p) => p.isActive).toList();
         final outOfStock = products.where((p) => p.stock <= 0).toList();
@@ -178,7 +180,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
             children: [
               _buildHandle(),
               _buildHeader(
-                'Gestión de Productos',
+                l.t('admin_products_management'),
                 Icons.inventory_2,
                 Colors.blue,
                 context,
@@ -193,19 +195,19 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                       // Resumen con datos reales
                       _buildSummaryCard([
                         _StatData(
-                          'Total',
+                          l.t('admin_total'),
                           '${products.length}',
                           Icons.shopping_bag,
                           Colors.blue,
                         ),
                         _StatData(
-                          'Activos',
+                          l.t('admin_active'),
                           '${activeProducts.length}',
                           Icons.check_circle,
                           Colors.green,
                         ),
                         _StatData(
-                          'Agotados',
+                          l.t('admin_out_of_stock'),
                           '${outOfStock.length}',
                           Icons.warning,
                           Colors.orange,
@@ -217,7 +219,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                       TextField(
                         controller: _searchController,
                         decoration: InputDecoration(
-                          labelText: 'Buscar producto...',
+                          labelText: l.t('admin_search_product'),
                           prefixIcon: const Icon(Icons.search),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -238,7 +240,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
 
                       // Lista de productos reales
                       Text(
-                        'Productos (${filtered.length})',
+                        '${l.t('admin_products_label')} (${filtered.length})',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -247,7 +249,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                       const SizedBox(height: 8),
 
                       if (filtered.isEmpty)
-                        _buildEmptyCard('No se encontraron productos')
+                        _buildEmptyCard(l.t('admin_no_products_found'))
                       else
                         ...filtered.map((p) => _buildProductTile(p)),
 
@@ -267,6 +269,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
   }
 
   Widget _buildProductTile(ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       elevation: 1,
       margin: const EdgeInsets.only(bottom: 8),
@@ -309,7 +312,11 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                         size: 18,
                       ),
                       const SizedBox(width: 8),
-                      Text(product.isActive ? 'Desactivar' : 'Activar'),
+                      Text(
+                        product.isActive
+                            ? l.t('admin_deactivate')
+                            : l.t('admin_activate'),
+                      ),
                     ],
                   ),
                 ),
@@ -335,6 +342,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
     String action,
     ProductEntity product,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (action == 'toggle') {
       await widget.shopProvider.updateProduct(
         _copyProductWith(product, isActive: !product.isActive),
@@ -344,8 +352,8 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
           SnackBar(
             content: Text(
               product.isActive
-                  ? '${product.name} desactivado'
-                  : '${product.name} activado',
+                  ? '${product.name} ${l.t('admin_deactivated')}'
+                  : '${product.name} ${l.t('admin_activated')}',
             ),
           ),
         );
@@ -354,19 +362,19 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
       final confirm = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('¿Eliminar producto?'),
+          title: Text(l.t('admin_delete_product_question')),
           content: Text(
-            '¿Estás seguro de eliminar "${product.name}"? Esta acción no se puede deshacer.',
+            '${l.t('admin_confirm_delete')} "${product.name}"? ${l.t('admin_confirm_delete_irreversible')}',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text(
-                'Eliminar',
+              child: Text(
+                l.t('admin_delete'),
                 style: TextStyle(color: Colors.red),
               ),
             ),
@@ -377,7 +385,9 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
         await widget.shopProvider.deleteProduct(product.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('"${product.name}" eliminado')),
+            SnackBar(
+              content: Text('"${product.name}" ${l.t('admin_deleted')}'),
+            ),
           );
         }
       }
@@ -385,6 +395,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
   }
 
   Widget _buildPriceUpdateCard(List<ProductEntity> products) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -393,15 +404,15 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Actualización Rápida de Precios',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              l.t('admin_quick_price_update'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _selectedProductId,
               decoration: InputDecoration(
-                labelText: 'Seleccionar producto',
+                labelText: l.t('admin_select_product'),
                 prefixIcon: const Icon(Icons.shopping_bag),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -430,7 +441,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
               controller: _priceController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Nuevo precio',
+                labelText: l.t('admin_new_price'),
                 prefixIcon: const Icon(Icons.attach_money),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -446,8 +457,8 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                     : () async {
                         if (_selectedProductId == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Selecciona un producto'),
+                            SnackBar(
+                              content: Text(l.t('admin_select_a_product')),
                             ),
                           );
                           return;
@@ -457,8 +468,8 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                         );
                         if (newPrice == null || newPrice <= 0) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Ingresa un precio válido'),
+                            SnackBar(
+                              content: Text(l.t('admin_enter_valid_price')),
                             ),
                           );
                           return;
@@ -480,7 +491,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Precio de "$productName" actualizado a \$${newPrice.toStringAsFixed(2)}',
+                                  '${l.t('admin_price_of')} "$productName" ${l.t('admin_updated_to')} \$${newPrice.toStringAsFixed(2)}',
                                 ),
                               ),
                             );
@@ -508,7 +519,9 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                       )
                     : const Icon(Icons.update),
                 label: Text(
-                  _isUpdating ? 'Actualizando...' : 'Actualizar Precio',
+                  _isUpdating
+                      ? l.t('admin_updating')
+                      : l.t('admin_update_price'),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -559,6 +572,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
@@ -569,7 +583,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
         children: [
           _buildHandle(),
           _buildHeader(
-            'Gestión de Vendedores',
+            l.t('admin_sellers_management'),
             Icons.people,
             Colors.green,
             context,
@@ -592,9 +606,9 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Agregar Vendedor',
-                            style: TextStyle(
+                          Text(
+                            l.t('admin_add_seller'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -603,7 +617,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                           TextField(
                             controller: _nameController,
                             decoration: InputDecoration(
-                              labelText: 'Nombre completo *',
+                              labelText: l.t('admin_full_name'),
                               prefixIcon: const Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -615,7 +629,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
-                              labelText: 'Correo electrónico *',
+                              labelText: l.t('admin_email'),
                               prefixIcon: const Icon(Icons.email),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -627,7 +641,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                             controller: _phoneController,
                             keyboardType: TextInputType.phone,
                             decoration: InputDecoration(
-                              labelText: 'Teléfono',
+                              labelText: l.t('admin_phone'),
                               prefixIcon: const Icon(Icons.phone),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -638,24 +652,24 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                           DropdownButtonFormField<String>(
                             initialValue: _selectedRole,
                             decoration: InputDecoration(
-                              labelText: 'Rol',
+                              labelText: l.t('admin_role'),
                               prefixIcon: const Icon(Icons.badge),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'vendedor',
-                                child: Text('Vendedor'),
+                                child: Text(l.t('admin_seller_role')),
                               ),
                               DropdownMenuItem(
                                 value: 'supervisor',
-                                child: Text('Supervisor'),
+                                child: Text(l.t('admin_supervisor_role')),
                               ),
                               DropdownMenuItem(
                                 value: 'cajero',
-                                child: Text('Cajero'),
+                                child: Text(l.t('admin_cashier_role')),
                               ),
                             ],
                             onChanged: (v) =>
@@ -678,8 +692,8 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                                   : const Icon(Icons.person_add),
                               label: Text(
                                 _isSubmitting
-                                    ? 'Agregando...'
-                                    : 'Agregar Vendedor',
+                                    ? l.t('admin_adding')
+                                    : l.t('admin_add_seller'),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,

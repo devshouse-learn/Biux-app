@@ -2,6 +2,7 @@ import 'package:biux/features/maps/presentation/providers/meeting_point_provider
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showExperienceMenu(BuildContext context, dynamic experience) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: ColorTokens.neutral20,
@@ -96,7 +98,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.edit_outlined, color: ColorTokens.primary50),
               title: Text(
-                'Editar publicación',
+                l.t('edit_post'),
                 style: TextStyle(color: ColorTokens.neutral100),
               ),
               onTap: () {
@@ -107,7 +109,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.delete_outline, color: ColorTokens.error50),
               title: Text(
-                'Eliminar publicación',
+                l.t('delete_post'),
                 style: TextStyle(color: ColorTokens.error50),
               ),
               onTap: () {
@@ -117,18 +119,18 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   builder: (dialogCtx) => AlertDialog(
                     backgroundColor: ColorTokens.neutral20,
                     title: Text(
-                      '¿Eliminar publicación?',
+                      l.t('delete_post_confirm'),
                       style: TextStyle(color: ColorTokens.neutral100),
                     ),
                     content: Text(
-                      'Esta acción no se puede deshacer',
+                      l.t('delete_post_content'),
                       style: TextStyle(color: ColorTokens.neutral80),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogCtx),
                         child: Text(
-                          'Cancelar',
+                          l.t('cancel'),
                           style: TextStyle(color: ColorTokens.primary50),
                         ),
                       ),
@@ -140,9 +142,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             await provider.deleteExperience(experience.id);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Publicación eliminada'),
-                                  duration: Duration(seconds: 2),
+                                SnackBar(
+                                  content: Text(l.t('post_deleted')),
+                                  duration: const Duration(seconds: 2),
                                 ),
                               );
                             }
@@ -150,7 +152,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error eliminando: $e'),
+                                  content: Text('${l.t('error_deleting')}: $e'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
@@ -158,7 +160,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           }
                         },
                         child: Text(
-                          'Eliminar',
+                          l.t('delete'),
                           style: TextStyle(color: ColorTokens.error50),
                         ),
                       ),
@@ -206,18 +208,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showLogoutDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Cerrar Sesión'),
-          content: Text('¿Estás seguro que deseas cerrar sesión?'),
+          title: Text(l.t('sign_out')),
+          content: Text(l.t('sign_out_confirm')),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               style: Styles.cancelButtonStyle,
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -250,7 +253,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ),
                             ),
                             SizedBox(width: 16),
-                            Text('Cerrando sesión...'),
+                            Text(l.t('closing_session')),
                           ],
                         ),
                       ),
@@ -307,7 +310,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     ScaffoldMessenger.of(widgetContext).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'Error al cerrar sesión: ${e.toString()}',
+                          '${l.t('error_signing_out')}: ${e.toString()}',
                         ),
                         backgroundColor: ColorTokens.error50,
                       ),
@@ -316,7 +319,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 }
               },
               child: Text(
-                'Cerrar Sesión',
+                l.t('sign_out'),
                 style: TextStyle(color: ColorTokens.error50),
               ),
             ),
@@ -327,19 +330,18 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showDeleteAccountDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Eliminar Cuenta'),
-          content: Text(
-            'Esta acción marcará tu cuenta para eliminación. El proceso será revisado por nuestro equipo. ¿Continuar?',
-          ),
+          title: Text(l.t('delete_account')),
+          content: Text(l.t('delete_account_content')),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               style: Styles.cancelButtonStyle,
-              child: Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -350,14 +352,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 if (mounted && success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Solicitud de eliminación enviada'),
+                      content: Text(l.t('deletion_request_sent')),
                       backgroundColor: ColorTokens.warning50,
                     ),
                   );
                 }
               },
               child: Text(
-                'Eliminar',
+                l.t('delete'),
                 style: TextStyle(color: ColorTokens.error50),
               ),
             ),
@@ -405,6 +407,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showFollowersModal(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final followers = widget.userProvider.user?.followers ?? {};
 
     showModalBottomSheet(
@@ -428,7 +431,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  const Text('Sin seguidores aún'),
+                  Text(l.t('no_followers_yet')),
                 ],
               ),
             ),
@@ -444,7 +447,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Seguidores (${followers.length})',
+                    '${l.t('followers')} (${followers.length})',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -457,7 +460,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(title: Text('Cargando...'));
+                        return ListTile(title: Text(l.t('loading')));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -503,8 +506,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Error: Usuario inválido'),
+                              SnackBar(
+                                content: Text(
+                                  '${l.t('error')}: ${l.t('invalid_user')}',
+                                ),
                               ),
                             );
                           }
@@ -522,6 +527,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showFollowingModal(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final following = widget.userProvider.user?.following ?? {};
 
     showModalBottomSheet(
@@ -545,7 +551,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  const Text('No sigue a nadie aún'),
+                  Text(l.t('not_following_anyone')),
                 ],
               ),
             ),
@@ -561,7 +567,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Siguiendo (${following.length})',
+                    '${l.t('following')} (${following.length})',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -574,7 +580,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const ListTile(title: Text('Cargando...'));
+                        return ListTile(title: Text(l.t('loading')));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -620,8 +626,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Error: Usuario inválido'),
+                              SnackBar(
+                                content: Text(
+                                  '${l.t('error')}: ${l.t('invalid_user')}',
+                                ),
                               ),
                             );
                           }
@@ -661,6 +669,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showEditProfileDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final nameController = TextEditingController(
       text: widget.userProvider.user?.name ?? '',
     );
@@ -684,7 +693,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.edit, color: ColorTokens.primary30),
                   SizedBox(width: 8),
-                  Text('Editar Perfil'),
+                  Text(l.t('edit_profile')),
                 ],
               ),
               content: SingleChildScrollView(
@@ -694,7 +703,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   children: [
                     // ========== FOTO DE PERFIL ==========
                     Text(
-                      'Foto de Perfil',
+                      l.t('profile_photo'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -746,7 +755,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== FOTO DE PORTADA ==========
                     Text(
-                      'Foto de Portada',
+                      l.t('cover_photo'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -798,7 +807,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== NOMBRE ==========
                     Text(
-                      'Nombre',
+                      l.t('name_label'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -808,7 +817,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        hintText: 'Tu nombre completo',
+                        hintText: l.t('your_full_name'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -822,7 +831,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== USERNAME ==========
                     Text(
-                      'Nombre de Usuario',
+                      l.t('username_label'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -832,7 +841,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: usernameController,
                       decoration: InputDecoration(
-                        hintText: 'tu_nombre_usuario',
+                        hintText: l.t('your_username'),
                         prefixText: '@',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -847,7 +856,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== DESCRIPCIÓN ==========
                     Text(
-                      'Descripción / Bio',
+                      l.t('description_bio'),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -857,7 +866,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: descriptionController,
                       decoration: InputDecoration(
-                        hintText: 'Cuéntales sobre ti',
+                        hintText: l.t('tell_about_yourself'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -878,7 +887,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     Navigator.of(dialogContext).pop();
                   },
                   style: Styles.cancelButtonStyle,
-                  child: Text('Cancelar'),
+                  child: Text(l.t('cancel')),
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
@@ -910,7 +919,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Perfil actualizado correctamente'),
+                            content: Text(l.t('profile_updated')),
                             backgroundColor: ColorTokens.success40,
                           ),
                         );
@@ -918,7 +927,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Error: ${widget.userProvider.error ?? "Intenta nuevamente"}',
+                              '${l.t('error')}: ${widget.userProvider.error ?? l.t('try_again')}',
                             ),
                             backgroundColor: ColorTokens.error50,
                           ),
@@ -927,7 +936,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     }
                   },
                   icon: Icon(Icons.check),
-                  label: Text('Guardar'),
+                  label: Text(l.t('save')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -943,6 +952,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   // Panel para crear contenido (historias o publicaciones)
   void _showCreateContentOptions() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -974,7 +984,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Text(
-                    'Crear contenido',
+                    l.t('create_content'),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -995,12 +1005,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       size: 24,
                     ),
                   ),
-                  title: const Text(
-                    'Historia',
+                  title: Text(
+                    l.t('story'),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text(
-                    'Comparte un momento que desaparece en 24h',
+                  subtitle: Text(
+                    l.t('share_moment_24h'),
                     style: TextStyle(fontSize: 12),
                   ),
                   trailing: Icon(
@@ -1038,12 +1048,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       size: 24,
                     ),
                   ),
-                  title: const Text(
-                    'Publicación',
+                  title: Text(
+                    l.t('post'),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text(
-                    'Comparte tu experiencia con todos tus seguidores',
+                  subtitle: Text(
+                    l.t('share_experience'),
                     style: TextStyle(fontSize: 12),
                   ),
                   trailing: Icon(
@@ -1070,9 +1080,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mi Perfil'),
+        title: Text(l.t('my_profile')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
       ),
@@ -1085,11 +1096,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.error, size: 64, color: ColorTokens.neutral60),
                   SizedBox(height: 16),
-                  Text('Error cargando datos del perfil'),
+                  Text(l.t('error_loading_profile')),
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => widget.userProvider.loadUserData(),
-                    child: Text('Reintentar'),
+                    child: Text(l.t('retry')),
                   ),
                 ],
               ),
@@ -1155,7 +1166,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             onPressed: () {
                               context.push('/account-settings');
                             },
-                            tooltip: 'Configuración de cuenta',
+                            tooltip: l.t('account_settings'),
                           ),
                         ),
                         // Botón crear contenido en esquina superior izquierda
@@ -1169,7 +1180,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               size: 28,
                             ),
                             onPressed: _showCreateContentOptions,
-                            tooltip: 'Crear contenido',
+                            tooltip: l.t('create_content'),
                           ),
                         ),
                       ],
@@ -1284,7 +1295,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                 ?.length ??
                                             0)
                                         .toString(),
-                                label: 'Seguidores',
+                                label: l.t('followers'),
                                 onTap: () => _showFollowersModal(context),
                               ),
                               _buildStatCardButton(
@@ -1296,7 +1307,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                 ?.length ??
                                             0)
                                         .toString(),
-                                label: 'Siguiendo',
+                                label: l.t('following'),
                                 onTap: () => _showFollowingModal(context),
                               ),
                             ],
@@ -1312,7 +1323,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 _showEditProfileDialog();
                               },
                               icon: const Icon(Icons.edit, size: 18),
-                              label: const Text('Editar Perfil'),
+                              label: Text(l.t('edit_profile')),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor:
                                     Theme.of(context).brightness ==
@@ -1373,7 +1384,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         .description!
                                         .isNotEmpty
                                 ? widget.userProvider.user!.description!
-                                : 'Toca el botón "Editar Perfil" para agregar una descripción',
+                                : l.t('add_description_hint'),
                             style: TextStyle(
                               fontSize: 14,
                               color:
@@ -1410,7 +1421,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                         // ========== SECCIÓN DE PUBLICACIONES ==========
                         Text(
-                          'Publicaciones',
+                          l.t('posts'),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -1476,7 +1487,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      'Error cargando publicaciones',
+                                      l.t('error_loading_posts'),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.error50,
@@ -1513,7 +1524,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      'Sin publicaciones aún',
+                                      l.t('no_posts_yet'),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.neutral70,
@@ -1522,7 +1533,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                      'Comienza a compartir tus historias',
+                                      l.t('start_sharing_stories'),
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: ColorTokens.neutral60,
@@ -1667,7 +1678,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           child: ElevatedButton.icon(
                             onPressed: _showLogoutDialog,
                             icon: Icon(Icons.logout),
-                            label: Text('Cerrar Sesión'),
+                            label: Text(l.t('sign_out')),
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   Theme.of(context).brightness ==
@@ -1688,7 +1699,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           child: OutlinedButton.icon(
                             onPressed: _showDeleteAccountDialog,
                             icon: Icon(Icons.delete_forever),
-                            label: Text('Eliminar Cuenta'),
+                            label: Text(l.t('delete_account')),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: ColorTokens.error50,
                               side: BorderSide(

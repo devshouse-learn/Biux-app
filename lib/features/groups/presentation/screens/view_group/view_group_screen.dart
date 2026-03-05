@@ -1,4 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       body: Consumer<GroupProvider>(
         builder: (context, provider, child) {
@@ -77,11 +79,11 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   children: [
                     Icon(Icons.error, size: 64, color: ColorTokens.error50),
                     SizedBox(height: 16),
-                    Text('Grupo no encontrado'),
+                    Text(l.t('group_not_found')),
                     SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => context.push('/groups'),
-                      child: Text('Volver a Grupos'),
+                      child: Text(l.t('back_to_groups')),
                     ),
                   ],
                 ),
@@ -149,12 +151,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       labelColor: ColorTokens.primary30,
                       unselectedLabelColor: ColorTokens.neutral60,
                       tabs: [
-                        Tab(text: 'Info'),
-                        Tab(text: 'Miembros (${group.memberCount})'),
-                        Tab(text: 'Rodadas'),
+                        Tab(text: l.t('info')),
+                        Tab(text: '${l.t('members')} (${group.memberCount})'),
+                        Tab(text: l.t('rides')),
                         if (isAdmin)
                           Tab(
-                            text: 'Solicitudes (${group.pendingRequestCount})',
+                            text:
+                                '${l.t('requests')} (${group.pendingRequestCount})',
                           ),
                       ],
                     ),
@@ -178,6 +181,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   Widget _buildInfoTab(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -226,12 +230,12 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '${group.memberCount} miembros',
+                      '${group.memberCount} ${l.t('members')}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Creado el ${_formatDate(group.createdAt)}',
+                      '${l.t('created_on')} ${_formatDate(group.createdAt)}',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -244,7 +248,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
 
           // Descripción
           Text(
-            'Descripción',
+            l.t('description'),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
@@ -260,6 +264,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   Widget _buildMembersTab(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: provider.getMembersWithNames(group),
       builder: (context, snapshot) {
@@ -268,7 +273,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No hay miembros en este grupo'));
+          return Center(child: Text(l.t('no_members')));
         }
 
         final members = snapshot.data!;
@@ -296,13 +301,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   member['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
-                subtitle: Text('Miembro del grupo'),
+                subtitle: Text(l.t('group_member')),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (member['isAdmin'])
                       Chip(
-                        label: Text('Admin'),
+                        label: Text(l.t('admin')),
                         backgroundColor: ColorTokens.success50.withValues(
                           alpha: 0.1,
                         ),
@@ -331,7 +336,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     print('❌ Error: userId está vacío o es null');
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Error: ID de usuario no disponible'),
+                        content: Text(l.t('error_user_id_not_available')),
                         backgroundColor: ColorTokens.error50,
                       ),
                     );
@@ -346,6 +351,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   Widget _buildRidesTab(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     return FutureBuilder<List<RideModel>>(
       future: provider.getRidesByGroup(group),
       builder: (context, snapshot) {
@@ -365,7 +371,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'No hay rodadas en este grupo',
+                  l.t('no_rides_in_this_group'),
                   style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
                 ),
                 SizedBox(height: 16),
@@ -376,7 +382,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       context.go('/rides/create/${group.id}');
                     },
                     icon: Icon(Icons.add),
-                    label: Text('Crear Primera Rodada'),
+                    label: Text(l.t('create_first_ride')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary30,
                       foregroundColor: ColorTokens.neutral100,
@@ -401,7 +407,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       context.go('/rides/create/${group.id}');
                     },
                     icon: Icon(Icons.add),
-                    label: Text('Crear Rodada'),
+                    label: Text(l.t('create_ride')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary30,
                       foregroundColor: ColorTokens.neutral100,
@@ -434,12 +440,16 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Fecha: ${_formatDateTime(ride.dateTime)}'),
-                          Text('Distancia: ${ride.kilometers} km'),
                           Text(
-                            'Dificultad: ${_getDifficultyName(ride.difficulty)}',
+                            '${l.t('date_label')}: ${_formatDateTime(ride.dateTime)}',
                           ),
-                          Text('Participantes: ${ride.participants.length}'),
+                          Text('${l.t('distance')}: ${ride.kilometers} km'),
+                          Text(
+                            '${l.t('difficulty')}: ${_getDifficultyName(ride.difficulty)}',
+                          ),
+                          Text(
+                            '${l.t('participants')}: ${ride.participants.length}',
+                          ),
                         ],
                       ),
                       trailing: IconButton(
@@ -461,6 +471,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   Widget _buildRequestsTab(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: provider.getPendingRequestsWithNames(group),
       builder: (context, snapshot) {
@@ -480,7 +491,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'No hay solicitudes pendientes',
+                  l.t('no_pending_requests'),
                   style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
                 ),
               ],
@@ -513,7 +524,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   request['userName'],
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
-                subtitle: Text('Solicitud pendiente'),
+                subtitle: Text(l.t('pending_request')),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -525,7 +536,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         provider,
                       ),
                       icon: Icon(Icons.check, color: ColorTokens.success50),
-                      tooltip: 'Aprobar',
+                      tooltip: l.t('approve'),
                     ),
                     IconButton(
                       onPressed: () => _rejectRequest(
@@ -535,7 +546,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         provider,
                       ),
                       icon: Icon(Icons.close, color: ColorTokens.error50),
-                      tooltip: 'Rechazar',
+                      tooltip: l.t('reject'),
                     ),
                   ],
                 ),
@@ -548,6 +559,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   List<Widget> _buildAppBarActions(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     final userStatus = provider.getUserStatus(group);
     List<Widget> actions = [];
 
@@ -557,7 +569,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           IconButton(
             onPressed: () => context.go('/groups/${group.id}/edit'),
             icon: Icon(Icons.edit),
-            tooltip: 'Editar Grupo',
+            tooltip: l.t('edit_group'),
           ),
         );
         break;
@@ -576,7 +588,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   children: [
                     Icon(Icons.exit_to_app, color: ColorTokens.error50),
                     SizedBox(width: 8),
-                    Text('Salir del grupo'),
+                    Text(l.t('leave_group')),
                   ],
                 ),
               ),
@@ -589,7 +601,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           IconButton(
             onPressed: () => _cancelRequest(group.id, provider),
             icon: Icon(Icons.cancel),
-            tooltip: 'Cancelar Solicitud',
+            tooltip: l.t('cancel_request'),
           ),
         );
         break;
@@ -598,7 +610,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           IconButton(
             onPressed: () => _requestJoinGroup(group.id, provider),
             icon: Icon(Icons.group_add),
-            tooltip: 'Solicitar Unirse',
+            tooltip: l.t('request_join'),
           ),
         );
         break;
@@ -608,6 +620,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   Widget _buildActionButtons(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     final userStatus = provider.getUserStatus(group);
 
     switch (userStatus) {
@@ -631,14 +644,14 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Eres administrador',
+                      l.t('you_are_admin'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorTokens.success50,
                       ),
                     ),
                     Text(
-                      'Puedes editar el grupo desde el menú superior',
+                      l.t('edit_from_menu'),
                       style: TextStyle(
                         fontSize: 12,
                         color: ColorTokens.neutral60,
@@ -671,7 +684,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Ya eres miembro',
+                      l.t('already_member'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorTokens.secondary50,
@@ -690,7 +703,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           child: ElevatedButton.icon(
             onPressed: () => _cancelRequest(group.id, provider),
             icon: Icon(Icons.cancel),
-            label: Text('Cancelar Solicitud'),
+            label: Text(l.t('cancel_request')),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.warning50,
               foregroundColor: ColorTokens.neutral100,
@@ -704,7 +717,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           child: ElevatedButton.icon(
             onPressed: () => _requestJoinGroup(group.id, provider),
             icon: Icon(Icons.group_add),
-            label: Text('Solicitar Unirse'),
+            label: Text(l.t('request_join')),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary30,
               foregroundColor: ColorTokens.neutral100,
@@ -720,18 +733,19 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     String userName,
     GroupProvider provider,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.approveJoinRequest(groupId, userId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$userName ha sido aceptado en el grupo'),
+          content: Text('$userName ${l.t('user_accepted')}'),
           backgroundColor: ColorTokens.success50,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al aprobar la solicitud'),
+          content: Text(l.t('error_approving_request')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -744,18 +758,21 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     String userName,
     GroupProvider provider,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.rejectJoinRequest(groupId, userId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Solicitud de $userName rechazada'),
+          content: Text(
+            l.t('request_of_rejected').replaceAll('{name}', userName),
+          ),
           backgroundColor: ColorTokens.warning50,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al rechazar la solicitud'),
+          content: Text(l.t('error_rejecting_request')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -763,23 +780,22 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   void _requestJoinGroup(String groupId, GroupProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final result = await provider.requestJoinGroup(groupId);
 
     if (result['success'] == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Solicitud enviada correctamente'),
+          content: Text(l.t('request_sent')),
           backgroundColor: ColorTokens.success50,
         ),
       );
     } else if (result['requiresProfile'] == true) {
-      _showProfileRequiredDialog(
-        result['error'] ?? 'Debes completar tu perfil',
-      );
+      _showProfileRequiredDialog(result['error'] ?? l.t('to_join_you_need'));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result['error'] ?? 'Error al enviar solicitud'),
+          content: Text(result['error'] ?? l.t('error_sending_request')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -787,22 +803,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   void _showProfileRequiredDialog(String message) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Completar Perfil'),
+        title: Text(l.t('complete_profile')),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               context.go('/profile');
             },
-            child: Text('Ir al Perfil'),
+            child: Text(l.t('go_to_profile')),
           ),
         ],
       ),
@@ -810,11 +827,12 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   void _cancelRequest(String groupId, GroupProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Solicitud cancelada'),
+          content: Text(l.t('request_cancelled')),
           backgroundColor: ColorTokens.success50,
         ),
       );
@@ -822,15 +840,18 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   }
 
   void _showLeaveGroupDialog(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Salir del Grupo'),
-        content: Text('¿Estás seguro que deseas salir de "${group.name}"?'),
+        title: Text(l.t('leave_group')),
+        content: Text(
+          '${l.t('leave_group_confirm_with_name')} "${group.name}"?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -843,7 +864,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
             ),
-            child: Text('Salir'),
+            child: Text(l.t('leave')),
           ),
         ],
       ),
@@ -871,15 +892,16 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
 
   // M�todo para obtener nombre de dificultad
   String _getDifficultyName(DifficultyLevel difficulty) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return 'Fácil';
+        return l.t('difficulty_easy');
       case DifficultyLevel.medium:
-        return 'Medio';
+        return l.t('difficulty_medium');
       case DifficultyLevel.hard:
-        return 'Difícil';
+        return l.t('difficulty_hard');
       case DifficultyLevel.expert:
-        return 'Experto';
+        return l.t('difficulty_expert');
     }
   }
 

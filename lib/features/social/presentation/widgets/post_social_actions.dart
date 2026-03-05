@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../providers/comments_provider.dart';
@@ -162,21 +163,28 @@ class PostCommentsPreview extends StatelessWidget {
             if (comments.length > maxComments)
               Padding(
                 padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: TextButton(
-                  onPressed: () {
-                    context.push(
-                      '/posts/$postId/comments?ownerId=$postOwnerId',
+                child: Builder(
+                  builder: (context) {
+                    final l = Provider.of<LocaleNotifier>(context);
+                    return TextButton(
+                      onPressed: () {
+                        context.push(
+                          '/posts/$postId/comments?ownerId=$postOwnerId',
+                        );
+                      },
+                      child: Text(
+                        l
+                            .t('view_all_comments')
+                            .replaceAll('{n}', comments.length.toString()),
+                        style: TextStyle(
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.lightBlue[300]
+                              : theme.primaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     );
                   },
-                  child: Text(
-                    'Ver los ${comments.length} comentarios',
-                    style: TextStyle(
-                      color: theme.brightness == Brightness.dark
-                          ? Colors.lightBlue[300]
-                          : theme.primaryColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
                 ),
               ),
           ],
@@ -231,9 +239,10 @@ class _ShareButton extends StatelessWidget {
   }
 
   void _sharePost(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       // Construir el mensaje para compartir
-      String shareText = '🚴 ¡Mira esta publicación en Biux!\n\n';
+      String shareText = l.t('share_post_header');
 
       if (postPreview != null && postPreview!.isNotEmpty) {
         shareText += '$postPreview\n\n';
@@ -241,7 +250,7 @@ class _ShareButton extends StatelessWidget {
 
       // Agregar deep link con dominio personalizado
       shareText += 'https://biux.devshouse.org/posts/$postId\n\n';
-      shareText += '📱 Si no tienes la app, descárgala para ver más';
+      shareText += l.t('share_post_footer');
 
       // Usar SharePlus del paquete share_plus
       await SharePlus.instance.share(ShareParams(text: shareText));
@@ -249,7 +258,7 @@ class _ShareButton extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('share_error')}: $e')));
       }
     }
   }

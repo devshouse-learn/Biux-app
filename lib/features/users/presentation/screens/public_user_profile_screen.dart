@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 
@@ -61,6 +62,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       body: Consumer<UserProfileProvider>(
         builder: (context, provider, child) {
@@ -79,7 +81,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
               appBar: AppBar(
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: ColorTokens.neutral100,
-                title: const Text('Perfil de Usuario'),
+                title: Text(l.t('user_profile')),
               ),
               body: Center(
                 child: Column(
@@ -92,7 +94,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Error al cargar el perfil',
+                      l.t('error_loading_profile_title'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -112,7 +114,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         backgroundColor: ColorTokens.primary50,
                         foregroundColor: ColorTokens.neutral100,
                       ),
-                      child: const Text('Volver'),
+                      child: Text(l.t('go_back')),
                     ),
                   ],
                 ),
@@ -127,11 +129,11 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
               appBar: AppBar(
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: ColorTokens.neutral100,
-                title: const Text('Perfil de Usuario'),
+                title: Text(l.t('user_profile')),
               ),
-              body: const Center(
+              body: Center(
                 child: Text(
-                  'Usuario no encontrado',
+                  l.t('user_not_found_label'),
                   style: TextStyle(fontSize: 18, color: ColorTokens.neutral70),
                 ),
               ),
@@ -266,7 +268,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     ? user.fullName
                                     : (user.userName.isNotEmpty
                                           ? user.userName
-                                          : 'Usuario sin nombre'), // Solo mostrar info pública
+                                          : l.t(
+                                              'no_name_user',
+                                            )), // Solo mostrar info pública
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -324,7 +328,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                   children: [
                                     Expanded(
                                       child: _buildStatItem(
-                                        'Posts',
+                                        l.t('posts'),
                                         '${provider.userPosts.length}',
                                       ),
                                     ),
@@ -335,7 +339,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                           provider,
                                         ),
                                         child: _buildStatItem(
-                                          'Seguidores',
+                                          l.t('followers'),
                                           '${provider.followersCount}',
                                         ),
                                       ),
@@ -347,7 +351,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                           provider,
                                         ),
                                         child: _buildStatItem(
-                                          'Siguiendo',
+                                          l.t('following'),
                                           '${provider.followingCount}',
                                         ),
                                       ),
@@ -394,7 +398,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                                   SnackBar(
                                                     content: Text(
                                                       userProvider.error ??
-                                                          'Error al dejar de seguir',
+                                                          l.t('error_unfollow'),
                                                     ),
                                                     backgroundColor:
                                                         ColorTokens.error50,
@@ -403,7 +407,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                               }
                                             },
                                             icon: const Icon(Icons.check),
-                                            label: const Text('Siguiendo'),
+                                            label: Text(l.t('following')),
                                             style: OutlinedButton.styleFrom(
                                               foregroundColor:
                                                   ColorTokens.neutral100,
@@ -444,7 +448,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                                   SnackBar(
                                                     content: Text(
                                                       userProvider.error ??
-                                                          'Error al seguir',
+                                                          l.t('error_follow'),
                                                     ),
                                                     backgroundColor:
                                                         ColorTokens.error50,
@@ -453,7 +457,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                               }
                                             },
                                             icon: const Icon(Icons.add),
-                                            label: const Text('Seguir'),
+                                            label: Text(l.t('follow')),
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
                                                   ColorTokens.primary30,
@@ -488,11 +492,11 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         indicatorColor: ColorTokens.primary50,
                         labelColor: ColorTokens.primary50,
                         unselectedLabelColor: ColorTokens.neutral60,
-                        tabs: const [
-                          Tab(icon: Icon(Icons.grid_on), text: 'Posts'),
+                        tabs: [
+                          Tab(icon: Icon(Icons.grid_on), text: l.t('posts')),
                           Tab(
                             icon: Icon(Icons.play_circle_outline),
-                            text: 'Historias',
+                            text: l.t('stories'),
                           ),
                         ],
                       ),
@@ -561,10 +565,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   height: 200,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       CircularProgressIndicator(color: ColorTokens.primary50),
                       SizedBox(height: 12),
-                      Text('Cargando seguidores...'),
+                      Text(l.t('loading_followers')),
                     ],
                   ),
                 ),
@@ -586,7 +590,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         color: ColorTokens.neutral60,
                       ),
                       const SizedBox(height: 12),
-                      const Text('Sin seguidores aún'),
+                      Text(l.t('no_followers_yet')),
                     ],
                   ),
                 ),
@@ -602,7 +606,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        'Seguidores (${followers.length})',
+                        '${l.t('followers')} (${followers.length})',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -659,10 +663,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   height: 200,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       CircularProgressIndicator(color: ColorTokens.primary50),
                       SizedBox(height: 12),
-                      Text('Cargando seguidos...'),
+                      Text(l.t('loading_following')),
                     ],
                   ),
                 ),
@@ -684,7 +688,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         color: ColorTokens.neutral60,
                       ),
                       const SizedBox(height: 12),
-                      const Text('No sigue a nadie aún'),
+                      Text(l.t('not_following_anyone')),
                     ],
                   ),
                 ),
@@ -700,7 +704,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        'Siguiendo (${following.length})',
+                        '${l.t('following')} (${following.length})',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -741,7 +745,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
   Widget _buildPostsTab(UserProfileProvider provider) {
     if (provider.userPosts.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -752,7 +756,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             ),
             SizedBox(height: 16),
             Text(
-              'No hay posts aún',
+              l.t('no_posts_yet'),
               style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
             ),
           ],
@@ -820,7 +824,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
   Widget _buildStoriesTab(UserProfileProvider provider) {
     if (provider.userStories.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -831,7 +835,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             ),
             SizedBox(height: 16),
             Text(
-              'No hay historias aún',
+              l.t('no_stories_yet'),
               style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
             ),
           ],

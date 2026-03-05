@@ -6,6 +6,7 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/shop/presentation/widgets/price_tag.dart';
 import 'package:biux/features/shop/presentation/widgets/payment_method_selector.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pantalla del carrito de compras
@@ -13,6 +14,7 @@ class CartScreen extends StatelessWidget {
   const CartScreen({Key? key}) : super(key: key);
 
   void _showCheckoutDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final TextEditingController addressController = TextEditingController();
     final TextEditingController phoneController = TextEditingController();
     final TextEditingController notesController = TextEditingController();
@@ -22,7 +24,7 @@ class CartScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Finalizar Compra'),
+          title: Text(l.t('checkout')),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -39,8 +41,8 @@ class CartScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 TextField(
                   controller: addressController,
-                  decoration: const InputDecoration(
-                    labelText: 'Dirección de entrega',
+                  decoration: InputDecoration(
+                    labelText: l.t('delivery_address'),
                     prefixIcon: Icon(Icons.location_on),
                     border: OutlineInputBorder(),
                   ),
@@ -49,8 +51,8 @@ class CartScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 TextField(
                   controller: phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Teléfono de contacto',
+                  decoration: InputDecoration(
+                    labelText: l.t('contact_phone'),
                     prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(),
                   ),
@@ -59,8 +61,8 @@ class CartScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 TextField(
                   controller: notesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Notas adicionales (opcional)',
+                  decoration: InputDecoration(
+                    labelText: l.t('additional_notes'),
                     prefixIcon: Icon(Icons.note),
                     border: OutlineInputBorder(),
                   ),
@@ -72,7 +74,7 @@ class CartScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -80,10 +82,8 @@ class CartScreen extends StatelessWidget {
                     addressController.text.isEmpty ||
                     phoneController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Por favor completa todos los campos obligatorios',
-                      ),
+                    SnackBar(
+                      content: Text(l.t('fill_required_fields')),
                       backgroundColor: Colors.orange,
                     ),
                   );
@@ -98,8 +98,8 @@ class CartScreen extends StatelessWidget {
                 final currentUser = userProvider.user;
                 if (currentUser == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Error: usuario no encontrado'),
+                    SnackBar(
+                      content: Text(l.t('user_not_found')),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -109,12 +109,14 @@ class CartScreen extends StatelessWidget {
                 final orderId = await shopProvider.createOrderFromCart(
                   userId: currentUser.uid,
                   userName:
-                      currentUser.username ?? currentUser.name ?? 'Usuario',
+                      currentUser.username ??
+                      currentUser.name ??
+                      l.t('default_user'),
                   deliveryAddress: addressController.text,
                   phoneNumber: phoneController.text,
                   notes: notesController.text.isEmpty
-                      ? 'Método de pago: ${selectedPaymentMethod!.label}'
-                      : 'Método de pago: ${selectedPaymentMethod!.label}\n${notesController.text}',
+                      ? '${l.t('payment_method_prefix')}: ${selectedPaymentMethod!.label}'
+                      : '${l.t('payment_method_prefix')}: ${selectedPaymentMethod!.label}\n${notesController.text}',
                 );
 
                 if (orderId != null) {
@@ -122,7 +124,7 @@ class CartScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        '¡Pedido realizado con éxito!\nMétodo de pago: ${selectedPaymentMethod!.label}',
+                        '${l.t('order_success')}\n${l.t('payment_method_label')}: ${selectedPaymentMethod!.label}',
                       ),
                       backgroundColor: Colors.green,
                       duration: const Duration(seconds: 4),
@@ -134,7 +136,7 @@ class CartScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        shopProvider.errorMessage ?? 'Error al crear pedido',
+                        shopProvider.errorMessage ?? l.t('order_error'),
                       ),
                       backgroundColor: Colors.red,
                     ),
@@ -144,7 +146,7 @@ class CartScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.secondary50,
               ),
-              child: const Text('Confirmar Pedido'),
+              child: Text(l.t('confirm_order')),
             ),
           ],
         ),
@@ -154,6 +156,7 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -166,7 +169,7 @@ class CartScreen extends StatelessWidget {
             }
           },
         ),
-        title: const Text('Carrito de Compras'),
+        title: Text(l.t('shopping_cart')),
         backgroundColor: ColorTokens.primary30,
       ),
       body: Consumer<ShopProvider>(
@@ -187,9 +190,13 @@ class CartScreen extends StatelessWidget {
                               height: 120,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: ColorTokens.primary30.withValues(alpha: 0.1),
+                                color: ColorTokens.primary30.withValues(
+                                  alpha: 0.1,
+                                ),
                                 border: Border.all(
-                                  color: ColorTokens.primary30.withValues(alpha: 0.2),
+                                  color: ColorTokens.primary30.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   width: 2,
                                 ),
                               ),
@@ -201,7 +208,7 @@ class CartScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              '¡Tu carrito está vacío!',
+                              l.t('cart_empty'),
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -210,7 +217,7 @@ class CartScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'Elige aquí tus productos favoritos\ny agrégalos para continuar',
+                              l.t('cart_empty_subtitle'),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
@@ -224,7 +231,7 @@ class CartScreen extends StatelessWidget {
                                 context.go('/shop');
                               },
                               icon: const Icon(Icons.pedal_bike, size: 22),
-                              label: const Text('Explorar productos'),
+                              label: Text(l.t('explore_products')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: ColorTokens.primary30,
                                 foregroundColor: Colors.white,
@@ -306,7 +313,7 @@ class CartScreen extends StatelessWidget {
                                           const SizedBox(height: 4),
                                           if (item.selectedSize != null)
                                             Text(
-                                              'Talla: ${item.selectedSize}',
+                                              '${l.t('size_label')}: ${item.selectedSize}',
                                               style: TextStyle(
                                                 color: Colors.grey[600],
                                                 fontSize: 14,
@@ -447,7 +454,7 @@ class CartScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Métodos de pago: Efectivo, PSE, Tarjeta',
+                                  l.t('payment_methods_info'),
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.green[800],
@@ -463,13 +470,13 @@ class CartScreen extends StatelessWidget {
                         // Campo de cupón
                         const _CouponField(),
                         const SizedBox(height: 16),
-                        
+
                         // Total de items
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Total de items:',
+                              '${l.t('total_items')}:',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[600],
@@ -491,7 +498,7 @@ class CartScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Subtotal:',
+                              '${l.t('subtotal')}:',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[600],
@@ -515,12 +522,13 @@ class CartScreen extends StatelessWidget {
                               return Column(
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Row(
                                         children: [
                                           Text(
-                                            'Descuento (${shopProvider.appliedCoupon}):',
+                                            '${l.t('discount_label')} (${shopProvider.appliedCoupon}):',
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: Colors.green[700],
@@ -552,18 +560,22 @@ class CartScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Envío:',
+                              '${l.t('shipping_label')}:',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[600],
                               ),
                             ),
                             Text(
-                              shopProvider.cartTotal >= 100000 ? 'Gratis' : '\$${(15000).toStringAsFixed(0)} COP',
+                              shopProvider.cartTotal >= 100000
+                                  ? l.t('free_label')
+                                  : '\$${(15000).toStringAsFixed(0)} COP',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: shopProvider.cartTotal >= 100000 ? Colors.green : Colors.black,
+                                color: shopProvider.cartTotal >= 100000
+                                    ? Colors.green
+                                    : Colors.black,
                               ),
                             ),
                           ],
@@ -574,9 +586,9 @@ class CartScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Total a pagar:',
-                              style: TextStyle(
+                            Text(
+                              '${l.t('total_to_pay')}:',
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -599,7 +611,7 @@ class CartScreen extends StatelessWidget {
                           child: ElevatedButton.icon(
                             onPressed: () => _showCheckoutDialog(context),
                             icon: const Icon(Icons.shopping_cart_checkout),
-                            label: const Text('Finalizar Compra'),
+                            label: Text(l.t('checkout')),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ColorTokens.primary30,
                               foregroundColor: Colors.white,
@@ -642,6 +654,7 @@ class _CouponFieldState extends State<_CouponField> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Consumer<ShopProvider>(
       builder: (context, shopProvider, _) {
         // Si ya hay un cupón aplicado, mostrar badge con opción de remover
@@ -691,7 +704,7 @@ class _CouponFieldState extends State<_CouponField> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Ahorro: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
+                        '${l.t('savings')}: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 13,
@@ -706,7 +719,7 @@ class _CouponFieldState extends State<_CouponField> {
                     _couponController.clear();
                   },
                   icon: const Icon(Icons.close, color: Colors.white),
-                  tooltip: 'Quitar cupón',
+                  tooltip: l.t('remove_coupon'),
                 ),
               ],
             ),
@@ -723,8 +736,8 @@ class _CouponFieldState extends State<_CouponField> {
                   child: TextField(
                     controller: _couponController,
                     decoration: InputDecoration(
-                      labelText: '¿Tienes un cupón de descuento?',
-                      hintText: 'Ej: BIUX20',
+                      labelText: l.t('coupon_question'),
+                      hintText: l.t('coupon_hint_example'),
                       prefixIcon: Icon(
                         Icons.confirmation_number,
                         color: ColorTokens.primary30,
@@ -764,9 +777,9 @@ class _CouponFieldState extends State<_CouponField> {
                     ),
                     elevation: 2,
                   ),
-                  child: const Text(
-                    'Aplicar',
-                    style: TextStyle(
+                  child: Text(
+                    l.t('apply'),
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -775,7 +788,7 @@ class _CouponFieldState extends State<_CouponField> {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Botón para ver cupones disponibles
             InkWell(
               onTap: () => _showAvailableCoupons(context, shopProvider),
@@ -793,7 +806,7 @@ class _CouponFieldState extends State<_CouponField> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Ver cupones disponibles',
+                        l.t('view_available_coupons'),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.blue[900],
@@ -801,8 +814,9 @@ class _CouponFieldState extends State<_CouponField> {
                         ),
                       ),
                     ),
-                    Icon(Icons.arrow_forward_ios, 
-                      color: Colors.blue[700], 
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.blue[700],
                       size: 16,
                     ),
                   ],
@@ -816,6 +830,7 @@ class _CouponFieldState extends State<_CouponField> {
   }
 
   void _applyCoupon(ShopProvider shopProvider, BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final coupon = _couponController.text.trim();
     if (coupon.isNotEmpty) {
       final success = shopProvider.applyCoupon(coupon);
@@ -828,7 +843,7 @@ class _CouponFieldState extends State<_CouponField> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '🎉 ¡Cupón aplicado! Ahorro: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
+                    '🎉 ${l.t('coupon_applied')} ${l.t('savings')}: \$${shopProvider.couponDiscount.toStringAsFixed(0)} COP',
                   ),
                 ),
               ],
@@ -845,8 +860,8 @@ class _CouponFieldState extends State<_CouponField> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ingresa un código de cupón'),
+        SnackBar(
+          content: Text(l.t('enter_coupon_code')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -854,8 +869,9 @@ class _CouponFieldState extends State<_CouponField> {
   }
 
   void _showAvailableCoupons(BuildContext context, ShopProvider shopProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final coupons = shopProvider.getAvailableCoupons();
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -881,10 +897,10 @@ class _CouponFieldState extends State<_CouponField> {
                 children: [
                   const Icon(Icons.local_offer, color: Colors.white, size: 28),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Cupones Disponibles',
-                      style: TextStyle(
+                      l.t('available_coupons'),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -898,7 +914,7 @@ class _CouponFieldState extends State<_CouponField> {
                 ],
               ),
             ),
-            
+
             // Información de compra mínima
             Container(
               margin: const EdgeInsets.all(16),
@@ -914,7 +930,7 @@ class _CouponFieldState extends State<_CouponField> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Compra mínima: \$50.000 COP',
+                      '${l.t('min_purchase')}: \$50.000 COP',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.orange[900],
@@ -925,7 +941,7 @@ class _CouponFieldState extends State<_CouponField> {
                 ],
               ),
             ),
-            
+
             // Lista de cupones
             Expanded(
               child: ListView.builder(
@@ -947,22 +963,21 @@ class _CouponFieldState extends State<_CouponField> {
                           ),
                         ),
                       ),
-                      ...List.generate(
-                        category['coupons'].length,
-                        (couponIndex) {
-                          final coupon = category['coupons'][couponIndex];
-                          return _CouponCard(
-                            code: coupon['code'],
-                            discount: coupon['discount'],
-                            description: coupon['description'],
-                            onTap: () {
-                              Navigator.pop(context);
-                              _couponController.text = coupon['code'];
-                              _applyCoupon(shopProvider, context);
-                            },
-                          );
-                        },
-                      ),
+                      ...List.generate(category['coupons'].length, (
+                        couponIndex,
+                      ) {
+                        final coupon = category['coupons'][couponIndex];
+                        return _CouponCard(
+                          code: coupon['code'],
+                          discount: coupon['discount'],
+                          description: coupon['description'],
+                          onTap: () {
+                            Navigator.pop(context);
+                            _couponController.text = coupon['code'];
+                            _applyCoupon(shopProvider, context);
+                          },
+                        );
+                      }),
                       const SizedBox(height: 8),
                     ],
                   );
@@ -1032,7 +1047,7 @@ class _CouponCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Información del cupón
                 Expanded(
                   child: Column(
@@ -1049,15 +1064,12 @@ class _CouponCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         description,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Botón de aplicar
                 Container(
                   padding: const EdgeInsets.all(8),

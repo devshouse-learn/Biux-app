@@ -6,6 +6,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 /// Pantalla estilo Instagram para ver publicaciones con galería
@@ -34,6 +35,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Future<void> _loadExperience() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final provider = context.read<ExperienceProvider>();
       final experience = await provider.getExperienceById(widget.postId);
@@ -43,7 +45,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           _experience = experience;
           _isLoading = false;
           if (experience == null) {
-            _error = 'Publicación no encontrada';
+            _error = l.t('post_not_found');
           }
         });
       }
@@ -51,7 +53,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _error = 'Error cargando la publicación: $e';
+          _error = '${l.t('post_loading_error')}: $e';
         });
       }
     }
@@ -82,7 +84,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   /// Formatea el tiempo relativo al formato solicitado
-  String _formatRelativeTime(DateTime? createdAt) {
+  String _formatRelativeTime(DateTime? createdAt, LocaleNotifier l) {
     if (createdAt == null) return '';
 
     final now = DateTime.now();
@@ -90,22 +92,34 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
     // Menos de un minuto
     if (difference.inSeconds < 60) {
-      return 'hace ${difference.inSeconds} segundo${difference.inSeconds != 1 ? 's' : ''}';
+      final n = difference.inSeconds;
+      return l
+          .t(n == 1 ? 'time_full_second' : 'time_full_seconds')
+          .replaceAll('{n}', '$n');
     }
 
     // Menos de una hora
     if (difference.inMinutes < 60) {
-      return 'hace ${difference.inMinutes} minuto${difference.inMinutes != 1 ? 's' : ''}';
+      final n = difference.inMinutes;
+      return l
+          .t(n == 1 ? 'time_full_minute' : 'time_full_minutes')
+          .replaceAll('{n}', '$n');
     }
 
     // Menos de un día
     if (difference.inHours < 24) {
-      return 'hace ${difference.inHours} hora${difference.inHours != 1 ? 's' : ''}';
+      final n = difference.inHours;
+      return l
+          .t(n == 1 ? 'time_full_hour' : 'time_full_hours')
+          .replaceAll('{n}', '$n');
     }
 
     // Menos de 7 días
     if (difference.inDays < 7) {
-      return 'hace ${difference.inDays} día${difference.inDays != 1 ? 's' : ''}';
+      final n = difference.inDays;
+      return l
+          .t(n == 1 ? 'time_full_day' : 'time_full_days')
+          .replaceAll('{n}', '$n');
     }
 
     // Más de 7 días - mostrar formato DD de MM
@@ -137,6 +151,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -147,9 +162,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Publicación',
-          style: TextStyle(color: Colors.white, fontSize: 16),
+        title: Text(
+          l.t('post_title'),
+          style: const TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: _buildBody(),
@@ -157,16 +172,17 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Widget _buildBody() {
+    final l = Provider.of<LocaleNotifier>(context);
     if (_isLoading) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            CircularProgressIndicator(color: Colors.white30),
-            SizedBox(height: 16),
+          children: [
+            const CircularProgressIndicator(color: Colors.white30),
+            const SizedBox(height: 16),
             Text(
-              'Cargando publicación...',
-              style: TextStyle(color: Colors.white54, fontSize: 14),
+              l.t('post_loading'),
+              style: const TextStyle(color: Colors.white54, fontSize: 14),
             ),
           ],
         ),
@@ -181,7 +197,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             Icon(Icons.image_not_supported, color: Colors.grey[600], size: 64),
             const SizedBox(height: 16),
             Text(
-              _error ?? 'Publicación no encontrada',
+              _error ?? l.t('post_not_found'),
               style: TextStyle(color: Colors.grey[400], fontSize: 16),
               textAlign: TextAlign.center,
             ),
@@ -192,7 +208,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 backgroundColor: ColorTokens.primary50,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Volver'),
+              child: Text(l.t('go_back')),
             ),
           ],
         ),
@@ -275,6 +291,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   // ignore: unused_element
   Widget _buildDescriptionAndTimestamp(ExperienceEntity experience) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(
@@ -289,7 +306,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 height: 1.5,
               ),
               textAlign: TextAlign.left,
-            // ignore: unnecessary_null_comparison, unused_local_variable
+              // ignore: unnecessary_null_comparison, unused_local_variable
             ),
           // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.description.isNotEmpty && experience.createdAt != null)
@@ -298,7 +315,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.createdAt != null)
             Text(
-              _formatRelativeTime(experience.createdAt),
+              _formatRelativeTime(experience.createdAt, l),
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 13,
@@ -311,6 +328,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   Widget _buildDescriptionAndTimestampInline(ExperienceEntity experience) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: Column(
@@ -325,7 +343,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 height: 1.5,
               ),
               textAlign: TextAlign.left,
-            // ignore: unnecessary_null_comparison, unused_local_variable
+              // ignore: unnecessary_null_comparison, unused_local_variable
             ),
           // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.description.isNotEmpty && experience.createdAt != null)
@@ -334,7 +352,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           // ignore: unnecessary_null_comparison, unused_local_variable
           if (experience.createdAt != null)
             Text(
-              _formatRelativeTime(experience.createdAt),
+              _formatRelativeTime(experience.createdAt, l),
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 13,
@@ -350,10 +368,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     BuildContext context,
     ExperienceEntity experience,
     bool hasMultipleMedia,
-  // ignore: unnecessary_null_comparison, unused_local_variable
+    // ignore: unnecessary_null_comparison, unused_local_variable
   ) {
     // ignore: unnecessary_null_comparison, unused_local_variable
     final user = experience.user;
+    final l = Provider.of<LocaleNotifier>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final galleryWidth = screenWidth - 32; // 16px padding en cada lado
 
@@ -395,7 +414,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'URL no válida',
+                        l.t('invalid_url'),
                         style: TextStyle(color: Colors.grey[500], fontSize: 14),
                       ),
                     ],
@@ -429,7 +448,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'No se pudo cargar',
+                            l.t('could_not_load'),
                             style: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 14,
@@ -598,6 +617,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void _showMediaOptions(BuildContext context, String mediaUrl) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -624,7 +644,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.save_alt, color: Colors.blue),
-                title: const Text('Descargar imagen'),
+                title: Text(l.t('download_image')),
                 onTap: () {
                   Navigator.pop(context);
                   // Implementar descarga
@@ -632,7 +652,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.share, color: Colors.green),
-                title: const Text('Compartir'),
+                title: Text(l.t('share')),
                 onTap: () {
                   Navigator.pop(context);
                   // Implementar compartir
@@ -640,7 +660,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.report, color: Colors.red),
-                title: const Text('Reportar'),
+                title: Text(l.t('report')),
                 onTap: () {
                   Navigator.pop(context);
                   // Implementar reporte
@@ -714,15 +734,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   /// Construye el botón de opciones (menú de tres puntos)
   Widget _buildPostOptions(BuildContext context, ExperienceEntity experience) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return PopupMenuButton<String>(
       color: Colors.grey[800],
       onSelected: (value) {
         if (value == 'edit') {
           // TODO: Implementar editar post
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Editar post - Próximamente'),
-              duration: Duration(seconds: 2),
+            SnackBar(
+              content: Text(l.t('edit_post_coming_soon')),
+              duration: const Duration(seconds: 2),
             ),
           );
         } else if (value == 'delete') {
@@ -730,23 +751,23 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         }
       },
       itemBuilder: (BuildContext context) => [
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, color: Colors.white, size: 18),
-              SizedBox(width: 8),
-              Text('Editar', style: TextStyle(color: Colors.white)),
+              const Icon(Icons.edit, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Text(l.t('edit'), style: const TextStyle(color: Colors.white)),
             ],
           ),
         ),
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, color: Colors.red, size: 18),
-              SizedBox(width: 8),
-              Text('Eliminar', style: TextStyle(color: Colors.red)),
+              const Icon(Icons.delete, color: Colors.red, size: 18),
+              const SizedBox(width: 8),
+              Text(l.t('delete'), style: const TextStyle(color: Colors.red)),
             ],
           ),
         ),
@@ -767,22 +788,23 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     BuildContext context,
     ExperienceEntity experience,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text(
-          'Eliminar publicación',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l.t('delete_post_title'),
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          l.t('delete_post_confirm_message'),
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -793,7 +815,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -805,6 +827,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     BuildContext context,
     ExperienceEntity experience,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final database = FirebaseDatabase.instance;
 
@@ -826,10 +849,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       // Mostrar éxito
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Publicación eliminada correctamente'),
+          SnackBar(
+            content: Text(l.t('post_deleted_success')),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
 
@@ -843,7 +866,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al eliminar: $e'),
+            content: Text('${l.t('post_delete_error')}: $e'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para que los administradores gestionen permisos de vendedores
 class ManageSellersScreen extends StatefulWidget {
@@ -38,6 +39,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
   }
 
   Future<void> _toggleSellerPermission(UserModel user) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final userProvider = context.read<UserProvider>();
 
     final bool success;
@@ -52,17 +54,19 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
         SnackBar(
           content: Text(
             user.canSellProducts
-                ? 'Permiso revocado exitosamente'
-                : 'Vendedor autorizado exitosamente',
+                ? l.t('permission_revoked_success')
+                : l.t('seller_authorized_success'),
           ),
           backgroundColor: Colors.green,
         ),
       );
-      _loadUsers(); // Recargar lista
+      _loadUsers();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(userProvider.error ?? 'Error al actualizar permisos'),
+          content: Text(
+            userProvider.error ?? l.t('error_updating_permissions'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -71,6 +75,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final userProvider = context.watch<UserProvider>();
     final currentUser = userProvider.user;
 
@@ -78,19 +83,19 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
     if (currentUser == null || !currentUser.isAdmin) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Acceso Denegado'),
+          title: Text(l.t('access_denied')),
           backgroundColor: ColorTokens.primary30,
         ),
-        body: const Center(
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.lock, size: 80, color: Colors.grey),
-              SizedBox(height: 16),
+              const Icon(Icons.lock, size: 80, color: Colors.grey),
+              const SizedBox(height: 16),
               Text(
-                'Solo los administradores\npueden acceder a esta sección',
+                l.t('admin_only_section'),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: const TextStyle(fontSize: 18, color: Colors.grey),
               ),
             ],
           ),
@@ -103,20 +108,20 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/shop'),
-          tooltip: 'Volver a la tienda',
+          tooltip: l.t('back_to_store'),
         ),
-        title: const Text('Gestionar Vendedores'),
+        title: Text(l.t('manage_sellers')),
         backgroundColor: ColorTokens.primary30,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadUsers,
-            tooltip: 'Actualizar',
+            tooltip: l.t('update'),
           ),
           // Botón de volver (solo icono)
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            tooltip: 'Volver',
+            tooltip: l.t('go_back'),
             onPressed: () {
               if (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
@@ -130,7 +135,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _allUsers.isEmpty
-          ? const Center(child: Text('No hay usuarios registrados'))
+          ? Center(child: Text(l.t('no_registered_users')))
           : ListView.builder(
               itemCount: _allUsers.length,
               padding: const EdgeInsets.all(16),
@@ -172,7 +177,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
                           : null,
                     ),
                     title: Text(
-                      user.name ?? user.username ?? 'Usuario sin nombre',
+                      user.name ?? user.username ?? l.t('no_name'),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -251,8 +256,8 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
                               const SizedBox(width: 4),
                               Text(
                                 user.canSellProducts
-                                    ? 'Vendedor Autorizado'
-                                    : 'Sin permiso para vender',
+                                    ? l.t('authorized_seller')
+                                    : l.t('no_sell_permission'),
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,

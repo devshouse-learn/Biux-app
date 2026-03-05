@@ -1,4 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/authentication/presentation/providers/auth_provider.dart';
@@ -34,7 +35,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
 
   String? _validatePhoneNumber(String phone) {
     if (phone.isEmpty) {
-      return 'Por favor ingresa tu número de teléfono';
+      return 'enter_phone';
     }
 
     // Limpiar número (solo dígitos)
@@ -42,20 +43,21 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
 
     // Validar longitud (10 dígitos para Colombia)
     if (cleanPhone.length != 10) {
-      return 'El número debe tener 10 dígitos';
+      return 'invalid_phone';
     }
 
     return null; // Válido
   }
 
   void _handleSendCode() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final validationError = _validatePhoneNumber(phoneController.text);
 
     if (validationError != null) {
       print('⚠️ [LoginPhone] Validación fallida: $validationError');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(validationError),
+          content: Text(l.t(validationError)),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -70,18 +72,20 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
   }
 
   void _handleValidateCode() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     String code = codeControllers.map((c) => c.text).join();
     if (code.length == 6) {
       context.read<AuthProvider>().validateCode(code);
     } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Ingresa los 6 dígitos')));
+      ).showSnackBar(SnackBar(content: Text(l.t('enter_6_digits'))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.primary30,
       body: Container(
@@ -130,7 +134,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           ),
                           content: SingleChildScrollView(
                             child: Text(
-                              auth.errorMessage ?? 'Error desconocido',
+                              auth.errorMessage ?? l.t('unknown_error'),
                               style: TextStyle(color: ColorTokens.neutral100),
                             ),
                           ),
@@ -167,7 +171,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           LengthLimitingTextInputFormatter(10),
                         ],
                         decoration: InputDecoration(
-                          labelText: 'Número de teléfono',
+                          labelText: l.t('phone_number'),
                           hintText: '3001234567',
                           labelStyle: TextStyle(color: ColorTokens.neutral100),
                           prefixIcon: Container(
@@ -231,7 +235,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                           ),
                           onPressed: _handleSendCode,
                           child: Text(
-                            'Enviar código',
+                            l.t('send_code'),
                             style: TextStyle(
                               color: ColorTokens.neutral100,
                               fontSize: 16,
@@ -241,7 +245,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                         ),
                       if (auth.state == AuthState.codeSent) ...[
                         Text(
-                          'Código enviado a: ${phoneController.text}',
+                          '${l.t('enter_code_sent')} ${phoneController.text}',
                           style: TextStyle(
                             color: ColorTokens.neutral100,
                             fontSize: 14,
@@ -316,7 +320,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                               ? _handleValidateCode
                               : null,
                           child: Text(
-                            'Validar código',
+                            l.t('verify'),
                             style: TextStyle(
                               color: ColorTokens.neutral100,
                               fontSize: 16,
@@ -342,7 +346,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                               : null,
                           child: auth.canResendCode
                               ? Text(
-                                  'Reenviar código',
+                                  l.t('resend_code'),
                                   style: TextStyle(
                                     color: ColorTokens.neutral100,
                                     fontSize: 16,
@@ -350,7 +354,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                                   ),
                                 )
                               : Text(
-                                  'Reenviar en ${auth.resendSeconds} s',
+                                  '${l.t('resend_in')} ${auth.resendSeconds} s',
                                   style: TextStyle(
                                     color: ColorTokens.neutral100,
                                     fontSize: 16,

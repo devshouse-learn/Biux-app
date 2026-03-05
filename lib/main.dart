@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
 
 // Features imports
@@ -125,6 +126,7 @@ void main() async {
           ),
         ),
         ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider<LocaleNotifier>(create: (_) => LocaleNotifier()),
         ChangeNotifierProvider(
           create: (_) =>
               MeetingPointProvider(repository: MeetingPointRepository()),
@@ -254,16 +256,18 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final localeNotifier = Provider.of<LocaleNotifier>(context);
 
     return BiuxNotificationListener(
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
+        locale: localeNotifier.locale,
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale(AppStrings.en, AppStrings.us)],
+        supportedLocales: LocaleNotifier.supportedLocales,
         title: AppStrings.APP_NAME,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RideDetailScreen extends StatefulWidget {
   final String rideId;
@@ -95,11 +96,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   children: [
                     Icon(Icons.error, size: 64, color: ColorTokens.error50),
                     SizedBox(height: 16),
-                    Text('Rodada no encontrada'),
+                    Text(l.t('ride_not_found')),
                     SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => context.pop(),
-                      child: Text('Volver'),
+                      child: Text(l.t('go_back')),
                     ),
                   ],
                 ),
@@ -127,7 +128,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () => _navigateToEdit(context, ride),
-                        tooltip: 'Editar rodada',
+                        tooltip: l.t('edit_ride'),
                       ),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
@@ -181,7 +182,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
 
                   // Instrucciones
                   InfoSectionWidget(
-                    title: 'Instrucciones',
+                    title: l.t('instructions'),
                     content: ride.instructions,
                     icon: Icons.info_outline,
                   ),
@@ -189,7 +190,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
 
                   // Recomendaciones
                   InfoSectionWidget(
-                    title: 'Recomendaciones',
+                    title: l.t('recommendations'),
                     content: ride.recommendations,
                     icon: Icons.lightbulb_outline,
                   ),
@@ -216,7 +217,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () => _shareRide(context, ride),
                       icon: Icon(Icons.share),
-                      label: Text('Compartir rodada'),
+                      label: Text(l.t('share_ride')),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: ColorTokens.primary50,
                         side: BorderSide(
@@ -239,7 +240,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         onPressed: () =>
                             _showCancelDialog(ride.id, rideProvider),
                         icon: Icon(Icons.cancel),
-                        label: Text('Cancelar rodada'),
+                        label: Text(l.t('cancel_ride')),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: ColorTokens.error50,
                           side: BorderSide(
@@ -278,7 +279,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       // Obtener información del grupo
       final provider = Provider.of<RideProvider>(context, listen: false);
       final groupInfo = await provider.getGroupInfo(ride.groupId);
-      final groupName = groupInfo?['name'] ?? 'un grupo de ciclistas';
+      final groupName = groupInfo?['name'] ?? l.t('a_cycling_group');
 
       // Generar texto de compartir con deep link
       final shareText = DeepLinkService.generateShareText(
@@ -322,7 +323,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al compartir la rodada'),
+            content: Text(l.t('error_sharing_ride')),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -331,17 +332,16 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   }
 
   void _showCancelDialog(String rideId, RideProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Cancelar Rodada'),
-        content: Text(
-          'Estás seguro que deseas cancelar esta rodada? Esta acción no se puede deshacer.',
-        ),
+        title: Text(l.t('cancel_ride')),
+        content: Text(l.t('cancel_ride_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text('No'),
+            child: Text(l.t('no_label')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -350,7 +350,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               if (success && mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Rodada cancelada'),
+                    content: Text(l.t('ride_cancelled')),
                     backgroundColor: ColorTokens.error50,
                   ),
                 );
@@ -360,7 +360,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               backgroundColor: ColorTokens.error50,
             ),
             child: Text(
-              'Sí, cancelar',
+              l.t('yes_cancel'),
               style: TextStyle(color: ColorTokens.neutral100),
             ),
           ),
@@ -379,6 +379,7 @@ class GroupInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<RideProvider>(
       builder: (context, provider, child) {
+        final l = Provider.of<LocaleNotifier>(context);
         return FutureBuilder<Map<String, dynamic>?>(
           future: provider.getGroupInfo(ride.groupId),
           builder: (context, snapshot) {
@@ -401,7 +402,7 @@ class GroupInfoWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 12),
                       Text(
-                        'Cargando Información del grupo...',
+                        l.t('loading_group_info'),
                         style: TextStyle(color: ColorTokens.neutral60),
                       ),
                     ],
@@ -423,7 +424,7 @@ class GroupInfoWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 12),
                       Text(
-                        'Grupo no encontrado',
+                        l.t('group_not_found'),
                         style: TextStyle(color: ColorTokens.neutral60),
                       ),
                     ],
@@ -476,7 +477,7 @@ class GroupInfoWidget extends StatelessWidget {
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  'Organizada por',
+                                  l.t('organized_by'),
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
@@ -492,7 +493,7 @@ class GroupInfoWidget extends StatelessWidget {
                             if (groupInfo['memberCount'] > 0) ...[
                               SizedBox(height: 2),
                               Text(
-                                '${groupInfo['memberCount']} miembros',
+                                '${groupInfo['memberCount']} ${l.t('members')}',
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
@@ -507,7 +508,7 @@ class GroupInfoWidget extends StatelessWidget {
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  'Líder de la rodada',
+                                  l.t('ride_leader'),
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
                                         color: ColorTokens.primary50,
@@ -543,6 +544,7 @@ class BasicInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -550,19 +552,19 @@ class BasicInfoWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Información de la rodada',
+              l.t('ride_info'),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             InfoRowWidget(
               icon: Icons.calendar_today,
-              label: 'Fecha y hora',
+              label: l.t('date_and_time'),
               value: _formatDateTime(ride.dateTime),
             ),
             SizedBox(height: 12),
             InfoRowWidget(
               icon: Icons.straighten,
-              label: 'Distancia',
+              label: l.t('distance'),
               value: '${ride.kilometers} km',
             ),
             SizedBox(height: 12),
@@ -571,7 +573,7 @@ class BasicInfoWidget extends StatelessWidget {
                 Icon(Icons.trending_up, color: ColorTokens.neutral60),
                 SizedBox(width: 12),
                 Text(
-                  'Dificultad: ',
+                  '${l.t('difficulty')}: ',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: ColorTokens.neutral60,
@@ -584,7 +586,7 @@ class BasicInfoWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    _getDifficultyName(ride.difficulty),
+                    _getDifficultyName(context, ride.difficulty),
                     style: TextStyle(
                       color: ColorTokens.neutral100,
                       fontSize: 12,
@@ -597,8 +599,8 @@ class BasicInfoWidget extends StatelessWidget {
             SizedBox(height: 12),
             InfoRowWidget(
               icon: Icons.flag,
-              label: 'Estado',
-              value: _getStatusName(ride.status),
+              label: l.t('status_label'),
+              value: _getStatusName(context, ride.status),
             ),
           ],
         ),
@@ -645,29 +647,31 @@ class BasicInfoWidget extends StatelessWidget {
     }
   }
 
-  String _getDifficultyName(DifficultyLevel difficulty) {
+  String _getDifficultyName(BuildContext context, DifficultyLevel difficulty) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return 'Fácil';
+        return l.t('difficulty_easy');
       case DifficultyLevel.medium:
-        return 'Medio';
+        return l.t('difficulty_medium');
       case DifficultyLevel.hard:
-        return 'Difícil';
+        return l.t('difficulty_hard');
       case DifficultyLevel.expert:
-        return 'Experto';
+        return l.t('difficulty_expert');
     }
   }
 
-  String _getStatusName(RideStatus status) {
+  String _getStatusName(BuildContext context, RideStatus status) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     switch (status) {
       case RideStatus.upcoming:
-        return 'Próxima';
+        return l.t('status_upcoming');
       case RideStatus.ongoing:
-        return 'En curso';
+        return l.t('status_ongoing');
       case RideStatus.completed:
-        return 'Completada';
+        return l.t('status_completed');
       case RideStatus.cancelled:
-        return 'Cancelada';
+        return l.t('status_cancelled');
     }
   }
 }
@@ -680,6 +684,7 @@ class MeetingPointInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -687,7 +692,7 @@ class MeetingPointInfoWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Punto de encuentro',
+              l.t('meeting_point'),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
@@ -703,7 +708,7 @@ class MeetingPointInfoWidget extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () => context.push('/map'),
                     icon: Icon(Icons.map),
-                    label: Text('Ver en mapa'),
+                    label: Text(l.t('view_on_map')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary30,
                       foregroundColor: ColorTokens.neutral100,
@@ -791,6 +796,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -798,7 +804,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Participantes',
+              l.t('participants'),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
@@ -806,7 +812,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: ParticipantStatWidget(
-                    label: 'Confirmados',
+                    label: l.t('confirmed_count'),
                     count: ride.participants.length,
                     color: ColorTokens.success40,
                     icon: Icons.check_circle,
@@ -815,7 +821,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
                 SizedBox(width: 16),
                 Expanded(
                   child: ParticipantStatWidget(
-                    label: 'Tal vez',
+                    label: l.t('maybe_count'),
                     count: ride.maybeParticipants.length,
                     color: ColorTokens.warning50,
                     icon: Icons.help,
@@ -827,7 +833,7 @@ class ParticipantsSectionWidget extends StatelessWidget {
                 ride.maybeParticipants.isEmpty) ...[
               SizedBox(height: 16),
               Text(
-                'Aún no hay participantes registrados',
+                l.t('no_participants_yet'),
                 style: TextStyle(
                   color: ColorTokens.neutral60,
                   fontStyle: FontStyle.italic,

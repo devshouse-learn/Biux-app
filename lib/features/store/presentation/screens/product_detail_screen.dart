@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/presentation/providers/cart_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla de detalle completo de un producto
 class ProductDetailScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.product.nombre),
@@ -109,7 +111,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         const Icon(Icons.store, size: 20),
                         const SizedBox(width: 8),
                         Text(
-                          'Vendido por: ${widget.product.vendedorNombre}',
+                          '${l.t('sold_by')} ${widget.product.vendedorNombre}',
                           style: const TextStyle(fontSize: 14),
                         ),
                       ],
@@ -132,8 +134,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       const SizedBox(width: 8),
                       Text(
                         widget.product.disponible
-                            ? 'En stock: ${widget.product.stock} unidades'
-                            : 'Agotado',
+                            ? '${l.t('stock_label')}: ${widget.product.stock}'
+                            : l.t('out_of_stock'),
                         style: TextStyle(
                           fontSize: 14,
                           color: widget.product.disponible
@@ -148,9 +150,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const Divider(),
 
                   // Descripción
-                  const Text(
-                    'Descripción',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('description'),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -163,9 +168,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       widget.product.especificaciones!.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Divider(),
-                    const Text(
-                      'Especificaciones',
-                      style: TextStyle(
+                    Text(
+                      l.t('specifications'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -197,9 +202,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   if (widget.product.tags.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Divider(),
-                    const Text(
-                      'Etiquetas',
-                      style: TextStyle(
+                    Text(
+                      l.t('tags_label'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -399,6 +404,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildBottomBar() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -460,11 +466,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          '$_cantidad ${_cantidad == 1 ? 'producto agregado' : 'productos agregados'} al carrito',
+                          '$_cantidad ${_cantidad == 1 ? l.t('product_added_to_cart') : l.t('products_added_to_cart')}',
                         ),
                         backgroundColor: Colors.green,
                         action: SnackBarAction(
-                          label: 'Ver carrito',
+                          label: l.t('view_cart'),
                           textColor: Colors.white,
                           onPressed: () {
                             Navigator.pushNamed(context, '/cart');
@@ -482,7 +488,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   }
                 },
                 icon: const Icon(Icons.add_shopping_cart),
-                label: const Text('Agregar al carrito'),
+                label: Text(l.t('add_to_cart')),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),

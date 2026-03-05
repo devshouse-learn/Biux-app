@@ -8,6 +8,7 @@ import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/experiences/presentation/widgets/video_player_widget.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story
 /// Soporta reproducción automática de videos e imágenes con duración
@@ -405,7 +406,6 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildUserHeader() {
     final user = widget.experience.user;
 
-
     return Row(
       children: [
         // Avatar + información usuario (clickeable para ir al perfil)
@@ -523,31 +523,32 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   /// Elimina la historia
   void _deleteStory(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final provider = context.read<ExperienceProvider>();
       final success = await provider.deleteExperience(widget.experience.id);
 
       if (context.mounted) {
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Historia eliminada correctamente')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('story_deleted'))));
           // Cerrar el visor
           Navigator.pop(context);
           if (widget.onClose != null) {
             widget.onClose!();
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al eliminar la historia')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('error_deleting_story'))));
         }
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('error')}: $e')));
       }
     }
   }

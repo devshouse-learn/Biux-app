@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 /// Widget para visualizar fotos en pantalla completa con zoom y gestos
@@ -120,7 +122,14 @@ class _PhotoViewerState extends State<PhotoViewer> {
   void _sharePhoto(String photoUrl) {
     // TODO: Implementar compartir foto
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Compartir foto próximamente')),
+      SnackBar(
+        content: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('share_photo_coming_soon'),
+        ),
+      ),
     );
   }
 }

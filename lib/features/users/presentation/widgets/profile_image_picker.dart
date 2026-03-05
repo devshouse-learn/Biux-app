@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para seleccionar y recortar imagen de perfil en formato cuadrado
 /// La foto es OPCIONAL - el usuario puede dejar su perfil sin foto
@@ -148,6 +150,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
   }
 
   void _showImageOptions() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -172,7 +175,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                 const SizedBox(height: 20),
 
                 Text(
-                  'Cambiar foto de perfil',
+                  l.t('change_profile_photo'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -194,8 +197,8 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                       color: ColorTokens.primary50,
                     ),
                   ),
-                  title: const Text('Tomar foto'),
-                  subtitle: const Text('Usar la cámara'),
+                  title: Text(l.t('take_photo')),
+                  subtitle: Text(l.t('use_camera')),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(ImageSource.camera);
@@ -214,8 +217,8 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                       color: ColorTokens.secondary50,
                     ),
                   ),
-                  title: const Text('Seleccionar de galería'),
-                  subtitle: const Text('Elegir foto existente'),
+                  title: Text(l.t('select_from_gallery')),
+                  subtitle: Text(l.t('choose_existing_photo')),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(ImageSource.gallery);
@@ -237,8 +240,8 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
                         color: ColorTokens.error50,
                       ),
                     ),
-                    title: const Text('Eliminar foto'),
-                    subtitle: const Text('Usar avatar por defecto'),
+                    title: Text(l.t('delete_photo')),
+                    subtitle: Text(l.t('use_default_avatar')),
                     onTap: () {
                       Navigator.pop(context);
                       _removeImage();
@@ -253,6 +256,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     setState(() {
       _isProcessing = true;
     });
@@ -280,7 +284,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Error al seleccionar la imagen'),
+            content: Text(l.t('error_selecting_image')),
             backgroundColor: ColorTokens.error50,
           ),
         );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../data/models/promotion_request_model.dart';
 import '../providers/promotions_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -8,6 +9,7 @@ class PromotionsScreen extends StatelessWidget {
   const PromotionsScreen({Key? key}) : super(key: key);
 
   void _openRequestDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final titleCtrl = TextEditingController();
     final descCtrl = TextEditingController();
     String type = 'anuncio';
@@ -16,30 +18,38 @@ class PromotionsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Solicitar publicación'),
+        title: Text(l.t('request_publication')),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleCtrl,
-                decoration: const InputDecoration(labelText: 'Título'),
+                decoration: InputDecoration(labelText: l.t('title_label')),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: descCtrl,
-                decoration: const InputDecoration(labelText: 'Descripción'),
+                decoration: InputDecoration(
+                  labelText: l.t('description_label'),
+                ),
                 maxLines: 3,
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: type,
-                items: const [
-                  DropdownMenuItem(value: 'anuncio', child: Text('Anuncio')),
-                  DropdownMenuItem(value: 'evento', child: Text('Evento')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'anuncio',
+                    child: Text(l.t('announcement')),
+                  ),
+                  DropdownMenuItem(
+                    value: 'evento',
+                    child: Text(l.t('event_label')),
+                  ),
                 ],
                 onChanged: (v) => type = v ?? 'anuncio',
-                decoration: const InputDecoration(labelText: 'Tipo'),
+                decoration: InputDecoration(labelText: l.t('type_label')),
               ),
               if (type == 'evento') ...[
                 const SizedBox(height: 8),
@@ -53,7 +63,7 @@ class PromotionsScreen extends StatelessWidget {
                     );
                     if (d != null) eventDate = d;
                   },
-                  child: const Text('Seleccionar fecha del evento'),
+                  child: Text(l.t('select_event_date')),
                 ),
               ],
             ],
@@ -62,7 +72,7 @@ class PromotionsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -78,10 +88,10 @@ class PromotionsScreen extends StatelessWidget {
               context.read<PromotionsProvider>().addRequest(req);
               Navigator.of(ctx).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Solicitud enviada a los admins')),
+                SnackBar(content: Text(l.t('request_sent_admins'))),
               );
             },
-            child: const Text('Enviar solicitud'),
+            child: Text(l.t('send_request')),
           ),
         ],
       ),
@@ -90,9 +100,10 @@ class PromotionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Promociones de la comunidad'),
+        title: Text(l.t('community_promotions')),
         backgroundColor: ColorTokens.primary30,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -108,22 +119,22 @@ class PromotionsScreen extends StatelessWidget {
               Card(
                 color: Colors.grey[600],
                 child: ListTile(
-                  title: const Text(
-                    '¿Quieres promocionar tu anuncio o evento?',
-                    style: TextStyle(
+                  title: Text(
+                    l.t('promote_question'),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  subtitle: const Text(
-                    'Envía una solicitud y los admins la revisarán.',
-                    style: TextStyle(color: Colors.white),
+                  subtitle: Text(
+                    l.t('promote_subtitle'),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   trailing: ElevatedButton(
                     onPressed: () => _openRequestDialog(context),
-                    child: const Text(
-                      'Solicitar',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      l.t('request_button'),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
@@ -132,7 +143,7 @@ class PromotionsScreen extends StatelessWidget {
               if (items.isEmpty) ...[
                 Center(
                   child: Text(
-                    'No hay promociones publicadas.',
+                    l.t('no_promotions_published'),
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ),
@@ -142,7 +153,7 @@ class PromotionsScreen extends StatelessWidget {
                     child: ListTile(
                       title: Text(r.title),
                       subtitle: Text(
-                        '${r.type.toUpperCase()} • ${r.description}\nEstado: ${r.status}',
+                        '${r.type.toUpperCase()} • ${r.description}\n${l.t('status_label')}: ${r.status}',
                       ),
                       isThreeLine: true,
                     ),

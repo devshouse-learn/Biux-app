@@ -1,5 +1,6 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/presentation/screens/view_group/view_group_bloc.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,6 +13,7 @@ class ViewMembersGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final bloc = context.watch<ViewGroupBloc>();
     return SingleChildScrollView(
       child: Column(
@@ -101,7 +103,7 @@ class ViewMembersGroup extends StatelessWidget {
                                       minimumSize: Size(80, 40),
                                     ),
                                     child: Text(
-                                      'Ver Perfil',
+                                      l.t('view_profile'),
                                       style: TextStyle(fontSize: 12),
                                     ),
                                     onPressed: () {

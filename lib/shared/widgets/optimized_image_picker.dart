@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:provider/provider.dart';
 import '../../core/design_system/color_tokens.dart';
+import '../../core/design_system/locale_notifier.dart';
 import '../services/image_compression_service.dart';
 import '../services/optimized_storage_service.dart';
 import '../services/optimized_cache_manager.dart';
@@ -191,7 +193,9 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
             children: [
               ListTile(
                 leading: Icon(Icons.photo_camera, color: ColorTokens.primary50),
-                title: Text('Tomar foto'),
+                title: Text(
+                  Provider.of<LocaleNotifier>(context).t('take_photo'),
+                ),
                 onTap: () => _selectImage(ImageSource.camera),
               ),
               ListTile(
@@ -199,13 +203,17 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
                   Icons.photo_library,
                   color: ColorTokens.primary50,
                 ),
-                title: Text('Seleccionar de galería'),
+                title: Text(
+                  Provider.of<LocaleNotifier>(context).t('select_from_gallery'),
+                ),
                 onTap: () => _selectImage(ImageSource.gallery),
               ),
               if (widget.currentImageUrl != null)
                 ListTile(
                   leading: Icon(Icons.delete, color: Colors.red),
-                  title: Text('Eliminar imagen'),
+                  title: Text(
+                    Provider.of<LocaleNotifier>(context).t('delete_image'),
+                  ),
                   onTap: _removeImage,
                 ),
             ],
@@ -247,7 +255,9 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
 
       await _uploadImage(imageFile);
     } catch (e) {
-      _showError('Error seleccionando imagen: $e');
+      _showError(
+        '${Provider.of<LocaleNotifier>(context, listen: false).t('error_selecting_image')}: $e',
+      );
     }
   }
 
@@ -339,7 +349,12 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
   void _showCompressionInfo(int originalSizeBytes) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Subiendo imagen'),
+        content: Text(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('uploading_image'),
+        ),
         backgroundColor: ColorTokens.primary50,
         duration: Duration(seconds: 3),
       ),

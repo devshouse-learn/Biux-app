@@ -3,6 +3,7 @@ import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/core/utils/responsive_helper.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'app_drawer.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
@@ -69,23 +71,23 @@ class _MainShellState extends State<MainShell> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home, size: 24),
-            label: 'Inicio',
+            label: l.t('nav_home'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_bike, size: 24),
-            label: 'Rutas',
+            label: l.t('nav_routes'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.pedal_bike, size: 24),
-            label: 'Mis Bicis',
+            label: l.t('nav_my_bikes'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag, size: 24),
-            label: 'Tienda',
+            label: l.t('nav_store'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person, size: 24),
-            label: 'Mi Perfil',
+            label: l.t('nav_profile'),
           ),
         ],
       ),

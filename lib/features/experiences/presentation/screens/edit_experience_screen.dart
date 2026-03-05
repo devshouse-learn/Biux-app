@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class EditExperienceScreen extends StatefulWidget {
   final ExperienceEntity experience;
@@ -33,13 +34,14 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
   }
 
   Future<void> _saveChanges() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final newDescription = _descriptionController.text.trim();
 
     if (newDescription.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('La descripción no puede estar vacía'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(l.t('description_empty')),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -59,9 +61,9 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
       if (mounted) {
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Publicación actualizada correctamente'),
-              duration: Duration(seconds: 2),
+            SnackBar(
+              content: Text(l.t('post_updated')),
+              duration: const Duration(seconds: 2),
             ),
           );
 
@@ -71,7 +73,7 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Error al actualizar: ${provider.error ?? "Error desconocido"}',
+                '${l.t('error_updating')}: ${provider.error ?? l.t('unknown_error')}',
               ),
               duration: const Duration(seconds: 2),
             ),
@@ -82,7 +84,7 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al actualizar: $e'),
+            content: Text('${l.t('error_updating')}: $e'),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -96,12 +98,13 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral10,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-        title: const Text('Editar publicación'),
+        title: Text(l.t('edit_post')),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -111,7 +114,7 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
           children: [
             // Descripción
             Text(
-              'Descripción',
+              l.t('description_label'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -124,7 +127,7 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
               maxLines: 5,
               minLines: 3,
               decoration: InputDecoration(
-                hintText: 'Describe tu publicación...',
+                hintText: l.t('describe_your_post'),
                 hintStyle: TextStyle(color: ColorTokens.neutral60),
                 filled: true,
                 fillColor: ColorTokens.neutral20,
@@ -163,7 +166,7 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Cancelar'),
+                    child: Text(l.t('cancel')),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -189,7 +192,7 @@ class _EditExperienceScreenState extends State<EditExperienceScreen> {
                               ),
                             ),
                           )
-                        : const Text('Guardar cambios'),
+                        : Text(l.t('save_changes')),
                   ),
                 ),
               ],

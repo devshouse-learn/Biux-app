@@ -20,14 +20,17 @@ class ExperiencesStoriesWidget extends StatefulWidget {
 }
 
 class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
+  ExperienceProvider? _experienceProvider;
+
   @override
   void initState() {
     super.initState();
     // Escuchar cambios del ExperienceProvider para re-agrupar stories
     // cuando el feed se cargue o actualice
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final experienceProvider = context.read<ExperienceProvider>();
-      experienceProvider.addListener(_onExperiencesChanged);
+      if (!mounted) return;
+      _experienceProvider = context.read<ExperienceProvider>();
+      _experienceProvider!.addListener(_onExperiencesChanged);
       // Intentar agrupar si ya hay datos
       _loadAndGroupStories();
     });
@@ -35,20 +38,20 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 
   @override
   void dispose() {
-    // Remover listener de forma segura
-    try {
-      final experienceProvider = context.read<ExperienceProvider>();
-      experienceProvider.removeListener(_onExperiencesChanged);
-    } catch (_) {}
+    // Remover listener de forma segura usando la referencia guardada
+    _experienceProvider?.removeListener(_onExperiencesChanged);
+    _experienceProvider = null;
     super.dispose();
   }
 
   void _onExperiencesChanged() {
-    // Re-agrupar stories cuando el feed cambie
+    // Solo re-agrupar si el widget sigue montado
+    if (!mounted) return;
     _loadAndGroupStories();
   }
 
   Future<void> _loadAndGroupStories() async {
+    if (!mounted) return;
     final storyGroupsProvider = context.read<StoryGroupsProvider>();
     final experienceProvider = context.read<ExperienceProvider>();
 

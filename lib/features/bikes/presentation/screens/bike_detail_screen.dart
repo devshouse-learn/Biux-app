@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
@@ -31,7 +31,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
     final bikeProvider = context.read<BikeProvider>();
     bike = bikeProvider.userBikes.firstWhere(
       (b) => b.id == widget.bikeId,
-      orElse: () => throw Exception('Bicicleta no encontrada'),
+      orElse: () => throw Exception('bike_not_found'),
     );
 
     if (bike != null) {
@@ -41,6 +41,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Consumer<BikeProvider>(
       builder: (context, bikeProvider, child) {
         final currentBike = bikeProvider.currentBike ?? bike;
@@ -48,10 +49,10 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         if (currentBike == null) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Bicicleta'),
+              title: Text(l.t('bike')),
               backgroundColor: ColorTokens.primary30,
             ),
-            body: const Center(child: Text('Bicicleta no encontrada')),
+            body: Center(child: Text(l.t('bike_not_found'))),
           );
         }
 
@@ -81,6 +82,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildAppBar(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final photos = <String>[
       bike.mainPhoto,
       if (bike.serialPhoto != null) bike.serialPhoto!,
@@ -88,11 +90,11 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
     ];
 
     final photoLabels = <String>[
-      'Foto Principal',
-      if (bike.serialPhoto != null) 'Número de Serie',
+      l.t('main_photo_label'),
+      if (bike.serialPhoto != null) l.t('serial_number_label'),
       ...List.generate(
         (bike.additionalPhotos ?? []).length,
-        (i) => 'Foto Adicional ${i + 1}',
+        (i) => '${l.t('additional_photo')} ${i + 1}',
       ),
     ];
 
@@ -160,7 +162,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                       const Icon(Icons.zoom_in, size: 20, color: Colors.white),
                       const SizedBox(width: 4),
                       Text(
-                        'Toca para ampliar',
+                        l.t('tap_to_enlarge'),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -183,36 +185,36 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         PopupMenuButton<String>(
           onSelected: (value) => _handleMenuAction(value, bike),
           itemBuilder: (context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'edit',
               child: Row(
                 children: [
-                  Icon(Icons.edit),
-                  SizedBox(width: 8),
-                  Text('Editar'),
+                  const Icon(Icons.edit),
+                  const SizedBox(width: 8),
+                  Text(l.t('edit_bike')),
                 ],
               ),
             ),
             if (bike.canBeTransferred)
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'transfer',
                 child: Row(
                   children: [
-                    Icon(Icons.swap_horiz),
-                    SizedBox(width: 8),
-                    Text('Transferir'),
+                    const Icon(Icons.swap_horiz),
+                    const SizedBox(width: 8),
+                    Text(l.t('transfer')),
                   ],
                 ),
               ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'delete',
               child: Row(
                 children: [
-                  Icon(Icons.delete, color: ColorTokens.error50),
-                  SizedBox(width: 8),
+                  const Icon(Icons.delete, color: ColorTokens.error50),
+                  const SizedBox(width: 8),
                   Text(
-                    'Eliminar',
-                    style: TextStyle(color: ColorTokens.error50),
+                    l.t('delete'),
+                    style: const TextStyle(color: ColorTokens.error50),
                   ),
                 ],
               ),
@@ -224,6 +226,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildStatusCard(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     Color statusColor;
     IconData statusIcon;
     String statusDescription;
@@ -232,22 +235,22 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
       case BikeStatus.active:
         statusColor = ColorTokens.success40;
         statusIcon = Icons.check_circle;
-        statusDescription = 'Tu bicicleta está activa y registrada';
+        statusDescription = l.t('bike_active_registered');
         break;
       case BikeStatus.stolen:
         statusColor = ColorTokens.error50;
         statusIcon = Icons.warning;
-        statusDescription = 'Reportada como robada';
+        statusDescription = l.t('reported_stolen');
         break;
       case BikeStatus.recovered:
         statusColor = Colors.orange;
         statusIcon = Icons.restore;
-        statusDescription = 'Recuperada después de robo';
+        statusDescription = l.t('recovered_after_theft');
         break;
       case BikeStatus.verified:
         statusColor = Colors.blue;
         statusIcon = Icons.verified;
-        statusDescription = bike.verifiedBy ?? 'Verificada por tienda aliada';
+        statusDescription = bike.verifiedBy ?? l.t('verified_by_store');
         break;
     }
 
@@ -288,6 +291,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildBasicInfo(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
@@ -305,25 +309,25 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Información Básica',
-            style: TextStyle(
+          Text(
+            l.t('basic_info'),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ColorTokens.primary30,
             ),
           ),
           const SizedBox(height: 16),
-          _buildInfoRow('Marca', bike.brand),
-          _buildInfoRow('Modelo', bike.model),
-          _buildInfoRow('Año', bike.year.toString()),
-          _buildInfoRow('Color', bike.color),
-          _buildInfoRow('Talla', bike.size),
-          _buildInfoRow('Tipo', bike.type.displayName),
-          _buildInfoRow('Número de Serie', bike.frameSerial),
-          _buildInfoRow('Ciudad', bike.city),
+          _buildInfoRow(l.t('brand_label'), bike.brand),
+          _buildInfoRow(l.t('model_label'), bike.model),
+          _buildInfoRow(l.t('year_label'), bike.year.toString()),
+          _buildInfoRow(l.t('color_label'), bike.color),
+          _buildInfoRow(l.t('size_label'), bike.size),
+          _buildInfoRow(l.t('type_label'), bike.type.displayName),
+          _buildInfoRow(l.t('serial_number_label'), bike.frameSerial),
+          _buildInfoRow(l.t('city_label'), bike.city),
           if (bike.neighborhood != null)
-            _buildInfoRow('Barrio', bike.neighborhood!),
+            _buildInfoRow(l.t('neighborhood_label'), bike.neighborhood!),
         ],
       ),
     );
@@ -358,6 +362,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildPhotosSection(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final photos = <String>[
       bike.mainPhoto,
       if (bike.serialPhoto != null) bike.serialPhoto!,
@@ -365,11 +370,11 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
     ];
 
     final photoLabels = <String>[
-      'Foto Principal',
-      if (bike.serialPhoto != null) 'Número de Serie',
+      l.t('main_photo_label'),
+      if (bike.serialPhoto != null) l.t('serial_number_label'),
       ...List.generate(
         (bike.additionalPhotos ?? []).length,
-        (i) => 'Foto Adicional ${i + 1}',
+        (i) => '${l.t('additional_photo')} ${i + 1}',
       ),
     ];
 
@@ -382,9 +387,9 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         children: [
           Row(
             children: [
-              const Text(
-                'Fotos',
-                style: TextStyle(
+              Text(
+                l.t('photos'),
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: ColorTokens.primary30,
@@ -394,7 +399,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               Icon(Icons.zoom_in, size: 18, color: ColorTokens.neutral60),
               const SizedBox(width: 4),
               Text(
-                'Toca para ver en pantalla completa',
+                l.t('tap_fullscreen'),
                 style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
               ),
             ],
@@ -457,6 +462,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildAdditionalInfo(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final hasAdditionalInfo =
         bike.purchaseDate != null ||
         bike.purchasePlace != null ||
@@ -482,7 +488,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Información Adicional',
+            l.t('additional_info'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -492,19 +498,23 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           const SizedBox(height: 16),
           if (bike.purchaseDate != null)
             _buildInfoRow(
-              'Fecha de Compra',
+              l.t('purchase_date_label'),
               '${bike.purchaseDate!.day}/${bike.purchaseDate!.month}/${bike.purchaseDate!.year}',
             ),
           if (bike.purchasePlace != null)
-            _buildInfoRow('Lugar de Compra', bike.purchasePlace!),
+            _buildInfoRow(l.t('purchase_place_label'), bike.purchasePlace!),
           if (bike.featuredComponents != null)
-            _buildInfoRow('Componentes Destacados', bike.featuredComponents!),
+            _buildInfoRow(
+              l.t('featured_components_label'),
+              bike.featuredComponents!,
+            ),
         ],
       ),
     );
   }
 
   Widget _buildQRSection(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -523,7 +533,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Código QR',
+            l.t('bike_qr'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -568,7 +578,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                     foregroundColor: Colors.white,
                   ),
                   icon: const Icon(Icons.download),
-                  label: Text(AppStrings.downloadQR),
+                  label: Text(l.t('download_qr')),
                 ),
               ),
               const SizedBox(width: 12),
@@ -580,7 +590,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                     side: const BorderSide(color: ColorTokens.primary30),
                   ),
                   icon: const Icon(Icons.local_shipping),
-                  label: Text(AppStrings.requestSticker),
+                  label: Text(l.t('request_sticker')),
                 ),
               ),
             ],
@@ -591,14 +601,15 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   Widget _buildActionsSection(BikeEntity bike, BikeProvider bikeProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Acciones',
-            style: TextStyle(
+          Text(
+            l.t('actions'),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ColorTokens.primary30,
@@ -611,7 +622,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               bike.status == BikeStatus.verified)
             _buildActionButton(
               icon: Icons.warning,
-              label: AppStrings.reportTheft,
+              label: Text(l.t('report_theft')),
               color: ColorTokens.error50,
               onPressed: () => _showTheftReportDialog(bike, bikeProvider),
             ),
@@ -619,7 +630,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           if (bike.status == BikeStatus.stolen)
             _buildActionButton(
               icon: Icons.restore,
-              label: AppStrings.markRecovered,
+              label: l.t('mark_recovered'),
               color: ColorTokens.success40,
               onPressed: () => _markAsRecovered(bike, bikeProvider),
             ),
@@ -628,7 +639,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           if (bike.canBeTransferred)
             _buildActionButton(
               icon: Icons.swap_horiz,
-              label: AppStrings.transferOwnership,
+              label: l.t('transfer_ownership'),
               color: Colors.blue,
               onPressed: () => _showTransferDialog(bike, bikeProvider),
             ),
@@ -685,17 +696,16 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   void _showTheftReportDialog(BikeEntity bike, BikeProvider bikeProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppStrings.reportTheft),
-        content: const Text(
-          '¿Estás seguro de que quieres reportar esta bicicleta como robada?',
-        ),
+        title: Text(l.t('report_theft')),
+        content: Text(l.t('report_theft_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppStrings.cancel),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -705,7 +715,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
             ),
-            child: const Text('Reportar'),
+            child: Text(l.t('report')),
           ),
         ],
       ),
@@ -717,24 +727,23 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   void _showTransferDialog(BikeEntity bike, BikeProvider bikeProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppStrings.transferOwnership),
-        content: const Text(
-          '¿Deseas transferir la propiedad de esta bicicleta?',
-        ),
+        title: Text(l.t('transfer_ownership')),
+        content: Text(l.t('transfer_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppStrings.cancel),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               // TODO: Implementar transferencia
             },
-            child: const Text('Transferir'),
+            child: Text(l.t('transfer')),
           ),
         ],
       ),
@@ -742,17 +751,18 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   void _showDeleteConfirmation(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar Bicicleta'),
-        content: const Text(
-          '¿Estás seguro de que quieres eliminar esta bicicleta? Esta acción no se puede deshacer.',
+        title: Text(l.t('delete_bike')),
+        content: Text(
+          '${l.t('delete_bike_confirm')} ${l.t('delete_action_irreversible')}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppStrings.cancel),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -760,9 +770,9 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
 
               // Mostrar indicador de carga
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Eliminando bicicleta...'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(l.t('deleting_bike')),
+                  duration: const Duration(seconds: 2),
                 ),
               );
 
@@ -772,8 +782,8 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
 
               if (success && mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('✅ Bicicleta eliminada correctamente'),
+                  SnackBar(
+                    content: Text('✅ ${l.t('bike_deleted_success')}'),
                     backgroundColor: ColorTokens.success40,
                     duration: Duration(seconds: 2),
                   ),
@@ -797,7 +807,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -805,18 +815,20 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
   }
 
   void _downloadQR(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('QR descargado en la galería'),
+      SnackBar(
+        content: Text(l.t('qr_downloaded')),
         backgroundColor: ColorTokens.success40,
       ),
     );
   }
 
   void _requestSticker(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Solicitud de sticker enviada'),
+      SnackBar(
+        content: Text(l.t('sticker_request_sent')),
         backgroundColor: Colors.blue,
       ),
     );

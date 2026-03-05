@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/cities/data/models/city_model.dart';
 import 'package:biux/features/cities/presentation/providers/city_provider.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
@@ -58,11 +59,12 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
-        title: const Text(
-          'Crear Grupo',
+        title: Text(
+          l.t('create_group'),
           style: TextStyle(color: ColorTokens.neutral100),
         ),
         backgroundColor: ColorTokens.primary30,
@@ -82,6 +84,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
   }
 
   Widget _buildAlreadyAdminView(GroupProvider groupProvider) {
+    final l = Provider.of<LocaleNotifier>(context);
     final adminGroup = groupProvider.adminGroups.first;
 
     return Center(
@@ -97,7 +100,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Ya eres administrador de un grupo',
+              l.t('already_admin_of_group'),
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -151,7 +154,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${adminGroup.memberIds.length} miembros',
+                      '${adminGroup.memberIds.length} ${l.t('members')}',
                       style: TextStyle(
                         color: ColorTokens.neutral60,
                         fontSize: 14,
@@ -163,7 +166,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Solo puedes ser administrador de un grupo a la vez. Para crear un nuevo grupo, primero debes transferir la administración del grupo actual a otro miembro.',
+              l.t('only_one_admin_explanation'),
               style: TextStyle(color: ColorTokens.neutral60, fontSize: 16),
               textAlign: TextAlign.center,
             ),
@@ -178,7 +181,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       foregroundColor: ColorTokens.neutral100,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text('Ver Mi Grupo'),
+                    child: Text(l.t('view_my_group')),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -190,7 +193,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       side: const BorderSide(color: ColorTokens.primary30),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text('Volver'),
+                    child: Text(l.t('back')),
                   ),
                 ),
               ],
@@ -202,6 +205,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
   }
 
   Widget _buildCreateGroupForm(GroupProvider groupProvider) {
+    final l = Provider.of<LocaleNotifier>(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -236,9 +240,9 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Center(
+            Center(
               child: Text(
-                'Logo del grupo (opcional)',
+                l.t('group_logo_optional'),
                 style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
               ),
             ),
@@ -248,7 +252,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             TextFormField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Nombre del grupo',
+                labelText: l.t('group_name'),
                 labelStyle: TextStyle(color: ColorTokens.neutral60),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -260,10 +264,10 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'El nombre del grupo es requerido';
+                  return l.t('group_name_required');
                 }
                 if (value.trim().length < 3) {
-                  return 'El nombre debe tener al menos 3 caracteres';
+                  return l.t('name_min_chars');
                 }
                 return null;
               },
@@ -280,7 +284,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 return DropdownButtonFormField<CityModel>(
                   initialValue: _selectedCity,
                   decoration: InputDecoration(
-                    labelText: 'Ciudad',
+                    labelText: l.t('city'),
                     labelStyle: TextStyle(color: ColorTokens.neutral60),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -305,7 +309,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                   },
                   validator: (value) {
                     if (value == null) {
-                      return 'Selecciona una ciudad';
+                      return l.t('select_city');
                     }
                     return null;
                   },
@@ -319,7 +323,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               controller: _descriptionController,
               maxLines: 4,
               decoration: InputDecoration(
-                labelText: 'Descripción',
+                labelText: l.t('description'),
                 labelStyle: TextStyle(color: ColorTokens.neutral60),
                 alignLabelWithHint: true,
                 border: OutlineInputBorder(
@@ -332,10 +336,10 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'La descripción es requerida';
+                  return l.t('description_required');
                 }
                 if (value.trim().length < 10) {
-                  return 'La descripción debe tener al menos 10 caracteres';
+                  return l.t('description_min_chars');
                 }
                 return null;
               },
@@ -343,8 +347,8 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
             const SizedBox(height: 24),
 
             // Imagen de portada
-            const Text(
-              'Imagen de portada (opcional)',
+            Text(
+              l.t('cover_image_optional'),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -366,18 +370,18 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: ColorTokens.neutral60, width: 1),
                 ),
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.add_photo_alternate,
                       size: 50,
                       color: ColorTokens.neutral60,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Toca para agregar imagen de portada',
-                      style: TextStyle(color: ColorTokens.neutral60),
+                      l.t('tap_to_add_cover'),
+                      style: const TextStyle(color: ColorTokens.neutral60),
                     ),
                   ],
                 ),
@@ -402,8 +406,8 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     ? const CircularProgressIndicator(
                         color: ColorTokens.neutral100,
                       )
-                    : const Text(
-                        'Crear Grupo',
+                    : Text(
+                        l.t('create_group'),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -422,10 +426,12 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
       return;
     }
 
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+
     if (_selectedCity == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Selecciona una ciudad'),
+        SnackBar(
+          content: Text(l.t('select_city')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -437,8 +443,8 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
     // Verificar una vez más que no sea admin de otro grupo
     if (groupProvider.isAdminOfAnyGroup) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ya eres administrador de otro grupo'),
+        SnackBar(
+          content: Text(l.t('already_admin')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -457,8 +463,8 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Grupo creado exitosamente'),
+        SnackBar(
+          content: Text(l.t('group_created_success')),
           backgroundColor: ColorTokens.success50,
         ),
       );
@@ -466,7 +472,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(groupProvider.error ?? 'Error al crear el grupo'),
+          content: Text(groupProvider.error ?? l.t('error_creating_group')),
           backgroundColor: ColorTokens.error50,
         ),
       );

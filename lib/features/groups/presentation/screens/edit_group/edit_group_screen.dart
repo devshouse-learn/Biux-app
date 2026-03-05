@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
@@ -56,10 +57,11 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Editar Grupo'),
+          title: Text(l.t('edit_group')),
           backgroundColor: ColorTokens.primary30,
           foregroundColor: ColorTokens.neutral100,
         ),
@@ -70,7 +72,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
     if (_group == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Editar Grupo'),
+          title: Text(l.t('edit_group')),
           backgroundColor: ColorTokens.primary30,
           foregroundColor: ColorTokens.neutral100,
         ),
@@ -80,11 +82,11 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
             children: [
               Icon(Icons.error, size: 64, color: ColorTokens.error50),
               SizedBox(height: 16),
-              Text('Grupo no encontrado'),
+              Text(l.t('group_not_found')),
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => context.pop(),
-                child: Text('Volver'),
+                child: Text(l.t('back')),
               ),
             ],
           ),
@@ -94,14 +96,14 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Grupo'),
+        title: Text(l.t('edit_group')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         actions: [
           TextButton(
             onPressed: _saveChanges,
             child: Text(
-              'Guardar',
+              l.t('save'),
               style: TextStyle(
                 color: ColorTokens.neutral100,
                 fontWeight: FontWeight.bold,
@@ -131,7 +133,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      labelText: 'Nombre del grupo',
+                      labelText: l.t('group_name'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -139,10 +141,10 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'El nombre del grupo es requerido';
+                        return l.t('group_name_required');
                       }
                       if (value.trim().length < 3) {
-                        return 'El nombre debe tener al menos 3 caracteres';
+                        return l.t('name_min_chars');
                       }
                       return null;
                     },
@@ -154,7 +156,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                     controller: _descriptionController,
                     maxLines: 4,
                     decoration: InputDecoration(
-                      labelText: 'Descripción',
+                      labelText: l.t('description'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -163,10 +165,10 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'La Descripción es requerida';
+                        return l.t('description_required');
                       }
                       if (value.trim().length < 10) {
-                        return 'La Descripción debe tener al menos 10 caracteres';
+                        return l.t('description_min_chars');
                       }
                       return null;
                     },
@@ -190,7 +192,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                           ),
                         ),
                         child: Text(
-                          'Guardar Cambios',
+                          l.t('save_changes'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -234,11 +236,12 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
   }
 
   Widget _buildCoverImageSection() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Imagen de portada',
+          l.t('cover_image'),
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
@@ -270,7 +273,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
             ElevatedButton.icon(
               onPressed: () => _pickImage(ImageSource.camera, true),
               icon: Icon(Icons.camera_alt, size: 16),
-              label: Text('Cámara'),
+              label: Text(l.t('camera')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.secondary50,
                 foregroundColor: ColorTokens.neutral100,
@@ -280,7 +283,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
             ElevatedButton.icon(
               onPressed: () => _pickImage(ImageSource.gallery, true),
               icon: Icon(Icons.photo_library, size: 16),
-              label: Text('Galería'),
+              label: Text(l.t('gallery')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.secondary50,
                 foregroundColor: ColorTokens.neutral100,
@@ -293,11 +296,12 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
   }
 
   Widget _buildLogoSection() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Logo del grupo',
+          l.t('group_logo'),
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
@@ -337,7 +341,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
             ElevatedButton.icon(
               onPressed: () => _pickImage(ImageSource.camera, false),
               icon: Icon(Icons.camera_alt, size: 16),
-              label: Text('Cámara'),
+              label: Text(l.t('camera')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.secondary50,
                 foregroundColor: ColorTokens.neutral100,
@@ -347,7 +351,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
             ElevatedButton.icon(
               onPressed: () => _pickImage(ImageSource.gallery, false),
               icon: Icon(Icons.photo_library, size: 16),
-              label: Text('Galería'),
+              label: Text(l.t('gallery')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.secondary50,
                 foregroundColor: ColorTokens.neutral100,
@@ -360,6 +364,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
   }
 
   Widget _buildImagePlaceholder() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -367,7 +372,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
           Icon(Icons.image, size: 50, color: ColorTokens.neutral60),
           SizedBox(height: 8),
           Text(
-            'Toca para agregar imagen',
+            l.t('tap_to_add_image'),
             style: TextStyle(color: ColorTokens.neutral60, fontSize: 14),
           ),
         ],
@@ -393,6 +398,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
   void _saveChanges() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final groupProvider = Provider.of<GroupProvider>(context, listen: false);
 
     final success = await groupProvider.editGroup(
@@ -406,7 +412,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Grupo actualizado exitosamente'),
+          content: Text(l.t('group_updated_success')),
           backgroundColor: ColorTokens.success50,
         ),
       );

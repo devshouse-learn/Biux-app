@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar el progreso de compresión de multimedia
 class CompressionProgressWidget extends StatelessWidget {
@@ -143,6 +145,7 @@ class MultiCompressionProgressWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (items.isEmpty) return const SizedBox.shrink();
 
+    final l = Provider.of<LocaleNotifier>(context);
     final activeItems = items.where((item) => !item.isCompleted).toList();
     final completedItems = items.where((item) => item.isCompleted).toList();
 
@@ -154,8 +157,8 @@ class MultiCompressionProgressWidget extends StatelessWidget {
           // Header
           Row(
             children: [
-              const Text(
-                'Procesando multimedia',
+              Text(
+                l.t('processing_multimedia'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -166,7 +169,7 @@ class MultiCompressionProgressWidget extends StatelessWidget {
               if (activeItems.isNotEmpty && onCancelAll != null)
                 TextButton(
                   onPressed: onCancelAll,
-                  child: const Text('Cancelar todo'),
+                  child: Text(l.t('cancel_all')),
                 ),
             ],
           ),
@@ -189,7 +192,7 @@ class MultiCompressionProgressWidget extends StatelessWidget {
             const SizedBox(height: 8),
             ExpansionTile(
               title: Text(
-                'Completados (${completedItems.length})',
+                '${l.t('completed_label')} (${completedItems.length})',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

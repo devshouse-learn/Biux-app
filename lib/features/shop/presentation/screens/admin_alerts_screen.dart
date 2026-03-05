@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/features/shop/domain/usecases/alert_pdf_export_service.dart';
 
@@ -83,6 +85,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     bool addTodas = false,
     IconData itemIcon = Icons.location_city,
   }) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final allItems = addTodas ? ['Todas', ...items] : items;
     String filter = '';
     return showModalBottomSheet<String>(
@@ -141,7 +144,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                   child: TextField(
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: 'Buscar...',
+                      hintText: l.t('search_hint'),
                       prefixIcon: const Icon(Icons.search, size: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -174,7 +177,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '${filtered.length} resultado${filtered.length != 1 ? 's' : ''}',
+                      '${filtered.length} ${filtered.length != 1 ? l.t('results_plural') : l.t('result_singular')}',
                       style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                     ),
                   ),
@@ -194,7 +197,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Sin resultados',
+                                l.t('no_results'),
                                 style: TextStyle(color: Colors.grey[500]),
                               ),
                             ],
@@ -346,10 +349,11 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
-        title: const Text('Dashboard Alertas'),
+        title: Text(l.t('alerts_dashboard')),
         backgroundColor: const Color(0xFF2D2D3A),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -357,12 +361,12 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           if (_selectMode && _selectedAlerts.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep, size: 22),
-              tooltip: 'Eliminar seleccionadas',
+              tooltip: l.t('delete_selected'),
               onPressed: _deleteSelectedAlerts,
             ),
           IconButton(
             icon: Icon(_selectMode ? Icons.close : Icons.checklist, size: 22),
-            tooltip: _selectMode ? 'Cancelar' : 'Seleccionar',
+            tooltip: _selectMode ? l.t('cancel') : l.t('select'),
             onPressed: () => setState(() {
               _selectMode = !_selectMode;
               _selectedAlerts.clear();
@@ -370,7 +374,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           ),
           IconButton(
             icon: const Icon(Icons.file_download, size: 22),
-            tooltip: 'Exportar',
+            tooltip: l.t('export'),
             onPressed: _exportReport,
           ),
         ],
@@ -384,10 +388,19 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             fontWeight: FontWeight.w700,
             fontSize: 13,
           ),
-          tabs: const [
-            Tab(icon: Icon(Icons.warning_amber, size: 20), text: 'Alertas'),
-            Tab(icon: Icon(Icons.analytics, size: 20), text: 'Estadisticas'),
-            Tab(icon: Icon(Icons.block, size: 20), text: 'Bloqueados'),
+          tabs: [
+            Tab(
+              icon: const Icon(Icons.warning_amber, size: 20),
+              text: l.t('alerts'),
+            ),
+            Tab(
+              icon: const Icon(Icons.analytics, size: 20),
+              text: l.t('statistics'),
+            ),
+            Tab(
+              icon: const Icon(Icons.block, size: 20),
+              text: l.t('blocked_users_tab'),
+            ),
           ],
         ),
       ),
@@ -400,6 +413,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
 
   // ===================== TAB 1: ALERTAS =====================
   Widget _buildAlertsTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       children: [
         // Filters
@@ -410,7 +424,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             children: [
               TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar vendedor, serial, marca...',
+                  hintText: l.t('search_seller_serial_brand'),
                   prefixIcon: Icon(Icons.search, color: ColorTokens.primary50),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -441,7 +455,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
               Row(
                 children: [
                   _searchableChip(
-                    'Ciudad',
+                    l.t('city'),
                     _selectedCity,
                     Icons.location_city,
                     _allCities,
@@ -450,7 +464,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                   ),
                   const SizedBox(width: 8),
                   _searchableChip(
-                    'Estado',
+                    l.t('status'),
                     _selectedStatus,
                     Icons.flag,
                     _statuses.sublist(1),
@@ -498,8 +512,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                       const SizedBox(width: 8),
                       Text(
                         _startDate == null
-                            ? 'Todas las fechas'
-                            : '${DateFormat('dd/MM/yy').format(_startDate!)} - ${_endDate != null ? DateFormat('dd/MM/yy').format(_endDate!) : 'Hoy'}',
+                            ? l.t('all_dates')
+                            : '${DateFormat('dd/MM/yy').format(_startDate!)} - ${_endDate != null ? DateFormat('dd/MM/yy').format(_endDate!) : l.t('today')}',
                         style: TextStyle(
                           fontSize: 12,
                           color: _startDate != null
@@ -550,7 +564,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '${_selectedAlerts.length} seleccionada${_selectedAlerts.length != 1 ? 's' : ''}',
+                  '${_selectedAlerts.length} ${l.t('selected_count_suffix')}',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -560,7 +574,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 const Spacer(),
                 TextButton(
                   onPressed: () => setState(() => _selectedAlerts.clear()),
-                  child: const Text('Limpiar', style: TextStyle(fontSize: 12)),
+                  child: Text(
+                    l.t('clear'),
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 ),
               ],
             ),
@@ -572,6 +589,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   Widget _buildAlertsList() {
+    final l = Provider.of<LocaleNotifier>(context);
     return StreamBuilder<QuerySnapshot>(
       stream: _getAlertsStream(),
       builder: (context, snapshot) {
@@ -583,7 +601,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 Icon(Icons.error, size: 48, color: ColorTokens.error50),
                 const SizedBox(height: 12),
                 Text(
-                  'Error: ${snapshot.error}',
+                  '${l.t('error')}: ${snapshot.error}',
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ],
@@ -598,7 +616,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 CircularProgressIndicator(color: ColorTokens.error50),
                 const SizedBox(height: 12),
                 Text(
-                  'Cargando alertas...',
+                  l.t('loading_alerts'),
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ],
@@ -658,7 +676,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Sin alertas',
+                  l.t('no_alerts'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -667,7 +685,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'No hay intentos de venta detectados',
+                  l.t('no_sale_attempts_detected'),
                   style: TextStyle(fontSize: 13, color: Colors.grey[500]),
                 ),
               ],
@@ -689,6 +707,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   Widget _alertCard(QueryDocumentSnapshot doc) {
+    final l = Provider.of<LocaleNotifier>(context);
     final data = doc.data() as Map<String, dynamic>;
     final id = doc.id;
     final ts = data['timestamp'] as Timestamp?;
@@ -696,7 +715,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
         ? DateFormat('dd/MM/yy HH:mm').format(ts.toDate())
         : '—';
     final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
-    final seller = data['sellerName'] ?? 'Desconocido';
+    final seller = data['sellerName'] ?? l.t('unknown_person');
     final sellerUid = data['sellerUid'] ?? '';
     final serial = bike['frameSerial'] ?? '—';
     final brand = bike['brand'] ?? '—';
@@ -749,10 +768,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 if (_selectMode) const SizedBox(width: 8),
                 const Icon(Icons.dangerous, color: Colors.white, size: 16),
                 const SizedBox(width: 6),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'INTENTO VENTA ROBADA',
-                    style: TextStyle(
+                    l.t('stolen_sale_attempt'),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 11,
@@ -828,14 +847,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                           Expanded(
                             child: _miniInfo(
                               Icons.fingerprint,
-                              'Serial',
+                              l.t('serial_label'),
                               serial.toString(),
                             ),
                           ),
                           Expanded(
                             child: _miniInfo(
                               Icons.branding_watermark,
-                              'Marca',
+                              l.t('brand_label'),
                               brand.toString(),
                             ),
                           ),
@@ -847,14 +866,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                           Expanded(
                             child: _miniInfo(
                               Icons.directions_bike,
-                              'Modelo',
+                              l.t('model_label'),
                               model.toString(),
                             ),
                           ),
                           Expanded(
                             child: _miniInfo(
                               Icons.palette,
-                              'Color',
+                              l.t('color_label'),
                               color.toString(),
                             ),
                           ),
@@ -866,7 +885,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                           Expanded(
                             child: _miniInfo(
                               Icons.location_on,
-                              'Ciudad',
+                              l.t('city'),
                               city.toString(),
                             ),
                           ),
@@ -874,7 +893,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                             Expanded(
                               child: _miniInfo(
                                 Icons.calendar_today,
-                                'Ano',
+                                l.t('year_label'),
                                 bike['year'].toString(),
                               ),
                             )
@@ -892,9 +911,9 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                     Expanded(
                       child: OutlinedButton.icon(
                         icon: const Icon(Icons.visibility, size: 16),
-                        label: const Text(
-                          'Detalle',
-                          style: TextStyle(fontSize: 12),
+                        label: Text(
+                          l.t('detail'),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -909,9 +928,9 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                     Expanded(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.block, size: 16),
-                        label: const Text(
-                          'Bloquear',
-                          style: TextStyle(fontSize: 12),
+                        label: Text(
+                          l.t('block'),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorTokens.error50,
@@ -980,6 +999,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
 
   // ===================== TAB 2: ESTADISTICAS =====================
   Widget _buildStatsTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('theft_alerts')
@@ -1027,7 +1047,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           final bike =
               (doc.data() as Map<String, dynamic>)['bikeData']
                   as Map<String, dynamic>?;
-          final c = bike?['city']?.toString() ?? 'Desconocida';
+          final c = bike?['city']?.toString() ?? l.t('unknown_city');
           cityCount[c] = (cityCount[c] ?? 0) + 1;
         }
         final sortedCities = cityCount.entries.toList()
@@ -1039,7 +1059,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           final bike =
               (doc.data() as Map<String, dynamic>)['bikeData']
                   as Map<String, dynamic>?;
-          final b = bike?['brand']?.toString() ?? 'Desconocida';
+          final b = bike?['brand']?.toString() ?? l.t('unknown_city');
           brandCount[b] = (brandCount[b] ?? 0) + 1;
         }
         final sortedBrands = brandCount.entries.toList()
@@ -1055,14 +1075,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 children: [
                   _statCard(
                     Icons.warning,
-                    'Total',
+                    l.t('total'),
                     alerts.length.toString(),
                     ColorTokens.error50,
                   ),
                   const SizedBox(width: 10),
                   _statCard(
                     Icons.today,
-                    'Hoy',
+                    l.t('today'),
                     today.toString(),
                     Colors.orange,
                   ),
@@ -1073,14 +1093,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 children: [
                   _statCard(
                     Icons.date_range,
-                    'Semana',
+                    l.t('week'),
                     thisWeek.toString(),
                     ColorTokens.primary50,
                   ),
                   const SizedBox(width: 10),
                   _statCard(
                     Icons.calendar_month,
-                    'Mes',
+                    l.t('month_label'),
                     thisMonth.toString(),
                     Colors.purple,
                   ),
@@ -1091,14 +1111,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 children: [
                   _statCard(
                     Icons.people,
-                    'Vendedores',
+                    l.t('sellers'),
                     sellers.toString(),
                     ColorTokens.secondary50,
                   ),
                   const SizedBox(width: 10),
                   _statCard(
                     Icons.location_city,
-                    'Ciudades',
+                    l.t('cities'),
                     cityCount.length.toString(),
                     Colors.teal,
                   ),
@@ -1106,7 +1126,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
               ),
               const SizedBox(height: 20),
               // City ranking
-              _sectionTitle(Icons.location_on, 'Alertas por Ciudad'),
+              _sectionTitle(Icons.location_on, l.t('alerts_by_city')),
               const SizedBox(height: 10),
               ...sortedCities
                   .take(10)
@@ -1120,7 +1140,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                   ),
               const SizedBox(height: 20),
               // Brand ranking
-              _sectionTitle(Icons.branding_watermark, 'Marcas mas Afectadas'),
+              _sectionTitle(
+                Icons.branding_watermark,
+                l.t('most_affected_brands'),
+              ),
               const SizedBox(height: 10),
               ...sortedBrands
                   .take(10)
@@ -1262,6 +1285,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
 
   // ===================== TAB 3: BLOQUEADOS =====================
   Widget _buildBlockedTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -1280,7 +1304,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 Icon(Icons.verified_user, size: 56, color: Colors.green[400]),
                 const SizedBox(height: 12),
                 Text(
-                  'Sin usuarios bloqueados',
+                  l.t('no_blocked_users'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1298,8 +1322,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           itemBuilder: (c, i) {
             final d = blocked[i].data() as Map<String, dynamic>;
             final uid = blocked[i].id;
-            final name = d['name'] ?? d['displayName'] ?? 'Sin nombre';
-            final reason = d['blockedReason'] ?? 'Sin razon';
+            final name = d['name'] ?? d['displayName'] ?? l.t('no_name');
+            final reason = d['blockedReason'] ?? l.t('no_reason');
             final blockedAt = d['blockedAt'] as Timestamp?;
             final dateStr = blockedAt != null
                 ? DateFormat('dd/MM/yy HH:mm').format(blockedAt.toDate())
@@ -1367,7 +1391,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Bloqueado: $dateStr',
+                            '${l.t('blocked_date_prefix')}: $dateStr',
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey[500],
@@ -1382,7 +1406,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                         color: Colors.green[600],
                         size: 22,
                       ),
-                      tooltip: 'Desbloquear',
+                      tooltip: l.t('unblock'),
                       onPressed: () => _unblockUser(uid, name.toString()),
                     ),
                   ],
@@ -1441,6 +1465,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   void _showAlertDetails(String alertId, Map<String, dynamic> data) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
     final ts = data['timestamp'] as Timestamp?;
     showModalBottomSheet(
@@ -1470,10 +1495,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 children: [
                   Icon(Icons.dangerous, color: ColorTokens.error50),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Detalle de Alerta',
-                      style: TextStyle(
+                      l.t('alert_detail'),
+                      style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                       ),
@@ -1493,10 +1518,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _detailSection('Alerta', [
-                      _detailRow('ID', alertId),
+                    _detailSection(l.t('alert_section'), [
+                      _detailRow(l.t('id_label'), alertId),
                       _detailRow(
-                        'Fecha',
+                        l.t('date_label'),
                         ts != null
                             ? DateFormat(
                                 'dd/MM/yyyy HH:mm:ss',
@@ -1505,25 +1530,34 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                       ),
                     ]),
                     const SizedBox(height: 16),
-                    _detailSection('Vendedor', [
+                    _detailSection(l.t('seller_label'), [
                       _detailRow(
-                        'Nombre',
+                        l.t('name_label'),
                         data['sellerName']?.toString() ?? '—',
                       ),
                       _detailRow('UID', data['sellerUid']?.toString() ?? '—'),
                     ]),
                     const SizedBox(height: 16),
-                    _detailSection('Bicicleta', [
+                    _detailSection(l.t('bicycle'), [
                       _detailRow(
-                        'Serial',
+                        l.t('serial_label'),
                         bike['frameSerial']?.toString() ?? '—',
                       ),
-                      _detailRow('Marca', bike['brand']?.toString() ?? '—'),
-                      _detailRow('Modelo', bike['model']?.toString() ?? '—'),
-                      _detailRow('Color', bike['color']?.toString() ?? '—'),
-                      _detailRow('Ciudad', bike['city']?.toString() ?? '—'),
+                      _detailRow(
+                        l.t('brand_label'),
+                        bike['brand']?.toString() ?? '—',
+                      ),
+                      _detailRow(
+                        l.t('model_label'),
+                        bike['model']?.toString() ?? '—',
+                      ),
+                      _detailRow(
+                        l.t('color_label'),
+                        bike['color']?.toString() ?? '—',
+                      ),
+                      _detailRow(l.t('city'), bike['city']?.toString() ?? '—'),
                       if (bike['year'] != null)
-                        _detailRow('Ano', bike['year'].toString()),
+                        _detailRow(l.t('year_label'), bike['year'].toString()),
                     ]),
                     const SizedBox(height: 20),
                     Row(
@@ -1531,7 +1565,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                         Expanded(
                           child: ElevatedButton.icon(
                             icon: const Icon(Icons.block, size: 18),
-                            label: const Text('Bloquear Vendedor'),
+                            label: Text(l.t('block_seller')),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ColorTokens.error50,
                               foregroundColor: Colors.white,
@@ -1558,7 +1592,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                               color: Colors.grey[600],
                             ),
                             label: Text(
-                              'Eliminar',
+                              l.t('delete'),
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                             style: OutlinedButton.styleFrom(
@@ -1635,19 +1669,20 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   Future<void> _blockSeller(String uid, String name) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final confirm = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: Icon(Icons.block, color: ColorTokens.error50, size: 40),
-        title: const Text('Bloquear Vendedor'),
+        title: Text(l.t('block_seller')),
         content: Text(
-          'Bloquear a $name?\nNo podra crear productos en la tienda.',
+          '${l.t('block_question')} $name?\n${l.t('cannot_create_store_products')}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(c, true),
@@ -1658,7 +1693,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Bloquear'),
+            child: Text(l.t('block')),
           ),
         ],
       ),
@@ -1667,13 +1702,13 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     try {
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'canCreateProducts': false,
-        'blockedReason': 'Intento de venta de bicicleta robada',
+        'blockedReason': l.t('stolen_bike_reason'),
         'blockedAt': FieldValue.serverTimestamp(),
       });
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$name bloqueado'),
+            content: Text('$name ${l.t('user_blocked_msg')}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -1681,7 +1716,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${l.t('error')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -1689,17 +1724,20 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   Future<void> _unblockUser(String uid, String name) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final confirm = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: Icon(Icons.lock_open, color: Colors.green, size: 40),
-        title: const Text('Desbloquear Usuario'),
-        content: Text('Desbloquear a $name?\nPodra volver a crear productos.'),
+        title: Text(l.t('unblock_user')),
+        content: Text(
+          '${l.t('unblock_question')} $name?\n${l.t('can_create_products_again')}',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(c, true),
@@ -1710,7 +1748,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Desbloquear'),
+            child: Text(l.t('unblock')),
           ),
         ],
       ),
@@ -1725,7 +1763,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$name desbloqueado'),
+            content: Text('$name ${l.t('user_unblocked_msg')}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -1733,7 +1771,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${l.t('error')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -1741,6 +1779,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   Future<void> _deleteAlert(String id) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       await FirebaseFirestore.instance
           .collection('theft_alerts')
@@ -1748,8 +1787,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           .delete();
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Alerta eliminada'),
+          SnackBar(
+            content: Text(l.t('alert_deleted')),
             backgroundColor: Colors.green,
           ),
         );
@@ -1757,7 +1796,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${l.t('error')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -1765,19 +1804,20 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   Future<void> _deleteSelectedAlerts() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final confirm = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: Icon(Icons.delete_sweep, color: ColorTokens.error50, size: 40),
-        title: const Text('Eliminar Seleccionadas'),
+        title: Text(l.t('delete_selected_title')),
         content: Text(
-          'Eliminar ${_selectedAlerts.length} alerta${_selectedAlerts.length != 1 ? 's' : ''}?',
+          '${l.t('delete')} ${_selectedAlerts.length} ${l.t('alerts')}?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(c, true),
@@ -1788,7 +1828,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -1808,8 +1848,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       });
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Alertas eliminadas'),
+          SnackBar(
+            content: Text(l.t('alerts_deleted')),
             backgroundColor: Colors.green,
           ),
         );
@@ -1817,7 +1857,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${l.t('error')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -1825,13 +1865,17 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   }
 
   Future<void> _exportReport() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Row(
           children: [
-            CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-            SizedBox(width: 16),
-            Text('Generando PDF...'),
+            const CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 16),
+            Text(l.t('generating_pdf')),
           ],
         ),
         duration: Duration(seconds: 3),
@@ -1845,8 +1889,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       if (alerts.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No hay alertas para exportar'),
+            SnackBar(
+              content: Text(l.t('no_alerts_to_export')),
               backgroundColor: ColorTokens.error50,
             ),
           );
@@ -1859,7 +1903,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
         final start = DateFormat('dd/MM/yyyy').format(_startDate!);
         final end = _endDate != null
             ? DateFormat('dd/MM/yyyy').format(_endDate!)
-            : 'Hoy';
+            : l.t('today');
         dateRange = '$start - $end';
       }
 
@@ -1872,7 +1916,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al generar PDF: $e'),
+            content: Text('${l.t('error_generating_pdf')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );

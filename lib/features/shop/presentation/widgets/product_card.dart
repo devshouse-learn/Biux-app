@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 /// Widget de tarjeta de producto para el grid
@@ -13,6 +15,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -74,7 +77,7 @@ class ProductCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          'Últimas ${product.stock}',
+                          '${l.t('last_units')} ${product.stock}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -97,8 +100,8 @@ class ProductCard extends StatelessWidget {
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          'Agotado',
+                        child: Text(
+                          l.t('out_of_stock'),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -143,7 +146,7 @@ class ProductCard extends StatelessWidget {
                         ),
                         if (product.sizes.isNotEmpty)
                           Text(
-                            'Tallas',
+                            l.t('sizes_label'),
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 11,

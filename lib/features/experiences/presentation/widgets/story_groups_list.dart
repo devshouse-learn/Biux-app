@@ -4,6 +4,7 @@ import 'package:biux/features/experiences/presentation/providers/story_groups_pr
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget de lista horizontal de historias agrupadas por usuario
 /// Similar a Instagram Stories en la parte superior
@@ -164,6 +165,7 @@ class _AddStoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6),
       child: GestureDetector(
@@ -217,10 +219,10 @@ class _AddStoryItem extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            const SizedBox(
+            SizedBox(
               width: 70,
               child: Text(
-                'Tu historia',
+                l.t('your_story'),
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -294,6 +296,7 @@ class StoryViewerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
@@ -301,12 +304,12 @@ class StoryViewerScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Visor de historias de ${storyGroup.userName}',
+              '${l.t('story_viewer_of')} ${storyGroup.userName}',
               style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
             const SizedBox(height: 20),
             Text(
-              '${storyGroup.totalStories} historias',
+              '${storyGroup.totalStories} ${l.t('n_stories')}',
               style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 40),
@@ -316,7 +319,7 @@ class StoryViewerScreen extends StatelessWidget {
                 onGroupCompleted();
                 Navigator.pop(context);
               },
-              child: const Text('Cerrar'),
+              child: Text(l.t('close')),
             ),
           ],
         ),

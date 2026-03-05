@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
@@ -39,6 +40,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
     String message,
     IconData icon,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -70,7 +72,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
             ElevatedButton.icon(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.arrow_back),
-              label: const Text('Volver'),
+              label: Text(l.t('admin_go_back')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
                 padding: const EdgeInsets.symmetric(
@@ -95,6 +97,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
   }
 
   void _showCleanupDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -102,33 +105,36 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
           children: [
             Icon(Icons.cleaning_services, color: ColorTokens.warning50),
             const SizedBox(width: 12),
-            const Text('Limpiar Base de Datos'),
+            Text(l.t('admin_clean_database')),
           ],
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Esta acción eliminará PERMANENTEMENTE todos los productos que no tengan imágenes.',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              l.t('admin_clean_database_warning'),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 12),
-            Text('Esto incluye:'),
-            SizedBox(height: 8),
-            Text('• Productos con array de imágenes vacío'),
-            Text('• Productos con imágenes en blanco'),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
+            Text(l.t('admin_clean_includes')),
+            const SizedBox(height: 8),
+            Text('• ${l.t('admin_clean_empty_images')}'),
+            Text('• ${l.t('admin_clean_blank_images')}'),
+            const SizedBox(height: 12),
             Text(
-              '⚠️ Esta acción NO se puede deshacer.',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              l.t('admin_action_irreversible'),
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -150,7 +156,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Text('Limpiando productos sin imágenes...'),
+                      Text(l.t('admin_cleaning_products')),
                     ],
                   ),
                   duration: const Duration(seconds: 30),
@@ -182,8 +188,8 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                         Expanded(
                           child: Text(
                             deletedCount > 0
-                                ? '✅ $deletedCount producto(s) eliminado(s)'
-                                : '✨ No se encontraron productos sin imágenes',
+                                ? '✅ $deletedCount ${l.t('admin_products_deleted')}'
+                                : '✨ ${l.t('admin_no_products_without_images')}',
                           ),
                         ),
                       ],
@@ -199,7 +205,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
             ),
-            child: const Text('Limpiar Ahora'),
+            child: Text(l.t('admin_clean_now')),
           ),
         ],
       ),
@@ -207,15 +213,16 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
   }
 
   void _showDeleteConfirmation(BuildContext context, ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar Producto'),
-        content: Text('¿Estás seguro de eliminar "${product.name}"?'),
+        title: Text(l.t('admin_delete_product')),
+        content: Text('${l.t('admin_confirm_delete')} "${product.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -225,8 +232,8 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
 
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Producto eliminado'),
+                  SnackBar(
+                    content: Text(l.t('admin_product_deleted')),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -234,7 +241,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      shopProvider.errorMessage ?? 'Error al eliminar',
+                      shopProvider.errorMessage ?? l.t('admin_error_deleting'),
                     ),
                     backgroundColor: Colors.red,
                   ),
@@ -242,7 +249,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('admin_delete')),
           ),
         ],
       ),
@@ -251,6 +258,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -263,16 +271,16 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
             }
           },
         ),
-        title: const Text(
-          'Administrar Productos',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l.t('admin_manage_products'),
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: ColorTokens.primary30,
         actions: [
           // Botón para limpiar productos sin imágenes
           IconButton(
             icon: const Icon(Icons.cleaning_services, color: Colors.white),
-            tooltip: 'Limpiar productos sin imágenes',
+            tooltip: l.t('admin_clean_products_tooltip'),
             onPressed: () => _showCleanupDialog(context),
           ),
         ],
@@ -286,8 +294,8 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
           if (currentUser == null) {
             return _buildAccessDenied(
               context,
-              'Sesión no iniciada',
-              'Debes iniciar sesión para acceder a esta sección.',
+              l.t('admin_session_not_started'),
+              l.t('admin_session_required'),
               Icons.login,
             );
           }
@@ -297,8 +305,8 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
           if (!isAdmin) {
             return _buildAccessDenied(
               context,
-              'Acceso Denegado',
-              'Solo los administradores designados pueden subir productos a la tienda.',
+              l.t('admin_access_denied'),
+              l.t('admin_only_admins'),
               Icons.admin_panel_settings_outlined,
             );
           }
@@ -328,7 +336,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Buscar productos...',
+                    hintText: l.t('admin_search_products'),
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
@@ -372,8 +380,8 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                             const SizedBox(height: 16),
                             Text(
                               _searchQuery.isEmpty
-                                  ? 'No tienes productos'
-                                  : 'No se encontraron productos',
+                                  ? l.t('admin_no_products')
+                                  : l.t('admin_no_products_found'),
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -382,7 +390,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
                             if (_searchQuery.isEmpty) ...[
                               const SizedBox(height: 8),
                               Text(
-                                'Crea tu primer producto',
+                                l.t('admin_create_first'),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[500],
@@ -501,7 +509,7 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
         onPressed: () => _showProductForm(context),
         backgroundColor: ColorTokens.secondary50,
         icon: const Icon(Icons.add),
-        label: const Text('Crear Producto'),
+        label: Text(l.t('admin_create_product')),
       ),
     );
   }
@@ -621,8 +629,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
       print('⚠️ No se capturó imagen');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo acceder a la cámara'),
+          SnackBar(
+            content: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('admin_camera_error'),
+            ),
             backgroundColor: Colors.orange,
           ),
         );
@@ -645,7 +658,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al seleccionar imagen: $e'),
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('admin_image_select_error')}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -673,7 +688,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al seleccionar imágenes: $e'),
+            content: Text(
+              '${Provider.of<LocaleNotifier>(context, listen: false).t('admin_images_select_error')}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -705,15 +722,27 @@ class _ProductFormModalState extends State<ProductFormModal> {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Imagen subida exitosamente')),
+        SnackBar(
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('admin_image_uploaded'),
+          ),
+        ),
       );
     } else {
       setState(() {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error al subir imagen'),
+        SnackBar(
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('admin_image_upload_error'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -739,8 +768,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
     final isValid = await _mediaService.validateVideoDuration(video.path);
     if (!isValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('El video debe durar máximo 30 segundos'),
+        SnackBar(
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('admin_video_max_30s'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -770,15 +804,27 @@ class _ProductFormModalState extends State<ProductFormModal> {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Video subido exitosamente')),
+        SnackBar(
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('admin_video_uploaded'),
+          ),
+        ),
       );
     } else {
       setState(() {
         _isUploading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error al subir video'),
+        SnackBar(
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('admin_video_upload_error'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -798,6 +844,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   void _showMediaOptions() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -807,7 +854,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             if (!kIsWeb) ...[
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: Colors.blue),
-                title: const Text('Tomar foto'),
+                title: Text(l.t('admin_take_photo')),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImageFromCamera();
@@ -816,7 +863,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             ],
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.green),
-              title: const Text('Seleccionar imagen'),
+              title: Text(l.t('admin_select_image')),
               onTap: () {
                 Navigator.pop(context);
                 _pickImageFromGallery();
@@ -824,7 +871,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.purple),
-              title: const Text('Seleccionar múltiples imágenes'),
+              title: Text(l.t('admin_select_multiple_images')),
               onTap: () {
                 Navigator.pop(context);
                 _pickMultipleImages();
@@ -834,7 +881,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             if (!kIsWeb) ...[
               ListTile(
                 leading: const Icon(Icons.videocam, color: Colors.red),
-                title: const Text('Grabar video (máx 30s)'),
+                title: Text(l.t('admin_record_video')),
                 onTap: () {
                   Navigator.pop(context);
                   _pickVideoFromCamera();
@@ -843,7 +890,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
             ],
             ListTile(
               leading: const Icon(Icons.video_library, color: Colors.orange),
-              title: const Text('Seleccionar video'),
+              title: Text(l.t('admin_select_video')),
               onTap: () {
                 Navigator.pop(context);
                 _pickVideoFromGallery();
@@ -856,6 +903,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _verifyBikeNotStolen() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // Validar que se haya ingresado el número de serie
     if (_bikeFrameSerialController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -866,7 +914,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Debes ingresar el número de serie para verificar',
+                  l.t('admin_serial_required_verify'),
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -937,7 +985,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '⚠️ ALERTA DE ROBO',
+                    l.t('admin_theft_alert'),
                     style: TextStyle(
                       color: ColorTokens.error50,
                       fontWeight: FontWeight.bold,
@@ -971,7 +1019,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   if (result.details != null) ...[
                     const SizedBox(height: 16),
                     Text(
-                      'Detalles:',
+                      l.t('admin_details'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
@@ -993,7 +1041,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'NO se puede publicar esta bicicleta en la tienda',
+                            l.t('admin_cannot_publish_bike'),
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Colors.red.shade700,
@@ -1010,7 +1058,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(
-                  'Entendido',
+                  l.t('understood'),
                   style: TextStyle(
                     color: ColorTokens.error50,
                     fontWeight: FontWeight.bold,
@@ -1049,7 +1097,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al verificar: $e'),
+          content: Text('${l.t('admin_verify_error')}: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -1058,6 +1106,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
   Future<void> _saveProduct() async {
     if (!_formKey.currentState!.validate()) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     // Validación obligatoria de imágenes
     if (_imageUrls.isEmpty) {
@@ -1069,7 +1118,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  '¡Debes agregar al menos una foto del producto!',
+                  l.t('admin_photo_required'),
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                 ),
               ),
@@ -1097,7 +1146,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '¡El número de serie es obligatorio para bicicletas!',
+                    l.t('admin_serial_required_bike'),
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                   ),
                 ),
@@ -1119,7 +1168,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '¡Debes verificar que la bicicleta NO esté reportada como robada!',
+                    l.t('admin_verify_not_stolen'),
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                   ),
                 ),
@@ -1137,9 +1186,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
     final currentUser = userProvider.user;
 
     if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: usuario no encontrado')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('admin_user_not_found'))));
       return;
     }
 
@@ -1208,8 +1257,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
         SnackBar(
           content: Text(
             widget.product == null
-                ? 'Producto creado exitosamente'
-                : 'Producto actualizado',
+                ? l.t('admin_product_created')
+                : l.t('admin_product_updated'),
           ),
           backgroundColor: Colors.green,
         ),
@@ -1217,7 +1266,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(shopProvider.errorMessage ?? 'Error al guardar'),
+          content: Text(shopProvider.errorMessage ?? l.t('admin_error_saving')),
           backgroundColor: Colors.red,
         ),
       );
@@ -1226,6 +1275,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
       minChildSize: 0.5,
@@ -1259,7 +1309,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
               // Título
               Text(
-                widget.product == null ? 'Crear Producto' : 'Editar Producto',
+                widget.product == null
+                    ? l.t('admin_create_product')
+                    : l.t('admin_edit_product'),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -1273,7 +1325,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 controller: _nameController,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Nombre del producto *',
+                  labelText: l.t('admin_product_name'),
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
@@ -1295,7 +1347,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingresa el nombre';
+                    return l.t('admin_enter_name');
                   }
                   return null;
                 },
@@ -1307,7 +1359,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 controller: _descriptionController,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Descripción corta *',
+                  labelText: l.t('admin_short_description'),
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
@@ -1330,7 +1382,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 maxLines: 2,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingresa una descripción';
+                    return l.t('admin_enter_description');
                   }
                   return null;
                 },
@@ -1342,9 +1394,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 controller: _longDescriptionController,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Descripción detallada (opcional)',
+                  labelText: l.t('admin_detailed_description'),
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
-                  hintText: 'Características, materiales, medidas, etc.',
+                  hintText: l.t('admin_features_hint'),
                   hintStyle: TextStyle(color: ColorTokens.neutral70),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
@@ -1376,7 +1428,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       controller: _priceController,
                       style: TextStyle(color: ColorTokens.neutral20),
                       decoration: InputDecoration(
-                        labelText: 'Precio *',
+                        labelText: l.t('admin_price'),
                         labelStyle: TextStyle(color: ColorTokens.neutral60),
                         prefixText: '\$ ',
                         prefixStyle: TextStyle(color: ColorTokens.neutral40),
@@ -1401,10 +1453,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Ingresa el precio';
+                          return l.t('admin_enter_price');
                         }
                         if (double.tryParse(value) == null) {
-                          return 'Precio inválido';
+                          return l.t('admin_invalid_price');
                         }
                         return null;
                       },
@@ -1416,7 +1468,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       controller: _stockController,
                       style: TextStyle(color: ColorTokens.neutral20),
                       decoration: InputDecoration(
-                        labelText: 'Stock *',
+                        labelText: l.t('admin_stock'),
                         labelStyle: TextStyle(color: ColorTokens.neutral60),
                         filled: true,
                         fillColor: ColorTokens.neutral100,
@@ -1439,10 +1491,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Ingresa el stock';
+                          return l.t('admin_enter_stock');
                         }
                         if (int.tryParse(value) == null) {
-                          return 'Stock inválido';
+                          return l.t('admin_invalid_stock');
                         }
                         return null;
                       },
@@ -1457,9 +1509,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 controller: _cityController,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Ciudad (opcional)',
+                  labelText: l.t('admin_city_optional'),
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
-                  hintText: 'Ej: Bogotá, Medellín, Cali...',
+                  hintText: l.t('admin_city_hint'),
                   hintStyle: TextStyle(color: ColorTokens.neutral70),
                   prefixIcon: Icon(
                     Icons.location_on,
@@ -1491,7 +1543,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 initialValue: _selectedCategory,
                 style: TextStyle(color: ColorTokens.neutral20),
                 decoration: InputDecoration(
-                  labelText: 'Categoría *',
+                  labelText: l.t('admin_category'),
                   labelStyle: TextStyle(color: ColorTokens.neutral60),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
@@ -1557,7 +1609,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Sistema Anti-Robo de Bicicletas',
+                            l.t('admin_anti_theft_system'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -1586,14 +1638,14 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         });
                       },
                       title: Text(
-                        '¿Este producto es una bicicleta completa?',
+                        l.t('admin_is_bicycle'),
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: ColorTokens.neutral30,
                         ),
                       ),
                       subtitle: Text(
-                        'Si es bicicleta completa, debe verificarse contra base de robos',
+                        l.t('admin_bicycle_verify_note'),
                         style: TextStyle(
                           fontSize: 12,
                           color: ColorTokens.neutral60,
@@ -1623,7 +1675,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Obligatorio verificar antes de publicar',
+                                l.t('admin_verify_before_publish'),
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -1641,7 +1693,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         controller: _bikeFrameSerialController,
                         style: TextStyle(color: ColorTokens.neutral20),
                         decoration: InputDecoration(
-                          labelText: 'Número de Serie / Chasis *',
+                          labelText: l.t('admin_serial_number'),
                           labelStyle: TextStyle(color: ColorTokens.neutral60),
                           hintText: 'Ej: AB123456789',
                           hintStyle: TextStyle(color: ColorTokens.neutral70),
@@ -1658,7 +1710,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         validator: _isBicycle
                             ? (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'Número de serie obligatorio para bicicletas';
+                                  return l.t('admin_serial_required_bikes');
                                 }
                                 return null;
                               }
@@ -1671,7 +1723,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         controller: _bikeBrandController,
                         style: TextStyle(color: ColorTokens.neutral20),
                         decoration: InputDecoration(
-                          labelText: 'Marca',
+                          labelText: l.t('admin_brand'),
                           labelStyle: TextStyle(color: ColorTokens.neutral60),
                           hintText: 'Ej: Trek, Giant, Specialized...',
                           filled: true,
@@ -1691,7 +1743,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                               controller: _bikeModelController,
                               style: TextStyle(color: ColorTokens.neutral20),
                               decoration: InputDecoration(
-                                labelText: 'Modelo',
+                                labelText: l.t('admin_model'),
                                 labelStyle: TextStyle(
                                   color: ColorTokens.neutral60,
                                 ),
@@ -1709,7 +1761,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                               controller: _bikeColorController,
                               style: TextStyle(color: ColorTokens.neutral20),
                               decoration: InputDecoration(
-                                labelText: 'Color',
+                                labelText: l.t('admin_color'),
                                 labelStyle: TextStyle(
                                   color: ColorTokens.neutral60,
                                 ),
@@ -1730,7 +1782,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         controller: _bikeYearController,
                         style: TextStyle(color: ColorTokens.neutral20),
                         decoration: InputDecoration(
-                          labelText: 'Año (opcional)',
+                          labelText: l.t('admin_year_optional'),
                           labelStyle: TextStyle(color: ColorTokens.neutral60),
                           hintText: '2024',
                           filled: true,
@@ -1768,12 +1820,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
                                 ),
                           label: Text(
                             _isVerifying
-                                ? 'Verificando contra base de robos...'
+                                ? l.t('admin_verifying_theft_db')
                                 : _verificationResult == true
-                                ? '✓ Verificado: NO está robada'
+                                ? l.t('admin_verified_not_stolen')
                                 : _verificationResult == false
-                                ? '✗ ROBADA - No se puede publicar'
-                                : 'Verificar contra Base de Robos',
+                                ? l.t('admin_stolen_cannot_publish')
+                                : l.t('admin_verify_theft_db'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           style: ElevatedButton.styleFrom(
@@ -1821,8 +1873,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
                               Expanded(
                                 child: Text(
                                   _verificationResult == true
-                                      ? 'Bicicleta verificada. Puede publicarse en la tienda.'
-                                      : 'Esta bicicleta está reportada como robada y NO puede publicarse.',
+                                      ? l.t('admin_bike_verified_publish')
+                                      : l.t('admin_bike_stolen_no_publish'),
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -1844,7 +1896,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
               // Tallas
               Text(
-                'Tallas disponibles (opcional)',
+                l.t('admin_sizes_optional'),
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: ColorTokens.neutral30,
@@ -1893,7 +1945,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               Row(
                 children: [
                   Text(
-                    'Fotos del Producto',
+                    l.t('admin_product_photos'),
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: ColorTokens.neutral30,
@@ -1911,7 +1963,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '(Obligatorio)',
+                    l.t('admin_required_label'),
                     style: TextStyle(
                       color: ColorTokens.error50,
                       fontSize: 12,
@@ -1933,8 +1985,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ),
                 label: Text(
                   _imageUrls.isEmpty
-                      ? 'Agregar Fotos (Requerido)'
-                      : 'Agregar Más Fotos/Video',
+                      ? l.t('admin_add_photos_required')
+                      : l.t('admin_add_more_media'),
                   style: TextStyle(
                     color: _imageUrls.isEmpty
                         ? ColorTokens.error50
@@ -1969,7 +2021,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Subiendo... ${(_uploadProgress * 100).toStringAsFixed(0)}%',
+                  '${l.t('admin_uploading')} ${(_uploadProgress * 100).toStringAsFixed(0)}%',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: ColorTokens.neutral60, fontSize: 13),
                 ),
@@ -1980,7 +2032,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               // Lista de imágenes
               if (_imageUrls.isNotEmpty) ...[
                 Text(
-                  'Imágenes',
+                  l.t('admin_images_label'),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: ColorTokens.neutral30,
@@ -2046,7 +2098,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
               // Video
               if (_videoUrl != null) ...[
                 Text(
-                  'Video',
+                  l.t('admin_video_label'),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: ColorTokens.neutral30,
@@ -2118,7 +2170,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                         ),
                       ),
                       child: Text(
-                        'Cancelar',
+                        l.t('cancel'),
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: ColorTokens.neutral50,
@@ -2142,8 +2194,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       ),
                       child: Text(
                         widget.product == null
-                            ? 'Crear Producto'
-                            : 'Actualizar',
+                            ? l.t('admin_create_product')
+                            : l.t('admin_update'),
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,

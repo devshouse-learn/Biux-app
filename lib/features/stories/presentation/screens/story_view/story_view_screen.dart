@@ -1,4 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
@@ -330,7 +331,9 @@ class _CarouselImagesState extends State<_CarouselImages> {
                             Icon(Icons.flash_on, color: Colors.white, size: 14),
                             SizedBox(width: 4),
                             Text(
-                              'PUBLICIDAD',
+                              Provider.of<LocaleNotifier>(
+                                context,
+                              ).t('advertising_label'),
                               style: Styles.accentTextThemeWhite.copyWith(
                                 color: Colors.white,
                                 fontSize: 11,
@@ -523,35 +526,31 @@ class _CarouselImagesState extends State<_CarouselImages> {
   }
 
   void _showDeleteConfirmationDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final bloc = context.read<StoryViewBloc>();
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Eliminar historia'),
-          content: const Text(
-            '¿Estás seguro de que deseas eliminar esta historia? Esta acción no se puede deshacer.',
-          ),
+          title: Text(l.t('delete_story')),
+          content: Text(l.t('delete_story_confirm')),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () {
                 bloc.deleteStory(story: widget.story);
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Historia eliminada exitosamente'),
+                  SnackBar(
+                    content: Text(l.t('story_deleted')),
                     duration: Duration(seconds: 2),
                   ),
                 );
               },
-              child: const Text(
-                'Eliminar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: Text(l.t('delete'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -560,6 +559,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
   }
 
   void _showAdvertisementInfoDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -587,7 +587,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'HISTORIA PROMOCIONADA',
+                        l.t('promoted_story').toUpperCase(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -596,7 +596,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                         ),
                       ),
                       Text(
-                        'Contenido impulsado',
+                        l.t('boosted_content'),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 11,
@@ -655,7 +655,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
 
                 // Descripción
                 Text(
-                  'Sobre esta publicidad:',
+                  l.t('about_this_ad'),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -667,7 +667,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 Text(
                   widget.story.description.isNotEmpty
                       ? widget.story.description
-                      : 'Esta historia ha sido impulsada para alcanzar a más usuarios. El creador ha elegido promocionar su contenido para obtener mayor visibilidad.',
+                      : l.t('ad_default_desc'),
                   style: TextStyle(
                     fontSize: 13,
                     color: ColorTokens.neutral80,
@@ -681,7 +681,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
 
                 // Beneficios
                 Text(
-                  '✨ Ventajas de la publicidad:',
+                  '✨ ${l.t('ad_benefits_title')}',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -690,10 +690,10 @@ class _CarouselImagesState extends State<_CarouselImages> {
                 ),
                 SizedBox(height: 12),
                 ...[
-                  '🎯 Alcance 500% mayor a todos los usuarios',
-                  '⭐ Aparece destacada en el feed',
-                  '📊 Más interacciones y visibilidad',
-                  '💎 Distintivo especial de publicidad',
+                  '🎯 ${l.t('ad_benefit_reach')}',
+                  '⭐ ${l.t('ad_benefit_featured')}',
+                  '📊 ${l.t('ad_benefit_engagement')}',
+                  '💎 ${l.t('ad_benefit_badge')}',
                 ].map((benefit) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
@@ -722,7 +722,7 @@ class _CarouselImagesState extends State<_CarouselImages> {
               onPressed: () => Navigator.pop(context),
               style: TextButton.styleFrom(foregroundColor: Color(0xFFFFD700)),
               child: Text(
-                'Entendido',
+                l.t('understood'),
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
@@ -800,7 +800,7 @@ class _AdvertisementBadgeState extends State<_AdvertisementBadge>
               Icon(Icons.flash_on, color: Colors.white, size: 16),
               SizedBox(width: 6),
               Text(
-                'PUBLICIDAD',
+                Provider.of<LocaleNotifier>(context).t('advertising_label'),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 13,
@@ -824,6 +824,7 @@ class _StoryActionsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final idUser = AuthenticationRepository().getUserId;
     bool userLiked = story.listReactions.any(
       (reaction) => reaction.id == idUser,
@@ -941,7 +942,7 @@ class _StoryActionsBar extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'Compartir',
+                            l.t('share'),
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

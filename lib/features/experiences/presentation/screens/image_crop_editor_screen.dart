@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:image/image.dart' as img;
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para editar el recorte cuadrado de una imagen
 /// El usuario puede desplazar y escalar la imagen para ajustarla al encuadre cuadrado
@@ -8,11 +10,7 @@ class ImageCropEditorScreen extends StatefulWidget {
   final File imageFile;
   final String? title;
 
-  const ImageCropEditorScreen({
-    super.key,
-    required this.imageFile,
-    this.title = 'Ajustar imagen',
-  });
+  const ImageCropEditorScreen({super.key, required this.imageFile, this.title});
 
   @override
   State<ImageCropEditorScreen> createState() => _ImageCropEditorScreenState();
@@ -53,7 +51,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
       }
     } catch (e) {
       setState(() {
-        _error = 'Error al cargar imagen: $e';
+        _error = e.toString();
         _isLoading = false;
       });
     }
@@ -125,9 +123,10 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
 
       return croppedFile;
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error al recortar: $e')));
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${l.t('error_cropping_image')}: $e')),
+      );
       return null;
     }
   }
@@ -154,30 +153,31 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final screenSize = MediaQuery.of(context).size;
     final frameSize = screenSize.width - 40; // Margen de 20 a cada lado
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.title ?? 'Ajustar imagen')),
+        appBar: AppBar(title: Text(widget.title ?? l.t('adjust_image'))),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.title ?? 'Ajustar imagen')),
+        appBar: AppBar(title: Text(widget.title ?? l.t('adjust_image'))),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.error, color: Colors.red, size: 64),
               const SizedBox(height: 16),
-              Text(_error!),
+              Text('${l.t('error_loading_image')}: $_error'),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Volver'),
+                child: Text(l.t('go_back')),
               ),
             ],
           ),
@@ -187,7 +187,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title ?? 'Ajustar imagen'),
+        title: Text(widget.title ?? l.t('adjust_image')),
         elevation: 0,
       ),
       body: Column(
@@ -357,7 +357,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Usa dos dedos para escalar y desplazar',
+                  l.t('use_fingers_to_scale'),
                   style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
@@ -370,7 +370,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.close),
-                      label: const Text('Cancelar'),
+                      label: Text(l.t('cancel')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -379,7 +379,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                     ElevatedButton.icon(
                       onPressed: _cropAndSaveImage,
                       icon: const Icon(Icons.check),
-                      label: const Text('Aceptar'),
+                      label: Text(l.t('accept')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,

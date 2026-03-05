@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/store/presentation/providers/cart_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla del carrito de compras con checkout
 class CartScreen extends StatefulWidget {
@@ -15,8 +16,9 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Carrito de Compras')),
+      appBar: AppBar(title: Text(l.t('shopping_cart'))),
       body: Consumer<CartProvider>(
         builder: (context, cart, child) {
           if (cart.isEmpty) {
@@ -47,6 +49,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildEmptyCart(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -55,7 +58,7 @@ class _CartScreenState extends State<CartScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
+              decoration: BoxDecoration(
                 color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
@@ -67,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 32),
             Text(
-              '¡Tu carrito está vacío!',
+              l.t('your_cart_is_empty'),
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
@@ -91,7 +94,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Pon tus productos aquí',
+                    l.t('put_products_here'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -101,7 +104,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Explora nuestra tienda y agrega los productos que más te gusten',
+                    l.t('explore_store_desc'),
                     style: TextStyle(fontSize: 14, color: Colors.orange[800]),
                     textAlign: TextAlign.center,
                   ),
@@ -110,7 +113,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Encuentra productos increíbles para tu ciclismo',
+              l.t('find_amazing_products'),
               style: TextStyle(fontSize: 15, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
@@ -120,9 +123,12 @@ class _CartScreenState extends State<CartScreen> {
                 Navigator.pushReplacementNamed(context, '/store');
               },
               icon: const Icon(Icons.shopping_bag, size: 24),
-              label: const Text(
-                'Explorar Tienda',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              label: Text(
+                l.t('explore_store'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3B82F6),
@@ -148,6 +154,7 @@ class _CartScreenState extends State<CartScreen> {
     CartItem item,
     CartProvider cart,
   ) {
+    final l = Provider.of<LocaleNotifier>(context);
     final product = item.product;
 
     return Card(
@@ -200,7 +207,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${product.precioFinal.toStringAsFixed(0)} COP c/u',
+                    '\$${product.precioFinal.toStringAsFixed(0)} ${l.t('cop_each')}',
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
@@ -292,6 +299,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildCheckoutSection(BuildContext context, CartProvider cart) {
+    final l = Provider.of<LocaleNotifier>(context);
     // Validar stock
     final stockIssues = cart.getStockIssues();
     final hasStockIssues = stockIssues.isNotEmpty;
@@ -329,7 +337,7 @@ class _CartScreenState extends State<CartScreen> {
                         Icon(Icons.warning, color: Colors.red[700], size: 20),
                         const SizedBox(width: 8),
                         Text(
-                          'Problemas de stock',
+                          l.t('stock_issues'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.red[700],
@@ -360,25 +368,25 @@ class _CartScreenState extends State<CartScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Productos:',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                Text(
+                  '${l.t('products_label')}:',
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 Text(
-                  '${cart.totalQuantity} ${cart.totalQuantity == 1 ? 'item' : 'items'}',
+                  '${cart.totalQuantity} ${cart.totalQuantity == 1 ? l.t('item_singular') : l.t('item_plural')}',
                   style: const TextStyle(fontSize: 14),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            
+
             // Subtotal
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Subtotal:',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                Text(
+                  '${l.t('subtotal')}:',
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 Text(
                   '\$${cart.subtotal.toStringAsFixed(0)} COP',
@@ -386,11 +394,11 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ],
             ),
-            
+
             // Cupón de descuento
             const SizedBox(height: 16),
             _buildCouponSection(context, cart),
-            
+
             // Descuento aplicado (si existe)
             if (cart.appliedCoupon != null) ...[
               const SizedBox(height: 8),
@@ -398,7 +406,7 @@ class _CartScreenState extends State<CartScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Descuento (${cart.appliedCoupon!.code}):',
+                    '${l.t('discount')} (${cart.appliedCoupon!.code}):',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.green,
@@ -416,18 +424,21 @@ class _CartScreenState extends State<CartScreen> {
                 ],
               ),
             ],
-            
+
             const SizedBox(height: 12),
             const Divider(),
             const SizedBox(height: 8),
-            
+
             // Total
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Total:',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  '${l.t('total')}:',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   '\$${cart.total.toStringAsFixed(0)} COP',
@@ -457,7 +468,7 @@ class _CartScreenState extends State<CartScreen> {
                       Icon(Icons.payment, color: Colors.blue[700], size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'Métodos de pago disponibles',
+                        l.t('available_payment_methods'),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.blue[700],
@@ -470,7 +481,7 @@ class _CartScreenState extends State<CartScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildPaymentMethod(Icons.credit_card, 'Tarjeta'),
+                      _buildPaymentMethod(Icons.credit_card, l.t('card')),
                       _buildPaymentMethod(Icons.account_balance, 'PSE'),
                       _buildPaymentMethod(Icons.phone_android, 'Nequi'),
                       _buildPaymentMethod(Icons.wallet, 'Daviplata'),
@@ -501,7 +512,7 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Envíos disponibles a:',
+                        '${l.t('available_shipping')}:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.green[700],
@@ -520,7 +531,7 @@ class _CartScreenState extends State<CartScreen> {
                       _buildShippingChip('Cali', Icons.location_city),
                       _buildShippingChip('Barranquilla', Icons.location_city),
                       _buildShippingChip('Cartagena', Icons.location_city),
-                      _buildShippingChip('Todo Colombia', Icons.public),
+                      _buildShippingChip(l.t('all_colombia'), Icons.public),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -540,7 +551,7 @@ class _CartScreenState extends State<CartScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Envío gratis en compras mayores a \$150,000 COP',
+                            l.t('free_shipping_note'),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.green[900],
@@ -607,7 +618,7 @@ class _CartScreenState extends State<CartScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Continuar comprando'),
+              child: Text(l.t('continue_shopping')),
             ),
           ],
         ),
@@ -621,29 +632,30 @@ class _CartScreenState extends State<CartScreen> {
     String productId,
     String productName,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar producto'),
-        content: Text('¿Deseas eliminar "$productName" del carrito?'),
+        title: Text(l.t('remove_product')),
+        content: Text('${l.t('remove_from_cart_confirm')} "$productName"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
               cart.removeItem(productId);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Producto eliminado del carrito'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(l.t('product_removed_from_cart')),
+                  duration: const Duration(seconds: 2),
                 ),
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -651,6 +663,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _processCheckout(BuildContext context, CartProvider cart) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -696,21 +709,24 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Confirmar Compra',
-                          style: TextStyle(
+                          l.t('confirm_purchase'),
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
                         ),
                         Text(
-                          'Revisa tu pedido',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          l.t('review_order'),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -731,9 +747,9 @@ class _CartScreenState extends State<CartScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Resumen del pedido
-                    const Text(
-                      'Resumen del Pedido',
-                      style: TextStyle(
+                    Text(
+                      l.t('order_summary'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -751,9 +767,9 @@ class _CartScreenState extends State<CartScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Productos:'),
+                              Text('${l.t('products_label')}:'),
                               Text(
-                                '${cart.totalQuantity} ${cart.totalQuantity == 1 ? 'item' : 'items'}',
+                                '${cart.totalQuantity} ${cart.totalQuantity == 1 ? l.t('item_singular') : l.t('item_plural')}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -764,7 +780,7 @@ class _CartScreenState extends State<CartScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Subtotal:'),
+                              Text('${l.t('subtotal')}:'),
                               Text('\$${cart.subtotal.toStringAsFixed(0)} COP'),
                             ],
                           ),
@@ -774,7 +790,7 @@ class _CartScreenState extends State<CartScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Descuento (${cart.appliedCoupon!.code}):',
+                                  '${l.t('discount')} (${cart.appliedCoupon!.code}):',
                                   style: const TextStyle(
                                     color: Colors.green,
                                     fontWeight: FontWeight.w500,
@@ -794,10 +810,10 @@ class _CartScreenState extends State<CartScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Envío:'),
+                              Text('${l.t('shipping_label')}:'),
                               Text(
                                 cart.total >= 150000
-                                    ? 'GRATIS'
+                                    ? l.t('free_label')
                                     : '\$15,000 COP',
                                 style: TextStyle(
                                   color: cart.total >= 150000
@@ -814,9 +830,9 @@ class _CartScreenState extends State<CartScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                'Total:',
-                                style: TextStyle(
+                              Text(
+                                '${l.t('total')}:',
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -837,9 +853,9 @@ class _CartScreenState extends State<CartScreen> {
                     const SizedBox(height: 24),
 
                     // Método de pago
-                    const Text(
-                      'Selecciona método de pago',
-                      style: TextStyle(
+                    Text(
+                      l.t('select_payment_method'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -847,22 +863,26 @@ class _CartScreenState extends State<CartScreen> {
                     const SizedBox(height: 12),
                     _buildPaymentOption(
                       context,
-                      'Tarjeta de Crédito/Débito',
+                      l.t('credit_debit_card'),
                       Icons.credit_card,
-                      selected: _selectedPayment == 'Tarjeta de Crédito/Débito',
+                      selected: _selectedPayment == 'credit_debit_card',
                       onTap: () {
-                        setState(() => _selectedPayment = 'Tarjeta de Crédito/Débito');
-                        context.read<CartProvider>().setSelectedPayment('Tarjeta de Crédito/Débito');
+                        setState(() => _selectedPayment = 'credit_debit_card');
+                        context.read<CartProvider>().setSelectedPayment(
+                          'credit_debit_card',
+                        );
                       },
                     ),
                     _buildPaymentOption(
                       context,
-                      'PSE - Transferencia Bancaria',
+                      l.t('pse_transfer'),
                       Icons.account_balance,
-                      selected: _selectedPayment == 'PSE - Transferencia Bancaria',
+                      selected: _selectedPayment == 'pse_transfer',
                       onTap: () {
-                        setState(() => _selectedPayment = 'PSE - Transferencia Bancaria');
-                        context.read<CartProvider>().setSelectedPayment('PSE - Transferencia Bancaria');
+                        setState(() => _selectedPayment = 'pse_transfer');
+                        context.read<CartProvider>().setSelectedPayment(
+                          'pse_transfer',
+                        );
                       },
                     ),
                     _buildPaymentOption(
@@ -872,7 +892,9 @@ class _CartScreenState extends State<CartScreen> {
                       selected: _selectedPayment == 'Nequi',
                       onTap: () {
                         setState(() => _selectedPayment = 'Nequi');
-                        context.read<CartProvider>().setSelectedPayment('Nequi');
+                        context.read<CartProvider>().setSelectedPayment(
+                          'Nequi',
+                        );
                       },
                     ),
                     _buildPaymentOption(
@@ -882,7 +904,9 @@ class _CartScreenState extends State<CartScreen> {
                       selected: _selectedPayment == 'Daviplata',
                       onTap: () {
                         setState(() => _selectedPayment = 'Daviplata');
-                        context.read<CartProvider>().setSelectedPayment('Daviplata');
+                        context.read<CartProvider>().setSelectedPayment(
+                          'Daviplata',
+                        );
                       },
                     ),
                     const SizedBox(height: 24),
@@ -913,10 +937,10 @@ class _CartScreenState extends State<CartScreen> {
                         children: [
                           Icon(Icons.info_outline, color: Colors.blue[700]),
                           const SizedBox(width: 12),
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              'Esta es una versión demo. En producción se integraría una pasarela de pago real.',
-                              style: TextStyle(fontSize: 13),
+                              l.t('demo_note'),
+                              style: const TextStyle(fontSize: 13),
                             ),
                           ),
                         ],
@@ -958,10 +982,12 @@ class _CartScreenState extends State<CartScreen> {
                                 color: Colors.white,
                               ),
                               const SizedBox(width: 12),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
-                                  '¡Compra realizada con éxito!',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  l.t('purchase_success'),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -984,9 +1010,9 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       elevation: 4,
                     ),
-                    child: const Text(
-                      'Confirmar y Pagar',
-                      style: TextStyle(
+                    child: Text(
+                      l.t('confirm_and_pay'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -1112,6 +1138,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildAppliedCoupon(CartProvider cart) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1124,7 +1151,7 @@ class _CartScreenState extends State<CartScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Cupón aplicado: ${cart.appliedCoupon!.code}',
+                    '${l.t('coupon_applied_named')}: ${cart.appliedCoupon!.code}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.green[900],
@@ -1133,10 +1160,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   Text(
                     cart.appliedCoupon!.description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green[700],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.green[700]),
                   ),
                 ],
               ),
@@ -1145,7 +1169,7 @@ class _CartScreenState extends State<CartScreen> {
               icon: const Icon(Icons.close, size: 20),
               color: Colors.red[700],
               onPressed: () => cart.removeCoupon(),
-              tooltip: 'Quitar cupón',
+              tooltip: l.t('remove_coupon'),
             ),
           ],
         ),
@@ -1158,6 +1182,7 @@ class _CartScreenState extends State<CartScreen> {
     CartProvider cart,
     TextEditingController controller,
   ) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1166,7 +1191,7 @@ class _CartScreenState extends State<CartScreen> {
             Icon(Icons.local_offer, color: Colors.orange[700], size: 20),
             const SizedBox(width: 8),
             Text(
-              '¿Tienes un cupón de descuento?',
+              l.t('have_coupon'),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.orange[900],
@@ -1183,7 +1208,7 @@ class _CartScreenState extends State<CartScreen> {
                 controller: controller,
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
-                  hintText: 'Ingresa tu código',
+                  hintText: l.t('enter_code'),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -1216,7 +1241,9 @@ class _CartScreenState extends State<CartScreen> {
                   controller.clear();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Cupón "${cart.appliedCoupon!.code}" aplicado'),
+                      content: Text(
+                        '${l.t('coupon_applied_named')}: ${cart.appliedCoupon!.code}',
+                      ),
                       backgroundColor: Colors.green,
                       duration: const Duration(seconds: 2),
                     ),
@@ -1234,9 +1261,9 @@ class _CartScreenState extends State<CartScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Aplicar',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              child: Text(
+                l.t('apply'),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],

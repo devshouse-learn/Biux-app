@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:biux/features/store/presentation/providers/product_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Panel de administración para gestionar usuarios, vendedores y productos
 class AdminDashboardScreen extends StatefulWidget {
@@ -31,23 +32,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
+
     // Verificar permisos de admin
     if (!widget.currentUser.isAdministrador) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Panel de Administración')),
-        body: const Center(child: Text('No tienes permisos de administrador')),
+        appBar: AppBar(title: Text(l.t('admin_panel_title'))),
+        body: Center(child: Text(l.t('no_admin_permissions'))),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Panel de Administración'),
+        title: Text(l.t('admin_panel_title')),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.people), text: 'Usuarios'),
-            Tab(icon: Icon(Icons.store), text: 'Vendedores'),
-            Tab(icon: Icon(Icons.inventory), text: 'Productos'),
+          tabs: [
+            Tab(icon: const Icon(Icons.people), text: l.t('users')),
+            Tab(icon: const Icon(Icons.store), text: l.t('sellers_tab')),
+            Tab(icon: const Icon(Icons.inventory), text: l.t('products_tab')),
           ],
         ),
       ),
@@ -60,6 +63,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
 
   // Tab 1: Gestión de usuarios
   Widget _buildUsersTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -69,32 +73,34 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Gestión de Usuarios',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('user_management'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Aquí puedes ver todos los usuarios registrados en la plataforma y gestionar sus roles.',
-                ),
+                Text(l.t('user_management_desc')),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () => _showUsersList(),
                   icon: const Icon(Icons.people),
-                  label: const Text('Ver Todos los Usuarios'),
+                  label: Text(l.t('view_all_users')),
                 ),
               ],
             ),
           ),
         ),
         const SizedBox(height: 16),
-        _buildStatsCard('Total de Usuarios', '0', Icons.people, Colors.blue),
+        _buildStatsCard(l.t('total_users'), '0', Icons.people, Colors.blue),
       ],
     );
   }
 
   // Tab 2: Gestión de vendedores
   Widget _buildSellersTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -104,14 +110,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Gestión de Vendedores',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('seller_management'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Autoriza o revoca permisos de vendedor a los usuarios.',
-                ),
+                Text(l.t('seller_management_desc')),
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -119,7 +126,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _showAuthorizeSellerDialog(),
                         icon: const Icon(Icons.person_add),
-                        label: const Text('Autorizar Vendedor'),
+                        label: Text(l.t('authorize_seller')),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                         ),
@@ -130,7 +137,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                       child: ElevatedButton.icon(
                         onPressed: () => _showRevokeSellerDialog(),
                         icon: const Icon(Icons.person_remove),
-                        label: const Text('Revocar Permisos'),
+                        label: Text(l.t('revoke_permissions')),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
@@ -143,13 +150,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           ),
         ),
         const SizedBox(height: 16),
-        _buildStatsCard('Vendedores Activos', '0', Icons.store, Colors.green),
+        _buildStatsCard(l.t('active_sellers'), '0', Icons.store, Colors.green),
       ],
     );
   }
 
   // Tab 3: Gestión de productos
   Widget _buildProductsTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Consumer<ProductProvider>(
       builder: (context, provider, child) {
         return Column(
@@ -162,24 +170,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Gestión de Productos',
-                        style: TextStyle(
+                      Text(
+                        l.t('product_management'),
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Como administrador puedes eliminar cualquier producto y marcarlo como destacado.',
-                      ),
+                      Text(l.t('product_management_desc')),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
                         onPressed: () {
                           context.read<ProductProvider>().loadAllProducts();
                         },
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Recargar Productos'),
+                        label: Text(l.t('reload_products')),
                       ),
                     ],
                   ),
@@ -192,7 +198,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 children: [
                   Expanded(
                     child: _buildStatsCard(
-                      'Total Productos',
+                      l.t('total_products'),
                       '${provider.products.length}',
                       Icons.inventory,
                       Colors.blue,
@@ -201,7 +207,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildStatsCard(
-                      'Destacados',
+                      l.t('featured'),
                       '${provider.featuredProducts.length}',
                       Icons.star,
                       Colors.orange,
@@ -215,7 +221,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
               child: provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : provider.products.isEmpty
-                  ? const Center(child: Text('No hay productos'))
+                  ? Center(child: Text(l.t('no_products')))
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: provider.products.length,
@@ -259,7 +265,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                               ),
                             ),
                             subtitle: Text(
-                              'Vendedor: ${product.vendedorNombre ?? 'Desconocido'}\n'
+                              '${l.t('seller')}: ${product.vendedorNombre ?? l.t('unknown')}\n'
                               '\$${product.precio.toStringAsFixed(2)} • Stock: ${product.stock}',
                             ),
                             trailing: Row(
@@ -335,24 +341,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   }
 
   void _showUsersList() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Lista de Usuarios'),
-        content: const SingleChildScrollView(
+        title: Text(l.t('users_list')),
+        content: SingleChildScrollView(
           child: Text(
-            'Aquí se mostraría la lista completa de usuarios con opciones para:\n\n'
-            '• Ver perfil\n'
-            '• Cambiar rol\n'
-            '• Suspender cuenta\n'
-            '• Ver historial de compras\n\n'
-            'Esta es una versión demo.',
+            l.t('users_list_demo_content'),
+            style: const TextStyle(fontSize: 14),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
         ],
       ),
@@ -360,24 +363,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   }
 
   void _showAuthorizeSellerDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Autorizar Vendedor'),
-        content: const SingleChildScrollView(
+        title: Text(l.t('authorize_seller')),
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Selecciona un usuario para autorizarlo como vendedor:'),
-              SizedBox(height: 16),
+              Text(l.t('select_user_to_authorize')),
+              const SizedBox(height: 16),
               Text(
-                'Lista de usuarios normales:\n\n'
-                '• Usuario 1\n'
-                '• Usuario 2\n'
-                '• Usuario 3\n\n'
-                'Esta es una versión demo.',
-                style: TextStyle(fontSize: 14),
+                l.t('authorize_seller_demo_list'),
+                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -385,20 +385,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
               // TODO: Implementar autorización real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Usuario autorizado como vendedor (Demo)'),
+                SnackBar(
+                  content: Text(l.t('user_authorized_seller_demo')),
                   backgroundColor: Colors.green,
                 ),
               );
             },
-            child: const Text('Autorizar'),
+            child: Text(l.t('authorize')),
           ),
         ],
       ),
@@ -406,24 +406,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   }
 
   void _showRevokeSellerDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Revocar Permisos de Vendedor'),
-        content: const SingleChildScrollView(
+        title: Text(l.t('revoke_seller_permissions')),
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Selecciona un vendedor para revocar sus permisos:'),
-              SizedBox(height: 16),
+              Text(l.t('select_seller_to_revoke')),
+              const SizedBox(height: 16),
               Text(
-                'Lista de vendedores activos:\n\n'
-                '• Vendedor 1\n'
-                '• Vendedor 2\n'
-                '• Vendedor 3\n\n'
-                'Esta es una versión demo.',
-                style: TextStyle(fontSize: 14),
+                l.t('revoke_seller_demo_list'),
+                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -431,21 +428,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
               // TODO: Implementar revocación real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Permisos de vendedor revocados (Demo)'),
+                SnackBar(
+                  content: Text(l.t('seller_permissions_revoked_demo')),
                   backgroundColor: Colors.orange,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Revocar'),
+            child: Text(l.t('revoke')),
           ),
         ],
       ),
@@ -453,19 +450,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   }
 
   void _confirmDeleteProduct(product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar Producto'),
+        title: Text(l.t('delete_product')),
         content: Text(
-          '¿Estás seguro de que deseas eliminar "${product.nombre}"?\n\n'
-          'Este producto pertenece a: ${product.vendedorNombre ?? 'Desconocido'}\n\n'
-          'Esta acción no se puede deshacer.',
+          '${l.t('delete_product_confirm')}\n\n"${product.nombre}"\n\n'
+          '${l.t('seller')}: ${product.vendedorNombre ?? l.t('unknown')}\n\n'
+          '${l.t('action_cannot_be_undone')}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -479,8 +477,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Producto eliminado por el administrador'),
+                    SnackBar(
+                      content: Text(l.t('product_deleted_by_admin')),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -490,7 +488,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error: $e'),
+                      content: Text('${l.t('error')}: $e'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -498,7 +496,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
