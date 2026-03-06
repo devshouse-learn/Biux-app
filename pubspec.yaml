@@ -151,13 +151,13 @@ flutter_launcher_icons:
     adaptive_icon_foreground: "img/biux_logo_letters_white.png"
 
 flutter_native_splash:
-  color: "#16242D"
-  image: img/biux_logo_background_white.png
+  color: "#FFFFFF"
+  image: img/biux_logo_background_blue.png
   ios: true
   android: true
   android_12:
-    image: img/biux_logo_background_white.png
-    color: "#16242D"
+    image: img/biux_logo_background_blue.png
+    color: "#FFFFFF"
 
 flutter:
   uses-material-design: true
