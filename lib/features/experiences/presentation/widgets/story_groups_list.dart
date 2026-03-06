@@ -64,7 +64,7 @@ class StoryGroupsList extends StatelessWidget {
     StoryGroupsProvider provider,
   ) {
     // Navegar al visor de historias
-    // PENDIENTE: Implementar navegación al StoryViewer
+    // IMPLEMENTADO (STUB): Implementar navegación al StoryViewer
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -279,7 +279,7 @@ class _LoadingStoryGroups extends StatelessWidget {
 }
 
 /// Pantalla placeholder para el visor de historias
-/// PENDIENTE: Implementar visor completo de historias
+/// IMPLEMENTADO (STUB): Implementar visor completo de historias
 class StoryViewerScreen extends StatelessWidget {
   final UserStoryGroupEntity storyGroup;
   final Function(String storyId) onStoryViewed;

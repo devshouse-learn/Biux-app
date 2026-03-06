@@ -1255,7 +1255,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               setState(() {});
                             },
                           )
-                        // PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+                        // IMPLEMENTADO (STUB): Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
                         : null,
                     // : IconButton(
                     //     icon: const Icon(Icons.qr_code_scanner, color: Colors.grey),

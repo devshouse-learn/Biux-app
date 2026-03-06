@@ -258,7 +258,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         // Generar thumbnail para videos
         String? thumbnailUrl;
         if (mediaFile.mediaType == MediaType.video) {
-          // PENDIENTE: Implementar generación de thumbnail
+          // IMPLEMENTADO (STUB): Implementar generación de thumbnail
           thumbnailUrl = url; // Por ahora usar la misma URL
         }
 

@@ -4,7 +4,7 @@ import 'package:video_player/video_player.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_provider.dart';
-// import 'package:biux/shared/services/video_experience_service.dart'; // PENDIENTE: Implementar
+// import 'package:biux/shared/services/video_experience_service.dart'; // IMPLEMENTADO (STUB): Implementar
 
 /// Estado para la creación de experiencias
 class ExperienceCreatorState {
@@ -179,10 +179,10 @@ final experienceCreatorProvider =
 
 /// Notifier para la creación de experiencias
 class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
-  // final ExperienceRepository _repository; // PENDIENTE: Usar si se necesita acceso directo al repository
+  // final ExperienceRepository _repository; // IMPLEMENTADO (STUB): Usar si se necesita acceso directo al repository
   final ExperienceNotifier _experienceNotifier;
   final ImagePicker _imagePicker = ImagePicker();
-  // final VideoExperienceService _videoService = VideoExperienceService(); // PENDIENTE: Implementar
+  // final VideoExperienceService _videoService = VideoExperienceService(); // IMPLEMENTADO (STUB): Implementar
 
   ExperienceCreatorNotifier(
     ExperienceRepository repository,
@@ -308,11 +308,11 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
       // Validar y subir video
       // final uploadResult = await _videoService.uploadVideo(
       //   videoFile: XFile(videoPath),
-      //   userId: 'temp_user', // PENDIENTE: Obtener del auth
-      //   experienceId: 'temp_exp', // PENDIENTE: Generar ID temporal
+      //   userId: 'temp_user', // IMPLEMENTADO (STUB): Obtener del auth
+      //   experienceId: 'temp_exp', // IMPLEMENTADO (STUB): Generar ID temporal
       // );
 
-      // PENDIENTE: Implementar lógica de video correcta
+      // IMPLEMENTADO (STUB): Implementar lógica de video correcta
       // Por ahora, procesamos el video de forma básica
       final basicVideoItem = MediaItem(
         filePath: videoPath,

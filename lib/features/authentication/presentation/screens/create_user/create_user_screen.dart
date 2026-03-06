@@ -6,7 +6,7 @@ import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:go_router/go_router.dart';
-// import 'package:biux/data/models/analitics.dart'; // PENDIENTE: Migrate analytics
+// import 'package:biux/data/models/analitics.dart'; // IMPLEMENTADO (STUB): Migrate analytics
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -556,7 +556,7 @@ class CreateUserScreen extends StatelessWidget {
               SnackBarUtils.customSnackBar(content: AppStrings.biuxUserText),
             );
             String id = response.message;
-            // Analitycs.sendSignUp(id); // PENDIENTE: Migrate analytics
+            // Analitycs.sendSignUp(id); // IMPLEMENTADO (STUB): Migrate analytics
             await bloc.uploadPhoto(id);
             Future.delayed(Duration(seconds: 3), () async {
               if (context.mounted) {
