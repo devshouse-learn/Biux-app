@@ -12,6 +12,7 @@ import 'package:biux/features/social/presentation/providers/likes_provider.dart'
 import 'package:biux/features/social/domain/entities/like_entity.dart';
 import 'package:biux/features/social/domain/repositories/likes_repository.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story
 /// Soporta reproducción automática de videos e imágenes con duración
@@ -384,6 +385,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   Widget _buildUserHeader() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final user = widget.experience.user;
 
     return Row(
@@ -421,7 +423,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             ? user.fullName
                             : (user.userName.isNotEmpty
                                   ? user.userName
-                                  : 'Usuario sin datos'),
+                                  : l.t('user_no_data')),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: const TextStyle(
@@ -463,9 +465,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             ),
             if (isPaused) const SizedBox(height: 4),
             if (isPaused)
-              const Text(
-                'Pausado',
-                style: TextStyle(color: Colors.white, fontSize: 12),
+              Text(
+                l.t('story_paused'),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
           ],
         ),
@@ -480,32 +482,33 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   /// Muestra diálogo de confirmación para eliminar
   void _confirmDeleteStory(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          '¿Estás seguro/a que quieres eliminar esta historia?',
+          l.t('story_delete_confirm_question'),
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
-          'No podrás recuperar esta historia después de eliminada',
+          l.t('cannot_recover_story'),
           style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
               _deleteStory(context);
             },
-            child: const Text(
-              'Eliminar historia',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              l.t('delete_story'),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -515,21 +518,22 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   /// Elimina la historia
   void _deleteStory(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final provider = context.read<ExperienceProvider>();
       final success = await provider.deleteExperience(widget.experience.id);
 
       if (context.mounted) {
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Historia eliminada correctamente')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('story_deleted_success'))));
           // Cerrar el visor de stories (un solo pop)
           Navigator.of(context).pop();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error al eliminar la historia')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('story_delete_error'))));
         }
       }
     } catch (e) {
@@ -559,6 +563,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   /// Muestra opciones de la historia (eliminar, compartir)
   void _showStoryOptions(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     // Pausar el progreso mientras se muestra el menú
     _progressController.stop();
@@ -598,11 +603,11 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   ),
                   child: const Icon(Icons.share, color: ColorTokens.primary50),
                 ),
-                title: const Text(
-                  'Compartir',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                title: Text(
+                  l.t('share_label'),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
-                subtitle: const Text('Comparte esta historia'),
+                subtitle: Text(l.t('share_this_story')),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -624,14 +629,14 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   ),
                   child: const Icon(Icons.delete_outline, color: Colors.red),
                 ),
-                title: const Text(
-                  'Eliminar historia',
-                  style: TextStyle(
+                title: Text(
+                  l.t('delete_story'),
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.red,
                   ),
                 ),
-                subtitle: const Text('Esta acción no se puede deshacer'),
+                subtitle: Text(l.t('action_cannot_undo')),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -646,7 +651,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               // Cancelar
               TextButton(
                 onPressed: () => Navigator.pop(modalContext),
-                child: const Text('Cancelar'),
+                child: Text(l.t('cancel')),
               ),
             ],
           ),
@@ -662,6 +667,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   /// Comparte la historia
   void _shareStory(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final user = widget.experience.user;
     final description = widget.experience.description;
     final mediaUrl = widget.experience.media.isNotEmpty
@@ -670,9 +676,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
     final shareText = StringBuffer();
     if (user.fullName.isNotEmpty) {
-      shareText.write('Historia de ${user.fullName}');
+      shareText.write('${l.t('story_of')} ${user.fullName}');
     } else {
-      shareText.write('Historia de @${user.userName}');
+      shareText.write('${l.t('story_of')} @${user.userName}');
     }
     if (description.isNotEmpty) {
       shareText.write('\n\n$description');
@@ -680,7 +686,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     if (mediaUrl.isNotEmpty) {
       shareText.write('\n\n$mediaUrl');
     }
-    shareText.write('\n\nCompartido desde Biux');
+    shareText.write('\n\n${l.t('shared_from_biux')}');
 
     SharePlus.instance.share(ShareParams(text: shareText.toString()));
   }
@@ -688,6 +694,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   /// Muestra modal con información de visualizaciones y likes
   void _showViewersModal(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final viewers = widget.experience.viewers;
     final viewsCount = viewers.length;
     final hasViewers = viewers.isNotEmpty;
@@ -737,14 +744,14 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Quién vio tu historia',
+                          l.t('who_saw_story'),
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '$viewsCount ${viewsCount == 1 ? 'visualización' : 'visualizaciones'}',
+                          '$viewsCount ${viewsCount == 1 ? l.t('views_count_singular') : l.t('views_count_plural')}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.grey[600],
                           ),
@@ -902,7 +909,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Nadie ha visto tu historia aún',
+                          l.t('no_views_yet'),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
@@ -910,7 +917,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Comparte tu historia con más amigos para que la vean',
+                          l.t('share_story_more_friends'),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
@@ -977,6 +984,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   String _getTimeAgo(DateTime createdAt) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final now = DateTime.now();
     final difference = now.difference(createdAt);
 
@@ -987,7 +995,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes}m';
     } else {
-      return 'ahora';
+      return l.t('experiences_time_now');
     }
   }
 

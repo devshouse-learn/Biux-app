@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
 
 /// Modelo de anuncio para mostrar en el feed
@@ -17,8 +19,8 @@ class AdvertisementData {
     required this.userName,
     required this.userFullName,
     this.userPhotoUrl,
-    this.description = 'Descubre este perfil increíble',
-    this.callToActionText = 'Ver Perfil',
+    this.description = 'discover_profile',
+    this.callToActionText = 'view_profile',
   });
 }
 
@@ -36,6 +38,7 @@ class AdvertisementWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -105,7 +108,7 @@ class AdvertisementWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'PUBLICIDAD',
+                  l.t('advertising_badge'),
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
@@ -132,8 +135,7 @@ class AdvertisementWidget extends StatelessWidget {
                         height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border:
-                              Border.all(color: Colors.white, width: 2),
+                          border: Border.all(color: Colors.white, width: 2),
                           color: ColorTokens.neutral100.withValues(alpha: 0.3),
                         ),
                         child: ClipRRect(
@@ -188,7 +190,7 @@ class AdvertisementWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        advertisement.description,
+                        l.t(advertisement.description),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -215,7 +217,9 @@ class AdvertisementWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            advertisement.callToActionText ?? 'Ver Perfil',
+                            l.t(
+                              advertisement.callToActionText ?? 'view_profile',
+                            ),
                             style: TextStyle(
                               color: ColorTokens.primary30,
                               fontWeight: FontWeight.bold,
@@ -276,14 +280,15 @@ class AdvertisementDataGenerator {
   /// Genera un anuncio aleatorio para mostrar
   static AdvertisementData generateRandom() {
     final ad =
-        _mockAdvertisements[DateTime.now().millisecond % _mockAdvertisements.length];
+        _mockAdvertisements[DateTime.now().millisecond %
+            _mockAdvertisements.length];
     return AdvertisementData(
       userId: ad['userId']!,
       userName: ad['userName']!,
       userFullName: ad['fullName']!,
       userPhotoUrl: ad['photoUrl'],
       description: ad['description']!,
-      callToActionText: 'Ver Perfil',
+      callToActionText: 'view_profile',
     );
   }
 
@@ -293,7 +298,7 @@ class AdvertisementDataGenerator {
     required String userName,
     required String userFullName,
     String? userPhotoUrl,
-    String description = 'Descubre este perfil increíble',
+    String description = 'discover_profile',
   }) {
     return AdvertisementData(
       userId: userId,
@@ -301,7 +306,7 @@ class AdvertisementDataGenerator {
       userFullName: userFullName,
       userPhotoUrl: userPhotoUrl,
       description: description,
-      callToActionText: 'Ver Perfil',
+      callToActionText: 'view_profile',
     );
   }
 }

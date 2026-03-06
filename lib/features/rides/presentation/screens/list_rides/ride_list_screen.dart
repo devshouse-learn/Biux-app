@@ -343,7 +343,7 @@ class _RideListScreenState extends State<RideListScreen> {
                                       SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          'Organizado por ${groupInfo['name']}',
+                                          '${l.t('organized_by')} ${groupInfo['name']}',
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
@@ -656,19 +656,20 @@ class _RideListScreenState extends State<RideListScreen> {
   }
 
   String _formatDateTime(DateTime dateTime) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final months = [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic',
+      l.t('month_jan'),
+      l.t('month_feb'),
+      l.t('month_mar'),
+      l.t('month_apr'),
+      l.t('month_may'),
+      l.t('month_jun'),
+      l.t('month_jul'),
+      l.t('month_aug'),
+      l.t('month_sep'),
+      l.t('month_oct'),
+      l.t('month_nov'),
+      l.t('month_dec'),
     ];
 
     final day = dateTime.day;

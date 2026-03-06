@@ -1,4 +1,4 @@
-// (conflict markers removed - keeping remote version)
+﻿// (conflict markers removed - keeping remote version)
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +17,7 @@ import 'package:biux/features/shop/presentation/widgets/promotions_widget.dart';
 import '../widgets/request_seller_permission_dialog.dart';
 // import '../widgets/recommended_for_rides_widget.dart'; // actualmente no usado
 
-/// Tienda virtual profesional con características de e-commerce avanzadas
+/// Tienda virtual profesional con caracterÃ­sticas de e-commerce avanzadas
 class ShopScreenPro extends StatefulWidget {
   final String? initialSearch;
 
@@ -43,12 +43,15 @@ class _ShopScreenProState extends State<ShopScreenPro>
   bool _inStockOnly = false;
   double _minRating = 0;
 
+  /// Helper de localizaciÃ³n
+  LocaleNotifier get _l => Provider.of<LocaleNotifier>(context, listen: false);
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 8, vsync: this);
 
-    // Si hay búsqueda inicial, aplicarla
+    // Si hay bÃºsqueda inicial, aplicarla
     if (widget.initialSearch != null && widget.initialSearch!.isNotEmpty) {
       _searchController.text = widget.initialSearch!;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -81,7 +84,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           // AppBar limpio estilo Chrome
           _buildChromeStyleAppBar(),
 
-          // Selector de categoría desplegable
+          // Selector de categorÃ­a desplegable
           SliverToBoxAdapter(child: _buildCategoryDropdown()),
 
           // Productos destacados
@@ -128,9 +131,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
         ),
         child: Row(
           children: [
-            // Logo o título
+            // Logo o tÃ­tulo
             Text(
-              '🚴 Tienda Biux',
+              'ðŸš´ ${_l.t("shop")} Biux',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -139,7 +142,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               ),
             ),
             const SizedBox(width: 16),
-            // Barra de búsqueda limpia
+            // Barra de bÃºsqueda limpia
             Expanded(
               child: Container(
                 height: 42,
@@ -199,23 +202,21 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 final favCount = uid.isEmpty
                     ? 0
                     : shopProvider.products
-                        .where((p) => p.isLikedBy(uid))
-                        .length;
+                          .where((p) => p.isLikedBy(uid))
+                          .length;
                 return Stack(
                   clipBehavior: Clip.none,
                   children: [
                     IconButton(
                       icon: Icon(
-                        favCount > 0
-                            ? Icons.favorite
-                            : Icons.favorite_border,
+                        favCount > 0 ? Icons.favorite : Icons.favorite_border,
                         size: 24,
                         color: favCount > 0
                             ? Colors.red
                             : ColorTokens.primary30,
                       ),
                       onPressed: () => context.push('/shop/favorites'),
-                      tooltip: 'Mis Favoritos',
+                      tooltip: _l.t('my_favorites'),
                       style: IconButton.styleFrom(
                         backgroundColor: ColorTokens.neutral99,
                       ),
@@ -297,7 +298,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 );
               },
             ),
-            // Menú de opciones (admin, ofertas, agregar producto)
+            // MenÃº de opciones (admin, ofertas, agregar producto)
             Consumer<UserProvider>(
               builder: (context, userProvider, child) {
                 final currentUser = userProvider.user;
@@ -352,7 +353,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'Info de Productos',
+                            _l.t('product_info'),
                             style: TextStyle(color: Colors.blue[800]),
                           ),
                         ],
@@ -364,7 +365,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         children: [
                           Icon(Icons.campaign, size: 20, color: Colors.orange),
                           const SizedBox(width: 12),
-                          Text('Promociones'),
+                          Text(_l.t('promotions')),
                         ],
                       ),
                     ),
@@ -378,8 +379,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             size: 22,
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Ofertas y Beneficios',
+                          Text(
+                            _l.t('offers_and_benefits'),
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -396,8 +397,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               size: 22,
                             ),
                             const SizedBox(width: 12),
-                            const Text(
-                              'Panel Admin',
+                            Text(
+                              _l.t('admin_panel'),
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                           ],
@@ -414,8 +415,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               size: 22,
                             ),
                             const SizedBox(width: 12),
-                            const Text(
-                              'Agregar Producto',
+                            Text(
+                              _l.t('add_product'),
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                           ],
@@ -431,7 +432,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Bottom sheet con información de productos y sugerencias
+  /// Bottom sheet con informaciÃ³n de productos y sugerencias
   void _showShopInfoBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -458,7 +459,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              // Título
+              // TÃ­tulo
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -477,7 +478,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Información de la Tienda',
+                      _l.t('shop_info'),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -496,62 +497,58 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   children: [
                     _buildInfoSection(
                       icon: Icons.storefront,
-                      title: 'Productos Disponibles',
-                      description:
-                          'Puedes ofrecer productos relacionados con ciclismo: bicicletas, accesorios, componentes, indumentaria, nutrición y tecnología deportiva.',
+                      title: _l.t('available_products'),
+                      description: _l.t('available_products_desc'),
                       items: [
-                        'Bicicletas (ruta, montaña, urbanas, eléctricas)',
-                        'Cascos y protección',
-                        'Luces y reflectantes',
-                        'Herramientas y repuestos',
-                        'Ropa ciclista',
-                        'Suplementos y nutrición',
-                        'GPS y ciclocomputadores',
+                        _l.t('item_bikes_types'),
+                        _l.t('item_helmets_protection'),
+                        _l.t('item_lights_reflectors'),
+                        _l.t('item_tools_parts'),
+                        _l.t('item_cycling_clothing'),
+                        _l.t('item_supplements_nutrition'),
+                        _l.t('item_gps_computers'),
                       ],
                     ),
                     const SizedBox(height: 16),
                     _buildInfoSection(
                       icon: Icons.category,
-                      title: 'Categorías Populares',
-                      description:
-                          'Las categorías más buscadas por los ciclistas en nuestra plataforma:',
+                      title: _l.t('popular_categories'),
+                      description: _l.t('popular_categories_desc'),
                       items: [
-                        'Bicicletas completas',
-                        'Componentes y repuestos',
-                        'Accesorios de seguridad',
-                        'Indumentaria',
-                        'Electrónica y GPS',
-                        'Nutrición deportiva',
-                        'Mantenimiento',
+                        _l.t('item_complete_bikes'),
+                        _l.t('item_components_parts'),
+                        _l.t('item_safety_accessories'),
+                        _l.t('item_clothing'),
+                        _l.t('item_electronics_gps'),
+                        _l.t('item_sports_nutrition'),
+                        _l.t('item_maintenance'),
                       ],
                     ),
                     const SizedBox(height: 16),
                     _buildInfoSection(
                       icon: Icons.tips_and_updates,
-                      title: 'Consejos para Vender',
-                      description:
-                          'Mejora tus ventas siguiendo estas recomendaciones:',
+                      title: _l.t('selling_tips'),
+                      description: _l.t('selling_tips_desc'),
                       items: [
-                        'Usa fotos de alta calidad',
-                        'Describe detalladamente el estado del producto',
-                        'Establece precios competitivos',
-                        'Responde rápido a las consultas',
-                        'Ofrece envío o entrega en mano',
-                        'Mantén tu inventario actualizado',
+                        _l.t('tip_high_quality_photos'),
+                        _l.t('tip_describe_condition'),
+                        _l.t('tip_competitive_prices'),
+                        _l.t('tip_respond_quickly'),
+                        _l.t('tip_offer_shipping'),
+                        _l.t('tip_update_inventory'),
                       ],
                     ),
                     const SizedBox(height: 16),
                     _buildInfoSection(
                       icon: Icons.local_offer,
-                      title: 'Ofertas y Promociones',
-                      description:
-                          'Atrae más compradores con estrategias de venta:',
+                      title: _l.t('offers_and_promotions'),
+                      description: _l.t('offers_and_promotions_desc'),
                       items: [
-                        'Descuentos por temporada',
-                        'Packs y combos de productos',
-                        'Envío gratis en compras mayores',
-                        'Programa de fidelización',
-                        'Ofertas flash por tiempo limitado',
+                        _l.t('item_seasonal_discounts'),
+                        _l.t('item_product_bundles'),
+                        _l.t('item_free_shipping_orders'),
+                        _l.t('item_loyalty_program'),
+                        _l.t('item_flash_limited_offers'),
                       ],
                     ),
                   ],
@@ -564,7 +561,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Widget helper para las secciones de información
+  /// Widget helper para las secciones de informaciÃ³n
   Widget _buildInfoSection({
     required IconData icon,
     required String title,
@@ -630,44 +627,44 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Chips de categorías horizontales estilo Chrome
+  /// Chips de categorÃ­as horizontales estilo Chrome
   // ignore: unused_element
   Widget _buildCategoryChips() {
     final categories = [
-      {'icon': Icons.apps, 'label': 'Todos', 'value': null},
+      {'icon': Icons.apps, 'label': _l.t('all'), 'value': null},
       {
         'icon': Icons.pedal_bike,
-        'label': 'Bicis',
+        'label': _l.t('bikes'),
         'value': ProductCategories.bikes,
       },
       {
         'icon': Icons.checkroom,
-        'label': 'Jerseys',
+        'label': _l.t('jerseys'),
         'value': ProductCategories.jerseys,
       },
       {
         'icon': Icons.sports,
-        'label': 'Culotes',
+        'label': _l.t('shorts'),
         'value': ProductCategories.shorts,
       },
       {
         'icon': Icons.sports_motorsports,
-        'label': 'Cascos',
+        'label': _l.t('helmets'),
         'value': ProductCategories.helmets,
       },
       {
         'icon': Icons.directions_run,
-        'label': 'Calzado',
+        'label': _l.t('shoes'),
         'value': ProductCategories.shoes,
       },
       {
         'icon': Icons.settings,
-        'label': 'Componentes',
+        'label': _l.t('components'),
         'value': ProductCategories.components,
       },
       {
         'icon': Icons.category,
-        'label': 'Accesorios',
+        'label': _l.t('accessories'),
         'value': ProductCategories.accessories,
       },
     ];
@@ -789,7 +786,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Ofertas y Beneficios',
+                            _l.t('offers_and_benefits'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -799,8 +796,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           const SizedBox(height: 2),
                           Text(
                             _showOffersExpanded
-                                ? 'Ocultar promociones'
-                                : 'Descuentos especiales disponibles',
+                                ? _l.t('hide_promotions')
+                                : _l.t('special_discounts_available'),
                             style: TextStyle(
                               fontSize: 13,
                               color: ColorTokens.neutral60,
@@ -855,8 +852,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         children: [
                           Expanded(
                             child: _buildOfferCard(
-                              '⚡',
-                              'Ofertas\nRelámpago',
+                              'âš¡',
+                              _l.t('flash_offers_label'),
                               ColorTokens.warning99,
                               ColorTokens.warning50,
                               () => _showFlashOffersDialog(context),
@@ -865,8 +862,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildOfferCard(
-                              '🎯',
-                              'Descuentos\nGrupales',
+                              'ðŸŽ¯',
+                              _l.t('group_discounts_label'),
                               ColorTokens.info90,
                               ColorTokens.secondary50,
                               () => _showGroupDiscountsDialog(context),
@@ -879,8 +876,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         children: [
                           Expanded(
                             child: _buildOfferCard(
-                              '🏆',
-                              'Productos\nPremium',
+                              'ðŸ†',
+                              _l.t('premium_products_label'),
                               ColorTokens.secondary99,
                               ColorTokens.primary50,
                               () => _showPremiumProductsDialog(context),
@@ -889,8 +886,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           const SizedBox(width: 12),
                           Expanded(
                             child: _buildOfferCard(
-                              '🚚',
-                              'Envío\nGratis',
+                              'ðŸšš',
+                              _l.t('free_shipping_label'),
                               ColorTokens.success99,
                               ColorTokens.success40,
                               () => _showShippingDiscountsDialog(context),
@@ -954,17 +951,17 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Sección de productos destacados
+  /// SecciÃ³n de productos destacados
   Widget _buildFeaturedSection() {
     return SliverToBoxAdapter(
       child: Consumer<ShopProvider>(
         builder: (context, provider, child) {
-          // ✅ FILTRAR: Solo productos destacados, disponibles Y con imágenes válidas
+          // âœ… FILTRAR: Solo productos destacados, disponibles Y con imÃ¡genes vÃ¡lidas
           final featuredProducts = provider.products
               .where((p) {
                 // Debe ser destacado y disponible
                 if (!p.isFeatured || !p.isAvailable) return false;
-                // Debe tener imágenes REALES (no placeholders)
+                // Debe tener imÃ¡genes REALES (no placeholders)
                 return _productHasRealImages(p);
               })
               .take(6)
@@ -990,7 +987,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Destacados para ti',
+                      _l.t('featured_for_you'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -1001,7 +998,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Productos seleccionados para ciclistas',
+                  _l.t('products_selected_for_cyclists'),
                   style: TextStyle(fontSize: 13, color: ColorTokens.neutral60),
                 ),
                 const SizedBox(height: 16),
@@ -1109,7 +1106,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       color: ColorTokens.neutral100,
       child: Row(
         children: [
-          // Contador de productos (solo válidos con imágenes)
+          // Contador de productos (solo vÃ¡lidos con imÃ¡genes)
           Consumer<ShopProvider>(
             builder: (context, provider, child) {
               final validCount = provider.products.where((p) {
@@ -1117,17 +1114,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
               }).length;
 
               return Text(
-                '$validCount productos',
-                style: TextStyle(
-                  color: ColorTokens.neutral50,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                '$validCount ${_l.t("products_label")}',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               );
             },
           ),
           const Spacer(),
-          // Botón de filtros
+          // BotÃ³n de filtros
           TextButton.icon(
             onPressed: () => setState(() => _showFilters = !_showFilters),
             icon: Icon(
@@ -1136,7 +1129,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               color: ColorTokens.primary30,
             ),
             label: Text(
-              'Filtros',
+              _l.t('filters'),
               style: TextStyle(
                 color: ColorTokens.primary30,
                 fontWeight: FontWeight.w600,
@@ -1194,7 +1187,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// AppBar profesional con búsqueda integrada (antiguo)
+  /// AppBar profesional con bÃºsqueda integrada (antiguo)
   // ignore: unused_element
   Widget _buildSliverAppBar() {
     return SliverAppBar(
@@ -1223,7 +1216,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // Barra de búsqueda profesional
+              // Barra de bÃºsqueda profesional
               Container(
                 height: 48,
                 decoration: BoxDecoration(
@@ -1324,7 +1317,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           },
         ),
 
-        // Menú de opciones
+        // MenÃº de opciones
         Consumer2<UserProvider, SellerRequestProvider>(
           builder: (context, userProvider, requestProvider, child) {
             final currentUser = userProvider.user;
@@ -1359,36 +1352,36 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'orders',
                   child: Row(
                     children: [
                       Icon(Icons.receipt_long, size: 20),
                       SizedBox(width: 12),
-                      Text('Mis Pedidos'),
+                      Text(_l.t('my_orders')),
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'favorites',
                   child: Row(
                     children: [
                       Icon(Icons.favorite_border, size: 20),
                       SizedBox(width: 12),
-                      Text('Favoritos'),
+                      Text(_l.t('favorites')),
                     ],
                   ),
                 ),
                 // Solo mostrar a usuarios NO autorizados (para solicitar permiso)
                 if (!isAdmin && !(currentUser?.canSellProducts ?? false)) ...[
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'request_seller',
                     child: Row(
                       children: [
                         Icon(Icons.request_page, size: 20, color: Colors.blue),
                         SizedBox(width: 12),
                         Text(
-                          'Solicitar Vender Productos',
+                          _l.t('request_sell_products'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
@@ -1414,8 +1407,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Solicitudes de Vendedores',
+                        Text(
+                          _l.t('seller_requests'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.purple,
@@ -1424,14 +1417,14 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'manage_sellers',
                     child: Row(
                       children: [
                         Icon(Icons.people, size: 20, color: Colors.orange),
                         SizedBox(width: 12),
                         Text(
-                          'Gestionar Vendedores',
+                          _l.t('manage_sellers'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.orange,
@@ -1440,14 +1433,14 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete_all_products',
                     child: Row(
                       children: [
                         Icon(Icons.delete_forever, size: 20, color: Colors.red),
                         SizedBox(width: 12),
                         Text(
-                          'Eliminar Todos los Productos',
+                          _l.t('delete_all_products'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.red,
@@ -1457,13 +1450,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ),
                 ],
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'help',
                   child: Row(
                     children: [
                       Icon(Icons.help_outline, size: 20),
                       SizedBox(width: 12),
-                      Text('Ayuda'),
+                      Text(_l.t('help')),
                     ],
                   ),
                 ),
@@ -1509,12 +1502,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Promociones de la Comunidad',
+                        _l.t('community_promotions'),
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -1523,7 +1516,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ),
                       SizedBox(height: 2),
                       Text(
-                        'Comparte ofertas y eventos con otros ciclistas',
+                        _l.t('share_offers_with_cyclists'),
                         style: TextStyle(
                           fontSize: 12,
                           color: Color(0xFF5A7A8A),
@@ -1536,9 +1529,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
             const SizedBox(height: 20),
 
-            // Campo: Título de la promoción
-            const Text(
-              'Título de la promoción',
+            // Campo: TÃ­tulo de la promociÃ³n
+            Text(
+              _l.t('promotion_title'),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -1548,7 +1541,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             const SizedBox(height: 6),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Ej: Descuento en cascos de ciclismo',
+                hintText: _l.t('promo_title_hint'),
                 hintStyle: TextStyle(
                   color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
@@ -1588,9 +1581,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
             const SizedBox(height: 16),
 
-            // Campo: Descripción
-            const Text(
-              'Descripción',
+            // Campo: DescripciÃ³n
+            Text(
+              _l.t('description'),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -1601,8 +1594,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             TextField(
               maxLines: 3,
               decoration: InputDecoration(
-                hintText:
-                    'Describe tu promoción, incluye detalles importantes como ubicación, horarios, condiciones...',
+                hintText: _l.t('promo_description_hint'),
                 hintStyle: TextStyle(
                   color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
@@ -1648,13 +1640,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
             // Fila: Tipo + Fecha
             Row(
               children: [
-                // Tipo de promoción
+                // Tipo de promociÃ³n
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Tipo',
+                      Text(
+                        _l.t('type'),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -1688,14 +1680,17 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               fontSize: 14,
                             ),
                             dropdownColor: Colors.white,
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'descuento',
                                 child: Row(
                                   children: [
-                                    Text('🏷️', style: TextStyle(fontSize: 16)),
+                                    Text(
+                                      'ðŸ·ï¸',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                                     SizedBox(width: 8),
-                                    Text('Descuento'),
+                                    Text(_l.t('discount')),
                                   ],
                                 ),
                               ),
@@ -1703,9 +1698,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                 value: 'oferta',
                                 child: Row(
                                   children: [
-                                    Text('🎁', style: TextStyle(fontSize: 16)),
+                                    Text(
+                                      'ðŸŽ',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                                     SizedBox(width: 8),
-                                    Text('Oferta'),
+                                    Text(_l.t('offer')),
                                   ],
                                 ),
                               ),
@@ -1713,9 +1711,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                 value: 'evento',
                                 child: Row(
                                   children: [
-                                    Text('🚴', style: TextStyle(fontSize: 16)),
+                                    Text(
+                                      'ðŸš´',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
                                     SizedBox(width: 8),
-                                    Text('Evento'),
+                                    Text(_l.t('event')),
                                   ],
                                 ),
                               ),
@@ -1723,9 +1724,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                 value: 'novedad',
                                 child: Row(
                                   children: [
-                                    Text('✨', style: TextStyle(fontSize: 16)),
+                                    Text('âœ¨', style: TextStyle(fontSize: 16)),
                                     SizedBox(width: 8),
-                                    Text('Novedad'),
+                                    Text(_l.t('new_arrivals')),
                                   ],
                                 ),
                               ),
@@ -1739,13 +1740,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
                 const SizedBox(width: 12),
 
-                // Fecha de expiración
+                // Fecha de expiraciÃ³n
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Expira',
+                      Text(
+                        _l.t('expires'),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -1791,7 +1792,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Seleccionar',
+                                _l.t('select'),
                                 style: TextStyle(
                                   color: const Color(
                                     0xFF16242D,
@@ -1810,9 +1811,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
             const SizedBox(height: 16),
 
-            // Campo: Ubicación (nuevo)
-            const Text(
-              'Ubicación (opcional)',
+            // Campo: UbicaciÃ³n (nuevo)
+            Text(
+              _l.t('location_optional'),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -1822,7 +1823,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             const SizedBox(height: 6),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Ej: Tienda de ciclismo Calle 80, Bogotá',
+                hintText: _l.t('promo_location_hint'),
                 hintStyle: TextStyle(
                   color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
@@ -1863,8 +1864,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
             const SizedBox(height: 16),
 
             // Campo: Enlace o contacto (nuevo)
-            const Text(
-              'Enlace o contacto (opcional)',
+            Text(
+              _l.t('link_or_contact_optional'),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -1874,7 +1875,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
             const SizedBox(height: 6),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Ej: https://mitienda.com o +57 300 123 4567',
+                hintText: _l.t('promo_link_hint'),
                 hintStyle: TextStyle(
                   color: const Color(0xFF16242D).withValues(alpha: 0.35),
                   fontSize: 14,
@@ -1924,14 +1925,18 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   color: const Color(0xFF16242D).withValues(alpha: 0.08),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 18, color: Color(0xFF5A7A8A)),
-                  SizedBox(width: 10),
+                  const Icon(
+                    Icons.info_outline,
+                    size: 18,
+                    color: Color(0xFF5A7A8A),
+                  ),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Las promociones serán visibles para todos los ciclistas de tu comunidad durante el tiempo seleccionado.',
-                      style: TextStyle(
+                      _l.t('promo_visibility_info'),
+                      style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF5A7A8A),
                         height: 1.4,
@@ -1943,21 +1948,21 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
             const SizedBox(height: 20),
 
-            // Botón publicar
+            // BotÃ³n publicar
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Promoción publicada exitosamente 🎉'),
+                    SnackBar(
+                      content: Text(_l.t('promotion_published_successfully')),
                       backgroundColor: Color(0xFF16242D),
                     ),
                   );
                 },
                 icon: const Icon(Icons.send_rounded, size: 18),
-                label: const Text(
-                  'Publicar Promoción',
+                label: Text(
+                  _l.t('publish_promotion'),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -2032,7 +2037,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       color: Colors.white,
       child: Row(
         children: [
-          // Resultados count (solo productos válidos)
+          // Resultados count (solo productos vÃ¡lidos)
           Consumer<ShopProvider>(
             builder: (context, provider, child) {
               final validCount = provider.products.where((p) {
@@ -2040,7 +2045,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               }).length;
 
               return Text(
-                '$validCount productos',
+                '$validCount ${_l.t("products_label")}',
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontSize: 14,
@@ -2065,21 +2070,27 @@ class _ShopScreenProState extends State<ShopScreenPro>
               underline: const SizedBox(),
               icon: const Icon(Icons.sort, size: 18),
               isDense: true,
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'relevant',
-                  child: Text('Más relevantes'),
+                  child: Text(_l.t('most_relevant')),
                 ),
                 DropdownMenuItem(
                   value: 'price_low',
-                  child: Text('Menor precio'),
+                  child: Text(_l.t('lowest_price')),
                 ),
                 DropdownMenuItem(
                   value: 'price_high',
-                  child: Text('Mayor precio'),
+                  child: Text(_l.t('highest_price')),
                 ),
-                DropdownMenuItem(value: 'newest', child: Text('Más recientes')),
-                DropdownMenuItem(value: 'popular', child: Text('Más vendidos')),
+                DropdownMenuItem(
+                  value: 'newest',
+                  child: Text(_l.t('most_recent')),
+                ),
+                DropdownMenuItem(
+                  value: 'popular',
+                  child: Text(_l.t('best_sellers')),
+                ),
               ],
               onChanged: (value) {
                 setState(() => _sortBy = value!);
@@ -2145,24 +2156,21 @@ class _ShopScreenProState extends State<ShopScreenPro>
             children: [
               const Icon(Icons.tune, color: ColorTokens.primary30),
               const SizedBox(width: 8),
-              const Text(
-                'Filtros Avanzados',
+              Text(
+                _l.t('advanced_filters'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               // Evitar Spacer() que expande indefinidamente dentro de filas
               // anidadas en Slivers; usar un SizedBox flexible en su lugar.
               const SizedBox(height: 4),
-              TextButton(
-                onPressed: _clearFilters,
-                child: const Text('Limpiar'),
-              ),
+              TextButton(onPressed: _clearFilters, child: Text(_l.t('clear'))),
             ],
           ),
           const Divider(),
 
           // Rango de precios
-          const Text(
-            'Rango de precio',
+          Text(
+            _l.t('price_range'),
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -2191,7 +2199,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
           // Checkboxes
           CheckboxListTile(
-            title: const Text('Solo productos en stock'),
+            title: Text(_l.t('in_stock_only')),
             value: _inStockOnly,
             onChanged: (value) => setState(() => _inStockOnly = value!),
             activeColor: ColorTokens.primary30,
@@ -2201,9 +2209,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
           const SizedBox(height: 16),
 
-          // Calificación mínima
-          const Text(
-            'Calificación mínima',
+          // CalificaciÃ³n mÃ­nima
+          Text(
+            _l.t('minimum_rating'),
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -2222,7 +2230,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
           const SizedBox(height: 16),
 
-          // Botón aplicar
+          // BotÃ³n aplicar
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -2234,8 +2242,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Aplicar Filtros',
+              child: Text(
+                _l.t('apply_filters'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -2269,11 +2277,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
           );
         }
 
-        // ✅ FILTRAR PRODUCTOS: Solo mostrar productos con fotos REALES (no placeholders)
+        // âœ… FILTRAR PRODUCTOS: Solo mostrar productos con fotos REALES (no placeholders)
         final validProducts = shopProvider.products.where((product) {
           if (!_productHasRealImages(product)) {
             debugPrint(
-              '🚫 Producto filtrado (sin foto real): ${product.name} (${product.id}) - imgs: ${product.images}',
+              'ðŸš« Producto filtrado (sin foto real): ${product.name} (${product.id}) - imgs: ${product.images}',
             );
             return false;
           }
@@ -2281,7 +2289,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
         }).toList();
 
         debugPrint(
-          '✅ Productos válidos mostrados: ${validProducts.length} de ${shopProvider.products.length}',
+          'âœ… Productos vÃ¡lidos mostrados: ${validProducts.length} de ${shopProvider.products.length}',
         );
 
         if (validProducts.isEmpty) {
@@ -2293,7 +2301,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   Icon(Icons.search_off, size: 80, color: Colors.grey[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'No se encontraron productos',
+                    l.t('no_products_found'),
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],
@@ -2303,7 +2311,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: _clearFilters,
-                    child: const Text('Limpiar filtros'),
+                    child: Text(l.t('clear_filters')),
                   ),
                 ],
               ),
@@ -2311,7 +2319,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           );
         }
 
-        // Grid o List según modo
+        // Grid o List segÃºn modo
         if (_viewMode == 'grid') {
           return SliverPadding(
             padding: const EdgeInsets.all(16),
@@ -2400,7 +2408,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ),
 
-                  // Botón favorito
+                  // BotÃ³n favorito
                   Positioned(
                     top: 8,
                     right: 8,
@@ -2429,9 +2437,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             child: Icon(
                               isLiked ? Icons.favorite : Icons.favorite_border,
                               size: 18,
-                              color: isLiked
-                                  ? Colors.red
-                                  : Colors.grey[700],
+                              color: isLiked ? Colors.red : Colors.grey[700],
                             ),
                           ),
                         );
@@ -2454,7 +2460,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          'Solo ${product.stock}',
+                          '${_l.t("only")} ${product.stock}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -2544,7 +2550,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                         ),
 
-                        // Botón agregar al carrito
+                        // BotÃ³n agregar al carrito
                         GestureDetector(
                           onTap: product.isAvailable && !product.isSold
                               ? () {
@@ -2554,11 +2560,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                        '${product.name} agregado al carrito',
+                                        _l.t('product_added_to_cart'),
                                       ),
                                       duration: const Duration(seconds: 2),
                                       action: SnackBarAction(
-                                        label: 'Ver Carrito',
+                                        label: _l.t('see_cart'),
                                         onPressed: () =>
                                             context.push('/shop/cart'),
                                       ),
@@ -2671,13 +2677,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
           ),
 
-          // Botón agregar
+          // BotÃ³n agregar
           IconButton(
             onPressed: () {
               context.read<ShopProvider>().addToCart(product);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Producto agregado al carrito'),
+                SnackBar(
+                  content: Text(_l.t('product_added_to_cart')),
                   duration: Duration(seconds: 2),
                 ),
               );
@@ -2706,11 +2712,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
   }
 
   void _applySorting() {
-    // Implementar lógica de ordenamiento
+    // Implementar lÃ³gica de ordenamiento
   }
 
   void _applyFilters() {
-    // Implementar lógica de filtros avanzados
+    // Implementar lÃ³gica de filtros avanzados
     setState(() => _showFilters = false);
   }
 
@@ -2724,25 +2730,25 @@ class _ShopScreenProState extends State<ShopScreenPro>
     context.read<ShopProvider>().clearFilters();
   }
 
-  /// ✅ Verifica si una URL de imagen es una foto REAL del producto
-  /// Filtra placeholders genéricos, fondos de color sólido, y URLs falsas
+  /// âœ… Verifica si una URL de imagen es una foto REAL del producto
+  /// Filtra placeholders genÃ©ricos, fondos de color sÃ³lido, y URLs falsas
   static bool _isRealProductImage(String url) {
     if (url.isEmpty || url.trim().isEmpty) return false;
 
     final lower = url.toLowerCase().trim();
 
-    // ✅ Permitir URLs mock:// (productos de prueba con placeholder visual)
+    // âœ… Permitir URLs mock:// (productos de prueba con placeholder visual)
     if (lower.startsWith('mock://')) return true;
 
-    // ✅ Permitir assets locales (imágenes descargadas del proyecto)
+    // âœ… Permitir assets locales (imÃ¡genes descargadas del proyecto)
     if (lower.startsWith('asset://')) return true;
 
-    // Debe ser una URL válida (http o https)
+    // Debe ser una URL vÃ¡lida (http o https)
     if (!lower.startsWith('http://') && !lower.startsWith('https://')) {
       return false;
     }
 
-    // 🚫 BLOQUEAR servicios de placeholder (fondos de color sólido)
+    // ðŸš« BLOQUEAR servicios de placeholder (fondos de color sÃ³lido)
     const blockedDomains = [
       'via.placeholder.com',
       'placehold.it',
@@ -2768,7 +2774,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           !lower.contains('cloudinary') &&
           !lower.contains('imgbb') &&
           !lower.contains('imgur')) {
-        // Verificar si la URL NO tiene extensión de imagen real
+        // Verificar si la URL NO tiene extensiÃ³n de imagen real
         final hasImageExt =
             lower.endsWith('.jpg') ||
             lower.endsWith('.jpeg') ||
@@ -2779,10 +2785,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
       }
     }
 
-    // ✅ Permitir Pexels (fotos reales de productos)
+    // âœ… Permitir Pexels (fotos reales de productos)
     if (lower.contains('images.pexels.com/photos/')) return true;
 
-    // ✅ Permitir Unsplash (fotos fijas por ID, siempre coinciden con producto)
+    // âœ… Permitir Unsplash (fotos fijas por ID, siempre coinciden con producto)
     if (lower.contains('images.unsplash.com/photo-')) return true;
 
     // Filtrar texto "Producto" en placeholders
@@ -2790,7 +2796,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
       return false;
     }
 
-    // Debe ser una URL válida (http o https)
+    // Debe ser una URL vÃ¡lida (http o https)
     if (!lower.startsWith('http://') && !lower.startsWith('https://')) {
       return false;
     }
@@ -2864,14 +2870,14 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Placeholder bonito con gradiente, icono de categoría y nombre del producto
+  /// Placeholder bonito con gradiente, icono de categorÃ­a y nombre del producto
   Widget _buildMockPlaceholder({
     required String productName,
     required String category,
     double? width,
     double? height,
   }) {
-    // Icono y colores por categoría
+    // Icono y colores por categorÃ­a
     final categoryConfig = _getCategoryVisual(category);
 
     return Container(
@@ -2935,7 +2941,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Configuración visual por categoría (icono + colores de gradiente)
+  /// ConfiguraciÃ³n visual por categorÃ­a (icono + colores de gradiente)
   static _CategoryVisual _getCategoryVisual(String category) {
     switch (category.toLowerCase()) {
       case 'jerseys':
@@ -2981,7 +2987,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     }
   }
 
-  /// Mostrar pantalla de Solicitudes de Vendedores con estado vacío
+  /// Mostrar pantalla de Solicitudes de Vendedores con estado vacÃ­o
   void _showSellerRequestsModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -3028,12 +3034,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Solicitudes de Vendedores',
+                          _l.t('seller_requests'),
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -3041,7 +3047,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                         ),
                         Text(
-                          'Gestiona permisos de venta',
+                          _l.t('manage_sell_permissions'),
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                       ],
@@ -3054,7 +3060,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ],
               ),
             ),
-            // Estado vacío
+            // Estado vacÃ­o
             Expanded(
               child: Center(
                 child: Column(
@@ -3073,8 +3079,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      '¡No hay solicitudes pendientes!',
+                    Text(
+                      _l.t('no_pending_requests'),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -3085,7 +3091,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
-                        'Todas las solicitudes de vendedores han sido procesadas',
+                        _l.t('all_seller_requests_processed'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -3103,7 +3109,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         nav.go('/shop/seller-requests');
                       },
                       icon: const Icon(Icons.admin_panel_settings),
-                      label: const Text('Panel de administración'),
+                      label: Text(_l.t('admin_panel')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.purple,
                         foregroundColor: Colors.white,
@@ -3127,7 +3133,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Mostrar pantalla de Gestionar Vendedores con estado vacío
+  /// Mostrar pantalla de Gestionar Vendedores con estado vacÃ­o
   void _showManageSellersModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -3174,12 +3180,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Gestionar Vendedores',
+                          _l.t('manage_sellers'),
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -3187,7 +3193,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                         ),
                         Text(
-                          'Administra permisos de usuarios',
+                          _l.t('manage_user_permissions'),
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                       ],
@@ -3200,7 +3206,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ],
               ),
             ),
-            // Estado vacío
+            // Estado vacÃ­o
             Expanded(
               child: Center(
                 child: Column(
@@ -3219,8 +3225,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Sistema de vendedores activo',
+                    Text(
+                      _l.t('seller_system_active'),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -3231,7 +3237,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
-                        'Gestiona los permisos de venta de los usuarios de tu plataforma',
+                        _l.t('manage_sell_permissions_description'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -3249,7 +3255,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         nav.go('/shop/manage-sellers');
                       },
                       icon: const Icon(Icons.settings),
-                      label: const Text('Configurar permisos'),
+                      label: Text(_l.t('configure_permissions')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         foregroundColor: Colors.white,
@@ -3273,7 +3279,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  /// Mostrar confirmación de Eliminar Todos los Productos
+  /// Mostrar confirmaciÃ³n de Eliminar Todos los Productos
   void _showDeleteAllProductsModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -3320,12 +3326,12 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Eliminar Productos',
+                          _l.t('delete_products'),
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -3333,7 +3339,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                         ),
                         Text(
-                          'Gestión de inventario',
+                          _l.t('inventory_management'),
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                       ],
@@ -3365,8 +3371,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Gestión de Inventario',
+                    Text(
+                      _l.t('inventory_management'),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -3377,7 +3383,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
-                        'Administra y organiza el inventario de productos de tu tienda',
+                        _l.t('manage_organize_inventory'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -3395,7 +3401,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         nav.go('/shop/delete-all-products');
                       },
                       icon: const Icon(Icons.inventory),
-                      label: const Text('Ver inventario'),
+                      label: Text(_l.t('see_inventory')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -3423,31 +3429,31 @@ class _ShopScreenProState extends State<ShopScreenPro>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Centro de Ayuda'),
+        title: Text(_l.t('help_center')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.phone),
-              title: const Text('Llámanos'),
+              title: Text(_l.t('call_us')),
               subtitle: const Text('300 123 4567'),
             ),
             ListTile(
               leading: const Icon(Icons.email),
-              title: const Text('Email'),
+              title: Text(_l.t('email')),
               subtitle: const Text('ayuda@biux.com'),
             ),
             ListTile(
               leading: const Icon(Icons.chat),
-              title: const Text('Chat en vivo'),
-              subtitle: const Text('Lun-Vie 9am-6pm'),
+              title: Text(_l.t('live_chat')),
+              subtitle: Text(_l.t('mon_fri_9am_6pm')),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(_l.t('close')),
           ),
         ],
       ),
@@ -3456,42 +3462,42 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   // ignore: unused_element
   void _showPermissionRequestDialog(BuildContext context) {
-    // Usar el nuevo widget de diálogo
+    // Usar el nuevo widget de diÃ¡logo
     showRequestSellerPermissionDialog(context);
   }
 
-  /// Dropdown compacto para seleccionar categoría
+  /// Dropdown compacto para seleccionar categorÃ­a
   Widget _buildCategoryDropdown() {
     final categories = [
-      {'icon': Icons.apps, 'label': 'Todos', 'value': null},
+      {'icon': Icons.apps, 'label': _l.t('all'), 'value': null},
       {
         'icon': Icons.pedal_bike,
-        'label': 'Bicis',
+        'label': _l.t('bikes'),
         'value': ProductCategories.bikes,
       },
       {
         'icon': Icons.checkroom,
-        'label': 'Jerseys',
+        'label': _l.t('jerseys'),
         'value': ProductCategories.jerseys,
       },
       {
         'icon': Icons.sports_motorsports,
-        'label': 'Cascos',
+        'label': _l.t('helmets'),
         'value': ProductCategories.helmets,
       },
       {
         'icon': Icons.directions_run,
-        'label': 'Calzado',
+        'label': _l.t('shoes'),
         'value': ProductCategories.shoes,
       },
       {
         'icon': Icons.settings,
-        'label': 'Componentes',
+        'label': _l.t('components'),
         'value': ProductCategories.components,
       },
       {
         'icon': Icons.category,
-        'label': 'Accesorios',
+        'label': _l.t('accessories'),
         'value': ProductCategories.accessories,
       },
     ];
@@ -3593,7 +3599,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              // Header con flecha atrás
+              // Header con flecha atrÃ¡s
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -3604,8 +3610,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const Icon(Icons.campaign, color: Colors.orange, size: 24),
                     const SizedBox(width: 8),
-                    const Text(
-                      'Promociones de la Comunidad',
+                    Text(
+                      _l.t('community_promotions'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -3658,7 +3664,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 Icon(Icons.local_offer, color: ColorTokens.warning50, size: 24),
                 const SizedBox(width: 10),
                 Text(
-                  'Ofertas y Beneficios',
+                  _l.t('offers_and_benefits'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -3672,8 +3678,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
               children: [
                 Expanded(
                   child: _buildOfferCard(
-                    '⚡',
-                    'Ofertas\nRelámpago',
+                    'âš¡',
+                    _l.t('flash_offers_label'),
                     ColorTokens.warning99,
                     ColorTokens.warning50,
                     () {
@@ -3685,8 +3691,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildOfferCard(
-                    '🎯',
-                    'Descuentos\nGrupales',
+                    'ðŸŽ¯',
+                    _l.t('group_discounts_label'),
                     ColorTokens.info90,
                     ColorTokens.secondary50,
                     () {
@@ -3702,8 +3708,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
               children: [
                 Expanded(
                   child: _buildOfferCard(
-                    '🏆',
-                    'Productos\nPremium',
+                    'ðŸ†',
+                    _l.t('premium_products_label'),
                     ColorTokens.secondary99,
                     ColorTokens.primary50,
                     () {
@@ -3715,8 +3721,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildOfferCard(
-                    '🚚',
-                    'Envío\nGratis',
+                    'ðŸšš',
+                    _l.t('free_shipping_label'),
                     ColorTokens.success99,
                     ColorTokens.success40,
                     () {
@@ -3734,7 +3740,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
     );
   }
 
-  ///   /// Bottom sheet con panel de administración
+  ///   /// Bottom sheet con panel de administraciÃ³n
   void _showAdminDashboardSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -3769,7 +3775,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Panel de Administración',
+                    _l.t('admin_panel'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -3826,6 +3832,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 /// Bottom sheet para gestionar productos de la tienda
 // ignore: unused_element
 void _showManageProductsSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -3857,8 +3864,8 @@ void _showManageProductsSheet(BuildContext context) {
                 ),
                 const Icon(Icons.inventory_2, color: Colors.blue),
                 const SizedBox(width: 8),
-                const Text(
-                  'Gestión de Productos',
+                Text(
+                  l.t('product_management'),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -3882,8 +3889,8 @@ void _showManageProductsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Resumen de Inventario',
+                          Text(
+                            l.t('inventory_summary'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -3894,19 +3901,19 @@ void _showManageProductsSheet(BuildContext context) {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _buildStatItem(
-                                'Total',
+                                l.t('total'),
                                 '0',
                                 Icons.shopping_bag,
                                 Colors.blue,
                               ),
                               _buildStatItem(
-                                'Activos',
+                                l.t('active'),
                                 '0',
                                 Icons.check_circle,
                                 Colors.green,
                               ),
                               _buildStatItem(
-                                'Agotados',
+                                l.t('sold_out'),
                                 '0',
                                 Icons.warning,
                                 Colors.orange,
@@ -3918,17 +3925,17 @@ void _showManageProductsSheet(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Acciones rápidas
-                  const Text(
-                    'Acciones Rápidas',
+                  // Acciones rÃ¡pidas
+                  Text(
+                    l.t('quick_actions'),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   _buildActionTile(
                     icon: Icons.add_circle,
                     color: Colors.green,
-                    title: 'Agregar Producto',
-                    subtitle: 'Añadir un nuevo producto al catálogo',
+                    title: l.t('add_product'),
+                    subtitle: l.t('add_product_desc'),
                     onTap: () {
                       Navigator.pop(context);
                       // Navegar a agregar producto
@@ -3937,33 +3944,33 @@ void _showManageProductsSheet(BuildContext context) {
                   _buildActionTile(
                     icon: Icons.edit,
                     color: Colors.blue,
-                    title: 'Editar Productos',
-                    subtitle: 'Modificar información de productos existentes',
+                    title: l.t('edit_products'),
+                    subtitle: l.t('edit_products_desc'),
                     onTap: () {},
                   ),
                   _buildActionTile(
                     icon: Icons.category,
                     color: Colors.purple,
-                    title: 'Categorías',
-                    subtitle: 'Organizar productos por categorías',
+                    title: l.t('categories'),
+                    subtitle: l.t('organize_categories_desc'),
                     onTap: () {},
                   ),
                   _buildActionTile(
                     icon: Icons.local_offer,
                     color: Colors.red,
-                    title: 'Ofertas y Descuentos',
-                    subtitle: 'Configurar promociones especiales',
+                    title: l.t('offers_and_discounts'),
+                    subtitle: l.t('configure_promos_desc'),
                     onTap: () {},
                   ),
                   _buildActionTile(
                     icon: Icons.photo_library,
                     color: Colors.teal,
-                    title: 'Galería de Productos',
-                    subtitle: 'Gestionar fotos y multimedia',
+                    title: l.t('product_gallery'),
+                    subtitle: l.t('manage_photos_desc'),
                     onTap: () {},
                   ),
                   const SizedBox(height: 16),
-                  // Formulario rápido de precio
+                  // Formulario rÃ¡pido de precio
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -3974,8 +3981,8 @@ void _showManageProductsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Actualización Rápida de Precios',
+                          Text(
+                            l.t('quick_price_update'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -3984,7 +3991,7 @@ void _showManageProductsSheet(BuildContext context) {
                           const SizedBox(height: 12),
                           TextField(
                             decoration: InputDecoration(
-                              labelText: 'Nombre del producto',
+                              labelText: l.t('product_name'),
                               prefixIcon: const Icon(Icons.search),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -3995,7 +4002,7 @@ void _showManageProductsSheet(BuildContext context) {
                           TextField(
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              labelText: 'Nuevo precio',
+                              labelText: l.t('new_price'),
                               prefixIcon: const Icon(Icons.attach_money),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -4008,7 +4015,7 @@ void _showManageProductsSheet(BuildContext context) {
                             child: ElevatedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.update),
-                              label: const Text('Actualizar Precio'),
+                              label: Text(l.t('update_price')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                                 foregroundColor: Colors.white,
@@ -4038,6 +4045,7 @@ void _showManageProductsSheet(BuildContext context) {
 /// Bottom sheet para gestionar vendedores
 // ignore: unused_element
 void _showManageSellersSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4069,8 +4077,8 @@ void _showManageSellersSheet(BuildContext context) {
                 ),
                 const Icon(Icons.people, color: Colors.green),
                 const SizedBox(width: 8),
-                const Text(
-                  'Gestión de Vendedores',
+                Text(
+                  l.t('seller_management'),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -4094,8 +4102,8 @@ void _showManageSellersSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Agregar Vendedor',
+                          Text(
+                            l.t('add_seller'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -4104,7 +4112,7 @@ void _showManageSellersSheet(BuildContext context) {
                           const SizedBox(height: 12),
                           TextField(
                             decoration: InputDecoration(
-                              labelText: 'Nombre completo',
+                              labelText: l.t('full_name'),
                               prefixIcon: const Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -4114,7 +4122,7 @@ void _showManageSellersSheet(BuildContext context) {
                           const SizedBox(height: 8),
                           TextField(
                             decoration: InputDecoration(
-                              labelText: 'Correo electrónico',
+                              labelText: l.t('email'),
                               prefixIcon: const Icon(Icons.email),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -4124,7 +4132,7 @@ void _showManageSellersSheet(BuildContext context) {
                           const SizedBox(height: 8),
                           TextField(
                             decoration: InputDecoration(
-                              labelText: 'Teléfono',
+                              labelText: l.t('phone'),
                               prefixIcon: const Icon(Icons.phone),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -4134,24 +4142,24 @@ void _showManageSellersSheet(BuildContext context) {
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
                             decoration: InputDecoration(
-                              labelText: 'Rol',
+                              labelText: l.t('role'),
                               prefixIcon: const Icon(Icons.badge),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'vendedor',
-                                child: Text('Vendedor'),
+                                child: Text(l.t('seller')),
                               ),
                               DropdownMenuItem(
                                 value: 'supervisor',
-                                child: Text('Supervisor'),
+                                child: Text(l.t('supervisor')),
                               ),
                               DropdownMenuItem(
                                 value: 'cajero',
-                                child: Text('Cajero'),
+                                child: Text(l.t('cashier')),
                               ),
                             ],
                             onChanged: (value) {},
@@ -4162,7 +4170,7 @@ void _showManageSellersSheet(BuildContext context) {
                             child: ElevatedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.person_add),
-                              label: const Text('Agregar Vendedor'),
+                              label: Text(l.t('add_seller')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
@@ -4180,14 +4188,14 @@ void _showManageSellersSheet(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Vendedores Activos',
+                  Text(
+                    l.t('active_sellers'),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   _buildSellerCard(
-                    'Sin vendedores registrados',
-                    'Agrega vendedores para empezar',
+                    l.t('no_sellers_registered'),
+                    l.t('add_sellers_to_start'),
                     Icons.person_off,
                     Colors.grey,
                   ),
@@ -4203,8 +4211,8 @@ void _showManageSellersSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Permisos de Vendedores',
+                          Text(
+                            l.t('seller_permissions'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -4212,25 +4220,25 @@ void _showManageSellersSheet(BuildContext context) {
                           ),
                           const SizedBox(height: 8),
                           SwitchListTile(
-                            title: const Text('Pueden modificar precios'),
+                            title: Text(l.t('can_modify_prices')),
                             value: false,
                             onChanged: (v) {},
                             secondary: const Icon(Icons.attach_money),
                           ),
                           SwitchListTile(
-                            title: const Text('Pueden agregar productos'),
+                            title: Text(l.t('can_add_products')),
                             value: false,
                             onChanged: (v) {},
                             secondary: const Icon(Icons.add_box),
                           ),
                           SwitchListTile(
-                            title: const Text('Pueden eliminar productos'),
+                            title: Text(l.t('can_delete_products')),
                             value: false,
                             onChanged: (v) {},
                             secondary: const Icon(Icons.delete),
                           ),
                           SwitchListTile(
-                            title: const Text('Pueden ver reportes'),
+                            title: Text(l.t('can_view_reports')),
                             value: false,
                             onChanged: (v) {},
                             secondary: const Icon(Icons.bar_chart),
@@ -4252,6 +4260,7 @@ void _showManageSellersSheet(BuildContext context) {
 /// Bottom sheet para reportes
 // ignore: unused_element
 void _showReportsSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4283,9 +4292,12 @@ void _showReportsSheet(BuildContext context) {
                 ),
                 const Icon(Icons.assessment, color: Colors.orange),
                 const SizedBox(width: 8),
-                const Text(
-                  'Reportes',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('reports'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -4308,9 +4320,9 @@ void _showReportsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Resumen de Ventas',
-                            style: TextStyle(
+                          Text(
+                            l.t('sales_summary'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -4320,19 +4332,19 @@ void _showReportsSheet(BuildContext context) {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _buildStatItem(
-                                'Hoy',
+                                l.t('today'),
                                 '\$0',
                                 Icons.today,
                                 Colors.blue,
                               ),
                               _buildStatItem(
-                                'Semana',
+                                l.t('week'),
                                 '\$0',
                                 Icons.date_range,
                                 Colors.green,
                               ),
                               _buildStatItem(
-                                'Mes',
+                                l.t('month'),
                                 '\$0',
                                 Icons.calendar_month,
                                 Colors.purple,
@@ -4355,9 +4367,9 @@ void _showReportsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Generar Reporte',
-                            style: TextStyle(
+                          Text(
+                            l.t('generate_report'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -4365,28 +4377,28 @@ void _showReportsSheet(BuildContext context) {
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             decoration: InputDecoration(
-                              labelText: 'Tipo de reporte',
+                              labelText: l.t('report_type'),
                               prefixIcon: const Icon(Icons.description),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'ventas',
-                                child: Text('Ventas'),
+                                child: Text(l.t('sales')),
                               ),
                               DropdownMenuItem(
                                 value: 'inventario',
-                                child: Text('Inventario'),
+                                child: Text(l.t('inventory')),
                               ),
                               DropdownMenuItem(
                                 value: 'clientes',
-                                child: Text('Clientes'),
+                                child: Text(l.t('clients')),
                               ),
                               DropdownMenuItem(
                                 value: 'devoluciones',
-                                child: Text('Devoluciones'),
+                                child: Text(l.t('returns')),
                               ),
                             ],
                             onChanged: (value) {},
@@ -4394,32 +4406,32 @@ void _showReportsSheet(BuildContext context) {
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
                             decoration: InputDecoration(
-                              labelText: 'Período',
+                              labelText: l.t('period'),
                               prefixIcon: const Icon(Icons.schedule),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'hoy',
-                                child: Text('Hoy'),
+                                child: Text(l.t('today')),
                               ),
                               DropdownMenuItem(
                                 value: 'semana',
-                                child: Text('Última semana'),
+                                child: Text(l.t('last_week')),
                               ),
                               DropdownMenuItem(
                                 value: 'mes',
-                                child: Text('Último mes'),
+                                child: Text(l.t('last_month')),
                               ),
                               DropdownMenuItem(
                                 value: 'trimestre',
-                                child: Text('Último trimestre'),
+                                child: Text(l.t('last_quarter')),
                               ),
                               DropdownMenuItem(
                                 value: 'personalizado',
-                                child: Text('Personalizado'),
+                                child: Text(l.t('custom')),
                               ),
                             ],
                             onChanged: (value) {},
@@ -4430,7 +4442,7 @@ void _showReportsSheet(BuildContext context) {
                             child: ElevatedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.download),
-                              label: const Text('Generar Reporte'),
+                              label: Text(l.t('generate_report')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
                                 foregroundColor: Colors.white,
@@ -4449,9 +4461,12 @@ void _showReportsSheet(BuildContext context) {
                   ),
                   const SizedBox(height: 16),
                   // Top productos
-                  const Text(
-                    'Top Productos Vendidos',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('top_selling_products'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
@@ -4463,7 +4478,7 @@ void _showReportsSheet(BuildContext context) {
                       padding: EdgeInsets.all(24),
                       child: Center(
                         child: Text(
-                          'Sin datos de ventas aún',
+                          'Sin datos de ventas aÃºn',
                           style: TextStyle(color: Colors.grey),
                         ),
                       ),
@@ -4482,6 +4497,7 @@ void _showReportsSheet(BuildContext context) {
 /// Bottom sheet para solicitudes
 // ignore: unused_element
 void _showRequestsSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4513,9 +4529,12 @@ void _showRequestsSheet(BuildContext context) {
                 ),
                 const Icon(Icons.inbox, color: Colors.indigo),
                 const SizedBox(width: 8),
-                const Text(
-                  'Solicitudes',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('requests'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -4538,9 +4557,9 @@ void _showRequestsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Filtrar Solicitudes',
-                            style: TextStyle(
+                          Text(
+                            l.t('filter_requests'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -4548,28 +4567,28 @@ void _showRequestsSheet(BuildContext context) {
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             decoration: InputDecoration(
-                              labelText: 'Estado',
+                              labelText: l.t('status'),
                               prefixIcon: const Icon(Icons.filter_list),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'todas',
-                                child: Text('Todas'),
+                                child: Text(l.t('all')),
                               ),
                               DropdownMenuItem(
                                 value: 'pendientes',
-                                child: Text('Pendientes'),
+                                child: Text(l.t('pending')),
                               ),
                               DropdownMenuItem(
                                 value: 'aprobadas',
-                                child: Text('Aprobadas'),
+                                child: Text(l.t('approved')),
                               ),
                               DropdownMenuItem(
                                 value: 'rechazadas',
-                                child: Text('Rechazadas'),
+                                child: Text(l.t('rejected')),
                               ),
                             ],
                             onChanged: (value) {},
@@ -4577,32 +4596,32 @@ void _showRequestsSheet(BuildContext context) {
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
                             decoration: InputDecoration(
-                              labelText: 'Tipo de solicitud',
+                              labelText: l.t('request_type'),
                               prefixIcon: const Icon(Icons.category),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'todas',
-                                child: Text('Todas'),
+                                child: Text(l.t('all')),
                               ),
                               DropdownMenuItem(
                                 value: 'devolucion',
-                                child: Text('Devolución'),
+                                child: Text(l.t('return_request')),
                               ),
                               DropdownMenuItem(
                                 value: 'cambio',
-                                child: Text('Cambio'),
+                                child: Text(l.t('exchange')),
                               ),
                               DropdownMenuItem(
                                 value: 'garantia',
-                                child: Text('Garantía'),
+                                child: Text(l.t('warranty')),
                               ),
                               DropdownMenuItem(
                                 value: 'reclamo',
-                                child: Text('Reclamo'),
+                                child: Text(l.t('complaint')),
                               ),
                             ],
                             onChanged: (value) {},
@@ -4616,19 +4635,19 @@ void _showRequestsSheet(BuildContext context) {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildStatItem(
-                        'Pendientes',
+                        l.t('pending'),
                         '0',
                         Icons.pending,
                         Colors.orange,
                       ),
                       _buildStatItem(
-                        'En Proceso',
+                        l.t('in_process'),
                         '0',
                         Icons.hourglass_top,
                         Colors.blue,
                       ),
                       _buildStatItem(
-                        'Resueltas',
+                        l.t('resolved'),
                         '0',
                         Icons.check_circle,
                         Colors.green,
@@ -4636,9 +4655,12 @@ void _showRequestsSheet(BuildContext context) {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Solicitudes Recientes',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('recent_requests'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
@@ -4646,12 +4668,12 @@ void _showRequestsSheet(BuildContext context) {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(24),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
                       child: Center(
                         child: Text(
-                          'No hay solicitudes pendientes',
-                          style: TextStyle(color: Colors.grey),
+                          l.t('no_pending_requests'),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -4666,9 +4688,10 @@ void _showRequestsSheet(BuildContext context) {
   );
 }
 
-/// Bottom sheet para estadísticas
+/// Bottom sheet para estadÃ­sticas
 // ignore: unused_element
 void _showStatsSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4700,9 +4723,12 @@ void _showStatsSheet(BuildContext context) {
                 ),
                 const Icon(Icons.analytics, color: Colors.purple),
                 const SizedBox(width: 8),
-                const Text(
-                  'Estadísticas',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('statistics'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -4725,9 +4751,9 @@ void _showStatsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'KPIs del Negocio',
-                            style: TextStyle(
+                          Text(
+                            l.t('business_kpis'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -4737,19 +4763,19 @@ void _showStatsSheet(BuildContext context) {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _buildStatItem(
-                                'Visitas',
+                                l.t('visits'),
                                 '0',
                                 Icons.visibility,
                                 Colors.blue,
                               ),
                               _buildStatItem(
-                                'Clientes',
+                                l.t('clients'),
                                 '0',
                                 Icons.people,
                                 Colors.green,
                               ),
                               _buildStatItem(
-                                'Conversión',
+                                l.t('conversion'),
                                 '0%',
                                 Icons.trending_up,
                                 Colors.purple,
@@ -4771,9 +4797,9 @@ void _showStatsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Rendimiento de Ventas',
-                            style: TextStyle(
+                          Text(
+                            l.t('sales_performance'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -4783,19 +4809,19 @@ void _showStatsSheet(BuildContext context) {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _buildStatItem(
-                                'Ingresos',
+                                l.t('revenue'),
                                 '\$0',
                                 Icons.monetization_on,
                                 Colors.green,
                               ),
                               _buildStatItem(
-                                'Ticket Prom.',
+                                l.t('avg_ticket'),
                                 '\$0',
                                 Icons.receipt,
                                 Colors.orange,
                               ),
                               _buildStatItem(
-                                'Margen',
+                                l.t('margin'),
                                 '0%',
                                 Icons.pie_chart,
                                 Colors.red,
@@ -4807,7 +4833,7 @@ void _showStatsSheet(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Período de consulta
+                  // PerÃ­odo de consulta
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -4818,9 +4844,9 @@ void _showStatsSheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Consultar Período',
-                            style: TextStyle(
+                          Text(
+                            l.t('query_period'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -4832,7 +4858,7 @@ void _showStatsSheet(BuildContext context) {
                                 child: TextField(
                                   readOnly: true,
                                   decoration: InputDecoration(
-                                    labelText: 'Desde',
+                                    labelText: l.t('from_date'),
                                     prefixIcon: const Icon(
                                       Icons.calendar_today,
                                     ),
@@ -4848,7 +4874,7 @@ void _showStatsSheet(BuildContext context) {
                                 child: TextField(
                                   readOnly: true,
                                   decoration: InputDecoration(
-                                    labelText: 'Hasta',
+                                    labelText: l.t('to_date'),
                                     prefixIcon: const Icon(
                                       Icons.calendar_today,
                                     ),
@@ -4867,7 +4893,7 @@ void _showStatsSheet(BuildContext context) {
                             child: ElevatedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.search),
-                              label: const Text('Consultar'),
+                              label: Text(l.t('query')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.purple,
                                 foregroundColor: Colors.white,
@@ -4885,10 +4911,13 @@ void _showStatsSheet(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Productos más visitados
-                  const Text(
-                    'Productos Más Visitados',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  // Productos mÃ¡s visitados
+                  Text(
+                    l.t('most_visited_products'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
@@ -4900,7 +4929,7 @@ void _showStatsSheet(BuildContext context) {
                       padding: EdgeInsets.all(24),
                       child: Center(
                         child: Text(
-                          'Sin datos de visitas aún',
+                          'Sin datos de visitas aÃºn',
                           style: TextStyle(color: Colors.grey),
                         ),
                       ),
@@ -4919,6 +4948,7 @@ void _showStatsSheet(BuildContext context) {
 /// Bottom sheet para centro de seguridad
 // ignore: unused_element
 void _showSecuritySheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4950,9 +4980,12 @@ void _showSecuritySheet(BuildContext context) {
                 ),
                 const Icon(Icons.security, color: Colors.red),
                 const SizedBox(width: 8),
-                const Text(
-                  'Centro de Seguridad',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('security_center'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -4986,7 +5019,7 @@ void _showSecuritySheet(BuildContext context) {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Estado: Seguro',
+                                  l.t('status_secure'),
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -5004,9 +5037,12 @@ void _showSecuritySheet(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Configuración de Seguridad',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('security_settings'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
@@ -5017,19 +5053,15 @@ void _showSecuritySheet(BuildContext context) {
                     child: Column(
                       children: [
                         SwitchListTile(
-                          title: const Text('Autenticación de dos factores'),
-                          subtitle: const Text(
-                            'Añade una capa extra de seguridad',
-                          ),
+                          title: Text(l.t('two_factor_auth')),
+                          subtitle: Text(l.t('add_extra_security')),
                           value: false,
                           onChanged: (v) {},
                           secondary: const Icon(Icons.lock),
                         ),
                         const Divider(height: 1),
                         SwitchListTile(
-                          title: const Text(
-                            'Notificaciones de inicio de sesión',
-                          ),
+                          title: Text(l.t('login_notifications')),
                           subtitle: const Text(
                             'Recibe alertas cuando alguien accede',
                           ),
@@ -5039,7 +5071,7 @@ void _showSecuritySheet(BuildContext context) {
                         ),
                         const Divider(height: 1),
                         SwitchListTile(
-                          title: const Text('Registro de actividad'),
+                          title: Text(l.t('activity_log')),
                           subtitle: const Text(
                             'Guarda un log de todas las acciones',
                           ),
@@ -5049,7 +5081,7 @@ void _showSecuritySheet(BuildContext context) {
                         ),
                         const Divider(height: 1),
                         SwitchListTile(
-                          title: const Text('Bloqueo por intentos fallidos'),
+                          title: Text(l.t('lockout_failed_attempts')),
                           subtitle: const Text(
                             'Bloquea tras 5 intentos fallidos',
                           ),
@@ -5061,7 +5093,7 @@ void _showSecuritySheet(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Cambiar contraseña
+                  // Cambiar contraseÃ±a
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -5072,9 +5104,9 @@ void _showSecuritySheet(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Cambiar Contraseña',
-                            style: TextStyle(
+                          Text(
+                            l.t('change_password'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -5083,7 +5115,7 @@ void _showSecuritySheet(BuildContext context) {
                           TextField(
                             obscureText: true,
                             decoration: InputDecoration(
-                              labelText: 'Contraseña actual',
+                              labelText: l.t('current_password'),
                               prefixIcon: const Icon(Icons.lock_outline),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -5094,7 +5126,7 @@ void _showSecuritySheet(BuildContext context) {
                           TextField(
                             obscureText: true,
                             decoration: InputDecoration(
-                              labelText: 'Nueva contraseña',
+                              labelText: l.t('new_password'),
                               prefixIcon: const Icon(Icons.lock),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -5105,7 +5137,7 @@ void _showSecuritySheet(BuildContext context) {
                           TextField(
                             obscureText: true,
                             decoration: InputDecoration(
-                              labelText: 'Confirmar nueva contraseña',
+                              labelText: l.t('confirm_new_password'),
                               prefixIcon: const Icon(Icons.lock),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -5118,7 +5150,7 @@ void _showSecuritySheet(BuildContext context) {
                             child: ElevatedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.vpn_key),
-                              label: const Text('Actualizar Contraseña'),
+                              label: Text(l.t('update_password')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
@@ -5137,9 +5169,12 @@ void _showSecuritySheet(BuildContext context) {
                   ),
                   const SizedBox(height: 16),
                   // Sesiones activas
-                  const Text(
-                    'Sesiones Activas',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('active_sessions'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
@@ -5152,8 +5187,8 @@ void _showSecuritySheet(BuildContext context) {
                         Icons.phone_iphone,
                         color: Colors.blue,
                       ),
-                      title: const Text('Este dispositivo'),
-                      subtitle: const Text('Activo ahora'),
+                      title: Text(l.t('this_device')),
+                      subtitle: Text(l.t('active_now')),
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -5164,7 +5199,7 @@ void _showSecuritySheet(BuildContext context) {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Actual',
+                          l.t('current'),
                           style: TextStyle(
                             color: Colors.green[700],
                             fontSize: 12,
@@ -5179,8 +5214,8 @@ void _showSecuritySheet(BuildContext context) {
                     child: OutlinedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.logout, color: Colors.red),
-                      label: const Text(
-                        'Cerrar todas las sesiones',
+                      label: Text(
+                        l.t('close_all_sessions'),
                         style: TextStyle(color: Colors.red),
                       ),
                       style: OutlinedButton.styleFrom(
@@ -5202,7 +5237,7 @@ void _showSecuritySheet(BuildContext context) {
   );
 }
 
-/// Helper: construir item de estadística
+/// Helper: construir item de estadÃ­stica
 Widget _buildStatItem(String label, String value, IconData icon, Color color) {
   return Column(
     children: [
@@ -5221,7 +5256,7 @@ Widget _buildStatItem(String label, String value, IconData icon, Color color) {
   );
 }
 
-/// Helper: construir tile de acción
+/// Helper: construir tile de acciÃ³n
 Widget _buildActionTile({
   required IconData icon,
   required Color color,
@@ -5261,7 +5296,7 @@ Widget _buildSellerCard(String name, String role, IconData icon, Color color) {
   );
 }
 
-/// Widget FAB con menú desplegable para opciones de tienda
+/// Widget FAB con menÃº desplegable para opciones de tienda
 // ignore: unused_element
 class _ShopMenuFab extends StatelessWidget {
   final bool isAdmin;
@@ -5313,8 +5348,11 @@ class _ShopMenuFab extends StatelessWidget {
             children: [
               Icon(Icons.local_offer, color: ColorTokens.warning50, size: 22),
               const SizedBox(width: 12),
-              const Text(
-                'Ofertas y Beneficios',
+              Text(
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('offers_and_benefits'),
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
             ],
@@ -5331,8 +5369,11 @@ class _ShopMenuFab extends StatelessWidget {
                   size: 22,
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  'Panel Admin',
+                Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('admin_panel'),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
@@ -5345,8 +5386,11 @@ class _ShopMenuFab extends StatelessWidget {
               children: [
                 Icon(Icons.add_circle, color: ColorTokens.success40, size: 22),
                 const SizedBox(width: 12),
-                const Text(
-                  'Agregar Producto',
+                Text(
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('add_product'),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
@@ -5363,7 +5407,7 @@ class _ShopMenuFab extends StatelessWidget {
   }
 }
 
-/// Custom painter para patrón de bicicletas en el banner
+/// Custom painter para patrÃ³n de bicicletas en el banner
 class BikePatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -5408,10 +5452,11 @@ class BikePatternPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-// Extensión para el estado con los métodos de diálogos
+// ExtensiÃ³n para el estado con los mÃ©todos de diÃ¡logos
 extension _BenefitDialogs on _ShopScreenProState {
   /// Mostrar descuentos para grupos
   void _showGroupDiscountsDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -5437,11 +5482,11 @@ extension _BenefitDialogs on _ShopScreenProState {
               ),
               child: Row(
                 children: [
-                  const Text('🎯', style: TextStyle(fontSize: 32)),
+                  const Text('ðŸŽ¯', style: TextStyle(fontSize: 32)),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Descuentos para Grupos',
+                      l.t('group_discounts'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -5464,40 +5509,38 @@ extension _BenefitDialogs on _ShopScreenProState {
                 children: [
                   _buildInfoCard(
                     icon: Icons.group,
-                    title: '¿Cómo funciona?',
-                    description:
-                        'Compra en grupo con tus amigos ciclistas y obtén descuentos especiales. Mientras más sean, mayor el descuento.',
+                    title: l.t('how_it_works'),
+                    description: l.t('group_purchase_desc'),
                     color: Colors.blue,
                   ),
                   const SizedBox(height: 16),
 
                   _buildDiscountTier(
-                    '3-5 personas',
-                    '10% de descuento',
+                    l.t('3_5_people'),
+                    l.t('10_percent_discount'),
                     Colors.blue[300]!,
                   ),
                   _buildDiscountTier(
-                    '6-10 personas',
-                    '15% de descuento',
+                    l.t('6_10_people'),
+                    l.t('15_percent_discount'),
                     Colors.blue[400]!,
                   ),
                   _buildDiscountTier(
-                    '11-20 personas',
-                    '20% de descuento',
+                    l.t('11_20_people'),
+                    l.t('20_percent_discount'),
                     Colors.blue[500]!,
                   ),
                   _buildDiscountTier(
-                    '21+ personas',
-                    '25% de descuento',
+                    l.t('21_plus_people'),
+                    l.t('25_percent_discount'),
                     Colors.blue[600]!,
                   ),
 
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.card_giftcard,
-                    title: 'Beneficios adicionales',
-                    description:
-                        '• Envío gratis para grupos\n• Personalización incluida\n• Soporte prioritario\n• Descuentos acumulables',
+                    title: l.t('additional_benefits'),
+                    description: l.t('additional_benefits_desc'),
                     color: Colors.green,
                   ),
 
@@ -5505,7 +5548,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                   ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
-                      // Aquí podrías navegar a una pantalla de creación de grupo
+                      // AquÃ­ podrÃ­as navegar a una pantalla de creaciÃ³n de grupo
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -5543,8 +5586,9 @@ extension _BenefitDialogs on _ShopScreenProState {
     );
   }
 
-  /// Mostrar ofertas relámpago
+  /// Mostrar ofertas relÃ¡mpago
   void _showFlashOffersDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -5570,11 +5614,11 @@ extension _BenefitDialogs on _ShopScreenProState {
               ),
               child: Row(
                 children: [
-                  const Text('⚡', style: TextStyle(fontSize: 32)),
+                  const Text('âš¡', style: TextStyle(fontSize: 32)),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Ofertas Relámpago',
+                      l.t('flash_offers'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -5597,29 +5641,28 @@ extension _BenefitDialogs on _ShopScreenProState {
                 children: [
                   _buildInfoCard(
                     icon: Icons.flash_on,
-                    title: '¡Ofertas por tiempo limitado!',
-                    description:
-                        'Descuentos especiales que duran solo 24 horas. ¡Aprovecha antes de que terminen!',
+                    title: l.t('limited_time_offers'),
+                    description: l.t('flash_offers_desc'),
                     color: Colors.orange,
                   ),
                   const SizedBox(height: 20),
 
                   _buildFlashOffer(
-                    'Casco Profesional',
+                    l.t('professional_helmet'),
                     '\$450.000',
                     '\$299.000',
                     '35% OFF',
                     '18:45:23',
                   ),
                   _buildFlashOffer(
-                    'Guantes Premium',
+                    l.t('premium_gloves'),
                     '\$120.000',
                     '\$79.000',
                     '34% OFF',
                     '12:15:45',
                   ),
                   _buildFlashOffer(
-                    'Botella Térmica',
+                    l.t('thermal_bottle'),
                     '\$85.000',
                     '\$49.000',
                     '42% OFF',
@@ -5629,9 +5672,8 @@ extension _BenefitDialogs on _ShopScreenProState {
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.notifications_active,
-                    title: 'Recibe notificaciones',
-                    description:
-                        'Activa las notificaciones para enterarte de las nuevas ofertas relámpago antes que nadie.',
+                    title: l.t('receive_notifications'),
+                    description: l.t('receive_notifications_desc'),
                     color: Colors.deepOrange,
                   ),
 
@@ -5642,7 +5684,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                       context.push('/settings/notifications');
                     },
                     icon: const Icon(Icons.notifications),
-                    label: const Text('Activar Notificaciones'),
+                    label: Text(l.t('enable_notifications')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
@@ -5663,6 +5705,7 @@ extension _BenefitDialogs on _ShopScreenProState {
 
   /// Mostrar productos premium
   void _showPremiumProductsDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -5688,11 +5731,11 @@ extension _BenefitDialogs on _ShopScreenProState {
               ),
               child: Row(
                 children: [
-                  const Text('🏆', style: TextStyle(fontSize: 32)),
+                  const Text('ðŸ†', style: TextStyle(fontSize: 32)),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Productos Premium',
+                      l.t('premium_products'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -5715,38 +5758,36 @@ extension _BenefitDialogs on _ShopScreenProState {
                 children: [
                   _buildInfoCard(
                     icon: Icons.star,
-                    title: 'Calidad superior',
-                    description:
-                        'Productos de las mejores marcas internacionales con garantía extendida y certificaciones profesionales.',
+                    title: l.t('superior_quality'),
+                    description: l.t('superior_quality_desc'),
                     color: Colors.purple,
                   ),
                   const SizedBox(height: 20),
 
                   _buildPremiumProduct(
-                    'Bicicleta Carbono Pro',
+                    l.t('carbon_pro_bike'),
                     '\$8.500.000',
-                    'Shimano Dura-Ace • Cuadro carbono T1000',
+                    l.t('carbon_pro_bike_desc'),
                     Icons.pedal_bike,
                   ),
                   _buildPremiumProduct(
-                    'Kit Ciclismo Elite',
+                    l.t('elite_cycling_kit'),
                     '\$1.200.000',
-                    'Jersey + Culote profesional • Tecnología aerodinámica',
+                    l.t('elite_cycling_kit_desc'),
                     Icons.checkroom,
                   ),
                   _buildPremiumProduct(
-                    'Potenciómetro Dual',
+                    l.t('dual_power_meter'),
                     '\$2.800.000',
-                    'Medición precisa • Compatible ANT+ y Bluetooth',
+                    l.t('dual_power_meter_desc'),
                     Icons.speed,
                   ),
 
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.verified,
-                    title: 'Garantías premium',
-                    description:
-                        '• Garantía extendida de 2 años\n• Servicio técnico prioritario\n• Repuestos garantizados\n• Devolución en 30 días',
+                    title: l.t('premium_warranties'),
+                    description: l.t('premium_warranties_desc'),
                     color: Colors.amber,
                   ),
 
@@ -5760,7 +5801,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                       );
                     },
                     icon: const Icon(Icons.filter_list),
-                    label: const Text('Ver Todos los Premium'),
+                    label: Text(l.t('see_all_premium')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                       foregroundColor: Colors.white,
@@ -5887,6 +5928,7 @@ extension _BenefitDialogs on _ShopScreenProState {
     String discount,
     String timeLeft,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -5954,7 +5996,7 @@ extension _BenefitDialogs on _ShopScreenProState {
               const Icon(Icons.timer, size: 16, color: Colors.red),
               const SizedBox(width: 4),
               Text(
-                'Termina en: $timeLeft',
+                '${l.t("ends_in")}: $timeLeft',
                 style: const TextStyle(
                   color: Colors.red,
                   fontWeight: FontWeight.w600,
@@ -6026,8 +6068,9 @@ extension _BenefitDialogs on _ShopScreenProState {
     );
   }
 
-  /// Mostrar descuentos por envío
+  /// Mostrar descuentos por envÃ­o
   void _showShippingDiscountsDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -6053,11 +6096,11 @@ extension _BenefitDialogs on _ShopScreenProState {
               ),
               child: Row(
                 children: [
-                  const Text('🚚', style: TextStyle(fontSize: 32)),
+                  const Text('ðŸšš', style: TextStyle(fontSize: 32)),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Descuentos por Envío',
+                      l.t('shipping_discounts'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
@@ -6080,53 +6123,50 @@ extension _BenefitDialogs on _ShopScreenProState {
                 children: [
                   _buildInfoCard(
                     icon: Icons.local_shipping,
-                    title: 'Envío gratis por compra',
-                    description:
-                        'Obtén envío gratuito según el monto de tu compra. Mientras más compres, más ahorras en envío.',
+                    title: l.t('free_shipping_by_purchase'),
+                    description: l.t('free_shipping_by_purchase_desc'),
                     color: Colors.green,
                   ),
                   const SizedBox(height: 20),
 
                   _buildShippingTier(
-                    'Compras desde \$50.000',
-                    'Envío: \$15.000',
-                    '0% descuento',
+                    l.t('purchases_from_50k'),
+                    '${l.t("shipping")}: \$15.000',
+                    l.t('0_percent_discount'),
                     Colors.grey[400]!,
                   ),
                   _buildShippingTier(
-                    'Compras desde \$100.000',
-                    'Envío gratis',
-                    '100% descuento',
+                    l.t('purchases_from_100k'),
+                    l.t('free_shipping'),
+                    l.t('100_percent_discount'),
                     Colors.green[300]!,
                   ),
                   _buildShippingTier(
-                    'Compras desde \$200.000',
-                    'Envío gratis + Express',
-                    '100% + Express',
+                    l.t('purchases_from_200k'),
+                    l.t('free_shipping_express'),
+                    l.t('100_percent_express'),
                     Colors.green[500]!,
                   ),
                   _buildShippingTier(
-                    'Compras desde \$500.000',
-                    'Envío gratis + Express + Seguro',
-                    '100% + Beneficios',
+                    l.t('purchases_from_500k'),
+                    l.t('free_shipping_express_insurance'),
+                    l.t('100_percent_benefits'),
                     Colors.green[700]!,
                   ),
 
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.location_on,
-                    title: 'Cobertura nacional',
-                    description:
-                        '• Todas las ciudades principales\n• Municipios intermedios\n• Zonas rurales (costo adicional)\n• Envíos internacionales disponibles',
+                    title: l.t('national_coverage'),
+                    description: l.t('national_coverage_desc'),
                     color: Colors.blue,
                   ),
 
                   const SizedBox(height: 20),
                   _buildInfoCard(
                     icon: Icons.access_time,
-                    title: 'Tiempos de entrega',
-                    description:
-                        '• Ciudades principales: 2-3 días\n• Municipios: 4-6 días\n• Envío express: 24-48 horas\n• Zonas rurales: 7-10 días',
+                    title: l.t('delivery_times'),
+                    description: l.t('delivery_times_desc'),
                     color: Colors.orange,
                   ),
 
@@ -6149,7 +6189,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '¡Tip para ahorrar!',
+                                l.t('tip_to_save'),
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -6158,7 +6198,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Combina tus compras para alcanzar \$100.000 y obtener envío gratis',
+                                l.t('combine_purchases_tip'),
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey[700],
@@ -6178,7 +6218,7 @@ extension _BenefitDialogs on _ShopScreenProState {
                       context.push('/shop/cart');
                     },
                     icon: const Icon(Icons.shopping_cart),
-                    label: const Text('Ir al Carrito'),
+                    label: Text(l.t('go_to_cart')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
@@ -6270,7 +6310,7 @@ extension _BenefitDialogs on _ShopScreenProState {
 
 // End of resolved conflict
 
-/// Modelo visual para representar una categoría con icono y colores
+/// Modelo visual para representar una categorÃ­a con icono y colores
 class _CategoryVisual {
   final IconData icon;
   final List<Color> gradientColors;

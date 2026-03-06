@@ -12,6 +12,7 @@ import 'package:biux/features/experiences/presentation/screens/create_experience
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
@@ -99,30 +100,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: ColorTokens.primary30,
-        title: GestureDetector(
-          onTap: _loadFeed,
-          child: const Text(
-            'Mi Feed',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.push('/users/search');
-            },
-            icon: const Icon(Icons.search, color: Colors.white),
-            tooltip: 'Buscar usuarios',
-          ),
-        ],
-      ),
       body: Consumer<ExperienceProvider>(
         builder: (context, provider, child) {
           return _buildBody(provider);
@@ -174,6 +151,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   Widget _buildErrorState(String error, ExperienceProvider provider) {
     // ignore: unused_local_variable
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Center(
       child: Column(
@@ -186,7 +164,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'Error al cargar experiencias',
+            l.t('experiences_error_loading'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -210,7 +188,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 provider.loadPersonalizedFeed(userId);
               }
             },
-            child: const Text('Reintentar'),
+            child: Text(l.t('experiences_retry')),
           ),
         ],
       ),
@@ -221,6 +199,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   Widget _buildEmptyStateInLayout() {
     // ignore: unused_local_variable
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -237,7 +216,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                '¡Comparte tu primera publicación!',
+                l.t('experiences_share_first_post'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -246,7 +225,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
+                l.t('experiences_stories_explanation'),
                 style: TextStyle(
                   fontSize: 14,
                   color: theme.textTheme.bodySmall?.color?.withValues(
@@ -338,38 +317,37 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   /// Crea un anuncio de ejemplo
   /// En producción, esto vendría de un repositorio que consulte el backend
   AdvertisementEntity _createMockAdvertisement(int index) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final advertisements = [
       AdvertisementEntity(
         id: 'ad_1',
         title: 'Biux Premium',
-        description:
-            'Desbloquea funciones exclusivas y conecta con más ciclistas',
+        description: l.t('experiences_ad_premium_desc'),
         imageUrl:
             'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop',
-        callToActionText: 'Descubrir',
+        callToActionText: l.t('experiences_ad_discover'),
         callToActionUrl: 'https://biux.app/premium',
         advertiserName: 'Biux',
         createdAt: DateTime.now(),
       ),
       AdvertisementEntity(
         id: 'ad_2',
-        title: 'Accesorios para Ciclismo',
-        description: 'Los mejores accesorios para tus rodadas. Envío gratis.',
+        title: l.t('experiences_ad_accessories_title'),
+        description: l.t('experiences_ad_accessories_desc'),
         imageUrl:
             'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=500&h=300&fit=crop',
-        callToActionText: 'Ver catálogo',
+        callToActionText: l.t('experiences_ad_view_catalog'),
         callToActionUrl: 'https://shop.biux.app',
         advertiserName: 'Biux Shop',
         createdAt: DateTime.now(),
       ),
       AdvertisementEntity(
         id: 'ad_3',
-        title: 'Rodadas Organizadas',
-        description:
-            'Únete a nuestras rodadas semanales y conoce ciclistas de tu zona',
+        title: l.t('experiences_ad_rides_title'),
+        description: l.t('experiences_ad_rides_desc'),
         imageUrl:
             'https://images.unsplash.com/photo-1519578962823-e54908f409b7?w=500&h=300&fit=crop',
-        callToActionText: 'Explorar',
+        callToActionText: l.t('experiences_ad_explore'),
         callToActionUrl: 'https://biux.app/rides',
         advertiserName: 'Biux Community',
         createdAt: DateTime.now(),
@@ -405,6 +383,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   void _showCreatePostOptions(BuildContext context) {
     // ignore: unused_local_variable
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showModalBottomSheet(
       context: context,
@@ -430,7 +409,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             ),
 
             Text(
-              'Crear Publicación',
+              l.t('experiences_create_post'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -439,7 +418,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Elige el tipo de post que quieres compartir',
+              l.t('experiences_choose_post_type'),
               style: TextStyle(
                 fontSize: 14,
                 color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
@@ -524,6 +503,7 @@ class _ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final imageUrls = experience.media.map((m) => m.url).toList();
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     // ignore: unused_local_variable
@@ -540,7 +520,7 @@ class _ExperienceCard extends StatelessWidget {
         ),
         imageUrls: imageUrls,
         description: experience.description,
-        timestamp: _formatDate(experience.createdAt),
+        timestamp: _formatDate(experience.createdAt, l),
         isEdited: experience.isEdited,
         onUserTap: () {
           if (experience.user.id.isNotEmpty) {
@@ -576,24 +556,25 @@ class _ExperienceCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, LocaleNotifier l) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return 'Hace ${difference.inDays}d';
+      return '${l.t('experiences_time_ago')} ${difference.inDays}d';
     } else if (difference.inHours > 0) {
-      return 'Hace ${difference.inHours}h';
+      return '${l.t('experiences_time_ago')} ${difference.inHours}h';
     } else if (difference.inMinutes > 0) {
-      return 'Hace ${difference.inMinutes}m';
+      return '${l.t('experiences_time_ago')} ${difference.inMinutes}m';
     } else {
-      return 'Ahora';
+      return l.t('experiences_time_now');
     }
   }
 
   void _showPostMenu(BuildContext context) {
     // ignore: unused_local_variable
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     // ignore: unused_local_variable
     final isOwner = currentUserId == experience.user.id;
@@ -612,9 +593,9 @@ class _ExperienceCard extends StatelessWidget {
             if (isOwner) ...[
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text(
-                  'Eliminar publicación',
-                  style: TextStyle(color: Colors.red),
+                title: Text(
+                  l.t('experiences_delete_post'),
+                  style: const TextStyle(color: Colors.red),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -624,7 +605,7 @@ class _ExperienceCard extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.edit, color: theme.iconTheme.color),
                 title: Text(
-                  'Editar publicación',
+                  l.t('experiences_edit_post'),
                   style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 ),
                 onTap: () {
@@ -639,14 +620,14 @@ class _ExperienceCard extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.flag, color: theme.iconTheme.color),
                 title: Text(
-                  'Reportar publicación',
+                  l.t('experiences_report_post'),
                   style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 ),
                 onTap: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Función de reportar próximamente'),
+                    SnackBar(
+                      content: Text(l.t('experiences_report_coming_soon')),
                     ),
                   );
                 },
@@ -655,7 +636,7 @@ class _ExperienceCard extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.share, color: theme.iconTheme.color),
               title: Text(
-                'Compartir',
+                l.t('experiences_share'),
                 style: TextStyle(color: theme.textTheme.bodyLarge?.color),
               ),
               onTap: () {
@@ -672,30 +653,34 @@ class _ExperienceCard extends StatelessWidget {
   void _confirmDelete(BuildContext context) {
     // ignore: unused_local_variable
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          'Eliminar publicación',
+          l.t('experiences_delete_post'),
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
-          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
+          l.t('experiences_delete_post_confirm'),
           style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('experiences_cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _deletePost(context);
             },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+            child: Text(
+              l.t('experiences_delete'),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -704,24 +689,26 @@ class _ExperienceCard extends StatelessWidget {
 
   void _deletePost(BuildContext context) async {
     try {
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       final provider = context.read<ExperienceProvider>();
       await provider.deleteExperience(experience.id);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Publicación eliminada correctamente')),
+          SnackBar(content: Text(l.t('experiences_post_deleted'))),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
 
   void _sharePost(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       // En lugar de compartir un link, abrir la app directamente con deep link
       final deepLink = 'biux://posts/${experience.id}';
@@ -731,15 +718,15 @@ class _ExperienceCard extends StatelessWidget {
       ).catchError((e) {
         // Fallback: si el deep link falla, mostrar mensaje
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('La app debe estar instalada para compartir')),
+          SnackBar(content: Text(l.t('experiences_app_must_be_installed'))),
         );
         return false;
       });
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l.t('experiences_share_error')}: $e')),
+        );
       }
     }
   }
@@ -832,6 +819,7 @@ class _AdvertisementCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -876,7 +864,7 @@ class _AdvertisementCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'Anuncio publicitario',
+                    l.t('experiences_advertisement_label'),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -998,6 +986,7 @@ class _AdvertisementCard extends StatelessWidget {
   void _showAdvertisementModal(BuildContext context) {
     // ignore: unused_local_variable
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showModalBottomSheet(
       context: context,
@@ -1155,9 +1144,9 @@ class _AdvertisementCard extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                'Cerrar',
-                                style: TextStyle(
+                              child: Text(
+                                l.t('experiences_close'),
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -1181,6 +1170,7 @@ class _AdvertisementCard extends StatelessWidget {
 
   /// Maneja la acción del botón CTA del anuncio
   void _handleAdvertisementAction(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       if (advertisement.callToActionUrl != null &&
           advertisement.callToActionUrl!.isNotEmpty) {
@@ -1190,17 +1180,15 @@ class _AdvertisementCard extends StatelessWidget {
         } else {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('No se pudo abrir el enlace del anuncio'),
-              ),
+              SnackBar(content: Text(l.t('experiences_cannot_open_ad_link'))),
             );
           }
         }
       } else {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Enlace no disponible')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l.t('experiences_link_unavailable'))),
+          );
         }
       }
     } catch (e) {

@@ -266,7 +266,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        request.status.displayName,
+                        l.t(request.status.displayName),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

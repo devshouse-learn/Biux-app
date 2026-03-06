@@ -133,7 +133,7 @@ class HelpScreen extends StatelessWidget {
             subtitle: l.t('report_bug_subtitle'),
             onTap: () => _launchEmail(
               'bugs@biux.app',
-              subject: 'Reporte de Error - BiUX App',
+              subject: l.t('bug_report_subject'),
             ),
           ),
 
@@ -152,8 +152,7 @@ class HelpScreen extends StatelessWidget {
               context: context,
               applicationName: 'BiUX',
               applicationVersion: '1.0.0',
-              applicationLegalese:
-                  '© 2025 BiUX. Todos los derechos reservados.',
+              applicationLegalese: l.t('app_legalese'),
             );
           }),
 
@@ -175,7 +174,7 @@ class HelpScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Versión 1.0.0',
+                  '${l.t('version')} 1.0.0',
                   style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
                 ),
                 SizedBox(height: 4),
@@ -399,40 +398,21 @@ class HelpScreen extends StatelessWidget {
   }
 
   void _showTermsDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Términos y Condiciones'),
+        title: Text(l.t('terms_conditions')),
         content: SingleChildScrollView(
           child: Text(
-            'TÉRMINOS Y CONDICIONES DE USO DE BIUX\n\n'
-            '1. ACEPTACIÓN DE TÉRMINOS\n'
-            'Al usar BiUX, aceptas estos términos y condiciones.\n\n'
-            '2. USO DE LA APLICACIÓN\n'
-            '- Debes ser mayor de 18 años o tener autorización de tus padres\n'
-            '- Eres responsable de la seguridad de tu cuenta\n'
-            '- No puedes usar la app para actividades ilegales\n\n'
-            '3. CONTENIDO\n'
-            '- Eres dueño del contenido que publicas\n'
-            '- Nos otorgas licencia para usar tu contenido en la plataforma\n'
-            '- No publiques contenido ofensivo, violento o ilegal\n\n'
-            '4. PRIVACIDAD\n'
-            '- Respetamos tu privacidad según nuestra Política de Privacidad\n'
-            '- No vendemos tus datos personales\n\n'
-            '5. RESPONSABILIDAD\n'
-            '- BiUX no se hace responsable de accidentes durante rodadas\n'
-            '- Los usuarios son responsables de su seguridad\n'
-            '- Usa equipo de protección adecuado\n\n'
-            '6. MODIFICACIONES\n'
-            'Podemos modificar estos términos en cualquier momento.\n\n'
-            'Fecha de última actualización: 29 de noviembre de 2025',
+            l.t('terms_conditions_body'),
             style: TextStyle(fontSize: 12),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
         ],
       ),
@@ -440,51 +420,21 @@ class HelpScreen extends StatelessWidget {
   }
 
   void _showPrivacyDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Política de Privacidad'),
+        title: Text(l.t('privacy_policy')),
         content: SingleChildScrollView(
           child: Text(
-            'POLÍTICA DE PRIVACIDAD DE BIUX\n\n'
-            '1. INFORMACIÓN QUE RECOPILAMOS\n'
-            '- Nombre, teléfono y foto de perfil\n'
-            '- Ubicación durante rodadas (con tu permiso)\n'
-            '- Fotos y videos que publicas\n'
-            '- Información de tus bicicletas registradas\n\n'
-            '2. CÓMO USAMOS TU INFORMACIÓN\n'
-            '- Para proporcionarte los servicios de la app\n'
-            '- Para conectarte con otros ciclistas\n'
-            '- Para mejorar la experiencia de usuario\n'
-            '- Para enviarte notificaciones relevantes\n\n'
-            '3. COMPARTIR INFORMACIÓN\n'
-            '- Tu perfil es visible para otros usuarios\n'
-            '- Tus publicaciones son públicas o visibles para tu grupo\n'
-            '- No vendemos tu información a terceros\n'
-            '- Solo compartimos con servicios necesarios (Firebase, Google Maps)\n\n'
-            '4. SEGURIDAD\n'
-            '- Usamos encriptación para proteger tus datos\n'
-            '- Servidores seguros de Firebase\n'
-            '- Autenticación segura\n\n'
-            '5. TUS DERECHOS\n'
-            '- Puedes ver, editar o eliminar tu información\n'
-            '- Puedes desactivar tu cuenta en cualquier momento\n'
-            '- Puedes solicitar una copia de tus datos\n\n'
-            '6. COOKIES Y TRACKING\n'
-            '- Usamos Firebase Analytics para mejorar la app\n'
-            '- Puedes desactivar el tracking en configuración\n\n'
-            '7. MENORES DE EDAD\n'
-            '- La app es para mayores de 18 años\n'
-            '- Menores requieren autorización de padres\n\n'
-            'Contacto: privacidad@biux.app\n\n'
-            'Fecha de última actualización: 29 de noviembre de 2025',
+            l.t('privacy_policy_body'),
             style: TextStyle(fontSize: 12),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
         ],
       ),

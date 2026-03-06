@@ -65,6 +65,30 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   static const _statuses = ['Todas', 'Pendiente', 'Revisada', 'Bloqueado'];
   static const _sorts = ['Reciente', 'Ciudad', 'Vendedor'];
 
+  String _statusDisplay(String status, LocaleNotifier l) {
+    const map = {
+      'Todas': 'filter_all',
+      'Pendiente': 'status_pending',
+      'Revisada': 'status_reviewed',
+      'Bloqueado': 'status_blocked',
+    };
+    return l.t(map[status] ?? status);
+  }
+
+  String _sortDisplay(String sort, LocaleNotifier l) {
+    const map = {
+      'Reciente': 'sort_recent',
+      'Ciudad': 'sort_city',
+      'Vendedor': 'sort_seller',
+    };
+    return l.t(map[sort] ?? sort);
+  }
+
+  String _filterAllDisplay(String val, LocaleNotifier l) {
+    if (val == 'Todas') return l.t('filter_all');
+    return val;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +108,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     String? current,
     bool addTodas = false,
     IconData itemIcon = Icons.location_city,
+    String Function(String)? displayMapper,
   }) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final allItems = addTodas ? ['Todas', ...items] : items;
@@ -225,7 +250,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                                     : Colors.grey[400],
                               ),
                               title: Text(
-                                item,
+                                displayMapper?.call(item) ?? item,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: isSel
@@ -264,6 +289,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     bool addTodas,
     ValueChanged<String> onChanged, {
     IconData itemIcon = Icons.location_city,
+    String Function(String)? displayMapper,
   }) {
     final isAll = value == 'Todas';
     return Expanded(
@@ -275,6 +301,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             current: value,
             addTodas: addTodas,
             itemIcon: itemIcon,
+            displayMapper: displayMapper,
           );
           if (r != null) onChanged(r);
         },
@@ -301,7 +328,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  value,
+                  displayMapper?.call(value) ?? value,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isAll ? FontWeight.w400 : FontWeight.w600,
@@ -321,8 +348,9 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
   Widget _smallDropdown(
     String value,
     List<String> items,
-    ValueChanged<String?> onChanged,
-  ) {
+    ValueChanged<String?> onChanged, {
+    String Function(String)? displayMapper,
+  }) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -338,7 +366,12 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             isDense: true,
             style: const TextStyle(fontSize: 12, color: Color(0xFF16242D)),
             items: items
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .map(
+                  (e) => DropdownMenuItem(
+                    value: e,
+                    child: Text(displayMapper?.call(e) ?? e),
+                  ),
+                )
                 .toList(),
             onChanged: onChanged,
           ),
@@ -461,6 +494,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                     _allCities,
                     true,
                     (v) => setState(() => _selectedCity = v),
+                    displayMapper: (v) => _filterAllDisplay(v, l),
                   ),
                   const SizedBox(width: 8),
                   _searchableChip(
@@ -471,12 +505,14 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
                     true,
                     (v) => setState(() => _selectedStatus = v),
                     itemIcon: Icons.flag,
+                    displayMapper: (v) => _statusDisplay(v, l),
                   ),
                   const SizedBox(width: 8),
                   _smallDropdown(
                     _sortBy,
                     _sorts,
                     (v) => setState(() => _sortBy = v!),
+                    displayMapper: (v) => _sortDisplay(v, l),
                   ),
                 ],
               ),

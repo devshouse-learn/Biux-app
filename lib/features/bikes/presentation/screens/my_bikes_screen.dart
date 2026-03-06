@@ -243,6 +243,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   }
 
   Widget _buildBikeCard(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -283,7 +284,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${bike.year} • ${bike.color} • ${bike.type.displayName}',
+                      '${bike.year} • ${bike.color} • ${l.t(bike.type.displayName)}',
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

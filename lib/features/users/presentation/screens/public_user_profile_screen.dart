@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
@@ -24,6 +25,7 @@ class PublicUserProfileScreen extends StatefulWidget {
 
 class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     with SingleTickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context, listen: false);
   final Set<String> _failedImageIds = {};
   late final Future<dynamic> _experiencesFuture;
   int _postCount = 0;
@@ -62,6 +64,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       ),
       body: Consumer<UserProfileProvider>(
         builder: (context, provider, child) {
+          final l = Provider.of<LocaleNotifier>(context, listen: false);
           if (provider.isLoadingProfile) {
             return Center(
               child: CircularProgressIndicator(
@@ -84,7 +87,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'No se pudo cargar el perfil',
+                    l.t('could_not_load_profile'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -93,7 +96,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Verifica tu conexión e intenta nuevamente',
+                    l.t('check_connection_retry'),
                     style: TextStyle(color: ColorTokens.neutral60),
                   ),
                   SizedBox(height: 24),
@@ -105,7 +108,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                       backgroundColor: ColorTokens.primary30,
                       foregroundColor: ColorTokens.neutral100,
                     ),
-                    child: Text('Reintentar'),
+                    child: Text(l.t('retry')),
                   ),
                 ],
               ),
@@ -163,7 +166,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                             size: 20,
                                           ),
                                           SizedBox(width: 10),
-                                          Text('Agregar Historia'),
+                                          Text(l.t('add_story')),
                                         ],
                                       ),
                                     ),
@@ -173,7 +176,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                         children: [
                                           Icon(Icons.image_search, size: 20),
                                           SizedBox(width: 10),
-                                          Text('Nueva Publicación'),
+                                          Text(l.t('new_post')),
                                         ],
                                       ),
                                     ),
@@ -190,7 +193,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                   if (AuthenticationRepository().getUserId ==
                                       user.id)
                                     Tooltip(
-                                      message: 'Editar perfil',
+                                      message: l.t('edit_profile'),
                                       child: IconButton(
                                         icon: Icon(
                                           Icons.edit_outlined,
@@ -213,7 +216,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                   if (AuthenticationRepository().getUserId ==
                                       user.id)
                                     Tooltip(
-                                      message: 'Configuración',
+                                      message: l.t('settings'),
                                       child: IconButton(
                                         icon: Icon(
                                           Icons.settings_outlined,
@@ -279,7 +282,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     Text(
                                       user.fullName.isNotEmpty
                                           ? user.fullName
-                                          : 'Sin nombre',
+                                          : l.t('no_name'),
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -331,7 +334,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     ),
                                   ),
                                   Text(
-                                    'Posts',
+                                    l.t('posts'),
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: ColorTokens.neutral100.withValues(
@@ -356,7 +359,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                       ),
                                     ),
                                     Text(
-                                      'Seguidores',
+                                      l.t('followers'),
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: ColorTokens.neutral100
@@ -381,7 +384,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                       ),
                                     ),
                                     Text(
-                                      'Siguiendo',
+                                      l.t('following'),
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: ColorTokens.neutral100
@@ -426,7 +429,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                       SizedBox(height: 20),
                       // ========== SECCIÓN DE PUBLICACIONES ==========
                       Text(
-                        'Publicaciones',
+                        l.t('posts_title'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -511,7 +514,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 ),
               )
             : Text(
-                provider.isFollowing ? 'Siguiendo' : 'Seguir',
+                provider.isFollowing ? l.t('following') : l.t('follow'),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
       ),
@@ -558,7 +561,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 Icon(Icons.error_outline, size: 48, color: ColorTokens.error50),
                 SizedBox(height: 12),
                 Text(
-                  'Error cargando publicaciones',
+                  l.t('error_loading_posts'),
                   style: TextStyle(
                     fontSize: 14,
                     color: ColorTokens.error50,
@@ -592,7 +595,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'Sin publicaciones aún',
+                  l.t('no_posts_yet'),
                   style: TextStyle(
                     fontSize: 14,
                     color: ColorTokens.neutral70,
@@ -661,7 +664,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'Sin publicaciones válidas',
+                  l.t('no_valid_posts'),
                   style: TextStyle(
                     fontSize: 14,
                     color: ColorTokens.neutral70,
@@ -825,7 +828,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Seguidores',
+                          l.t('followers'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -858,7 +861,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         if (provider.followers.isEmpty) {
                           return Center(
                             child: Text(
-                              'Sin seguidores aún',
+                              l.t('no_followers_yet'),
                               style: TextStyle(
                                 color: ColorTokens.neutral60,
                                 fontSize: 14,
@@ -893,7 +896,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                               title: Text(
                                 follower.fullName.isNotEmpty
                                     ? follower.fullName
-                                    : 'Usuario',
+                                    : l.t('user'),
                                 style: TextStyle(
                                   color: ColorTokens.neutral100,
                                   fontWeight: FontWeight.w500,
@@ -966,7 +969,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Siguiendo',
+                          l.t('following'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -999,7 +1002,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         if (provider.following.isEmpty) {
                           return Center(
                             child: Text(
-                              'No sigue a nadie aún',
+                              l.t('not_following_anyone'),
                               style: TextStyle(
                                 color: ColorTokens.neutral60,
                                 fontSize: 14,
@@ -1034,7 +1037,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                               title: Text(
                                 followingUser.fullName.isNotEmpty
                                     ? followingUser.fullName
-                                    : 'Usuario',
+                                    : l.t('user'),
                                 style: TextStyle(
                                   color: ColorTokens.neutral100,
                                   fontWeight: FontWeight.w500,
@@ -1077,8 +1080,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
   // ignore: unused_element
   Future<void> _shareProfile(BiuxUser user) async {
-    await SharePlus.instance.share(ShareParams(text:
-      'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
-      ));
+    await SharePlus.instance.share(
+      ShareParams(
+        text: 'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
+      ),
+    );
   }
 }

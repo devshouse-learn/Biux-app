@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
@@ -42,8 +42,9 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         setState(() {
-          _error = 'No se pudo cargar la información de la bicicleta';
+          _error = l.t('could_not_load_bike_info');
           _isLoading = false;
         });
       }
@@ -65,6 +66,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   Widget _buildErrorView() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -84,7 +86,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
               ),
-              child: const Text('Volver'),
+              child: Text(l.t('go_back')),
             ),
           ],
         ),
@@ -93,6 +95,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   Widget _buildNotFoundView() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -101,8 +104,8 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
           children: [
             Icon(Icons.search_off, size: 64, color: ColorTokens.neutral70),
             const SizedBox(height: 16),
-            const Text(
-              'Bicicleta no encontrada',
+            Text(
+              l.t('bike_not_found'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
@@ -111,8 +114,8 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'El código QR no corresponde a ninguna bicicleta registrada',
+            Text(
+              l.t('qr_not_registered'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: ColorTokens.neutral70),
             ),
@@ -122,7 +125,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
               ),
-              child: const Text('Volver'),
+              child: Text(l.t('go_back')),
             ),
           ],
         ),
@@ -215,6 +218,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   Widget _buildStatusCard(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     Color statusColor;
     IconData statusIcon;
     String statusDescription;
@@ -223,22 +227,22 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
       case BikeStatus.active:
         statusColor = Colors.green;
         statusIcon = Icons.check_circle;
-        statusDescription = 'Esta bicicleta está registrada en Biux';
+        statusDescription = l.t('bike_registered_in_biux');
         break;
       case BikeStatus.stolen:
         statusColor = Colors.red;
         statusIcon = Icons.warning;
-        statusDescription = '¡Esta bicicleta fue reportada como robada!';
+        statusDescription = l.t('bike_reported_stolen_alert');
         break;
       case BikeStatus.recovered:
         statusColor = Colors.orange;
         statusIcon = Icons.restore;
-        statusDescription = 'Esta bicicleta fue recuperada después de un robo';
+        statusDescription = l.t('bike_recovered_after_theft');
         break;
       case BikeStatus.verified:
         statusColor = Colors.blue;
         statusIcon = Icons.verified;
-        statusDescription = 'Bicicleta verificada por tienda aliada';
+        statusDescription = l.t('bike_verified_by_store');
         break;
     }
 
@@ -259,7 +263,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  bike.status.displayName,
+                  l.t(bike.status.displayName),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -279,6 +283,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   Widget _buildPublicInfo(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
@@ -296,8 +301,8 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Información de la Bicicleta',
+          Text(
+            l.t('bike_info'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -305,13 +310,13 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildInfoRow('Marca', bike.brand),
-          _buildInfoRow('Modelo', bike.model),
-          _buildInfoRow('Año', bike.year.toString()),
-          _buildInfoRow('Color', bike.color),
-          _buildInfoRow('Talla', bike.size),
-          _buildInfoRow('Tipo', bike.type.displayName),
-          _buildInfoRow('Ciudad', bike.city),
+          _buildInfoRow(l.t('brand'), bike.brand),
+          _buildInfoRow(l.t('model'), bike.model),
+          _buildInfoRow(l.t('year'), bike.year.toString()),
+          _buildInfoRow(l.t('color'), bike.color),
+          _buildInfoRow(l.t('size'), bike.size),
+          _buildInfoRow(l.t('type'), l.t(bike.type.displayName)),
+          _buildInfoRow(l.t('city'), bike.city),
           const Divider(height: 24),
           Row(
             children: [
@@ -319,7 +324,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Esta información es pública para verificar la identidad de la bicicleta.',
+                  l.t('public_info_note'),
                   style: TextStyle(
                     fontSize: 12,
                     color: ColorTokens.neutral70,
@@ -367,6 +372,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   Widget _buildSightingSection(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.all(16),
       child: Column(
@@ -388,7 +394,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        '¿Has visto esta bicicleta?',
+                        l.t('have_you_seen_bike'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -400,7 +406,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Si has visto esta bicicleta, por favor reporta el avistamiento para ayudar a su dueño a recuperarla.',
+                  l.t('report_sighting_help'),
                   style: TextStyle(fontSize: 14, color: Colors.red[600]),
                 ),
                 const SizedBox(height: 16),
@@ -417,8 +423,8 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
                       ),
                     ),
                     icon: const Icon(Icons.add_location),
-                    label: const Text(
-                      'Reportar Avistamiento',
+                    label: Text(
+                      l.t('report_sighting'),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -435,32 +441,33 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   void _showSightingDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reportar Avistamiento'),
+        title: Text(l.t('report_sighting')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '¿Dónde viste esta bicicleta?',
+            Text(
+              l.t('where_did_you_see'),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16),
             TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Ubicación',
-                hintText: 'Ej: Parque El Virrey, Calle 85 con 15',
+              decoration: InputDecoration(
+                labelText: l.t('location_label'),
+                hintText: l.t('location_hint'),
                 border: OutlineInputBorder(),
               ),
               maxLines: 2,
             ),
             const SizedBox(height: 16),
             TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Descripción (opcional)',
-                hintText: 'Detalles adicionales sobre el avistamiento',
+              decoration: InputDecoration(
+                labelText: l.t('description_optional'),
+                hintText: l.t('additional_details_hint'),
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
@@ -470,7 +477,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppStrings.cancel),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -478,7 +485,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               _submitSighting();
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red[600]),
-            child: const Text('Reportar'),
+            child: Text(l.t('report')),
           ),
         ],
       ),
@@ -487,11 +494,10 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
 
   void _submitSighting() {
     // PENDIENTE: Implementar envío de avistamiento
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          '¡Avistamiento reportado! Gracias por ayudar a la comunidad.',
-        ),
+      SnackBar(
+        content: Text(l.t('sighting_reported')),
         backgroundColor: Colors.green,
       ),
     );

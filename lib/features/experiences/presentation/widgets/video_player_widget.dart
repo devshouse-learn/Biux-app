@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para reproducir videos en las experiencias
 /// Soporta videos de hasta 30 segundos con controles automáticos
@@ -175,7 +177,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             const Icon(Icons.error_outline, color: Colors.white, size: 48),
             const SizedBox(height: 16),
             Text(
-              'Error al cargar video',
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('video_load_error'),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,

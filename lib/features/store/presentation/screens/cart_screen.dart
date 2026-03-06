@@ -592,8 +592,8 @@ class _CartScreenState extends State<CartScreen> {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          'Comprar Ahora',
+                        Text(
+                          l.t('buy_now'),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -920,7 +920,7 @@ class _CartScreenState extends State<CartScreen> {
                         _buildCityOption('Cali'),
                         _buildCityOption('Barranquilla'),
                         _buildCityOption('Cartagena'),
-                        _buildCityOption('Otra ciudad'),
+                        _buildCityOption(l.t('other_city')),
                       ],
                     ),
                     const SizedBox(height: 24),

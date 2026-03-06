@@ -561,7 +561,7 @@ class BasicInfoWidget extends StatelessWidget {
             InfoRowWidget(
               icon: Icons.calendar_today,
               label: l.t('date_and_time'),
-              value: _formatDateTime(ride.dateTime),
+              value: _formatDateTime(context, ride.dateTime),
             ),
             SizedBox(height: 12),
             InfoRowWidget(
@@ -610,21 +610,30 @@ class BasicInfoWidget extends StatelessWidget {
     );
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    final weekdays = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
+  String _formatDateTime(BuildContext context, DateTime dateTime) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final weekdays = [
+      l.t('weekday_mon'),
+      l.t('weekday_tue'),
+      l.t('weekday_wed'),
+      l.t('weekday_thu'),
+      l.t('weekday_fri'),
+      l.t('weekday_sat'),
+      l.t('weekday_sun'),
+    ];
     final months = [
-      'Enero',
-      'Febrero',
-      'Marzo',
-      'Abril',
-      'Mayo',
-      'Junio',
-      'Julio',
-      'Agosto',
-      'Septiembre',
-      'Octubre',
-      'Noviembre',
-      'Diciembre',
+      l.t('month_january_full'),
+      l.t('month_february_full'),
+      l.t('month_march_full'),
+      l.t('month_april_full'),
+      l.t('month_may_full'),
+      l.t('month_june_full'),
+      l.t('month_july_full'),
+      l.t('month_august_full'),
+      l.t('month_september_full'),
+      l.t('month_october_full'),
+      l.t('month_november_full'),
+      l.t('month_december_full'),
     ];
 
     final weekday = weekdays[dateTime.weekday - 1];
@@ -633,7 +642,7 @@ class BasicInfoWidget extends StatelessWidget {
     final hour = dateTime.hour.toString().padLeft(2, '0');
     final minute = dateTime.minute.toString().padLeft(2, '0');
 
-    return '$weekday, $day de $month - $hour:$minute';
+    return '$weekday, $day ${l.t('date_of')} $month - $hour:$minute';
   }
 
   Color _getDifficultyColor(DifficultyLevel difficulty) {

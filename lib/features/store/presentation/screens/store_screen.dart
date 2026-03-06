@@ -227,7 +227,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Buscar productos...',
+                        hintText: l.t('search_products'),
                         prefixIcon: const Icon(
                           Icons.search,
                           color: Colors.grey,
@@ -315,7 +315,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     ...ProductCategory.values.map((category) {
                       return _buildCategoryChip(
                         context,
-                        category.displayName,
+                        l.t(category.displayName),
                         category,
                         provider.selectedCategory == category,
                       );
@@ -654,6 +654,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   /// Imagen placeholder para productos sin imagen
   Widget _buildPlaceholderImage(ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -674,7 +675,7 @@ class _StoreScreenState extends State<StoreScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            product.categoria.displayName,
+            l.t(product.categoria.displayName),
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),

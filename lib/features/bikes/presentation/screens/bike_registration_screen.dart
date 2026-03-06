@@ -191,6 +191,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   Widget _buildNavigationButtons(BikeProvider bikeProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -215,9 +216,9 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
                 side: const BorderSide(color: ColorTokens.error50),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(
+              child: Text(
+                l.t('cancel'),
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
                 ),
@@ -272,20 +273,19 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   void _showCancelDialog(BikeProvider bikeProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancelar registro'),
-        content: const Text(
-          '¿Estás seguro de que deseas cancelar el registro de la bicicleta? Se perderán todos los datos ingresados.',
-        ),
+        title: Text(l.t('cancel_registration')),
+        content: Text(l.t('cancel_registration_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral60),
-            child: const Text(
-              'Continuar editando',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            child: Text(
+              l.t('continue_editing'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ),
           ElevatedButton(
@@ -298,9 +298,9 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
               backgroundColor: ColorTokens.error50,
               foregroundColor: Colors.white,
             ),
-            child: const Text(
-              'Cancelar registro',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            child: Text(
+              l.t('cancel_registration'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
         ],

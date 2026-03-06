@@ -93,7 +93,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   // Categoría
                   Chip(
-                    label: Text(widget.product.categoria.displayName),
+                    label: Text(l.t(widget.product.categoria.displayName)),
                     backgroundColor: Colors.blue[100],
                   ),
 

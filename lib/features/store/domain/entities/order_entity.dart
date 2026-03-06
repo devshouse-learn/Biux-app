@@ -9,15 +9,15 @@ enum OrderStatus {
   String get displayName {
     switch (this) {
       case OrderStatus.pendiente:
-        return 'Pendiente';
+        return 'order_status_pending';
       case OrderStatus.pagado:
-        return 'Pagado';
+        return 'order_status_paid';
       case OrderStatus.enviado:
-        return 'Enviado';
+        return 'order_status_shipped';
       case OrderStatus.entregado:
-        return 'Entregado';
+        return 'order_status_delivered';
       case OrderStatus.cancelado:
-        return 'Cancelado';
+        return 'order_status_cancelled';
     }
   }
 }
@@ -33,15 +33,15 @@ enum PaymentMethod {
   String get displayName {
     switch (this) {
       case PaymentMethod.efectivo:
-        return 'Efectivo';
+        return 'payment_cash';
       case PaymentMethod.tarjeta:
-        return 'Tarjeta';
+        return 'payment_card';
       case PaymentMethod.transferencia:
-        return 'Transferencia';
+        return 'payment_transfer';
       case PaymentMethod.paypal:
         return 'PayPal';
       case PaymentMethod.otro:
-        return 'Otro';
+        return 'payment_other';
     }
   }
 }

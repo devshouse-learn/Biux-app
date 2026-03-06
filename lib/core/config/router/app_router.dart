@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Feature imports (providers)
 import '../../../features/groups/presentation/providers/group_provider.dart';
@@ -342,7 +343,9 @@ final GoRouter _router = GoRouter(
     // Shell principal que envuelve todas las pantallas con AppBar y BottomNavigationBar
     ShellRoute(
       builder: (context, state, child) {
+        final langCode = context.watch<LocaleNotifier>().langCode;
         return MultiProvider(
+          key: ValueKey('shell_provider_$langCode'),
           providers: [
             ChangeNotifierProvider.value(value: context.read<MapProvider>()),
             ChangeNotifierProvider.value(
@@ -355,7 +358,7 @@ final GoRouter _router = GoRouter(
             ChangeNotifierProvider.value(value: context.read<GroupProvider>()),
             ChangeNotifierProvider.value(value: context.read<RideProvider>()),
           ],
-          child: MainShell(child: child),
+          child: MainShell(key: ValueKey('main_shell_$langCode'), child: child),
         );
       },
       routes: [
@@ -856,7 +859,6 @@ final GoRouter _router = GoRouter(
             return SellerDashboardScreen(currentUser: currentUser.toEntity());
           },
         ),
-
 
         // ===== NEW FEATURES =====
 

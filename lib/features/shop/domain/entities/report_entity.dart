@@ -49,43 +49,43 @@ class ReportEntity {
   String get typeLabel {
     switch (type) {
       case ReportType.productReport:
-        return 'Reporte de Producto';
+        return 'report_type_product';
       case ReportType.sellerReport:
-        return 'Reporte de Vendedor';
+        return 'report_type_seller';
       case ReportType.orderIssue:
-        return 'Problema con Pedido';
+        return 'report_type_order';
       case ReportType.securityAlert:
-        return 'Alerta de Seguridad';
+        return 'report_type_security';
       case ReportType.suggestion:
-        return 'Sugerencia';
+        return 'report_type_suggestion';
     }
   }
 
   String get statusLabel {
     switch (status) {
       case ReportStatus.pending:
-        return 'Pendiente';
+        return 'report_status_pending';
       case ReportStatus.reviewing:
-        return 'En Revisión';
+        return 'report_status_reviewing';
       case ReportStatus.resolved:
-        return 'Resuelto';
+        return 'report_status_resolved';
       case ReportStatus.dismissed:
-        return 'Descartado';
+        return 'report_status_dismissed';
     }
   }
 
   String get priorityLabel {
     switch (priority) {
       case 5:
-        return '🔴 Urgente';
+        return 'priority_urgent';
       case 4:
-        return '🟠 Alta';
+        return 'priority_high';
       case 3:
-        return '🟡 Media';
+        return 'priority_medium';
       case 2:
-        return '🔵 Baja';
+        return 'priority_low';
       default:
-        return '⚪ Informativa';
+        return 'priority_info';
     }
   }
 }

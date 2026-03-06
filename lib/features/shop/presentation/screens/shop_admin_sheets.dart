@@ -297,7 +297,7 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildStatusBadge(product.isActive),
+            _buildStatusBadge(product.isActive, l),
             PopupMenuButton<String>(
               onSelected: (value) => _handleProductAction(value, product),
               itemBuilder: (_) => [
@@ -320,13 +320,13 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: Row(
                     children: [
                       Icon(Icons.delete, size: 18, color: Colors.red),
                       SizedBox(width: 8),
-                      Text('Eliminar', style: TextStyle(color: Colors.red)),
+                      Text(l.t('delete'), style: TextStyle(color: Colors.red)),
                     ],
                   ),
                 ),
@@ -715,7 +715,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
 
                   // Vendedores registrados
                   Text(
-                    'Vendedores Activos (${_sellers.length})',
+                    '${l.t('admin_active_sellers')} (${_sellers.length})',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -723,7 +723,7 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                   ),
                   const SizedBox(height: 8),
                   if (_sellers.isEmpty)
-                    _buildEmptyCard('No hay vendedores registrados')
+                    _buildEmptyCard(l.t('admin_no_sellers_registered'))
                   else
                     ..._sellers.map(
                       (s) => Card(
@@ -763,47 +763,59 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Permisos de Vendedores',
-                            style: TextStyle(
+                          Text(
+                            l.t('admin_sellers_permissions'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
                           SwitchListTile(
-                            title: const Text('Pueden modificar precios'),
+                            title: Text(l.t('admin_can_modify_prices')),
                             value: _canModifyPrices,
                             onChanged: (v) {
                               setState(() => _canModifyPrices = v);
-                              _showPermissionSnack('Modificar precios', v);
+                              _showPermissionSnack(
+                                l.t('admin_modify_prices_perm'),
+                                v,
+                              );
                             },
                             secondary: const Icon(Icons.attach_money),
                           ),
                           SwitchListTile(
-                            title: const Text('Pueden agregar productos'),
+                            title: Text(l.t('admin_can_add_products')),
                             value: _canAddProducts,
                             onChanged: (v) {
                               setState(() => _canAddProducts = v);
-                              _showPermissionSnack('Agregar productos', v);
+                              _showPermissionSnack(
+                                l.t('admin_add_products_perm'),
+                                v,
+                              );
                             },
                             secondary: const Icon(Icons.add_box),
                           ),
                           SwitchListTile(
-                            title: const Text('Pueden eliminar productos'),
+                            title: Text(l.t('admin_can_delete_products')),
                             value: _canDeleteProducts,
                             onChanged: (v) {
                               setState(() => _canDeleteProducts = v);
-                              _showPermissionSnack('Eliminar productos', v);
+                              _showPermissionSnack(
+                                l.t('admin_delete_products_perm'),
+                                v,
+                              );
                             },
                             secondary: const Icon(Icons.delete),
                           ),
                           SwitchListTile(
-                            title: const Text('Pueden ver reportes'),
+                            title: Text(l.t('admin_can_view_reports')),
                             value: _canViewReports,
                             onChanged: (v) {
                               setState(() => _canViewReports = v);
-                              _showPermissionSnack('Ver reportes', v);
+                              _showPermissionSnack(
+                                l.t('admin_view_reports_perm'),
+                                v,
+                              );
                             },
                             secondary: const Icon(Icons.bar_chart),
                           ),
@@ -821,18 +833,19 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
   }
 
   void _addSeller() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     if (name.isEmpty || email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nombre y correo son obligatorios')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('admin_name_email_required'))));
       return;
     }
     if (!email.contains('@')) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Ingresa un correo válido')));
+      ).showSnackBar(SnackBar(content: Text(l.t('admin_enter_valid_email'))));
       return;
     }
     setState(() => _isSubmitting = true);
@@ -853,27 +866,35 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
         _isSubmitting = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Vendedor "$name" agregado exitosamente')),
+        SnackBar(
+          content: Text(
+            '${l.t('admin_seller_role')} "$name" ${l.t('admin_added_successfully')}',
+          ),
+        ),
       );
     });
   }
 
   void _removeSeller(Map<String, dynamic> seller) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Eliminar vendedor?'),
+        title: Text(l.t('admin_delete_seller_question')),
         content: Text(
-          '¿Estás seguro de eliminar a "${seller['name']}" del equipo?',
+          '${l.t('admin_confirm_delete_seller')} "${seller['name']}" ${l.t('admin_from_team')}?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+            child: Text(
+              l.t('delete'),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -881,15 +902,22 @@ class _ManageSellersSheetState extends State<_ManageSellersSheet> {
     if (confirm == true && mounted) {
       setState(() => _sellers.remove(seller));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('"${seller['name']}" eliminado del equipo')),
+        SnackBar(
+          content: Text(
+            '"${seller['name']}" ${l.t('admin_removed_from_team')}',
+          ),
+        ),
       );
     }
   }
 
   void _showPermissionSnack(String permission, bool enabled) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$permission: ${enabled ? 'activado' : 'desactivado'}'),
+        content: Text(
+          '$permission: ${enabled ? l.t('admin_enabled') : l.t('admin_disabled')}',
+        ),
         duration: const Duration(seconds: 1),
       ),
     );
@@ -915,6 +943,7 @@ class _ReportsSheetState extends State<_ReportsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final products = widget.shopProvider.products;
     final totalValue = products.fold<double>(
       0,
@@ -933,7 +962,12 @@ class _ReportsSheetState extends State<_ReportsSheet> {
       child: Column(
         children: [
           _buildHandle(),
-          _buildHeader('Reportes', Icons.assessment, Colors.orange, context),
+          _buildHeader(
+            l.t('admin_reports'),
+            Icons.assessment,
+            Colors.orange,
+            context,
+          ),
           const Divider(),
           Expanded(
             child: SingleChildScrollView(
@@ -944,19 +978,19 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                   // Resumen con datos reales
                   _buildSummaryCard([
                     _StatData(
-                      'Productos',
+                      l.t('admin_products_label'),
                       '${products.length}',
                       Icons.shopping_bag,
                       Colors.blue,
                     ),
                     _StatData(
-                      'Valor Total',
+                      l.t('admin_total_value'),
                       '\$${totalValue.toStringAsFixed(0)}',
                       Icons.monetization_on,
                       Colors.green,
                     ),
                     _StatData(
-                      'Precio Prom.',
+                      l.t('admin_avg_price'),
                       '\$${avgPrice.toStringAsFixed(0)}',
                       Icons.receipt,
                       Colors.purple,
@@ -975,9 +1009,9 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Generar Reporte',
-                            style: TextStyle(
+                          Text(
+                            l.t('admin_generate_report'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -986,28 +1020,28 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                           DropdownButtonFormField<String>(
                             initialValue: _reportType,
                             decoration: InputDecoration(
-                              labelText: 'Tipo de reporte',
+                              labelText: l.t('admin_report_type'),
                               prefixIcon: const Icon(Icons.description),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'inventario',
-                                child: Text('Inventario'),
+                                child: Text(l.t('admin_inventory')),
                               ),
                               DropdownMenuItem(
                                 value: 'precios',
-                                child: Text('Lista de Precios'),
+                                child: Text(l.t('admin_price_list')),
                               ),
                               DropdownMenuItem(
                                 value: 'agotados',
-                                child: Text('Productos Agotados'),
+                                child: Text(l.t('admin_out_of_stock_products')),
                               ),
                               DropdownMenuItem(
                                 value: 'categorias',
-                                child: Text('Por Categoría'),
+                                child: Text(l.t('admin_by_category')),
                               ),
                             ],
                             onChanged: (v) => setState(() => _reportType = v),
@@ -1016,28 +1050,28 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                           DropdownButtonFormField<String>(
                             initialValue: _period,
                             decoration: InputDecoration(
-                              labelText: 'Período',
+                              labelText: l.t('admin_period'),
                               prefixIcon: const Icon(Icons.schedule),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'hoy',
-                                child: Text('Hoy'),
+                                child: Text(l.t('admin_today')),
                               ),
                               DropdownMenuItem(
                                 value: 'semana',
-                                child: Text('Última semana'),
+                                child: Text(l.t('admin_last_week')),
                               ),
                               DropdownMenuItem(
                                 value: 'mes',
-                                child: Text('Último mes'),
+                                child: Text(l.t('admin_last_month')),
                               ),
                               DropdownMenuItem(
                                 value: 'todo',
-                                child: Text('Todo el historial'),
+                                child: Text(l.t('admin_all_history')),
                               ),
                             ],
                             onChanged: (v) => setState(() => _period = v),
@@ -1059,8 +1093,8 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                                   : const Icon(Icons.download),
                               label: Text(
                                 _isGenerating
-                                    ? 'Generando...'
-                                    : 'Generar Reporte',
+                                    ? l.t('admin_generating')
+                                    : l.t('admin_generate_report'),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
@@ -1100,9 +1134,9 @@ class _ReportsSheetState extends State<_ReportsSheet> {
                                   color: Colors.green[700],
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Reporte Generado',
-                                  style: TextStyle(
+                                Text(
+                                  l.t('admin_report_generated'),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -1119,13 +1153,16 @@ class _ReportsSheetState extends State<_ReportsSheet> {
 
                   const SizedBox(height: 16),
                   // Top productos por precio
-                  const Text(
-                    'Top 5 Productos por Precio',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('admin_top5_by_price'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   if (products.isEmpty)
-                    _buildEmptyCard('Sin datos de productos')
+                    _buildEmptyCard(l.t('admin_no_product_data'))
                   else
                     ...(List<ProductEntity>.from(products)
                           ..sort((a, b) => b.price.compareTo(a.price)))
@@ -1163,10 +1200,11 @@ class _ReportsSheetState extends State<_ReportsSheet> {
   }
 
   void _generateReport() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_reportType == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona un tipo de reporte')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('admin_select_report_type'))));
       return;
     }
     setState(() => _isGenerating = true);
@@ -1179,10 +1217,10 @@ class _ReportsSheetState extends State<_ReportsSheet> {
         case 'inventario':
           final total = products.fold<int>(0, (s, p) => s + p.stock);
           report =
-              '📦 Inventario Total: $total unidades en ${products.length} productos.\n'
-              '✅ Activos: ${products.where((p) => p.isActive).length}\n'
-              '❌ Inactivos: ${products.where((p) => !p.isActive).length}\n'
-              '⚠️ Sin stock: ${products.where((p) => p.stock <= 0).length}';
+              '📦 ${l.t('admin_total_inventory')}: $total ${l.t('admin_units_in')} ${products.length} ${l.t('admin_products_label')}.\n'
+              '✅ ${l.t('admin_active')}: ${products.where((p) => p.isActive).length}\n'
+              '❌ ${l.t('admin_inactive')}: ${products.where((p) => !p.isActive).length}\n'
+              '⚠️ ${l.t('admin_out_of_stock')}: ${products.where((p) => p.stock <= 0).length}';
           break;
         case 'precios':
           final min = products.isEmpty
@@ -1192,36 +1230,40 @@ class _ReportsSheetState extends State<_ReportsSheet> {
               ? 0.0
               : products.map((p) => p.price).reduce((a, b) => a > b ? a : b);
           report =
-              '💰 Lista de Precios:\n'
-              'Precio mínimo: \$${min.toStringAsFixed(2)}\n'
-              'Precio máximo: \$${max.toStringAsFixed(2)}\n'
-              'Productos: ${products.length}';
+              '💰 ${l.t('admin_price_list')}:\n'
+              '${l.t('admin_min_price')}: \$${min.toStringAsFixed(2)}\n'
+              '${l.t('admin_max_price')}: \$${max.toStringAsFixed(2)}\n'
+              '${l.t('admin_products_label')}: ${products.length}';
           break;
         case 'agotados':
           final outOfStock = products.where((p) => p.stock <= 0).toList();
-          report = '⚠️ Productos Agotados: ${outOfStock.length}\n';
+          report =
+              '⚠️ ${l.t('admin_out_of_stock_products')}: ${outOfStock.length}\n';
           for (var p in outOfStock.take(10)) {
             report += '  • ${p.name}\n';
           }
-          if (outOfStock.isEmpty) report += '  ¡No hay productos agotados! 🎉';
+          if (outOfStock.isEmpty)
+            report += '  ${l.t('admin_no_out_of_stock')} 🎉';
           break;
         case 'categorias':
           final categories = <String, int>{};
           for (var p in products) {
             categories[p.category] = (categories[p.category] ?? 0) + 1;
           }
-          report = '📊 Productos por Categoría:\n';
-          categories.forEach((k, v) => report += '  • $k: $v productos\n');
+          report = '📊 ${l.t('admin_products_by_category')}:\n';
+          categories.forEach(
+            (k, v) => report += '  • $k: $v ${l.t('admin_products_label')}\n',
+          );
           break;
         default:
-          report = 'Reporte no disponible';
+          report = l.t('admin_report_not_available');
       }
       setState(() {
         _generatedReport = report;
         _isGenerating = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Reporte generado exitosamente ✅')),
+        SnackBar(content: Text('${l.t('admin_report_generated_success')} ✅')),
       );
     });
   }
@@ -1253,6 +1295,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final filtered = _requests.where((r) {
       if (_statusFilter != 'todas' && r['status'] != _statusFilter) {
         return false;
@@ -1276,7 +1319,12 @@ class _RequestsSheetState extends State<_RequestsSheet> {
       child: Column(
         children: [
           _buildHandle(),
-          _buildHeader('Solicitudes', Icons.inbox, Colors.indigo, context),
+          _buildHeader(
+            l.t('admin_requests'),
+            Icons.inbox,
+            Colors.indigo,
+            context,
+          ),
           const Divider(),
           Expanded(
             child: SingleChildScrollView(
@@ -1286,19 +1334,19 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                 children: [
                   _buildSummaryCard([
                     _StatData(
-                      'Pendientes',
+                      l.t('admin_pending'),
                       '$pending',
                       Icons.pending,
                       Colors.orange,
                     ),
                     _StatData(
-                      'En Proceso',
+                      l.t('admin_in_progress'),
                       '$inProgress',
                       Icons.hourglass_top,
                       Colors.blue,
                     ),
                     _StatData(
-                      'Resueltas',
+                      l.t('admin_resolved'),
                       '$resolved',
                       Icons.check_circle,
                       Colors.green,
@@ -1317,9 +1365,9 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Filtrar',
-                            style: TextStyle(
+                          Text(
+                            l.t('admin_filter'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -1328,28 +1376,28 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                           DropdownButtonFormField<String>(
                             initialValue: _statusFilter,
                             decoration: InputDecoration(
-                              labelText: 'Estado',
+                              labelText: l.t('admin_status'),
                               prefixIcon: const Icon(Icons.filter_list),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'todas',
-                                child: Text('Todas'),
+                                child: Text(l.t('admin_all')),
                               ),
                               DropdownMenuItem(
                                 value: 'pendiente',
-                                child: Text('Pendientes'),
+                                child: Text(l.t('admin_pending')),
                               ),
                               DropdownMenuItem(
                                 value: 'en_proceso',
-                                child: Text('En Proceso'),
+                                child: Text(l.t('admin_in_progress')),
                               ),
                               DropdownMenuItem(
                                 value: 'resuelta',
-                                child: Text('Resueltas'),
+                                child: Text(l.t('admin_resolved')),
                               ),
                             ],
                             onChanged: (v) =>
@@ -1359,32 +1407,32 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                           DropdownButtonFormField<String>(
                             initialValue: _typeFilter,
                             decoration: InputDecoration(
-                              labelText: 'Tipo',
+                              labelText: l.t('admin_type'),
                               prefixIcon: const Icon(Icons.category),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'todas',
-                                child: Text('Todas'),
+                                child: Text(l.t('admin_all')),
                               ),
                               DropdownMenuItem(
                                 value: 'devolucion',
-                                child: Text('Devolución'),
+                                child: Text(l.t('admin_return')),
                               ),
                               DropdownMenuItem(
                                 value: 'cambio',
-                                child: Text('Cambio'),
+                                child: Text(l.t('admin_exchange')),
                               ),
                               DropdownMenuItem(
                                 value: 'garantia',
-                                child: Text('Garantía'),
+                                child: Text(l.t('admin_warranty')),
                               ),
                               DropdownMenuItem(
                                 value: 'reclamo',
-                                child: Text('Reclamo'),
+                                child: Text(l.t('admin_claim')),
                               ),
                             ],
                             onChanged: (v) =>
@@ -1407,9 +1455,9 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Nueva Solicitud',
-                            style: TextStyle(
+                          Text(
+                            l.t('admin_new_request'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -1418,27 +1466,27 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                           DropdownButtonFormField<String>(
                             initialValue: _newRequestType,
                             decoration: InputDecoration(
-                              labelText: 'Tipo',
+                              labelText: l.t('admin_type'),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'devolucion',
-                                child: Text('Devolución'),
+                                child: Text(l.t('admin_return')),
                               ),
                               DropdownMenuItem(
                                 value: 'cambio',
-                                child: Text('Cambio'),
+                                child: Text(l.t('admin_exchange')),
                               ),
                               DropdownMenuItem(
                                 value: 'garantia',
-                                child: Text('Garantía'),
+                                child: Text(l.t('admin_warranty')),
                               ),
                               DropdownMenuItem(
                                 value: 'reclamo',
-                                child: Text('Reclamo'),
+                                child: Text(l.t('admin_claim')),
                               ),
                             ],
                             onChanged: (v) => setState(
@@ -1450,7 +1498,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                             controller: _requestDescController,
                             maxLines: 3,
                             decoration: InputDecoration(
-                              labelText: 'Descripción *',
+                              labelText: '${l.t('description')} *',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -1462,7 +1510,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                             child: ElevatedButton.icon(
                               onPressed: _isAdding ? null : _createRequest,
                               icon: const Icon(Icons.add),
-                              label: const Text('Crear Solicitud'),
+                              label: Text(l.t('admin_create_request')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.indigo,
                                 foregroundColor: Colors.white,
@@ -1482,7 +1530,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                   const SizedBox(height: 16),
 
                   Text(
-                    'Solicitudes (${filtered.length})',
+                    '${l.t('admin_requests')} (${filtered.length})',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1490,7 +1538,7 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                   ),
                   const SizedBox(height: 8),
                   if (filtered.isEmpty)
-                    _buildEmptyCard('No hay solicitudes')
+                    _buildEmptyCard(l.t('admin_no_requests'))
                   else
                     ...filtered.map(
                       (r) => Card(
@@ -1515,19 +1563,19 @@ class _RequestsSheetState extends State<_RequestsSheet> {
                           trailing: PopupMenuButton<String>(
                             onSelected: (v) => _updateRequestStatus(r, v),
                             itemBuilder: (_) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'en_proceso',
-                                child: Text('En Proceso'),
+                                child: Text(l.t('admin_in_progress')),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'resuelta',
-                                child: Text('Resuelta'),
+                                child: Text(l.t('admin_resolved')),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'eliminar',
                                 child: Text(
-                                  'Eliminar',
-                                  style: TextStyle(color: Colors.red),
+                                  l.t('delete'),
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                               ),
                             ],
@@ -1545,10 +1593,11 @@ class _RequestsSheetState extends State<_RequestsSheet> {
   }
 
   void _createRequest() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final desc = _requestDescController.text.trim();
     if (desc.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('La descripción es obligatoria')),
+        SnackBar(content: Text(l.t('admin_description_required'))),
       );
       return;
     }
@@ -1561,24 +1610,25 @@ class _RequestsSheetState extends State<_RequestsSheet> {
       });
       _requestDescController.clear();
     });
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Solicitud creada ✅')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${l.t('admin_request_created')} ✅')),
+    );
   }
 
   void _updateRequestStatus(Map<String, dynamic> request, String action) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     setState(() {
       if (action == 'eliminar') {
         _requests.remove(request);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Solicitud eliminada')));
+        ).showSnackBar(SnackBar(content: Text(l.t('admin_request_deleted'))));
       } else {
         request['status'] = action;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Estado actualizado a: ${action == 'en_proceso' ? 'En Proceso' : 'Resuelta'}',
+              '${l.t('admin_status_updated_to')}: ${action == 'en_proceso' ? l.t('admin_in_progress') : l.t('admin_resolved')}',
             ),
           ),
         );
@@ -1629,6 +1679,7 @@ class _StatsSheetState extends State<_StatsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final products = widget.shopProvider.products;
     final totalValue = products.fold<double>(
       0,
@@ -1655,7 +1706,12 @@ class _StatsSheetState extends State<_StatsSheet> {
       child: Column(
         children: [
           _buildHandle(),
-          _buildHeader('Estadísticas', Icons.analytics, Colors.purple, context),
+          _buildHeader(
+            l.t('admin_statistics'),
+            Icons.analytics,
+            Colors.purple,
+            context,
+          ),
           const Divider(),
           Expanded(
             child: SingleChildScrollView(
@@ -1665,19 +1721,19 @@ class _StatsSheetState extends State<_StatsSheet> {
                 children: [
                   _buildSummaryCard([
                     _StatData(
-                      'Productos',
+                      l.t('admin_products_label'),
                       '${products.length}',
                       Icons.shopping_bag,
                       Colors.blue,
                     ),
                     _StatData(
-                      'Categorías',
+                      l.t('admin_categories'),
                       '${categories.length}',
                       Icons.category,
                       Colors.green,
                     ),
                     _StatData(
-                      'Activos',
+                      l.t('admin_active'),
                       '$conversionRate%',
                       Icons.trending_up,
                       Colors.purple,
@@ -1686,19 +1742,19 @@ class _StatsSheetState extends State<_StatsSheet> {
                   const SizedBox(height: 16),
                   _buildSummaryCard([
                     _StatData(
-                      'Valor Inv.',
+                      l.t('admin_inventory_value'),
                       '\$${totalValue.toStringAsFixed(0)}',
                       Icons.monetization_on,
                       Colors.green,
                     ),
                     _StatData(
-                      'Precio Prom.',
+                      l.t('admin_avg_price'),
                       '\$${avgPrice.toStringAsFixed(0)}',
                       Icons.receipt,
                       Colors.orange,
                     ),
                     _StatData(
-                      'Sin Stock',
+                      l.t('admin_out_of_stock'),
                       '${products.where((p) => p.stock <= 0).length}',
                       Icons.warning,
                       Colors.red,
@@ -1717,9 +1773,9 @@ class _StatsSheetState extends State<_StatsSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Consultar Período',
-                            style: TextStyle(
+                          Text(
+                            l.t('admin_query_period'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -1752,7 +1808,7 @@ class _StatsSheetState extends State<_StatsSheet> {
                                   const SizedBox(width: 8),
                                   Text(
                                     _dateRange == null
-                                        ? 'Seleccionar rango de fechas'
+                                        ? l.t('admin_select_date_range')
                                         : '${_dateRange!.start.day}/${_dateRange!.start.month}/${_dateRange!.start.year} - ${_dateRange!.end.day}/${_dateRange!.end.month}/${_dateRange!.end.year}',
                                     style: TextStyle(
                                       color: _dateRange == null
@@ -1786,9 +1842,9 @@ class _StatsSheetState extends State<_StatsSheet> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(12),
                                     child: Text(
-                                      '📊 En este período:\n'
-                                      '• ${inRange.length} productos creados\n'
-                                      '• Valor: \$${inRange.fold<double>(0, (s, p) => s + p.price).toStringAsFixed(2)}',
+                                      '📊 ${l.t('admin_in_this_period')}:\n'
+                                      '• ${inRange.length} ${l.t('admin_products_created')}\n'
+                                      '• ${l.t('admin_total_value')}: \$${inRange.fold<double>(0, (s, p) => s + p.price).toStringAsFixed(2)}',
                                       style: const TextStyle(fontSize: 14),
                                     ),
                                   ),
@@ -1803,9 +1859,12 @@ class _StatsSheetState extends State<_StatsSheet> {
                   const SizedBox(height: 16),
 
                   // Distribución por categoría
-                  const Text(
-                    'Distribución por Categoría',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('admin_distribution_by_category'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   ...categories.map((cat) {
@@ -1889,6 +1948,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
@@ -1899,7 +1959,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
         children: [
           _buildHandle(),
           _buildHeader(
-            'Centro de Seguridad',
+            l.t('admin_security_center'),
             Icons.security,
             Colors.red,
             context,
@@ -1940,8 +2000,8 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                               children: [
                                 Text(
                                   (_twoFactor && _loginNotifications)
-                                      ? 'Estado: Seguro'
-                                      : 'Estado: Mejorable',
+                                      ? l.t('admin_status_secure')
+                                      : l.t('admin_status_improvable'),
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -1952,8 +2012,8 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                                 ),
                                 Text(
                                   (_twoFactor && _loginNotifications)
-                                      ? 'Todas las protecciones activas'
-                                      : 'Activa más protecciones para mayor seguridad',
+                                      ? l.t('admin_all_protections_active')
+                                      : l.t('admin_enable_more_protections'),
                                 ),
                               ],
                             ),
@@ -1965,9 +2025,12 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                   const SizedBox(height: 16),
 
                   // Configuraciones funcionales
-                  const Text(
-                    'Configuración',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('admin_configuration'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
@@ -1978,15 +2041,15 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                     child: Column(
                       children: [
                         SwitchListTile(
-                          title: const Text('Autenticación de dos factores'),
-                          subtitle: const Text('Capa extra de seguridad'),
+                          title: Text(l.t('admin_two_factor_auth')),
+                          subtitle: Text(l.t('admin_extra_security_layer')),
                           value: _twoFactor,
                           onChanged: (v) {
                             setState(() => _twoFactor = v);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  '2FA ${v ? 'activado ✅' : 'desactivado ❌'}',
+                                  '2FA ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
                                 ),
                               ),
                             );
@@ -1995,17 +2058,15 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                         ),
                         const Divider(height: 1),
                         SwitchListTile(
-                          title: const Text(
-                            'Notificaciones de inicio de sesión',
-                          ),
-                          subtitle: const Text('Alertas de acceso'),
+                          title: Text(l.t('admin_login_notifications')),
+                          subtitle: Text(l.t('admin_access_alerts')),
                           value: _loginNotifications,
                           onChanged: (v) {
                             setState(() => _loginNotifications = v);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Notificaciones ${v ? 'activadas ✅' : 'desactivadas ❌'}',
+                                  '${l.t('admin_notifications')} ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
                                 ),
                               ),
                             );
@@ -2014,15 +2075,15 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                         ),
                         const Divider(height: 1),
                         SwitchListTile(
-                          title: const Text('Registro de actividad'),
-                          subtitle: const Text('Log de acciones'),
+                          title: Text(l.t('admin_activity_log')),
+                          subtitle: Text(l.t('admin_action_log')),
                           value: _activityLog,
                           onChanged: (v) {
                             setState(() => _activityLog = v);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Log ${v ? 'activado ✅' : 'desactivado ❌'}',
+                                  'Log ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
                                 ),
                               ),
                             );
@@ -2031,15 +2092,15 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                         ),
                         const Divider(height: 1),
                         SwitchListTile(
-                          title: const Text('Bloqueo por intentos fallidos'),
-                          subtitle: const Text('Bloqueo tras 5 intentos'),
+                          title: Text(l.t('admin_failed_attempt_lock')),
+                          subtitle: Text(l.t('admin_lock_after_5_attempts')),
                           value: _failedAttemptLock,
                           onChanged: (v) {
                             setState(() => _failedAttemptLock = v);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Bloqueo ${v ? 'activado ✅' : 'desactivado ❌'}',
+                                  '${l.t('admin_lock')} ${v ? '${l.t('admin_enabled')} ✅' : '${l.t('admin_disabled')} ❌'}',
                                 ),
                               ),
                             );
@@ -2062,9 +2123,9 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Cambiar Contraseña',
-                            style: TextStyle(
+                          Text(
+                            l.t('admin_change_password'),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -2074,7 +2135,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             controller: _currentPasswordController,
                             obscureText: _obscureCurrent,
                             decoration: InputDecoration(
-                              labelText: 'Contraseña actual',
+                              labelText: l.t('admin_current_password'),
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -2096,7 +2157,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             controller: _newPasswordController,
                             obscureText: _obscureNew,
                             decoration: InputDecoration(
-                              labelText: 'Nueva contraseña',
+                              labelText: l.t('admin_new_password'),
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -2117,7 +2178,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                             controller: _confirmPasswordController,
                             obscureText: _obscureConfirm,
                             decoration: InputDecoration(
-                              labelText: 'Confirmar nueva contraseña',
+                              labelText: l.t('admin_confirm_new_password'),
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -2153,8 +2214,8 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                                   : const Icon(Icons.vpn_key),
                               label: Text(
                                 _isChangingPassword
-                                    ? 'Cambiando...'
-                                    : 'Actualizar Contraseña',
+                                    ? l.t('admin_changing')
+                                    : l.t('admin_update_password'),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
@@ -2175,9 +2236,12 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                   const SizedBox(height: 16),
 
                   // Sesión activa
-                  const Text(
-                    'Sesiones Activas',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('admin_active_sessions'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Card(
@@ -2190,8 +2254,8 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                         Icons.phone_iphone,
                         color: Colors.blue,
                       ),
-                      title: const Text('Este dispositivo'),
-                      subtitle: const Text('Activo ahora'),
+                      title: Text(l.t('admin_this_device')),
+                      subtitle: Text(l.t('admin_active_now')),
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -2202,7 +2266,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Actual',
+                          l.t('admin_current'),
                           style: TextStyle(
                             color: Colors.green[700],
                             fontSize: 12,
@@ -2217,17 +2281,17 @@ class _SecuritySheetState extends State<_SecuritySheet> {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(
-                              'Todas las sesiones remotas cerradas ✅',
+                              '${l.t('admin_all_remote_sessions_closed')} ✅',
                             ),
                           ),
                         );
                       },
                       icon: const Icon(Icons.logout, color: Colors.red),
-                      label: const Text(
-                        'Cerrar todas las sesiones',
-                        style: TextStyle(color: Colors.red),
+                      label: Text(
+                        l.t('admin_close_all_sessions'),
+                        style: const TextStyle(color: Colors.red),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
@@ -2248,27 +2312,26 @@ class _SecuritySheetState extends State<_SecuritySheet> {
   }
 
   void _changePassword() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final current = _currentPasswordController.text.trim();
     final newPass = _newPasswordController.text.trim();
     final confirm = _confirmPasswordController.text.trim();
 
     if (current.isEmpty || newPass.isEmpty || confirm.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Todos los campos son obligatorios')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('admin_all_fields_required'))));
       return;
     }
     if (newPass.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('La nueva contraseña debe tener al menos 6 caracteres'),
-        ),
+        SnackBar(content: Text(l.t('admin_password_min_6_chars'))),
       );
       return;
     }
     if (newPass != confirm) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Las contraseñas no coinciden')),
+        SnackBar(content: Text(l.t('admin_passwords_dont_match'))),
       );
       return;
     }
@@ -2281,7 +2344,7 @@ class _SecuritySheetState extends State<_SecuritySheet> {
       _newPasswordController.clear();
       _confirmPasswordController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Contraseña actualizada exitosamente ✅')),
+        SnackBar(content: Text('${l.t('admin_password_updated_success')} ✅')),
       );
     });
   }
@@ -2390,7 +2453,7 @@ Widget _buildEmptyCard(String message) {
   );
 }
 
-Widget _buildStatusBadge(bool isActive) {
+Widget _buildStatusBadge(bool isActive, LocaleNotifier l) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
@@ -2398,7 +2461,7 @@ Widget _buildStatusBadge(bool isActive) {
       borderRadius: BorderRadius.circular(8),
     ),
     child: Text(
-      isActive ? 'Activo' : 'Inactivo',
+      isActive ? l.t('active') : l.t('inactive'),
       style: TextStyle(
         color: isActive ? Colors.green[700] : Colors.red[700],
         fontSize: 11,

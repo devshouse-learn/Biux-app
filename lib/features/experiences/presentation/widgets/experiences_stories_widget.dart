@@ -8,6 +8,7 @@ import 'package:biux/features/experiences/presentation/providers/story_groups_pr
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/experiences/presentation/screens/story_viewer_screen.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar stories agrupadas por usuario (tipo Instagram)
 /// Se muestra en la parte superior con scroll horizontal de círculos
@@ -189,15 +190,23 @@ class _AddStoryButtonState extends State<_AddStoryButton> {
                 const SizedBox(height: 4),
                 SizedBox(
                   width: 80,
-                  child: Text(
-                    'Tu story',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: theme.textTheme.bodySmall?.color,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Builder(
+                    builder: (context) {
+                      final l = Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      );
+                      return Text(
+                        l.t('your_story'),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.textTheme.bodySmall?.color,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    },
                   ),
                 ),
               ],

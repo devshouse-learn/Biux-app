@@ -7,11 +7,11 @@ enum UserRole {
   String get displayName {
     switch (this) {
       case UserRole.user:
-        return 'Usuario';
+        return 'user_role_user';
       case UserRole.seller:
-        return 'Vendedor Autorizado';
+        return 'user_role_seller';
       case UserRole.admin:
-        return 'Administrador';
+        return 'user_role_admin';
     }
   }
 }

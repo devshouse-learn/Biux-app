@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para editar el recorte cuadrado de una imagen
 /// El usuario puede desplazar y escalar la imagen para ajustarla al encuadre cuadrado
@@ -60,13 +62,13 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
         });
       } else {
         setState(() {
-          _error = 'No se pudo decodificar la imagen';
+          _error = 'image_decode_error';
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Error al cargar imagen: $e';
+        _error = 'image_load_error';
         _isLoading = false;
       });
     }
@@ -118,8 +120,12 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
       final imageH = _originalImageSize!.height;
 
       // Usar las dimensiones reales del contenedor guardadas del LayoutBuilder
-      final containerW = _containerSize.width > 0 ? _containerSize.width : screenSize.width;
-      final containerH = _containerSize.height > 0 ? _containerSize.height : screenSize.height * 0.6;
+      final containerW = _containerSize.width > 0
+          ? _containerSize.width
+          : screenSize.width;
+      final containerH = _containerSize.height > 0
+          ? _containerSize.height
+          : screenSize.height * 0.6;
       final displayScale = math.min(containerW / imageW, containerH / imageH);
 
       // Escala total aplicada (displayScale * _scale)
@@ -144,7 +150,10 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
       // Clamping
       cropX = cropX.clamp(0, (imageW - 1).toInt());
       cropY = cropY.clamp(0, (imageH - 1).toInt());
-      cropSize = cropSize.clamp(1, math.min(imageW.toInt() - cropX, imageH.toInt() - cropY));
+      cropSize = cropSize.clamp(
+        1,
+        math.min(imageW.toInt() - cropX, imageH.toInt() - cropY),
+      );
 
       final croppedImage = img.copyCrop(
         originalImage,
@@ -155,7 +164,11 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
       );
 
       // Redimensionar a 1080x1080
-      final resizedImage = img.copyResize(croppedImage, width: 1080, height: 1080);
+      final resizedImage = img.copyResize(
+        croppedImage,
+        width: 1080,
+        height: 1080,
+      );
       final encodedBytes = img.encodeJpg(resizedImage, quality: 90);
 
       final originalPath = widget.imageFile.path;
@@ -171,8 +184,9 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
     } catch (e) {
       setState(() => _isCropping = false);
       if (mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al recortar: $e')),
+          SnackBar(content: Text('${l.t('error_cropping_image')}: $e')),
         );
       }
     }
@@ -180,30 +194,31 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final screenSize = MediaQuery.of(context).size;
     final frameSize = screenSize.width - 40;
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.title ?? 'Ajustar imagen')),
+        appBar: AppBar(title: Text(widget.title ?? l.t('adjust_image'))),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.title ?? 'Ajustar imagen')),
+        appBar: AppBar(title: Text(widget.title ?? l.t('adjust_image'))),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error, color: Colors.red, size: 64),
               const SizedBox(height: 16),
-              Text(_error!),
+              Text(l.t(_error!)),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Volver'),
+                child: Text(l.t('go_back')),
               ),
             ],
           ),
@@ -213,7 +228,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title ?? 'Ajustar imagen'),
+        title: Text(widget.title ?? l.t('adjust_image')),
         elevation: 0,
       ),
       body: Column(
@@ -231,7 +246,10 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                 // Calcular cómo se muestra la imagen con BoxFit.contain
                 final imageW = _originalImageSize!.width;
                 final imageH = _originalImageSize!.height;
-                final displayScale = math.min(containerW / imageW, containerH / imageH);
+                final displayScale = math.min(
+                  containerW / imageW,
+                  containerH / imageH,
+                );
                 final displayW = imageW * displayScale;
                 final displayH = imageH * displayScale;
                 final imageDisplaySize = Size(displayW, displayH);
@@ -250,7 +268,10 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                     },
                     onScaleUpdate: (details) {
                       setState(() {
-                        _scale = (_baseScale * details.scale).clamp(minScale, 5.0);
+                        _scale = (_baseScale * details.scale).clamp(
+                          minScale,
+                          5.0,
+                        );
                         final delta = details.focalPoint - _startFocalPoint;
                         _offset = _startOffset + delta;
                         _clampOffset(frameSize, imageDisplaySize);
@@ -277,7 +298,11 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                               widget.imageFile,
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.broken_image, color: Colors.white, size: 64);
+                                return const Icon(
+                                  Icons.broken_image,
+                                  color: Colors.white,
+                                  size: 64,
+                                );
                               },
                             ),
                           ),
@@ -338,24 +363,40 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                                 // Líneas de tercios horizontales
                                 Positioned(
                                   top: frameSize / 3 - 0.5,
-                                  left: 0, right: 0,
-                                  child: Container(height: 0.5, color: Colors.white38),
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                    height: 0.5,
+                                    color: Colors.white38,
+                                  ),
                                 ),
                                 Positioned(
                                   top: frameSize * 2 / 3 - 0.5,
-                                  left: 0, right: 0,
-                                  child: Container(height: 0.5, color: Colors.white38),
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                    height: 0.5,
+                                    color: Colors.white38,
+                                  ),
                                 ),
                                 // Líneas de tercios verticales
                                 Positioned(
                                   left: frameSize / 3 - 0.5,
-                                  top: 0, bottom: 0,
-                                  child: Container(width: 0.5, color: Colors.white38),
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 0.5,
+                                    color: Colors.white38,
+                                  ),
                                 ),
                                 Positioned(
                                   left: frameSize * 2 / 3 - 0.5,
-                                  top: 0, bottom: 0,
-                                  child: Container(width: 0.5, color: Colors.white38),
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 0.5,
+                                    color: Colors.white38,
+                                  ),
                                 ),
                                 // Esquinas
                                 _buildCorner(top: -1, left: -1),
@@ -382,7 +423,7 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Pellizca para escalar, arrastra para ajustar',
+                  l.t('pinch_to_scale'),
                   style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
@@ -391,9 +432,11 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
-                      onPressed: _isCropping ? null : () => Navigator.pop(context),
+                      onPressed: _isCropping
+                          ? null
+                          : () => Navigator.pop(context),
                       icon: const Icon(Icons.close),
-                      label: const Text('Cancelar'),
+                      label: Text(l.t('cancel')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -403,13 +446,17 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
                       onPressed: _isCropping ? null : _onAccept,
                       icon: _isCropping
                           ? const SizedBox(
-                              width: 18, height: 18,
+                              width: 18,
+                              height: 18,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white,
+                                strokeWidth: 2,
+                                color: Colors.white,
                               ),
                             )
                           : const Icon(Icons.check),
-                      label: Text(_isCropping ? 'Procesando...' : 'Aceptar'),
+                      label: Text(
+                        _isCropping ? l.t('processing_label') : l.t('accept'),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -425,7 +472,12 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
     );
   }
 
-  Widget _buildCorner({double? top, double? bottom, double? left, double? right}) {
+  Widget _buildCorner({
+    double? top,
+    double? bottom,
+    double? left,
+    double? right,
+  }) {
     return Positioned(
       top: top,
       bottom: bottom,
@@ -436,10 +488,18 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
         height: 20,
         decoration: BoxDecoration(
           border: Border(
-            top: top != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
-            bottom: bottom != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
-            left: left != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
-            right: right != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
+            top: top != null
+                ? const BorderSide(color: Colors.white, width: 3)
+                : BorderSide.none,
+            bottom: bottom != null
+                ? const BorderSide(color: Colors.white, width: 3)
+                : BorderSide.none,
+            left: left != null
+                ? const BorderSide(color: Colors.white, width: 3)
+                : BorderSide.none,
+            right: right != null
+                ? const BorderSide(color: Colors.white, width: 3)
+                : BorderSide.none,
           ),
         ),
       ),

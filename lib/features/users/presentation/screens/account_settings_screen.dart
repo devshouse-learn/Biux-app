@@ -330,7 +330,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
                 // Sección de Opciones de Cuenta
                 Text(
-                  'Opciones de Cuenta',
+                  l.t('account_options'),
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -343,8 +343,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildSettingOptionButton(
                   context: context,
                   icon: Icons.logout,
-                  title: 'Cerrar Sesión',
-                  subtitle: 'Cierra tu sesión actual',
+                  title: l.t('logout'),
+                  subtitle: l.t('close_current_session'),
                   onTap: () {
                     _showLogoutDialog();
                   },
@@ -355,8 +355,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildSettingOptionButton(
                   context: context,
                   icon: Icons.delete_forever,
-                  title: 'Eliminar Cuenta',
-                  subtitle: 'Elimina permanentemente tu cuenta',
+                  title: l.t('delete_account'),
+                  subtitle: l.t('permanently_delete_account'),
                   onTap: () {
                     _showDeleteAccountDialog();
                   },
@@ -542,18 +542,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   void _showLogoutDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Cerrar Sesión'),
-          content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+          title: Text(l.t('logout')),
+          content: Text(l.t('sign_out_confirm')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -564,10 +565,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text(
-                'Confirmar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -576,21 +574,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   void _showDeleteAccountDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Eliminar Cuenta'),
-          content: const Text(
-            '¿Estás seguro de que deseas eliminar tu cuenta? '
-            'Esta acción no se puede deshacer.',
-          ),
+          title: Text(l.t('delete_account')),
+          content: Text(l.t('delete_account_confirm')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -601,10 +597,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text(
-                'Confirmar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );

@@ -563,6 +563,7 @@ void showDialogCreateStory({
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
   bool _isAdvertisement = false;
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
 
   return await showDialog(
     context: context,
@@ -602,7 +603,7 @@ void showDialogCreateStory({
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Crear Historia',
+                            l.t('create_story'),
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -668,7 +669,7 @@ void showDialogCreateStory({
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Impulsa tu historia',
+                                    l.t('boost_your_story'),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -689,7 +690,7 @@ void showDialogCreateStory({
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
-                                        'PREMIUM',
+                                        l.t('premium_label'),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w900,
@@ -730,7 +731,7 @@ void showDialogCreateStory({
 
                             // Descripción y beneficios
                             Text(
-                              '✨ Tu historia aparecerá con un distintivo especial y mayor alcance a todos los usuarios',
+                              l.t('ad_special_badge_desc'),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF1A1A1A),
@@ -745,17 +746,19 @@ void showDialogCreateStory({
                             Wrap(
                               spacing: 6,
                               children: [
-                                _buildAdvertisementBadge('🎯 Alcance +500%'),
-                                _buildAdvertisementBadge('⭐ Destaque premium'),
+                                _buildAdvertisementBadge(l.t('ad_reach_500')),
                                 _buildAdvertisementBadge(
-                                  '📊 Más interacciones',
+                                  l.t('ad_premium_highlight'),
+                                ),
+                                _buildAdvertisementBadge(
+                                  l.t('ad_more_interactions'),
                                 ),
                               ],
                             ),
                           ] else ...[
                             const SizedBox(height: 8),
                             Text(
-                              'Activa la publicidad para impulsar tu historia y alcanzar más usuarios',
+                              l.t('activate_ad_to_boost'),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: ColorTokens.neutral70,
@@ -804,8 +807,8 @@ void showDialogCreateStory({
                         ),
                         label: Text(
                           _isAdvertisement
-                              ? 'Publicar como Publicidad'
-                              : 'Publicar',
+                              ? l.t('publish_as_ad')
+                              : l.t('publish'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

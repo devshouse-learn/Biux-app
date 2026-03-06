@@ -374,7 +374,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      '@${admin['userName'] ?? 'usuario'}',
+                                      '@${admin['userName'] ?? l.t('user')}',
                                       style: TextStyle(
                                         color: ColorTokens.neutral60,
                                         fontSize: 11,

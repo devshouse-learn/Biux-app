@@ -260,7 +260,9 @@ class AttendeeCard extends StatelessWidget {
           if (attendee.bikeType != null)
             Text('${l.t('bike')}: ${attendee.bikeType}'),
           if (attendee.level != null)
-            Text('${l.t('difficulty_level')}: ${attendee.level!.displayName}'),
+            Text(
+              '${l.t('difficulty_level')}: ${l.t(attendee.level!.displayName)}',
+            ),
         ],
       ),
       onTap: () {

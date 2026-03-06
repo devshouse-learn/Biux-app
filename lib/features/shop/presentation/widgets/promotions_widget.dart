@@ -84,15 +84,15 @@ class Promotion {
   String get typeLabel {
     switch (type) {
       case 'descuento':
-        return 'Descuento';
+        return 'promo_type_discount';
       case 'oferta':
-        return 'Oferta';
+        return 'promo_type_offer';
       case 'evento':
-        return 'Evento';
+        return 'promo_type_event';
       case 'novedad':
-        return 'Novedad';
+        return 'promo_type_new';
       default:
-        return 'Promoción';
+        return 'promo_type_promo';
     }
   }
 }
@@ -843,12 +843,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             const SizedBox(height: 20),
 
             // Campo: Ubicación
-            _buildLabel('Ubicación (opcional)'),
+            _buildLabel(l.t('promo_location_label')),
             const SizedBox(height: 8),
             TextFormField(
               controller: _locationController,
               decoration: _inputDecoration(
-                hint: 'Ej: Tienda de ciclismo Calle 80, Bogotá',
+                hint: l.t('promo_location_hint'),
                 icon: Icons.location_on_outlined,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -856,12 +856,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             const SizedBox(height: 20),
 
             // Campo: Enlace o contacto
-            _buildLabel('Enlace o contacto (opcional)'),
+            _buildLabel(l.t('promo_contact_label')),
             const SizedBox(height: 8),
             TextFormField(
               controller: _contactController,
               decoration: _inputDecoration(
-                hint: 'Ej: https://mitienda.com o +57 300 123 4567',
+                hint: l.t('promo_contact_hint'),
                 icon: Icons.link,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -878,13 +878,13 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   color: const Color(0xFF16242D).withValues(alpha: 0.08),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.info_outline, size: 18, color: Color(0xFF5A7A8A)),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Las promociones serán visibles para todos los ciclistas de tu comunidad.',
+                      l.t('promo_info_visibility'),
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF5A7A8A),
@@ -921,8 +921,8 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Cancelar',
+                    child: Text(
+                      l.t('promo_cancel'),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -946,7 +946,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                           )
                         : const Icon(Icons.send_rounded, size: 18),
                     label: Text(
-                      _isPublishing ? 'Publicando...' : 'Publicar Promoción',
+                      _isPublishing
+                          ? l.t('promo_publishing')
+                          : l.t('promo_publish_promotion'),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -1073,10 +1075,11 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
 
   Future<void> _publishPromotion() async {
     if (!_formKey.currentState!.validate()) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     final user = _auth.currentUser;
     if (user == null) {
-      _showSnackBar('Debes iniciar sesión para publicar', isError: true);
+      _showSnackBar(l.t('promo_login_required'), isError: true);
       return;
     }
 
@@ -1093,7 +1096,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         expiresAt: _selectedDate,
         createdAt: DateTime.now(),
         userId: user.uid,
-        userName: user.displayName ?? 'Ciclista',
+        userName: user.displayName ?? l.t('promo_default_username'),
       );
 
       await _promotionsRef.add(promotion.toMap());
@@ -1108,38 +1111,39 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         _selectedDate = null;
       });
 
-      _showSnackBar('Promoción publicada exitosamente 🎉');
+      _showSnackBar(l.t('promo_published_success'));
 
       // Ir a pestaña de activas
       _tabController.animateTo(0);
     } catch (e) {
-      _showSnackBar('Error al publicar: $e', isError: true);
+      _showSnackBar('${l.t('promo_error_publishing')}: $e', isError: true);
     } finally {
       setState(() => _isPublishing = false);
     }
   }
 
   void _confirmDelete(Promotion promo) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Eliminar Promoción',
+        title: Text(
+          l.t('promo_delete_title'),
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: Color(0xFF16242D),
           ),
         ),
         content: Text(
-          '¿Estás seguro de eliminar "${promo.title}"?\nEsta acción no se puede deshacer.',
+          '${l.t('promo_confirm_delete')} "${promo.title}"?\n${l.t('promo_action_irreversible')}',
           style: const TextStyle(color: Color(0xFF5A7A8A)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Cancelar',
+            child: Text(
+              l.t('promo_cancel'),
               style: TextStyle(color: Color(0xFF5A7A8A)),
             ),
           ),
@@ -1148,9 +1152,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
               Navigator.pop(ctx);
               try {
                 await _promotionsRef.doc(promo.id).delete();
-                _showSnackBar('Promoción eliminada');
+                _showSnackBar(l.t('promo_deleted_success'));
               } catch (e) {
-                _showSnackBar('Error al eliminar: $e', isError: true);
+                _showSnackBar(
+                  '${l.t('promo_error_deleting')}: $e',
+                  isError: true,
+                );
               }
             },
             style: ElevatedButton.styleFrom(
@@ -1160,7 +1167,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('promo_delete_button')),
           ),
         ],
       ),
