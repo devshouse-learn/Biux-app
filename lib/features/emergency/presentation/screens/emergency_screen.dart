@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/emergency/presentation/providers/emergency_provider.dart';
 import 'package:biux/features/emergency/domain/entities/emergency_contact_entity.dart';

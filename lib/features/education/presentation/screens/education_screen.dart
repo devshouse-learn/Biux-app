@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class EducationScreen extends StatefulWidget {
   const EducationScreen({Key? key}) : super(key: key);
