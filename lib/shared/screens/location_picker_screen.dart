@@ -17,6 +17,7 @@ class LocationPickerScreen extends StatefulWidget {
 }
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
+  
   GoogleMapController? _mapController;
   LatLng? _selectedLocation;
   bool _loading = true;

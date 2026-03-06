@@ -667,7 +667,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selRel,
+                  initialValue: selRel,
                   decoration: InputDecoration(
                     labelText: 'Relación',
                     prefixIcon: const Icon(Icons.family_restroom),
