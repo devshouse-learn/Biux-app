@@ -115,18 +115,16 @@ class _ReportDialogState extends State<ReportDialog> {
           const SizedBox(height: 8),
           Text('¿Por qué quieres reportar esto?', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           const SizedBox(height: 16),
-          RadioGroup<String>(
-            groupValue: _selectedReason ?? '',
-            onChanged: (v) => setState(() => _selectedReason = v),
-            child: Column(
-              children: List.generate(_reasons.length, (i) => RadioListTile<String>(
-                value: _reasons[i],
-                title: Text(_reasons[i], style: const TextStyle(fontSize: 14)),
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                activeColor: ColorTokens.primary30,
-              )),
-            ),
+          Column(
+            children: _reasons.map((reason) => RadioListTile<String>(
+              value: reason,
+              groupValue: _selectedReason,
+              onChanged: (v) => setState(() => _selectedReason = v),
+              title: Text(reason, style: const TextStyle(fontSize: 14)),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              activeColor: ColorTokens.primary30,
+            )).toList(),
           ),
           const SizedBox(height: 8),
           TextField(
