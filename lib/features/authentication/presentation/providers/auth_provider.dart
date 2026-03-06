@@ -57,9 +57,9 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> sendCode(String phoneNumber) async {
     try {
-      print('📲 [AuthProvider] Iniciando proceso de envío de código');
-      print('   Teléfono: $phoneNumber');
-      print('   Intento: ${_sendAttempts + 1}/$_maxSendAttempts');
+      debugPrint('📲 [AuthProvider] Iniciando proceso de envío de código');
+      debugPrint('   Teléfono: $phoneNumber');
+      debugPrint('   Intento: ${_sendAttempts + 1}/$_maxSendAttempts');
 
       _state = AuthState.loading;
       _errorMessage = null;
@@ -68,24 +68,24 @@ class AuthProvider extends ChangeNotifier {
 
       // Si es reintento, incrementar contador
       if (_sendAttempts > 0) {
-        print('   ⚠️ Este es reintento #${_sendAttempts}');
+        debugPrint('   ⚠️ Este es reintento #${_sendAttempts}');
       }
 
-      print('📤 Enviando request a N8N...');
+      debugPrint('📤 Enviando request a N8N...');
       await _authRepository.sendOTP(phoneNumber);
 
       _sendAttempts = 0; // Reset en caso de éxito
       _state = AuthState.codeSent;
-      print('✅ [AuthProvider] Código enviado - Esperando validación');
+      debugPrint('✅ [AuthProvider] Código enviado - Esperando validación');
       _startResendTimer();
     } catch (e) {
       _sendAttempts++;
       _state = AuthState.error;
       _errorMessage = e.toString();
 
-      print('❌ [AuthProvider] Error al enviar código:');
-      print('   Mensaje: $_errorMessage');
-      print('   Intentos realizados: $_sendAttempts/$_maxSendAttempts');
+      debugPrint('❌ [AuthProvider] Error al enviar código:');
+      debugPrint('   Mensaje: $_errorMessage');
+      debugPrint('   Intentos realizados: $_sendAttempts/$_maxSendAttempts');
 
       // Limpiar el mensaje de excepción si empieza con "Exception: "
       if (_errorMessage?.startsWith('Exception: ') ?? false) {
@@ -102,7 +102,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> validateCode(String code) async {
     if (_phoneNumber == null) {
-      print('❌ [AuthProvider] No hay número de teléfono registrado');
+      debugPrint('❌ [AuthProvider] No hay número de teléfono registrado');
       _state = AuthState.error;
       _errorMessage = 'Error: No se encontró número de teléfono';
       notifyListeners();
@@ -110,57 +110,57 @@ class AuthProvider extends ChangeNotifier {
     }
 
     if (_state == AuthState.loading) {
-      print('⏳ [AuthProvider] Ya hay una validación en proceso');
+      debugPrint('⏳ [AuthProvider] Ya hay una validación en proceso');
       return;
     }
 
     try {
-      print('🔐 [AuthProvider] Iniciando validación de código');
-      print('   Teléfono: $_phoneNumber');
-      print('   Código: ${code.replaceAll(RegExp(r'.'), '*')}');
+      debugPrint('🔐 [AuthProvider] Iniciando validación de código');
+      debugPrint('   Teléfono: $_phoneNumber');
+      debugPrint('   Código: ${code.replaceAll(RegExp(r'.'), '*')}');
 
       _state = AuthState.loading;
       _errorMessage = null;
       notifyListeners();
 
-      print('📤 Enviando validación a N8N...');
+      debugPrint('📤 Enviando validación a N8N...');
       final authResponse = await _authRepository.validateOTP(
         _phoneNumber!,
         code,
       );
 
-      print('✅ [AuthProvider] Código validado correctamente');
-      print('🔑 Token recibido: ${authResponse.token.substring(0, 20)}...');
+      debugPrint('✅ [AuthProvider] Código validado correctamente');
+      debugPrint('🔑 Token recibido: ${authResponse.token.substring(0, 20)}...');
 
       // Autenticar con Firebase
-      print('🔐 Autenticando con Firebase...');
+      debugPrint('🔐 Autenticando con Firebase...');
       final userCredential = await _auth.signInWithCustomToken(
         authResponse.token,
       );
       final user = userCredential.user;
 
-      print('✅ [AuthProvider] Usuario autenticado en Firebase');
-      print('   UID: ${user?.uid}');
+      debugPrint('✅ [AuthProvider] Usuario autenticado en Firebase');
+      debugPrint('   UID: ${user?.uid}');
 
       // Obtener token ID para base de datos
       final idToken = await user?.getIdToken();
-      print('🎫 Token ID obtenido: ${idToken?.substring(0, 50)}...');
+      debugPrint('🎫 Token ID obtenido: ${idToken?.substring(0, 50)}...');
 
       // Reinicializar servicio de notificaciones con el usuario autenticado
-      print('📢 Reinicializando servicio de notificaciones...');
+      debugPrint('📢 Reinicializando servicio de notificaciones...');
       await NotificationService().reinitializeAfterLogin();
 
       // Verificar si el usuario necesita completar su perfil
       await _checkProfileSetup(user!.uid);
 
       _state = AuthState.authenticated;
-      print('✅ [AuthProvider] ¡Autenticación completada exitosamente!');
+      debugPrint('✅ [AuthProvider] ¡Autenticación completada exitosamente!');
     } catch (e) {
       _state = AuthState.codeSent;
       _errorMessage = e.toString();
 
-      print('❌ [AuthProvider] Error en validación:');
-      print('   Mensaje: $_errorMessage');
+      debugPrint('❌ [AuthProvider] Error en validación:');
+      debugPrint('   Mensaje: $_errorMessage');
 
       // Limpiar el mensaje de excepción si empieza con "Exception: "
       if (_errorMessage?.startsWith('Exception: ') ?? false) {
@@ -172,14 +172,14 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> resendCode() async {
     if (_phoneNumber != null && _canResendCode) {
-      print('🔄 [AuthProvider] Reenviando código a: $_phoneNumber');
+      debugPrint('🔄 [AuthProvider] Reenviando código a: $_phoneNumber');
       await sendCode(_phoneNumber!);
     }
   }
 
   Future<void> signInAsGuest() async {
     try {
-      print('👤 [AuthProvider] Iniciando sesión como invitado');
+      debugPrint('👤 [AuthProvider] Iniciando sesión como invitado');
       _state = AuthState.loading;
       _errorMessage = null;
       notifyListeners();
@@ -188,40 +188,40 @@ class AuthProvider extends ChangeNotifier {
       final userCredential = await _auth.signInAnonymously();
       final user = userCredential.user;
 
-      print('👤 Usuario invitado autenticado: ${user?.uid}');
+      debugPrint('👤 Usuario invitado autenticado: ${user?.uid}');
 
       // Reinicializar servicio de notificaciones
       await NotificationService().reinitializeAfterLogin();
 
       _state = AuthState.authenticated;
-      print('✅ Sesión de invitado iniciada correctamente');
+      debugPrint('✅ Sesión de invitado iniciada correctamente');
     } catch (e) {
       _state = AuthState.error;
       _errorMessage = 'Error al iniciar como invitado: $e';
-      print('❌ Error en sesión de invitado: $_errorMessage');
+      debugPrint('❌ Error en sesión de invitado: $_errorMessage');
     }
     notifyListeners();
   }
 
   Future<void> signOut() async {
     try {
-      print('🚪 [AuthProvider] Cerrando sesión...');
+      debugPrint('🚪 [AuthProvider] Cerrando sesión...');
       // Forzar eliminación completa de la sesión
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
-        print('   Usuario: ${currentUser.uid}');
+        debugPrint('   Usuario: ${currentUser.uid}');
         // Eliminar tokens cached
         await currentUser.delete().catchError((e) {
-          print('⚠️ No se pudo eliminar usuario (normal si es externo): $e');
+          debugPrint('⚠️ No se pudo eliminar usuario (normal si es externo): $e');
         });
       }
       await _auth.signOut();
-      print('✅ Sesión cerrada completamente');
+      debugPrint('✅ Sesión cerrada completamente');
       _state = AuthState.initial;
       _sendAttempts = 0;
       notifyListeners();
     } catch (e) {
-      print('❌ Error al cerrar sesión: $e');
+      debugPrint('❌ Error al cerrar sesión: $e');
       _errorMessage = 'Error al cerrar sesión';
       notifyListeners();
     }
@@ -230,7 +230,7 @@ class AuthProvider extends ChangeNotifier {
   /// Verifica si el usuario necesita completar su perfil
   Future<void> _checkProfileSetup(String uid) async {
     try {
-      print('🔍 Verificando perfil del usuario: $uid');
+      debugPrint('🔍 Verificando perfil del usuario: $uid');
       final doc = await _firestore.collection('users').doc(uid).get();
 
       if (doc.exists) {
@@ -242,18 +242,18 @@ class AuthProvider extends ChangeNotifier {
         if ((userName == null || userName.isEmpty) &&
             (name == null || name.isEmpty)) {
           _needsProfileSetup = true;
-          print('⚠️ Usuario necesita completar perfil');
+          debugPrint('⚠️ Usuario necesita completar perfil');
         } else {
           _needsProfileSetup = false;
-          print('✅ Usuario tiene perfil completo');
+          debugPrint('✅ Usuario tiene perfil completo');
         }
       } else {
         // Si el documento no existe, necesita crear perfil
         _needsProfileSetup = true;
-        print('⚠️ Documento de usuario no existe, necesita crear perfil');
+        debugPrint('⚠️ Documento de usuario no existe, necesita crear perfil');
       }
     } catch (e) {
-      print('❌ Error verificando perfil: $e');
+      debugPrint('❌ Error verificando perfil: $e');
       _needsProfileSetup = false; // En caso de error, no bloquear
     }
   }

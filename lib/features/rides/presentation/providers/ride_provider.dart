@@ -215,11 +215,11 @@ class RideProvider extends ChangeNotifier {
           if (finalImageUrl != null) {
             await docRef.update({'imageUrl': finalImageUrl});
           } else {
-            print('Error moviendo imagen temporal, usando URL temporal');
+            debugPrint('Error moviendo imagen temporal, usando URL temporal');
             await docRef.update({'imageUrl': imageUrl});
           }
         } catch (e) {
-          print('Error moviendo imagen temporal: $e');
+          debugPrint('Error moviendo imagen temporal: $e');
           // Continuar sin la imagen si hay error
         }
       } else if (imageUrl != null) {
@@ -296,7 +296,7 @@ class RideProvider extends ChangeNotifier {
           try {
             await OptimizedStorageService.deleteImage(currentImageUrl);
           } catch (e) {
-            print('Error eliminando imagen anterior: $e');
+            debugPrint('Error eliminando imagen anterior: $e');
           }
         }
         updateData['imageUrl'] = FieldValue.delete();
@@ -317,7 +317,7 @@ class RideProvider extends ChangeNotifier {
               updateData['imageUrl'] = imageUrl;
             }
           } catch (e) {
-            print('Error moviendo imagen temporal: $e');
+            debugPrint('Error moviendo imagen temporal: $e');
             updateData['imageUrl'] = imageUrl;
           }
         } else {
@@ -330,7 +330,7 @@ class RideProvider extends ChangeNotifier {
           try {
             await OptimizedStorageService.deleteImage(currentImageUrl);
           } catch (e) {
-            print('Error eliminando imagen anterior: $e');
+            debugPrint('Error eliminando imagen anterior: $e');
           }
         }
       }
@@ -372,15 +372,15 @@ class RideProvider extends ChangeNotifier {
       final userData = userDoc.data();
 
       // 🔍 DEBUG: Ver exactamente qué datos tenemos
-      print('🔍 DEBUG joinRide - userData completo: $userData');
-      print('🔍 DEBUG joinRide - currentUserId: $currentUserId');
-      print(
+      debugPrint('🔍 DEBUG joinRide - userData completo: $userData');
+      debugPrint('🔍 DEBUG joinRide - currentUserId: $currentUserId');
+      debugPrint(
         '🔍 DEBUG joinRide - Firebase Auth displayName: ${_auth.currentUser?.displayName}',
       );
-      print(
+      debugPrint(
         '🔍 DEBUG joinRide - Firebase Auth email: ${_auth.currentUser?.email}',
       );
-      print(
+      debugPrint(
         '🔍 DEBUG joinRide - Firebase Auth phoneNumber: ${_auth.currentUser?.phoneNumber}',
       );
 
@@ -427,14 +427,14 @@ class RideProvider extends ChangeNotifier {
             userData['avatar'] ??
             _auth.currentUser?.photoURL;
 
-        print('🔍 DEBUG joinRide - userName seleccionado: "$userName"');
-        print('🔍 DEBUG joinRide - photoUrl seleccionado: "$photoUrl"');
+        debugPrint('🔍 DEBUG joinRide - userName seleccionado: "$userName"');
+        debugPrint('🔍 DEBUG joinRide - photoUrl seleccionado: "$photoUrl"');
       } else {
         // CRÍTICO: Si no existe el documento en Firestore, crearlo con datos básicos
-        print(
+        debugPrint(
           '⚠️ DEBUG joinRide - No se encontró documento de usuario en Firestore',
         );
-        print('⚠️ Creando documento básico para el usuario...');
+        debugPrint('⚠️ Creando documento básico para el usuario...');
 
         // Usar teléfono como nombre temporal si no hay displayName
         userName =
@@ -460,9 +460,9 @@ class RideProvider extends ChangeNotifier {
             SetOptions(merge: true),
           ); // merge: true para no sobrescribir si existe
 
-          print('✅ Documento de usuario creado/actualizado');
+          debugPrint('✅ Documento de usuario creado/actualizado');
         } catch (e) {
-          print('❌ Error creando documento de usuario: $e');
+          debugPrint('❌ Error creando documento de usuario: $e');
         }
       }
 
@@ -757,7 +757,7 @@ class RideProvider extends ChangeNotifier {
         'logoUrl': groupData['logo'] ?? groupData['logoUrl'],
       };
     } catch (e) {
-      print('Error al cargar información del grupo: $e');
+      debugPrint('Error al cargar información del grupo: $e');
       return null;
     }
   }

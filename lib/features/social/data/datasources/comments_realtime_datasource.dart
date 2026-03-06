@@ -122,29 +122,29 @@ class CommentsRealtimeDatasource {
     // IMPORTANTE: Usar timestamp del servidor en lugar del cliente
     jsonData['createdAt'] = ServerValue.timestamp;
 
-    print('🔍 Creando comentario en: ${ref.path}');
-    print('🔍 UserId del comentario: ${comment.userId}');
+    debugPrint('🔍 Creando comentario en: ${ref.path}');
+    debugPrint('🔍 UserId del comentario: ${comment.userId}');
 
     // CRÍTICO: Verificar que el usuario esté autenticado
     final currentUser = FirebaseAuth.instance.currentUser;
-    print('👤 Usuario actual en Firebase Auth: ${currentUser?.uid}');
-    print('🎫 ¿Tiene token?: ${currentUser != null}');
+    debugPrint('👤 Usuario actual en Firebase Auth: ${currentUser?.uid}');
+    debugPrint('🎫 ¿Tiene token?: ${currentUser != null}');
     if (currentUser != null) {
       final token = await currentUser.getIdToken();
-      print('🎫 Token ID (primeros 50 chars): ${token?.substring(0, 50)}');
+      debugPrint('🎫 Token ID (primeros 50 chars): ${token?.substring(0, 50)}');
     }
 
-    print('📝 Escribiendo comentario en Realtime Database...');
-    print('   Datos: $jsonData');
+    debugPrint('📝 Escribiendo comentario en Realtime Database...');
+    debugPrint('   Datos: $jsonData');
     try {
       await ref.set(jsonData);
-      print('✅ Comentario creado exitosamente: $commentId');
+      debugPrint('✅ Comentario creado exitosamente: $commentId');
     } catch (e) {
-      print('❌ Error al crear comentario: $e');
-      print('❌ Path: ${ref.path}');
+      debugPrint('❌ Error al crear comentario: $e');
+      debugPrint('❌ Path: ${ref.path}');
       if (e is PlatformException) {
-        print('❌ Code: ${e.code}');
-        print('❌ Message: ${e.message}');
+        debugPrint('❌ Code: ${e.code}');
+        debugPrint('❌ Message: ${e.message}');
       }
       rethrow;
     }
@@ -152,17 +152,17 @@ class CommentsRealtimeDatasource {
     // Si es una respuesta, incrementar el contador de respuestas del padre
     if (comment.parentCommentId != null) {
       try {
-        print('🔢 Actualizando contador de respuestas del padre...');
+        debugPrint('🔢 Actualizando contador de respuestas del padre...');
         final parentRef = _database.ref(
           '${_getBasePath(type)}/$targetId/${comment.parentCommentId}/repliesCount',
         );
         final snapshot = await parentRef.get();
         final currentCount = snapshot.value as int? ?? 0;
         await parentRef.set(currentCount + 1);
-        print('✅ Contador actualizado: $currentCount -> ${currentCount + 1}');
+        debugPrint('✅ Contador actualizado: $currentCount -> ${currentCount + 1}');
       } catch (counterError) {
         // No fallar si el contador no se puede actualizar
-        print('⚠️ No se pudo actualizar contador de respuestas: $counterError');
+        debugPrint('⚠️ No se pudo actualizar contador de respuestas: $counterError');
         // El comentario ya fue creado exitosamente, esto es solo metadata
       }
     }

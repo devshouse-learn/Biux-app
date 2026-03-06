@@ -37,25 +37,25 @@ class CityProvider extends ChangeNotifier {
         if (cachedCities.isNotEmpty) {
           _cities = cachedCities;
           _setLoading(false);
-          print('✅ Ciudades cargadas desde caché: ${_cities.length}');
+          debugPrint('✅ Ciudades cargadas desde caché: ${_cities.length}');
           return;
         }
       }
 
       // Si no hay caché válido, cargar desde Firestore
-      print('🔄 Cargando ciudades desde Firestore...');
+      debugPrint('🔄 Cargando ciudades desde Firestore...');
       final cities = await _repository.getCities();
 
       if (cities.isNotEmpty) {
         _cities = cities;
         await _saveToCache(cities);
-        print('✅ Ciudades cargadas desde Firestore: ${_cities.length}');
+        debugPrint('✅ Ciudades cargadas desde Firestore: ${_cities.length}');
       } else {
         _setError('No se pudieron cargar las ciudades');
       }
     } catch (e) {
       _setError('Error al cargar ciudades: ${e.toString()}');
-      print('❌ Error cargando ciudades: $e');
+      debugPrint('❌ Error cargando ciudades: $e');
     }
 
     _setLoading(false);
@@ -67,14 +67,14 @@ class CityProvider extends ChangeNotifier {
       // Verificar si ya existen ciudades en Firestore
       final exist = await _repository.citiesExist();
       if (!exist) {
-        print('🏙️ Creando ciudades iniciales...');
+        debugPrint('🏙️ Creando ciudades iniciales...');
         await _createInitialCities();
       }
 
       // Cargar ciudades
       await loadCities();
     } catch (e) {
-      print('❌ Error inicializando ciudades: $e');
+      debugPrint('❌ Error inicializando ciudades: $e');
       _setError('Error al inicializar ciudades');
     }
   }
@@ -156,7 +156,7 @@ class CityProvider extends ChangeNotifier {
 
     final success = await _repository.createCities(initialCities);
     if (success) {
-      print('✅ Ciudades iniciales creadas exitosamente');
+      debugPrint('✅ Ciudades iniciales creadas exitosamente');
     } else {
       throw Exception('Error creando ciudades iniciales');
     }
@@ -187,7 +187,7 @@ class CityProvider extends ChangeNotifier {
 
       return [];
     } catch (e) {
-      print('❌ Error cargando caché de ciudades: $e');
+      debugPrint('❌ Error cargando caché de ciudades: $e');
       return [];
     }
   }
@@ -203,9 +203,9 @@ class CityProvider extends ChangeNotifier {
       await prefs.setString(_cacheKey, json.encode(jsonList));
       await prefs.setInt(_cacheTimeKey, DateTime.now().millisecondsSinceEpoch);
 
-      print('💾 Ciudades guardadas en caché');
+      debugPrint('💾 Ciudades guardadas en caché');
     } catch (e) {
-      print('❌ Error guardando caché de ciudades: $e');
+      debugPrint('❌ Error guardando caché de ciudades: $e');
     }
   }
 
@@ -221,9 +221,9 @@ class CityProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_cacheKey);
       await prefs.remove(_cacheTimeKey);
-      print('🗑️ Caché de ciudades limpiado');
+      debugPrint('🗑️ Caché de ciudades limpiado');
     } catch (e) {
-      print('❌ Error limpiando caché: $e');
+      debugPrint('❌ Error limpiando caché: $e');
     }
   }
 

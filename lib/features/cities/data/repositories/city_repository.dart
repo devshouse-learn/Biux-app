@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/city_model.dart';
+import "package:flutter/foundation.dart";
 
 class CityRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -19,7 +20,7 @@ class CityRepository {
           .map((doc) => CityModel.fromFirestore(doc.data(), doc.id))
           .toList();
     } catch (e) {
-      print('Error obteniendo ciudades: $e');
+      debugPrint('Error obteniendo ciudades: $e');
       return [];
     }
   }
@@ -30,7 +31,7 @@ class CityRepository {
       await _firestore.collection(_collection).add(city.toFirestore());
       return true;
     } catch (e) {
-      print('Error creando ciudad: $e');
+      debugPrint('Error creando ciudad: $e');
       return false;
     }
   }
@@ -48,7 +49,7 @@ class CityRepository {
       await batch.commit();
       return true;
     } catch (e) {
-      print('Error creando ciudades en lote: $e');
+      debugPrint('Error creando ciudades en lote: $e');
       return false;
     }
   }
@@ -59,7 +60,7 @@ class CityRepository {
       final snapshot = await _firestore.collection(_collection).limit(1).get();
       return snapshot.docs.isNotEmpty;
     } catch (e) {
-      print('Error verificando ciudades: $e');
+      debugPrint('Error verificando ciudades: $e');
       return false;
     }
   }

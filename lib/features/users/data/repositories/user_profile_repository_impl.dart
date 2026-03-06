@@ -2,6 +2,7 @@ import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import "package:flutter/foundation.dart";
 
 class UserProfileRepositoryImpl implements UserProfileRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -99,7 +100,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
             resultsWithScore.add(MapEntry(user, score));
           }
         } catch (e) {
-          print('Error procesando usuario ${doc.id}: $e');
+          debugPrint('Error procesando usuario ${doc.id}: $e');
           continue;
         }
       }
@@ -110,7 +111,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       // Retornar solo los usuarios (sin la puntuación)
       return resultsWithScore.map((e) => e.key).toList();
     } catch (e) {
-      print('❌ Error buscando usuarios: $e');
+      debugPrint('❌ Error buscando usuarios: $e');
       return [];
     }
   }
@@ -176,13 +177,13 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
               'createdAt': FieldValue.serverTimestamp(),
             });
       } catch (notifError) {
-        print('Error creando notificación de seguimiento: $notifError');
+        debugPrint('Error creando notificación de seguimiento: $notifError');
         // No fallar la operación si la notificación falla
       }
 
       return true;
     } catch (e) {
-      print('Error siguiendo usuario: $e');
+      debugPrint('Error siguiendo usuario: $e');
       return false;
     }
   }
@@ -208,7 +209,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       await batch.commit();
       return true;
     } catch (e) {
-      print('Error dejando de seguir usuario: $e');
+      debugPrint('Error dejando de seguir usuario: $e');
       return false;
     }
   }
@@ -240,7 +241,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return followersList;
     } catch (e) {
-      print('Error obteniendo followers: $e');
+      debugPrint('Error obteniendo followers: $e');
       return [];
     }
   }
@@ -272,7 +273,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
       return followingList;
     } catch (e) {
-      print('Error obteniendo following: $e');
+      debugPrint('Error obteniendo following: $e');
       return [];
     }
   }
@@ -285,7 +286,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       // se manejan en otro feature
       return [];
     } catch (e) {
-      print('Error obteniendo experiencias de usuario: $e');
+      debugPrint('Error obteniendo experiencias de usuario: $e');
       return [];
     }
   }
@@ -306,7 +307,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       }
       return false;
     } catch (e) {
-      print('Error verificando si sigue usuario: $e');
+      debugPrint('Error verificando si sigue usuario: $e');
       return false;
     }
   }

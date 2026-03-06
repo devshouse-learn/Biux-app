@@ -37,6 +37,16 @@ class AppRoutes {
   static const String notificationSettings = '/settings/notifications';
   static const String accountSettings = '/account-settings';
 
+  // Rutas de nuevas funcionalidades
+  static const String chatList = '/chat';
+  static const String chatDetail = '/chat/:chatId';
+  static const String roadReports = '/road-reports';
+  static const String rideTracker = '/ride-tracker';
+  static const String cyclingStats = '/cycling-stats';
+  static const String emergency = '/emergency';
+  static const String achievements = '/achievements';
+  static const String education = '/education';
+
   // Rutas de ayuda
   static const String help = '/help';
 
@@ -66,4 +76,14 @@ class AppRoutes {
   static const String notificationSettingsName = 'notificationSettings';
   static const String accountSettingsName = 'accountSettings';
   static const String helpName = 'help';
+
+  // Nombres de nuevas funcionalidades
+  static const String chatListName = 'chatList';
+  static const String chatDetailName = 'chatDetail';
+  static const String roadReportsName = 'roadReports';
+  static const String rideTrackerName = 'rideTracker';
+  static const String cyclingStatsName = 'cyclingStats';
+  static const String emergencyName = 'emergency';
+  static const String achievementsName = 'achievements';
+  static const String educationName = 'education';
 }

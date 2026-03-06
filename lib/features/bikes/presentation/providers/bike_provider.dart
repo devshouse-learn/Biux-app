@@ -86,16 +86,16 @@ class BikeProvider extends ChangeNotifier {
   /// Obtiene todas las bicicletas del usuario
   Future<void> loadUserBikes(String userId) async {
     try {
-      print('🚴 BikeProvider: Cargando bicicletas para userId: "$userId"');
+      debugPrint('🚴 BikeProvider: Cargando bicicletas para userId: "$userId"');
       _setState(BikeProviderState.loading);
       _userBikes = await _getUserBikesUseCase(userId);
-      print('🚴 BikeProvider: Se encontraron ${_userBikes.length} bicicletas');
+      debugPrint('🚴 BikeProvider: Se encontraron ${_userBikes.length} bicicletas');
       if (_userBikes.isNotEmpty) {
-        print('🚴 Primera bici - ownerId: "${_userBikes.first.ownerId}"');
+        debugPrint('🚴 Primera bici - ownerId: "${_userBikes.first.ownerId}"');
       }
       _setState(BikeProviderState.loaded);
     } catch (e) {
-      print('❌ BikeProvider: Error cargando bicicletas: $e');
+      debugPrint('❌ BikeProvider: Error cargando bicicletas: $e');
       _setState(BikeProviderState.error, error: e.toString());
     }
   }
@@ -470,7 +470,7 @@ class BikeProvider extends ChangeNotifier {
       _setState(BikeProviderState.loaded);
       return true;
     } catch (e) {
-      print('❌ BikeProvider: Error eliminando bicicleta: $e');
+      debugPrint('❌ BikeProvider: Error eliminando bicicleta: $e');
       _setState(BikeProviderState.error, error: e.toString());
       return false;
     }

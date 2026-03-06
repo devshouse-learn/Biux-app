@@ -7,6 +7,7 @@ import 'package:biux/core/utils/bytes_utils.dart';
 import 'package:biux/features/stories/domain/repositories/stories_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import "package:flutter/foundation.dart";
 //import 'package:flutter_native_image/flutter_native_image.dart';
 
 class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
@@ -44,7 +45,7 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
 
       return updateResult;
     } catch (e) {
-      print('Error en createStory: $e');
+      debugPrint('Error en createStory: $e');
       return false;
     }
   }
@@ -109,10 +110,10 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
       Reference ref = FirebaseStorage.instance.ref('$userId/$id/$nameUrl');
       UploadTask uploadTask = ref.putFile(fileUrl);
       String downloadUrl = await (await uploadTask).ref.getDownloadURL();
-      print('Imagen subida exitosamente: $nameUrl -> $downloadUrl');
+      debugPrint('Imagen subida exitosamente: $nameUrl -> $downloadUrl');
       return downloadUrl;
     } catch (e) {
-      print('Error subiendo imagen $nameUrl: $e');
+      debugPrint('Error subiendo imagen $nameUrl: $e');
       return '';
     }
   }

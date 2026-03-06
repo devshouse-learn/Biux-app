@@ -1,5 +1,6 @@
 import '../models/auth_response.dart';
 import 'package:dio/dio.dart';
+import "package:flutter/foundation.dart";
 
 class AuthRepository {
   final Dio _dio;
@@ -17,7 +18,7 @@ class AuthRepository {
       'Accept': 'application/json',
     };
 
-    print('🔧 [AuthRepo] Inicializado con URL: $_baseUrl');
+    debugPrint('🔧 [AuthRepo] Inicializado con URL: $_baseUrl');
   }
 
   // Validar formato de número telefónico - PERMISIVO
@@ -29,27 +30,27 @@ class AuthRepository {
 
   Future<bool> sendOTP(String phoneNumber) async {
     try {
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('📱 [AuthRepo] ENVIANDO CÓDIGO SMS');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('📞 NÚMERO DESTINO: $phoneNumber');
-      print('📞 EL CÓDIGO SE ENVIARÁ A: $phoneNumber');
-      print('🌐 URL Backend: $_baseUrl');
-      print('⏰ Timestamp: ${DateTime.now().toIso8601String()}');
-      print('');
-      print('⚠️  IMPORTANTE: El SMS se envía al número ingresado');
-      print('⚠️  NO se envía al número del administrador');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('📱 [AuthRepo] ENVIANDO CÓDIGO SMS');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('📞 NÚMERO DESTINO: $phoneNumber');
+      debugPrint('📞 EL CÓDIGO SE ENVIARÁ A: $phoneNumber');
+      debugPrint('🌐 URL Backend: $_baseUrl');
+      debugPrint('⏰ Timestamp: ${DateTime.now().toIso8601String()}');
+      debugPrint('');
+      debugPrint('⚠️  IMPORTANTE: El SMS se envía al número ingresado');
+      debugPrint('⚠️  NO se envía al número del administrador');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       // Validación muy permisiva
       if (!_isValidPhoneNumber(phoneNumber)) {
-        print('❌ [AuthRepo] Número inválido: $phoneNumber');
+        debugPrint('❌ [AuthRepo] Número inválido: $phoneNumber');
         throw Exception(
           'Número inválido. Debe tener al menos 8 dígitos',
         );
       }
 
-      print('✅ [AuthRepo] Número válido: $phoneNumber');
+      debugPrint('✅ [AuthRepo] Número válido: $phoneNumber');
 
       final url = '$_baseUrl/send-otp';
       final requestData = {
@@ -57,39 +58,39 @@ class AuthRepository {
         'timestamp': DateTime.now().toIso8601String(),
       };
 
-      print('📤 [AuthRepo] Enviando POST a: $url');
-      print('� [AuthRepo] Datos: $requestData');
-      print('🔧 [AuthRepo] Headers: ${_dio.options.headers}');
+      debugPrint('📤 [AuthRepo] Enviando POST a: $url');
+      debugPrint('� [AuthRepo] Datos: $requestData');
+      debugPrint('🔧 [AuthRepo] Headers: ${_dio.options.headers}');
 
       final response = await _dio.post(url, data: requestData);
 
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('📨 [AuthRepo] RESPUESTA RECIBIDA');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('📊 Status Code: ${response.statusCode}');
-      print('📝 Response Data: ${response.data}');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('📨 [AuthRepo] RESPUESTA RECIBIDA');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('📊 Status Code: ${response.statusCode}');
+      debugPrint('📝 Response Data: ${response.data}');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ [AuthRepo] ¡OTP ENVIADO EXITOSAMENTE!');
+        debugPrint('✅ [AuthRepo] ¡OTP ENVIADO EXITOSAMENTE!');
         return true;
       } else {
-        print('⚠️ [AuthRepo] Status inesperado: ${response.statusCode}');
+        debugPrint('⚠️ [AuthRepo] Status inesperado: ${response.statusCode}');
         throw Exception(
           'Servidor respondió con código ${response.statusCode}. Intenta nuevamente.',
         );
       }
     } on DioException catch (e) {
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('❌ [AuthRepo] ERROR DE CONEXIÓN');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('🔴 Tipo de error: ${e.type}');
-      print('💬 Mensaje: ${e.message}');
-      print('📍 URL intentada: ${e.requestOptions.uri}');
-      print('📦 Datos enviados: ${e.requestOptions.data}');
-      print('📨 Response Status: ${e.response?.statusCode}');
-      print('📝 Response Data: ${e.response?.data}');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('❌ [AuthRepo] ERROR DE CONEXIÓN');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('🔴 Tipo de error: ${e.type}');
+      debugPrint('💬 Mensaje: ${e.message}');
+      debugPrint('📍 URL intentada: ${e.requestOptions.uri}');
+      debugPrint('📦 Datos enviados: ${e.requestOptions.data}');
+      debugPrint('📨 Response Status: ${e.response?.statusCode}');
+      debugPrint('📝 Response Data: ${e.response?.data}');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       String errorMessage = 'Error al enviar el código OTP';
 
@@ -131,29 +132,29 @@ class AuthRepository {
           errorMessage = 'Error inesperado: ${e.type}';
       }
 
-      print('🔴 Mensaje de error final: $errorMessage');
+      debugPrint('🔴 Mensaje de error final: $errorMessage');
       throw Exception(errorMessage);
     } catch (e) {
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('❌ [AuthRepo] ERROR INESPERADO');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('🔴 Tipo: ${e.runtimeType}');
-      print('🔴 Detalles: $e');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('❌ [AuthRepo] ERROR INESPERADO');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      debugPrint('🔴 Tipo: ${e.runtimeType}');
+      debugPrint('🔴 Detalles: $e');
+      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       throw Exception('Error inesperado: ${e.toString()}');
     }
   }
 
   Future<AuthResponse> validateOTP(String phoneNumber, String code) async {
     try {
-      print('🔑 [AuthRepo] Validando código para: $phoneNumber');
-      print('📝 [AuthRepo] Código: ${code.replaceAll(RegExp(r'.'), '*')}');
+      debugPrint('🔑 [AuthRepo] Validando código para: $phoneNumber');
+      debugPrint('📝 [AuthRepo] Código: ${code.replaceAll(RegExp(r'.'), '*')}');
 
       if (code.length != 6) {
         throw Exception('El código debe tener exactamente 6 dígitos');
       }
 
-      print('📤 [AuthRepo] Enviando validación a: $_baseUrl/validate-otp');
+      debugPrint('📤 [AuthRepo] Enviando validación a: $_baseUrl/validate-otp');
 
       final response = await _dio.post(
         '$_baseUrl/validate-otp',
@@ -164,24 +165,24 @@ class AuthRepository {
         },
       );
 
-      print(
+      debugPrint(
         '✅ [AuthRepo] Respuesta de validación recibida - Status: ${response.statusCode}',
       );
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(response.data);
-        print('🎫 [AuthRepo] Token obtenido exitosamente');
+        debugPrint('🎫 [AuthRepo] Token obtenido exitosamente');
         return authResponse;
       } else {
-        print(
+        debugPrint(
           '⚠️ [AuthRepo] Validación fallida - Status: ${response.statusCode}',
         );
         throw Exception('Código inválido o expirado');
       }
     } on DioException catch (e) {
-      print('❌ [AuthRepo] Error en validación:');
-      print('   Tipo: ${e.type}');
-      print('   Status: ${e.response?.statusCode}');
+      debugPrint('❌ [AuthRepo] Error en validación:');
+      debugPrint('   Tipo: ${e.type}');
+      debugPrint('   Status: ${e.response?.statusCode}');
 
       String errorMessage = 'Error al validar el código';
 
@@ -195,7 +196,7 @@ class AuthRepository {
 
       throw Exception(errorMessage);
     } catch (e) {
-      print('❌ [AuthRepo] Error inesperado en validación: $e');
+      debugPrint('❌ [AuthRepo] Error inesperado en validación: $e');
       throw Exception('Error al validar: ${e.toString()}');
     }
   }

@@ -2,6 +2,7 @@ import 'package:biux/features/bikes/domain/repositories/bike_repository.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_theft_entity.dart';
 import 'package:biux/shared/services/notification_service.dart';
+import "package:flutter/foundation.dart";
 
 /// Servicio para verificar si una bicicleta está reportada como robada
 /// antes de permitir su publicación en la tienda
@@ -22,13 +23,13 @@ class StolenBikeVerificationService {
     String? sellerName,
   }) async {
     try {
-      print('🔍 Verificando bicicleta con número de serie: $frameSerial');
+      debugPrint('🔍 Verificando bicicleta con número de serie: $frameSerial');
 
       // Buscar bicicletas registradas con ese número de serie
       final bikes = await bikeRepository.searchBikes(frameSerial: frameSerial);
 
       if (bikes.isEmpty) {
-        print('✅ No se encontró la bicicleta registrada en el sistema');
+        debugPrint('✅ No se encontró la bicicleta registrada en el sistema');
         return VerificationResult(
           isStolen: false,
           isRegistered: false,
@@ -36,7 +37,7 @@ class StolenBikeVerificationService {
         );
       }
 
-      print(
+      debugPrint(
         '📋 Encontradas ${bikes.length} bicicleta(s) con ese número de serie',
       );
 
@@ -44,7 +45,7 @@ class StolenBikeVerificationService {
       for (final bike in bikes) {
         // Verificar si la bicicleta está actualmente reportada como robada
         if (bike.status.toString().contains('stolen')) {
-          print('⚠️ ¡ALERTA! Bicicleta reportada como robada');
+          debugPrint('⚠️ ¡ALERTA! Bicicleta reportada como robada');
 
           // Obtener detalles del reporte de robo
           final theftReports = await bikeRepository.getTheftReports(bike.id);
@@ -89,7 +90,7 @@ class StolenBikeVerificationService {
 
         // Verificar coincidencias adicionales para mayor seguridad
         if (_matchesBikeDescription(bike, brand, model, color)) {
-          print('✅ Bicicleta registrada y NO robada');
+          debugPrint('✅ Bicicleta registrada y NO robada');
           return VerificationResult(
             isStolen: false,
             isRegistered: true,
@@ -101,7 +102,7 @@ class StolenBikeVerificationService {
       }
 
       // Si hay bikes pero no coinciden exactamente
-      print('⚠️ Se encontraron bicicletas con número de serie similar');
+      debugPrint('⚠️ Se encontraron bicicletas con número de serie similar');
       return VerificationResult(
         isStolen: false,
         isRegistered: true,
@@ -111,7 +112,7 @@ class StolenBikeVerificationService {
             'Recomendamos verificación manual.',
       );
     } catch (e) {
-      print('❌ Error en verificación: $e');
+      debugPrint('❌ Error en verificación: $e');
       return VerificationResult(
         isStolen: false,
         isRegistered: false,
@@ -127,7 +128,7 @@ class StolenBikeVerificationService {
     try {
       return await bikeRepository.getStolenBikes(city);
     } catch (e) {
-      print('❌ Error obteniendo bicicletas robadas: $e');
+      debugPrint('❌ Error obteniendo bicicletas robadas: $e');
       return [];
     }
   }
@@ -164,7 +165,7 @@ class StolenBikeVerificationService {
 
       return allStolenBikes;
     } catch (e) {
-      print('❌ Error obteniendo todas las bicicletas robadas: $e');
+      debugPrint('❌ Error obteniendo todas las bicicletas robadas: $e');
       return [];
     }
   }

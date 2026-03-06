@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import "package:flutter/foundation.dart";
 
 /// Servicio para manejar deep links y app links
 class DeepLinkService {
@@ -36,11 +37,11 @@ class DeepLinkService {
   static Future<void> handleDeepLink(String? link, GoRouter router) async {
     if (link == null || link.isEmpty) return;
 
-    print('🔗 Procesando deep link: $link');
+    debugPrint('🔗 Procesando deep link: $link');
 
     try {
       final uri = Uri.parse(link);
-      print(
+      debugPrint(
         '🔗 URI Schema: ${uri.scheme}, Host: ${uri.host}, Path: ${uri.path}',
       );
 
@@ -56,21 +57,21 @@ class DeepLinkService {
         return;
       }
 
-      print('⚠️ Esquema o host no reconocido: ${uri.scheme}://${uri.host}');
+      debugPrint('⚠️ Esquema o host no reconocido: ${uri.scheme}://${uri.host}');
     } catch (e) {
-      print('❌ Error procesando deep link: $e');
+      debugPrint('❌ Error procesando deep link: $e');
     }
   }
 
   static Future<void> _handleBiuxDeepLink(Uri uri, GoRouter router) async {
-    print('🔗 Manejando deep link biux: ${uri.toString()}');
+    debugPrint('🔗 Manejando deep link biux: ${uri.toString()}');
 
     // biux://ride/{rideId}
     if (uri.host == 'ride') {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final rideId = segments.first;
-        print('🚴 Navegando a rodada: $rideId');
+        debugPrint('🚴 Navegando a rodada: $rideId');
         router.push('/rides/$rideId');
       }
       return;
@@ -81,7 +82,7 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final postId = segments.first;
-        print('📝 Navegando a post: $postId');
+        debugPrint('📝 Navegando a post: $postId');
         router.push('/stories');
       }
       return;
@@ -92,7 +93,7 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final groupId = segments.first;
-        print('👥 Navegando a grupo: $groupId');
+        debugPrint('👥 Navegando a grupo: $groupId');
         router.push('/groups/$groupId');
       }
       return;
@@ -103,24 +104,24 @@ class DeepLinkService {
       final segments = uri.pathSegments;
       if (segments.isNotEmpty) {
         final userId = segments.first;
-        print('👤 Navegando a perfil: $userId');
+        debugPrint('👤 Navegando a perfil: $userId');
         router.push('/user-profile/$userId');
       }
       return;
     }
 
-    print('⚠️ Host de deep link no reconocido: ${uri.host}');
+    debugPrint('⚠️ Host de deep link no reconocido: ${uri.host}');
   }
 
   static Future<void> _handleAppLink(Uri uri, GoRouter router) async {
-    print('🔗 Manejando app link: ${uri.toString()}');
-    print('🔗 Path: ${uri.path}, Segments: ${uri.pathSegments}');
+    debugPrint('🔗 Manejando app link: ${uri.toString()}');
+    debugPrint('🔗 Path: ${uri.path}, Segments: ${uri.pathSegments}');
 
     // https://biux.devshouse.org/ride/{rideId}
     if (uri.path.startsWith('/ride/')) {
       final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (rideId != null && rideId.isNotEmpty) {
-        print('🚴 Navegando a rodada desde app link: $rideId');
+        debugPrint('🚴 Navegando a rodada desde app link: $rideId');
         router.push('/rides/$rideId');
       }
       return;
@@ -130,7 +131,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/posts/')) {
       final postId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (postId != null && postId.isNotEmpty) {
-        print('📝 Navegando a post desde app link: $postId');
+        debugPrint('📝 Navegando a post desde app link: $postId');
         router.push('/stories');
       }
       return;
@@ -140,7 +141,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/stories/')) {
       final storyId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (storyId != null && storyId.isNotEmpty) {
-        print('📸 Navegando a historia desde app link: $storyId');
+        debugPrint('📸 Navegando a historia desde app link: $storyId');
         router.push('/stories');
       }
       return;
@@ -150,7 +151,7 @@ class DeepLinkService {
     if (uri.path.startsWith('/group/')) {
       final groupId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (groupId != null && groupId.isNotEmpty) {
-        print('👥 Navegando a grupo desde app link: $groupId');
+        debugPrint('👥 Navegando a grupo desde app link: $groupId');
         router.push('/groups/$groupId');
       }
       return;
@@ -160,13 +161,13 @@ class DeepLinkService {
     if (uri.path.startsWith('/user/')) {
       final userId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
       if (userId != null && userId.isNotEmpty) {
-        print('👤 Navegando a perfil desde app link: $userId');
+        debugPrint('👤 Navegando a perfil desde app link: $userId');
         router.push('/user-profile/$userId');
       }
       return;
     }
 
-    print('⚠️ Path de app link no reconocido: ${uri.path}');
+    debugPrint('⚠️ Path de app link no reconocido: ${uri.path}');
   }
 
   /// Texto para compartir una rodada

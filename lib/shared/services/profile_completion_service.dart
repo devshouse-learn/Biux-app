@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import "package:flutter/foundation.dart";
 
 /// Servicio centralizado para validar que un usuario ha completado su perfil
 class ProfileCompletionService {
@@ -31,15 +32,15 @@ class ProfileCompletionService {
       for (String field in _requiredFields) {
         final value = userData[field];
         if (value == null || (value is String && value.trim().isEmpty)) {
-          print('❌ Campo faltante o vacío: $field');
+          debugPrint('❌ Campo faltante o vacío: $field');
           return false;
         }
       }
 
-      print('✅ Perfil completo para usuario: $uid');
+      debugPrint('✅ Perfil completo para usuario: $uid');
       return true;
     } catch (e) {
-      print('⚠️ Error verificando perfil: $e');
+      debugPrint('⚠️ Error verificando perfil: $e');
       return false;
     }
   }
@@ -69,7 +70,7 @@ class ProfileCompletionService {
 
       return missing;
     } catch (e) {
-      print('⚠️ Error obteniendo campos faltantes: $e');
+      debugPrint('⚠️ Error obteniendo campos faltantes: $e');
       return _requiredFields;
     }
   }

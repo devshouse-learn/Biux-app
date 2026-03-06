@@ -340,7 +340,7 @@ class GroupProvider extends ChangeNotifier {
       _searchResults = await _repository.searchGroups(query);
       notifyListeners();
     } catch (e) {
-      print('Error buscando grupos: $e');
+      debugPrint('Error buscando grupos: $e');
     }
   }
 
@@ -380,7 +380,7 @@ class GroupProvider extends ChangeNotifier {
       }
       return user;
     } catch (e) {
-      print('Error obteniendo usuario $userId: $e');
+      debugPrint('Error obteniendo usuario $userId: $e');
       return null;
     }
   }
@@ -410,22 +410,22 @@ class GroupProvider extends ChangeNotifier {
   ) async {
     List<Map<String, dynamic>> members = [];
 
-    print('=== OBTENIENDO MIEMBROS DEL GRUPO ===');
-    print('Grupo: ${group.name}');
-    print('Admin ID: ${group.adminId}');
-    print('Member IDs: ${group.memberIds}');
-    print('====================================');
+    debugPrint('=== OBTENIENDO MIEMBROS DEL GRUPO ===');
+    debugPrint('Grupo: ${group.name}');
+    debugPrint('Admin ID: ${group.adminId}');
+    debugPrint('Member IDs: ${group.memberIds}');
+    debugPrint('====================================');
 
     for (String userId in group.memberIds) {
       final user = await getUserInfo(userId);
 
-      print('--- Procesando usuario $userId ---');
-      print('Usuario obtenido: $user');
-      print('Nombre: ${user?.name}');
-      print('Foto: ${user?.photoUrl}');
-      print('Teléfono: ${user?.phoneNumber}');
-      print('Es admin: ${group.isAdmin(userId)}');
-      print('--------------------------------');
+      debugPrint('--- Procesando usuario $userId ---');
+      debugPrint('Usuario obtenido: $user');
+      debugPrint('Nombre: ${user?.name}');
+      debugPrint('Foto: ${user?.photoUrl}');
+      debugPrint('Teléfono: ${user?.phoneNumber}');
+      debugPrint('Es admin: ${group.isAdmin(userId)}');
+      debugPrint('--------------------------------');
 
       members.add({
         'userId': userId,
@@ -436,13 +436,13 @@ class GroupProvider extends ChangeNotifier {
       });
     }
 
-    print('=== RESULTADO FINAL ===');
+    debugPrint('=== RESULTADO FINAL ===');
     for (var member in members) {
-      print(
+      debugPrint(
         'Miembro: ${member['userName']} (${member['userId']}) - Admin: ${member['isAdmin']}',
       );
     }
-    print('======================');
+    debugPrint('======================');
 
     return members;
   }
@@ -479,7 +479,7 @@ class GroupProvider extends ChangeNotifier {
       );
       return image;
     } catch (e) {
-      print('Error seleccionando imagen: $e');
+      debugPrint('Error seleccionando imagen: $e');
       _setError('Error al seleccionar imagen: ${e.toString()}');
       return null;
     }
@@ -493,7 +493,7 @@ class GroupProvider extends ChangeNotifier {
       final stream = _rideRepository.getGroupRides(group.id);
       return await stream.first;
     } catch (e) {
-      print('Error obteniendo rodadas del grupo: $e');
+      debugPrint('Error obteniendo rodadas del grupo: $e');
       return [];
     }
   }
@@ -519,7 +519,7 @@ class GroupProvider extends ChangeNotifier {
         'email': '',
       };
     } catch (e) {
-      print('Error obteniendo info del admin: $e');
+      debugPrint('Error obteniendo info del admin: $e');
       return {
         'fullName': 'Usuario',
         'userName': 'usuario',
