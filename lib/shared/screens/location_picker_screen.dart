@@ -18,7 +18,7 @@ class LocationPickerScreen extends StatefulWidget {
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
   
-  GoogleMapController? _mapController;
+  GoogleMapController? _mapController; // ignore: unused_field // ignore: unused_field
   LatLng? _selectedLocation;
   bool _loading = true;
   String _address = 'Mueve el mapa para seleccionar';
