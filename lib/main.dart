@@ -96,7 +96,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui' show PlatformDispatcher;
 
-import 'firebase_options.dart';
+import 'package:biux/core/config/firebase_options.dart';
 
 void main() async {
   if (kIsWeb) {
