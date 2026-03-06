@@ -13,7 +13,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
-import 'package:biux/shared/widgets/location_picker_screen.dart';
+import 'package:biux/shared/screens/location_picker_screen.dart';
 
 class AccidentReportScreen extends StatefulWidget {
   const AccidentReportScreen({Key? key}) : super(key: key);
