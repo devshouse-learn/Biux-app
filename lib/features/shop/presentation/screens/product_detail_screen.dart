@@ -52,16 +52,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Future<void> _loadProduct() async {
     try {
-      print('🔍 Buscando producto con ID: ${widget.productId}');
+      debugPrint('🔍 Buscando producto con ID: ${widget.productId}');
       final shopProvider = context.read<ShopProvider>();
 
       // Asegurarse de que los productos estén cargados
       if (shopProvider.products.isEmpty) {
-        print('📦 Cargando productos desde Firebase...');
+        debugPrint('📦 Cargando productos desde Firebase...');
         await shopProvider.loadProducts();
-        print('✅ Productos cargados: ${shopProvider.products.length}');
+        debugPrint('✅ Productos cargados: ${shopProvider.products.length}');
       } else {
-        print('📦 Ya hay ${shopProvider.products.length} productos cargados');
+        debugPrint('📦 Ya hay ${shopProvider.products.length} productos cargados');
       }
 
       // Buscar el producto específico
@@ -70,10 +70,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         product = shopProvider.products.firstWhere(
           (p) => p.id == widget.productId,
         );
-        print('✅ Producto encontrado: ${product.name}');
+        debugPrint('✅ Producto encontrado: ${product.name}');
       } catch (e) {
-        print('❌ Producto con ID ${widget.productId} no encontrado');
-        print(
+        debugPrint('❌ Producto con ID ${widget.productId} no encontrado');
+        debugPrint(
           '📋 IDs disponibles: ${shopProvider.products.map((p) => p.id).join(", ")}',
         );
 
@@ -98,7 +98,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             // Regresar a la tienda después de mostrar el error
             Future.delayed(const Duration(seconds: 2), () {
               if (mounted) {
-                print('⬅️ Regresando a la tienda...');
+                debugPrint('⬅️ Regresando a la tienda...');
                 _goBack();
               }
             });
@@ -122,11 +122,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (product.hasVideo &&
           product.videoUrl != null &&
           product.videoUrl!.isNotEmpty) {
-        print('🎥 Inicializando video: ${product.videoUrl}');
+        debugPrint('🎥 Inicializando video: ${product.videoUrl}');
         _initializeVideo(product.videoUrl!);
       }
     } catch (e) {
-      print('❌ Error cargando producto: $e');
+      debugPrint('❌ Error cargando producto: $e');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -165,7 +165,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         });
       }
     } catch (e) {
-      print('Error inicializando video: $e');
+      debugPrint('Error inicializando video: $e');
       // Si falla el video, simplemente no lo mostramos
       if (mounted) {
         setState(() {
@@ -177,22 +177,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void _addToCart() {
     if (_product == null) {
-      print('⚠️ ERROR: Producto es null');
+      debugPrint('⚠️ ERROR: Producto es null');
       return;
     }
 
-    print('🛒 Intentando agregar al carrito: ${_product!.name}');
-    print('  - ID: ${_product!.id}');
-    print('  - Precio: \$${_product!.price}');
-    print('  - Cantidad: $_quantity');
-    print('  - Talla seleccionada: $_selectedSize');
-    print('  - Disponible: ${_product!.isAvailable}');
-    print('  - Stock: ${_product!.stock}');
-    print('  - Activo: ${_product!.isActive}');
-    print('  - Vendido: ${_product!.isSold}');
+    debugPrint('🛒 Intentando agregar al carrito: ${_product!.name}');
+    debugPrint('  - ID: ${_product!.id}');
+    debugPrint('  - Precio: \$${_product!.price}');
+    debugPrint('  - Cantidad: $_quantity');
+    debugPrint('  - Talla seleccionada: $_selectedSize');
+    debugPrint('  - Disponible: ${_product!.isAvailable}');
+    debugPrint('  - Stock: ${_product!.stock}');
+    debugPrint('  - Activo: ${_product!.isActive}');
+    debugPrint('  - Vendido: ${_product!.isSold}');
 
     if (_product!.sizes.isNotEmpty && _selectedSize == null) {
-      print('⚠️ ERROR: Debe seleccionar una talla');
+      debugPrint('⚠️ ERROR: Debe seleccionar una talla');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor selecciona una talla')),
       );
@@ -200,14 +200,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     final shopProvider = context.read<ShopProvider>();
-    print('📦 Carrito antes: ${shopProvider.cartItems.length} items');
+    debugPrint('📦 Carrito antes: ${shopProvider.cartItems.length} items');
 
     for (int i = 0; i < _quantity; i++) {
       shopProvider.addToCart(_product!, selectedSize: _selectedSize);
     }
 
-    print('📦 Carrito después: ${shopProvider.cartItems.length} items');
-    print('✅ Producto agregado exitosamente');
+    debugPrint('📦 Carrito después: ${shopProvider.cartItems.length} items');
+    debugPrint('✅ Producto agregado exitosamente');
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

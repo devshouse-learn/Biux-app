@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import "package:flutter/foundation.dart";
 
 /// Servicio para comprimir imágenes antes de subirlas a Firebase
 /// Esto reduce significativamente los costos de almacenamiento y transferencia
@@ -43,13 +43,13 @@ class ImageCompressionService {
 
       // Verificar que la compresión fue exitosa
       final compressedSize = await File(compressedFile.path).length();
-      print(
+      debugPrint(
         'Imagen comprimida: ${fileSize ~/ 1024}KB → ${compressedSize ~/ 1024}KB',
       );
 
       return File(compressedFile.path);
     } catch (e) {
-      print('Error comprimiendo imagen: $e');
+      debugPrint('Error comprimiendo imagen: $e');
       return file; // Retornar archivo original si falla
     }
   }
@@ -65,12 +65,12 @@ class ImageCompressionService {
         format: CompressFormat.jpeg,
       );
 
-      print(
+      debugPrint(
         'Bytes comprimidos: ${bytes.length ~/ 1024}KB → ${compressedBytes.length ~/ 1024}KB',
       );
       return compressedBytes;
     } catch (e) {
-      print('Error comprimiendo bytes: $e');
+      debugPrint('Error comprimiendo bytes: $e');
       return bytes;
     }
   }
@@ -95,7 +95,7 @@ class ImageCompressionService {
 
       return compressedFile != null ? File(compressedFile.path) : file;
     } catch (e) {
-      print('Error comprimiendo avatar: $e');
+      debugPrint('Error comprimiendo avatar: $e');
       return file;
     }
   }
@@ -120,7 +120,7 @@ class ImageCompressionService {
 
       return compressedFile != null ? File(compressedFile.path) : file;
     } catch (e) {
-      print('Error comprimiendo thumbnail: $e');
+      debugPrint('Error comprimiendo thumbnail: $e');
       return file;
     }
   }

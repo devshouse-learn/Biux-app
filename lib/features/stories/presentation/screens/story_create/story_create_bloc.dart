@@ -78,7 +78,7 @@ class StoryCreateBloc extends ChangeNotifier {
       }
 
       if (listFiles.isEmpty) {
-        print('Error: No hay archivos para subir');
+        debugPrint('Error: No hay archivos para subir');
         return false;
       }
 
@@ -96,7 +96,7 @@ class StoryCreateBloc extends ChangeNotifier {
 
       return result;
     } catch (e) {
-      print('Error creando historia: $e');
+      debugPrint('Error creando historia: $e');
       return false;
     }
   }
@@ -109,7 +109,7 @@ class StoryCreateBloc extends ChangeNotifier {
       final image = img.decodeImage(bytes);
 
       if (image == null) {
-        print('No se pudo decodificar la imagen');
+        debugPrint('No se pudo decodificar la imagen');
         return imageFile;
       }
 
@@ -119,7 +119,7 @@ class StoryCreateBloc extends ChangeNotifier {
 
       // Si la imagen ya está dentro de los límites, retornarla sin cambios
       if (image.width <= maxWidth && image.height <= maxHeight) {
-        print('Imagen dentro de límites (${image.width}x${image.height})');
+        debugPrint('Imagen dentro de límites (${image.width}x${image.height})');
         return imageFile;
       }
 
@@ -131,7 +131,7 @@ class StoryCreateBloc extends ChangeNotifier {
       final newWidth = (image.width * ratio).toInt();
       final newHeight = (image.height * ratio).toInt();
 
-      print(
+      debugPrint(
         'Redimensionando imagen: ${image.width}x${image.height} → ${newWidth}x${newHeight}',
       );
 
@@ -151,10 +151,10 @@ class StoryCreateBloc extends ChangeNotifier {
       );
       await tempFile.writeAsBytes(resizedBytes);
 
-      print('Imagen redimensionada guardada: ${tempFile.path}');
+      debugPrint('Imagen redimensionada guardada: ${tempFile.path}');
       return tempFile;
     } catch (e) {
-      print('Error redimensionando imagen: $e');
+      debugPrint('Error redimensionando imagen: $e');
       // Si hay error, retornar archivo original
       return imageFile;
     }

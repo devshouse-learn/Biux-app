@@ -8,6 +8,7 @@ import 'package:biux/core/utils/firebase_utils.dart';
 import 'package:biux/features/users/domain/repositories/user_repository_abstract.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import "package:flutter/foundation.dart";
 
 class UserFirebaseRepository extends UserRepositoryAbstract {
   static final collection = 'users';
@@ -189,7 +190,7 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
     try {
       await _auth.sendPasswordResetEmail(email: user);
     } on FirebaseAuthException catch (e) {
-      print(e);
+      debugPrint(e.toString());
       if (e.code == 'invalid-email') {
       } else if (e.code == 'user-not-found') {
       } else {}
@@ -199,12 +200,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
   @override
   Future<BiuxUser> updateUser(BiuxUser user) async {
     try {
-      print('📝 Guardando datos en Firestore:');
-      print('   - ID: ${user.id}');
-      print('   - Nombre: ${user.fullName}');
-      print('   - Teléfono: ${user.whatsapp}');
-      print('   - Ciudad: ${user.cityId.name}');
-      print('   - Descripción: ${user.description}');
+      debugPrint('📝 Guardando datos en Firestore:');
+      debugPrint('   - ID: ${user.id}');
+      debugPrint('   - Nombre: ${user.fullName}');
+      debugPrint('   - Teléfono: ${user.whatsapp}');
+      debugPrint('   - Ciudad: ${user.cityId.name}');
+      debugPrint('   - Descripción: ${user.description}');
 
       await firestore.collection(collection).doc(user.id).update({
         AppStrings.fullName: user.fullName,
@@ -213,12 +214,12 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         AppStrings.description: user.description,
       });
 
-      print('✅ Datos guardados en Firestore correctamente');
+      debugPrint('✅ Datos guardados en Firestore correctamente');
       final response = await this.getUserId(user.id);
-      print('✅ Datos recuperados: ${response.fullName}');
+      debugPrint('✅ Datos recuperados: ${response.fullName}');
       return response;
     } catch (e) {
-      print('❌ Error al actualizar en Firestore: $e');
+      debugPrint('❌ Error al actualizar en Firestore: $e');
       rethrow; // Propagar el error para que se capture en la pantalla
     }
   }
@@ -266,10 +267,10 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
         await firestore.collection(collection).doc(id).update({
           'profileCover': downloadUrl,
         });
-        print('✅ profileCover actualizado en Firestore: $downloadUrl');
+        debugPrint('✅ profileCover actualizado en Firestore: $downloadUrl');
       }
     } catch (e) {
-      print('❌ Error al subir foto de portada: $e');
+      debugPrint('❌ Error al subir foto de portada: $e');
     }
   }
 

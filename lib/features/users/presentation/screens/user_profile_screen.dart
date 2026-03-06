@@ -1074,6 +1074,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   // Método para compartir el perfil del usuario
+  // ignore: unused_element
   Future<void> _shareProfile(BiuxUser user) async {
     try {
       final userName = user.userName.isNotEmpty ? user.userName : user.fullName;
@@ -1083,11 +1084,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
-      print('Error al compartir perfil: $e');
+      debugPrint('Error al compartir perfil: $e');
     }
   }
 }
 
+// ignore: unused_element
 class _UserListItem extends StatelessWidget {
   final BiuxUser user;
   final VoidCallback onTap;

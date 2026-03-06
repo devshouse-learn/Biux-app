@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:biux/features/rides/data/models/ride_model.dart';
+import "package:flutter/foundation.dart";
 
 class RideRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -13,7 +14,7 @@ class RideRepository {
           .add(ride.toFirestore());
       return docRef.id;
     } catch (e) {
-      print('Error creating ride: $e');
+      debugPrint('Error creating ride: $e');
       return null;
     }
   }
@@ -54,7 +55,7 @@ class RideRepository {
       }
       return null;
     } catch (e) {
-      print('Error getting ride: $e');
+      debugPrint('Error getting ride: $e');
       return null;
     }
   }
@@ -70,7 +71,7 @@ class RideRepository {
       });
       return true;
     } catch (e) {
-      print('Error joining ride: $e');
+      debugPrint('Error joining ride: $e');
       return false;
     }
   }
@@ -86,7 +87,7 @@ class RideRepository {
       });
       return true;
     } catch (e) {
-      print('Error marking maybe join ride: $e');
+      debugPrint('Error marking maybe join ride: $e');
       return false;
     }
   }
@@ -100,7 +101,7 @@ class RideRepository {
       });
       return true;
     } catch (e) {
-      print('Error leaving ride: $e');
+      debugPrint('Error leaving ride: $e');
       return false;
     }
   }
@@ -111,7 +112,7 @@ class RideRepository {
       await _firestore.collection('rides').doc(rideId).update(updates);
       return true;
     } catch (e) {
-      print('Error updating ride: $e');
+      debugPrint('Error updating ride: $e');
       return false;
     }
   }
@@ -124,7 +125,7 @@ class RideRepository {
       });
       return true;
     } catch (e) {
-      print('Error cancelling ride: $e');
+      debugPrint('Error cancelling ride: $e');
       return false;
     }
   }
@@ -135,7 +136,7 @@ class RideRepository {
       await _firestore.collection('rides').doc(rideId).delete();
       return true;
     } catch (e) {
-      print('Error deleting ride: $e');
+      debugPrint('Error deleting ride: $e');
       return false;
     }
   }

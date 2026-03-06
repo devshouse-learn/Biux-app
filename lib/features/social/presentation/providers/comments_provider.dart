@@ -40,13 +40,13 @@ class CommentsProvider extends ChangeNotifier {
           .doc(userId)
           .get();
 
-      print('🔍 Buscando usuario en Firestore: $userId');
-      print('🔍 Documento existe: ${userDoc.exists}');
+      debugPrint('🔍 Buscando usuario en Firestore: $userId');
+      debugPrint('🔍 Documento existe: ${userDoc.exists}');
 
       final userData = userDoc.data();
 
       if (userData != null) {
-        print('🔍 Datos del usuario: $userData');
+        debugPrint('🔍 Datos del usuario: $userData');
       }
 
       if (userData != null && userData.isNotEmpty) {
@@ -73,13 +73,13 @@ class CommentsProvider extends ChangeNotifier {
       }
 
       _userDataLoaded = true;
-      print('✅ CommentsProvider: Datos de usuario cargados');
-      print('   👤 UserId: $userId');
-      print('   📝 UserName encontrado: $_cachedUserName');
-      print('   📸 UserPhoto: $_cachedUserPhoto');
-      print('   ✔️ Perfil completo: $hasCompletedProfile');
+      debugPrint('✅ CommentsProvider: Datos de usuario cargados');
+      debugPrint('   👤 UserId: $userId');
+      debugPrint('   📝 UserName encontrado: $_cachedUserName');
+      debugPrint('   📸 UserPhoto: $_cachedUserPhoto');
+      debugPrint('   ✔️ Perfil completo: $hasCompletedProfile');
     } catch (e) {
-      print('⚠️ Error cargando datos de usuario en CommentsProvider: $e');
+      debugPrint('⚠️ Error cargando datos de usuario en CommentsProvider: $e');
       _cachedUserName = null;
       _cachedUserPhoto = null;
       _userDataLoaded = true;

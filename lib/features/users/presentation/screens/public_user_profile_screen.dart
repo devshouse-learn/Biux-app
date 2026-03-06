@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
@@ -1076,10 +1075,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     );
   }
 
+  // ignore: unused_element
   Future<void> _shareProfile(BiuxUser user) async {
-    await Share.share(
+    await SharePlus.instance.share(ShareParams(text:
       'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
-      subject: 'Perfil de ${user.fullName}',
-    );
+      ));
   }
 }

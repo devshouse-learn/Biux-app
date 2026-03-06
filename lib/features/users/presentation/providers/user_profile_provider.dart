@@ -43,12 +43,14 @@ class UserProfileProvider extends ChangeNotifier {
   static const Duration _followCooldownDuration = Duration(seconds: 3);
 
   // Helper methods para cooldown
+  // ignore: unused_element
   bool _isInFollowCooldown(String userId) {
     final lastAction = _followCooldowns[userId];
     if (lastAction == null) return false;
     return DateTime.now().difference(lastAction) < _followCooldownDuration;
   }
 
+  // ignore: unused_element
   void _setFollowCooldown(String userId) {
     _followCooldowns[userId] = DateTime.now();
   }
@@ -222,7 +224,7 @@ class UserProfileProvider extends ChangeNotifier {
         // ignore: unnecessary_null_comparison, dead_null_aware_expression
         final hasMedia = exp.media != null && exp.media.isNotEmpty;
         if (!hasMedia) {
-          print('⚠️ Eliminando publicación sin media: ${exp.id}');
+          debugPrint('⚠️ Eliminando publicación sin media: ${exp.id}');
         }
         return hasMedia;
       }).toList();

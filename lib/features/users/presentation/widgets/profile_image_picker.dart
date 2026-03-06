@@ -276,7 +276,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
         }
       }
     } catch (e) {
-      print('Error seleccionando imagen: $e');
+      debugPrint('Error seleccionando imagen: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -345,7 +345,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
       return croppedFile;
     } catch (e) {
-      print('Error recortando imagen: $e');
+      debugPrint('Error recortando imagen: $e');
       return null;
     }
   }

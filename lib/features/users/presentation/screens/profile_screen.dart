@@ -210,11 +210,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        print('🔄 Cargando datos del usuario...');
+        debugPrint('🔄 Cargando datos del usuario...');
         await widget.userProvider.loadUserData();
 
         if (widget.userProvider.user == null) {
-          print('⚠️ Usuario no existe, creando...');
+          debugPrint('⚠️ Usuario no existe, creando...');
           String formattedPhone = widget.formatPhoneFunction(currentUser.uid);
           await widget.userProvider.createUserIfNotExists(
             currentUser.uid,
@@ -225,9 +225,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         }
 
         if (widget.userProvider.user != null && mounted) {
-          print('✅ Inicializando campos con datos del usuario:');
-          print('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
-          print('   Email: "${widget.userProvider.user?.email ?? ''}"');
+          debugPrint('✅ Inicializando campos con datos del usuario:');
+          debugPrint('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
+          debugPrint('   Email: "${widget.userProvider.user?.email ?? ''}"');
           setState(() {
             _nameController.text = widget.userProvider.user?.name ?? '';
             _emailController.text = widget.userProvider.user?.email ?? '';
@@ -261,7 +261,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                 // Verificar que el contexto sigue siendo válido antes de mostrar el loading
                 if (!widgetContext.mounted) {
-                  print('❌ Contexto inválido, abortando logout');
+                  debugPrint('❌ Contexto inválido, abortando logout');
                   return;
                 }
 
@@ -291,7 +291,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 );
 
                 try {
-                  print('🔄 Iniciando logout desde perfil...');
+                  debugPrint('🔄 Iniciando logout desde perfil...');
 
                   // Detener la escucha del MeetingPointProvider si existe
                   try {
@@ -301,22 +301,22 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           listen: false,
                         );
                     meetingPointProvider.stopListening();
-                    print('✅ MeetingPointProvider detenido');
+                    debugPrint('✅ MeetingPointProvider detenido');
                   } catch (e) {
-                    print('⚠️ Error deteniendo MeetingPointProvider: $e');
+                    debugPrint('⚠️ Error deteniendo MeetingPointProvider: $e');
                   }
 
                   // Limpiar UserProvider primero
                   await widget.userProvider.signOut();
-                  print('✅ UserProvider limpiado');
+                  debugPrint('✅ UserProvider limpiado');
 
                   // Limpiar Firebase Auth (esto activa el refreshListenable del router)
                   await FirebaseAuth.instance.signOut();
-                  print('✅ Firebase Auth limpiado');
+                  debugPrint('✅ Firebase Auth limpiado');
 
                   // Esperar un momento para que el router detecte el cambio
                   await Future.delayed(Duration(milliseconds: 300));
-                  print('✅ Logout completado');
+                  debugPrint('✅ Logout completado');
 
                   // Cerrar loading
                   if (widgetContext.mounted) {
@@ -325,11 +325,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                   // NO navegamos manualmente - el router detectará el cambio de auth automáticamente
                   // gracias al refreshListenable configurado en el router
-                  print(
+                  debugPrint(
                     '✅ Logout completado, esperando redirección automática del router',
                   );
                 } catch (e) {
-                  print('❌ Error en logout desde perfil: $e');
+                  debugPrint('❌ Error en logout desde perfil: $e');
 
                   // Cerrar loading
                   if (widgetContext.mounted) {
@@ -401,6 +401,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   // Función temporal para actualizar ciudades con departamentos
 
+  // ignore: unused_element
+  // ignore: unused_element
   Widget _buildStatCardButton({
     required String value,
     required String label,
@@ -513,25 +515,25 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          print('🔍 DEBUG: Intentando navegar a usuario');
-                          print('  User ID: "${user.id}"');
-                          print('  User ID isEmpty: ${user.id.isEmpty}');
-                          print('  User ID length: ${user.id.length}');
+                          debugPrint('🔍 DEBUG: Intentando navegar a usuario');
+                          debugPrint('  User ID: "${user.id}"');
+                          debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
+                          debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            print('🔍 DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
-                                print(
+                                debugPrint(
                                   '🔍 DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
-                            print(
+                            debugPrint(
                               '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -630,25 +632,25 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          print('🔍 DEBUG: Intentando navegar a usuario');
-                          print('  User ID: "${user.id}"');
-                          print('  User ID isEmpty: ${user.id.isEmpty}');
-                          print('  User ID length: ${user.id.length}');
+                          debugPrint('🔍 DEBUG: Intentando navegar a usuario');
+                          debugPrint('  User ID: "${user.id}"');
+                          debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
+                          debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            print('🔍 DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
-                                print(
+                                debugPrint(
                                   '🔍 DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
-                            print(
+                            debugPrint(
                               '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -681,13 +683,13 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         final data = userDoc.data() as Map<String, dynamic>;
         // Asegurar que el ID está incluido en los datos
         data['id'] = userDoc.id;
-        print('✅ Usuario cargado con ID: ${userDoc.id}');
+        debugPrint('✅ Usuario cargado con ID: ${userDoc.id}');
         return BiuxUser.fromJsonMap(data);
       } else {
-        print('❌ Usuario no encontrado: $userId');
+        debugPrint('❌ Usuario no encontrado: $userId');
       }
     } catch (e) {
-      print('❌ Error cargando usuario $userId: $e');
+      debugPrint('❌ Error cargando usuario $userId: $e');
     }
     return null;
   }
@@ -919,6 +921,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   // Panel para crear contenido (historias o publicaciones)
+  // ignore: unused_element
+  // ignore: unused_element
   void _showCreateContentOptions() {
     showModalBottomSheet(
       context: context,

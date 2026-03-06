@@ -46,6 +46,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   late String _contentType;
 
   // Toggle para marcador de publicidad
+  // ignore: unused_field
   bool _isAdvertisement = false;
 
   // Modo edición

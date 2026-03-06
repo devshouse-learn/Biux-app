@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import "package:flutter/foundation.dart";
 
 /// Provider del repository
 final experienceRepositoryProvider = Provider<ExperienceRepository>((ref) {
@@ -190,7 +191,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
       // PENDIENTE: Actualizar las vistas en el estado local
     } catch (e) {
       // Error silencioso para marcar vistas
-      print('Error marcando como vista: $e');
+      debugPrint('Error marcando como vista: $e');
     }
   }
 

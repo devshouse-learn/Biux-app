@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/like_model.dart';
@@ -86,22 +87,22 @@ class LikesRealtimeDatasource {
     final path = '${_getBasePath(type)}/$targetId/${like.userId}';
     final jsonData = like.toJson();
 
-    print('🔍 DEBUG DATASOURCE - Path: $path');
-    print('🔍 DEBUG DATASOURCE - JSON: $jsonData');
+    debugPrint('🔍 DEBUG DATASOURCE - Path: $path');
+    debugPrint('🔍 DEBUG DATASOURCE - JSON: $jsonData');
 
     // Verificar auth
     final currentUser = FirebaseAuth.instance.currentUser;
-    print('🔍 DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
-    print('🔍 DEBUG AUTH - like.userId: ${like.userId}');
-    print('🔍 DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
+    debugPrint('🔍 DEBUG AUTH - currentUser.uid: ${currentUser?.uid}');
+    debugPrint('🔍 DEBUG AUTH - like.userId: ${like.userId}');
+    debugPrint('🔍 DEBUG AUTH - Match: ${currentUser?.uid == like.userId}');
 
     final ref = _database.ref(path);
 
     try {
       await ref.set(jsonData);
-      print('✅ LIKE GUARDADO EXITOSAMENTE');
+      debugPrint('✅ LIKE GUARDADO EXITOSAMENTE');
     } catch (e) {
-      print('❌ ERROR AL GUARDAR LIKE: $e');
+      debugPrint('❌ ERROR AL GUARDAR LIKE: $e');
       rethrow;
     }
   }

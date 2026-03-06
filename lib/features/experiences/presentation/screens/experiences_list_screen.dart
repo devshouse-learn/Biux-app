@@ -94,6 +94,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -171,6 +172,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   Widget _buildErrorState(String error, ExperienceProvider provider) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return Center(
@@ -217,6 +219,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   /// Estado vacío cuando no hay posts pero sí hay stories
   Widget _buildEmptyStateInLayout() {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
@@ -377,6 +380,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   /// Navegar directamente a crear publicación (comportamiento original)
+  // ignore: unused_element
   void _navigateToCreatePost(BuildContext context) {
     Navigator.of(context)
         .push(
@@ -397,7 +401,9 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   /// Muestra opciones para crear POST (con multimedia o solo texto)
+  // ignore: unused_element
   void _showCreatePostOptions(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -520,6 +526,7 @@ class _ExperienceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageUrls = experience.media.map((m) => m.url).toList();
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    // ignore: unused_local_variable
     final isOwner = currentUserId == experience.user.id;
 
     return Container(
@@ -585,8 +592,10 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _showPostMenu(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    // ignore: unused_local_variable
     final isOwner = currentUserId == experience.user.id;
 
     showModalBottomSheet(
@@ -661,6 +670,7 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     showDialog(
@@ -820,6 +830,7 @@ class _AdvertisementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return Container(
@@ -985,6 +996,7 @@ class _AdvertisementCard extends StatelessWidget {
 
   /// Muestra un modal expandido con los detalles del anuncio
   void _showAdvertisementModal(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     showModalBottomSheet(

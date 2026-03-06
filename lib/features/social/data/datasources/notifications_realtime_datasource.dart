@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import '../models/notification_model.dart';
+import "package:flutter/foundation.dart";
 
 /// Datasource para notificaciones en Firebase Realtime Database
 class NotificationsRealtimeDatasource {
@@ -34,24 +35,24 @@ class NotificationsRealtimeDatasource {
   /// Stream del conteo de notificaciones no leídas
   Stream<int> watchUnreadCount(String userId) {
     final ref = _database.ref('notifications/unread/$userId');
-    print('👀 Escuchando contador para userId: $userId en: ${ref.path}');
+    debugPrint('👀 Escuchando contador para userId: $userId en: ${ref.path}');
 
     return ref.onValue
         .map((event) {
-          print('📊 Evento de contador recibido para $userId');
+          debugPrint('📊 Evento de contador recibido para $userId');
           if (event.snapshot.value == null) {
-            print('   Contador: 0 (null)');
+            debugPrint('   Contador: 0 (null)');
             return 0;
           }
 
           // ⚠️ Las reglas esperan estructura {count: number, lastUpdated: number}
           final data = event.snapshot.value as Map<dynamic, dynamic>?;
           final count = data?['count'] as int? ?? 0;
-          print('   Contador: $count');
+          debugPrint('   Contador: $count');
           return count;
         })
         .handleError((error) {
-          print('❌ Error en stream de contador para $userId: $error');
+          debugPrint('❌ Error en stream de contador para $userId: $error');
           // Retornar 0 en caso de error en vez de fallar
           return 0;
         });

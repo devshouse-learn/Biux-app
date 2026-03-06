@@ -63,7 +63,7 @@ class StoryViewBloc extends ChangeNotifier {
       listStory.removeWhere((element) => element.id == story.id);
       notifyListeners();
     } catch (e) {
-      print('Error eliminando historia: $e');
+      debugPrint('Error eliminando historia: $e');
     }
   }
 
@@ -76,7 +76,7 @@ class StoryViewBloc extends ChangeNotifier {
         await storiesFirebaseRepository.updateStory(id: story.id, story: story);
       }
     } catch (e) {
-      print('Error actualizando comentarios: $e');
+      debugPrint('Error actualizando comentarios: $e');
     }
   }
 }

@@ -177,16 +177,57 @@ class _AppDrawerState extends State<AppDrawer> {
             child: ListView(
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
+                // ===== CICLISMO =====
+                _sec('CICLISMO'),
+                _item(Icons.gps_fixed, Colors.green, 'Grabar Rodada',
+                    'GPS tracking en tiempo real', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.rideTracker);
+                }),
+                _item(Icons.bar_chart_rounded, Colors.blue, 'Mis Estadisticas',
+                    'Km, velocidad, nivel y ranking', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.cyclingStats);
+                }),
+                _item(Icons.emoji_events, Colors.amber, 'Logros',
+                    'Medallas y desafios desbloqueados', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.achievements);
+                }),
+
+                const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(height: 24)),
+
+                // ===== COMUNIDAD =====
                 _sec('COMUNIDAD'),
+                _item(Icons.chat_bubble_outline, ColorTokens.primary30, 'Mensajes',
+                    'Chats con otros ciclistas', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.chatList);
+                }),
                 _item(Icons.storefront, Colors.deepPurple, 'Negocios y Eventos',
                     'Publicidad y eventos con registro', () {
                   Navigator.pop(context);
                   context.push('/promotions');
                 }),
+
                 const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Divider(height: 24)),
+
+                // ===== SEGURIDAD =====
                 _sec('SEGURIDAD'),
+                _item(Icons.sos, Colors.red, 'Emergencia SOS',
+                    'Boton de panico y contactos', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.emergency);
+                }),
+                _item(Icons.report_problem_outlined, Colors.orange, 'Reportes Viales',
+                    'Baches, obras y peligros en ruta', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.roadReports);
+                }),
                 _item(Icons.warning_amber_rounded, ColorTokens.error50,
                     'Bicicletas Robadas', 'Base de datos publica', () {
                   Navigator.pop(context);
@@ -207,9 +248,24 @@ class _AppDrawerState extends State<AppDrawer> {
                     });
                   },
                 ),
+
                 const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Divider(height: 24)),
+
+                // ===== APRENDIZAJE =====
+                _sec('APRENDIZAJE'),
+                _item(Icons.menu_book_rounded, Colors.teal, 'Educacion Vial',
+                    'Seguridad, mecanica y consejos', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.education);
+                }),
+
+                const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(height: 24)),
+
+                // ===== AJUSTES =====
                 _sec('AJUSTES'),
                 _item(Icons.settings_outlined, ColorTokens.neutral50,
                     'Configuracion', 'Notificaciones y preferencias', () {

@@ -37,7 +37,7 @@ class EditUsernameProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('Error cargando username actual: $e');
+      debugPrint('Error cargando username actual: $e');
     }
   }
 
@@ -105,7 +105,7 @@ class EditUsernameProvider extends ChangeNotifier {
         _availabilityMessage = '✗ No disponible';
       }
     } catch (e) {
-      print('Error verificando disponibilidad: $e');
+      debugPrint('Error verificando disponibilidad: $e');
       _usernameAvailable = null;
       _availabilityMessage = 'Error verificando disponibilidad';
     } finally {
@@ -149,7 +149,7 @@ class EditUsernameProvider extends ChangeNotifier {
       _currentUsername = newUsername;
       return true;
     } catch (e) {
-      print('Error actualizando username: $e');
+      debugPrint('Error actualizando username: $e');
       _error = 'Error al actualizar el nombre de usuario';
       return false;
     } finally {

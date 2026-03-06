@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import "package:flutter/foundation.dart";
 
 /// Servicio para manejar notificaciones push y locales
 class NotificationService {
@@ -34,9 +35,9 @@ class NotificationService {
       await _saveDeviceToken();
 
       _isInitialized = true;
-      print('NotificationService inicializado correctamente');
+      debugPrint('NotificationService inicializado correctamente');
     } catch (e) {
-      print('Error inicializando NotificationService: $e');
+      debugPrint('Error inicializando NotificationService: $e');
     }
   }
 
@@ -90,7 +91,7 @@ class NotificationService {
       criticalAlert: false,
     );
 
-    print('📱 Permisos de notificación: ${settings.authorizationStatus}');
+    debugPrint('📱 Permisos de notificación: ${settings.authorizationStatus}');
   }
 
   /// Configura los manejadores de FCM
@@ -107,7 +108,7 @@ class NotificationService {
 
   /// Maneja mensajes cuando la app está en primer plano
   Future<void> _handleForegroundMessage(RemoteMessage message) async {
-    print('📬 Notificación recibida en foreground: ${message.messageId}');
+    debugPrint('📬 Notificación recibida en foreground: ${message.messageId}');
 
     // Crear notificación en Firestore
     await _saveNotificationToFirestore(message);
@@ -121,7 +122,7 @@ class NotificationService {
 
   /// Maneja cuando el usuario toca una notificación (app en background)
   void _handleMessageOpenedApp(RemoteMessage message) {
-    print('🔔 Notificación tocada (background): ${message.messageId}');
+    debugPrint('🔔 Notificación tocada (background): ${message.messageId}');
 
     // Agregar delay para asegurar que el contexto esté listo
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -133,7 +134,7 @@ class NotificationService {
   Future<void> _checkInitialMessage() async {
     final initialMessage = await _fcm.getInitialMessage();
     if (initialMessage != null) {
-      print(
+      debugPrint(
         '🚀 App abierta desde notificación (terminated): ${initialMessage.messageId}',
       );
 
@@ -174,9 +175,9 @@ class NotificationService {
             'data': data,
           });
 
-      print('✅ Notificación guardada en Firestore');
+      debugPrint('✅ Notificación guardada en Firestore');
     } catch (e) {
-      print('❌ Error guardando notificación en Firestore: $e');
+      debugPrint('❌ Error guardando notificación en Firestore: $e');
     }
   }
 
@@ -225,7 +226,7 @@ class NotificationService {
         final data = jsonDecode(response.payload!);
         _notificationStreamController.add({...data, 'opened': true});
       } catch (e) {
-        print('❌ Error procesando payload de notificación: $e');
+        debugPrint('❌ Error procesando payload de notificación: $e');
       }
     }
   }
@@ -244,14 +245,14 @@ class NotificationService {
         'lastTokenUpdate': FieldValue.serverTimestamp(),
       });
 
-      print('✅ Token FCM guardado: ${token.substring(0, 20)}...');
+      debugPrint('✅ Token FCM guardado: ${token.substring(0, 20)}...');
 
       // Escuchar cambios de token
       _fcm.onTokenRefresh.listen((newToken) {
         _updateDeviceToken(userId, newToken);
       });
     } catch (e) {
-      print('❌ Error guardando token FCM: $e');
+      debugPrint('❌ Error guardando token FCM: $e');
     }
   }
 
@@ -263,9 +264,9 @@ class NotificationService {
         'lastTokenUpdate': FieldValue.serverTimestamp(),
       });
 
-      print('🔄 Token FCM actualizado');
+      debugPrint('🔄 Token FCM actualizado');
     } catch (e) {
-      print('❌ Error actualizando token FCM: $e');
+      debugPrint('❌ Error actualizando token FCM: $e');
     }
   }
 
@@ -274,7 +275,7 @@ class NotificationService {
     try {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
-        print('⚠️ No hay usuario autenticado');
+        debugPrint('⚠️ No hay usuario autenticado');
         return;
       }
 
@@ -284,11 +285,11 @@ class NotificationService {
       // Inicializar preferencias de notificación si no existen
       await _ensureNotificationSettings(userId);
 
-      print(
+      debugPrint(
         '✅ NotificationService reinicializado para usuario: ${userId.substring(0, 8)}...',
       );
     } catch (e) {
-      print('❌ Error reinicializando NotificationService: $e');
+      debugPrint('❌ Error reinicializando NotificationService: $e');
     }
   }
 
@@ -329,10 +330,10 @@ class NotificationService {
             .doc('notifications')
             .set(defaultSettings);
 
-        print('✅ Preferencias de notificación inicializadas');
+        debugPrint('✅ Preferencias de notificación inicializadas');
       }
     } catch (e) {
-      print('❌ Error inicializando preferencias: $e');
+      debugPrint('❌ Error inicializando preferencias: $e');
     }
   }
 
@@ -366,9 +367,9 @@ class NotificationService {
       }
 
       await _fcm.deleteToken();
-      print('🗑️ Token FCM eliminado');
+      debugPrint('🗑️ Token FCM eliminado');
     } catch (e) {
-      print('❌ Error eliminando token FCM: $e');
+      debugPrint('❌ Error eliminando token FCM: $e');
     }
   }
 
@@ -391,7 +392,7 @@ class NotificationService {
     required String sellerName,
   }) async {
     try {
-      print('🚨 Enviando alerta de robo al propietario $bikeOwnerId');
+      debugPrint('🚨 Enviando alerta de robo al propietario $bikeOwnerId');
 
       // Obtener tokens FCM del propietario
       final ownerDoc = await FirebaseFirestore.instance
@@ -400,7 +401,7 @@ class NotificationService {
           .get();
 
       if (!ownerDoc.exists) {
-        print('⚠️ Usuario propietario no encontrado');
+        debugPrint('⚠️ Usuario propietario no encontrado');
         return;
       }
 
@@ -408,7 +409,7 @@ class NotificationService {
       final fcmTokens = ownerData?['fcmTokens'] as List<dynamic>?;
 
       if (fcmTokens == null || fcmTokens.isEmpty) {
-        print('⚠️ El propietario no tiene tokens FCM registrados');
+        debugPrint('⚠️ El propietario no tiene tokens FCM registrados');
         return;
       }
 
@@ -448,13 +449,13 @@ class NotificationService {
         'status': 'pending',
       });
 
-      print('✅ Alerta de robo guardada en Firestore');
+      debugPrint('✅ Alerta de robo guardada en Firestore');
 
       // Aquí se enviaría la notificación push real mediante Cloud Functions
       // En producción, esto se haría desde el backend usando Admin SDK
-      print('📤 Notificación push enviada al propietario (simulado)');
+      debugPrint('📤 Notificación push enviada al propietario (simulado)');
     } catch (e) {
-      print('❌ Error enviando alerta de robo: $e');
+      debugPrint('❌ Error enviando alerta de robo: $e');
     }
   }
 
@@ -467,7 +468,7 @@ class NotificationService {
     required String sellerName,
   }) async {
     try {
-      print('📢 Notificando a administradores sobre intento de robo');
+      debugPrint('📢 Notificando a administradores sobre intento de robo');
 
       // Obtener todos los administradores
       final adminsQuery = await FirebaseFirestore.instance
@@ -499,11 +500,11 @@ class NotificationService {
             });
       }
 
-      print(
+      debugPrint(
         '✅ Administradores notificados (${adminsQuery.docs.length} admins)',
       );
     } catch (e) {
-      print('❌ Error notificando a administradores: $e');
+      debugPrint('❌ Error notificando a administradores: $e');
     }
   }
 }
@@ -511,6 +512,6 @@ class NotificationService {
 /// Manejador de mensajes en background (debe estar fuera de la clase)
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('📱 Mensaje recibido en background: ${message.messageId}');
+  debugPrint('📱 Mensaje recibido en background: ${message.messageId}');
   // Aquí puedes agregar lógica adicional para procesar el mensaje en background
 }

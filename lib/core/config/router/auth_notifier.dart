@@ -18,9 +18,9 @@ class AuthNotifier extends ChangeNotifier {
     _user = FirebaseAuth.instance.currentUser;
 
     if (_isWebPlatform) {
-      print('🌐 WEB: Modo desarrollo - Saltando autenticación');
+      debugPrint('🌐 WEB: Modo desarrollo - Saltando autenticación');
     } else {
-      print('📱 MOBILE: Requiriendo autenticación real');
+      debugPrint('📱 MOBILE: Requiriendo autenticación real');
     }
 
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
@@ -28,7 +28,7 @@ class AuthNotifier extends ChangeNotifier {
         // Solo en mobile actualizar el estado de autenticación
         if (_user != user) {
           _user = user;
-          print('🔄 Estado de autenticación cambió: ${user?.uid ?? "null"}');
+          debugPrint('🔄 Estado de autenticación cambió: ${user?.uid ?? "null"}');
           notifyListeners();
         }
       }

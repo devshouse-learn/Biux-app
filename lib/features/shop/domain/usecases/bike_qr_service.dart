@@ -70,7 +70,7 @@ class BikeQRService {
 
       return null;
     } catch (e) {
-      print('❌ Error generando imagen QR: $e');
+      debugPrint('❌ Error generando imagen QR: $e');
       return null;
     }
   }
@@ -99,7 +99,7 @@ class BikeQRService {
         'verifierUid': params['verifier']!,
       };
     } catch (e) {
-      print('❌ Error decodificando QR: $e');
+      debugPrint('❌ Error decodificando QR: $e');
       return null;
     }
   }
@@ -167,7 +167,7 @@ class BikeQRService {
         verificationDate: verificationDate,
       );
     } catch (e) {
-      print('❌ Error verificando QR: $e');
+      debugPrint('❌ Error verificando QR: $e');
       return QRVerificationResult(
         isValid: false,
         message: 'Error al verificar el código QR',
@@ -189,9 +189,9 @@ class BikeQRService {
             'qrCode': qrData,
             'qrGeneratedAt': FieldValue.serverTimestamp(),
           });
-      print('✅ QR guardado en producto $productId');
+      debugPrint('✅ QR guardado en producto $productId');
     } catch (e) {
-      print('❌ Error guardando QR: $e');
+      debugPrint('❌ Error guardando QR: $e');
     }
   }
 

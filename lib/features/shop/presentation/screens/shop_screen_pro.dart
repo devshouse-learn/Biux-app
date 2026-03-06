@@ -2256,7 +2256,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
         // ✅ FILTRAR PRODUCTOS: Solo mostrar productos con fotos REALES (no placeholders)
         final validProducts = shopProvider.products.where((product) {
           if (!_productHasRealImages(product)) {
-            print(
+            debugPrint(
               '🚫 Producto filtrado (sin foto real): ${product.name} (${product.id}) - imgs: ${product.images}',
             );
             return false;
@@ -2264,7 +2264,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           return true;
         }).toList();
 
-        print(
+        debugPrint(
           '✅ Productos válidos mostrados: ${validProducts.length} de ${shopProvider.products.length}',
         );
 

@@ -125,7 +125,7 @@ class _AttendeeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Debug para ver qué datos tiene el metadata
-    print(
+    debugPrint(
       '📋 AttendeeCard - userId: ${metadata.userId}, userName: "${metadata.userName}", photoUrl: "${metadata.photoUrl}"',
     );
 
@@ -169,7 +169,7 @@ class _AttendeeCard extends StatelessWidget {
 
   Widget _buildAvatar() {
     // Debug: Imprimir datos para ver qué está llegando
-    print(
+    debugPrint(
       '🔍 Avatar Debug - userName: "${metadata.userName}", photoUrl: "${metadata.photoUrl}"',
     );
 
@@ -179,7 +179,7 @@ class _AttendeeCard extends StatelessWidget {
         backgroundImage: NetworkImage(metadata.photoUrl!),
         backgroundColor: ColorTokens.neutral20,
         onBackgroundImageError: (exception, stackTrace) {
-          print('❌ Error cargando imagen: $exception');
+          debugPrint('❌ Error cargando imagen: $exception');
         },
       );
     }

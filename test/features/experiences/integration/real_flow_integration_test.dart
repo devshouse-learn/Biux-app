@@ -14,7 +14,10 @@ class MockFirebaseExperienceRepository implements ExperienceRepository {
   }
 
   @override
-  Future<void> updateExperience(String experienceId, {required String description}) async {}
+  Future<void> updateExperience(String experienceId, {required String description, List<String>? existingMediaUrls, bool isEdited = false, List<CreateMediaRequest>? newMediaFiles}) async {}
+
+  @override
+  Stream<DateTime?> watchLatestExperienceTimestamp() => Stream.value(null);
 
   List<ExperienceEntity> _firebaseDatabase = [];
   bool shouldThrowError = false;

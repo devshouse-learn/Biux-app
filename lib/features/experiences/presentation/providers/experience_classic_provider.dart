@@ -57,18 +57,18 @@ class ExperienceProvider extends ChangeNotifier {
   /// Obtiene una experiencia específica por ID
   Future<ExperienceEntity?> getExperienceById(String experienceId) async {
     try {
-      print('🔍 PROVIDER: Cargando experiencia por ID: $experienceId');
+      debugPrint('🔍 PROVIDER: Cargando experiencia por ID: $experienceId');
       final experience = await _repository.getExperienceById(experienceId);
 
       if (experience != null) {
-        print('✅ PROVIDER: Experiencia encontrada: ${experience.id}');
+        debugPrint('✅ PROVIDER: Experiencia encontrada: ${experience.id}');
       } else {
-        print('⚠️ PROVIDER: Experiencia no encontrada: $experienceId');
+        debugPrint('⚠️ PROVIDER: Experiencia no encontrada: $experienceId');
       }
 
       return experience;
     } catch (e) {
-      print('❌ PROVIDER: Error cargando experiencia: $e');
+      debugPrint('❌ PROVIDER: Error cargando experiencia: $e');
       _setError('Error cargando experiencia: ${e.toString()}');
       return null;
     }

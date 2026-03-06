@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -8,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/models/experience_model.dart';
+import "package:flutter/foundation.dart";
 
 /// Implementación del repository para experiencias usando Firebase
 class ExperienceRepositoryImpl implements ExperienceRepository {
@@ -100,7 +100,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .get();
 
       if (!doc.exists) {
-        print('⚠️ REPO: Experiencia no encontrada: $experienceId');
+        debugPrint('⚠️ REPO: Experiencia no encontrada: $experienceId');
         return null;
       }
 
@@ -109,7 +109,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         'id': doc.id,
       }).toEntity();
     } catch (e) {
-      print('❌ REPO: Error obteniendo experiencia por ID: $e');
+      debugPrint('❌ REPO: Error obteniendo experiencia por ID: $e');
       throw Exception('Error obteniendo experiencia: $e');
     }
   }
@@ -139,7 +139,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   @override
   Future<List<ExperienceEntity>> getFollowingExperiences(String userId) async {
     try {
-      print(
+      debugPrint(
         '🔍 REPO: Obteniendo experiencias de usuarios seguidos para: $userId',
       );
 
@@ -153,13 +153,13 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       List<String> followingIds = followingSnapshot.docs
           .map((doc) => doc.id)
           .toList();
-      print(
+      debugPrint(
         '🔍 REPO: Usuarios seguidos en subcolección: ${followingIds.length}',
       );
 
       // Si no hay en subcolección, intentar desde el documento principal
       if (followingIds.isEmpty) {
-        print('🔍 REPO: Buscando en documento principal del usuario...');
+        debugPrint('🔍 REPO: Buscando en documento principal del usuario...');
         final userDoc = await _firestore.collection('users').doc(userId).get();
 
         if (userDoc.exists) {
@@ -169,18 +169,18 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           if (userData['following'] is Map) {
             final followingMap = userData['following'] as Map;
             followingIds = followingMap.keys.cast<String>().toList();
-            print(
+            debugPrint(
               '🔍 REPO: Usuarios seguidos en documento principal: ${followingIds.length}',
             );
-            print('🔍 REPO: Following map: $followingMap');
+            debugPrint('🔍 REPO: Following map: $followingMap');
           }
         }
       }
 
-      print('🔍 REPO: Total IDs de usuarios seguidos: $followingIds');
+      debugPrint('🔍 REPO: Total IDs de usuarios seguidos: $followingIds');
 
       if (followingIds.isEmpty) {
-        print('⚠️ REPO: No hay usuarios seguidos, retornando lista vacía');
+        debugPrint('⚠️ REPO: No hay usuarios seguidos, retornando lista vacía');
         return [];
       }
 
@@ -192,7 +192,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           .limit(50)
           .get();
 
-      print(
+      debugPrint(
         '🔍 REPO: Experiencias de seguidos encontradas: ${snapshot.docs.length}',
       );
 
@@ -205,7 +205,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           )
           .toList();
     } catch (e) {
-      print('❌ REPO: Error obteniendo experiencias de seguidores: $e');
+      debugPrint('❌ REPO: Error obteniendo experiencias de seguidores: $e');
       throw Exception('Error obteniendo experiencias de seguidores: $e');
     }
   }
@@ -349,7 +349,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           final ref = FirebaseStorage.instance.refFromURL(url);
           await ref.delete();
         } catch (e) {
-          print('Error eliminando archivo: $e');
+          // Continuar aunque falle eliminación de archivo
+          debugPrint('Error eliminando archivo: $e');
         }
       }
 
@@ -423,7 +424,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
 
         // Subir nuevos archivos
         if (hasNewMedia) {
-          for (int i = 0; i < newMediaFiles!.length; i++) {
+          for (int i = 0; i < newMediaFiles.length; i++) {
             final mediaFile = newMediaFiles[i];
             final mediaId =
                 '${experienceId}_media_edit_${DateTime.now().millisecondsSinceEpoch}_$i';
@@ -595,7 +596,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           await processedFile.delete();
         } catch (e) {
           // Ignorar errores de limpieza
-          print('Error limpiando archivo temporal: $e');
+          debugPrint('Error limpiando archivo temporal: $e');
         }
       }
 
@@ -662,7 +663,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final optimizedSize = compressedBytes.length;
       final compressionRatio = (1 - (optimizedSize / originalSize)) * 100;
 
-      print(
+      debugPrint(
         'Imagen optimizada: ${originalSize ~/ 1024}KB → ${optimizedSize ~/ 1024}KB (${compressionRatio.toStringAsFixed(1)}% reducción)',
       );
 
@@ -674,7 +675,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
 
       return optimizedFile;
     } catch (e) {
-      print('Error optimizando imagen: $e');
+      debugPrint('Error optimizando imagen: $e');
       // En caso de error, usar archivo original
       return originalFile;
     }

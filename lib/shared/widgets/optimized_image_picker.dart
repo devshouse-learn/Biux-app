@@ -415,7 +415,7 @@ class OptimizedNetworkImage extends StatelessWidget {
         minSize,
         400.0,
       ); // 2x para calidad HD, máximo 400px
-      print(
+      debugPrint(
         'OptimizedNetworkImage - Cache size para $imageType: display=${displaySize} -> cache=${result}',
       );
       return result.round();
@@ -424,7 +424,7 @@ class OptimizedNetworkImage extends StatelessWidget {
     // Para thumbnails, usamos 1.5x el tamaño de display
     if (imageType == 'thumbnail') {
       final result = (displaySize * 1.5).clamp(100.0, 300.0);
-      print(
+      debugPrint(
         'OptimizedNetworkImage - Cache size para thumbnail: display=${displaySize} -> cache=${result}',
       );
       return result.round();
@@ -438,7 +438,7 @@ class OptimizedNetworkImage extends StatelessWidget {
         minSize,
         1200.0,
       ); // 3x para calidad ultra HD, máximo 1200px
-      print(
+      debugPrint(
         'OptimizedNetworkImage - Cache size para cover: display=${displaySize} -> cache=${result}',
       );
       return result.round();
@@ -446,7 +446,7 @@ class OptimizedNetworkImage extends StatelessWidget {
 
     // Para otros tipos, usar el tamaño original si es finito
     final result = displaySize.round();
-    print(
+    debugPrint(
       'OptimizedNetworkImage - Cache size para $imageType: display=${displaySize} -> cache=${result}',
     );
     return result;
@@ -456,7 +456,7 @@ class OptimizedNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Validar que la URL no esté vacía
     if (imageUrl.isEmpty) {
-      print('OptimizedNetworkImage - URL vacía, mostrando widget de error');
+      debugPrint('OptimizedNetworkImage - URL vacía, mostrando widget de error');
       return errorWidget ??
           Container(
             width: width,
@@ -471,16 +471,16 @@ class OptimizedNetworkImage extends StatelessWidget {
     }
 
     // Debug: Imprimir información de la imagen
-    print(
+    debugPrint(
       'OptimizedNetworkImage: ${imageUrl.isNotEmpty ? "Loading" : "Empty URL"} - URL: $imageUrl',
     );
-    print(
+    debugPrint(
       'OptimizedNetworkImage: imageType: $imageType, width: $width, height: $height',
     );
 
     // Seleccionar el cache manager apropiado según el tipo de imagen
     final cacheManager = OptimizedCacheManager.getCacheManager(imageType);
-    print(
+    debugPrint(
       'OptimizedNetworkImage - Cache Manager para $imageType: ${cacheManager.runtimeType}',
     );
 
@@ -493,7 +493,7 @@ class OptimizedNetworkImage extends StatelessWidget {
         fit: fit,
         cacheManager: cacheManager,
         placeholder: (context, url) {
-          print('OptimizedNetworkImage - Placeholder mostrado para: $url');
+          debugPrint('OptimizedNetworkImage - Placeholder mostrado para: $url');
           return placeholder ??
               Container(
                 width: width,
@@ -509,7 +509,7 @@ class OptimizedNetworkImage extends StatelessWidget {
               );
         },
         errorWidget: (context, url, error) {
-          print('OptimizedNetworkImage - Error cargando: $url, Error: $error');
+          debugPrint('OptimizedNetworkImage - Error cargando: $url, Error: $error');
           return errorWidget ??
               Container(
                 width: width,
