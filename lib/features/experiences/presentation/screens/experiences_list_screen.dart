@@ -375,7 +375,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     return advertisements[index % advertisements.length];
   }
 
-  // MÉTODOS COMENTADOS - Ya no se crean publicaciones generales
   /*
   void _navigateToCreatePostWithMedia(BuildContext context) {
     // Navegar a crear post CON multimedia (fotos/videos)
