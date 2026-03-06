@@ -235,8 +235,7 @@ class _OrderCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // PENDIENTE: Navegar al detalle del pedido
-          // context.go('/shop/orders/${order.id}');
+          context.go('/shop/orders/${order.id}');
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(

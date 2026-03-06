@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/config/strings.dart';
@@ -485,15 +487,28 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
     );
   }
 
-  void _submitSighting() {
-    // PENDIENTE: Implementar envío de avistamiento
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          '¡Avistamiento reportado! Gracias por ayudar a la comunidad.',
-        ),
-        backgroundColor: Colors.green,
-      ),
-    );
+  Future<void> _submitSighting() async {
+    try {
+      await FirebaseFirestore.instance.collection('bikeSightings').add({
+        'qrCode': widget.qrCode,
+        'reportedAt': FieldValue.serverTimestamp(),
+        'reportedBy': FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+        'location': 'Ubicación no disponible',
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Avistamiento reportado! Gracias por ayudar a la comunidad.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al reportar: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 }
