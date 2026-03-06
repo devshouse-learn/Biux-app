@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/group_model.dart';
+import "package:flutter/foundation.dart";
 
 class GroupRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -54,12 +55,12 @@ class GroupRepository {
       await docRef.set(group.toFirestore());
 
       // Log para debug
-      print('✅ Grupo creado exitosamente: ${docRef.id}');
-      print('📋 Datos del grupo: ${group.toFirestore()}');
+      debugPrint('✅ Grupo creado exitosamente: ${docRef.id}');
+      debugPrint('📋 Datos del grupo: ${group.toFirestore()}');
 
       return docRef.id;
     } catch (e) {
-      print('❌ Error creando grupo: $e');
+      debugPrint('❌ Error creando grupo: $e');
       return null;
     }
   }
@@ -67,21 +68,21 @@ class GroupRepository {
   // NUEVO: Obtener grupos por ciudad
   // No filtramos isActive en query para incluir docs antiguos sin ese campo
   Stream<List<GroupModel>> getGroupsByCity(String cityId) {
-    print('🔍 Obteniendo grupos de la ciudad: $cityId');
+    debugPrint('🔍 Obteniendo grupos de la ciudad: $cityId');
 
     return _firestore
         .collection(_collection)
         .where('cityId', isEqualTo: cityId)
         .snapshots()
         .map((snapshot) {
-          print('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
+          debugPrint('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
 
           final groups = snapshot.docs
               .map((doc) {
                 try {
                   return GroupModel.fromFirestore(doc);
                 } catch (e) {
-                  print('❌ Error parseando grupo ${doc.id}: $e');
+                  debugPrint('❌ Error parseando grupo ${doc.id}: $e');
                   return null;
                 }
               })
@@ -93,7 +94,7 @@ class GroupRepository {
           // Ordenar por fecha en memoria
           groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-          print('✅ Grupos procesados correctamente: ${groups.length}');
+          debugPrint('✅ Grupos procesados correctamente: ${groups.length}');
           return groups;
         });
   }
@@ -103,17 +104,17 @@ class GroupRepository {
   // documentos antiguos pueden no tener ese campo y serían excluidos.
   // En su lugar, filtramos en memoria tratando ausencia como true.
   Stream<List<GroupModel>> getGroups() {
-    print('🔍 Obteniendo todos los grupos...');
+    debugPrint('🔍 Obteniendo todos los grupos...');
 
     return _firestore.collection(_collection).snapshots().map((snapshot) {
-      print('📊 Grupos encontrados: ${snapshot.docs.length}');
+      debugPrint('📊 Grupos encontrados: ${snapshot.docs.length}');
 
       final groups = snapshot.docs
           .map((doc) {
             try {
               return GroupModel.fromFirestore(doc);
             } catch (e) {
-              print('❌ Error parseando grupo ${doc.id}: $e');
+              debugPrint('❌ Error parseando grupo ${doc.id}: $e');
               return null;
             }
           })
@@ -125,7 +126,7 @@ class GroupRepository {
       // Ordenar por fecha en memoria
       groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      print('✅ Grupos procesados correctamente: ${groups.length}');
+      debugPrint('✅ Grupos procesados correctamente: ${groups.length}');
       return groups;
     });
   }
@@ -173,7 +174,7 @@ class GroupRepository {
       }
       return null;
     } catch (e) {
-      print('Error obteniendo grupo: $e');
+      debugPrint('Error obteniendo grupo: $e');
       return null;
     }
   }
@@ -228,7 +229,7 @@ class GroupRepository {
           }
         }
       } catch (notifError) {
-        print(
+        debugPrint(
           'Error creando notificación de solicitud de ingreso: $notifError',
         );
         // No fallar la operación si la notificación falla
@@ -236,7 +237,7 @@ class GroupRepository {
 
       return true;
     } catch (e) {
-      print('Error solicitando unirse al grupo: $e');
+      debugPrint('Error solicitando unirse al grupo: $e');
       return false;
     }
   }
@@ -251,7 +252,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      print('Error aprobando solicitud: $e');
+      debugPrint('Error aprobando solicitud: $e');
       return false;
     }
   }
@@ -265,7 +266,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      print('Error rechazando solicitud: $e');
+      debugPrint('Error rechazando solicitud: $e');
       return false;
     }
   }
@@ -279,7 +280,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      print('Error cancelando solicitud: $e');
+      debugPrint('Error cancelando solicitud: $e');
       return false;
     }
   }
@@ -293,7 +294,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      print('Error saliendo del grupo: $e');
+      debugPrint('Error saliendo del grupo: $e');
       return false;
     }
   }
@@ -329,7 +330,7 @@ class GroupRepository {
       await _firestore.collection(_collection).doc(groupId).update(updates);
       return true;
     } catch (e) {
-      print('Error actualizando grupo: $e');
+      debugPrint('Error actualizando grupo: $e');
       return false;
     }
   }
@@ -343,7 +344,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      print('Error eliminando grupo: $e');
+      debugPrint('Error eliminando grupo: $e');
       return false;
     }
   }
@@ -356,7 +357,7 @@ class GroupRepository {
       final snapshot = await uploadTask;
       return await snapshot.ref.getDownloadURL();
     } catch (e) {
-      print('Error subiendo imagen: $e');
+      debugPrint('Error subiendo imagen: $e');
       return null;
     }
   }
@@ -374,7 +375,7 @@ class GroupRepository {
 
       return snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList();
     } catch (e) {
-      print('Error buscando grupos: $e');
+      debugPrint('Error buscando grupos: $e');
       return [];
     }
   }

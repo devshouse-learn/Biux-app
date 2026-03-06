@@ -43,8 +43,8 @@ class GroupLogoWidget extends StatelessWidget {
       errorWidget: (context, url, error) {
         // Solo hacer log en debug, no en producción
         assert(() {
-          print('⚠️ Error cargando logo de grupo: $url');
-          print('   Error: $error');
+          debugPrint('⚠️ Error cargando logo de grupo: $url');
+          debugPrint('   Error: $error');
           return true;
         }());
         return _buildPlaceholder();

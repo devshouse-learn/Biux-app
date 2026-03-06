@@ -279,9 +279,9 @@ class _BotonSend extends StatelessWidget {
             onPressed: () async {
               if (form.currentState!.validate()) {
                 try {
-                  print('📝 Iniciando actualización de perfil...');
+                  debugPrint('📝 Iniciando actualización de perfil...');
                   await bloc.uploadUpdate(context);
-                  print('✅ Perfil actualizado, cerrando pantalla...');
+                  debugPrint('✅ Perfil actualizado, cerrando pantalla...');
 
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -297,7 +297,7 @@ class _BotonSend extends StatelessWidget {
                     }
                   }
                 } catch (e) {
-                  print('❌ Excepción capturada: $e');
+                  debugPrint('❌ Excepción capturada: $e');
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
@@ -308,7 +308,7 @@ class _BotonSend extends StatelessWidget {
                   }
                 }
               } else {
-                print('⚠️ Formulario inválido');
+                debugPrint('⚠️ Formulario inválido');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
                     content: bloc.nameController.text.isEmpty

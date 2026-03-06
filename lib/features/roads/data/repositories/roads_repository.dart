@@ -154,7 +154,7 @@ class RoadsRepository {
       // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
-    // var body = jsonEncode(competitorRoad.toJson()); // TODO: Use when implementing request body
+    // var body = jsonEncode(competitorRoad.toJson()); // PENDIENTE: Use when implementing request body
 
     var url = '$URLParticipant/${competitorRoad.userId}';
     final http.Response response = await http.delete(

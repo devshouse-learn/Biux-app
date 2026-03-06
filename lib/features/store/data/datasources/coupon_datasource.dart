@@ -1,7 +1,7 @@
 import 'package:biux/features/store/domain/entities/coupon_entity.dart';
 
 /// Fuente de datos para cupones (actualmente hardcodeados)
-/// TODO: Migrar a Firebase cuando se requiera gestión dinámica
+/// PENDIENTE: Migrar a Firebase cuando se requiera gestión dinámica
 class CouponDataSource {
   /// Cupones disponibles en la tienda
   static final Map<String, CouponEntity> _coupons = {

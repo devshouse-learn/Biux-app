@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/user_model.dart';
+import "package:flutter/foundation.dart";
 
 class UserRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -15,7 +16,7 @@ class UserRepository {
       }
       return null;
     } catch (e) {
-      print('Error obteniendo usuario: $e');
+      debugPrint('Error obteniendo usuario: $e');
       return null;
     }
   }
@@ -26,7 +27,7 @@ class UserRepository {
       await _firestore.collection(_collection).doc(user.uid).set(user.toMap());
       return true;
     } catch (e) {
-      print('Error guardando usuario: $e');
+      debugPrint('Error guardando usuario: $e');
       return false;
     }
   }
@@ -37,7 +38,7 @@ class UserRepository {
       await _firestore.collection(_collection).doc(uid).update(updates);
       return true;
     } catch (e) {
-      print('Error actualizando usuario: $e');
+      debugPrint('Error actualizando usuario: $e');
       return false;
     }
   }
@@ -48,7 +49,7 @@ class UserRepository {
       final doc = await _firestore.collection(_collection).doc(uid).get();
       return doc.exists;
     } catch (e) {
-      print('Error verificando usuario: $e');
+      debugPrint('Error verificando usuario: $e');
       return false;
     }
   }
@@ -77,7 +78,7 @@ class UserRepository {
 
       return users;
     } catch (e) {
-      print('Error obteniendo usuarios múltiples: $e');
+      debugPrint('Error obteniendo usuarios múltiples: $e');
       return [];
     }
   }

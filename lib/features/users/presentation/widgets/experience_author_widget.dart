@@ -25,11 +25,11 @@ class ExperienceAuthorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveTextColor = textColor ?? ColorTokens.neutral80;
 
-    print('=== EXPERIENCE AUTHOR WIDGET ===');
-    print('Author ID: ${author.id}');
-    print('Author FullName: ${author.fullName}');
-    print('Author Photo: ${author.photo}');
-    print('================================');
+    debugPrint('=== EXPERIENCE AUTHOR WIDGET ===');
+    debugPrint('Author ID: ${author.id}');
+    debugPrint('Author FullName: ${author.fullName}');
+    debugPrint('Author Photo: ${author.photo}');
+    debugPrint('================================');
 
     return GestureDetector(
       onTap: () {

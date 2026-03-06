@@ -31,12 +31,12 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
     final bikeProvider = context.read<BikeProvider>();
     // Obtener el userId del usuario autenticado
     final userId = FirebaseAuth.instance.currentUser?.uid;
-    print('🔑 MyBikesScreen: Usuario autenticado - userId: "$userId"');
+    debugPrint('🔑 MyBikesScreen: Usuario autenticado - userId: "$userId"');
 
     if (userId != null) {
       bikeProvider.loadUserBikes(userId);
     } else {
-      print('❌ MyBikesScreen: No hay usuario autenticado');
+      debugPrint('❌ MyBikesScreen: No hay usuario autenticado');
       // Si no hay usuario autenticado, mostrar error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

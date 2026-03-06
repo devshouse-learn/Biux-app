@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
@@ -23,6 +24,11 @@ class ExperienceProvider extends ChangeNotifier {
       20; // Posts por página (aumentado para mejor UX)
   static const int _initialPostsCount =
       15; // Posts iniciales (suficientes para pantalla completa)
+
+  // Stream para detectar contenido nuevo en tiempo real
+  StreamSubscription<DateTime?>? _feedStreamSubscription;
+  DateTime? _latestKnownTimestamp;
+  String? _currentFeedUserId;
 
   // Getters
   List<ExperienceEntity> get experiences => _experiences;
@@ -51,18 +57,18 @@ class ExperienceProvider extends ChangeNotifier {
   /// Obtiene una experiencia específica por ID
   Future<ExperienceEntity?> getExperienceById(String experienceId) async {
     try {
-      print('🔍 PROVIDER: Cargando experiencia por ID: $experienceId');
+      debugPrint('🔍 PROVIDER: Cargando experiencia por ID: $experienceId');
       final experience = await _repository.getExperienceById(experienceId);
 
       if (experience != null) {
-        print('✅ PROVIDER: Experiencia encontrada: ${experience.id}');
+        debugPrint('✅ PROVIDER: Experiencia encontrada: ${experience.id}');
       } else {
-        print('⚠️ PROVIDER: Experiencia no encontrada: $experienceId');
+        debugPrint('⚠️ PROVIDER: Experiencia no encontrada: $experienceId');
       }
 
       return experience;
     } catch (e) {
-      print('❌ PROVIDER: Error cargando experiencia: $e');
+      debugPrint('❌ PROVIDER: Error cargando experiencia: $e');
       _setError('Error cargando experiencia: ${e.toString()}');
       return null;
     }
@@ -120,7 +126,11 @@ class ExperienceProvider extends ChangeNotifier {
       final allExperiences = [...myExperiences, ...followingExperiences];
       allExperiences.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      // ✅ FILTRADO ULTRA-AGRESIVO: Solo posts con media realmente válida
+      // ✅ FILTRO TEMPORAL: Solo publicaciones de las últimas 72 horas
+      final cutoff = DateTime.now().subtract(const Duration(hours: 72));
+      allExperiences.removeWhere((exp) => exp.createdAt.isBefore(cutoff));
+
+      // ✅ FILTRADO: Solo posts con media realmente válida (imágenes y videos)
       final validExperiences = <ExperienceEntity>[];
       for (var exp in allExperiences) {
         // ignore: unnecessary_null_comparison
@@ -130,26 +140,61 @@ class ExperienceProvider extends ChangeNotifier {
         for (final media in exp.media) {
           final url = media.url.trim();
           if (url.isEmpty ||
-              (!url.startsWith('http://') && !url.startsWith('https://')) ||
-              url.contains('placeholder') ||
+              (!url.startsWith('http://') && !url.startsWith('https://'))) {
+            allUrlsValid = false;
+            break;
+          }
+          // Validaciones de contenido corrupto
+          if (url.contains('placeholder') ||
               url.contains('null') ||
               url.toLowerCase().contains('error') ||
               url.toLowerCase().contains('broken') ||
               url.toLowerCase().contains('404') ||
-              url.length < 20 ||
-              (!url.contains('alt=') &&
-                  !url.contains('.jpg') &&
-                  !url.contains('.jpeg') &&
-                  !url.contains('.png') &&
-                  !url.contains('.gif') &&
-                  !url.contains('.webp'))) {
+              url.length < 20) {
             allUrlsValid = false;
             break;
+          }
+          // Para imágenes: validar extensiones de imagen
+          if (media.mediaType == MediaType.image) {
+            if (!url.contains('alt=') &&
+                !url.contains('.jpg') &&
+                !url.contains('.jpeg') &&
+                !url.contains('.png') &&
+                !url.contains('.gif') &&
+                !url.contains('.webp')) {
+              allUrlsValid = false;
+              break;
+            }
+          }
+          // Para videos: validar que tenga URL de video o thumbnail válido
+          if (media.mediaType == MediaType.video) {
+            final thumb = media.thumbnailUrl?.trim() ?? '';
+            final hasValidVideo =
+                url.contains('.mp4') ||
+                url.contains('.mov') ||
+                url.contains('.avi') ||
+                url.contains('.webm') ||
+                url.contains('.3gp') ||
+                url.contains('alt=') ||
+                url.contains('firebasestorage');
+            final hasValidThumb =
+                thumb.isNotEmpty &&
+                thumb.startsWith('http') &&
+                thumb.length >= 20;
+            if (!hasValidVideo && !hasValidThumb) {
+              allUrlsValid = false;
+              break;
+            }
           }
         }
         if (allUrlsValid) {
           validExperiences.add(exp);
         }
+      }
+
+      // Actualizar timestamp conocido para detección de contenido nuevo
+      if (validExperiences.isNotEmpty) {
+        _latestKnownTimestamp = validExperiences.first.createdAt;
       }
 
       // Guardar todos los posts disponibles para paginación
@@ -240,6 +285,8 @@ class ExperienceProvider extends ChangeNotifier {
   Future<bool> updateExperience(
     String experienceId, {
     required String description,
+    List<CreateMediaRequest>? newMediaFiles,
+    List<String>? existingMediaUrls,
   }) async {
     try {
       _setLoading(true);
@@ -248,6 +295,9 @@ class ExperienceProvider extends ChangeNotifier {
       await _repository.updateExperience(
         experienceId,
         description: description,
+        isEdited: true,
+        newMediaFiles: newMediaFiles,
+        existingMediaUrls: existingMediaUrls,
       );
 
       // Actualizar en las listas locales
@@ -299,6 +349,30 @@ class ExperienceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Inicia el listener en tiempo real para detectar contenido nuevo
+  void startFeedListener(String userId) {
+    _currentFeedUserId = userId;
+    _feedStreamSubscription?.cancel();
+    _feedStreamSubscription = _repository
+        .watchLatestExperienceTimestamp()
+        .listen((latestTimestamp) {
+          if (latestTimestamp == null) return;
+          if (_latestKnownTimestamp == null ||
+              latestTimestamp.isAfter(_latestKnownTimestamp!)) {
+            // Hay contenido nuevo, recargar feed silenciosamente
+            if (!_isLoading && _currentFeedUserId != null) {
+              loadPersonalizedFeed(_currentFeedUserId!);
+            }
+          }
+        });
+  }
+
+  /// Detiene el listener en tiempo real
+  void stopFeedListener() {
+    _feedStreamSubscription?.cancel();
+    _feedStreamSubscription = null;
+  }
+
   /// Reinicia el estado
   void reset() {
     _experiences = [];
@@ -309,7 +383,14 @@ class ExperienceProvider extends ChangeNotifier {
     _isLoadingMore = false;
     _hasMorePosts = true;
     _error = null;
+    stopFeedListener();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    stopFeedListener();
+    super.dispose();
   }
 
   // Métodos privados
@@ -357,7 +438,10 @@ class ExperienceProvider extends ChangeNotifier {
     // Actualizar en _experiences
     for (int i = 0; i < _experiences.length; i++) {
       if (_experiences[i].id == experienceId) {
-        _experiences[i] = _experiences[i].copyWith(description: newDescription);
+        _experiences[i] = _experiences[i].copyWith(
+          description: newDescription,
+          isEdited: true,
+        );
       }
     }
 
@@ -366,6 +450,7 @@ class ExperienceProvider extends ChangeNotifier {
       if (_userExperiences[i].id == experienceId) {
         _userExperiences[i] = _userExperiences[i].copyWith(
           description: newDescription,
+          isEdited: true,
         );
       }
     }
@@ -375,6 +460,7 @@ class ExperienceProvider extends ChangeNotifier {
       if (_rideExperiences[i].id == experienceId) {
         _rideExperiences[i] = _rideExperiences[i].copyWith(
           description: newDescription,
+          isEdited: true,
         );
       }
     }

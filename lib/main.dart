@@ -64,6 +64,15 @@ import 'package:biux/features/social/presentation/providers/social_providers_con
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
 
+
+// New feature providers
+import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats_provider.dart';
+import 'package:biux/features/emergency/presentation/providers/emergency_provider.dart';
+import 'package:biux/features/achievements/presentation/providers/achievements_provider.dart';
+import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
+import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
+
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/shared/services/notification_service.dart';
@@ -233,6 +242,15 @@ void main() async {
 
         // Social Providers (Notificaciones, Likes, Comentarios, Asistentes)
         ...SocialProvidersConfig.getProviders(),
+
+        
+        // New feature providers
+        ChangeNotifierProvider(create: (_) => CyclingStatsProvider()),
+        ChangeNotifierProvider(create: (_) => EmergencyProvider()),
+        ChangeNotifierProvider(create: (_) => AchievementsProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => RoadReportsProvider()),
+        ChangeNotifierProvider(create: (_) => RideTrackerProvider()),
 
         // Settings Providers
         ChangeNotifierProvider(

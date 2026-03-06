@@ -43,12 +43,14 @@ class UserProfileProvider extends ChangeNotifier {
   static const Duration _followCooldownDuration = Duration(seconds: 3);
 
   // Helper methods para cooldown
+  // ignore: unused_element
   bool _isInFollowCooldown(String userId) {
     final lastAction = _followCooldowns[userId];
     if (lastAction == null) return false;
     return DateTime.now().difference(lastAction) < _followCooldownDuration;
   }
 
+  // ignore: unused_element
   void _setFollowCooldown(String userId) {
     _followCooldowns[userId] = DateTime.now();
   }
@@ -222,7 +224,7 @@ class UserProfileProvider extends ChangeNotifier {
         // ignore: unnecessary_null_comparison, dead_null_aware_expression
         final hasMedia = exp.media != null && exp.media.isNotEmpty;
         if (!hasMedia) {
-          print('⚠️ Eliminando publicación sin media: ${exp.id}');
+          debugPrint('⚠️ Eliminando publicación sin media: ${exp.id}');
         }
         return hasMedia;
       }).toList();
@@ -255,19 +257,7 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Seguir usuario
   Future<bool> followUser(String userId) async {
-    // ⛔ PROTECCIÓN: No permitir si ya está procesando
-    if (_isProcessingFollow) {
-      debugPrint('⏳ Ya se está procesando una acción de follow/unfollow');
-      return false;
-    }
-
-    // Cooldown: evitar múltiples clicks en el mismo usuario
-    if (_isInFollowCooldown(userId)) {
-      debugPrint(
-        '⏳ Follow en cooldown para $userId, espera ${_followCooldownDuration.inSeconds}s',
-      );
-      return false;
-    }
+    if (_isProcessingFollow) return false;
 
     _isProcessingFollow = true;
     notifyListeners();
@@ -276,20 +266,10 @@ class UserProfileProvider extends ChangeNotifier {
       final success = await _repository.followUser(userId);
       if (success) {
         _isFollowing = true;
-        // Actualizar contador de followers si tenemos el perfil cargado
-        if (_currentProfile?.id == userId) {
-          int newFollowerCount = _currentProfile!.followerS + 1;
-          _currentProfile = BiuxUser.fromJsonMap({
-            ..._currentProfile!.toJson(),
-            'followerS': newFollowerCount,
-          });
-        }
-
-        // Establecer cooldown después de éxito
-        _setFollowCooldown(userId);
         notifyListeners();
+        // Recargar perfil desde Firestore para obtener contadores reales
+        await refreshProfileQuick(userId);
       }
-
       return success;
     } catch (e) {
       return false;
@@ -301,19 +281,7 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Dejar de seguir usuario
   Future<bool> unfollowUser(String userId) async {
-    // ⛔ PROTECCIÓN: No permitir si ya está procesando
-    if (_isProcessingFollow) {
-      debugPrint('⏳ Ya se está procesando una acción de follow/unfollow');
-      return false;
-    }
-
-    // Cooldown: evitar múltiples clicks en el mismo usuario
-    if (_isInFollowCooldown(userId)) {
-      debugPrint(
-        '⏳ Unfollow en cooldown para $userId, espera ${_followCooldownDuration.inSeconds}s',
-      );
-      return false;
-    }
+    if (_isProcessingFollow) return false;
 
     _isProcessingFollow = true;
     notifyListeners();
@@ -322,23 +290,10 @@ class UserProfileProvider extends ChangeNotifier {
       final success = await _repository.unfollowUser(userId);
       if (success) {
         _isFollowing = false;
-        // Actualizar contador de followers si tenemos el perfil cargado
-        if (_currentProfile?.id == userId) {
-          // Asegurar que no sea negativo
-          int newFollowerCount = (_currentProfile!.followerS - 1)
-              .clamp(0, double.maxFinite)
-              .toInt();
-          _currentProfile = BiuxUser.fromJsonMap({
-            ..._currentProfile!.toJson(),
-            'followerS': newFollowerCount,
-          });
-        }
-
-        // Establecer cooldown después de éxito
-        _setFollowCooldown(userId);
         notifyListeners();
+        // Recargar perfil desde Firestore para obtener contadores reales
+        await refreshProfileQuick(userId);
       }
-
       return success;
     } catch (e) {
       return false;

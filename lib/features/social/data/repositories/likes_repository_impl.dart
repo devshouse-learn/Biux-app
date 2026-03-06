@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import '../../domain/entities/like_entity.dart';
 import '../../domain/repositories/likes_repository.dart';
 import '../datasources/likes_realtime_datasource.dart';
@@ -61,14 +62,14 @@ class LikesRepositoryImpl implements LikesRepository {
       expiresAt: expiresAt?.millisecondsSinceEpoch,
     );
 
-    print('🔍 DEBUG LIKE - Type: ${_typeToString(type)}');
-    print('🔍 DEBUG LIKE - TargetId: $targetId');
-    print('🔍 DEBUG LIKE - UserId: $userId');
-    print('🔍 DEBUG LIKE - UserName: "$userName"');
-    print('🔍 DEBUG LIKE - UserPhoto: $userPhoto');
-    print('🔍 DEBUG LIKE - Timestamp: ServerValue.timestamp');
-    print('🔍 DEBUG LIKE - ExpiresAt: ${like.expiresAt}');
-    print('🔍 DEBUG LIKE - JSON: ${like.toJson()}');
+    debugPrint('🔍 DEBUG LIKE - Type: ${_typeToString(type)}');
+    debugPrint('🔍 DEBUG LIKE - TargetId: $targetId');
+    debugPrint('🔍 DEBUG LIKE - UserId: $userId');
+    debugPrint('🔍 DEBUG LIKE - UserName: "$userName"');
+    debugPrint('🔍 DEBUG LIKE - UserPhoto: $userPhoto');
+    debugPrint('🔍 DEBUG LIKE - Timestamp: ServerValue.timestamp');
+    debugPrint('🔍 DEBUG LIKE - ExpiresAt: ${like.expiresAt}');
+    debugPrint('🔍 DEBUG LIKE - JSON: ${like.toJson()}');
 
     return _datasource.like(
       type: _typeToString(type),

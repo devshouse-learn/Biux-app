@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 
 /// Widget para mostrar un item multimedia en la creación de experiencias
@@ -112,6 +113,42 @@ class MediaItemWidget extends StatelessWidget {
   }
 
   Widget _buildContent() {
+    // Media remota (ya subida - modo edición)
+    if (mediaItem.isRemote) {
+      if (mediaItem.isVideo) {
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              imageUrl: mediaItem.url!,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => _buildVideoPlaceholder(),
+              errorWidget: (context, url, error) => _buildVideoPlaceholder(),
+            ),
+            const Center(
+              child: Icon(
+                Icons.play_circle_outline,
+                color: Colors.white,
+                size: 32,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return CachedNetworkImage(
+          imageUrl: mediaItem.url!,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => _buildImagePlaceholder(),
+          errorWidget: (context, url, error) => _buildImagePlaceholder(),
+        );
+      }
+    }
+
+    // Media local (archivo nuevo)
     if (mediaItem.isVideo) {
       // Para videos, mostrar thumbnail si existe, sino el primer frame
       if (mediaItem.thumbnailPath != null) {

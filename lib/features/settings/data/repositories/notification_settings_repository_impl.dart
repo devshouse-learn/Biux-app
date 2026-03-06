@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/notification_settings_entity.dart';
 import '../../domain/repositories/notification_settings_repository.dart';
+import "package:flutter/foundation.dart";
 
 class NotificationSettingsRepositoryImpl
     implements NotificationSettingsRepository {
@@ -33,7 +34,7 @@ class NotificationSettingsRepositoryImpl
         return defaults;
       }
     } catch (e) {
-      print('Error al obtener configuración de notificaciones: $e');
+      debugPrint('Error al obtener configuración de notificaciones: $e');
       return NotificationSettingsEntity.defaults();
     }
   }
@@ -57,7 +58,7 @@ class NotificationSettingsRepositoryImpl
         'notificationSettings': settings.toMap(),
       });
     } catch (e) {
-      print('Error al actualizar configuración de notificaciones: $e');
+      debugPrint('Error al actualizar configuración de notificaciones: $e');
       rethrow;
     }
   }

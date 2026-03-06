@@ -33,7 +33,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
         try {
           _showNotificationSnackbar(data);
         } catch (e) {
-          print('⚠️ Error mostrando snackbar de notificación: $e');
+          debugPrint('⚠️ Error mostrando snackbar de notificación: $e');
         }
       } else {
         // Notificación tocada - navegar
@@ -51,7 +51,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     // Verificar que existe un ScaffoldMessenger
     final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
     if (scaffoldMessenger == null) {
-      print('⚠️ No hay ScaffoldMessenger disponible para mostrar notificación');
+      debugPrint('⚠️ No hay ScaffoldMessenger disponible para mostrar notificación');
       return;
     }
 
@@ -91,10 +91,10 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
     final targetId = data['targetId'] as String?;
     final targetType = data['targetType'] as String?;
 
-    print('🔔 Navegando por notificación');
-    print('   Type: $type');
-    print('   TargetId: $targetId');
-    print('   TargetType: $targetType');
+    debugPrint('🔔 Navegando por notificación');
+    debugPrint('   Type: $type');
+    debugPrint('   TargetId: $targetId');
+    debugPrint('   TargetType: $targetType');
 
     // Si no hay tipo, ir a lista de notificaciones
     if (type == null) {
@@ -204,7 +204,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
 
       default:
         // Tipo desconocido, ir a notificaciones
-        print('⚠️ Tipo de notificación desconocido: $type');
+        debugPrint('⚠️ Tipo de notificación desconocido: $type');
         context.push('/notifications');
     }
   }

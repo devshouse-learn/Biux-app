@@ -134,10 +134,10 @@ class ShopProvider with ChangeNotifier {
 
   /// Agregar producto al carrito
   void addToCart(ProductEntity product, {String? selectedSize}) {
-    print('🛒 ShopProvider.addToCart llamado:');
-    print('  - Producto: ${product.name} (ID: ${product.id})');
-    print('  - Talla: $selectedSize');
-    print('  - Carrito actual: ${_cartItems.length} items');
+    debugPrint('🛒 ShopProvider.addToCart llamado:');
+    debugPrint('  - Producto: ${product.name} (ID: ${product.id})');
+    debugPrint('  - Talla: $selectedSize');
+    debugPrint('  - Carrito actual: ${_cartItems.length} items');
 
     // Verificar si el producto ya está en el carrito
     final existingIndex = _cartItems.indexWhere(
@@ -147,15 +147,15 @@ class ShopProvider with ChangeNotifier {
 
     if (existingIndex >= 0) {
       // Incrementar cantidad
-      print('  ✓ Producto ya existe en carrito, incrementando cantidad');
+      debugPrint('  ✓ Producto ya existe en carrito, incrementando cantidad');
       final existing = _cartItems[existingIndex];
       _cartItems[existingIndex] = existing.copyWith(
         quantity: existing.quantity + 1,
       );
-      print('  - Nueva cantidad: ${_cartItems[existingIndex].quantity}');
+      debugPrint('  - Nueva cantidad: ${_cartItems[existingIndex].quantity}');
     } else {
       // Agregar nuevo item
-      print('  ✓ Agregando nuevo producto al carrito');
+      debugPrint('  ✓ Agregando nuevo producto al carrito');
       _cartItems.add(
         CartItemEntity(
           product: product,
@@ -165,11 +165,11 @@ class ShopProvider with ChangeNotifier {
       );
     }
 
-    print('  - Carrito actualizado: ${_cartItems.length} items');
-    print('  - Total items: $cartItemCount');
-    print('  - Total precio: \$$cartTotal');
+    debugPrint('  - Carrito actualizado: ${_cartItems.length} items');
+    debugPrint('  - Total items: $cartItemCount');
+    debugPrint('  - Total precio: \$$cartTotal');
     notifyListeners();
-    print('  ✅ notifyListeners() llamado');
+    debugPrint('  ✅ notifyListeners() llamado');
   }
 
   /// Remover producto del carrito
@@ -299,11 +299,11 @@ class ShopProvider with ChangeNotifier {
     _couponDiscount = cartTotal * couponData.discount;
     _appliedCoupon = couponCode.toUpperCase();
 
-    print('🎟️ Cupón aplicado: $_appliedCoupon (${couponData.description})');
-    print(
+    debugPrint('🎟️ Cupón aplicado: $_appliedCoupon (${couponData.description})');
+    debugPrint(
       '💰 Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)',
     );
-    print(
+    debugPrint(
       '💵 Total con descuento: \$${cartTotalWithDiscount.toStringAsFixed(0)} COP',
     );
 
@@ -624,27 +624,27 @@ class ShopProvider with ChangeNotifier {
         );
       }).toList();
 
-      print(
+      debugPrint(
         '🗑️ Productos sin imágenes encontrados: ${productsToDelete.length}',
       );
 
       // Eliminar cada producto sin imagen
       for (final product in productsToDelete) {
         try {
-          print(
+          debugPrint(
             '🗑️ Eliminando producto sin imagen: ${product.name} (${product.id})',
           );
           await productRepository.deleteProduct(product.id);
           deletedCount++;
         } catch (e) {
-          print('❌ Error eliminando ${product.name}: $e');
+          debugPrint('❌ Error eliminando ${product.name}: $e');
         }
       }
 
       // Recargar productos después de la limpieza
       await loadProducts();
 
-      print('✅ Productos eliminados: $deletedCount');
+      debugPrint('✅ Productos eliminados: $deletedCount');
       return deletedCount;
     } catch (e) {
       _errorMessage = 'Error en limpieza de productos: $e';
@@ -653,40 +653,35 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  /// Dar like a un producto (solo si está disponible)
+  /// Dar like/unlike a un producto (operación atómica en Firestore)
   Future<bool> toggleProductLike(String productId, String userId) async {
     try {
       final productIndex = _allProducts.indexWhere((p) => p.id == productId);
       if (productIndex == -1) return false;
 
       final product = _allProducts[productIndex];
-
-      // Solo permitir like si el producto está disponible
-      if (!product.isAvailable) {
-        _errorMessage = 'No puedes dar me gusta a un producto no disponible';
-        notifyListeners();
-        return false;
-      }
-
       final likedByUsers = List<String>.from(product.likedByUsers);
 
+      // Actualizar localmente PRIMERO (respuesta instantánea)
       if (likedByUsers.contains(userId)) {
-        likedByUsers.remove(userId); // Quitar like
+        likedByUsers.remove(userId);
       } else {
-        likedByUsers.add(userId); // Agregar like
+        likedByUsers.add(userId);
       }
 
       final updatedProduct = product.copyWith(likedByUsers: likedByUsers);
-      await productRepository.updateProduct(updatedProduct);
-
-      // Actualizar localmente
       _allProducts[productIndex] = updatedProduct;
       _applyFilters();
       notifyListeners();
 
+      // Luego guardar en Firestore con operación atómica
+      await productRepository.toggleProductLike(productId, userId);
+
       return true;
     } catch (e) {
-      _errorMessage = 'Error al dar me gusta: $e';
+      // Revertir cambio local si falla Firestore
+      await loadProducts();
+      _errorMessage = 'Error al dar me gusta: \$e';
       notifyListeners();
       return false;
     }

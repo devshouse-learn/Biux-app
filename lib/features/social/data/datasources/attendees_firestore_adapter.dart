@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../models/attendee_model.dart';
+import "package:flutter/foundation.dart";
 
 /// Adaptador que sincroniza asistentes entre Realtime DB y Firestore
 ///
@@ -64,7 +65,7 @@ class AttendeesFirestoreAdapter {
         'maybeParticipants': maybe,
       });
     } catch (e) {
-      print('Error actualizando Firestore: $e');
+      debugPrint('Error actualizando Firestore: $e');
     }
   }
 
@@ -112,11 +113,11 @@ class AttendeesFirestoreAdapter {
             .set(attendee.toJson());
       }
 
-      print(
+      debugPrint(
         '✅ Migrados $rideId: ${participants.length} confirmados, ${maybeParticipants.length} tal vez',
       );
     } catch (e) {
-      print('❌ Error migrando rodada $rideId: $e');
+      debugPrint('❌ Error migrando rodada $rideId: $e');
     }
   }
 
@@ -125,7 +126,7 @@ class AttendeesFirestoreAdapter {
     try {
       final ridesSnapshot = await _firestore.collection('rides').get();
 
-      print(
+      debugPrint(
         '🚀 Iniciando migración de ${ridesSnapshot.docs.length} rodadas...',
       );
 
@@ -136,9 +137,9 @@ class AttendeesFirestoreAdapter {
         ); // Evitar rate limiting
       }
 
-      print('✅ Migración completada!');
+      debugPrint('✅ Migración completada!');
     } catch (e) {
-      print('❌ Error en migración masiva: $e');
+      debugPrint('❌ Error en migración masiva: $e');
     }
   }
 
@@ -167,6 +168,6 @@ class AttendeesFirestoreAdapter {
       await ref.child(userId).remove();
     }
 
-    print('🧹 Limpiados $toRemove.length asistentes cancelados de $rideId');
+    debugPrint('🧹 Limpiados $toRemove.length asistentes cancelados de $rideId');
   }
 }

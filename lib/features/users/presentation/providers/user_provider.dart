@@ -20,9 +20,9 @@ class UserProvider extends ChangeNotifier {
 
   // 🔴 Constructor que auto-inicializa en web
   UserProvider() {
-    print('🟦 UserProvider constructor llamado');
+    debugPrint('🟦 UserProvider constructor llamado');
     if (kIsWeb) {
-      print('🌐 Es WEB - Creando usuario admin de prueba automáticamente');
+      debugPrint('🌐 Es WEB - Creando usuario admin de prueba automáticamente');
       _createWebTestUser();
     } else {
       loadUserData();
@@ -38,7 +38,7 @@ class UserProvider extends ChangeNotifier {
 
   // 🔴 Crear usuario admin de prueba SOLO para Chrome web
   Future<void> _createWebTestUser() async {
-    print('🟦 Creando usuario admin para CHROME web (desarrollo)...');
+    debugPrint('🟦 Creando usuario admin para CHROME web (desarrollo)...');
     _setLoading(true);
 
     try {
@@ -53,20 +53,20 @@ class UserProvider extends ChangeNotifier {
         canSellProducts: true,
       );
 
-      print('✅ Usuario admin de Chrome creado (SOLO WEB)');
-      print('👤 Nombre: ${_user!.name}');
-      print('🛡️ Es admin: ${_user!.isAdmin}');
-      print('🛒 Puede vender: ${_user!.canSellProducts}');
-      print('✅ Puede crear productos: ${_user!.canCreateProducts}');
-      print('');
-      print('⚠️  IMPORTANTE:');
-      print('   - Este admin SOLO funciona en Chrome web');
-      print('   - En simuladores móviles, los usuarios deben pedir permiso');
-      print('');
+      debugPrint('✅ Usuario admin de Chrome creado (SOLO WEB)');
+      debugPrint('👤 Nombre: ${_user!.name}');
+      debugPrint('🛡️ Es admin: ${_user!.isAdmin}');
+      debugPrint('🛒 Puede vender: ${_user!.canSellProducts}');
+      debugPrint('✅ Puede crear productos: ${_user!.canCreateProducts}');
+      debugPrint('');
+      debugPrint('⚠️  IMPORTANTE:');
+      debugPrint('   - Este admin SOLO funciona en Chrome web');
+      debugPrint('   - En simuladores móviles, los usuarios deben pedir permiso');
+      debugPrint('');
 
       notifyListeners(); // ← IMPORTANTE: Notificar a los listeners
     } catch (e) {
-      print('❌ Error creando usuario de prueba: $e');
+      debugPrint('❌ Error creando usuario de prueba: $e');
       _error = 'Error creando usuario de prueba';
     }
 
@@ -79,22 +79,22 @@ class UserProvider extends ChangeNotifier {
     String? uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    print('');
-    print('�' * 30);
-    print('� SIMULADOR MÓVIL - Sistema de Permisos');
-    print('📱 TU UID ES: $uid');
-    print('�');
-    print('📱 ⚠️  IMPORTANTE:');
-    print('📱 - Por defecto, NO eres administrador');
-    print('📱 - NO puedes subir productos automáticamente');
-    print('📱 - Debes solicitar permisos a un administrador');
-    print('📱');
-    print('📱 Para solicitar permisos:');
-    print('📱 1. Ve a tu perfil');
-    print('📱 2. Solicita ser vendedor');
-    print('📱 3. Un admin debe aprobar tu solicitud');
-    print('�' * 30);
-    print('');
+    debugPrint('');
+    debugPrint('�' * 30);
+    debugPrint('� SIMULADOR MÓVIL - Sistema de Permisos');
+    debugPrint('📱 TU UID ES: $uid');
+    debugPrint('�');
+    debugPrint('📱 ⚠️  IMPORTANTE:');
+    debugPrint('📱 - Por defecto, NO eres administrador');
+    debugPrint('📱 - NO puedes subir productos automáticamente');
+    debugPrint('📱 - Debes solicitar permisos a un administrador');
+    debugPrint('📱');
+    debugPrint('📱 Para solicitar permisos:');
+    debugPrint('📱 1. Ve a tu perfil');
+    debugPrint('📱 2. Solicita ser vendedor');
+    debugPrint('📱 3. Un admin debe aprobar tu solicitud');
+    debugPrint('�' * 30);
+    debugPrint('');
 
     _setLoading(true);
     _error = null;
@@ -104,21 +104,21 @@ class UserProvider extends ChangeNotifier {
       _user = userData;
 
       if (_user != null) {
-        print('👤 Usuario cargado: ${_user!.name ?? "Sin nombre"}');
-        print('🛡️ Es admin: ${_user!.isAdmin}');
-        print('🛒 Puede vender: ${_user!.canSellProducts}');
-        print('✅ Puede crear productos: ${_user!.canCreateProducts}');
+        debugPrint('👤 Usuario cargado: ${_user!.name ?? "Sin nombre"}');
+        debugPrint('🛡️ Es admin: ${_user!.isAdmin}');
+        debugPrint('🛒 Puede vender: ${_user!.canSellProducts}');
+        debugPrint('✅ Puede crear productos: ${_user!.canCreateProducts}');
 
         if (!_user!.canCreateProducts) {
-          print('');
-          print('⚠️  NO PUEDES SUBIR PRODUCTOS');
-          print('   Necesitas autorización de un administrador');
-          print('');
+          debugPrint('');
+          debugPrint('⚠️  NO PUEDES SUBIR PRODUCTOS');
+          debugPrint('   Necesitas autorización de un administrador');
+          debugPrint('');
         }
       }
     } catch (e) {
       _error = 'Error cargando datos del usuario';
-      print('Error en loadUserData: $e');
+      debugPrint('Error en loadUserData: $e');
     }
 
     _setLoading(false);
@@ -136,10 +136,10 @@ class UserProvider extends ChangeNotifier {
       _userService.listenToUser(uid, (userData) {
         _user = userData;
         notifyListeners();
-        print('🔄 Datos de usuario actualizados en tiempo real');
+        debugPrint('🔄 Datos de usuario actualizados en tiempo real');
       });
     } catch (e) {
-      print('Error configurando listener: $e');
+      debugPrint('Error configurando listener: $e');
     }
   }
 
@@ -151,28 +151,28 @@ class UserProvider extends ChangeNotifier {
     String? photoUrl,
     String? coverPhotoUrl,
   }) async {
-    print('🔍 ====== USER PROVIDER: updateProfile ======');
-    print('📝 Nombre recibido: "$name"');
-    print('📧 Email recibido: "$email"');
-    print('📋 Descripción recibida: "$description"');
-    print('👤 Username recibido: "$username"');
-    print('🖼️ Foto de perfil recibida: "$photoUrl"');
-    print('🏞️ Foto de portada recibida: "$coverPhotoUrl"');
+    debugPrint('🔍 ====== USER PROVIDER: updateProfile ======');
+    debugPrint('📝 Nombre recibido: "$name"');
+    debugPrint('📧 Email recibido: "$email"');
+    debugPrint('📋 Descripción recibida: "$description"');
+    debugPrint('👤 Username recibido: "$username"');
+    debugPrint('🖼️ Foto de perfil recibida: "$photoUrl"');
+    debugPrint('🏞️ Foto de portada recibida: "$coverPhotoUrl"');
 
     // SIEMPRE usar Firebase Auth como fuente de verdad
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
     if (firebaseUser == null) {
-      print('❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth');
+      debugPrint('❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth');
       _error = 'No has iniciado sesión. Por favor, inicia sesión primero.';
       notifyListeners();
       return false;
     }
 
     final uid = firebaseUser.uid;
-    print('✅ Usuario autenticado encontrado');
-    print('🆔 UID de Firebase Auth: $uid');
-    print('📞 Teléfono: ${firebaseUser.phoneNumber}');
+    debugPrint('✅ Usuario autenticado encontrado');
+    debugPrint('🆔 UID de Firebase Auth: $uid');
+    debugPrint('📞 Teléfono: ${firebaseUser.phoneNumber}');
 
     // Validar que al menos uno de los campos tenga valor
     // Permitir null/empty para fotos (para poder eliminarlas)
@@ -186,7 +186,7 @@ class UserProvider extends ChangeNotifier {
     bool hasPhotoUpdate = photoUrl != null || coverPhotoUrl != null;
 
     if (!hasTextUpdate && !hasPhotoUpdate) {
-      print('❌ ERROR: Todos los campos vacíos');
+      debugPrint('❌ ERROR: Todos los campos vacíos');
       _error = 'Por favor ingresa al menos un campo para actualizar';
       notifyListeners();
       return false;
@@ -197,9 +197,9 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('📝 Iniciando actualización de perfil...');
-      print('   Foto de perfil: "$photoUrl"');
-      print('   Foto de portada: "$coverPhotoUrl"');
+      debugPrint('📝 Iniciando actualización de perfil...');
+      debugPrint('   Foto de perfil: "$photoUrl"');
+      debugPrint('   Foto de portada: "$coverPhotoUrl"');
 
       bool success = await _userService.updateUserProfile(
         uid: uid,
@@ -211,40 +211,40 @@ class UserProvider extends ChangeNotifier {
         coverPhotoUrl: coverPhotoUrl,
       );
 
-      print('📊 Respuesta del servicio: $success');
+      debugPrint('📊 Respuesta del servicio: $success');
 
       if (success) {
-        print('✅ Actualización exitosa, recargando datos...');
+        debugPrint('✅ Actualización exitosa, recargando datos...');
         // Recargar datos del usuario desde Firebase
         await loadUserData();
 
-        print('✅ Datos recargados:');
-        print('   Nombre actual: ${_user?.name}');
-        print('   Email actual: ${_user?.email}');
-        print('   Username actual: ${_user?.username}');
-        print('   Descripción actual: ${_user?.description}');
-        print('   Foto de perfil actual: ${_user?.photoUrl}');
-        print('   Foto de portada actual: ${_user?.coverPhotoUrl}');
+        debugPrint('✅ Datos recargados:');
+        debugPrint('   Nombre actual: ${_user?.name}');
+        debugPrint('   Email actual: ${_user?.email}');
+        debugPrint('   Username actual: ${_user?.username}');
+        debugPrint('   Descripción actual: ${_user?.description}');
+        debugPrint('   Foto de perfil actual: ${_user?.photoUrl}');
+        debugPrint('   Foto de portada actual: ${_user?.coverPhotoUrl}');
 
         _error = null;
       } else {
-        print('❌ El servicio retornó false');
+        debugPrint('❌ El servicio retornó false');
         _error = 'Error al actualizar el perfil. Intenta nuevamente.';
       }
 
       _setLoading(false);
       notifyListeners();
-      print(
+      debugPrint(
         '🔍 ====== FIN updateProfile (${success ? "ÉXITO" : "ERROR"}) ======\n',
       );
       return success;
     } catch (e) {
-      print('❌ EXCEPCIÓN en updateProfile: $e');
-      print('   Tipo: ${e.runtimeType}');
+      debugPrint('❌ EXCEPCIÓN en updateProfile: $e');
+      debugPrint('   Tipo: ${e.runtimeType}');
       _error = 'Error al actualizar perfil: ${e.toString()}';
       _setLoading(false);
       notifyListeners();
-      print('🔍 ====== FIN updateProfile (EXCEPCIÓN) ======\n');
+      debugPrint('🔍 ====== FIN updateProfile (EXCEPCIÓN) ======\n');
       return false;
     }
   }
@@ -398,7 +398,7 @@ class UserProvider extends ChangeNotifier {
     }
 
     final currentUserId = currentUser.uid;
-    print(
+    debugPrint(
       '📱 followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow',
     );
 
@@ -414,7 +414,7 @@ class UserProvider extends ChangeNotifier {
       if (success) {
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        print('✅ Ya sigues a $userIdToFollow');
+        debugPrint('✅ Ya sigues a $userIdToFollow');
       } else {
         _error = 'Error al seguir al usuario';
       }
@@ -441,7 +441,7 @@ class UserProvider extends ChangeNotifier {
     }
 
     final currentUserId = currentUser.uid;
-    print(
+    debugPrint(
       '📱 unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow',
     );
 
@@ -457,7 +457,7 @@ class UserProvider extends ChangeNotifier {
       if (success) {
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        print('✅ Dejaste de seguir a $userIdToUnfollow');
+        debugPrint('✅ Dejaste de seguir a $userIdToUnfollow');
       } else {
         _error = 'Error al dejar de seguir';
       }

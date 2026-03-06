@@ -118,7 +118,7 @@ class EditUserScreenBloc extends ChangeNotifier {
 
   Future<void> uploadUpdate(BuildContext context) async {
     try {
-      print('📝 Preparando actualización de perfil...');
+      debugPrint('📝 Preparando actualización de perfil...');
 
       // Crear usuario con todos los datos (preservar los que no cambian)
       final uploadUser = BiuxUser(
@@ -145,39 +145,39 @@ class EditUserScreenBloc extends ChangeNotifier {
         situationAccident: user.situationAccident,
       );
 
-      print('📤 Enviando datos a Firebase...');
+      debugPrint('📤 Enviando datos a Firebase...');
       await UserFirebaseRepository().updateUser(uploadUser);
 
-      print('📷 Verificando si hay foto nueva para subir...');
+      debugPrint('📷 Verificando si hay foto nueva para subir...');
       if (imageNew != null) {
-        print('📤 Subiendo foto de perfil...');
+        debugPrint('📤 Subiendo foto de perfil...');
         await UserFirebaseRepository().uploadPhoto(user.id, imageNew);
-        print('✅ Foto subida correctamente');
+        debugPrint('✅ Foto subida correctamente');
       } else {
-        print('ℹ️ No hay foto nueva');
+        debugPrint('ℹ️ No hay foto nueva');
       }
 
       // Verificar si hay foto de portada nueva para subir
-      print('🖼️ Verificando si hay foto de portada nueva...');
+      debugPrint('🖼️ Verificando si hay foto de portada nueva...');
       if (profileCoverNew != null) {
-        print('📤 Subiendo foto de portada...');
+        debugPrint('📤 Subiendo foto de portada...');
         await UserFirebaseRepository().uploadProfileCover(
           user.id,
           profileCoverNew,
         );
-        print('✅ Foto de portada subida correctamente');
+        debugPrint('✅ Foto de portada subida correctamente');
       } else {
-        print('ℹ️ No hay foto de portada nueva');
+        debugPrint('ℹ️ No hay foto de portada nueva');
       }
 
       // Recargar datos del usuario para asegurar sincronización
-      print('🔄 Recargando datos del perfil...');
+      debugPrint('🔄 Recargando datos del perfil...');
       await getUser();
 
-      print('✅ Perfil actualizado completamente');
+      debugPrint('✅ Perfil actualizado completamente');
       notifyListeners();
     } catch (e) {
-      print('❌ Error al actualizar perfil: $e');
+      debugPrint('❌ Error al actualizar perfil: $e');
       rethrow;
     }
   }

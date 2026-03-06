@@ -237,7 +237,7 @@ class MapProvider extends ChangeNotifier {
         route.destinationLongitude,
       );
 
-      print(
+      debugPrint(
         '🗺️ Obteniendo ruta de ciclismo desde ${origin} hasta ${destination}',
       );
 
@@ -249,7 +249,7 @@ class MapProvider extends ChangeNotifier {
       );
 
       if (directionResult != null && directionResult.points.isNotEmpty) {
-        print(
+        debugPrint(
           '✅ Ruta obtenida exitosamente con ${directionResult.points.length} puntos',
         );
 
@@ -274,7 +274,7 @@ class MapProvider extends ChangeNotifier {
           _fitRouteInViewFromPoints(directionResult.points);
         }
       } else {
-        print('⚠️ No se pudo obtener la ruta desde la API, usando línea recta');
+        debugPrint('⚠️ No se pudo obtener la ruta desde la API, usando línea recta');
 
         // Si falla la API, crear una línea recta punteada
         final simplePolylines = {
@@ -301,7 +301,7 @@ class MapProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print('💥 Error seleccionando ruta: $e');
+      debugPrint('💥 Error seleccionando ruta: $e');
       _state = _state.copyWith(isLoading: false);
     }
 

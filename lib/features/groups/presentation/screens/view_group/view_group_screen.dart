@@ -319,21 +319,21 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 ),
                 onTap: () {
                   // Debug de datos del miembro
-                  print('=== MIEMBRO CLICKEADO ===');
-                  print('Datos completos del miembro: $member');
-                  print('User ID: ${member['userId']}');
-                  print('User Name: ${member['userName']}');
-                  print('User Photo: ${member['userPhoto']}');
-                  print('Is Admin: ${member['isAdmin']}');
-                  print('========================');
+                  debugPrint('=== MIEMBRO CLICKEADO ===');
+                  debugPrint('Datos completos del miembro: $member');
+                  debugPrint('User ID: ${member['userId']}');
+                  debugPrint('User Name: ${member['userName']}');
+                  debugPrint('User Photo: ${member['userPhoto']}');
+                  debugPrint('Is Admin: ${member['isAdmin']}');
+                  debugPrint('========================');
 
                   // Verificar que el userId no esté vacío
                   final userId = member['userId'];
                   if (userId != null && userId.toString().isNotEmpty) {
-                    print('🔄 Navegando al perfil: /user-profile/$userId');
+                    debugPrint('🔄 Navegando al perfil: /user-profile/$userId');
                     context.push('/user-profile/$userId');
                   } else {
-                    print('❌ Error: userId está vacío o es null');
+                    debugPrint('❌ Error: userId está vacío o es null');
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(l.t('error_user_id_not_available')),

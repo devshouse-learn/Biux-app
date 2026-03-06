@@ -1,5 +1,6 @@
 ﻿import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/accidents/data/models/situation_accident.dart';
+import "package:flutter/foundation.dart";
 
 class BiuxUser {
   final String id;
@@ -54,7 +55,7 @@ class BiuxUser {
     // Validar que followerS no sea negativo
     int followerSCount = json["followerS"] ?? 0;
     if (followerSCount < 0) {
-      print(
+      debugPrint(
         '🚨 ADVERTENCIA: followerS negativo detectado! Valor: $followerSCount, fijando a 0',
       );
       followerSCount = 0;

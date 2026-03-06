@@ -620,13 +620,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _pickImageFromCamera() async {
-    print('📸 Intentando abrir cámara...');
+    debugPrint('📸 Intentando abrir cámara...');
     final image = await _mediaService.pickImageFromCamera();
     if (image != null) {
-      print('✅ Imagen capturada, subiendo...');
+      debugPrint('✅ Imagen capturada, subiendo...');
       await _uploadImage(image);
     } else {
-      print('⚠️ No se capturó imagen');
+      debugPrint('⚠️ No se capturó imagen');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -644,17 +644,17 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _pickImageFromGallery() async {
-    print('🖼️ Abriendo selector de imágenes...');
+    debugPrint('🖼️ Abriendo selector de imágenes...');
     try {
       final image = await _mediaService.pickImageFromGallery();
       if (image != null) {
-        print('✅ Imagen seleccionada: ${image.name}, subiendo...');
+        debugPrint('✅ Imagen seleccionada: ${image.name}, subiendo...');
         await _uploadImage(image);
       } else {
-        print('⚠️ No se seleccionó ninguna imagen');
+        debugPrint('⚠️ No se seleccionó ninguna imagen');
       }
     } catch (e) {
-      print('❌ Error en _pickImageFromGallery: $e');
+      debugPrint('❌ Error en _pickImageFromGallery: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -669,22 +669,22 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _pickMultipleImages() async {
-    print('🖼️ Abriendo selector múltiple...');
+    debugPrint('🖼️ Abriendo selector múltiple...');
     try {
       final images = await _mediaService.pickMultipleImages();
-      print('📸 ${images.length} imágenes seleccionadas');
+      debugPrint('📸 ${images.length} imágenes seleccionadas');
 
       if (images.isEmpty) {
-        print('⚠️ No se seleccionaron imágenes');
+        debugPrint('⚠️ No se seleccionaron imágenes');
         return;
       }
 
       for (final image in images) {
-        print('📤 Subiendo ${image.name}...');
+        debugPrint('📤 Subiendo ${image.name}...');
         await _uploadImage(image);
       }
     } catch (e) {
-      print('❌ Error en _pickMultipleImages: $e');
+      debugPrint('❌ Error en _pickMultipleImages: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

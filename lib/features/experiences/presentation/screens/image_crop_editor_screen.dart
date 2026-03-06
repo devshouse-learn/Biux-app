@@ -1,8 +1,7 @@
 import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:image/image.dart' as img;
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para editar el recorte cuadrado de una imagen
 /// El usuario puede desplazar y escalar la imagen para ajustarla al encuadre cuadrado
@@ -10,28 +9,39 @@ class ImageCropEditorScreen extends StatefulWidget {
   final File imageFile;
   final String? title;
 
-  const ImageCropEditorScreen({super.key, required this.imageFile, this.title});
+  const ImageCropEditorScreen({
+    super.key,
+    required this.imageFile,
+    this.title = 'Ajustar imagen',
+  });
 
   @override
   State<ImageCropEditorScreen> createState() => _ImageCropEditorScreenState();
 }
 
 class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
-  late Offset _imageOffset;
-  late double _imageScale;
-  double _initialScale = 1.0;
-  Offset _initialFocalPoint = Offset.zero;
-  Offset _initialImageOffset = Offset.zero;
+  // Transformaciones de la imagen
+  Offset _offset = Offset.zero;
+  double _scale = 1.0;
+  double _baseScale = 1.0;
+  Offset _startFocalPoint = Offset.zero;
+  Offset _startOffset = Offset.zero;
 
+  // Dimensiones de imagen original
   Size? _originalImageSize;
   bool _isLoading = true;
+  bool _isCropping = false;
   String? _error;
+
+  // Escala base para que la imagen llene el marco
+  double _fitScale = 1.0;
+
+  // Dimensiones reales del contenedor (del LayoutBuilder)
+  Size _containerSize = Size.zero;
 
   @override
   void initState() {
     super.initState();
-    _imageOffset = Offset.zero;
-    _imageScale = 1.0;
     _loadImageDimensions();
   }
 
@@ -48,51 +58,94 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
           );
           _isLoading = false;
         });
+      } else {
+        setState(() {
+          _error = 'No se pudo decodificar la imagen';
+          _isLoading = false;
+        });
       }
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = 'Error al cargar imagen: $e';
         _isLoading = false;
       });
     }
   }
 
-  Future<File?> _cropAndSaveImage() async {
-    try {
-      if (_originalImageSize == null) return null;
+  /// Calcula la escala mínima para que la imagen cubra el marco cuadrado
+  double _calcFitScale(double frameSize, Size imageDisplaySize) {
+    final scaleX = frameSize / imageDisplaySize.width;
+    final scaleY = frameSize / imageDisplaySize.height;
+    return math.max(scaleX, scaleY);
+  }
 
-      // Leer la imagen original
+  /// Asegura que la imagen siempre cubra el marco cuadrado completamente
+  void _clampOffset(double frameSize, Size imageDisplaySize) {
+    final scaledW = imageDisplaySize.width * _scale;
+    final scaledH = imageDisplaySize.height * _scale;
+
+    final halfFrame = frameSize / 2;
+
+    // Limitar desplazamiento para que el marco siempre esté dentro de la imagen
+    final minX = halfFrame - scaledW / 2;
+    final maxX = scaledW / 2 - halfFrame;
+    final minY = halfFrame - scaledH / 2;
+    final maxY = scaledH / 2 - halfFrame;
+
+    _offset = Offset(
+      _offset.dx.clamp(math.min(minX, 0), math.max(maxX, 0)),
+      _offset.dy.clamp(math.min(minY, 0), math.max(maxY, 0)),
+    );
+  }
+
+  Future<void> _onAccept() async {
+    if (_isCropping || _originalImageSize == null) return;
+
+    setState(() => _isCropping = true);
+
+    try {
       final imageBytes = await widget.imageFile.readAsBytes();
       final originalImage = img.decodeImage(imageBytes);
-      if (originalImage == null) return null;
+      if (originalImage == null) {
+        setState(() => _isCropping = false);
+        return;
+      }
 
-      // Obtener las dimensiones del panel de visualización
       final screenSize = MediaQuery.of(context).size;
-      final frameSize = screenSize.width - 40; // Dejando margen
+      final frameSize = screenSize.width - 40;
 
-      // Calcular dimensiones reales de la imagen mostrada
-      final displayImageWidth = _originalImageSize!.width * _imageScale;
+      final imageW = _originalImageSize!.width;
+      final imageH = _originalImageSize!.height;
 
-      // Calcular el área de recorte en coordenadas de la imagen original
-      final scaleFactor = _originalImageSize!.width / displayImageWidth;
+      // Usar las dimensiones reales del contenedor guardadas del LayoutBuilder
+      final containerW = _containerSize.width > 0 ? _containerSize.width : screenSize.width;
+      final containerH = _containerSize.height > 0 ? _containerSize.height : screenSize.height * 0.6;
+      final displayScale = math.min(containerW / imageW, containerH / imageH);
 
-      final cropX = (-_imageOffset.dx * scaleFactor)
-          .clamp(0, _originalImageSize!.width.toInt())
-          .toInt();
-      final cropY = (-_imageOffset.dy * scaleFactor)
-          .clamp(0, _originalImageSize!.height.toInt())
-          .toInt();
-      final cropSize = (frameSize * scaleFactor)
-          .clamp(
-            0,
-            min(
-              _originalImageSize!.width,
-              _originalImageSize!.height,
-            ).toDouble(),
-          )
-          .toInt();
+      // Escala total aplicada (displayScale * _scale)
+      final totalScale = displayScale * _scale;
 
-      // Realizar el recorte
+      // Centro de la imagen en pantalla: está en el centro del container,
+      // desplazada por _offset
+      // El marco cuadrado está centrado en el container
+
+      // Posición del centro del marco relativa al centro de la imagen original (en píxeles de imagen)
+      final cropCenterX = (imageW / 2) - (_offset.dx / totalScale);
+      final cropCenterY = (imageH / 2) - (_offset.dy / totalScale);
+
+      // Tamaño del recorte en píxeles de imagen
+      final cropSizeInImage = frameSize / totalScale;
+
+      // Coordenadas del recorte
+      int cropX = (cropCenterX - cropSizeInImage / 2).round();
+      int cropY = (cropCenterY - cropSizeInImage / 2).round();
+      int cropSize = cropSizeInImage.round();
+
+      // Clamping
+      cropX = cropX.clamp(0, (imageW - 1).toInt());
+      cropY = cropY.clamp(0, (imageH - 1).toInt());
+      cropSize = cropSize.clamp(1, math.min(imageW.toInt() - cropX, imageH.toInt() - cropY));
+
       final croppedImage = img.copyCrop(
         originalImage,
         x: cropX,
@@ -101,83 +154,56 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
         height: cropSize,
       );
 
-      // Redimensionar a una resolución estándar para guardar
-      final resizedImage = img.copyResize(
-        croppedImage,
-        width: 1080,
-        height: 1080,
-      );
-
-      // Guardar la imagen recortada
+      // Redimensionar a 1080x1080
+      final resizedImage = img.copyResize(croppedImage, width: 1080, height: 1080);
       final encodedBytes = img.encodeJpg(resizedImage, quality: 90);
 
-      final String originalPath = widget.imageFile.path;
-      final String extension = originalPath.split('.').last;
-      final String newPath = originalPath.replaceAll(
-        '.$extension',
-        '_cropped_1x1.jpg',
-      );
+      final originalPath = widget.imageFile.path;
+      final ext = originalPath.split('.').last;
+      final newPath = originalPath.replaceAll('.$ext', '_cropped_1x1.jpg');
 
-      final File croppedFile = File(newPath);
+      final croppedFile = File(newPath);
       await croppedFile.writeAsBytes(encodedBytes);
 
-      return croppedFile;
+      if (mounted) {
+        Navigator.pop(context, croppedFile);
+      }
     } catch (e) {
-      final l = Provider.of<LocaleNotifier>(context, listen: false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l.t('error_cropping_image')}: $e')),
-      );
-      return null;
+      setState(() => _isCropping = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al recortar: $e')),
+        );
+      }
     }
-  }
-
-  void _handleScaleStart(ScaleStartDetails details) {
-    _initialScale = _imageScale;
-    _initialFocalPoint = details.focalPoint;
-    _initialImageOffset = _imageOffset;
-  }
-
-  void _handleScaleUpdate(ScaleUpdateDetails details) {
-    setState(() {
-      // Escala
-      _imageScale = (_initialScale * details.scale).clamp(0.5, 3.0);
-
-      // Offset
-      final Offset offset = details.focalPoint - _initialFocalPoint;
-      _imageOffset = Offset(
-        _initialImageOffset.dx + offset.dx,
-        _initialImageOffset.dy + offset.dy,
-      );
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     final screenSize = MediaQuery.of(context).size;
-    final frameSize = screenSize.width - 40; // Margen de 20 a cada lado
+    final frameSize = screenSize.width - 40;
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.title ?? l.t('adjust_image'))),
+        appBar: AppBar(title: Text(widget.title ?? 'Ajustar imagen')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.title ?? l.t('adjust_image'))),
+        appBar: AppBar(title: Text(widget.title ?? 'Ajustar imagen')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error, color: Colors.red, size: 64),
+              const Icon(Icons.error, color: Colors.red, size: 64),
               const SizedBox(height: 16),
-              Text('${l.t('error_loading_image')}: $_error'),
+              Text(_error!),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l.t('go_back')),
+                child: const Text('Volver'),
               ),
             ],
           ),
@@ -187,169 +213,168 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title ?? l.t('adjust_image')),
+        title: Text(widget.title ?? 'Ajustar imagen'),
         elevation: 0,
       ),
       body: Column(
         children: [
-          // Área de vista previa y edición
+          // Área de edición
           Expanded(
-            child: Container(
-              color: Colors.black87,
-              child: Center(
-                child: GestureDetector(
-                  onScaleStart: _handleScaleStart,
-                  onScaleUpdate: _handleScaleUpdate,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Marco cuadrado de referencia (encuadre)
-                      Container(
-                        width: frameSize,
-                        height: frameSize,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.5),
-                              blurRadius: 8,
-                            ),
-                          ],
-                        ),
-                      ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final containerW = constraints.maxWidth;
+                final containerH = constraints.maxHeight;
 
-                      // Oscuridad alrededor del marco
-                      Container(
-                        width: frameSize,
-                        height: frameSize,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.transparent,
-                            width: 2,
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            // Arriba
-                            Positioned(
-                              top: -frameSize,
-                              left: -frameSize,
-                              child: Container(
-                                width: frameSize * 3,
-                                height: frameSize,
-                                color: Colors.black.withValues(alpha: 0.6),
-                              ),
-                            ),
-                            // Abajo
-                            Positioned(
-                              bottom: -frameSize,
-                              left: -frameSize,
-                              child: Container(
-                                width: frameSize * 3,
-                                height: frameSize,
-                                color: Colors.black.withValues(alpha: 0.6),
-                              ),
-                            ),
-                            // Izquierda
-                            Positioned(
-                              left: -frameSize,
-                              top: -frameSize,
-                              child: Container(
-                                width: frameSize,
-                                height: frameSize * 3,
-                                color: Colors.black.withValues(alpha: 0.6),
-                              ),
-                            ),
-                            // Derecha
-                            Positioned(
-                              right: -frameSize,
-                              top: -frameSize,
-                              child: Container(
-                                width: frameSize,
-                                height: frameSize * 3,
-                                color: Colors.black.withValues(alpha: 0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                // Guardar dimensiones reales del contenedor para usarlas en _onAccept
+                _containerSize = Size(containerW, containerH);
 
-                      // Imagen
-                      Transform.translate(
-                        offset: _imageOffset,
-                        child: Transform.scale(
-                          scale: _imageScale,
-                          child: Image.file(
-                            widget.imageFile,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.broken_image,
-                                color: Colors.white,
-                                size: 64,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
+                // Calcular cómo se muestra la imagen con BoxFit.contain
+                final imageW = _originalImageSize!.width;
+                final imageH = _originalImageSize!.height;
+                final displayScale = math.min(containerW / imageW, containerH / imageH);
+                final displayW = imageW * displayScale;
+                final displayH = imageH * displayScale;
+                final imageDisplaySize = Size(displayW, displayH);
 
-                      // Controles en esquinas (pseudo handles)
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(2),
+                // Escala mínima para cubrir el marco
+                _fitScale = _calcFitScale(frameSize, imageDisplaySize);
+                final minScale = _fitScale;
+
+                return Container(
+                  color: Colors.black,
+                  child: GestureDetector(
+                    onScaleStart: (details) {
+                      _baseScale = _scale;
+                      _startFocalPoint = details.focalPoint;
+                      _startOffset = _offset;
+                    },
+                    onScaleUpdate: (details) {
+                      setState(() {
+                        _scale = (_baseScale * details.scale).clamp(minScale, 5.0);
+                        final delta = details.focalPoint - _startFocalPoint;
+                        _offset = _startOffset + delta;
+                        _clampOffset(frameSize, imageDisplaySize);
+                      });
+                    },
+                    onScaleEnd: (_) {
+                      // Asegurar escala mínima
+                      if (_scale < minScale) {
+                        setState(() {
+                          _scale = minScale;
+                          _clampOffset(frameSize, imageDisplaySize);
+                        });
+                      }
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Imagen transformable
+                        Transform.translate(
+                          offset: _offset,
+                          child: Transform.scale(
+                            scale: _scale,
+                            child: Image.file(
+                              widget.imageFile,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.broken_image, color: Colors.white, size: 64);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(2),
+
+                        // Oscuridad fuera del marco (4 rectángulos)
+                        // Arriba
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: (containerH - frameSize) / 2,
+                            color: Colors.black.withValues(alpha: 0.6),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(2),
+                        // Abajo
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: (containerH - frameSize) / 2,
+                            color: Colors.black.withValues(alpha: 0.6),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(2),
+                        // Izquierda
+                        Positioned(
+                          top: (containerH - frameSize) / 2,
+                          left: 0,
+                          child: Container(
+                            width: (containerW - frameSize) / 2,
+                            height: frameSize,
+                            color: Colors.black.withValues(alpha: 0.6),
                           ),
                         ),
-                      ),
-                    ],
+                        // Derecha
+                        Positioned(
+                          top: (containerH - frameSize) / 2,
+                          right: 0,
+                          child: Container(
+                            width: (containerW - frameSize) / 2,
+                            height: frameSize,
+                            color: Colors.black.withValues(alpha: 0.6),
+                          ),
+                        ),
+
+                        // Marco cuadrado
+                        IgnorePointer(
+                          child: Container(
+                            width: frameSize,
+                            height: frameSize,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: Stack(
+                              children: [
+                                // Líneas de tercios horizontales
+                                Positioned(
+                                  top: frameSize / 3 - 0.5,
+                                  left: 0, right: 0,
+                                  child: Container(height: 0.5, color: Colors.white38),
+                                ),
+                                Positioned(
+                                  top: frameSize * 2 / 3 - 0.5,
+                                  left: 0, right: 0,
+                                  child: Container(height: 0.5, color: Colors.white38),
+                                ),
+                                // Líneas de tercios verticales
+                                Positioned(
+                                  left: frameSize / 3 - 0.5,
+                                  top: 0, bottom: 0,
+                                  child: Container(width: 0.5, color: Colors.white38),
+                                ),
+                                Positioned(
+                                  left: frameSize * 2 / 3 - 0.5,
+                                  top: 0, bottom: 0,
+                                  child: Container(width: 0.5, color: Colors.white38),
+                                ),
+                                // Esquinas
+                                _buildCorner(top: -1, left: -1),
+                                _buildCorner(top: -1, right: -1),
+                                _buildCorner(bottom: -1, left: -1),
+                                _buildCorner(bottom: -1, right: -1),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
 
-          // Instrucciones y controles
+          // Controles inferiores
           Container(
             color: Colors.grey[900],
             padding: const EdgeInsets.all(20),
@@ -357,29 +382,34 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  l.t('use_fingers_to_scale'),
+                  'Pellizca para escalar, arrastra para ajustar',
                   style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: _isCropping ? null : () => Navigator.pop(context),
                       icon: const Icon(Icons.close),
-                      label: Text(l.t('cancel')),
+                      label: const Text('Cancelar'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                       ),
                     ),
                     ElevatedButton.icon(
-                      onPressed: _cropAndSaveImage,
-                      icon: const Icon(Icons.check),
-                      label: Text(l.t('accept')),
+                      onPressed: _isCropping ? null : _onAccept,
+                      icon: _isCropping
+                          ? const SizedBox(
+                              width: 18, height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.check),
+                      label: Text(_isCropping ? 'Procesando...' : 'Aceptar'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -394,6 +424,25 @@ class _ImageCropEditorScreenState extends State<ImageCropEditorScreen> {
       ),
     );
   }
-}
 
-double min(double a, double b) => a < b ? a : b;
+  Widget _buildCorner({double? top, double? bottom, double? left, double? right}) {
+    return Positioned(
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right,
+      child: Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          border: Border(
+            top: top != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
+            bottom: bottom != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
+            left: left != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
+            right: right != null ? const BorderSide(color: Colors.white, width: 3) : BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+}

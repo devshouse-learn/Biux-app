@@ -22,7 +22,7 @@ class SellerRequestProvider with ChangeNotifier {
 
   /// Inicializa los listeners de solicitudes
   void initialize() {
-    print('🔔 Inicializando SellerRequestProvider');
+    debugPrint('🔔 Inicializando SellerRequestProvider');
     _listenToPendingRequests();
     _listenToAllRequests();
     _listenToPendingCount();
@@ -33,12 +33,12 @@ class SellerRequestProvider with ChangeNotifier {
     _service.getPendingRequests().listen(
       (requests) {
         _pendingRequests = requests;
-        print('📋 Solicitudes pendientes actualizadas: ${requests.length}');
+        debugPrint('📋 Solicitudes pendientes actualizadas: ${requests.length}');
         notifyListeners();
       },
       onError: (error) {
         _error = error.toString();
-        print('❌ Error escuchando solicitudes pendientes: $error');
+        debugPrint('❌ Error escuchando solicitudes pendientes: $error');
         notifyListeners();
       },
     );
@@ -49,12 +49,12 @@ class SellerRequestProvider with ChangeNotifier {
     _service.getAllRequests().listen(
       (requests) {
         _requests = requests;
-        print('📋 Todas las solicitudes actualizadas: ${requests.length}');
+        debugPrint('📋 Todas las solicitudes actualizadas: ${requests.length}');
         notifyListeners();
       },
       onError: (error) {
         _error = error.toString();
-        print('❌ Error escuchando todas las solicitudes: $error');
+        debugPrint('❌ Error escuchando todas las solicitudes: $error');
         notifyListeners();
       },
     );
@@ -95,7 +95,7 @@ class SellerRequestProvider with ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
-      print('❌ Error creando solicitud: $e');
+      debugPrint('❌ Error creando solicitud: $e');
       notifyListeners();
       return false;
     }
@@ -124,7 +124,7 @@ class SellerRequestProvider with ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
-      print('❌ Error aprobando solicitud: $e');
+      debugPrint('❌ Error aprobando solicitud: $e');
       notifyListeners();
       return false;
     }
@@ -153,7 +153,7 @@ class SellerRequestProvider with ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
-      print('❌ Error rechazando solicitud: $e');
+      debugPrint('❌ Error rechazando solicitud: $e');
       notifyListeners();
       return false;
     }
@@ -166,7 +166,7 @@ class SellerRequestProvider with ChangeNotifier {
       return true;
     } catch (e) {
       _error = e.toString();
-      print('❌ Error eliminando solicitud: $e');
+      debugPrint('❌ Error eliminando solicitud: $e');
       notifyListeners();
       return false;
     }

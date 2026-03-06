@@ -2,7 +2,6 @@ import 'package:biux/features/maps/presentation/providers/meeting_point_provider
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,8 @@ import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -64,17 +65,46 @@ class ProfileScreenContent extends StatefulWidget {
 }
 
 class _ProfileScreenContentState extends State<ProfileScreenContent> {
+  final Set<String> _failedImageIds = {};
+  late Future<dynamic> _experiencesFuture;
+  int _postCount = 0;
+  int _lastKnownFeedLength = -1;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _experiencesFuture = _loadExperiences();
     _initializeUserData();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Detectar si el feed cambió (nuevo post creado) para refrescar experiencias
+    final feedLength = context.watch<ExperienceProvider>().experiences.length;
+    if (_lastKnownFeedLength >= 0 && feedLength != _lastKnownFeedLength) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _refreshExperiences();
+      });
+    }
+    _lastKnownFeedLength = feedLength;
+  }
+
+  Future<dynamic> _loadExperiences() {
+    return ExperienceRepositoryImpl().getUserExperiences(
+      FirebaseAuth.instance.currentUser?.uid ?? '',
+    );
+  }
+
+  void _refreshExperiences() {
+    setState(() {
+      _experiencesFuture = _loadExperiences();
+    });
+  }
+
   void _showExperienceMenu(BuildContext context, dynamic experience) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: ColorTokens.neutral20,
@@ -98,7 +128,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.edit_outlined, color: ColorTokens.primary50),
               title: Text(
-                l.t('edit_post'),
+                'Editar publicación',
                 style: TextStyle(color: ColorTokens.neutral100),
               ),
               onTap: () {
@@ -109,7 +139,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.delete_outline, color: ColorTokens.error50),
               title: Text(
-                l.t('delete_post'),
+                'Eliminar publicación',
                 style: TextStyle(color: ColorTokens.error50),
               ),
               onTap: () {
@@ -119,18 +149,18 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   builder: (dialogCtx) => AlertDialog(
                     backgroundColor: ColorTokens.neutral20,
                     title: Text(
-                      l.t('delete_post_confirm'),
+                      '¿Eliminar publicación?',
                       style: TextStyle(color: ColorTokens.neutral100),
                     ),
                     content: Text(
-                      l.t('delete_post_content'),
+                      'Esta acción no se puede deshacer',
                       style: TextStyle(color: ColorTokens.neutral80),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogCtx),
                         child: Text(
-                          l.t('cancel'),
+                          'Cancelar',
                           style: TextStyle(color: ColorTokens.primary50),
                         ),
                       ),
@@ -142,9 +172,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             await provider.deleteExperience(experience.id);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(l.t('post_deleted')),
-                                  duration: const Duration(seconds: 2),
+                                const SnackBar(
+                                  content: Text('Publicación eliminada'),
+                                  duration: Duration(seconds: 2),
                                 ),
                               );
                             }
@@ -152,7 +182,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('${l.t('error_deleting')}: $e'),
+                                  content: Text('Error eliminando: $e'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
@@ -160,7 +190,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           }
                         },
                         child: Text(
-                          l.t('delete'),
+                          'Eliminar',
                           style: TextStyle(color: ColorTokens.error50),
                         ),
                       ),
@@ -180,11 +210,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        print('🔄 Cargando datos del usuario...');
+        debugPrint('🔄 Cargando datos del usuario...');
         await widget.userProvider.loadUserData();
 
         if (widget.userProvider.user == null) {
-          print('⚠️ Usuario no existe, creando...');
+          debugPrint('⚠️ Usuario no existe, creando...');
           String formattedPhone = widget.formatPhoneFunction(currentUser.uid);
           await widget.userProvider.createUserIfNotExists(
             currentUser.uid,
@@ -195,9 +225,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         }
 
         if (widget.userProvider.user != null && mounted) {
-          print('✅ Inicializando campos con datos del usuario:');
-          print('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
-          print('   Email: "${widget.userProvider.user?.email ?? ''}"');
+          debugPrint('✅ Inicializando campos con datos del usuario:');
+          debugPrint('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
+          debugPrint('   Email: "${widget.userProvider.user?.email ?? ''}"');
           setState(() {
             _nameController.text = widget.userProvider.user?.name ?? '';
             _emailController.text = widget.userProvider.user?.email ?? '';
@@ -208,19 +238,18 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showLogoutDialog() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text(l.t('sign_out')),
-          content: Text(l.t('sign_out_confirm')),
+          title: Text('Cerrar Sesión'),
+          content: Text('¿Estás seguro que deseas cerrar sesión?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               style: Styles.cancelButtonStyle,
-              child: Text(l.t('cancel')),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
@@ -232,7 +261,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                 // Verificar que el contexto sigue siendo válido antes de mostrar el loading
                 if (!widgetContext.mounted) {
-                  print('❌ Contexto inválido, abortando logout');
+                  debugPrint('❌ Contexto inválido, abortando logout');
                   return;
                 }
 
@@ -253,7 +282,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               ),
                             ),
                             SizedBox(width: 16),
-                            Text(l.t('closing_session')),
+                            Text('Cerrando sesión...'),
                           ],
                         ),
                       ),
@@ -262,7 +291,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 );
 
                 try {
-                  print('🔄 Iniciando logout desde perfil...');
+                  debugPrint('🔄 Iniciando logout desde perfil...');
 
                   // Detener la escucha del MeetingPointProvider si existe
                   try {
@@ -272,22 +301,22 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           listen: false,
                         );
                     meetingPointProvider.stopListening();
-                    print('✅ MeetingPointProvider detenido');
+                    debugPrint('✅ MeetingPointProvider detenido');
                   } catch (e) {
-                    print('⚠️ Error deteniendo MeetingPointProvider: $e');
+                    debugPrint('⚠️ Error deteniendo MeetingPointProvider: $e');
                   }
 
                   // Limpiar UserProvider primero
                   await widget.userProvider.signOut();
-                  print('✅ UserProvider limpiado');
+                  debugPrint('✅ UserProvider limpiado');
 
                   // Limpiar Firebase Auth (esto activa el refreshListenable del router)
                   await FirebaseAuth.instance.signOut();
-                  print('✅ Firebase Auth limpiado');
+                  debugPrint('✅ Firebase Auth limpiado');
 
                   // Esperar un momento para que el router detecte el cambio
                   await Future.delayed(Duration(milliseconds: 300));
-                  print('✅ Logout completado');
+                  debugPrint('✅ Logout completado');
 
                   // Cerrar loading
                   if (widgetContext.mounted) {
@@ -296,11 +325,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                   // NO navegamos manualmente - el router detectará el cambio de auth automáticamente
                   // gracias al refreshListenable configurado en el router
-                  print(
+                  debugPrint(
                     '✅ Logout completado, esperando redirección automática del router',
                   );
                 } catch (e) {
-                  print('❌ Error en logout desde perfil: $e');
+                  debugPrint('❌ Error en logout desde perfil: $e');
 
                   // Cerrar loading
                   if (widgetContext.mounted) {
@@ -310,7 +339,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     ScaffoldMessenger.of(widgetContext).showSnackBar(
                       SnackBar(
                         content: Text(
-                          '${l.t('error_signing_out')}: ${e.toString()}',
+                          'Error al cerrar sesión: ${e.toString()}',
                         ),
                         backgroundColor: ColorTokens.error50,
                       ),
@@ -319,7 +348,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 }
               },
               child: Text(
-                l.t('sign_out'),
+                'Cerrar Sesión',
                 style: TextStyle(color: ColorTokens.error50),
               ),
             ),
@@ -330,18 +359,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showDeleteAccountDialog() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text(l.t('delete_account')),
-          content: Text(l.t('delete_account_content')),
+          title: Text('Eliminar Cuenta'),
+          content: Text(
+            'Esta acción marcará tu cuenta para eliminación. El proceso será revisado por nuestro equipo. ¿Continuar?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               style: Styles.cancelButtonStyle,
-              child: Text(l.t('cancel')),
+              child: Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
@@ -352,14 +382,14 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 if (mounted && success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(l.t('deletion_request_sent')),
+                      content: Text('Solicitud de eliminación enviada'),
                       backgroundColor: ColorTokens.warning50,
                     ),
                   );
                 }
               },
               child: Text(
-                l.t('delete'),
+                'Eliminar',
                 style: TextStyle(color: ColorTokens.error50),
               ),
             ),
@@ -371,6 +401,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   // Función temporal para actualizar ciudades con departamentos
 
+  // ignore: unused_element
+  // ignore: unused_element
   Widget _buildStatCardButton({
     required String value,
     required String label,
@@ -407,7 +439,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showFollowersModal(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final followers = widget.userProvider.user?.followers ?? {};
 
     showModalBottomSheet(
@@ -431,7 +462,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  Text(l.t('no_followers_yet')),
+                  const Text('Sin seguidores aún'),
                 ],
               ),
             ),
@@ -447,7 +478,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    '${l.t('followers')} (${followers.length})',
+                    'Seguidores (${followers.length})',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -460,7 +491,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return ListTile(title: Text(l.t('loading')));
+                        return const ListTile(title: Text('Cargando...'));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -484,32 +515,30 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          print('🔍 DEBUG: Intentando navegar a usuario');
-                          print('  User ID: "${user.id}"');
-                          print('  User ID isEmpty: ${user.id.isEmpty}');
-                          print('  User ID length: ${user.id.length}');
+                          debugPrint('🔍 DEBUG: Intentando navegar a usuario');
+                          debugPrint('  User ID: "${user.id}"');
+                          debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
+                          debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            print('🔍 DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
-                                print(
+                                debugPrint(
                                   '🔍 DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
-                            print(
+                            debugPrint(
                               '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  '${l.t('error')}: ${l.t('invalid_user')}',
-                                ),
+                              const SnackBar(
+                                content: Text('Error: Usuario inválido'),
                               ),
                             );
                           }
@@ -527,7 +556,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   void _showFollowingModal(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final following = widget.userProvider.user?.following ?? {};
 
     showModalBottomSheet(
@@ -551,7 +579,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     color: ColorTokens.neutral60,
                   ),
                   const SizedBox(height: 12),
-                  Text(l.t('not_following_anyone')),
+                  const Text('No sigue a nadie aún'),
                 ],
               ),
             ),
@@ -567,7 +595,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    '${l.t('following')} (${following.length})',
+                    'Siguiendo (${following.length})',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -580,7 +608,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return ListTile(title: Text(l.t('loading')));
+                        return const ListTile(title: Text('Cargando...'));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -604,32 +632,30 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          print('🔍 DEBUG: Intentando navegar a usuario');
-                          print('  User ID: "${user.id}"');
-                          print('  User ID isEmpty: ${user.id.isEmpty}');
-                          print('  User ID length: ${user.id.length}');
+                          debugPrint('🔍 DEBUG: Intentando navegar a usuario');
+                          debugPrint('  User ID: "${user.id}"');
+                          debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
+                          debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            print('🔍 DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
-                                print(
+                                debugPrint(
                                   '🔍 DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
-                            print(
+                            debugPrint(
                               '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  '${l.t('error')}: ${l.t('invalid_user')}',
-                                ),
+                              const SnackBar(
+                                content: Text('Error: Usuario inválido'),
                               ),
                             );
                           }
@@ -657,19 +683,18 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
         final data = userDoc.data() as Map<String, dynamic>;
         // Asegurar que el ID está incluido en los datos
         data['id'] = userDoc.id;
-        print('✅ Usuario cargado con ID: ${userDoc.id}');
+        debugPrint('✅ Usuario cargado con ID: ${userDoc.id}');
         return BiuxUser.fromJsonMap(data);
       } else {
-        print('❌ Usuario no encontrado: $userId');
+        debugPrint('❌ Usuario no encontrado: $userId');
       }
     } catch (e) {
-      print('❌ Error cargando usuario $userId: $e');
+      debugPrint('❌ Error cargando usuario $userId: $e');
     }
     return null;
   }
 
   void _showEditProfileDialog() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final nameController = TextEditingController(
       text: widget.userProvider.user?.name ?? '',
     );
@@ -681,7 +706,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     );
 
     String? selectedProfileImageUrl;
-    String? selectedCoverImageUrl;
 
     showDialog(
       context: context,
@@ -693,7 +717,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.edit, color: ColorTokens.primary30),
                   SizedBox(width: 8),
-                  Text(l.t('edit_profile')),
+                  Text('Editar Perfil'),
                 ],
               ),
               content: SingleChildScrollView(
@@ -703,7 +727,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   children: [
                     // ========== FOTO DE PERFIL ==========
                     Text(
-                      l.t('profile_photo'),
+                      'Foto de Perfil',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -753,61 +777,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     ),
                     SizedBox(height: 20),
 
-                    // ========== FOTO DE PORTADA ==========
-                    Text(
-                      l.t('cover_photo'),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: 12),
-                    Center(
-                      child: OptimizedImagePicker(
-                        currentImageUrl: selectedCoverImageUrl != null
-                            ? (selectedCoverImageUrl?.isEmpty ?? false)
-                                  ? null // Cadena vacía = sin foto
-                                  : selectedCoverImageUrl // Tiene URL
-                            : widget
-                                  .userProvider
-                                  .user
-                                  ?.coverPhotoUrl, // Sin cambios = usa actual
-                        onImageSelected: (url) {
-                          setState(() {
-                            selectedCoverImageUrl = url;
-                          });
-                        },
-                        imageType: 'cover',
-                        entityId:
-                            FirebaseAuth.instance.currentUser?.uid ??
-                            'temp_user',
-                        width: 200,
-                        height: 100,
-                        borderRadius: BorderRadius.circular(8),
-                        placeholder: Container(
-                          width: 200,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: ColorTokens.neutral20,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: ColorTokens.neutral100,
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.image,
-                            size: 40,
-                            color: ColorTokens.neutral60,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-
                     // ========== NOMBRE ==========
                     Text(
-                      l.t('name_label'),
+                      'Nombre',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -817,7 +789,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        hintText: l.t('your_full_name'),
+                        hintText: 'Tu nombre completo',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -831,7 +803,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== USERNAME ==========
                     Text(
-                      l.t('username_label'),
+                      'Nombre de Usuario',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -841,7 +813,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: usernameController,
                       decoration: InputDecoration(
-                        hintText: l.t('your_username'),
+                        hintText: 'tu_nombre_usuario',
                         prefixText: '@',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -856,7 +828,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== DESCRIPCIÓN ==========
                     Text(
-                      l.t('description_bio'),
+                      'Descripción / Bio',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -866,7 +838,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: descriptionController,
                       decoration: InputDecoration(
-                        hintText: l.t('tell_about_yourself'),
+                        hintText: 'Cuéntales sobre ti',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -887,7 +859,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     Navigator.of(dialogContext).pop();
                   },
                   style: Styles.cancelButtonStyle,
-                  child: Text(l.t('cancel')),
+                  child: Text('Cancelar'),
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
@@ -896,7 +868,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     final username = usernameController.text.trim();
                     final description = descriptionController.text.trim();
                     final profileUrl = selectedProfileImageUrl;
-                    final coverUrl = selectedCoverImageUrl;
                     final email = widget.userProvider.user?.email ?? '';
 
                     // Actualizar todos los campos de perfil
@@ -905,7 +876,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       username: username,
                       description: description,
                       photoUrl: profileUrl,
-                      coverPhotoUrl: coverUrl,
                       email: email,
                     );
 
@@ -919,7 +889,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(l.t('profile_updated')),
+                            content: Text('Perfil actualizado correctamente'),
                             backgroundColor: ColorTokens.success40,
                           ),
                         );
@@ -927,7 +897,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              '${l.t('error')}: ${widget.userProvider.error ?? l.t('try_again')}',
+                              'Error: ${widget.userProvider.error ?? "Intenta nuevamente"}',
                             ),
                             backgroundColor: ColorTokens.error50,
                           ),
@@ -936,7 +906,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     }
                   },
                   icon: Icon(Icons.check),
-                  label: Text(l.t('save')),
+                  label: Text('Guardar'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -951,8 +921,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   // Panel para crear contenido (historias o publicaciones)
+  // ignore: unused_element
+  // ignore: unused_element
   void _showCreateContentOptions() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -984,7 +955,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Text(
-                    l.t('create_content'),
+                    'Crear contenido',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -1005,12 +976,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       size: 24,
                     ),
                   ),
-                  title: Text(
-                    l.t('story'),
+                  title: const Text(
+                    'Historia',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  subtitle: Text(
-                    l.t('share_moment_24h'),
+                  subtitle: const Text(
+                    'Comparte un momento que desaparece en 24h',
                     style: TextStyle(fontSize: 12),
                   ),
                   trailing: Icon(
@@ -1048,12 +1019,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       size: 24,
                     ),
                   ),
-                  title: Text(
-                    l.t('post'),
+                  title: const Text(
+                    'Publicación',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  subtitle: Text(
-                    l.t('share_experience'),
+                  subtitle: const Text(
+                    'Comparte tu experiencia con todos tus seguidores',
                     style: TextStyle(fontSize: 12),
                   ),
                   trailing: Icon(
@@ -1080,10 +1051,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.t('my_profile')),
+        title: const Text('Mi Perfil'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
       ),
@@ -1096,11 +1066,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.error, size: 64, color: ColorTokens.neutral60),
                   SizedBox(height: 16),
-                  Text(l.t('error_loading_profile')),
+                  Text('Error cargando datos del perfil'),
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => widget.userProvider.loadUserData(),
-                    child: Text(l.t('retry')),
+                    child: Text('Reintentar'),
                   ),
                 ],
               ),
@@ -1109,319 +1079,356 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
               child: Column(
                 children: [
                   // ========== SECCIÓN DE PERFIL TIPO INSTAGRAM ==========
-                  // Foto de portada (cover photo)
                   Container(
-                    width: double.infinity,
-                    height: 150,
                     decoration: BoxDecoration(
-                      color: ColorTokens.primary30,
                       gradient: LinearGradient(
-                        colors: [ColorTokens.primary30, ColorTokens.primary50],
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        // Imagen de portada del usuario o gradiente por defecto
-                        Positioned.fill(
-                          child:
-                              widget.userProvider.user?.coverPhotoUrl != null &&
-                                  widget
-                                      .userProvider
-                                      .user!
-                                      .coverPhotoUrl!
-                                      .isNotEmpty
-                              ? Image.network(
-                                  widget.userProvider.user!.coverPhotoUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Opacity(
-                                        opacity: 0.1,
-                                        child: Image.network(
-                                          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                )
-                              : Opacity(
-                                  opacity: 0.1,
-                                  child: Image.network(
-                                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600',
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            SizedBox.shrink(),
-                                  ),
-                                ),
-                        ),
-                        // Botón configuración en esquina superior derecha
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.settings,
-                              color: ColorTokens.neutral100,
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              context.push('/account-settings');
-                            },
-                            tooltip: l.t('account_settings'),
-                          ),
-                        ),
-                        // Botón crear contenido en esquina superior izquierda
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.add_circle,
-                              color: ColorTokens.neutral100,
-                              size: 28,
-                            ),
-                            onPressed: _showCreateContentOptions,
-                            tooltip: l.t('create_content'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Foto de perfil con overlap
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Transform.translate(
-                      offset: const Offset(0, -50),
-                      child: Column(
-                        children: [
-                          // Foto de perfil
-                          Container(
-                            width: 110,
-                            height: 110,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: ColorTokens.neutral20,
-                              border: Border.all(
-                                color: ColorTokens.neutral100,
-                                width: 3,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: ColorTokens.neutral60.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  spreadRadius: 2,
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child:
-                                widget.userProvider.user?.photoUrl != null &&
-                                    widget
-                                        .userProvider
-                                        .user!
-                                        .photoUrl!
-                                        .isNotEmpty
-                                ? ClipOval(
-                                    child: Image.network(
-                                      widget.userProvider.user!.photoUrl!,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) => Icon(
-                                            Icons.person,
-                                            size: 50,
-                                            color: ColorTokens.neutral60,
-                                          ),
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: ColorTokens.neutral60,
-                                  ),
-                          ),
-
-                          SizedBox(height: 12),
-
-                          // Username y nombre
-                          Text(
-                            widget.userProvider.user?.username != null &&
-                                    widget
-                                        .userProvider
-                                        .user!
-                                        .username!
-                                        .isNotEmpty
-                                ? '@${widget.userProvider.user!.username}'
-                                : 'usuario',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.neutral100
-                                  : ColorTokens.primary30,
-                            ),
-                          ),
-
-                          SizedBox(height: 4),
-
-                          Text(
-                            widget.userProvider.user?.name ?? 'Usuario',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.neutral90
-                                  : ColorTokens.neutral50,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-
-                          SizedBox(height: 16),
-
-                          // Estadísticas (Seguidores, Seguidos)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildStatCardButton(
-                                value:
-                                    (widget
-                                                .userProvider
-                                                .user
-                                                ?.followers
-                                                ?.length ??
-                                            0)
-                                        .toString(),
-                                label: l.t('followers'),
-                                onTap: () => _showFollowersModal(context),
-                              ),
-                              _buildStatCardButton(
-                                value:
-                                    (widget
-                                                .userProvider
-                                                .user
-                                                ?.following
-                                                ?.length ??
-                                            0)
-                                        .toString(),
-                                label: l.t('following'),
-                                onTap: () => _showFollowingModal(context),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: 16),
-
-                          // Botón Editar Perfil
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                _showEditProfileDialog();
-                              },
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: Text(l.t('edit_profile')),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? ColorTokens.neutral100
-                                    : ColorTokens.primary30,
-                                side: BorderSide(
-                                  color:
-                                      Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? ColorTokens.neutral100
-                                      : ColorTokens.primary30,
-                                  width: 1.5,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 16),
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          ColorTokens.primary30,
+                          ColorTokens.primary30.withValues(alpha: 0.8),
                         ],
                       ),
                     ),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
+                        child: Column(
+                          children: [
+                            // Primera fila: Botón (+) izquierda y controles derecha
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Menú izquierdo: Story + Post
+                                PopupMenuButton<String>(
+                                  icon: Icon(
+                                    Icons.add_circle_outline,
+                                    color: ColorTokens.neutral100,
+                                    size: 24,
+                                  ),
+                                  onSelected: (value) {
+                                    if (value == 'story') {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CreateExperienceScreen(
+                                                experienceType:
+                                                    ExperienceType.general,
+                                                isStoryMode: true,
+                                              ),
+                                        ),
+                                      );
+                                    } else if (value == 'post') {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CreateExperienceScreen(
+                                                experienceType:
+                                                    ExperienceType.general,
+                                                isPostMode: true,
+                                                textOnly: false,
+                                              ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) => [
+                                    PopupMenuItem<String>(
+                                      value: 'story',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.add_photo_alternate,
+                                            size: 20,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text('Agregar Historia'),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem<String>(
+                                      value: 'post',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.image_search, size: 20),
+                                          SizedBox(width: 10),
+                                          Text('Nueva Publicación'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                // Botones derechos: Editar + Configuración
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Tooltip(
+                                      message: 'Editar perfil',
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.edit_outlined,
+                                          color: ColorTokens.neutral100,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          _showEditProfileDialog();
+                                        },
+                                        constraints: BoxConstraints(
+                                          minWidth: 32,
+                                          minHeight: 32,
+                                        ),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ),
+                                    Tooltip(
+                                      message: 'Configuración',
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.settings_outlined,
+                                          color: ColorTokens.neutral100,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          context.go('/account-settings');
+                                        },
+                                        constraints: BoxConstraints(
+                                          minWidth: 32,
+                                          minHeight: 32,
+                                        ),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 16),
+
+                            // Segunda fila: Foto + Nombre/Usuario
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Foto de perfil
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: ColorTokens.neutral100,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: ColorTokens.neutral20,
+                                    backgroundImage:
+                                        widget.userProvider.user?.photoUrl !=
+                                                null &&
+                                            widget
+                                                .userProvider
+                                                .user!
+                                                .photoUrl!
+                                                .isNotEmpty
+                                        ? NetworkImage(
+                                            widget.userProvider.user!.photoUrl!,
+                                          )
+                                        : null,
+                                    child:
+                                        widget.userProvider.user?.photoUrl ==
+                                                null ||
+                                            widget
+                                                .userProvider
+                                                .user!
+                                                .photoUrl!
+                                                .isEmpty
+                                        ? Icon(
+                                            Icons.person,
+                                            size: 40,
+                                            color: ColorTokens.neutral60,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                SizedBox(width: 16),
+
+                                // Nombre y usuario - Columna al lado de la foto
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.userProvider.user?.name !=
+                                                    null &&
+                                                widget
+                                                    .userProvider
+                                                    .user!
+                                                    .name!
+                                                    .isNotEmpty
+                                            ? widget.userProvider.user!.name!
+                                            : 'Sin nombre',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorTokens.neutral100,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(height: 4),
+                                      if (widget.userProvider.user?.username !=
+                                              null &&
+                                          widget
+                                              .userProvider
+                                              .user!
+                                              .username!
+                                              .isNotEmpty)
+                                        Text(
+                                          '@${widget.userProvider.user!.username}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: ColorTokens.neutral100
+                                                .withValues(alpha: 0.7),
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 16),
+
+                            // Tercera fila: Estadísticas
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      _postCount.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Posts',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    _showFollowersModal(context);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        (widget
+                                                    .userProvider
+                                                    .user
+                                                    ?.followers
+                                                    ?.length ??
+                                                0)
+                                            .toString(),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorTokens.neutral100,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Seguidores',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: ColorTokens.neutral100
+                                              .withValues(alpha: 0.8),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    _showFollowingModal(context);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        (widget
+                                                    .userProvider
+                                                    .user
+                                                    ?.following
+                                                    ?.length ??
+                                                0)
+                                            .toString(),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorTokens.neutral100,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Siguiendo',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: ColorTokens.neutral100
+                                              .withValues(alpha: 0.8),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 12),
+
+                            // Descripción - Debajo de la foto, alineada a izquierda
+                            if (widget.userProvider.user?.description != null &&
+                                widget
+                                    .userProvider
+                                    .user!
+                                    .description!
+                                    .isNotEmpty)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  widget.userProvider.user!.description!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: ColorTokens.neutral100.withValues(
+                                      alpha: 0.9,
+                                    ),
+                                    height: 1.4,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
 
-                  // ========== SECCIÓN DE DESCRIPCIÓN BIO ==========
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Descripción/Bio
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? ColorTokens.primary10
-                                : ColorTokens.neutral100,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.primary40
-                                  : ColorTokens.neutral80,
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            widget.userProvider.user?.description != null &&
-                                    widget
-                                        .userProvider
-                                        .user!
-                                        .description!
-                                        .isNotEmpty
-                                ? widget.userProvider.user!.description!
-                                : l.t('add_description_hint'),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  widget.userProvider.user?.description !=
-                                          null &&
-                                      widget
-                                          .userProvider
-                                          .user!
-                                          .description!
-                                          .isNotEmpty
-                                  ? (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? ColorTokens.neutral100
-                                        : ColorTokens.neutral10)
-                                  : (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? ColorTokens.neutral80
-                                        : ColorTokens.neutral50),
-                              fontStyle:
-                                  widget.userProvider.user?.description ==
-                                          null ||
-                                      widget
-                                          .userProvider
-                                          .user!
-                                          .description!
-                                          .isEmpty
-                                  ? FontStyle.italic
-                                  : FontStyle.normal,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 24),
-
+                        SizedBox(height: 20),
                         // ========== SECCIÓN DE PUBLICACIONES ==========
                         Text(
-                          l.t('posts'),
+                          'Publicaciones',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -1436,9 +1443,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                         // Cargar y mostrar experiencias del usuario
                         FutureBuilder(
-                          future: ExperienceRepositoryImpl().getUserExperiences(
-                            FirebaseAuth.instance.currentUser?.uid ?? '',
-                          ),
+                          future: _experiencesFuture,
                           builder: (context, snapshot) {
                             // Estado de carga
                             if (snapshot.connectionState ==
@@ -1487,7 +1492,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      l.t('error_loading_posts'),
+                                      'Error cargando publicaciones',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.error50,
@@ -1524,7 +1529,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      l.t('no_posts_yet'),
+                                      'Sin publicaciones aún',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.neutral70,
@@ -1533,7 +1538,94 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                      l.t('start_sharing_stories'),
+                                      'Comienza a compartir tus historias',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: ColorTokens.neutral60,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            // Filtrar: solo PUBLICACIONES (no historias) con media válido
+                            final allExperiences = snapshot.data as dynamic;
+                            final experiences = allExperiences.where((exp) {
+                              // Excluir historias — solo publicaciones en el perfil
+                              if (exp.isStoryFormat == true) return false;
+                              try {
+                                if (exp.media == null || exp.media.isEmpty)
+                                  return false;
+                                if (exp.media.first == null) return false;
+                                final media = exp.media.first;
+                                final url = media.url ?? '';
+                                if (url.isEmpty) return false;
+                                if (!url.startsWith('http://') &&
+                                    !url.startsWith('https://'))
+                                  return false;
+                                // Para videos: validar que tenga thumbnail o URL válida
+                                if (media.mediaType == MediaType.video) {
+                                  final thumb = media.thumbnailUrl ?? '';
+                                  return thumb.isNotEmpty &&
+                                          thumb.startsWith('http') ||
+                                      url.isNotEmpty;
+                                }
+                                return true;
+                              } catch (e) {
+                                return false;
+                              }
+                            }).toList();
+
+                            // Eliminar publicaciones con imágenes que fallaron al cargar
+                            experiences.removeWhere(
+                              (exp) =>
+                                  _failedImageIds.contains(exp.id.toString()),
+                            );
+
+                            // Actualizar contador de posts
+                            if (_postCount != experiences.length) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (mounted)
+                                  setState(
+                                    () => _postCount = experiences.length,
+                                  );
+                              });
+                            }
+
+                            // Si después de filtrar no hay experiencias, mostrar el mensaje
+                            if (experiences.isEmpty) {
+                              return Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                decoration: BoxDecoration(
+                                  color: ColorTokens.neutral10,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: ColorTokens.neutral30,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_not_supported,
+                                      size: 48,
+                                      color: ColorTokens.neutral60,
+                                    ),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'Sin publicaciones válidas',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: ColorTokens.neutral70,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Comienza a compartir tus historias',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: ColorTokens.neutral60,
@@ -1545,7 +1637,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             }
 
                             // Mostrar grid de publicaciones
-                            final experiences = snapshot.data as dynamic;
                             return GridView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
@@ -1579,49 +1670,118 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     child: Stack(
                                       fit: StackFit.expand,
                                       children: [
-                                        // Imagen de la experiencia
+                                        // Imagen/thumbnail de la experiencia optimizada
                                         experience.media.isNotEmpty
-                                            ? CachedNetworkImage(
-                                                imageUrl:
-                                                    experience.media.first.url,
-                                                fit: BoxFit.cover,
-                                                cacheManager:
-                                                    OptimizedCacheManager
-                                                        .instance,
-                                                placeholder: (context, url) => Container(
-                                                  color: ColorTokens.neutral20,
-                                                  child: Center(
-                                                    child: SizedBox(
-                                                      width: 30,
-                                                      height: 30,
-                                                      child: CircularProgressIndicator(
-                                                        strokeWidth: 2,
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                              Color
-                                                            >(
-                                                              ColorTokens
-                                                                  .primary30,
+                                            ? Builder(
+                                                builder: (context) {
+                                                  final media =
+                                                      experience.media.first;
+                                                  final isVideo =
+                                                      media.mediaType ==
+                                                      MediaType.video;
+                                                  final displayUrl = isVideo
+                                                      ? (media
+                                                                    .thumbnailUrl
+                                                                    ?.isNotEmpty ==
+                                                                true
+                                                            ? media
+                                                                  .thumbnailUrl!
+                                                            : media.url)
+                                                      : media.url;
+                                                  return Stack(
+                                                    fit: StackFit.expand,
+                                                    children: [
+                                                      CachedNetworkImage(
+                                                        imageUrl: displayUrl,
+                                                        fit: BoxFit.cover,
+                                                        cacheManager:
+                                                            OptimizedCacheManager
+                                                                .instance,
+                                                        memCacheWidth: 400,
+                                                        memCacheHeight: 400,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                              milliseconds: 100,
                                                             ),
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                              milliseconds: 50,
+                                                            ),
+                                                        placeholder:
+                                                            (
+                                                              context,
+                                                              url,
+                                                            ) => Container(
+                                                              color: ColorTokens
+                                                                  .neutral20,
+                                                              child: Center(
+                                                                child: Icon(
+                                                                  isVideo
+                                                                      ? Icons
+                                                                            .videocam
+                                                                      : Icons
+                                                                            .image,
+                                                                  color: ColorTokens
+                                                                      .neutral60,
+                                                                  size: 32,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        errorWidget: (context, url, error) {
+                                                          final expId =
+                                                              experience.id
+                                                                  .toString();
+                                                          if (!_failedImageIds
+                                                              .contains(
+                                                                expId,
+                                                              )) {
+                                                            WidgetsBinding
+                                                                .instance
+                                                                .addPostFrameCallback((
+                                                                  _,
+                                                                ) {
+                                                                  if (mounted) {
+                                                                    setState(() {
+                                                                      _failedImageIds
+                                                                          .add(
+                                                                            expId,
+                                                                          );
+                                                                    });
+                                                                  }
+                                                                });
+                                                          }
+                                                          return SizedBox.shrink();
+                                                        },
                                                       ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                errorWidget:
-                                                    (
-                                                      context,
-                                                      url,
-                                                      error,
-                                                    ) => Container(
-                                                      color:
-                                                          ColorTokens.neutral20,
-                                                      child: Icon(
-                                                        Icons
-                                                            .image_not_supported,
-                                                        color: ColorTokens
-                                                            .neutral60,
-                                                      ),
-                                                    ),
+                                                      if (isVideo)
+                                                        Center(
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  8,
+                                                                ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.5,
+                                                                      ),
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                ),
+                                                            child: const Icon(
+                                                              Icons.play_arrow,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 24,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  );
+                                                },
                                               )
                                             : Container(
                                                 color: ColorTokens.neutral20,
@@ -1630,37 +1790,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                   color: ColorTokens.neutral60,
                                                 ),
                                               ),
-                                        // Overlay oscuro
-                                        Positioned.fill(
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                                colors: [
-                                                  Colors.transparent,
-                                                  Colors.black54,
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        // Título de la experiencia
-                                        Positioned(
-                                          bottom: 8,
-                                          left: 8,
-                                          right: 8,
-                                          child: Text(
-                                            experience.description ?? '',
-                                            style: TextStyle(
-                                              color: ColorTokens.neutral100,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            maxLines: 1,
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -1678,7 +1807,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           child: ElevatedButton.icon(
                             onPressed: _showLogoutDialog,
                             icon: Icon(Icons.logout),
-                            label: Text(l.t('sign_out')),
+                            label: Text('Cerrar Sesión'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   Theme.of(context).brightness ==
@@ -1699,7 +1828,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                           child: OutlinedButton.icon(
                             onPressed: _showDeleteAccountDialog,
                             icon: Icon(Icons.delete_forever),
-                            label: Text(l.t('delete_account')),
+                            label: Text('Eliminar Cuenta'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: ColorTokens.error50,
                               side: BorderSide(

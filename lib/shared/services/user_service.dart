@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,19 +16,19 @@ class UserService {
 
   Future<UserModel?> getUserData(String uid) async {
     try {
-      print('🐛 DEBUG - Obteniendo datos del usuario: $uid');
+      debugPrint('🐛 DEBUG - Obteniendo datos del usuario: $uid');
       DocumentSnapshot doc = await _firestore
           .collection('users')
           .doc(uid)
           .get();
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        print('🐛 DEBUG - Datos obtenidos: $data');
+        debugPrint('🐛 DEBUG - Datos obtenidos: $data');
 
         try {
           return UserModel.fromMap(data);
         } catch (parseError) {
-          print('⚠️ Error parseando datos del usuario: $parseError');
+          debugPrint('⚠️ Error parseando datos del usuario: $parseError');
           // Retornar un UserModel básico con los datos disponibles
           return UserModel(
             uid: uid,
@@ -39,10 +40,10 @@ class UserService {
           );
         }
       }
-      print('🐛 DEBUG - Documento de usuario no existe');
+      debugPrint('🐛 DEBUG - Documento de usuario no existe');
       return null;
     } catch (e) {
-      print('❌ Error obteniendo datos del usuario: $e');
+      debugPrint('❌ Error obteniendo datos del usuario: $e');
       return null;
     }
   }
@@ -61,11 +62,11 @@ class UserService {
                 try {
                   final userData = UserModel.fromMap(data);
                   onDataChanged(userData);
-                  print(
+                  debugPrint(
                     '🔄 Datos del usuario actualizados en tiempo real: $uid',
                   );
                 } catch (parseError) {
-                  print('⚠️ Error parseando datos en listener: $parseError');
+                  debugPrint('⚠️ Error parseando datos en listener: $parseError');
                   final userData = UserModel(
                     uid: uid,
                     phoneNumber: data['phoneNumber'] ?? uid,
@@ -81,11 +82,11 @@ class UserService {
               }
             },
             onError: (error) {
-              print('Error en listener de usuario: $error');
+              debugPrint('Error en listener de usuario: $error');
             },
           );
     } catch (e) {
-      print('❌ Error configurando listener: $e');
+      debugPrint('❌ Error configurando listener: $e');
     }
   }
 
@@ -98,19 +99,19 @@ class UserService {
     String? photoUrl,
     String? coverPhotoUrl,
   }) async {
-    print('🔍 ====== USER SERVICE: updateUserProfile ======');
-    print('🆔 UID: $uid');
-    print('📝 Nombre: "$name"');
-    print('📧 Email: "$email"');
-    print('📋 Descripción: "$description"');
-    print('👤 Username: "$username"');
-    print('🖼️ Foto de perfil: "$photoUrl"');
-    print('🏞️ Foto de portada: "$coverPhotoUrl"');
+    debugPrint('🔍 ====== USER SERVICE: updateUserProfile ======');
+    debugPrint('🆔 UID: $uid');
+    debugPrint('📝 Nombre: "$name"');
+    debugPrint('📧 Email: "$email"');
+    debugPrint('📋 Descripción: "$description"');
+    debugPrint('👤 Username: "$username"');
+    debugPrint('🖼️ Foto de perfil: "$photoUrl"');
+    debugPrint('🏞️ Foto de portada: "$coverPhotoUrl"');
 
     try {
       // Validar UID
       if (uid.isEmpty) {
-        print('❌ ERROR: UID vacío');
+        debugPrint('❌ ERROR: UID vacío');
         return false;
       }
 
@@ -118,70 +119,70 @@ class UserService {
 
       if (name != null) {
         updateData['name'] = name.trim();
-        print('✅ Nombre agregado a updateData: "${name.trim()}"');
+        debugPrint('✅ Nombre agregado a updateData: "${name.trim()}"');
       }
       if (email != null) {
         updateData['email'] = email.trim();
-        print('✅ Email agregado a updateData: "${email.trim()}"');
+        debugPrint('✅ Email agregado a updateData: "${email.trim()}"');
       }
       if (description != null) {
         // Permitir descripciones vacías (cadena vacía después de trim)
         updateData['description'] = description.trim();
-        print('✅ Descripción agregada a updateData: "${description.trim()}"');
+        debugPrint('✅ Descripción agregada a updateData: "${description.trim()}"');
       }
       if (username != null) {
         updateData['username'] = username.trim();
-        print('✅ Username agregado a updateData: "${username.trim()}"');
+        debugPrint('✅ Username agregado a updateData: "${username.trim()}"');
       }
       // Detectar eliminación de fotos (cadena vacía)
       if (photoUrl != null) {
         if (photoUrl.isEmpty) {
           // Eliminar foto: establecer como null
           updateData['photoUrl'] = null;
-          print('✅ Foto de perfil establecida para eliminación (null)');
+          debugPrint('✅ Foto de perfil establecida para eliminación (null)');
         } else {
           updateData['photoUrl'] = photoUrl.trim();
-          print('✅ Foto de perfil agregada a updateData');
+          debugPrint('✅ Foto de perfil agregada a updateData');
         }
       }
       if (coverPhotoUrl != null) {
         if (coverPhotoUrl.isEmpty) {
           // Eliminar foto: establecer como null
           updateData['coverPhotoUrl'] = null;
-          print('✅ Foto de portada establecida para eliminación (null)');
+          debugPrint('✅ Foto de portada establecida para eliminación (null)');
         } else {
           updateData['coverPhotoUrl'] = coverPhotoUrl.trim();
-          print('✅ Foto de portada agregada a updateData');
+          debugPrint('✅ Foto de portada agregada a updateData');
         }
       }
 
       // Si no hay datos para actualizar, retornar false
       if (updateData.isEmpty) {
-        print('❌ ERROR: updateData vacío después de procesar');
+        debugPrint('❌ ERROR: updateData vacío después de procesar');
         return false;
       }
 
       // Agregar timestamp de última actualización
       updateData['updatedAt'] = DateTime.now().toIso8601String();
-      print('⏰ Timestamp agregado: ${updateData['updatedAt']}');
+      debugPrint('⏰ Timestamp agregado: ${updateData['updatedAt']}');
 
-      print('📦 Datos a guardar en Firestore: $updateData');
-      print('🗄️ Colección: users, Documento: $uid');
+      debugPrint('📦 Datos a guardar en Firestore: $updateData');
+      debugPrint('🗄️ Colección: users, Documento: $uid');
 
       await _firestore
           .collection('users')
           .doc(uid)
           .set(updateData, SetOptions(merge: true));
 
-      print('✅ Actualización guardada exitosamente en Firestore');
-      print('🔍 ====== FIN DE ACTUALIZACIÓN ======\n');
+      debugPrint('✅ Actualización guardada exitosamente en Firestore');
+      debugPrint('🔍 ====== FIN DE ACTUALIZACIÓN ======\n');
       return true;
     } catch (e) {
-      print('❌ EXCEPCIÓN en updateUserProfile: $e');
-      print('   Tipo: ${e.runtimeType}');
-      print('   Stack trace:');
-      print(StackTrace.current);
-      print('🔍 ====== FIN DE ACTUALIZACIÓN (ERROR) ======\n');
+      debugPrint('❌ EXCEPCIÓN en updateUserProfile: $e');
+      debugPrint('   Tipo: ${e.runtimeType}');
+      debugPrint('   Stack trace:');
+      debugPrint(StackTrace.current.toString());
+      debugPrint('🔍 ====== FIN DE ACTUALIZACIÓN (ERROR) ======\n');
       return false;
     }
   }
@@ -213,7 +214,7 @@ class UserService {
       }
       return null;
     } catch (e) {
-      print('Error subiendo imagen: $e');
+      debugPrint('Error subiendo imagen: $e');
       return null;
     }
   }
@@ -226,7 +227,7 @@ class UserService {
       });
       return true;
     } catch (e) {
-      print('Error solicitando eliminación: $e');
+      debugPrint('Error solicitando eliminación: $e');
       return false;
     }
   }
@@ -242,16 +243,16 @@ class UserService {
           .doc(uid)
           .get();
       if (!doc.exists) {
-        print('🔐 Creando usuario: $uid');
-        print('👤 Teléfono: $phoneNumber');
+        debugPrint('🔐 Creando usuario: $uid');
+        debugPrint('👤 Teléfono: $phoneNumber');
 
         UserModel newUser = UserModel(uid: uid, phoneNumber: phoneNumber);
         await _firestore.collection('users').doc(uid).set(newUser.toMap());
-        print('✅ Usuario creado');
+        debugPrint('✅ Usuario creado');
       }
       return true;
     } catch (e) {
-      print('Error creando usuario: $e');
+      debugPrint('Error creando usuario: $e');
       return false;
     }
   }
@@ -265,7 +266,7 @@ class UserService {
       });
       return true;
     } catch (e) {
-      print('Error actualizando permiso de vendedor: $e');
+      debugPrint('Error actualizando permiso de vendedor: $e');
       return false;
     }
   }
@@ -278,7 +279,7 @@ class UserService {
           .map((doc) => UserModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('Error obteniendo usuarios: $e');
+      debugPrint('Error obteniendo usuarios: $e');
       return [];
     }
   }
@@ -289,7 +290,7 @@ class UserService {
     required String userIdToFollow,
   }) async {
     try {
-      print('📱 Iniciando seguimiento de $userIdToFollow por $currentUserId');
+      debugPrint('📱 Iniciando seguimiento de $userIdToFollow por $currentUserId');
 
       final currentUserRef = _firestore.collection('users').doc(currentUserId);
       final userToFollowRef = _firestore
@@ -297,77 +298,77 @@ class UserService {
           .doc(userIdToFollow);
 
       // Obtener los documentos actuales
-      print('🔍 Buscando usuario actual: $currentUserId');
+      debugPrint('🔍 Buscando usuario actual: $currentUserId');
       final currentUserDoc = await currentUserRef.get();
-      print('🔍 Usuario actual existe: ${currentUserDoc.exists}');
+      debugPrint('🔍 Usuario actual existe: ${currentUserDoc.exists}');
 
-      print('🔍 Buscando usuario a seguir: $userIdToFollow');
+      debugPrint('🔍 Buscando usuario a seguir: $userIdToFollow');
       final userToFollowDoc = await userToFollowRef.get();
-      print('🔍 Usuario a seguir existe: ${userToFollowDoc.exists}');
+      debugPrint('🔍 Usuario a seguir existe: ${userToFollowDoc.exists}');
 
       if (!currentUserDoc.exists || !userToFollowDoc.exists) {
-        print('❌ Usuario no encontrado');
+        debugPrint('❌ Usuario no encontrado');
         return false;
       }
 
-      print('📋 Extrayendo datos del usuario actual...');
+      debugPrint('📋 Extrayendo datos del usuario actual...');
       final currentUserData = currentUserDoc.data();
       if (currentUserData == null) {
-        print('❌ Datos del usuario actual son null');
+        debugPrint('❌ Datos del usuario actual son null');
         return false;
       }
-      print('✅ Datos del usuario actual obtenidos');
+      debugPrint('✅ Datos del usuario actual obtenidos');
 
-      print('📋 Extrayendo datos del usuario a seguir...');
+      debugPrint('📋 Extrayendo datos del usuario a seguir...');
       final userToFollowData = userToFollowDoc.data();
       if (userToFollowData == null) {
-        print('❌ Datos del usuario a seguir son null');
+        debugPrint('❌ Datos del usuario a seguir son null');
         return false;
       }
-      print('✅ Datos del usuario a seguir obtenidos');
+      debugPrint('✅ Datos del usuario a seguir obtenidos');
 
       // Actualizar 'following' del usuario actual
-      print('🔄 Actualizando "following" del usuario actual...');
+      debugPrint('🔄 Actualizando "following" del usuario actual...');
       Map<String, dynamic> following = Map<String, dynamic>.from(
         currentUserData['following'] ?? {},
       );
-      print('   Following actual: $following');
+      debugPrint('   Following actual: $following');
       following[userIdToFollow] = true;
-      print('   Following nuevo: $following');
+      debugPrint('   Following nuevo: $following');
       int newFollowingCount = following.length;
 
       // Actualizar 'followers' del usuario a seguir
-      print('🔄 Actualizando "followers" del usuario a seguir...');
+      debugPrint('🔄 Actualizando "followers" del usuario a seguir...');
       Map<String, dynamic> followers = Map<String, dynamic>.from(
         userToFollowData['followers'] ?? {},
       );
-      print('   Followers actual: $followers');
+      debugPrint('   Followers actual: $followers');
       followers[currentUserId] = true;
-      print('   Followers nuevo: $followers');
+      debugPrint('   Followers nuevo: $followers');
       int newFollowerSCount = followers.length;
 
       // Guardar los cambios
-      print('💾 Guardando cambios en usuario actual...');
+      debugPrint('💾 Guardando cambios en usuario actual...');
       await currentUserRef.update({
         'following': following,
         'followingCount': newFollowingCount,
         'updatedAt': DateTime.now().toIso8601String(),
       });
-      print('✅ Cambios guardados en usuario actual');
+      debugPrint('✅ Cambios guardados en usuario actual');
 
-      print('💾 Guardando cambios en usuario a seguir...');
+      debugPrint('💾 Guardando cambios en usuario a seguir...');
       await userToFollowRef.update({
         'followers': followers,
         'followerS': newFollowerSCount,
         'updatedAt': DateTime.now().toIso8601String(),
       });
-      print('✅ Cambios guardados en usuario a seguir');
+      debugPrint('✅ Cambios guardados en usuario a seguir');
 
-      print('✅ Ahora sigues a $userIdToFollow');
+      debugPrint('✅ Ahora sigues a $userIdToFollow');
       return true;
     } catch (e, st) {
-      print('❌ Error siguiendo usuario: $e');
-      print('   Stack trace: $st');
+      debugPrint('❌ Error siguiendo usuario: $e');
+      debugPrint('   Stack trace: $st');
       return false;
     }
   }
@@ -378,7 +379,7 @@ class UserService {
     required String userIdToUnfollow,
   }) async {
     try {
-      print('📱 Dejando de seguir a $userIdToUnfollow por $currentUserId');
+      debugPrint('📱 Dejando de seguir a $userIdToUnfollow por $currentUserId');
 
       final currentUserRef = _firestore.collection('users').doc(currentUserId);
       final userToUnfollowRef = _firestore
@@ -390,7 +391,7 @@ class UserService {
       final userToUnfollowDoc = await userToUnfollowRef.get();
 
       if (!currentUserDoc.exists || !userToUnfollowDoc.exists) {
-        print('❌ Usuario no encontrado');
+        debugPrint('❌ Usuario no encontrado');
         return false;
       }
 
@@ -403,53 +404,53 @@ class UserService {
       Map<String, dynamic> following = Map<String, dynamic>.from(
         currentUserData['following'] ?? {},
       );
-      print('   Following actual: $following');
+      debugPrint('   Following actual: $following');
       following.remove(userIdToUnfollow);
-      print('   Following nuevo: $following');
+      debugPrint('   Following nuevo: $following');
       int newFollowingCount = following.length;
 
       // Actualizar 'followers' del usuario
       Map<String, dynamic> followers = Map<String, dynamic>.from(
         userToUnfollowData['followers'] ?? {},
       );
-      print('   Followers actual: $followers');
+      debugPrint('   Followers actual: $followers');
       followers.remove(currentUserId);
-      print('   Followers nuevo: $followers');
+      debugPrint('   Followers nuevo: $followers');
       int newFollowerSCount = followers.length;
 
       // Validación: asegurar que el contador no sea negativo
-      print('⚠️ Validación: newFollowerSCount = $newFollowerSCount');
+      debugPrint('⚠️ Validación: newFollowerSCount = $newFollowerSCount');
       if (newFollowerSCount < 0) {
-        print('🚨 ERROR: Contador negativo detectado! Fijando a 0');
+        debugPrint('🚨 ERROR: Contador negativo detectado! Fijando a 0');
         newFollowerSCount = 0;
       }
       if (newFollowingCount < 0) {
-        print('🚨 ERROR: Contador de following negativo! Fijando a 0');
+        debugPrint('🚨 ERROR: Contador de following negativo! Fijando a 0');
         newFollowingCount = 0;
       }
 
       // Guardar los cambios
-      print('💾 Guardando cambios en usuario actual...');
+      debugPrint('💾 Guardando cambios en usuario actual...');
       await currentUserRef.update({
         'following': following,
         'followingCount': newFollowingCount,
         'updatedAt': DateTime.now().toIso8601String(),
       });
-      print('✅ Cambios guardados en usuario actual');
+      debugPrint('✅ Cambios guardados en usuario actual');
 
-      print('💾 Guardando cambios en usuario a seguir...');
+      debugPrint('💾 Guardando cambios en usuario a seguir...');
       await userToUnfollowRef.update({
         'followers': followers,
         'followerS': newFollowerSCount,
         'updatedAt': DateTime.now().toIso8601String(),
       });
-      print('✅ Cambios guardados en usuario a seguir');
+      debugPrint('✅ Cambios guardados en usuario a seguir');
 
-      print('✅ Dejaste de seguir a $userIdToUnfollow');
+      debugPrint('✅ Dejaste de seguir a $userIdToUnfollow');
       return true;
     } catch (e) {
-      print('❌ Error dejando de seguir: $e');
-      print('   Stack trace: ${StackTrace.current}');
+      debugPrint('❌ Error dejando de seguir: $e');
+      debugPrint('   Stack trace: ${StackTrace.current}');
       return false;
     }
   }

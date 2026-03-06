@@ -143,7 +143,7 @@ class AttendeesProvider extends ChangeNotifier {
               (userEntity.fullName.isNotEmpty ? userEntity.fullName : null);
         } catch (e) {
           // Si falla, usar los datos del provider
-          print('⚠️ No se pudieron obtener datos del usuario: $e');
+          debugPrint('⚠️ No se pudieron obtener datos del usuario: $e');
         }
       }
 

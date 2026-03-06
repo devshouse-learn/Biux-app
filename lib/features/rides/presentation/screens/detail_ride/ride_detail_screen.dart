@@ -311,7 +311,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           }
         } catch (e) {
           // Si hay error con la imagen, compartir solo texto
-          print('Error compartiendo imagen: $e');
+          debugPrint('Error compartiendo imagen: $e');
           await SharePlus.instance.share(ShareParams(text: shareText));
         }
       } else {
@@ -319,7 +319,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         await SharePlus.instance.share(ShareParams(text: shareText));
       }
     } catch (e) {
-      print('Error al compartir: $e');
+      debugPrint('Error al compartir: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

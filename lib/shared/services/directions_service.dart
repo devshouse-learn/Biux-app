@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import "package:flutter/foundation.dart";
 
 class DirectionsService {
   static const String _baseUrl =
@@ -37,7 +38,7 @@ class DirectionsService {
         }
       }
     } catch (e) {
-      print('Error getting directions: $e');
+      debugPrint('Error getting directions: $e');
     }
 
     return null;
@@ -55,8 +56,8 @@ class DirectionsService {
         'mode=$travelMode&'
         'key=$_apiKey';
 
-    print('🚴‍♂️ Requesting bicycling route from Google API...');
-    print('URL: $url');
+    debugPrint('🚴‍♂️ Requesting bicycling route from Google API...');
+    debugPrint('URL: $url');
 
     try {
       final response = await http
@@ -64,29 +65,29 @@ class DirectionsService {
           .timeout(
             Duration(seconds: 10), // Timeout de 10 segundos
             onTimeout: () {
-              print('⏰ Timeout en la petición a Google Directions API');
+              debugPrint('⏰ Timeout en la petición a Google Directions API');
               throw Exception('Timeout');
             },
           );
 
-      print('📡 Response status: ${response.statusCode}');
+      debugPrint('📡 Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('📊 API Response status: ${data['status']}');
+        debugPrint('📊 API Response status: ${data['status']}');
 
         if (data['status'] == 'OK' && data['routes'].isNotEmpty) {
           final route = data['routes'][0];
           final leg = route['legs'][0];
           final polylinePoints = route['overview_polyline']['points'];
 
-          print('✅ Route found! Polyline length: ${polylinePoints.length}');
-          print(
+          debugPrint('✅ Route found! Polyline length: ${polylinePoints.length}');
+          debugPrint(
             '📏 Distance: ${leg['distance']['text']}, Duration: ${leg['duration']['text']}',
           );
 
           final List<LatLng> points = _decodePolyline(polylinePoints);
-          print('🗺️ Decoded ${points.length} points for the route');
+          debugPrint('🗺️ Decoded ${points.length} points for the route');
 
           return DirectionResult(
             points: points,
@@ -96,17 +97,17 @@ class DirectionsService {
             durationValue: leg['duration']['value'],
           );
         } else {
-          print('❌ API Error: ${data['status']}');
+          debugPrint('❌ API Error: ${data['status']}');
           if (data['error_message'] != null) {
-            print('Error message: ${data['error_message']}');
+            debugPrint('Error message: ${data['error_message']}');
           }
         }
       } else {
-        print('❌ HTTP Error: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('❌ HTTP Error: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
       }
     } catch (e) {
-      print('💥 Exception in getDirectionsWithDetails: $e');
+      debugPrint('💥 Exception in getDirectionsWithDetails: $e');
     }
 
     return null;

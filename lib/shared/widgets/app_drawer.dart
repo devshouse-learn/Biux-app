@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/design_system.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../core/config/router/app_routes.dart';
 import '../../features/users/presentation/providers/user_provider.dart';
 
@@ -51,7 +50,6 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Drawer(
       backgroundColor: Colors.white,
       child: Column(
@@ -92,8 +90,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               width: 2,
                             ),
                           ),
-                          child:
-                              user?.photoUrl != null &&
+                          child: user?.photoUrl != null &&
                                   user!.photoUrl!.isNotEmpty
                               ? CachedNetworkImage(
                                   imageUrl: user.photoUrl!,
@@ -113,21 +110,15 @@ class _AppDrawerState extends State<AppDrawer> {
                                   errorWidget: (c, u, e) => const CircleAvatar(
                                     radius: 32,
                                     backgroundColor: Colors.white24,
-                                    child: Icon(
-                                      Icons.person,
-                                      size: 32,
-                                      color: Colors.white70,
-                                    ),
+                                    child: Icon(Icons.person,
+                                        size: 32, color: Colors.white70),
                                   ),
                                 )
                               : const CircleAvatar(
                                   radius: 32,
                                   backgroundColor: Colors.white24,
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 32,
-                                    color: Colors.white70,
-                                  ),
+                                  child: Icon(Icons.person,
+                                      size: 32, color: Colors.white70),
                                 ),
                         ),
                         const Spacer(),
@@ -142,26 +133,18 @@ class _AppDrawerState extends State<AppDrawer> {
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
+                                  horizontal: 12, vertical: 8),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    Icons.edit,
-                                    size: 14,
-                                    color: Colors.white70,
-                                  ),
+                                  Icon(Icons.edit,
+                                      size: 14, color: Colors.white70),
                                   SizedBox(width: 6),
-                                  Text(
-                                    l.t('edit'),
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                                  Text('Editar',
+                                      style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ),
@@ -171,20 +154,17 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                     const SizedBox(height: 14),
                     Text(
-                      user?.name ?? l.t('cyclist'),
+                      user?.name ?? 'Ciclista',
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       user?.email ?? cu?.phoneNumber ?? '',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontSize: 13,
-                      ),
+                          color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
                     ),
                   ],
                 ),
@@ -197,74 +177,106 @@ class _AppDrawerState extends State<AppDrawer> {
             child: ListView(
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
-                _sec(l.t('community')),
-                _item(
-                  Icons.campaign,
-                  Colors.orange,
-                  l.t('promotions'),
-                  l.t('promotions_subtitle'),
-                  () {
-                    Navigator.pop(context);
-                    context.push('/promotions');
-                  },
-                ),
+                // ===== CICLISMO =====
+                _sec('CICLISMO'),
+                _item(Icons.gps_fixed, Colors.green, 'Grabar Rodada',
+                    'GPS tracking en tiempo real', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.rideTracker);
+                }),
+                _item(Icons.bar_chart_rounded, Colors.blue, 'Mis Estadisticas',
+                    'Km, velocidad, nivel y ranking', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.cyclingStats);
+                }),
+                _item(Icons.emoji_events, Colors.amber, 'Logros',
+                    'Medallas y desafios desbloqueados', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.achievements);
+                }),
+
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Divider(height: 24),
-                ),
-                _sec(l.t('security')),
-                _item(
-                  Icons.warning_amber_rounded,
-                  ColorTokens.error50,
-                  l.t('stolen_bikes'),
-                  l.t('public_database'),
-                  () {
-                    Navigator.pop(context);
-                    context.push('/shop/stolen-bikes');
-                  },
-                ),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(height: 24)),
+
+                // ===== COMUNIDAD =====
+                _sec('COMUNIDAD'),
+                _item(Icons.chat_bubble_outline, ColorTokens.primary30, 'Mensajes',
+                    'Chats con otros ciclistas', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.chatList);
+                }),
+                _item(Icons.storefront, Colors.deepPurple, 'Negocios y Eventos',
+                    'Publicidad y eventos con registro', () {
+                  Navigator.pop(context);
+                  context.push('/promotions');
+                }),
+
+                const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(height: 24)),
+
+                // ===== SEGURIDAD =====
+                _sec('SEGURIDAD'),
+                _item(Icons.sos, Colors.red, 'Emergencia SOS',
+                    'Boton de panico y contactos', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.emergency);
+                }),
+                _item(Icons.report_problem_outlined, Colors.orange, 'Reportes Viales',
+                    'Baches, obras y peligros en ruta', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.roadReports);
+                }),
+                _item(Icons.warning_amber_rounded, ColorTokens.error50,
+                    'Bicicletas Robadas', 'Base de datos publica', () {
+                  Navigator.pop(context);
+                  context.push('/shop/stolen-bikes');
+                }),
                 Consumer<UserProvider>(
                   builder: (context, up, _) {
                     if (!(up.user?.isAdmin ?? false)) {
                       return const SizedBox.shrink();
                     }
                     return _item(
-                      Icons.admin_panel_settings,
-                      ColorTokens.secondary50,
-                      l.t('alerts_dashboard'),
-                      l.t('alerts_dashboard_subtitle'),
-                      () {
-                        Navigator.pop(context);
-                        context.push('/shop/admin-alerts');
-                      },
-                    );
+                        Icons.admin_panel_settings,
+                        ColorTokens.secondary50,
+                        'Dashboard Alertas',
+                        'Intentos venta bicis robadas', () {
+                      Navigator.pop(context);
+                      context.push('/shop/admin-alerts');
+                    });
                   },
                 ),
+
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Divider(height: 24),
-                ),
-                _sec(l.t('adjustments')),
-                _item(
-                  Icons.settings_outlined,
-                  ColorTokens.neutral50,
-                  l.t('settings'),
-                  l.t('notifications_preferences'),
-                  () {
-                    Navigator.pop(context);
-                    context.push(AppRoutes.notificationSettings);
-                  },
-                ),
-                _item(
-                  Icons.help_outline,
-                  ColorTokens.neutral50,
-                  l.t('help_center'),
-                  l.t('support_faq'),
-                  () {
-                    Navigator.pop(context);
-                    context.push(AppRoutes.help);
-                  },
-                ),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(height: 24)),
+
+                // ===== APRENDIZAJE =====
+                _sec('APRENDIZAJE'),
+                _item(Icons.menu_book_rounded, Colors.teal, 'Educacion Vial',
+                    'Seguridad, mecanica y consejos', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.education);
+                }),
+
+                const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(height: 24)),
+
+                // ===== AJUSTES =====
+                _sec('AJUSTES'),
+                _item(Icons.settings_outlined, ColorTokens.neutral50,
+                    'Configuracion', 'Notificaciones y preferencias', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.notificationSettings);
+                }),
+                _item(Icons.help_outline, ColorTokens.neutral50,
+                    'Centro de Ayuda', 'Soporte y preguntas frecuentes', () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.help);
+                }),
               ],
             ),
           ),
@@ -273,42 +285,33 @@ class _AppDrawerState extends State<AppDrawer> {
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey.shade200)),
-            ),
+                border:
+                    Border(top: BorderSide(color: Colors.grey.shade200))),
             child: Column(
               children: [
                 ListTile(
                   dense: true,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                      borderRadius: BorderRadius.circular(12)),
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: ColorTokens.error50.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.logout,
-                      color: ColorTokens.error50,
-                      size: 20,
-                    ),
+                        color: ColorTokens.error50.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Icon(Icons.logout,
+                        color: ColorTokens.error50, size: 20),
                   ),
-                  title: Text(
-                    l.t('sign_out'),
-                    style: TextStyle(
-                      color: ColorTokens.error50,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                  onTap: () => _logoutDialog(context, l),
+                  title: Text('Cerrar Sesion',
+                      style: TextStyle(
+                          color: ColorTokens.error50,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14)),
+                  onTap: () => _logoutDialog(context),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'BiUX v1.0.0',
-                  style: TextStyle(color: ColorTokens.neutral60, fontSize: 11),
-                ),
+                Text('BiUX v1.0.0',
+                    style: TextStyle(
+                        color: ColorTokens.neutral60, fontSize: 11)),
               ],
             ),
           ),
@@ -318,92 +321,77 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   Widget _sec(String t) => Padding(
-    padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-    child: Text(
-      t,
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: ColorTokens.neutral50,
-        letterSpacing: 1.2,
-      ),
-    ),
-  );
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+        child: Text(t,
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: ColorTokens.neutral50,
+                letterSpacing: 1.2)),
+      );
 
-  Widget _item(
-    IconData icon,
-    Color color,
-    String title,
-    String sub,
-    VoidCallback onTap,
-  ) {
+  Widget _item(IconData icon, Color color, String title, String sub,
+      VoidCallback onTap) {
     return ListTile(
       dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(10),
-        ),
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10)),
         child: Icon(icon, color: color, size: 20),
       ),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF16242D),
-        ),
-      ),
-      subtitle: Text(
-        sub,
-        style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-      ),
-      trailing: Icon(Icons.chevron_right, size: 18, color: Colors.grey[400]),
+      title: Text(title,
+          style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF16242D))),
+      subtitle: Text(sub,
+          style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+      trailing:
+          Icon(Icons.chevron_right, size: 18, color: Colors.grey[400]),
       onTap: onTap,
     );
   }
 
-  void _logoutDialog(BuildContext context, LocaleNotifier l) {
+  void _logoutDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dc) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Icon(Icons.logout, color: ColorTokens.error50),
-            const SizedBox(width: 8),
-            Text(l.t('sign_out')),
-          ],
-        ),
-        content: Text(l.t('sign_out_confirm')),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16)),
+        title: Row(children: [
+          Icon(Icons.logout, color: ColorTokens.error50),
+          const SizedBox(width: 8),
+          const Text('Cerrar Sesion')
+        ]),
+        content:
+            const Text('Estas seguro que deseas cerrar sesion?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dc).pop(),
-            child: Text(l.t('cancel')),
-          ),
+              onPressed: () => Navigator.of(dc).pop(),
+              child: const Text('Cancelar')),
           ElevatedButton(
             onPressed: () async {
               Navigator.of(dc).pop();
-              await _doLogout(context, l);
+              await _doLogout(context);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.error50,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: Text(l.t('sign_out')),
+                backgroundColor: ColorTokens.error50,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10))),
+            child: const Text('Cerrar Sesion'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _doLogout(BuildContext context, LocaleNotifier l) async {
+  Future<void> _doLogout(BuildContext context) async {
     try {
       showDialog(
         context: context,
@@ -415,12 +403,10 @@ class _AppDrawerState extends State<AppDrawer> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    ColorTokens.secondary50,
-                  ),
-                ),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        ColorTokens.secondary50)),
                 const SizedBox(width: 16),
-                Text(l.t('signing_out')),
+                const Text('Cerrando sesion...'),
               ],
             ),
           ),
@@ -435,12 +421,9 @@ class _AppDrawerState extends State<AppDrawer> {
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l.t('error')}: $e'),
-            backgroundColor: ColorTokens.error50,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: ColorTokens.error50));
       }
     }
   }

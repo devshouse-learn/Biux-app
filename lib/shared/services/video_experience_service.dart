@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import "package:flutter/foundation.dart";
 
 /// Servicio optimizado para gestión de videos en experiencias
 /// Maneja compresión, subida y gestión de videos hasta 30 segundos
@@ -32,14 +33,14 @@ class VideoExperienceService {
           );
         }
 
-        print(
+        debugPrint(
           '🎥 Video seleccionado: ${video.path}, Tamaño: ${fileSizeMB.toStringAsFixed(2)}MB',
         );
       }
 
       return video;
     } catch (e) {
-      print('❌ Error seleccionando video: $e');
+      debugPrint('❌ Error seleccionando video: $e');
       rethrow;
     }
   }
@@ -53,12 +54,12 @@ class VideoExperienceService {
       );
 
       if (video != null) {
-        print('🎥 Video grabado: ${video.path}');
+        debugPrint('🎥 Video grabado: ${video.path}');
       }
 
       return video;
     } catch (e) {
-      print('❌ Error grabando video: $e');
+      debugPrint('❌ Error grabando video: $e');
       rethrow;
     }
   }
@@ -71,7 +72,7 @@ class VideoExperienceService {
     Function(double)? onProgress,
   }) async {
     try {
-      print('📤 Iniciando subida de video...');
+      debugPrint('📤 Iniciando subida de video...');
 
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${videoFile.name}';
@@ -86,14 +87,14 @@ class VideoExperienceService {
       uploadTask.snapshotEvents.listen((snapshot) {
         final progress = snapshot.bytesTransferred / snapshot.totalBytes;
         onProgress?.call(progress);
-        print('📤 Progreso subida: ${(progress * 100).toStringAsFixed(1)}%');
+        debugPrint('📤 Progreso subida: ${(progress * 100).toStringAsFixed(1)}%');
       });
 
       // Esperar a que termine la subida
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      print('✅ Video subido exitosamente: $downloadUrl');
+      debugPrint('✅ Video subido exitosamente: $downloadUrl');
 
       return VideoUploadResult(
         videoUrl: downloadUrl,
@@ -101,7 +102,7 @@ class VideoExperienceService {
         sizeBytes: snapshot.totalBytes,
       );
     } catch (e) {
-      print('❌ Error subiendo video: $e');
+      debugPrint('❌ Error subiendo video: $e');
       throw VideoUploadException('Error subiendo video: $e');
     }
   }
@@ -112,12 +113,12 @@ class VideoExperienceService {
     required String userId,
   }) async {
     try {
-      // TODO: Implementar generación real de thumbnail
+      // PENDIENTE: Implementar generación real de thumbnail
       // Por ahora retornamos null para usar el video directamente
-      print('🖼️ Generando thumbnail para: $videoUrl');
+      debugPrint('🖼️ Generando thumbnail para: $videoUrl');
       return null;
     } catch (e) {
-      print('❌ Error generando thumbnail: $e');
+      debugPrint('❌ Error generando thumbnail: $e');
       return null;
     }
   }
@@ -125,11 +126,11 @@ class VideoExperienceService {
   /// Valida la duración de un video
   Future<bool> validateVideoDuration(XFile videoFile) async {
     try {
-      // TODO: Implementar validación real de duración
+      // PENDIENTE: Implementar validación real de duración
       // Por ahora asumimos que el picker ya limita la duración
       return true;
     } catch (e) {
-      print('❌ Error validando duración: $e');
+      debugPrint('❌ Error validando duración: $e');
       return false;
     }
   }
@@ -144,13 +145,13 @@ class VideoExperienceService {
         path: videoFile.path,
         sizeBytes: sizeBytes,
         sizeMB: sizeBytes / (1024 * 1024),
-        // TODO: Obtener duración y dimensiones reales
+        // PENDIENTE: Obtener duración y dimensiones reales
         durationSeconds: 30, // Placeholder
         width: 1080, // Placeholder
         height: 1920, // Placeholder
       );
     } catch (e) {
-      print('❌ Error obteniendo info del video: $e');
+      debugPrint('❌ Error obteniendo info del video: $e');
       return null;
     }
   }
@@ -162,10 +163,10 @@ class VideoExperienceService {
         final file = File(path);
         if (await file.exists()) {
           await file.delete();
-          print('🧹 Archivo temporal eliminado: $path');
+          debugPrint('🧹 Archivo temporal eliminado: $path');
         }
       } catch (e) {
-        print('⚠️ Error eliminando archivo temporal $path: $e');
+        debugPrint('⚠️ Error eliminando archivo temporal $path: $e');
       }
     }
   }

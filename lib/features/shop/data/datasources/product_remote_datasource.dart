@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/data/datasources/mock_products.dart';
+import "package:flutter/foundation.dart";
 
 /// Datasource para productos en Firebase Firestore
 class ProductRemoteDataSource {
@@ -38,7 +39,7 @@ class ProductRemoteDataSource {
       }
     } catch (e) {
       // Cualquier error (timeout, red, etc.) → usar productos mock
-      print('⚠️ Error cargando desde Firestore, usando productos mock: $e');
+      debugPrint('⚠️ Error cargando desde Firestore, usando productos mock: $e');
     }
 
     // Siempre retornar productos mock como fallback rápido
@@ -149,6 +150,31 @@ class ProductRemoteDataSource {
       });
     } catch (e) {
       throw Exception('Error al actualizar stock: $e');
+    }
+  }
+
+
+  /// Toggle like de un producto usando operaciones atomicas de Firestore
+  Future<void> toggleProductLike(String productId, String userId) async {
+    try {
+      final docRef = _firestore.collection(_collection).doc(productId);
+      final doc = await docRef.get();
+      if (!doc.exists) throw Exception('Producto no encontrado');
+
+      final data = doc.data()!;
+      final likedByUsers = List<String>.from(data['likedByUsers'] ?? []);
+
+      if (likedByUsers.contains(userId)) {
+        await docRef.update({
+          'likedByUsers': FieldValue.arrayRemove([userId]),
+        });
+      } else {
+        await docRef.update({
+          'likedByUsers': FieldValue.arrayUnion([userId]),
+        });
+      }
+    } catch (e) {
+      throw Exception('Error al dar me gusta: \$e');
     }
   }
 

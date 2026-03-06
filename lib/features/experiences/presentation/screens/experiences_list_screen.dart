@@ -12,7 +12,7 @@ import 'package:biux/features/experiences/presentation/screens/create_experience
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/shared/widgets/post_card.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     // Cargar feed personalizado al inicializar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadFeed();
-      _startAutoRefresh();
+      _startFeedListener();
     });
   }
 
@@ -48,19 +48,30 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _autoRefreshTimer?.cancel();
+    context.read<ExperienceProvider>().stopFeedListener();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // App vuelve a primer plano - recargar y reiniciar timer
+      // App vuelve a primer plano - recargar y reiniciar listener
       _loadFeed();
-      _startAutoRefresh();
+      _startFeedListener();
     } else if (state == AppLifecycleState.paused) {
-      // App va a segundo plano - pausar timer
+      // App va a segundo plano - pausar listener
       _autoRefreshTimer?.cancel();
+      context.read<ExperienceProvider>().stopFeedListener();
     }
+  }
+
+  void _startFeedListener() {
+    final userId = _currentUserId;
+    if (userId != null) {
+      context.read<ExperienceProvider>().startFeedListener(userId);
+    }
+    // Mantener timer como respaldo cada 5 minutos
+    _startAutoRefresh();
   }
 
   void _startAutoRefresh() {
@@ -83,18 +94,18 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: ColorTokens.primary30,
         title: GestureDetector(
           onTap: _loadFeed,
-          child: Text(
-            l.t('my_feed'),
+          child: const Text(
+            'Mi Feed',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: Colors.white,
@@ -108,7 +119,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               context.push('/users/search');
             },
             icon: const Icon(Icons.search, color: Colors.white),
-            tooltip: l.t('search_users'),
+            tooltip: 'Buscar usuarios',
           ),
         ],
       ),
@@ -116,20 +127,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         builder: (context, provider, child) {
           return _buildBody(provider);
         },
-      ),
-      floatingActionButton: GestureDetector(
-        // Tap principal: crear publicación directamente (como antes)
-        onTap: () => _navigateToCreatePost(context),
-        // Long press: mostrar opciones adicionales
-        onLongPress: () => _showCreatePostOptions(context),
-        child: FloatingActionButton(
-          onPressed: () => _navigateToCreatePost(context),
-          backgroundColor:
-              theme.floatingActionButtonTheme.backgroundColor ??
-              theme.primaryColor,
-          child: const Icon(Icons.add, color: Colors.white),
-          heroTag: "create_post_fab",
-        ),
       ),
     );
   }
@@ -147,15 +144,10 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final allExperiences = provider.experiences; // Feed personalizado
 
     // POSTS: Experiencias que van en el feed principal vertical
-    // - Pueden tener media (SOLO FOTOS, sin videos)
+    // - Incluye fotos y videos con contenido válido
     // - Cualquier longitud de descripción
     // - EXCLUYE las que ya se muestran como stories
-    // - EXCLUYE posts con videos (temporalmente deshabilitados)
-    final posts = allExperiences
-        .where(
-          (exp) => exp.isPostFormat && !exp.hasVideo,
-        ) // Filtrar posts con video
-        .toList();
+    final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
 
     // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
     return RefreshIndicator(
@@ -180,8 +172,8 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   Widget _buildErrorState(String error, ExperienceProvider provider) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context);
 
     return Center(
       child: Column(
@@ -194,7 +186,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            l.t('error_loading_experiences'),
+            'Error al cargar experiencias',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -218,7 +210,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 provider.loadPersonalizedFeed(userId);
               }
             },
-            child: Text(l.t('retry')),
+            child: const Text('Reintentar'),
           ),
         ],
       ),
@@ -227,8 +219,8 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   /// Estado vacío cuando no hay posts pero sí hay stories
   Widget _buildEmptyStateInLayout() {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context);
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -245,7 +237,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                l.t('share_first_post'),
+                '¡Comparte tu primera publicación!',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -254,7 +246,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                l.t('stories_above_posts_below'),
+                'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
                 style: TextStyle(
                   fontSize: 14,
                   color: theme.textTheme.bodySmall?.color?.withValues(
@@ -291,7 +283,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         return false;
       },
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.zero,
         itemCount: intercaledList.length + (provider.hasMorePosts ? 1 : 0),
         itemBuilder: (context, index) {
           // Mostrar post normal o anuncio
@@ -346,37 +338,38 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   /// Crea un anuncio de ejemplo
   /// En producción, esto vendría de un repositorio que consulte el backend
   AdvertisementEntity _createMockAdvertisement(int index) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final advertisements = [
       AdvertisementEntity(
         id: 'ad_1',
         title: 'Biux Premium',
-        description: l.t('mock_ad_premium_desc'),
+        description:
+            'Desbloquea funciones exclusivas y conecta con más ciclistas',
         imageUrl:
             'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop',
-        callToActionText: l.t('mock_ad_discover'),
+        callToActionText: 'Descubrir',
         callToActionUrl: 'https://biux.app/premium',
         advertiserName: 'Biux',
         createdAt: DateTime.now(),
       ),
       AdvertisementEntity(
         id: 'ad_2',
-        title: l.t('mock_ad_accessories_title'),
-        description: l.t('mock_ad_accessories_desc'),
+        title: 'Accesorios para Ciclismo',
+        description: 'Los mejores accesorios para tus rodadas. Envío gratis.',
         imageUrl:
             'https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=500&h=300&fit=crop',
-        callToActionText: l.t('mock_ad_view_catalog'),
+        callToActionText: 'Ver catálogo',
         callToActionUrl: 'https://shop.biux.app',
         advertiserName: 'Biux Shop',
         createdAt: DateTime.now(),
       ),
       AdvertisementEntity(
         id: 'ad_3',
-        title: l.t('mock_ad_rides_title'),
-        description: l.t('mock_ad_rides_desc'),
+        title: 'Rodadas Organizadas',
+        description:
+            'Únete a nuestras rodadas semanales y conoce ciclistas de tu zona',
         imageUrl:
             'https://images.unsplash.com/photo-1519578962823-e54908f409b7?w=500&h=300&fit=crop',
-        callToActionText: l.t('mock_ad_explore'),
+        callToActionText: 'Explorar',
         callToActionUrl: 'https://biux.app/rides',
         advertiserName: 'Biux Community',
         createdAt: DateTime.now(),
@@ -387,6 +380,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   /// Navegar directamente a crear publicación (comportamiento original)
+  // ignore: unused_element
   void _navigateToCreatePost(BuildContext context) {
     Navigator.of(context)
         .push(
@@ -407,9 +401,10 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   /// Muestra opciones para crear POST (con multimedia o solo texto)
+  // ignore: unused_element
   void _showCreatePostOptions(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showModalBottomSheet(
       context: context,
@@ -435,7 +430,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             ),
 
             Text(
-              l.t('create_post'),
+              'Crear Publicación',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -444,7 +439,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              l.t('choose_post_type'),
+              'Elige el tipo de post que quieres compartir',
               style: TextStyle(
                 fontSize: 14,
                 color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
@@ -529,298 +524,78 @@ class _ExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final imageUrls = experience.media.map((m) => m.url).toList();
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    // ignore: unused_local_variable
+    final isOwner = currentUserId == experience.user.id;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: theme.shadowColor.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header con información del autor del post
-          _buildAuthorHeader(context),
-
-          // Media section
-          if (experience.media.isNotEmpty) _buildMediaSection(context),
-
-          // Content section
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Description
-                if (experience.description.isNotEmpty)
-                  Text(
-                    experience.description,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: theme.textTheme.bodyMedium?.color,
-                      height: 1.4,
-                    ),
-                  ),
-
-                const SizedBox(height: 12),
-
-                // Metadata (tags removidos)
-                _buildMetadata(),
-              ],
-            ),
-          ),
-
-          // Divider
-          const Divider(height: 1),
-
-          // Acciones sociales (Likes y Comentarios)
-          PostSocialActions(
-            postId: experience.id,
-            postOwnerId: experience.user.id,
-            postPreview: experience.description.length > 50
-                ? experience.description.substring(0, 50)
-                : experience.description,
-          ),
-
-          // Vista previa de comentarios
-          PostCommentsPreview(
-            postId: experience.id,
-            postOwnerId: experience.user.id,
-            maxComments: 2,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMediaSection(BuildContext context) {
-    final theme = Theme.of(context);
-    final media = experience.media.first;
-
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(12),
-        topRight: Radius.circular(12),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          // Navegar al visor de post tipo Instagram
+      margin: const EdgeInsets.only(bottom: 12),
+      child: PostCard(
+        user: PostCardUser(
+          id: experience.user.id,
+          fullName: experience.user.fullName,
+          userName: experience.user.userName,
+          photo: experience.user.photo,
+        ),
+        imageUrls: imageUrls,
+        description: experience.description,
+        timestamp: _formatDate(experience.createdAt),
+        isEdited: experience.isEdited,
+        onUserTap: () {
+          if (experience.user.id.isNotEmpty) {
+            if (currentUserId == experience.user.id) {
+              context.push('/profile');
+            } else {
+              context.push('/user-profile/${experience.user.id}');
+            }
+          }
+        },
+        onImageTap: (_) {
           context.push('/social/post/${experience.id}');
         },
-        child: AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: media.mediaType == MediaType.image
-                ? Image.network(
-                    media.url,
-                    fit: BoxFit.cover,
-                    errorBuilder: (ctx, error, stackTrace) {
-                      return Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            color: theme.iconTheme.color?.withValues(
-                              alpha: 0.5,
-                            ),
-                            size: 48,
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                : Stack(
-                    children: [
-                      if (media.thumbnailUrl != null)
-                        Image.network(
-                          media.thumbnailUrl!,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: Colors.black54,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+        headerTrailing: [
+          GestureDetector(
+            onTap: () => _showPostMenu(context),
+            child: const Icon(Icons.more_vert, color: Colors.white70, size: 20),
           ),
+        ],
+        actionsWidget: PostSocialActions(
+          postId: experience.id,
+          postOwnerId: experience.user.id,
+          postPreview: experience.description.length > 50
+              ? experience.description.substring(0, 50)
+              : experience.description,
+        ),
+        bottomWidget: PostCommentsPreview(
+          postId: experience.id,
+          postOwnerId: experience.user.id,
+          maxComments: 2,
         ),
       ),
     );
   }
 
-  Widget _buildMetadata() {
-    return Builder(
-      builder: (context) {
-        final theme = Theme.of(context);
-        return Row(
-          children: [
-            const SizedBox(width: 12),
-
-            // Media count
-            if (experience.media.length > 1) ...[
-              const SizedBox(width: 12),
-              Row(
-                children: [
-                  Icon(
-                    Icons.photo_library,
-                    size: 16,
-                    color: theme.textTheme.bodySmall?.color?.withValues(
-                      alpha: 0.7,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${experience.media.length}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.textTheme.bodySmall?.color?.withValues(
-                        alpha: 0.7,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildAuthorHeader(BuildContext context) {
-    final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context);
-    final user = experience.user;
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          // Avatar y nombre del autor - con navegación al perfil
-          GestureDetector(
-            onTap: () {
-              if (user.id.isNotEmpty) {
-                context.push('/user-profile/${user.id}');
-              }
-            },
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: user.photo.isNotEmpty
-                      ? NetworkImage(user.photo)
-                      : null,
-                  child: user.photo.isEmpty
-                      ? const Icon(Icons.person, color: Colors.white)
-                      : null,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.fullName.isNotEmpty
-                          ? user.fullName
-                          : (user.userName.isNotEmpty
-                                ? user.userName
-                                : l.t('user_no_name')),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        if (user.userName.isNotEmpty)
-                          Text(
-                            '@${user.userName}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: isDark
-                                  ? Colors.grey[400]
-                                  : Colors.grey[600],
-                            ),
-                          ),
-                        if (user.userName.isNotEmpty)
-                          Text(
-                            ' • ',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: isDark
-                                  ? Colors.grey[400]
-                                  : Colors.grey[600],
-                            ),
-                          ),
-                        Text(
-                          _formatDate(experience.createdAt, l),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Expanded(child: SizedBox()),
-          // Botón de menú (3 puntos) - alineado a la derecha con padding
-          IconButton(
-            icon: Icon(Icons.more_vert, color: theme.iconTheme.color, size: 20),
-            onPressed: () => _showPostMenu(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date, LocaleNotifier l) {
+  String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return l.t('time_ago_days').replaceAll('{n}', '${difference.inDays}');
+      return 'Hace ${difference.inDays}d';
     } else if (difference.inHours > 0) {
-      return l.t('time_ago_hours').replaceAll('{n}', '${difference.inHours}');
+      return 'Hace ${difference.inHours}h';
     } else if (difference.inMinutes > 0) {
-      return l
-          .t('time_ago_minutes')
-          .replaceAll('{n}', '${difference.inMinutes}');
+      return 'Hace ${difference.inMinutes}m';
     } else {
-      return l.t('time_now');
+      return 'Ahora';
     }
   }
 
   void _showPostMenu(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    // ignore: unused_local_variable
     final isOwner = currentUserId == experience.user.id;
 
     showModalBottomSheet(
@@ -837,8 +612,8 @@ class _ExperienceCard extends StatelessWidget {
             if (isOwner) ...[
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: Text(
-                  l.t('delete_post'),
+                title: const Text(
+                  'Eliminar publicación',
                   style: TextStyle(color: Colors.red),
                 ),
                 onTap: () {
@@ -849,13 +624,14 @@ class _ExperienceCard extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.edit, color: theme.iconTheme.color),
                 title: Text(
-                  l.t('edit_post'),
+                  'Editar publicación',
                   style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l.t('edit_coming_soon'))),
+                  context.push(
+                    '/edit-post/${experience.id}',
+                    extra: experience,
                   );
                 },
               ),
@@ -863,13 +639,15 @@ class _ExperienceCard extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.flag, color: theme.iconTheme.color),
                 title: Text(
-                  l.t('report_post'),
+                  'Reportar publicación',
                   style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 ),
                 onTap: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l.t('report_coming_soon'))),
+                    const SnackBar(
+                      content: Text('Función de reportar próximamente'),
+                    ),
                   );
                 },
               ),
@@ -877,7 +655,7 @@ class _ExperienceCard extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.share, color: theme.iconTheme.color),
               title: Text(
-                l.t('share'),
+                'Compartir',
                 style: TextStyle(color: theme.textTheme.bodyLarge?.color),
               ),
               onTap: () {
@@ -892,32 +670,32 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          l.t('delete_post'),
+          'Eliminar publicación',
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
-          l.t('delete_post_confirm_message'),
+          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
           style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l.t('cancel')),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _deletePost(context);
             },
-            child: Text(l.t('delete'), style: TextStyle(color: Colors.red)),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -925,27 +703,25 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _deletePost(BuildContext context) async {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final provider = context.read<ExperienceProvider>();
       await provider.deleteExperience(experience.id);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.t('post_deleted_success'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Publicación eliminada correctamente')),
+        );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${l.t('error_deleting')}: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
       }
     }
   }
 
   void _sharePost(BuildContext context) async {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       // En lugar de compartir un link, abrir la app directamente con deep link
       final deepLink = 'biux://posts/${experience.id}';
@@ -954,16 +730,16 @@ class _ExperienceCard extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       ).catchError((e) {
         // Fallback: si el deep link falla, mostrar mensaje
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.t('app_must_be_installed'))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('La app debe estar instalada para compartir')),
+        );
         return false;
       });
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${l.t('error_sharing')}: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
       }
     }
   }
@@ -1054,8 +830,8 @@ class _AdvertisementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -1100,7 +876,7 @@ class _AdvertisementCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    l.t('ad_label'),
+                    'Anuncio publicitario',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -1220,8 +996,8 @@ class _AdvertisementCard extends StatelessWidget {
 
   /// Muestra un modal expandido con los detalles del anuncio
   void _showAdvertisementModal(BuildContext context) {
+    // ignore: unused_local_variable
     final theme = Theme.of(context);
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showModalBottomSheet(
       context: context,
@@ -1379,8 +1155,8 @@ class _AdvertisementCard extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () => Navigator.pop(context),
-                              child: Text(
-                                l.t('close'),
+                              child: const Text(
+                                'Cerrar',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -1405,7 +1181,6 @@ class _AdvertisementCard extends StatelessWidget {
 
   /// Maneja la acción del botón CTA del anuncio
   void _handleAdvertisementAction(BuildContext context) async {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       if (advertisement.callToActionUrl != null &&
           advertisement.callToActionUrl!.isNotEmpty) {
@@ -1415,7 +1190,9 @@ class _AdvertisementCard extends StatelessWidget {
         } else {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l.t('could_not_open_ad_link'))),
+              const SnackBar(
+                content: Text('No se pudo abrir el enlace del anuncio'),
+              ),
             );
           }
         }
@@ -1423,7 +1200,7 @@ class _AdvertisementCard extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(l.t('link_not_available'))));
+          ).showSnackBar(const SnackBar(content: Text('Enlace no disponible')));
         }
       }
     } catch (e) {
