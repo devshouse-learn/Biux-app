@@ -94,7 +94,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: ColorTokens.primary30,

@@ -71,6 +71,9 @@ import 'package:biux/features/achievements/presentation/providers/achievements_p
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
+import 'package:biux/features/accidents/presentation/providers/accident_provider.dart';
+import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
+import 'package:biux/features/social/presentation/providers/follow_provider.dart';
 
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
@@ -258,6 +261,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => RoadReportsProvider()),
         ChangeNotifierProvider(create: (_) => RideTrackerProvider()),
+        ChangeNotifierProvider(create: (_) => WeatherProvider()),
 
         // Settings Providers
         ChangeNotifierProvider(
@@ -265,6 +269,8 @@ void main() async {
             NotificationSettingsRepositoryImpl(),
           ),
         ),
+        ChangeNotifierProvider(create: (_) => AccidentProvider()),
+        ChangeNotifierProvider(create: (_) => FollowProvider()),
       ],
       child: MyApp(),
     ),

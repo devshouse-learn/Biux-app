@@ -228,6 +228,11 @@ class _AppDrawerState extends State<AppDrawer> {
                   Navigator.pop(context);
                   context.push(AppRoutes.roadReports);
                 }),
+                _item(Icons.car_crash, Colors.deepOrange, 'Reportar Accidente',
+                    'Reporta un incidente vial', () {
+                  Navigator.pop(context);
+                  context.push('/accidents/report');
+                }),
                 _item(Icons.warning_amber_rounded, ColorTokens.error50,
                     'Bicicletas Robadas', 'Base de datos publica', () {
                   Navigator.pop(context);
@@ -259,6 +264,11 @@ class _AppDrawerState extends State<AppDrawer> {
                     'Seguridad, mecanica y consejos', () {
                   Navigator.pop(context);
                   context.push(AppRoutes.education);
+                }),
+                _item(Icons.cloud_rounded, Colors.lightBlue, 'Clima',
+                    'Condiciones para rodar hoy', () {
+                  Navigator.pop(context);
+                  context.push('/weather');
                 }),
 
                 const Padding(

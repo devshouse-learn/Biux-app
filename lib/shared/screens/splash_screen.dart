@@ -1,4 +1,3 @@
-import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +18,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Configurar animación
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -29,18 +27,13 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
 
-    // Iniciar animación
     _animationController.forward();
-
-    // Navegar después de 3 segundos
     _navigateAfterDelay();
   }
 
   void _navigateAfterDelay() {
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        // El guard del router se encargará de decidir hacia dónde ir
-        // basado en el estado de autenticación de Firebase
         context.go('/');
       }
     });
@@ -55,11 +48,11 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.primary60,
+      backgroundColor: Colors.white,
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
-          child: Image.asset(Images.kBiuxLogoLettersWhite, width: 130),
+          child: Image.asset(Images.kBiuxLogoBackgroundBlue, width: 130),
         ),
       ),
     );

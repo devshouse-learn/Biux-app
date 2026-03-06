@@ -5,6 +5,7 @@ import 'package:biux/core/config/styles.dart';
 import 'package:biux/core/utils/responsive_helper.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'app_drawer.dart';
+import 'connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +26,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
@@ -33,6 +35,11 @@ class _MainShellState extends State<MainShell> {
           style: Styles.mainMenuTextBiux,
         ),
         actions: [
+          // Búsqueda global
+          IconButton(
+            icon: const Icon(Icons.search_rounded),
+            onPressed: () => context.push('/search'),
+          ),
           // Notificaciones con badge
           Consumer<NotificationsProvider?>(
             builder: (context, provider, child) {
@@ -89,10 +96,10 @@ class _MainShellState extends State<MainShell> {
           ),
         ],
       ),
-      body: ResponsiveHelper.wrapForWeb(
+      body: ConnectivityWrapper(child: ResponsiveHelper.wrapForWeb(
         Container(height: double.infinity, child: widget.child),
         context,
-      ),
+      )),
     );
   }
 
