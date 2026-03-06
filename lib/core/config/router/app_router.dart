@@ -61,7 +61,6 @@ import '../../../features/shop/presentation/screens/seller_requests_screen.dart'
 import '../../../features/shop/presentation/screens/delete_all_products_screen.dart';
 import '../../../features/shop/presentation/screens/favorites_screen.dart';
 import '../../../features/shop/presentation/screens/my_orders_screen.dart';
-import '../../../features/shop/presentation/screens/order_detail_screen.dart';
 import '../../../features/shop/presentation/screens/stolen_bikes_screen.dart';
 import '../../../features/shop/presentation/screens/admin_alerts_screen.dart';
 import '../../../features/shop/presentation/screens/bike_qr_screen.dart';
