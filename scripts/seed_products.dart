@@ -7,7 +7,7 @@
 /// ALTERNATIVA MANUAL:
 /// Copia los productos de abajo y créalos manualmente en Firebase Console
 
-import 'package:biux/firebase_options.dart';
+import 'package:biux/core/config/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 
