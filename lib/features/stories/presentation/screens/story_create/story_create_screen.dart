@@ -417,6 +417,7 @@ class _CarouselImagesSelected extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final bloc = context.watch<StoryCreateBloc>();
     final sizeScreen = MediaQuery.of(context).size;
     final List<Widget> imageSliders = bloc.imgList

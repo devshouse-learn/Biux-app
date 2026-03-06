@@ -72,7 +72,6 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       drawer: const ShopMenuDrawer(),
       backgroundColor: ColorTokens.neutral99, // Fondo claro y limpio
@@ -5520,7 +5519,12 @@ extension _BenefitDialogs on _ShopScreenProState {
                       );
                     },
                     icon: const Icon(Icons.add_circle),
-                    label: Text(l.t('create_purchase_group')),
+                    label: Text(
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('create_purchase_group'),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,

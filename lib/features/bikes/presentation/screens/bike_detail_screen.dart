@@ -487,7 +487,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             l.t('additional_info'),
             style: TextStyle(
               fontSize: 18,
@@ -532,7 +532,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             l.t('bike_qr'),
             style: TextStyle(
               fontSize: 18,
@@ -622,7 +622,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               bike.status == BikeStatus.verified)
             _buildActionButton(
               icon: Icons.warning,
-              label: Text(l.t('report_theft')),
+              label: l.t('report_theft'),
               color: ColorTokens.error50,
               onPressed: () => _showTheftReportDialog(bike, bikeProvider),
             ),

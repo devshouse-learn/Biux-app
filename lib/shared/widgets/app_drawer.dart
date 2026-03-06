@@ -131,7 +131,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               Navigator.pop(context);
                               context.push('/profile');
                             },
-                            child: const Padding(
+                            child: Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8),
                               child: Row(

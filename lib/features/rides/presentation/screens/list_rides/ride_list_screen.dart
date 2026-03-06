@@ -545,6 +545,7 @@ class _RideListScreenState extends State<RideListScreen> {
     RideParticipationStatus status,
     RideProvider provider,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // No mostrar botones si la rodada ya pas� o est� cancelada
     if (ride.status == RideStatus.completed ||
         ride.status == RideStatus.cancelled ||

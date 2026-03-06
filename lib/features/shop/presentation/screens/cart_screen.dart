@@ -115,8 +115,8 @@ class CartScreen extends StatelessWidget {
                   deliveryAddress: addressController.text,
                   phoneNumber: phoneController.text,
                   notes: notesController.text.isEmpty
-                      ? '${l.t('payment_method_prefix')}: ${selectedPaymentMethod!.label}'
-                      : '${l.t('payment_method_prefix')}: ${selectedPaymentMethod!.label}\n${notesController.text}',
+                      ? '${l.t('payment_method_prefix')}: ${l.t(selectedPaymentMethod!.labelKey)}'
+                      : '${l.t('payment_method_prefix')}: ${l.t(selectedPaymentMethod!.labelKey)}\n${notesController.text}',
                 );
 
                 if (orderId != null) {
@@ -124,7 +124,7 @@ class CartScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        '${l.t('order_success')}\n${l.t('payment_method_label')}: ${selectedPaymentMethod!.label}',
+                        '${l.t('order_success')}\n${l.t('payment_method_label')}: ${l.t(selectedPaymentMethod!.labelKey)}',
                       ),
                       backgroundColor: Colors.green,
                       duration: const Duration(seconds: 4),

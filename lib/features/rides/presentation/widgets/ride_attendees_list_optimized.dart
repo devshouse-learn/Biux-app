@@ -127,6 +127,7 @@ class _AttendeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // Debug para ver qué datos tiene el metadata
     debugPrint(
       '📋 AttendeeCard - userId: ${metadata.userId}, userName: "${metadata.userName}", photoUrl: "${metadata.photoUrl}"',

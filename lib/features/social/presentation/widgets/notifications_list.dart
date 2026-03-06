@@ -44,7 +44,7 @@ class NotificationsList extends StatelessWidget {
           child: provider.isLoading
               ? const Center(child: CircularProgressIndicator())
               : provider.notifications.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

@@ -109,6 +109,10 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  String _translatePromoType(LocaleNotifier l, String type) {
+    return l.t('promo_type_$type');
+  }
+
   // Form controllers
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();

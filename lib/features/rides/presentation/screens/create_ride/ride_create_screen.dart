@@ -830,6 +830,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     double lng,
     String name,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final googleMapsUrl = 'https://www.google.com/maps?q=$lat,$lng&z=16';
       final appleMapsUrl = 'https://maps.apple.com/?q=$lat,$lng';

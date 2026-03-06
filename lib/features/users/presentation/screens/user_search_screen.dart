@@ -221,6 +221,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -247,6 +248,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildLoadingState() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -265,6 +267,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildNoResultsState() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -303,6 +303,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
   }
 
   Future<void> _saveUsername(EditUsernameProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
     final success = await provider.updateUsername(

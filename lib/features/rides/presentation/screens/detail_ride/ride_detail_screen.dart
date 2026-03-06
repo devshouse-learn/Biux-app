@@ -70,6 +70,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       body: Consumer2<RideProvider, MeetingPointProvider>(
         builder: (context, rideProvider, meetingPointProvider, child) {
@@ -275,6 +276,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   }
 
   Future<void> _shareRide(BuildContext context, RideModel ride) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       // Obtener información del grupo
       final provider = Provider.of<RideProvider>(context, listen: false);

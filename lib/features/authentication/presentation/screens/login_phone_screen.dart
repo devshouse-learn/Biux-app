@@ -127,7 +127,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                               Icon(Icons.error_outline, color: Colors.red),
                               SizedBox(width: 8),
                               Text(
-                                'Error',
+                                l.t('error'),
                                 style: TextStyle(color: ColorTokens.neutral100),
                               ),
                             ],
@@ -145,7 +145,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                                 context.read<AuthProvider>().clearError();
                               },
                               child: Text(
-                                'OK',
+                                l.t('ok'),
                                 style: TextStyle(
                                   color: ColorTokens.secondary50,
                                 ),

@@ -709,6 +709,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   /// Agregar producto al carrito con feedback mejorado
   void _addToCart(BuildContext context, ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       context.read<CartProvider>().addItem(product);
 

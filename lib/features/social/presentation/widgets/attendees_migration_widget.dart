@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/data/datasources/attendees_firestore_adapter.dart';
 
 /// Widget para gestionar la migración y sincronización de asistentes
@@ -18,23 +20,26 @@ class AttendeesMigrationWidget extends StatefulWidget {
 class _AttendeesMigrationWidgetState extends State<AttendeesMigrationWidget> {
   final _adapter = AttendeesFirestoreAdapter();
   bool _isMigrating = false;
-  String _status = 'Listo para migrar';
+  String _statusKey = 'ready_to_migrate';
+  String? _errorDetail;
 
   Future<void> _migrateAll() async {
     setState(() {
       _isMigrating = true;
-      _status = 'Migrando rodadas...';
+      _statusKey = 'migrating_rides';
+      _errorDetail = null;
     });
 
     try {
       await _adapter.migrateAllRides();
       setState(() {
-        _status = '✅ Migración completada exitosamente';
+        _statusKey = 'migration_success';
         _isMigrating = false;
       });
     } catch (e) {
       setState(() {
-        _status = '❌ Error: $e';
+        _statusKey = 'migration_error';
+        _errorDetail = e.toString();
         _isMigrating = false;
       });
     }
@@ -42,6 +47,11 @@ class _AttendeesMigrationWidgetState extends State<AttendeesMigrationWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final statusText = _errorDetail != null
+        ? '${l.t(_statusKey)}: $_errorDetail'
+        : l.t(_statusKey);
+
     return Card(
       margin: const EdgeInsets.all(16),
       child: Padding(
@@ -50,22 +60,22 @@ class _AttendeesMigrationWidgetState extends State<AttendeesMigrationWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Migración de Asistentes',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l.t('migration_title'),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Migra los asistentes de Firestore a Realtime Database',
-              style: TextStyle(color: Colors.grey),
+            Text(
+              l.t('migration_description'),
+              style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 16),
             Text(
-              _status,
+              statusText,
               style: TextStyle(
-                color: _status.startsWith('✅')
+                color: _statusKey == 'migration_success'
                     ? Colors.green
-                    : _status.startsWith('❌')
+                    : _statusKey == 'migration_error'
                     ? Colors.red
                     : Colors.blue,
                 fontWeight: FontWeight.w500,
@@ -77,25 +87,25 @@ class _AttendeesMigrationWidgetState extends State<AttendeesMigrationWidget> {
               child: ElevatedButton(
                 onPressed: _isMigrating ? null : _migrateAll,
                 child: _isMigrating
-                    ? const Row(
+                    ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                          SizedBox(width: 8),
-                          Text('Migrando...'),
+                          const SizedBox(width: 8),
+                          Text(l.t('migrating')),
                         ],
                       )
-                    : const Text('Iniciar Migración'),
+                    : Text(l.t('start_migration')),
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              '⚠️ Solo ejecutar UNA vez',
-              style: TextStyle(
+            Text(
+              l.t('run_once_warning'),
+              style: const TextStyle(
                 color: Colors.orange,
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
