@@ -55,9 +55,6 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
     // Obtener experiencias del feed personalizado
     final allExperiences = experienceProvider.experiences;
 
-    // No agrupar si no hay datos aún (evitar resetear)
-    if (allExperiences.isEmpty) return;
-
     // Filtrar solo las que son formato story (visuales y cortas)
     final storyExperiences = allExperiences
         .where((exp) => exp.isStoryFormat)
@@ -74,7 +71,7 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
         final storyGroups = storyProvider.storyGroups;
 
         return Container(
-          height: 92,
+          height: 100,
           margin: const EdgeInsets.only(top: 8, bottom: 4),
           child: storyProvider.isLoading
               ? const Center(
@@ -189,7 +186,7 @@ class _AddStoryButtonState extends State<_AddStoryButton> {
                   child: Text(
                     'Tu story',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       color: theme.textTheme.bodySmall?.color,
                     ),
                     textAlign: TextAlign.center,
@@ -364,11 +361,28 @@ class _StoryGroupCircle extends StatelessWidget {
 
   void _openStoryViewer(BuildContext context) {
     final storyGroupsProvider = context.read<StoryGroupsProvider>();
+    final stories = storyGroup.stories;
+
+    // Combinar todas las stories del usuario en una sola con todos los media
+    // y rastrear el origen de cada media (experienceId + mediaIndex original)
+    final allMedia = <ExperienceMediaEntity>[];
+    final mediaOrigins = <({String experienceId, int mediaIndex})>[];
+    for (final story in stories) {
+      for (int i = 0; i < story.media.length; i++) {
+        allMedia.add(story.media[i]);
+        mediaOrigins.add((experienceId: story.id, mediaIndex: i));
+      }
+    }
+
+    final mergedStory = stories.first.copyWith(media: allMedia);
 
     Navigator.of(context)
         .push(
           MaterialPageRoute(
-            builder: (_) => StoryViewerScreen(stories: storyGroup.stories),
+            builder: (_) => StoryViewerScreen(
+              stories: [mergedStory],
+              mediaOrigins: mediaOrigins,
+            ),
           ),
         )
         .then((_) async {

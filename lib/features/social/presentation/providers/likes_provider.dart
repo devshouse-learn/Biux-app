@@ -155,14 +155,6 @@ class LikesProvider extends ChangeNotifier {
     if (contextType != null && contextTargetId != null) {
       final typeStr = contextType == CommentableType.post ? 'post' : 'ride';
       finalTargetId = '${typeStr}_${contextTargetId}_$commentId';
-      debugPrint('🔍 DEBUG LIKE COMMENT - commentId: $commentId');
-      debugPrint('🔍 DEBUG LIKE COMMENT - contextTargetId: $contextTargetId');
-      debugPrint('🔍 DEBUG LIKE COMMENT - contextType: $contextType');
-      debugPrint('🔍 DEBUG LIKE COMMENT - Constructed targetId: $finalTargetId');
-    } else {
-      debugPrint(
-        '⚠️ WARNING: likeComment called without context - targetId: $finalTargetId',
-      );
     }
 
     await _toggleLike(
@@ -186,7 +178,6 @@ class LikesProvider extends ChangeNotifier {
     if (contextType != null && contextTargetId != null) {
       final typeStr = contextType == CommentableType.post ? 'post' : 'ride';
       finalTargetId = '${typeStr}_${contextTargetId}_$commentId';
-      debugPrint('🔍 DEBUG UNLIKE COMMENT - Constructed targetId: $finalTargetId');
     }
 
     await _unlike(type: LikeableType.comment, targetId: finalTargetId);
@@ -274,12 +265,6 @@ class LikesProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      debugPrint('🔍 DEBUG PROVIDER - userId: $userId');
-      debugPrint('🔍 DEBUG PROVIDER - _cachedUserName: "$_cachedUserName"');
-      debugPrint('🔍 DEBUG PROVIDER - _cachedUserPhoto: $_cachedUserPhoto');
-      debugPrint('🔍 DEBUG PROVIDER - targetId: $targetId');
-      debugPrint('🔍 DEBUG PROVIDER - type: $type');
-
       await _repository.like(
         type: type,
         targetId: targetId,
@@ -345,13 +330,7 @@ class LikesProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      debugPrint('🔍 DEBUG UNLIKE - targetId: $targetId');
-      debugPrint('🔍 DEBUG UNLIKE - userId: $userId');
-      debugPrint('🔍 DEBUG UNLIKE - type: $type');
-
       await _repository.unlike(type: type, targetId: targetId, userId: userId);
-
-      debugPrint('✅ Unlike completado exitosamente');
 
       // Establecer cooldown después de completar exitosamente
       _setCooldown(targetId);
@@ -359,7 +338,6 @@ class LikesProvider extends ChangeNotifier {
       _isProcessing = false;
       notifyListeners();
     } catch (e) {
-      debugPrint('❌ Error al quitar like: $e');
       _error = 'Error al quitar like: $e';
       _isProcessing = false;
       notifyListeners();

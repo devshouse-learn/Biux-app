@@ -152,6 +152,7 @@ class ExperienceMediaModel {
   final int duration;
   final double? aspectRatio;
   final String? thumbnailUrl;
+  final String? description;
 
   const ExperienceMediaModel({
     required this.id,
@@ -160,6 +161,7 @@ class ExperienceMediaModel {
     required this.duration,
     this.aspectRatio,
     this.thumbnailUrl,
+    this.description,
   });
 
   ExperienceMediaEntity toEntity() {
@@ -170,6 +172,7 @@ class ExperienceMediaModel {
       mediaType: mediaType,
       duration: duration,
       aspectRatio: aspectRatio,
+      description: description,
     );
   }
 
@@ -181,6 +184,7 @@ class ExperienceMediaModel {
       duration: entity.duration,
       aspectRatio: entity.aspectRatio,
       thumbnailUrl: entity.thumbnailUrl,
+      description: entity.description,
     );
   }
 
@@ -192,6 +196,7 @@ class ExperienceMediaModel {
       'duration': duration,
       'aspectRatio': aspectRatio,
       'thumbnailUrl': thumbnailUrl,
+      'description': description,
     };
   }
 
@@ -205,6 +210,7 @@ class ExperienceMediaModel {
       duration: json['duration'] as int,
       aspectRatio: json['aspectRatio'] as double?,
       thumbnailUrl: json['thumbnailUrl'] as String?,
+      description: json['description'] as String?,
     );
   }
 }

@@ -270,6 +270,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
             duration: mediaFile.duration,
             aspectRatio: mediaFile.aspectRatio,
             thumbnailUrl: thumbnailUrl,
+            description: mediaFile.description,
           ),
         );
       }
@@ -341,23 +342,78 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         throw Exception('No tienes permisos para eliminar esta experiencia');
       }
 
-      // Eliminar archivos multimedia del storage
+      // Eliminar documento de Firestore primero (para que desaparezca de la UI rápido)
+      await _firestore.collection('experiences').doc(actualDocId).delete();
+
+      // Eliminar archivos multimedia del storage en paralelo (en segundo plano)
       final media = data['media'] as List;
-      for (final mediaItem in media) {
+      final deleteFutures = media.map((mediaItem) {
         try {
           final url = mediaItem['url'] as String;
           final ref = FirebaseStorage.instance.refFromURL(url);
-          await ref.delete();
-        } catch (e) {
-          // Continuar aunque falle eliminación de archivo
-          debugPrint('Error eliminando archivo: $e');
+          return ref.delete().catchError((_) {});
+        } catch (_) {
+          return Future.value();
         }
-      }
-
-      // Eliminar documento de Firestore usando el ID real del documento
-      await _firestore.collection('experiences').doc(actualDocId).delete();
+      });
+      await Future.wait(deleteFutures);
     } catch (e) {
       throw Exception('Error eliminando experiencia: $e');
+    }
+  }
+
+  @override
+  Future<bool> removeMediaFromExperience(
+    String experienceId,
+    int mediaIndex,
+  ) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('Usuario no autenticado');
+
+      final doc = await _firestore
+          .collection('experiences')
+          .doc(experienceId)
+          .get();
+      if (!doc.exists) throw Exception('Experiencia no encontrada');
+
+      final data = doc.data()!;
+      if (data['user']['id'] != user.uid) {
+        throw Exception('No tienes permisos para editar esta experiencia');
+      }
+
+      final mediaList = List<Map<String, dynamic>>.from(
+        (data['media'] as List).map((e) => Map<String, dynamic>.from(e as Map)),
+      );
+
+      if (mediaIndex < 0 || mediaIndex >= mediaList.length) {
+        throw Exception('Índice de media inválido');
+      }
+
+      // Si es el último media, eliminar toda la experiencia
+      if (mediaList.length == 1) {
+        await deleteExperience(experienceId);
+        return true; // true = experiencia eliminada completamente
+      }
+
+      // Eliminar el archivo del Storage
+      final mediaToRemove = mediaList[mediaIndex];
+      try {
+        final ref = FirebaseStorage.instance.refFromURL(
+          mediaToRemove['url'] as String,
+        );
+        await ref.delete();
+      } catch (_) {}
+
+      // Remover del array y actualizar Firestore
+      mediaList.removeAt(mediaIndex);
+      await _firestore.collection('experiences').doc(experienceId).update({
+        'media': mediaList,
+      });
+
+      return false; // false = solo se eliminó una foto
+    } catch (e) {
+      throw Exception('Error eliminando media: $e');
     }
   }
 
@@ -447,6 +503,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
               'duration': mediaFile.duration,
               'aspectRatio': mediaFile.aspectRatio,
               'thumbnailUrl': thumbnailUrl,
+              'description': mediaFile.description,
             });
           }
         }
@@ -613,8 +670,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final originalBytes = await originalFile.readAsBytes();
       final originalSize = originalBytes.length;
 
-      // Si el archivo es menor a 1MB, no optimizar
-      if (originalSize < 1024 * 1024) {
+      // Si el archivo es menor a 3MB, no optimizar
+      if (originalSize < 3 * 1024 * 1024) {
         return originalFile;
       }
 
@@ -623,22 +680,22 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final optimizedPath = '${tempDir.path}/optimized_$timestamp.jpg';
 
-      // Configuración de compresión adaptativa
-      int quality = 85;
+      // Configuración de compresión conservadora para mantener calidad
+      int quality = 92;
       int? targetWidth;
       int? targetHeight;
 
       // Ajustar calidad según el tamaño del archivo
-      if (originalSize > 5 * 1024 * 1024) {
-        // Archivos > 5MB: compresión más agresiva
-        quality = 70;
+      if (originalSize > 10 * 1024 * 1024) {
+        // Archivos > 10MB: compresión moderada
+        quality = 85;
         targetWidth = 1920;
-        targetHeight = 1080;
-      } else if (originalSize > 2 * 1024 * 1024) {
-        // Archivos > 2MB: compresión moderada
-        quality = 80;
+        targetHeight = 2400;
+      } else if (originalSize > 5 * 1024 * 1024) {
+        // Archivos > 5MB: compresión ligera
+        quality = 90;
         targetWidth = 2048;
-        targetHeight = 1536;
+        targetHeight = 2560;
       }
 
       // Comprimir imagen

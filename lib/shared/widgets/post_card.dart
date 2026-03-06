@@ -1,4 +1,4 @@
-import 'package:biux/core/design_system/color_tokens.dart';
+import 'dart:async';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -252,6 +252,18 @@ class _PostCardGallery extends StatefulWidget {
 class _PostCardGalleryState extends State<_PostCardGallery> {
   late PageController _pageController;
   int _currentIndex = 0;
+  bool _showArrows = false;
+  Timer? _arrowTimer;
+
+  void _onPageSwipe() {
+    if (!_showArrows) {
+      setState(() => _showArrows = true);
+    }
+    _arrowTimer?.cancel();
+    _arrowTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _showArrows = false);
+    });
+  }
 
   @override
   void initState() {
@@ -261,6 +273,7 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
 
   @override
   void dispose() {
+    _arrowTimer?.cancel();
     _pageController.dispose();
     super.dispose();
   }
@@ -288,6 +301,7 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
                 controller: _pageController,
                 onPageChanged: (index) {
                   setState(() => _currentIndex = index);
+                  _onPageSwipe();
                 },
                 itemCount: widget.imageUrls.length,
                 itemBuilder: (context, index) {
@@ -362,25 +376,32 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
                   top: 0,
                   bottom: 0,
                   child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (_currentIndex > 0) {
-                          _pageController.previousPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.4),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.chevron_left,
-                          color: Colors.white,
-                          size: 24,
+                    child: AnimatedOpacity(
+                      opacity: _showArrows ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 300),
+                      child: IgnorePointer(
+                        ignoring: !_showArrows,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_currentIndex > 0) {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.4),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.chevron_left,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -393,25 +414,32 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
                   top: 0,
                   bottom: 0,
                   child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (_currentIndex < widget.imageUrls.length - 1) {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.4),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.chevron_right,
-                          color: Colors.white,
-                          size: 24,
+                    child: AnimatedOpacity(
+                      opacity: _showArrows ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 300),
+                      child: IgnorePointer(
+                        ignoring: !_showArrows,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_currentIndex < widget.imageUrls.length - 1) {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.4),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.chevron_right,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -446,75 +474,7 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
             ],
           ),
         ),
-        // Miniaturas
-        if (hasMultiple) _buildThumbnailRow(),
       ],
-    );
-  }
-
-  Widget _buildThumbnailRow() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-        ),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: List.generate(widget.imageUrls.length, (index) {
-            final imageUrl = widget.imageUrls[index];
-            final isSelected = index == _currentIndex;
-            return GestureDetector(
-              onTap: () {
-                _pageController.animateToPage(
-                  index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              },
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isSelected
-                        ? ColorTokens.primary30
-                        : Colors.white.withValues(alpha: 0.2),
-                    width: isSelected ? 2 : 1,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                    cacheManager: OptimizedCacheManager.instance,
-                    placeholder: (context, url) => Container(
-                      width: 60,
-                      height: 60,
-                      color: Colors.grey[800],
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      width: 60,
-                      height: 60,
-                      color: Colors.grey[800],
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        ),
-      ),
     );
   }
 }

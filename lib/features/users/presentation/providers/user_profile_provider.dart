@@ -36,25 +36,6 @@ class UserProfileProvider extends ChangeNotifier {
   bool _isLoadingContent = false;
   String? _error;
 
-  // Map para rastrear cooldown de follow/unfollow (tiempo de espera entre acciones)
-  final Map<String, DateTime> _followCooldowns = {};
-
-  // Duración del cooldown (3 segundos para follow/unfollow)
-  static const Duration _followCooldownDuration = Duration(seconds: 3);
-
-  // Helper methods para cooldown
-  // ignore: unused_element
-  bool _isInFollowCooldown(String userId) {
-    final lastAction = _followCooldowns[userId];
-    if (lastAction == null) return false;
-    return DateTime.now().difference(lastAction) < _followCooldownDuration;
-  }
-
-  // ignore: unused_element
-  void _setFollowCooldown(String userId) {
-    _followCooldowns[userId] = DateTime.now();
-  }
-
   // Getters
   List<BiuxUser> get searchResults => _searchResults;
   bool get isSearching => _isSearching;

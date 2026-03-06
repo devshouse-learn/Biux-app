@@ -9,7 +9,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;
@@ -1070,57 +1069,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           },
         );
       },
-    );
-  }
-
-  // Método para compartir el perfil del usuario
-  // ignore: unused_element
-  Future<void> _shareProfile(BiuxUser user) async {
-    try {
-      final userName = user.userName.isNotEmpty ? user.userName : user.fullName;
-      final shareUrl = 'https://biux.devshouse.org/user/${user.id}';
-
-      final shareText = '🚴 Mira el perfil de $userName en Biux\n\n$shareUrl';
-
-      await SharePlus.instance.share(ShareParams(text: shareText));
-    } catch (e) {
-      debugPrint('Error al compartir perfil: $e');
-    }
-  }
-}
-
-// ignore: unused_element
-class _UserListItem extends StatelessWidget {
-  final BiuxUser user;
-  final VoidCallback onTap;
-
-  const _UserListItem({Key? key, required this.user, required this.onTap})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: ColorTokens.neutral20,
-          backgroundImage: user.photo.isNotEmpty
-              ? CachedNetworkImageProvider(
-                  user.photo,
-                  cacheManager: OptimizedCacheManager.avatarInstance,
-                )
-              : null,
-          child: user.photo.isEmpty
-              ? Icon(Icons.person, color: ColorTokens.neutral60)
-              : null,
-        ),
-        title: Text(
-          user.fullName.isNotEmpty ? user.fullName : 'Sin nombre',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: user.userName.isNotEmpty ? Text('@${user.userName}') : null,
-        onTap: onTap,
-      ),
     );
   }
 }

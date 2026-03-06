@@ -8,7 +8,6 @@ import 'package:biux/features/experiences/data/repositories/experience_repositor
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:biux/features/users/data/models/user.dart';
 
 /// Pantalla de perfil público de usuario - MISMO DISEÑO QUE MI PERFIL
@@ -1073,12 +1072,5 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
         );
       },
     );
-  }
-
-  // ignore: unused_element
-  Future<void> _shareProfile(BiuxUser user) async {
-    await SharePlus.instance.share(ShareParams(text:
-      'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
-      ));
   }
 }

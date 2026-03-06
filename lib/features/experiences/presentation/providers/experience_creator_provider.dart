@@ -217,9 +217,9 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1080, // ✅ Cambio: 1080px de ancho máximo
-        maxHeight: 1350, // ✅ Cambio: 1350px de alto máximo
-        imageQuality: 85,
+        maxWidth: 1920,
+        maxHeight: 2400,
+        imageQuality: 95,
       );
 
       if (image != null) {
@@ -241,9 +241,9 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1080, // ✅ Cambio: 1080px de ancho máximo
-        maxHeight: 1350, // ✅ Cambio: 1350px de alto máximo
-        imageQuality: 85,
+        maxWidth: 1920,
+        maxHeight: 2400,
+        imageQuality: 95,
       );
 
       if (image != null) {

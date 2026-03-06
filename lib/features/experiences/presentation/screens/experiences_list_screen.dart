@@ -8,7 +8,6 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/entities/advertisement_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experiences_stories_widget.dart';
-import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -94,9 +93,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -379,113 +375,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     return advertisements[index % advertisements.length];
   }
 
-  /// Navegar directamente a crear publicación (comportamiento original)
-  // ignore: unused_element
-  void _navigateToCreatePost(BuildContext context) {
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute(
-            builder: (context) => const CreateExperienceScreen(
-              experienceType: ExperienceType.general,
-              isPostMode: true, // Modo publicación permanente
-              textOnly: false, // Permite multimedia
-            ),
-          ),
-        )
-        .then((result) {
-          // Si se creó exitosamente, recargar el feed
-          if (result == true) {
-            _loadFeed();
-          }
-        });
-  }
-
-  /// Muestra opciones para crear POST (con multimedia o solo texto)
-  // ignore: unused_element
-  void _showCreatePostOptions(BuildContext context) {
-    // ignore: unused_local_variable
-    final theme = Theme.of(context);
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor:
-          theme.bottomSheetTheme.backgroundColor ?? theme.cardColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle del bottom sheet
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: theme.dividerColor,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-
-            Text(
-              'Crear Publicación',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: theme.textTheme.headlineMedium?.color,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Elige el tipo de post que quieres compartir',
-              style: TextStyle(
-                fontSize: 14,
-                color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Opciones de post - DESHABILITADAS: Las publicaciones deben ser dentro de un contexto
-            /*
-            Column(
-              children: [
-                // Post con multimedia
-                _PostOptionTile(
-                  icon: Icons.photo_library,
-                  title: 'Post con Multimedia',
-                  subtitle: 'Solo fotos',
-                  color: ColorTokens.secondary50,
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _navigateToCreatePostWithMedia(context);
-                  },
-                ),
-
-                const SizedBox(height: 12),
-
-                // Post solo texto
-                _PostOptionTile(
-                  icon: Icons.text_fields,
-                  title: 'Post de Texto',
-                  subtitle: 'Solo texto, sin multimedia',
-                  color: ColorTokens.primary30,
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _navigateToCreateTextPost(context);
-                  },
-                ),
-              ],
-            ),
-            */
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
   // MÉTODOS COMENTADOS - Ya no se crean publicaciones generales
   /*
   void _navigateToCreatePostWithMedia(BuildContext context) {
@@ -526,8 +415,6 @@ class _ExperienceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageUrls = experience.media.map((m) => m.url).toList();
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    // ignore: unused_local_variable
-    final isOwner = currentUserId == experience.user.id;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -551,9 +438,7 @@ class _ExperienceCard extends StatelessWidget {
             }
           }
         },
-        onImageTap: (_) {
-          context.push('/social/post/${experience.id}');
-        },
+
         headerTrailing: [
           GestureDetector(
             onTap: () => _showPostMenu(context),
