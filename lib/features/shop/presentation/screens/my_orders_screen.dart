@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -22,9 +23,11 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     super.initState();
     // Cargar pedidos al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // PENDIENTE: Implementar carga de pedidos desde el provider
-      // final shopProvider = Provider.of<ShopProvider>(context, listen: false);
-      // shopProvider.loadUserOrders();
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        final shopProvider = Provider.of<ShopProvider>(context, listen: false);
+        shopProvider.loadUserOrders(userId);
+      }
     });
   }
 
@@ -241,8 +244,7 @@ class _OrderCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // PENDIENTE: Navegar al detalle del pedido
-          // context.go('/shop/orders/${order.id}');
+          context.go('/shop/orders/${order.id}');
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(

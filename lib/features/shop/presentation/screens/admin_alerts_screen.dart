@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:intl/intl.dart';
-import 'package:biux/features/shop/domain/usecases/alert_pdf_export_service.dart';
+import 'package:biux/features/shop/data/datasources/alert_pdf_export_service.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});

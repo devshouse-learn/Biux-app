@@ -72,11 +72,19 @@ import 'package:biux/features/achievements/presentation/providers/achievements_p
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
+import 'package:biux/features/accidents/presentation/providers/accident_provider.dart';
+import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
+import 'package:biux/features/social/presentation/providers/follow_provider.dart';
 
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/shared/services/notification_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
+import 'package:biux/shared/widgets/offline_banner.dart';
+
+// Core services
+import 'package:biux/core/services/connectivity_service.dart';
+import 'package:biux/core/services/remote_config_service.dart';
 
 // External packages
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -89,7 +97,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui' show PlatformDispatcher;
 
-import 'firebase_options.dart';
+import 'package:biux/core/config/firebase_options.dart';
 
 void main() async {
   if (kIsWeb) {
@@ -120,6 +128,10 @@ void main() async {
   }
 
   await LocalStorage().init();
+
+  // Inicializar servicios core
+  ConnectivityService().initialize();
+  await RemoteConfigService().initialize();
 
   // Inicializar servicio de notificaciones
   await NotificationService().initialize();
@@ -251,6 +263,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => RoadReportsProvider()),
         ChangeNotifierProvider(create: (_) => RideTrackerProvider()),
+        ChangeNotifierProvider(create: (_) => WeatherProvider()),
 
         // Settings Providers
         ChangeNotifierProvider(
@@ -258,6 +271,8 @@ void main() async {
             NotificationSettingsRepositoryImpl(),
           ),
         ),
+        ChangeNotifierProvider(create: (_) => AccidentProvider()),
+        ChangeNotifierProvider(create: (_) => FollowProvider()),
       ],
       child: MyApp(),
     ),
@@ -291,6 +306,14 @@ class MyApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         themeMode: themeNotifier.themeMode,
         routerConfig: AppRouter.router,
+        builder: (context, child) {
+          return Column(
+            children: [
+              const OfflineBanner(),
+              Expanded(child: child ?? const SizedBox.shrink()),
+            ],
+          );
+        },
       ),
     );
   }

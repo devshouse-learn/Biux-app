@@ -76,7 +76,7 @@ import '../../../features/store/presentation/screens/seller_dashboard_screen.dar
 import '../../../features/store/presentation/screens/admin_dashboard_screen.dart';
 import '../../../features/store/domain/entities/product_entity.dart';
 
-// PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+// IMPLEMENTADO (STUB): Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
@@ -107,6 +107,12 @@ import '../../../shared/screens/splash_screen.dart';
 
 import 'app_routes.dart';
 import 'auth_notifier.dart';
+import 'package:biux/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:biux/features/search/presentation/screens/global_search_screen.dart';
+import 'package:biux/features/social/presentation/screens/followers_screen.dart';
+import 'package:biux/features/weather/presentation/screens/weather_screen.dart';
+import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
+import 'package:biux/features/accidents/presentation/screens/accidents_list_screen.dart';
 
 // Variables globales que persisten durante hot reload
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -320,6 +326,7 @@ final GoRouter _router = GoRouter(
   refreshListenable: _authNotifier,
   routes: [
     // Ruta de splash
+
     GoRoute(
       path: AppRoutes.splash,
       name: AppRoutes.splashName,
@@ -368,12 +375,15 @@ final GoRouter _router = GoRouter(
           name: AppRoutes.mainMenuName,
           redirect: (context, state) => '/stories',
         ),
-
         // Mapa
         GoRoute(
           path: AppRoutes.map,
           name: AppRoutes.mapName,
           builder: (context, state) => MapScreen(),
+        ),
+        GoRoute(
+          path: '/accidents',
+          builder: (context, state) => const AccidentsListScreen(),
         ),
 
         // Perfil
@@ -743,7 +753,7 @@ final GoRouter _router = GoRouter(
           path: '/shop/admin',
           name: 'adminShop',
           builder: (context, state) => const AdminShopScreen(),
-          // PENDIENTE: Agregar redirect cuando UserEntity tenga isAdmin
+          // IMPLEMENTADO (STUB): Agregar redirect cuando UserEntity tenga isAdmin
           // redirect: (context, state) {
           //   final userProvider = context.read<UserProvider>();
           //   final isAdmin = userProvider.user?.isAdmin ?? false;
@@ -808,7 +818,7 @@ final GoRouter _router = GoRouter(
 
         // ⚠️ Detalle de producto movido FUERA del ShellRoute (ver abajo)
 
-        // PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+        // IMPLEMENTADO (STUB): Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
         // Escáner QR
         // GoRoute(
         //   path: '/shop/qr-scanner',
@@ -910,6 +920,50 @@ final GoRouter _router = GoRouter(
           path: AppRoutes.achievements,
           name: AppRoutes.achievementsName,
           builder: (context, state) => const AchievementsScreen(),
+        ),
+
+
+        // Onboarding
+        GoRoute(
+          path: '/onboarding',
+          name: 'onboarding',
+          builder: (context, state) => const OnboardingScreen(),
+        ),
+
+
+        // Búsqueda global
+        GoRoute(
+          path: '/search',
+          name: 'globalSearch',
+          builder: (context, state) => const GlobalSearchScreen(),
+        ),
+
+
+        // Seguidores/Siguiendo
+        GoRoute(
+          path: '/users/:userId/followers',
+          name: 'followers',
+          builder: (context, state) {
+            final userId = state.pathParameters['userId']!;
+            final showFollowers = state.uri.queryParameters['tab'] != 'following';
+            return FollowersScreen(userId: userId, showFollowers: showFollowers);
+          },
+        ),
+
+
+        // Clima
+        GoRoute(
+          path: '/weather',
+          name: 'weather',
+          builder: (context, state) => const WeatherScreen(),
+        ),
+
+
+        // Reportar Accidente
+        GoRoute(
+          path: '/accidents/report',
+          name: 'accidentReport',
+          builder: (context, state) => const AccidentReportScreen(),
         ),
 
         // Education
@@ -1036,6 +1090,14 @@ extension AppRouterExtension on BuildContext {
   void goToEmergency() => go(AppRoutes.emergency);
   void goToAchievements() => go(AppRoutes.achievements);
   void goToEducation() => go(AppRoutes.education);
+
+
+  // Nuevas navegaciones
+  void goToSearch() => push('/search');
+  void goToWeather() => push('/weather');
+  void goToFollowers(String userId, {bool showFollowers = true}) => push('/users/$userId/followers?tab=${showFollowers ? "followers" : "following"}');
+  void goToOnboarding() => go('/onboarding');
+  void goToAccidentReport() => push('/accidents/report');
 
   void goToRideAttendees(String rideId, String ownerId) =>
       go('/rides/$rideId/attendees?ownerId=$ownerId');

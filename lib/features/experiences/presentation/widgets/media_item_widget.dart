@@ -7,11 +7,15 @@ import 'package:biux/features/experiences/presentation/providers/experience_crea
 class MediaItemWidget extends StatelessWidget {
   final MediaItem mediaItem;
   final VoidCallback onRemove;
+  final VoidCallback? onTap;
+  final VoidCallback? onEditDescription;
 
   const MediaItemWidget({
     super.key,
     required this.mediaItem,
     required this.onRemove,
+    this.onTap,
+    this.onEditDescription,
   });
 
   @override
@@ -26,11 +30,53 @@ class MediaItemWidget extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Contenido principal
-          ClipRRect(
-            borderRadius: BorderRadius.circular(7),
-            child: _buildContent(),
+          // Contenido principal (con tap para editar)
+          GestureDetector(
+            onTap: onTap,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(7),
+              child: _buildContent(),
+            ),
           ),
+
+          // Icono de edición si es tappeable
+          if (onTap != null && !mediaItem.isProcessing)
+            Positioned(
+              bottom: 4,
+              right: 4,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.crop, color: Colors.white, size: 13),
+              ),
+            ),
+
+          // Icono de lápiz para descripción (stories)
+          if (onEditDescription != null && !mediaItem.isProcessing)
+            Positioned(
+              bottom: 4,
+              left: 4,
+              child: GestureDetector(
+                onTap: onEditDescription,
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color:
+                        mediaItem.description != null &&
+                            mediaItem.description!.isNotEmpty
+                        ? Colors.blue.withValues(alpha: 0.8)
+                        : Colors.black.withValues(alpha: 0.6),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.edit, color: Colors.white, size: 13),
+                ),
+              ),
+            ),
 
           // Indicador de procesamiento
           if (mediaItem.isProcessing)
@@ -80,33 +126,30 @@ class MediaItemWidget extends StatelessWidget {
               ),
             ),
 
-          // Indicador de tipo de media
-          Positioned(
-            bottom: 4,
-            left: 4,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    mediaItem.isVideo ? Icons.videocam : Icons.photo,
-                    color: Colors.white,
-                    size: 12,
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${mediaItem.duration}s',
-                    style: const TextStyle(color: Colors.white, fontSize: 10),
-                  ),
-                ],
+          // Indicador de tipo de media (solo para videos)
+          if (mediaItem.isVideo)
+            Positioned(
+              bottom: 4,
+              left: 4,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.videocam, color: Colors.white, size: 12),
+                    const SizedBox(width: 2),
+                    Text(
+                      '${mediaItem.duration}s',
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

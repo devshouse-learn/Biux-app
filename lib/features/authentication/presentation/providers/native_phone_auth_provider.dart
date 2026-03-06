@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/shared/services/notification_service.dart';
+import 'package:biux/core/services/remote_config_service.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 enum AuthState { initial, loading, codeSent, authenticated, error }
 
@@ -50,35 +52,23 @@ class NativePhoneAuthProvider extends ChangeNotifier {
   }
 
   /// ENVIAR CÓDIGO SMS usando Firebase Phone Authentication
-  /// ✅ ADMIN BYPASS: Si es el número admin (3132332038), login automático
+  /// Admin bypass controlado por configuración remota en Firestore
   Future<void> sendCode(String phoneNumber) async {
     try {
-      // ✅ VERIFICAR SI ES EL NÚMERO DE ADMIN (sin código)
-      // Detectar: 3132332038, +573132332038, 573132332038
-      final phoneClean = phoneNumber.replaceAll('+', '').replaceAll(' ', '').trim();
-      final isAdmin = phoneClean == '3132332038' || 
-                     phoneClean == '573132332038' ||
-                     phoneNumber.contains('3132332038');
-      
+      // Verificar si es admin desde configuración remota (Firestore)
+      final isAdmin = RemoteConfigService().isAdminPhone(phoneNumber);
+
       if (isAdmin) {
-        debugPrint('👑👑👑 ADMIN DETECTADO: $phoneNumber 👑👑👑');
-        debugPrint('✅ ENTRANDO SIN CÓDIGO...');
-        
+        AppLogger.info('Admin login solicitado', tag: 'Auth');
+
         _state = AuthState.loading;
         notifyListeners();
-        
-        // Login DIRECTO sin Firebase
+
         await _loginAdminDirecto(phoneNumber);
         return;
       }
-      
-      debugPrint('');
-      debugPrint('🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
-      debugPrint('📲 FIREBASE PHONE AUTH - SMS REAL');
-      debugPrint('📞 Enviando código a: $phoneNumber');
-      debugPrint('🔥 Firebase enviará SMS automáticamente');
-      debugPrint('🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
-      debugPrint('');
+
+      AppLogger.info('Enviando SMS a: $phoneNumber', tag: 'Auth');
 
       _state = AuthState.loading;
       _errorMessage = null;
@@ -89,25 +79,34 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
-        
+
         // Verificación automática (solo Android)
         verificationCompleted: (PhoneAuthCredential credential) async {
-          debugPrint('✅ Verificación automática completada');
+          AppLogger.info('Verificación automática completada', tag: 'Auth');
           try {
             final userCredential = await _auth.signInWithCredential(credential);
             await _handleSuccessfulAuth(userCredential.user);
           } catch (e) {
-            debugPrint('❌ Error en verificación automática: $e');
+            AppLogger.error(
+              'Error en verificación automática',
+              tag: 'Auth',
+              error: e,
+            );
           }
         },
-        
+
         // Error al enviar
         verificationFailed: (FirebaseAuthException e) {
-          debugPrint('❌ Firebase Error: ${e.code} - ${e.message}');
+          AppLogger.error(
+            'Firebase verification failed',
+            tag: 'Auth',
+            error: e,
+          );
           _state = AuthState.error;
-          
+
           if (e.code == 'invalid-phone-number') {
-            _errorMessage = 'Número inválido. Verifica el formato (+57XXXXXXXXXX)';
+            _errorMessage =
+                'Número inválido. Verifica el formato (+57XXXXXXXXXX)';
           } else if (e.code == 'too-many-requests') {
             _errorMessage = 'Demasiados intentos. Espera unos minutos.';
           } else {
@@ -115,36 +114,29 @@ class NativePhoneAuthProvider extends ChangeNotifier {
           }
           notifyListeners();
         },
-        
-        // Código enviado correctamente ✅
+
+        // Código enviado correctamente
         codeSent: (String verificationId, int? resendToken) {
-          debugPrint('');
-          debugPrint('✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅');
-          debugPrint('✅ SMS ENVIADO POR FIREBASE');
-          debugPrint('✅ Número: $phoneNumber');
-          debugPrint('✅ Revisa tu teléfono');
-          debugPrint('✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅');
-          debugPrint('');
-          
+          AppLogger.info('SMS enviado correctamente', tag: 'Auth');
+
           _verificationId = verificationId;
           _resendToken = resendToken;
           _state = AuthState.codeSent;
           _startResendTimer();
           notifyListeners();
         },
-        
+
         // Timeout
         codeAutoRetrievalTimeout: (String verificationId) {
-          debugPrint('⏱️ Timeout');
+          AppLogger.debug('Auto-retrieval timeout', tag: 'Auth');
           _verificationId = verificationId;
         },
-        
+
         // Token para reenviar
         forceResendingToken: _resendToken,
       );
-      
     } catch (e) {
-      debugPrint('❌ Error: $e');
+      AppLogger.error('Error enviando código', tag: 'Auth', error: e);
       _state = AuthState.error;
       _errorMessage = 'Error al enviar código: $e';
       notifyListeners();
@@ -161,7 +153,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     }
 
     try {
-      debugPrint('🔐 Verificando código: ${code.replaceAll(RegExp(r'.'), '*')}');
+      AppLogger.info('Verificando código SMS', tag: 'Auth');
 
       _state = AuthState.loading;
       _errorMessage = null;
@@ -176,11 +168,10 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       // Autenticar
       final userCredential = await _auth.signInWithCredential(credential);
       await _handleSuccessfulAuth(userCredential.user);
-      
     } catch (e) {
-      debugPrint('❌ Error: $e');
+      AppLogger.error('Error verificando código', tag: 'Auth', error: e);
       _state = AuthState.error;
-      
+
       if (e.toString().contains('invalid-verification-code')) {
         _errorMessage = 'Código inválido';
       } else if (e.toString().contains('session-expired')) {
@@ -192,22 +183,18 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     }
   }
 
-  /// ✅ LOGIN DIRECTO PARA ADMIN (sin código SMS, sin Firebase Phone Auth)
+  /// Login directo para admin (controlado por Remote Config)
   Future<void> _loginAdminDirecto(String phoneNumber) async {
     try {
-      debugPrint('👑 Iniciando login directo admin...');
+      AppLogger.info('Iniciando login admin', tag: 'Auth');
 
-      // Crear sesión anónima (no requiere verificación)
       final userCredential = await _auth.signInAnonymously();
       final user = userCredential.user;
-      
+
       if (user == null) {
         throw Exception('No se pudo crear sesión');
       }
 
-      debugPrint('✅ Sesión creada: ${user.uid}');
-
-      // Guardar perfil admin en Firestore
       await _firestore.collection('users').doc(user.uid).set({
         'uid': user.uid,
         'phone': phoneNumber,
@@ -217,16 +204,11 @@ class NativePhoneAuthProvider extends ChangeNotifier {
         'loginMethod': 'admin_directo',
       }, SetOptions(merge: true));
 
-      debugPrint('👑👑👑 ADMIN ENTRÓ SIN CÓDIGO 👑👑👑');
-      debugPrint('👑 UID: ${user.uid}');
-      debugPrint('👑 Phone: $phoneNumber');
-      debugPrint('👑👑👑👑👑👑👑👑👑👑👑👑👑👑👑👑👑👑👑👑');
+      AppLogger.info('Admin autenticado: ${user.uid}', tag: 'Auth');
 
-      // Navegar directo al inicio
       await _handleSuccessfulAuth(user);
-      
     } catch (e) {
-      debugPrint('❌ Error en login automático admin: $e');
+      AppLogger.error('Error login admin', tag: 'Auth', error: e);
       _state = AuthState.error;
       _errorMessage = 'Error al iniciar sesión como admin: $e';
       notifyListeners();
@@ -234,25 +216,24 @@ class NativePhoneAuthProvider extends ChangeNotifier {
   }
 
   Future<void> _handleSuccessfulAuth(User? user) async {
-    debugPrint('✅ Usuario autenticado');
-    debugPrint('   UID: ${user?.uid}');
+    AppLogger.info('Auth exitosa: ${user?.uid}', tag: 'Auth');
 
-    // Verificar perfil
     final userDoc = await _firestore.collection('users').doc(user?.uid).get();
-    
+
     _needsProfileSetup = !userDoc.exists || userDoc.data()?['name'] == null;
 
-    // Notificaciones
     try {
       await NotificationService().initialize();
     } catch (e) {
-      debugPrint('⚠️ Error notificaciones: $e');
+      AppLogger.warning(
+        'Error inicializando notificaciones',
+        tag: 'Auth',
+        error: e,
+      );
     }
 
     _state = AuthState.authenticated;
     notifyListeners();
-    
-    debugPrint('✅ AUTENTICACIÓN EXITOSA');
   }
 
   Future<void> signOut() async {

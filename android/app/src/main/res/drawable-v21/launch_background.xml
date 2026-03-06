@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Drawable para la pantalla de splash de Biux (API 21+) -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Fondo con color primario de Biux -->
-    <item android:drawable="@color/biux_primary" />
-    
-    <!-- Logo centrado con efecto de elevación -->
+    <item android:drawable="@color/biux_background_light"/>
     <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/ic_launcher" />
+        <bitmap android:gravity="center" android:src="@drawable/splash"/>
     </item>
 </layer-list>

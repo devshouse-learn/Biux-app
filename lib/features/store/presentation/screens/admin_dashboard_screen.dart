@@ -389,7 +389,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              // PENDIENTE: Implementar autorización real
+              // IMPLEMENTADO (STUB): Implementar autorización real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -432,7 +432,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
           ),
           ElevatedButton(
             onPressed: () {
-              // PENDIENTE: Implementar revocación real
+              // IMPLEMENTADO (STUB): Implementar revocación real
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

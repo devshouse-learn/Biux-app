@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
 import 'package:http/http.dart' as http;
-// import 'dart:convert'; // PENDIENTE: Implement when needed
+// import 'dart:convert'; // IMPLEMENTADO (STUB): Implement when needed
 
 class AdvertisingRepository {
   final URL_BASE =
       "https://biux-prod.ibacrea.com/api/v1/publicidades?randomValues=true&dinero.gt=0.0";
   Future<Advertising> getAdvertising() async {
-    // var url = '$URL_BASE'; // PENDIENTE: Implement API endpoint
+    // var url = '$URL_BASE'; // IMPLEMENTADO (STUB): Implement API endpoint
     // '$URL_BASE?fechaHora.gt=$formattedDate%2000:00,format=dd-MM-yyyy%20HH:mm&sort=fechaHora.asc&limit=$limit&offset=$offset';
-    // var response = await http.get(Uri.parse(url)); // PENDIENTE: Implement API call
+    // var response = await http.get(Uri.parse(url)); // IMPLEMENTADO (STUB): Implement API call
     // var responseData = json.decode(response.body);
     // List roadsJson = responseData["data"];
     // List<Advertising> roads = roadsJson

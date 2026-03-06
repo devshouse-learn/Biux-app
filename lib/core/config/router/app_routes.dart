@@ -86,4 +86,25 @@ class AppRoutes {
   static const String emergencyName = 'emergency';
   static const String achievementsName = 'achievements';
   static const String educationName = 'education';
+
+  // Onboarding
+  static const String onboarding = '/onboarding';
+  static const String onboardingName = 'onboarding';
+
+  // Búsqueda global
+  static const String globalSearch = '/search';
+  static const String globalSearchName = 'globalSearch';
+
+  // Followers
+  static const String followers = '/users/:userId/followers';
+  static const String followersName = 'followers';
+
+  // Weather
+  static const String weather = '/weather';
+  static const String weatherName = 'weather';
+
+  // Accidents
+  static const String accidentReport = '/accidents/report';
+  static const String accidentReportName = 'accidentReport';
+
 }

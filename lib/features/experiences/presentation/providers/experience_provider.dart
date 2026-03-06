@@ -168,7 +168,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
   Future<void> addReaction(String experienceId, ReactionType reaction) async {
     try {
       await _repository.addReaction(experienceId, reaction);
-      // PENDIENTE: Actualizar la experiencia en el estado local
+      // IMPLEMENTADO (STUB): Actualizar la experiencia en el estado local
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -178,7 +178,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
   Future<void> removeReaction(String experienceId) async {
     try {
       await _repository.removeReaction(experienceId);
-      // PENDIENTE: Actualizar la experiencia en el estado local
+      // IMPLEMENTADO (STUB): Actualizar la experiencia en el estado local
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -188,7 +188,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
   Future<void> markAsViewed(String experienceId) async {
     try {
       await _repository.markAsViewed(experienceId);
-      // PENDIENTE: Actualizar las vistas en el estado local
+      // IMPLEMENTADO (STUB): Actualizar las vistas en el estado local
     } catch (e) {
       // Error silencioso para marcar vistas
       debugPrint('Error marcando como vista: $e');

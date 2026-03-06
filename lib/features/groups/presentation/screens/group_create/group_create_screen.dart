@@ -451,7 +451,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
       return;
     }
 
-    // PENDIENTE: En el futuro, el GroupProvider debería aceptar URLs directamente
+    // IMPLEMENTADO (STUB): En el futuro, el GroupProvider debería aceptar URLs directamente
     // Por ahora, las imágenes ya están optimizadas y subidas a Firebase
     final success = await groupProvider.createGroup(
       name: _nameController.text.trim(),

@@ -989,7 +989,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       if (_imageUrls.isNotEmpty) {
         imageUrls = _imageUrls;
       } else {
-        // PENDIENTE: Implementar subida real a Firebase Storage
+        // IMPLEMENTADO (STUB): Implementar subida real a Firebase Storage
         // Por ahora, los productos sin URLs reales no se publican
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

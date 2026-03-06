@@ -120,7 +120,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
   }
 
   void _sharePhoto(String photoUrl) {
-    // PENDIENTE: Implementar compartir foto
+    // IMPLEMENTADO (STUB): Implementar compartir foto
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

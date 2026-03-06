@@ -364,7 +364,6 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // NUEVOS MÉTODOS PARA MANEJAR INFORMACIÓN DE USUARIOS
 
   // Obtener información de usuario (con cache)
   Future<UserModel?> getUserInfo(String userId) async {
@@ -468,7 +467,6 @@ class GroupProvider extends ChangeNotifier {
     _userCache.clear();
   }
 
-  // MÉTODO PARA SELECCIONAR IMÁGENES
   Future<XFile?> pickImage(ImageSource source) async {
     try {
       final XFile? image = await _imagePicker.pickImage(

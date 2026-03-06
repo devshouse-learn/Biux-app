@@ -12,7 +12,7 @@ import 'package:biux/features/shop/data/datasources/media_upload_service.dart';
 // import 'package:biux/features/shop/presentation/widgets/product_form_modal.dart'; // import gestionado: se usa dinámicamente desde helpers
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/features/shop/domain/usecases/stolen_bike_verification_service.dart';
+import 'package:biux/features/shop/data/datasources/stolen_bike_verification_service.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 
 /// Pantalla de administración de productos (solo para admins)
