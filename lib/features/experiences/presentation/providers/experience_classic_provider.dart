@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/core/services/app_logger.dart';
+import 'package:biux/core/services/retry_service.dart';
+import 'package:biux/core/error/error_handler.dart';
 
 /// Provider de experiencias usando ChangeNotifier para compatibilidad con Provider clásico
 class ExperienceProvider extends ChangeNotifier {
@@ -45,10 +48,12 @@ class ExperienceProvider extends ChangeNotifier {
       _setLoading(true);
       _error = null;
 
-      final experiences = await _repository.getUserExperiences(userId);
+      final experiences = await RetryService.run(
+        () => _repository.getUserExperiences(userId),
+      );
       _setUserExperiences(experiences);
     } catch (e) {
-      _setError('Error cargando experiencias: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
     } finally {
       _setLoading(false);
     }
@@ -57,18 +62,18 @@ class ExperienceProvider extends ChangeNotifier {
   /// Obtiene una experiencia específica por ID
   Future<ExperienceEntity?> getExperienceById(String experienceId) async {
     try {
-      print('🔍 PROVIDER: Cargando experiencia por ID: $experienceId');
+      AppLogger.debug(
+        'Cargando experiencia: $experienceId',
+        tag: 'ExperienceProvider',
+      );
       final experience = await _repository.getExperienceById(experienceId);
-
-      if (experience != null) {
-        print('✅ PROVIDER: Experiencia encontrada: ${experience.id}');
-      } else {
-        print('⚠️ PROVIDER: Experiencia no encontrada: $experienceId');
-      }
-
       return experience;
     } catch (e) {
-      print('❌ PROVIDER: Error cargando experiencia: $e');
+      AppLogger.error(
+        'Error cargando experiencia',
+        tag: 'ExperienceProvider',
+        error: e,
+      );
       _setError('Error cargando experiencia: ${e.toString()}');
       return null;
     }
@@ -80,10 +85,12 @@ class ExperienceProvider extends ChangeNotifier {
       _setLoading(true);
       _error = null;
 
-      final experiences = await _repository.getRideExperiences(rideId);
+      final experiences = await RetryService.run(
+        () => _repository.getRideExperiences(rideId),
+      );
       _setRideExperiences(experiences);
     } catch (e) {
-      _setError('Error cargando experiencias de rodada: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
     } finally {
       _setLoading(false);
     }
@@ -95,10 +102,12 @@ class ExperienceProvider extends ChangeNotifier {
       _setLoading(true);
       _error = null;
 
-      final experiences = await _repository.getFollowingExperiences(userId);
+      final experiences = await RetryService.run(
+        () => _repository.getFollowingExperiences(userId),
+      );
       _setExperiences(experiences);
     } catch (e) {
-      _setError('Error cargando experiencias: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
     } finally {
       _setLoading(false);
     }
@@ -206,7 +215,7 @@ class ExperienceProvider extends ChangeNotifier {
 
       _setExperiences(initialPosts);
     } catch (e) {
-      _setError('Error cargando feed personalizado: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
     } finally {
       _setLoading(false);
     }
@@ -236,7 +245,7 @@ class ExperienceProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      _setError('Error cargando más posts: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
     } finally {
       _isLoadingMore = false;
       notifyListeners();
@@ -255,7 +264,7 @@ class ExperienceProvider extends ChangeNotifier {
       _refreshAfterCreate(newExperience);
       return true;
     } catch (e) {
-      _setError('Error creando experiencia: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
       return false;
     } finally {
       _setLoading(false);
@@ -264,20 +273,52 @@ class ExperienceProvider extends ChangeNotifier {
 
   /// Elimina una experiencia
   Future<bool> deleteExperience(String experienceId) async {
+    // Remover de las listas locales inmediatamente (optimistic UI)
+    _removeExperienceFromLists(experienceId);
+
     try {
-      _setLoading(true);
-      _error = null;
-
       await _repository.deleteExperience(experienceId);
-
-      // Remover de las listas locales
-      _removeExperienceFromLists(experienceId);
       return true;
     } catch (e) {
-      _setError('Error eliminando experiencia: ${e.toString()}');
       return false;
-    } finally {
-      _setLoading(false);
+    }
+  }
+
+  /// Elimina un media individual de una experiencia
+  /// Retorna true si se eliminó la experiencia completa, false si solo se eliminó la foto
+  Future<bool> removeMediaFromExperience(
+    String experienceId,
+    int mediaIndex,
+  ) async {
+    // Buscar la experiencia en las listas locales para saber cuántos media tiene
+    ExperienceEntity? exp;
+    for (final list in [
+      _experiences,
+      _allExperiences,
+      _userExperiences,
+      _rideExperiences,
+    ]) {
+      final idx = list.indexWhere((e) => e.id == experienceId);
+      if (idx != -1) {
+        exp = list[idx];
+        break;
+      }
+    }
+    final willDeleteEntire = exp == null || exp.media.length <= 1;
+
+    // Optimistic UI: actualizar listas locales inmediatamente
+    if (willDeleteEntire) {
+      _removeExperienceFromLists(experienceId);
+    } else {
+      _removeMediaFromExperienceInLists(experienceId, mediaIndex);
+    }
+
+    // Eliminar en segundo plano
+    try {
+      await _repository.removeMediaFromExperience(experienceId, mediaIndex);
+      return willDeleteEntire;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -304,7 +345,7 @@ class ExperienceProvider extends ChangeNotifier {
       _updateExperienceInLists(experienceId, description);
       return true;
     } catch (e) {
-      _setError('Error actualizando experiencia: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
       return false;
     } finally {
       _setLoading(false);
@@ -317,7 +358,7 @@ class ExperienceProvider extends ChangeNotifier {
       await _repository.addReaction(experienceId, reaction);
       return true;
     } catch (e) {
-      _setError('Error agregando reacción: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
       return false;
     }
   }
@@ -328,7 +369,7 @@ class ExperienceProvider extends ChangeNotifier {
       await _repository.removeReaction(experienceId);
       return true;
     } catch (e) {
-      _setError('Error eliminando reacción: ${e.toString()}');
+      _setError(ErrorHandler.getUserMessage(e));
       return false;
     }
   }
@@ -469,9 +510,28 @@ class ExperienceProvider extends ChangeNotifier {
   }
 
   void _removeExperienceFromLists(String experienceId) {
+    _allExperiences.removeWhere((exp) => exp.id == experienceId);
     _experiences.removeWhere((exp) => exp.id == experienceId);
     _userExperiences.removeWhere((exp) => exp.id == experienceId);
     _rideExperiences.removeWhere((exp) => exp.id == experienceId);
+    notifyListeners();
+  }
+
+  void _removeMediaFromExperienceInLists(String experienceId, int mediaIndex) {
+    for (final list in [
+      _allExperiences,
+      _experiences,
+      _userExperiences,
+      _rideExperiences,
+    ]) {
+      final idx = list.indexWhere((exp) => exp.id == experienceId);
+      if (idx != -1) {
+        final exp = list[idx];
+        final updatedMedia = List<ExperienceMediaEntity>.from(exp.media)
+          ..removeAt(mediaIndex);
+        list[idx] = exp.copyWith(media: updatedMedia);
+      }
+    }
     notifyListeners();
   }
 }

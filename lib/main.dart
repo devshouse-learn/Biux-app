@@ -67,6 +67,11 @@ import 'package:biux/features/settings/data/repositories/notification_settings_r
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/shared/services/notification_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
+import 'package:biux/shared/widgets/offline_banner.dart';
+
+// Core services
+import 'package:biux/core/services/connectivity_service.dart';
+import 'package:biux/core/services/remote_config_service.dart';
 
 // External packages
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -110,6 +115,10 @@ void main() async {
   }
 
   await LocalStorage().init();
+
+  // Inicializar servicios core
+  ConnectivityService().initialize();
+  await RemoteConfigService().initialize();
 
   // Inicializar servicio de notificaciones
   await NotificationService().initialize();
@@ -269,6 +278,14 @@ class MyApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         themeMode: themeNotifier.themeMode,
         routerConfig: AppRouter.router,
+        builder: (context, child) {
+          return Column(
+            children: [
+              const OfflineBanner(),
+              Expanded(child: child ?? const SizedBox.shrink()),
+            ],
+          );
+        },
       ),
     );
   }

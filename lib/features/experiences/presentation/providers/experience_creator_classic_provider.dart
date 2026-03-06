@@ -16,6 +16,7 @@ class MediaItem {
   final String? thumbnailPath;
   final bool isProcessing;
   final String? url; // URL remota para media ya subida (modo edición)
+  final String? description; // Descripción individual por imagen (stories)
 
   const MediaItem({
     required this.filePath,
@@ -25,6 +26,7 @@ class MediaItem {
     this.thumbnailPath,
     this.isProcessing = false,
     this.url,
+    this.description,
   });
 
   bool get isVideo => mediaType == MediaType.video;
@@ -39,6 +41,7 @@ class MediaItem {
     String? thumbnailPath,
     bool? isProcessing,
     String? url,
+    String? description,
   }) {
     return MediaItem(
       filePath: filePath ?? this.filePath,
@@ -48,6 +51,7 @@ class MediaItem {
       thumbnailPath: thumbnailPath ?? this.thumbnailPath,
       isProcessing: isProcessing ?? this.isProcessing,
       url: url ?? this.url,
+      description: description ?? this.description,
     );
   }
 }
@@ -121,12 +125,18 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Agregar imagen desde galería
   Future<void> addImageFromGallery() async {
+    if (_mediaItems.length >= 10) {
+      _error = 'Máximo 10 archivos permitidos';
+      notifyListeners();
+      return;
+    }
     try {
+      final isStory = _format == ExperienceFormat.story;
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1080, // ✅ Cambio: 1080px de ancho máximo
-        maxHeight: 1350, // ✅ Cambio: 1350px de alto máximo
-        imageQuality: 85,
+        maxWidth: isStory ? 1920 : 1080,
+        maxHeight: isStory ? 2400 : 1350,
+        imageQuality: isStory ? 95 : 85,
       );
 
       if (image != null) {
@@ -153,14 +163,64 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     }
   }
 
+  /// Agregar múltiples imágenes desde galería
+  Future<void> addMultipleImagesFromGallery() async {
+    try {
+      final remaining = 10 - _mediaItems.length;
+      if (remaining <= 0) {
+        _error = 'Ya tienes el máximo de 10 imágenes';
+        notifyListeners();
+        return;
+      }
+
+      final List<XFile> images = await _imagePicker.pickMultiImage(
+        maxWidth: _format == ExperienceFormat.story ? 1920 : 1080,
+        maxHeight: _format == ExperienceFormat.story ? 2400 : 1350,
+        imageQuality: _format == ExperienceFormat.story ? 95 : 85,
+        limit: remaining,
+      );
+
+      if (images.isNotEmpty) {
+        final allowed = 10 - _mediaItems.length;
+        final selected = images.take(allowed);
+        final newItems = <MediaItem>[];
+        for (final image in selected) {
+          final file = File(image.path);
+          if (file.existsSync()) {
+            newItems.add(
+              MediaItem(
+                filePath: image.path,
+                mediaType: MediaType.image,
+                duration: 15,
+              ),
+            );
+          }
+        }
+        if (newItems.isNotEmpty) {
+          _mediaItems = [..._mediaItems, ...newItems];
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      _error = 'Error seleccionando imágenes: $e';
+      notifyListeners();
+    }
+  }
+
   /// Tomar foto
   Future<void> takePhoto() async {
+    if (_mediaItems.length >= 10) {
+      _error = 'Máximo 10 archivos permitidos';
+      notifyListeners();
+      return;
+    }
     try {
+      final isStory = _format == ExperienceFormat.story;
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1080, // ✅ Cambio: 1080px de ancho máximo
-        maxHeight: 1350, // ✅ Cambio: 1350px de alto máximo
-        imageQuality: 85,
+        maxWidth: isStory ? 1920 : 1080,
+        maxHeight: isStory ? 2400 : 1350,
+        imageQuality: isStory ? 95 : 85,
       );
 
       if (image != null) {
@@ -189,6 +249,11 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Agregar imagen que ya ha sido recortada
   void addCroppedImage(File croppedImageFile) {
+    if (_mediaItems.length >= 10) {
+      _error = 'Máximo 10 archivos permitidos';
+      notifyListeners();
+      return;
+    }
     try {
       if (!croppedImageFile.existsSync()) {
         _error = 'El archivo recortado no está disponible';
@@ -213,6 +278,11 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Agregar video desde galería
   Future<void> addVideoFromGallery() async {
+    if (_mediaItems.length >= 10) {
+      _error = 'Máximo 10 archivos permitidos';
+      notifyListeners();
+      return;
+    }
     try {
       final XFile? video = await _imagePicker.pickVideo(
         source: ImageSource.gallery,
@@ -263,6 +333,11 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Grabar video
   Future<void> recordVideo() async {
+    if (_mediaItems.length >= 10) {
+      _error = 'Máximo 10 archivos permitidos';
+      notifyListeners();
+      return;
+    }
     try {
       final XFile? video = await _imagePicker.pickVideo(
         source: ImageSource.camera,
@@ -334,6 +409,13 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
   /// Crear experiencia
   Future<bool> createExperience() async {
+    // Validar límite máximo de archivos
+    if (_mediaItems.length > 10) {
+      _error = 'Máximo 10 archivos permitidos';
+      notifyListeners();
+      return false;
+    }
+
     // Validar multimedia solo si NO es post de solo texto
     if (!_isTextOnly && _mediaItems.isEmpty) {
       _error = 'Debes agregar al menos una imagen o video';
@@ -362,6 +444,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
               mediaType: item.mediaType,
               duration: item.duration,
               aspectRatio: item.aspectRatio,
+              description: item.description,
             ),
           )
           .toList();
@@ -422,10 +505,29 @@ class ExperienceCreatorProvider extends ChangeNotifier {
             aspectRatio: m.aspectRatio,
             thumbnailPath: null,
             url: m.url,
+            description: m.description,
           ),
         )
         .toList();
     notifyListeners();
+  }
+
+  /// Reemplazar un media item en una posición específica (para re-crop en edición)
+  void replaceMediaItem(int index, MediaItem newItem) {
+    if (index >= 0 && index < _mediaItems.length) {
+      _mediaItems[index] = newItem;
+      notifyListeners();
+    }
+  }
+
+  /// Actualizar la descripción de un media item (para stories)
+  void updateMediaDescription(int index, String description) {
+    if (index >= 0 && index < _mediaItems.length) {
+      _mediaItems[index] = _mediaItems[index].copyWith(
+        description: description,
+      );
+      notifyListeners();
+    }
   }
 
   /// Resetear estado

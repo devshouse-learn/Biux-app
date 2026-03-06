@@ -7,11 +7,13 @@ import 'package:biux/features/experiences/presentation/widgets/experience_story_
 class StoryViewerScreen extends StatefulWidget {
   final List<ExperienceEntity> stories;
   final int initialIndex;
+  final List<({String experienceId, int mediaIndex})>? mediaOrigins;
 
   const StoryViewerScreen({
     super.key,
     required this.stories,
     this.initialIndex = 0,
+    this.mediaOrigins,
   });
 
   @override
@@ -78,6 +80,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
 
           return ExperienceStoryViewer(
             experience: story,
+            mediaOrigins: widget.mediaOrigins,
             onNext: _goToNextStory,
             onPrevious: _goToPreviousStory,
             onClose: () => Navigator.of(context).pop(),

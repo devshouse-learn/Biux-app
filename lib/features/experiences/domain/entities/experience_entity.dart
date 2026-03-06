@@ -141,6 +141,7 @@ class ExperienceMediaEntity {
   final int duration; // En segundos
   final double? aspectRatio;
   final String? thumbnailUrl; // Para videos
+  final String? description; // Descripción individual por imagen
 
   const ExperienceMediaEntity({
     required this.id,
@@ -149,6 +150,7 @@ class ExperienceMediaEntity {
     required this.duration,
     this.aspectRatio,
     this.thumbnailUrl,
+    this.description,
   });
 
   /// Crear copia con campos modificados
@@ -159,6 +161,7 @@ class ExperienceMediaEntity {
     int? duration,
     double? aspectRatio,
     String? thumbnailUrl,
+    String? description,
   }) {
     return ExperienceMediaEntity(
       id: id ?? this.id,
@@ -167,6 +170,7 @@ class ExperienceMediaEntity {
       duration: duration ?? this.duration,
       aspectRatio: aspectRatio ?? this.aspectRatio,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      description: description ?? this.description,
     );
   }
 
@@ -179,7 +183,8 @@ class ExperienceMediaEntity {
         other.mediaType == mediaType &&
         other.duration == duration &&
         other.aspectRatio == aspectRatio &&
-        other.thumbnailUrl == thumbnailUrl;
+        other.thumbnailUrl == thumbnailUrl &&
+        other.description == description;
   }
 
   @override
@@ -189,12 +194,13 @@ class ExperienceMediaEntity {
         mediaType.hashCode ^
         duration.hashCode ^
         aspectRatio.hashCode ^
-        thumbnailUrl.hashCode;
+        thumbnailUrl.hashCode ^
+        description.hashCode;
   }
 
   @override
   String toString() {
-    return 'ExperienceMediaEntity(id: $id, url: $url, mediaType: $mediaType, duration: $duration, aspectRatio: $aspectRatio, thumbnailUrl: $thumbnailUrl)';
+    return 'ExperienceMediaEntity(id: $id, url: $url, mediaType: $mediaType, duration: $duration, aspectRatio: $aspectRatio, thumbnailUrl: $thumbnailUrl, description: $description)';
   }
 }
 

@@ -40,14 +40,7 @@ class CommentsProvider extends ChangeNotifier {
           .doc(userId)
           .get();
 
-      print('🔍 Buscando usuario en Firestore: $userId');
-      print('🔍 Documento existe: ${userDoc.exists}');
-
       final userData = userDoc.data();
-
-      if (userData != null) {
-        print('🔍 Datos del usuario: $userData');
-      }
 
       if (userData != null && userData.isNotEmpty) {
         String? name = userData['name'];
@@ -73,13 +66,8 @@ class CommentsProvider extends ChangeNotifier {
       }
 
       _userDataLoaded = true;
-      print('✅ CommentsProvider: Datos de usuario cargados');
-      print('   👤 UserId: $userId');
-      print('   📝 UserName encontrado: $_cachedUserName');
-      print('   📸 UserPhoto: $_cachedUserPhoto');
-      print('   ✔️ Perfil completo: $hasCompletedProfile');
     } catch (e) {
-      print('⚠️ Error cargando datos de usuario en CommentsProvider: $e');
+      debugPrint('Error cargando datos de usuario en CommentsProvider: $e');
       _cachedUserName = null;
       _cachedUserPhoto = null;
       _userDataLoaded = true;
@@ -203,14 +191,8 @@ class CommentsProvider extends ChangeNotifier {
       // Cargar datos del usuario si no están cargados
       await _loadUserData();
 
-      // DEBUG: Mostrar estado de validación
-      debugPrint('🔍 Validando perfil del usuario...');
-      debugPrint('   _cachedUserName: $_cachedUserName');
-      debugPrint('   hasCompletedProfile: $hasCompletedProfile');
-
       // Verificar que el usuario haya completado su perfil
       if (!hasCompletedProfile) {
-        debugPrint('❌ Usuario sin perfil completo, redirigiendo...');
         _error = 'complete_profile'; // Error especial para detectar en UI
         _isPosting = false;
         notifyListeners();
@@ -220,36 +202,23 @@ class CommentsProvider extends ChangeNotifier {
       // Verificar autenticación de Firebase
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
-        debugPrint('❌ Usuario no autenticado en Firebase Auth');
         _error = 'Debes iniciar sesión para comentar';
         _isPosting = false;
         notifyListeners();
         return null;
       }
 
-      debugPrint('🔐 Firebase Auth UID: ${currentUser.uid}');
-      debugPrint('🔐 Provider userId: $userId');
+      debugPrint('Firebase Auth UID: ${currentUser.uid}');
 
       if (currentUser.uid != userId) {
         debugPrint(
-          '⚠️ WARNING: Firebase Auth UID no coincide con Provider userId',
-        );
-        debugPrint(
-          '   Usando Firebase Auth UID para cumplir reglas de seguridad',
+          'WARNING: Firebase Auth UID no coincide con Provider userId',
         );
       }
 
       // IMPORTANTE: Usar currentUser.uid para cumplir con las reglas de seguridad
       // Las reglas requieren que userId === auth.uid
       final userIdForComment = currentUser.uid;
-
-      // Debug: Log antes de crear comentario
-      debugPrint('📝 Intentando crear comentario...');
-      debugPrint('   Tipo: $type');
-      debugPrint('   TargetId: $targetId');
-      debugPrint('   UserId para comentario: $userIdForComment');
-      debugPrint('   UserName: $_cachedUserName');
-      debugPrint('   UserPhoto: $_cachedUserPhoto');
 
       final commentId = await _repository.createComment(
         type: type,
@@ -261,7 +230,7 @@ class CommentsProvider extends ChangeNotifier {
         parentCommentId: parentCommentId,
       );
 
-      debugPrint('✅ Comentario creado: $commentId');
+      debugPrint('Comentario creado: $commentId');
 
       // ⚠️ Las notificaciones son creadas automáticamente por Cloud Functions
       // Ver: biux-cloud/functions/comment-notifications.js
@@ -277,9 +246,8 @@ class CommentsProvider extends ChangeNotifier {
       notifyListeners();
 
       return commentId;
-    } catch (e, stackTrace) {
-      debugPrint('❌ Error al crear comentario: $e');
-      debugPrint('Stack trace: $stackTrace');
+    } catch (e) {
+      debugPrint('Error al crear comentario: $e');
 
       // Detectar tipo de error específico
       if (e.toString().contains('MissingPluginException')) {

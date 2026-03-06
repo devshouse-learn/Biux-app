@@ -94,12 +94,11 @@ class StoryGroupsProvider with ChangeNotifier {
 
   /// Marca todas las historias de un usuario como vistas
   Future<void> markUserStoriesAsViewed(String userId) async {
-    final userGroup = _storyGroups.firstWhere(
-      (group) => group.userId == userId,
-      orElse: () => _storyGroups.first,
-    );
+    final userGroup = _storyGroups.where((group) => group.userId == userId);
 
-    final storyIds = userGroup.stories.map((s) => s.id).toList();
+    if (userGroup.isEmpty) return;
+
+    final storyIds = userGroup.first.stories.map((s) => s.id).toList();
     await _viewsService.markStoriesAsViewed(storyIds);
 
     // Actualizar el estado local

@@ -7,7 +7,6 @@ import 'package:biux/features/experiences/domain/entities/experience_entity.dart
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/shared/widgets/post_card.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 /// Pantalla estilo Instagram para ver publicaciones con galería
 /// Permite: ver imágenes en grande, darle like, y comentar
@@ -279,13 +278,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       color: Colors.grey[800],
       onSelected: (value) {
         if (value == 'edit') {
-          // PENDIENTE: Implementar editar post
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Editar post - Próximamente'),
-              duration: Duration(seconds: 2),
-            ),
-          );
+          context.push('/edit-post/${experience.id}', extra: experience);
         } else if (value == 'delete') {
           _showDeletePostConfirmation(context, experience);
         }
@@ -361,55 +354,19 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  /// Elimina el post de Firebase
+  /// Elimina el post de Firebase usando el provider (Firestore)
   Future<void> _deletePostFromFirebase(
     BuildContext context,
     ExperienceEntity experience,
   ) async {
-    try {
-      final database = FirebaseDatabase.instance;
+    final provider = context.read<ExperienceProvider>();
 
-      // Intentar primero marcar como eliminado (actualización)
-      try {
-        await database.ref('experiences/${experience.id}').update({
-          'isDeleted': true,
-          'deletedAt': DateTime.now().millisecondsSinceEpoch,
-        });
-      } catch (updateError) {
-        // Si falla la actualización, intentar eliminación directa
-        if (updateError.toString().contains('Permission denied')) {
-          await database.ref('experiences/${experience.id}').remove();
-        } else {
-          rethrow;
-        }
-      }
-
-      // Mostrar éxito
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Publicación eliminada correctamente'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-
-        // Navegar de vuelta después de 1 segundo
-        await Future.delayed(const Duration(seconds: 1));
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al eliminar: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+    // Navegar de vuelta inmediatamente para UX instantánea
+    if (context.mounted) {
+      Navigator.pop(context);
     }
+
+    // Eliminar en segundo plano
+    provider.deleteExperience(experience.id);
   }
 }

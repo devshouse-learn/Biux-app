@@ -14,7 +14,26 @@ class MockExperienceRepository implements ExperienceRepository {
   }
 
   @override
-  Future<void> updateExperience(String experienceId, {required String description}) async {}
+  Future<void> updateExperience(
+    String experienceId, {
+    required String description,
+    bool isEdited = true,
+    List<CreateMediaRequest>? newMediaFiles,
+    List<String>? existingMediaUrls,
+  }) async {}
+
+  @override
+  Future<bool> removeMediaFromExperience(
+    String experienceId,
+    int mediaIndex,
+  ) async {
+    return false;
+  }
+
+  @override
+  Stream<DateTime?> watchLatestExperienceTimestamp() {
+    return Stream.value(null);
+  }
 
   List<ExperienceEntity> _experiences = [];
   bool shouldThrowError = false;

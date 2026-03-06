@@ -29,6 +29,9 @@ abstract class ExperienceRepository {
   /// Elimina una experiencia
   Future<void> deleteExperience(String experienceId);
 
+  /// Elimina un media individual de una experiencia (si es el último, elimina la experiencia)
+  Future<bool> removeMediaFromExperience(String experienceId, int mediaIndex);
+
   /// Agrega una reacción a una experiencia
   Future<void> addReaction(String experienceId, ReactionType reaction);
 
@@ -121,12 +124,14 @@ class CreateMediaRequest {
   final MediaType mediaType;
   final int duration;
   final double? aspectRatio;
+  final String? description;
 
   const CreateMediaRequest({
     required this.filePath,
     required this.mediaType,
     required this.duration,
     this.aspectRatio,
+    this.description,
   });
 
   /// Crear copia con campos modificados
@@ -135,12 +140,14 @@ class CreateMediaRequest {
     MediaType? mediaType,
     int? duration,
     double? aspectRatio,
+    String? description,
   }) {
     return CreateMediaRequest(
       filePath: filePath ?? this.filePath,
       mediaType: mediaType ?? this.mediaType,
       duration: duration ?? this.duration,
       aspectRatio: aspectRatio ?? this.aspectRatio,
+      description: description ?? this.description,
     );
   }
 
@@ -151,7 +158,8 @@ class CreateMediaRequest {
         other.filePath == filePath &&
         other.mediaType == mediaType &&
         other.duration == duration &&
-        other.aspectRatio == aspectRatio;
+        other.aspectRatio == aspectRatio &&
+        other.description == description;
   }
 
   @override
@@ -159,11 +167,12 @@ class CreateMediaRequest {
     return filePath.hashCode ^
         mediaType.hashCode ^
         duration.hashCode ^
-        aspectRatio.hashCode;
+        aspectRatio.hashCode ^
+        description.hashCode;
   }
 
   @override
   String toString() {
-    return 'CreateMediaRequest(filePath: $filePath, mediaType: $mediaType, duration: $duration, aspectRatio: $aspectRatio)';
+    return 'CreateMediaRequest(filePath: $filePath, mediaType: $mediaType, duration: $duration, aspectRatio: $aspectRatio, description: $description)';
   }
 }

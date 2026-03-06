@@ -61,15 +61,6 @@ class LikesRepositoryImpl implements LikesRepository {
       expiresAt: expiresAt?.millisecondsSinceEpoch,
     );
 
-    print('🔍 DEBUG LIKE - Type: ${_typeToString(type)}');
-    print('🔍 DEBUG LIKE - TargetId: $targetId');
-    print('🔍 DEBUG LIKE - UserId: $userId');
-    print('🔍 DEBUG LIKE - UserName: "$userName"');
-    print('🔍 DEBUG LIKE - UserPhoto: $userPhoto');
-    print('🔍 DEBUG LIKE - Timestamp: ServerValue.timestamp');
-    print('🔍 DEBUG LIKE - ExpiresAt: ${like.expiresAt}');
-    print('🔍 DEBUG LIKE - JSON: ${like.toJson()}');
-
     return _datasource.like(
       type: _typeToString(type),
       targetId: targetId,
