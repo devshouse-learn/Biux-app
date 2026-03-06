@@ -2,11 +2,11 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 
 /// Productos de prueba para la tienda Biux
-/// Cada imagen es una URL fija verificada que corresponde al producto
+/// URLs verificadas - cada imagen corresponde exactamente al producto
 class MockProducts {
   static List<ProductEntity> getProducts() {
     return [
-      // 1. JERSEY - Ciclista con maillot/jersey de ciclismo
+      // 1. JERSEY DE CICLISMO
       ProductEntity(
         id: 'prod_001',
         name: 'Jersey Ciclismo Pro',
@@ -18,8 +18,7 @@ class MockProducts {
         category: ProductCategories.jerseys,
         sizes: ['S', 'M', 'L', 'XL'],
         images: [
-          // Jersey/maillot de ciclismo colorido
-          'https://images.unsplash.com/photo-1521078100750-c08e8e99e40b?w=600&h=600&fit=crop',
+          'https://m.media-amazon.com/images/I/71jJLnpFYzL._AC_UY1000_.jpg',
         ],
         isActive: true,
         sellerId: 'mock_seller_001',
@@ -27,7 +26,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
 
-      // 2. CULOTE - Ciclista pedaleando (se ve culote/shorts)
+      // 2. CULOTE / SHORTS CON BADANA
       ProductEntity(
         id: 'prod_002',
         name: 'Culote con Badana Gel',
@@ -40,8 +39,7 @@ class MockProducts {
         category: ProductCategories.shorts,
         sizes: ['S', 'M', 'L', 'XL'],
         images: [
-          // Ciclista en bici de ruta mostrando equipamiento
-          'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&h=600&fit=crop',
+          'https://m.media-amazon.com/images/I/71VqOzU-JML._AC_UY1000_.jpg',
         ],
         isActive: true,
         sellerId: 'mock_seller_001',
@@ -49,7 +47,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 3)),
       ),
 
-      // 3. GUANTES - Guantes de ciclismo
+      // 3. GUANTES DE CICLISMO
       ProductEntity(
         id: 'prod_003',
         name: 'Guantes Ciclismo Gel',
@@ -61,8 +59,7 @@ class MockProducts {
         category: ProductCategories.gloves,
         sizes: ['S', 'M', 'L', 'XL'],
         images: [
-          // Guantes deportivos de ciclismo
-          'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=600&h=600&fit=crop',
+          'https://m.media-amazon.com/images/I/71cLbsAFQPL._AC_UY1000_.jpg',
         ],
         isActive: true,
         sellerId: 'mock_seller_002',
@@ -70,7 +67,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 7)),
       ),
 
-      // 4. CASCO - Casco de ciclismo
+      // 4. CASCO DE CICLISMO
       ProductEntity(
         id: 'prod_004',
         name: 'Casco Aerodinamico',
@@ -82,8 +79,7 @@ class MockProducts {
         category: ProductCategories.helmets,
         sizes: ['S', 'M', 'L'],
         images: [
-          // Casco de bicicleta profesional
-          'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop',
+          'https://m.media-amazon.com/images/I/61fNJLGqMdL._AC_SL1500_.jpg',
         ],
         isActive: true,
         sellerId: 'mock_seller_002',
@@ -91,7 +87,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
       ),
 
-      // 5. GAFAS - Gafas deportivas de sol
+      // 5. GAFAS DEPORTIVAS DE CICLISMO
       ProductEntity(
         id: 'prod_005',
         name: 'Gafas Deportivas UV400',
@@ -103,8 +99,7 @@ class MockProducts {
         category: ProductCategories.glasses,
         sizes: ['Unica'],
         images: [
-          // Gafas de sol deportivas
-          'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&h=600&fit=crop',
+          'https://m.media-amazon.com/images/I/61SZ8R-k1SL._AC_SL1500_.jpg',
         ],
         isActive: true,
         sellerId: 'mock_seller_003',
@@ -112,7 +107,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       ),
 
-      // 6. ZAPATILLAS - Zapatillas deportivas/ciclismo
+      // 6. ZAPATILLAS DE CICLISMO
       ProductEntity(
         id: 'prod_006',
         name: 'Zapatillas Ciclismo Road',
@@ -124,8 +119,7 @@ class MockProducts {
         category: ProductCategories.shoes,
         sizes: ['38', '39', '40', '41', '42', '43', '44'],
         images: [
-          // Zapatillas deportivas rojas
-          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop',
+          'https://m.media-amazon.com/images/I/71gpt078N6L._AC_UY1000_.jpg',
         ],
         isActive: true,
         sellerId: 'mock_seller_003',
