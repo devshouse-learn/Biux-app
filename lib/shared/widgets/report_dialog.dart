@@ -115,25 +115,27 @@ class _ReportDialogState extends State<ReportDialog> {
           const SizedBox(height: 8),
           Text('¿Por qué quieres reportar esto?', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
           const SizedBox(height: 16),
-          Column(
-            children: _reasons.map((reason) => InkWell(
-              onTap: () => setState(() => _selectedReason = reason),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  children: [
-                    Radio<String>(
-                      value: reason,
-                      groupValue: _selectedReason,
-                      onChanged: (v) => setState(() => _selectedReason = v),
-                      activeColor: ColorTokens.primary30,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    Expanded(child: Text(reason, style: const TextStyle(fontSize: 14))),
-                  ],
+          RadioGroup<String>(
+            groupValue: _selectedReason ?? '',
+            onChanged: (v) => setState(() => _selectedReason = v),
+            child: Column(
+              children: _reasons.map((reason) => InkWell(
+                onTap: () => setState(() => _selectedReason = reason),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: reason,
+                        activeColor: ColorTokens.primary30,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      Expanded(child: Text(reason, style: const TextStyle(fontSize: 14))),
+                    ],
+                  ),
                 ),
-              ),
-            )).toList(),
+              )).toList(),
+            ),
           ),
           const SizedBox(height: 8),
           TextField(
