@@ -9,7 +9,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';

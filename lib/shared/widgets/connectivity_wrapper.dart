@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
 
 class ConnectivityWrapper extends StatefulWidget {
   final Widget child;
