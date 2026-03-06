@@ -2,11 +2,11 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 
 /// Productos de prueba para la tienda Biux
-/// URLs verificadas - cada imagen corresponde exactamente al producto
+/// Imagenes de Pexels (gratuitas, estables, URLs directas con tamano fijo)
 class MockProducts {
   static List<ProductEntity> getProducts() {
     return [
-      // 1. JERSEY DE CICLISMO
+      // 1. JERSEY DE CICLISMO - Ciclista con jersey en ruta
       ProductEntity(
         id: 'prod_001',
         name: 'Jersey Ciclismo Pro',
@@ -18,7 +18,7 @@ class MockProducts {
         category: ProductCategories.jerseys,
         sizes: ['S', 'M', 'L', 'XL'],
         images: [
-          'https://m.media-amazon.com/images/I/71jJLnpFYzL._AC_UY1000_.jpg',
+          'https://images.pexels.com/photos/5970275/pexels-photo-5970275.jpeg?auto=compress&cs=tinysrgb&w=600',
         ],
         isActive: true,
         sellerId: 'mock_seller_001',
@@ -26,7 +26,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
 
-      // 2. CULOTE / SHORTS CON BADANA
+      // 2. CULOTE / SHORTS - Ciclista pedaleando
       ProductEntity(
         id: 'prod_002',
         name: 'Culote con Badana Gel',
@@ -39,7 +39,7 @@ class MockProducts {
         category: ProductCategories.shorts,
         sizes: ['S', 'M', 'L', 'XL'],
         images: [
-          'https://m.media-amazon.com/images/I/71VqOzU-JML._AC_UY1000_.jpg',
+          'https://images.pexels.com/photos/5462562/pexels-photo-5462562.jpeg?auto=compress&cs=tinysrgb&w=600',
         ],
         isActive: true,
         sellerId: 'mock_seller_001',
@@ -47,7 +47,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 3)),
       ),
 
-      // 3. GUANTES DE CICLISMO
+      // 3. GUANTES - Manos en manillar de bicicleta
       ProductEntity(
         id: 'prod_003',
         name: 'Guantes Ciclismo Gel',
@@ -59,7 +59,7 @@ class MockProducts {
         category: ProductCategories.gloves,
         sizes: ['S', 'M', 'L', 'XL'],
         images: [
-          'https://m.media-amazon.com/images/I/71cLbsAFQPL._AC_UY1000_.jpg',
+          'https://images.pexels.com/photos/5462561/pexels-photo-5462561.jpeg?auto=compress&cs=tinysrgb&w=600',
         ],
         isActive: true,
         sellerId: 'mock_seller_002',
@@ -67,7 +67,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 7)),
       ),
 
-      // 4. CASCO DE CICLISMO
+      // 4. CASCO - Casco de bicicleta
       ProductEntity(
         id: 'prod_004',
         name: 'Casco Aerodinamico',
@@ -79,7 +79,7 @@ class MockProducts {
         category: ProductCategories.helmets,
         sizes: ['S', 'M', 'L'],
         images: [
-          'https://m.media-amazon.com/images/I/61fNJLGqMdL._AC_SL1500_.jpg',
+          'https://images.pexels.com/photos/5462567/pexels-photo-5462567.jpeg?auto=compress&cs=tinysrgb&w=600',
         ],
         isActive: true,
         sellerId: 'mock_seller_002',
@@ -87,7 +87,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
       ),
 
-      // 5. GAFAS DEPORTIVAS DE CICLISMO
+      // 5. GAFAS - Gafas deportivas
       ProductEntity(
         id: 'prod_005',
         name: 'Gafas Deportivas UV400',
@@ -99,7 +99,7 @@ class MockProducts {
         category: ProductCategories.glasses,
         sizes: ['Unica'],
         images: [
-          'https://m.media-amazon.com/images/I/61SZ8R-k1SL._AC_SL1500_.jpg',
+          'https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=600',
         ],
         isActive: true,
         sellerId: 'mock_seller_003',
@@ -107,7 +107,7 @@ class MockProducts {
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       ),
 
-      // 6. ZAPATILLAS DE CICLISMO
+      // 6. ZAPATILLAS - Zapatillas deportivas
       ProductEntity(
         id: 'prod_006',
         name: 'Zapatillas Ciclismo Road',
@@ -119,7 +119,7 @@ class MockProducts {
         category: ProductCategories.shoes,
         sizes: ['38', '39', '40', '41', '42', '43', '44'],
         images: [
-          'https://m.media-amazon.com/images/I/71gpt078N6L._AC_UY1000_.jpg',
+          'https://images.pexels.com/photos/1464625/pexels-photo-1464625.jpeg?auto=compress&cs=tinysrgb&w=600',
         ],
         isActive: true,
         sellerId: 'mock_seller_003',
