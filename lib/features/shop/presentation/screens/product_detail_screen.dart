@@ -175,6 +175,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
+
+  Future<void> _toggleLike() async {
+    final userProvider = context.read<UserProvider>();
+    final currentUser = userProvider.user;
+    if (currentUser == null || _product == null) return;
+    final shopProvider = context.read<ShopProvider>();
+    final success = await shopProvider.toggleProductLike(_product!.id, currentUser.uid);
+    if (success && mounted) {
+      final updated = shopProvider.products.firstWhere((p) => p.id == _product!.id, orElse: () => _product!);
+      setState(() { _product = updated; });
+    }
+  }
   void _addToCart() {
     if (_product == null) {
       debugPrint('⚠️ ERROR: Producto es null');
@@ -518,6 +530,36 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
             actions: [
+              // Boton de favorito
+              Consumer<UserProvider>(
+                builder: (context, userProvider, child) {
+                  final currentUser = userProvider.user;
+                  if (currentUser == null) return const SizedBox.shrink();
+                  return Consumer<ShopProvider>(
+                    builder: (context, shopProvider, child) {
+                      final up = shopProvider.products.where((p) => p.id == _product!.id).firstOrNull;
+                      final isLiked = up?.isLikedBy(currentUser.uid) ?? _product!.isLikedBy(currentUser.uid);
+                      final likes = up?.likesCount ?? _product!.likesCount;
+                      return GestureDetector(
+                        onTap: _toggleLike,
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(20)),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Icon(isLiked ? Icons.favorite : Icons.favorite_border, color: isLiked ? Colors.red : Colors.white, size: 22),
+                            if (likes > 0) ...[
+                              const SizedBox(width: 4),
+                              Text('$likes', style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                            ],
+                          ]),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+
               // Botón de opciones para el vendedor
               Consumer<UserProvider>(
                 builder: (context, userProvider, child) {
