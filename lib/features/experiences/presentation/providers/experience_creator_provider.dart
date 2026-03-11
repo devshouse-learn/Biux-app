@@ -4,7 +4,7 @@ import 'package:video_player/video_player.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_provider.dart';
-// import 'package:biux/shared/services/video_experience_service.dart'; // PENDIENTE: Implementar
+// import 'package:biux/features/experiences/data/datasources/video_experience_datasource.dart'; // PENDIENTE: Implementar
 
 /// Estado para la creación de experiencias
 class ExperienceCreatorState {

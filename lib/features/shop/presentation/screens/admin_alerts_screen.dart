@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:intl/intl.dart';
-import 'package:biux/features/shop/data/datasources/alert_pdf_export_service.dart';
+import 'package:biux/features/shop/data/datasources/alert_pdf_export_datasource.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});

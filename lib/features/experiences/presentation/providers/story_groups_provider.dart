@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/usecases/group_stories_by_user_usecase.dart';
-import 'package:biux/features/experiences/data/datasources/story_views_local_service.dart';
+import 'package:biux/features/experiences/data/datasources/story_views_local_datasource.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 
 /// Provider para gestionar historias agrupadas por usuario (estilo Instagram)
