@@ -24,6 +24,7 @@ class ExperiencesListScreen extends StatefulWidget {
 class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     with WidgetsBindingObserver {
   Timer? _autoRefreshTimer;
+  late final ExperienceProvider _experienceProvider;
 
   /// Obtiene el ID del usuario actual autenticado
   String? get _currentUserId {
@@ -44,10 +45,16 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _experienceProvider = context.read<ExperienceProvider>();
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _autoRefreshTimer?.cancel();
-    context.read<ExperienceProvider>().stopFeedListener();
+    _experienceProvider.stopFeedListener();
     super.dispose();
   }
 
@@ -60,7 +67,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     } else if (state == AppLifecycleState.paused) {
       // App va a segundo plano - pausar listener
       _autoRefreshTimer?.cancel();
-      context.read<ExperienceProvider>().stopFeedListener();
+      _experienceProvider.stopFeedListener();
     }
   }
 
