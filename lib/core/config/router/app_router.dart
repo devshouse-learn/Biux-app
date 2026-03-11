@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Feature imports (providers)
 import '../../../features/groups/presentation/providers/group_provider.dart';
@@ -76,7 +75,7 @@ import '../../../features/store/presentation/screens/seller_dashboard_screen.dar
 import '../../../features/store/presentation/screens/admin_dashboard_screen.dart';
 import '../../../features/store/domain/entities/product_entity.dart';
 
-// IMPLEMENTADO (STUB): Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+// PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
@@ -350,9 +349,7 @@ final GoRouter _router = GoRouter(
     // Shell principal que envuelve todas las pantallas con AppBar y BottomNavigationBar
     ShellRoute(
       builder: (context, state, child) {
-        final langCode = context.watch<LocaleNotifier>().langCode;
         return MultiProvider(
-          key: ValueKey('shell_provider_$langCode'),
           providers: [
             ChangeNotifierProvider.value(value: context.read<MapProvider>()),
             ChangeNotifierProvider.value(
@@ -365,7 +362,7 @@ final GoRouter _router = GoRouter(
             ChangeNotifierProvider.value(value: context.read<GroupProvider>()),
             ChangeNotifierProvider.value(value: context.read<RideProvider>()),
           ],
-          child: MainShell(key: ValueKey('main_shell_$langCode'), child: child),
+          child: MainShell(child: child),
         );
       },
       routes: [
@@ -753,7 +750,7 @@ final GoRouter _router = GoRouter(
           path: '/shop/admin',
           name: 'adminShop',
           builder: (context, state) => const AdminShopScreen(),
-          // IMPLEMENTADO (STUB): Agregar redirect cuando UserEntity tenga isAdmin
+          // PENDIENTE: Agregar redirect cuando UserEntity tenga isAdmin
           // redirect: (context, state) {
           //   final userProvider = context.read<UserProvider>();
           //   final isAdmin = userProvider.user?.isAdmin ?? false;
@@ -818,7 +815,7 @@ final GoRouter _router = GoRouter(
 
         // ⚠️ Detalle de producto movido FUERA del ShellRoute (ver abajo)
 
-        // IMPLEMENTADO (STUB): Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
+        // PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
         // Escáner QR
         // GoRoute(
         //   path: '/shop/qr-scanner',
@@ -869,6 +866,7 @@ final GoRouter _router = GoRouter(
             return SellerDashboardScreen(currentUser: currentUser.toEntity());
           },
         ),
+
 
         // ===== NEW FEATURES =====
 

@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
 
 // Features imports
@@ -30,7 +29,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_crea
 import 'package:biux/features/experiences/presentation/providers/story_groups_provider.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/usecases/group_stories_by_user_usecase.dart';
-import 'package:biux/features/experiences/data/datasources/story_views_local_service.dart';
+import 'package:biux/features/experiences/data/datasources/story_views_local_datasource.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/features/bikes/domain/usecases/register_bike_usecase.dart';
@@ -63,7 +62,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/social/presentation/providers/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
-
 
 // New feature providers
 import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats_provider.dart';
@@ -147,7 +145,6 @@ void main() async {
           ),
         ),
         ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
-        ChangeNotifierProvider<LocaleNotifier>(create: (_) => LocaleNotifier()),
         ChangeNotifierProvider(
           create: (_) =>
               MeetingPointProvider(repository: MeetingPointRepository()),
@@ -255,7 +252,6 @@ void main() async {
         // Social Providers (Notificaciones, Likes, Comentarios, Asistentes)
         ...SocialProvidersConfig.getProviders(),
 
-        
         // New feature providers
         ChangeNotifierProvider(create: (_) => CyclingStatsProvider()),
         ChangeNotifierProvider(create: (_) => EmergencyProvider()),
@@ -289,18 +285,16 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final localeNotifier = Provider.of<LocaleNotifier>(context);
 
     return BiuxNotificationListener(
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        locale: localeNotifier.locale,
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: LocaleNotifier.supportedLocales,
+        supportedLocales: const [Locale(AppStrings.en, AppStrings.us)],
         title: AppStrings.APP_NAME,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

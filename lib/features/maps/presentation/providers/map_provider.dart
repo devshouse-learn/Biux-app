@@ -4,7 +4,7 @@ import 'package:biux/core/config/images.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/features/maps/presentation/providers/location_provider.dart';
 import 'package:biux/features/roads/data/models/route.dart';
-import 'package:biux/shared/services/directions_service.dart';
+import 'package:biux/features/maps/data/datasources/directions_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -274,7 +274,9 @@ class MapProvider extends ChangeNotifier {
           _fitRouteInViewFromPoints(directionResult.points);
         }
       } else {
-        debugPrint('⚠️ No se pudo obtener la ruta desde la API, usando línea recta');
+        debugPrint(
+          '⚠️ No se pudo obtener la ruta desde la API, usando línea recta',
+        );
 
         // Si falla la API, crear una línea recta punteada
         final simplePolylines = {

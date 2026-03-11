@@ -1,6 +1,6 @@
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
-import 'package:biux/features/experiences/data/datasources/story_views_local_service.dart';
+import 'package:biux/features/experiences/data/datasources/story_views_local_datasource.dart';
 
 /// Caso de uso para agrupar experiencias (stories) por usuario
 /// Similar a cómo Instagram agrupa las historias en la parte superior
