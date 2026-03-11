@@ -66,7 +66,7 @@ class _RequestSellerPermissionDialogState
 
     final success = await requestProvider.createRequest(
       userId: currentUser.uid,
-      userName: currentUser.username ?? currentUser.name ?? 'Sin nombre',
+      userName: currentUser.username ?? currentUser.name ?? l.t('no_name'),
       userPhoto: currentUser.photoUrl ?? '',
       userEmail: currentUser.email ?? '',
       message: _messageController.text.trim(),

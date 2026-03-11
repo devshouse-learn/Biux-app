@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
@@ -102,12 +103,15 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     return '${(meters / 1000).toStringAsFixed(1)} km';
   }
 
-  String _timeAgo(DateTime date) {
+  String _timeAgo(DateTime date, LocaleNotifier l) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return 'Ahora';
-    if (diff.inMinutes < 60) return 'Hace ${diff.inMinutes} min';
-    if (diff.inHours < 24) return 'Hace ${diff.inHours} h';
-    if (diff.inDays < 7) return 'Hace ${diff.inDays} d';
+    if (diff.inMinutes < 1) return l.t('time_ago_now');
+    if (diff.inMinutes < 60)
+      return l.t('time_ago_minutes').replaceAll('{n}', '${diff.inMinutes}');
+    if (diff.inHours < 24)
+      return l.t('time_ago_hours').replaceAll('{n}', '${diff.inHours}');
+    if (diff.inDays < 7)
+      return l.t('time_ago_days').replaceAll('{n}', '${diff.inDays}');
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
@@ -122,14 +126,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     }
   }
 
-  String _severityLabel(String severity) {
+  String _severityLabel(String severity, LocaleNotifier l) {
     switch (severity) {
       case 'severe':
-        return 'Grave';
+        return l.t('severity_severe');
       case 'moderate':
-        return 'Moderado';
+        return l.t('severity_moderate');
       default:
-        return 'Leve';
+        return l.t('severity_minor');
     }
   }
 
@@ -148,6 +152,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ── Photo helpers ───────────────────────────────────
   // ═══════════════════════════════════════════════════════
   Future<void> _addPhoto(ImageSource source) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       PermissionStatus status;
       if (source == ImageSource.camera) {
@@ -171,23 +176,23 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('Permiso requerido'),
+              title: Text(l.t('permission_required')),
               content: Text(
                 source == ImageSource.camera
-                    ? 'Biux necesita acceso a tu cámara. Ve a Configuración para habilitarlo.'
-                    : 'Biux necesita acceso a tu galería. Ve a Configuración para habilitarlo.',
+                    ? l.t('camera_permission_message')
+                    : l.t('gallery_permission_message'),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancelar'),
+                  child: Text(l.t('cancel')),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(ctx);
                     openAppSettings();
                   },
-                  child: const Text('Abrir Configuración'),
+                  child: Text(l.t('open_settings')),
                 ),
               ],
             ),
@@ -199,8 +204,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             SnackBar(
               content: Text(
                 source == ImageSource.camera
-                    ? 'Se necesita permiso de cámara'
-                    : 'Se necesita permiso de galería',
+                    ? l.t('camera_permission_needed')
+                    : l.t('gallery_permission_needed'),
               ),
             ),
           );
@@ -212,6 +217,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   }
 
   void _showPhotoOptions() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -225,7 +231,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: Colors.red),
-                title: const Text('Tomar foto'),
+                title: Text(l.t('take_photo')),
                 onTap: () {
                   Navigator.pop(ctx);
                   _addPhoto(ImageSource.camera);
@@ -233,7 +239,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library, color: Colors.blue),
-                title: const Text('Seleccionar de galería'),
+                title: Text(l.t('select_from_gallery')),
                 onTap: () {
                   Navigator.pop(ctx);
                   _addPhoto(ImageSource.gallery);
@@ -263,15 +269,16 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   }
 
   Future<void> _submit() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_descCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Escribe una descripción del accidente')),
+        SnackBar(content: Text(l.t('accident_description_required'))),
       );
       return;
     }
     if (_selectedLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona la ubicación del accidente')),
+        SnackBar(content: Text(l.t('accident_location_required'))),
       );
       return;
     }
@@ -282,12 +289,13 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       final user = FirebaseAuth.instance.currentUser;
       final uid = user?.uid ?? '';
 
-      String userName = 'Anónimo';
+      String userName = l.t('anonymous');
       try {
         final userProvider = context.read<UserProvider>();
-        userName = userProvider.user?.name ?? user?.displayName ?? 'Anónimo';
+        userName =
+            userProvider.user?.name ?? user?.displayName ?? l.t('anonymous');
       } catch (_) {
-        userName = user?.displayName ?? 'Anónimo';
+        userName = user?.displayName ?? l.t('anonymous');
       }
 
       final docRef = await FirebaseFirestore.instance
@@ -319,8 +327,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         });
         _tabController.animateTo(0);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Accidente reportado. Ya es visible para todos.'),
+          SnackBar(
+            content: Text(l.t('accident_reported_success')),
             backgroundColor: Colors.green,
           ),
         );
@@ -328,7 +336,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${l.t('error_generic')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
         setState(() => _submitting = false);
       }
@@ -336,12 +347,13 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   }
 
   Future<void> _openMapPicker() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final LatLng? result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
           initialLocation: _selectedLocation,
-          title: 'Ubicación del accidente',
+          title: l.t('accident_location'),
         ),
       ),
     );
@@ -355,29 +367,33 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        title: const Text('Accidentes'),
+        title: Text(l.t('accidents_title')),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(icon: Icon(Icons.list_alt, size: 20), text: 'Reportes'),
-            Tab(icon: Icon(Icons.map, size: 20), text: 'Mapa'),
+          tabs: [
             Tab(
-              icon: Icon(Icons.add_circle_outline, size: 20),
-              text: 'Reportar',
+              icon: const Icon(Icons.list_alt, size: 20),
+              text: l.t('reports_tab'),
+            ),
+            Tab(icon: const Icon(Icons.map, size: 20), text: l.t('map_tab')),
+            Tab(
+              icon: const Icon(Icons.add_circle_outline, size: 20),
+              text: l.t('report_tab'),
             ),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [_buildReportsTab(), _buildMapTab(), _buildReportForm()],
+        children: [_buildReportsTab(l), _buildMapTab(l), _buildReportForm(l)],
       ),
     );
   }
@@ -385,7 +401,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ═══════════════════════════════════════════════════════
   // ── TAB 1: REPORTES (todos los usuarios) ────────────
   // ═══════════════════════════════════════════════════════
-  Widget _buildReportsTab() {
+  Widget _buildReportsTab(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
@@ -405,14 +421,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 8),
                 Text(
-                  'Error al cargar reportes',
+                  l.t('error_loading_reports'),
                   style: TextStyle(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () => setState(() {}),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Reintentar'),
+                  label: Text(l.t('retry')),
                 ),
               ],
             ),
@@ -439,23 +455,23 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       color: Colors.green[300],
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      '¡Sin accidentes reportados!',
-                      style: TextStyle(
+                    Text(
+                      l.t('no_accidents_reported'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'No hay accidentes activos en este momento',
+                      l.t('no_active_accidents'),
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () => _tabController.animateTo(2),
                       icon: const Icon(Icons.add),
-                      label: const Text('Reportar un accidente'),
+                      label: Text(l.t('report_accident')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[700],
                         foregroundColor: Colors.white,
@@ -511,7 +527,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                           Icon(Icons.warning, size: 16, color: Colors.red[700]),
                           const SizedBox(width: 4),
                           Text(
-                            '${active.length} activo${active.length != 1 ? "s" : ""}',
+                            l
+                                .t('active_count')
+                                .replaceAll('{n}', '${active.length}'),
                             style: TextStyle(
                               color: Colors.red[700],
                               fontWeight: FontWeight.bold,
@@ -542,7 +560,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${resolved.length} resuelto${resolved.length != 1 ? "s" : ""}',
+                              l
+                                  .t('resolved_count')
+                                  .replaceAll('{n}', '${resolved.length}'),
                               style: TextStyle(
                                 color: Colors.green[700],
                                 fontWeight: FontWeight.bold,
@@ -555,7 +575,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     ],
                     const Spacer(),
                     Text(
-                      'Visible para todos',
+                      l.t('visible_for_all'),
                       style: TextStyle(color: Colors.grey[400], fontSize: 11),
                     ),
                     const SizedBox(width: 4),
@@ -566,11 +586,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
 
               // ── Accidentes activos ─────────────────
               if (active.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   child: Text(
-                    'ACTIVOS',
-                    style: TextStyle(
+                    l.t('active_label'),
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: Colors.red,
@@ -578,16 +601,16 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     ),
                   ),
                 ),
-                ...active.map((a) => _accidentCard(a)),
+                ...active.map((a) => _accidentCard(a, l: l)),
               ],
 
               // ── Accidentes resueltos ───────────────
               if (resolved.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                   child: Text(
-                    'RESUELTOS',
-                    style: TextStyle(
+                    l.t('resolved_label'),
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: Colors.green,
@@ -595,7 +618,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     ),
                   ),
                 ),
-                ...resolved.map((a) => _accidentCard(a, isResolved: true)),
+                ...resolved.map(
+                  (a) => _accidentCard(a, isResolved: true, l: l),
+                ),
               ],
             ],
           ),
@@ -604,7 +629,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
     );
   }
 
-  Widget _accidentCard(AccidentEntity a, {bool isResolved = false}) {
+  Widget _accidentCard(
+    AccidentEntity a, {
+    bool isResolved = false,
+    required LocaleNotifier l,
+  }) {
     final color = isResolved ? Colors.green : _severityColor(a.severity);
     final dist = _distanceText(a.latitude, a.longitude);
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
@@ -661,8 +690,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                             ),
                             child: Text(
                               isResolved
-                                  ? 'Resuelto'
-                                  : _severityLabel(a.severity),
+                                  ? l.t('resolved')
+                                  : _severityLabel(a.severity, l),
                               style: TextStyle(
                                 color: color,
                                 fontSize: 10,
@@ -681,9 +710,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                                 color: Colors.blue.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Text(
-                                'Mío',
-                                style: TextStyle(
+                              child: Text(
+                                l.t('mine'),
+                                style: const TextStyle(
                                   color: Colors.blue,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -693,7 +722,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                           ],
                           const Spacer(),
                           Text(
-                            _timeAgo(a.createdAt),
+                            _timeAgo(a.createdAt, l),
                             style: TextStyle(
                               color: Colors.grey[400],
                               fontSize: 11,
@@ -718,7 +747,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                           ),
                           const SizedBox(width: 3),
                           Text(
-                            a.userName.isNotEmpty ? a.userName : 'Anónimo',
+                            a.userName.isNotEmpty
+                                ? a.userName
+                                : l.t('anonymous'),
                             style: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 11,
@@ -773,7 +804,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ═══════════════════════════════════════════════════════
   // ── TAB 2: MAPA ─────────────────────────────────────
   // ═══════════════════════════════════════════════════════
-  Widget _buildMapTab() {
+  Widget _buildMapTab(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
@@ -804,7 +835,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                   : BitmapDescriptor.hueYellow,
             ),
             infoWindow: InfoWindow(
-              title: '${_severityLabel(a.severity)} - ${_timeAgo(a.createdAt)}',
+              title:
+                  '${_severityLabel(a.severity, l)} - ${_timeAgo(a.createdAt, l)}',
               snippet: a.description.length > 60
                   ? '${a.description.substring(0, 60)}...'
                   : a.description,
@@ -857,16 +889,18 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${accidents.length} accidente${accidents.length != 1 ? "s" : ""} activo${accidents.length != 1 ? "s" : ""}',
+                      l
+                          .t('active_count')
+                          .replaceAll('{n}', '${accidents.length}'),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
                     ),
                     const SizedBox(height: 6),
-                    _legendItem(Colors.red, 'Grave'),
-                    _legendItem(Colors.orange, 'Moderado'),
-                    _legendItem(Colors.yellow[700]!, 'Leve'),
+                    _legendItem(Colors.red, l.t('severity_severe')),
+                    _legendItem(Colors.orange, l.t('severity_moderate')),
+                    _legendItem(Colors.yellow[700]!, l.t('severity_minor')),
                   ],
                 ),
               ),
@@ -898,7 +932,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ═══════════════════════════════════════════════════════
   // ── TAB 3: FORMULARIO DE REPORTE ────────────────────
   // ═══════════════════════════════════════════════════════
-  Widget _buildReportForm() {
+  Widget _buildReportForm(LocaleNotifier l) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -919,7 +953,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Tu reporte será visible para todos los ciclistas de Biux',
+                    l.t('report_visible_disclaimer'),
                     style: TextStyle(
                       color: Colors.red[800],
                       fontSize: 12,
@@ -934,9 +968,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           const SizedBox(height: 20),
 
           // ── Ubicación ─────────────────────────────
-          const Text(
-            '📍 Ubicación del accidente',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            l.t('accident_location_section'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           GestureDetector(
@@ -993,18 +1027,18 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                                 color: Colors.red[700],
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.edit_location_alt,
                                     color: Colors.white,
                                     size: 16,
                                   ),
-                                  SizedBox(width: 4),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    'Cambiar',
-                                    style: TextStyle(
+                                    l.t('change_location'),
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
                                     ),
@@ -1016,14 +1050,14 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                         ],
                       ),
                     )
-                  : const Column(
+                  : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.map, size: 48, color: Colors.grey),
-                        SizedBox(height: 8),
+                        const Icon(Icons.map, size: 48, color: Colors.grey),
+                        const SizedBox(height: 8),
                         Text(
-                          'Toca para seleccionar ubicación',
-                          style: TextStyle(color: Colors.grey),
+                          l.t('tap_to_select_location'),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ],
                     ),
@@ -1041,44 +1075,49 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           const SizedBox(height: 20),
 
           // ── Gravedad ──────────────────────────────
-          const Text(
-            '⚠️ Gravedad',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            l.t('severity_section'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
               _severityChip(
                 'minor',
-                'Leve',
+                l.t('severity_minor'),
                 Colors.yellow[700]!,
                 Icons.warning_amber,
               ),
               const SizedBox(width: 8),
               _severityChip(
                 'moderate',
-                'Moderado',
+                l.t('severity_moderate'),
                 Colors.orange,
                 Icons.warning,
               ),
               const SizedBox(width: 8),
-              _severityChip('severe', 'Grave', Colors.red, Icons.dangerous),
+              _severityChip(
+                'severe',
+                l.t('severity_severe'),
+                Colors.red,
+                Icons.dangerous,
+              ),
             ],
           ),
 
           const SizedBox(height: 20),
 
           // ── Descripción ───────────────────────────
-          const Text(
-            '📝 Descripción',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            l.t('description_section'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _descCtrl,
             maxLines: 4,
             decoration: InputDecoration(
-              hintText: 'Describe qué pasó, tipo de vehículo, lesiones, etc.',
+              hintText: l.t('accident_description_hint'),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1090,9 +1129,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           const SizedBox(height: 20),
 
           // ── Fotos ─────────────────────────────────
-          const Text(
-            '📸 Fotos (opcional)',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Text(
+            l.t('photos_optional_section'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           SizedBox(
@@ -1192,7 +1231,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       ),
                     )
                   : const Icon(Icons.send),
-              label: Text(_submitting ? 'Enviando...' : 'Enviar reporte'),
+              label: Text(_submitting ? l.t('sending') : l.t('send_report')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[700],
                 foregroundColor: Colors.white,
@@ -1219,7 +1258,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Si hay heridos, llama al 911 primero.',
+                    l.t('call_911_disclaimer'),
                     style: TextStyle(color: Colors.blue[800], fontSize: 12),
                   ),
                 ),

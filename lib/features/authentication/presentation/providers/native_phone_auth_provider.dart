@@ -105,12 +105,11 @@ class NativePhoneAuthProvider extends ChangeNotifier {
           _state = AuthState.error;
 
           if (e.code == 'invalid-phone-number') {
-            _errorMessage =
-                'Número inválido. Verifica el formato (+57XXXXXXXXXX)';
+            _errorMessage = 'err_invalid_phone_format';
           } else if (e.code == 'too-many-requests') {
-            _errorMessage = 'Demasiados intentos. Espera unos minutos.';
+            _errorMessage = 'err_too_many_requests';
           } else {
-            _errorMessage = e.message ?? 'Error al enviar código';
+            _errorMessage = e.message ?? 'err_send_code';
           }
           notifyListeners();
         },
@@ -138,7 +137,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     } catch (e) {
       AppLogger.error('Error enviando código', tag: 'Auth', error: e);
       _state = AuthState.error;
-      _errorMessage = 'Error al enviar código: $e';
+      _errorMessage = 'err_send_code';
       notifyListeners();
     }
   }
@@ -147,7 +146,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
   Future<void> validateCode(String code) async {
     if (_verificationId == null) {
       _state = AuthState.error;
-      _errorMessage = 'Error: Solicita un nuevo código';
+      _errorMessage = 'err_request_new_code';
       notifyListeners();
       return;
     }
@@ -173,11 +172,11 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       _state = AuthState.error;
 
       if (e.toString().contains('invalid-verification-code')) {
-        _errorMessage = 'Código inválido';
+        _errorMessage = 'err_invalid_code';
       } else if (e.toString().contains('session-expired')) {
-        _errorMessage = 'Código expirado. Solicita uno nuevo';
+        _errorMessage = 'err_code_expired_request_new';
       } else {
-        _errorMessage = 'Error al verificar código';
+        _errorMessage = 'err_verify_code';
       }
       notifyListeners();
     }
@@ -192,7 +191,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       final user = userCredential.user;
 
       if (user == null) {
-        throw Exception('No se pudo crear sesión');
+        throw Exception('err_create_session');
       }
 
       await _firestore.collection('users').doc(user.uid).set({
@@ -210,7 +209,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     } catch (e) {
       AppLogger.error('Error login admin', tag: 'Auth', error: e);
       _state = AuthState.error;
-      _errorMessage = 'Error al iniciar sesión como admin: $e';
+      _errorMessage = 'err_admin_login';
       notifyListeners();
     }
   }
@@ -244,7 +243,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       _phoneNumber = null;
       notifyListeners();
     } catch (e) {
-      _errorMessage = 'Error al cerrar sesión';
+      _errorMessage = 'err_sign_out';
       notifyListeners();
     }
   }
@@ -254,5 +253,4 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     _resendTimer?.cancel();
     super.dispose();
   }
-
 }

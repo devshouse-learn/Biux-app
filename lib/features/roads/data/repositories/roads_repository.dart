@@ -61,7 +61,7 @@ class RoadsRepository {
         id: json.decode(response.body),
       );
     } else {
-      throw Exception('Fallo en actualizar grupo');
+      throw Exception('error_update_group');
     }
 
     //Map<String, dynamic> responseData = json.decode(response.body);
@@ -112,7 +112,7 @@ class RoadsRepository {
 
       return;
     } else if (uriResponse.statusCode == 409) {
-      return 'Debes unirte al grupo para poder participar en esta rodada';
+      return 'must_join_group_for_ride';
     }
   }
 
@@ -127,7 +127,7 @@ class RoadsRepository {
       );
       if (uriResponse.statusCode == 200) {
         json.decode(uriResponse.body);
-        return "se elimino con exito";
+        return 'deleted_successfully';
       } else {}
       // return Rodada.fromJson(json.decode(response.body));
     }

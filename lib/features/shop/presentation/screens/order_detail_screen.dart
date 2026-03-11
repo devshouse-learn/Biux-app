@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/domain/entities/order_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 
@@ -11,21 +12,26 @@ class OrderDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Consumer<ShopProvider>(
       builder: (context, provider, _) {
-        final order = provider.userOrders.where((o) => o.id == orderId).firstOrNull;
+        final order = provider.userOrders
+            .where((o) => o.id == orderId)
+            .firstOrNull;
         if (order == null) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Detalle del pedido'),
+              title: Text(l.t('order_detail_title')),
               backgroundColor: ColorTokens.primary30,
             ),
-            body: const Center(child: Text('Pedido no encontrado')),
+            body: Center(child: Text(l.t('order_not_found'))),
           );
         }
         return Scaffold(
           appBar: AppBar(
-            title: Text('Pedido #\${order.id.substring(0, 8)}'),
+            title: Text(
+              '${l.t('order_number_prefix')}${order.id.substring(0, 8)}',
+            ),
             backgroundColor: ColorTokens.primary30,
           ),
           body: SingleChildScrollView(
@@ -33,11 +39,11 @@ class OrderDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _StatusCard(order: order),
+                _StatusCard(order: order, l: l),
                 const SizedBox(height: 16),
-                _ItemsCard(order: order),
+                _ItemsCard(order: order, l: l),
                 const SizedBox(height: 16),
-                _SummaryCard(order: order),
+                _SummaryCard(order: order, l: l),
               ],
             ),
           ),
@@ -49,15 +55,21 @@ class OrderDetailScreen extends StatelessWidget {
 
 class _StatusCard extends StatelessWidget {
   final OrderEntity order;
-  const _StatusCard({required this.order});
+  final LocaleNotifier l;
+  const _StatusCard({required this.order, required this.l});
 
   Color _statusColor(String status) {
     switch (status) {
-      case OrderStatus.pending: return Colors.orange;
-      case OrderStatus.processing: return Colors.blue;
-      case OrderStatus.completed: return Colors.green;
-      case OrderStatus.cancelled: return Colors.red;
-      default: return Colors.grey;
+      case OrderStatus.pending:
+        return Colors.orange;
+      case OrderStatus.processing:
+        return Colors.blue;
+      case OrderStatus.completed:
+        return Colors.green;
+      case OrderStatus.cancelled:
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -72,8 +84,10 @@ class _StatusCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Estado del pedido',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              l.t('order_status_label'),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -84,12 +98,18 @@ class _StatusCard extends StatelessWidget {
               ),
               child: Text(
                 OrderStatus.getDisplayName(order.status).toUpperCase(),
-                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
               ),
             ),
             const SizedBox(height: 8),
-            Text('Fecha: $date',
-                style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+            Text(
+              '${l.t('order_date_prefix')}$date',
+              style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            ),
           ],
         ),
       ),
@@ -99,7 +119,8 @@ class _StatusCard extends StatelessWidget {
 
 class _ItemsCard extends StatelessWidget {
   final OrderEntity order;
-  const _ItemsCard({required this.order});
+  final LocaleNotifier l;
+  const _ItemsCard({required this.order, required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -110,24 +131,36 @@ class _ItemsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Productos',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              l.t('products_label'),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 12),
-            ...order.items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: Text(item.product.name,
-                      style: const TextStyle(fontSize: 14))),
-                  Text("x\${item.quantity}",
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-                  const SizedBox(width: 8),
-                  Text('\${item.product.price.toStringAsFixed(0)}',
-                      style: const TextStyle(fontWeight: FontWeight.w600)),
-                ],
+            ...order.items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.product.name,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    Text(
+                      "x\${item.quantity}",
+                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '\${item.product.price.toStringAsFixed(0)}',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
           ],
         ),
       ),
@@ -137,7 +170,8 @@ class _ItemsCard extends StatelessWidget {
 
 class _SummaryCard extends StatelessWidget {
   final OrderEntity order;
-  const _SummaryCard({required this.order});
+  final LocaleNotifier l;
+  const _SummaryCard({required this.order, required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +182,10 @@ class _SummaryCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Total',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              l.t('total_label'),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             Text(
               '\${order.total.toStringAsFixed(0)}',
               style: TextStyle(

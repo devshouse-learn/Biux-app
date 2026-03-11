@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/users/presentation/screens/edit_user_screen/edit_user_screen_bloc.dart';
@@ -20,12 +20,13 @@ class UserEditScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<EditUserScreenBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       key: _scaffolState,
       backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
-        title: Text(AppStrings.editProfile, style: Styles.containerNameUser),
+        title: Text(l.t('edit_profile'), style: Styles.containerNameUser),
       ),
       body: Form(
         key: _formKey,
@@ -59,6 +60,7 @@ class _FormGroupWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<EditUserScreenBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.only(top: 70),
       child: Center(
@@ -79,7 +81,7 @@ class _FormGroupWidget extends StatelessWidget {
                 TextFormFieldBiuxWidget(
                   maxLine: 1,
                   controller: bloc.nameController,
-                  text: AppStrings.nameText,
+                  text: l.t('full_name'),
                   image: Image.asset(
                     Images.kImageSocial,
                     scale: 4,
@@ -96,7 +98,7 @@ class _FormGroupWidget extends StatelessWidget {
                   maxLine: 1,
                   enabled: false,
                   controller: bloc.nameUserController,
-                  text: AppStrings.nameUserText,
+                  text: l.t('username'),
                   image: Image.asset(
                     Images.kImageIconFacebook,
                     height: 1,
@@ -138,7 +140,7 @@ class _FormGroupWidget extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Editar nombre de usuario',
+                                  l.t('edit_username'),
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -169,7 +171,7 @@ class _FormGroupWidget extends StatelessWidget {
                   maxLine: 1,
                   enabled: false,
                   controller: bloc.correoController,
-                  text: AppStrings.gmail,
+                  text: l.t('email_field'),
                   image: SizedBox(
                     width: 5,
                     child: Image.asset(
@@ -182,7 +184,7 @@ class _FormGroupWidget extends StatelessWidget {
                 TextFormFieldBiuxWidget(
                   maxLine: 1,
                   controller: bloc.numberController,
-                  text: AppStrings.numberText,
+                  text: l.t('number_field'),
                   image: Image.asset(
                     Images.kImagePhone,
                     scale: 4,
@@ -201,7 +203,7 @@ class _FormGroupWidget extends StatelessWidget {
                   child: TextFormFieldBiuxWidget(
                     maxLine: 5,
                     controller: bloc.descripcionController,
-                    text: AppStrings.descriptionText,
+                    text: l.t('description_field'),
                     radiusCircular: 15,
                     maxLength: 200,
                     validator: (value) {
@@ -229,6 +231,7 @@ class _BotonSend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<EditUserScreenBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       children: <Widget>[
         ElevatedButtonTheme(
@@ -250,7 +253,7 @@ class _BotonSend extends StatelessWidget {
                 ColorTokens.neutral100,
               ),
             ),
-            child: Text(AppStrings.cancelText, style: Styles.textLightBlack),
+            child: Text(l.t('cancel'), style: Styles.textLightBlack),
             onPressed: () {
               bloc.onTapPop(context);
             },
@@ -275,7 +278,10 @@ class _BotonSend extends StatelessWidget {
                 ColorTokens.secondary50,
               ),
             ),
-            child: Text(AppStrings.update, style: Styles.daysRoadListDateTime),
+            child: Text(
+              l.t('update_button'),
+              style: Styles.daysRoadListDateTime,
+            ),
             onPressed: () async {
               if (form.currentState!.validate()) {
                 try {
@@ -286,7 +292,7 @@ class _BotonSend extends StatelessWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
-                        content: AppStrings.userUpdate,
+                        content: l.t('user_updated'),
                         backgroundColor: ColorTokens.secondary50,
                       ),
                     );
@@ -301,7 +307,8 @@ class _BotonSend extends StatelessWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
-                        content: 'Error al actualizar perfil: ${e.toString()}',
+                        content:
+                            '${l.t('error_updating_profile')}: ${e.toString()}',
                         backgroundColor: ColorTokens.error50,
                       ),
                     );
@@ -312,14 +319,14 @@ class _BotonSend extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
                     content: bloc.nameController.text.isEmpty
-                        ? AppStrings.fullNameIsEmpty
+                        ? l.t('enter_your_name')
                         : bloc.numberController.text.isEmpty
-                        ? AppStrings.numberIsEmpty
+                        ? l.t('enter_your_number')
                         : bloc.cityController.text.isEmpty
-                        ? AppStrings.cityIsEmpty
+                        ? l.t('enter_your_city')
                         : bloc.descripcionController.text.isEmpty
-                        ? AppStrings.descritionIsEmpty
-                        : 'Por favor completa todos los campos obligatorios',
+                        ? l.t('enter_your_description')
+                        : l.t('complete_all_required_fields'),
                     backgroundColor: ColorTokens.error50,
                   ),
                 );
@@ -338,6 +345,7 @@ class _LogoBiuxWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<EditUserScreenBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       children: [
         Container(
@@ -359,8 +367,8 @@ class _LogoBiuxWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Foto de Portada',
+              Text(
+                l.t('cover_photo'),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -407,7 +415,7 @@ class _LogoBiuxWidget extends StatelessWidget {
                                     return Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: const [
+                                      children: [
                                         Icon(
                                           Icons.broken_image_outlined,
                                           size: 40,
@@ -415,7 +423,7 @@ class _LogoBiuxWidget extends StatelessWidget {
                                         ),
                                         SizedBox(height: 8),
                                         Text(
-                                          'Tap para cambiar foto',
+                                          l.t('tap_to_change_photo'),
                                           style: TextStyle(
                                             color: ColorTokens.neutral60,
                                             fontSize: 12,
@@ -428,7 +436,7 @@ class _LogoBiuxWidget extends StatelessWidget {
                               )
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Icon(
                                     Icons.image_outlined,
                                     size: 40,
@@ -436,7 +444,7 @@ class _LogoBiuxWidget extends StatelessWidget {
                                   ),
                                   SizedBox(height: 8),
                                   Text(
-                                    'Tap para agregar foto de portada',
+                                    l.t('tap_to_add_cover_photo'),
                                     style: TextStyle(
                                       color: ColorTokens.neutral60,
                                       fontSize: 12,
@@ -460,6 +468,7 @@ class _WidgetSearchCity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<EditUserScreenBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       width: 350,
       margin: EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 5),
@@ -479,7 +488,7 @@ class _WidgetSearchCity extends StatelessWidget {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(10.0, 15.0, 20.0, 15.0),
           border: InputBorder.none,
-          hintText: AppStrings.cityText,
+          hintText: l.t('city_field'),
           hintStyle: Styles.TextSearch,
           prefixIcon: Image.asset(
             Images.kImageLocationGrey,
@@ -509,6 +518,7 @@ class _ListCity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<EditUserScreenBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       child: Column(
         children: [
@@ -522,7 +532,10 @@ class _ListCity extends StatelessWidget {
             minLeadingWidth: 36,
             iconColor: ColorTokens.neutral0,
             leading: Image.asset(Images.kImageLocation2, height: 20),
-            title: Text(AppStrings.currentLocation, style: Styles.TextCityList),
+            title: Text(
+              l.t('current_location_field'),
+              style: Styles.TextCityList,
+            ),
             onTap: () {},
           ),
           Divider(color: ColorTokens.neutral60, height: 1),

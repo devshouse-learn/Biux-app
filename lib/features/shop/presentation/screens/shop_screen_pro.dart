@@ -192,20 +192,21 @@ class _ShopScreenProState extends State<ShopScreenPro>
             // Favoritos
             Consumer2<ShopProvider, UserProvider>(
               builder: (context, shopProvider, userProvider, child) {
-                final uid = userProvider.user?.uid ?? FirebaseAuth.instance.currentUser?.uid ?? '';
+                final uid =
+                    userProvider.user?.uid ??
+                    FirebaseAuth.instance.currentUser?.uid ??
+                    '';
                 final favCount = uid.isEmpty
                     ? 0
                     : shopProvider.products
-                        .where((p) => p.isLikedBy(uid))
-                        .length;
+                          .where((p) => p.isLikedBy(uid))
+                          .length;
                 return Stack(
                   clipBehavior: Clip.none,
                   children: [
                     IconButton(
                       icon: Icon(
-                        favCount > 0
-                            ? Icons.favorite
-                            : Icons.favorite_border,
+                        favCount > 0 ? Icons.favorite : Icons.favorite_border,
                         size: 24,
                         color: favCount > 0
                             ? Colors.red
@@ -1662,7 +1663,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                            color: const Color(
+                              0xFF16242D,
+                            ).withValues(alpha: 0.12),
                           ),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -1671,7 +1674,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             isExpanded: true,
                             icon: Icon(
                               Icons.keyboard_arrow_down,
-                              color: const Color(0xFF16242D).withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.5),
                             ),
                             style: const TextStyle(
                               color: Color(0xFF16242D),
@@ -1765,7 +1770,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.12),
                             ),
                           ),
                           child: Row(
@@ -1773,7 +1780,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 18,
-                                color: const Color(0xFF16242D).withValues(alpha: 0.4),
+                                color: const Color(
+                                  0xFF16242D,
+                                ).withValues(alpha: 0.4),
                               ),
                               const SizedBox(width: 8),
                               Text(
@@ -2393,16 +2402,23 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       builder: (context, userProvider, shopProvider, child) {
                         final currentUser = userProvider.user;
                         if (currentUser == null) return const SizedBox.shrink();
-                        final uid = currentUser.uid.isNotEmpty ? currentUser.uid : (FirebaseAuth.instance.currentUser?.uid ?? 'local_user');
+                        final uid = currentUser.uid.isNotEmpty
+                            ? currentUser.uid
+                            : (FirebaseAuth.instance.currentUser?.uid ??
+                                  'local_user');
                         // Leer producto actualizado del provider
-                        final updatedProduct = shopProvider.products
-                            .where((p) => p.id == product.id)
-                            .firstOrNull ?? product;
+                        final updatedProduct =
+                            shopProvider.products
+                                .where((p) => p.id == product.id)
+                                .firstOrNull ??
+                            product;
                         final isLiked = updatedProduct.isLikedBy(uid);
                         return GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           onTap: () {
-                            debugPrint('LIKE_GRID>>> TAP on ${product.id} by $uid isLiked=$isLiked');
+                            debugPrint(
+                              'LIKE_GRID>>> TAP on ${product.id} by $uid isLiked=$isLiked',
+                            );
                             shopProvider.toggleProductLike(product.id, uid);
                           },
                           child: CircleAvatar(
@@ -2413,9 +2429,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             child: Icon(
                               isLiked ? Icons.favorite : Icons.favorite_border,
                               size: 18,
-                              color: isLiked
-                                  ? Colors.red
-                                  : Colors.grey[700],
+                              color: isLiked ? Colors.red : Colors.grey[700],
                             ),
                           ),
                         );
@@ -2661,13 +2675,17 @@ class _ShopScreenProState extends State<ShopScreenPro>
               final currentUser = userProvider.user;
               if (currentUser == null) return const SizedBox.shrink();
               final uid = currentUser.uid;
-              final updatedProduct = shopProvider.products
-                  .where((p) => p.id == product.id)
-                  .firstOrNull ?? product;
+              final updatedProduct =
+                  shopProvider.products
+                      .where((p) => p.id == product.id)
+                      .firstOrNull ??
+                  product;
               final isLiked = updatedProduct.isLikedBy(uid);
               return IconButton(
                 onPressed: () {
-                  debugPrint('LIKE_LIST>>> TAP on ${product.id} by $uid isLiked=$isLiked');
+                  debugPrint(
+                    'LIKE_LIST>>> TAP on ${product.id} by $uid isLiked=$isLiked',
+                  );
                   shopProvider.toggleProductLike(product.id, uid);
                 },
                 icon: Icon(
@@ -4465,12 +4483,12 @@ void _showReportsSheet(BuildContext context) {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(24),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
                       child: Center(
                         child: Text(
-                          'Sin datos de ventas aún',
-                          style: TextStyle(color: Colors.grey),
+                          l.t('shop_no_sales_data'),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -4902,12 +4920,12 @@ void _showStatsSheet(BuildContext context) {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(24),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
                       child: Center(
                         child: Text(
-                          'Sin datos de visitas aún',
-                          style: TextStyle(color: Colors.grey),
+                          l.t('shop_no_visits_data'),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -4999,9 +5017,7 @@ void _showSecuritySheet(BuildContext context) {
                                     color: Colors.green[700],
                                   ),
                                 ),
-                                const Text(
-                                  'No se detectaron problemas de seguridad',
-                                ),
+                                Text(l.t('shop_no_security_issues')),
                               ],
                             ),
                           ),

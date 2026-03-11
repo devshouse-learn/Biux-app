@@ -60,7 +60,7 @@ class NotificationsProvider extends ChangeNotifier {
     try {
       await _repository.markAsRead(userId, notificationId);
     } catch (e) {
-      _error = 'Error al marcar como leída: $e';
+      _error = 'notif_mark_read_error';
       notifyListeners();
     }
   }
@@ -76,7 +76,7 @@ class NotificationsProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al marcar todas como leídas: $e';
+      _error = 'notif_mark_all_read_error';
       _isLoading = false;
       notifyListeners();
     }
@@ -87,7 +87,7 @@ class NotificationsProvider extends ChangeNotifier {
     try {
       await _repository.deleteNotification(userId, notificationId);
     } catch (e) {
-      _error = 'Error al eliminar notificación: $e';
+      _error = 'notif_delete_error';
       notifyListeners();
     }
   }
@@ -103,7 +103,7 @@ class NotificationsProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al eliminar todas las notificaciones: $e';
+      _error = 'notif_delete_all_error';
       _isLoading = false;
       notifyListeners();
     }

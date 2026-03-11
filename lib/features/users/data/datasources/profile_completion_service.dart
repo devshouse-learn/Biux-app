@@ -80,15 +80,16 @@ class ProfileCompletionService {
     final missingFields = await getMissingFields(userId: userId);
     if (missingFields.isEmpty) return '';
 
-    final fieldLabels = {
-      'fullName': 'nombre completo',
-      'username': 'nombre de usuario',
-      'photoUrl': 'foto de perfil',
-      'gender': 'género',
-      'dateBirth': 'fecha de nacimiento',
+    // Translation keys – the caller with BuildContext should use l.t() on each key
+    const fieldLabelKeys = {
+      'fullName': 'field_full_name',
+      'username': 'field_username',
+      'photoUrl': 'field_photo_url',
+      'gender': 'field_gender',
+      'dateBirth': 'field_birth_date',
     };
 
-    final labels = missingFields.map((f) => fieldLabels[f] ?? f).toList();
-    return 'Por favor completa: ${labels.join(', ')}';
+    final keys = missingFields.map((f) => fieldLabelKeys[f] ?? f).toList();
+    return 'please_complete_fields:${keys.join(',')}';
   }
 }

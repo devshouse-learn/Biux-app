@@ -1,4 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
@@ -9,6 +10,7 @@ import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GroupList extends StatelessWidget {
   final List<Group> groupList;
@@ -29,6 +31,7 @@ class GroupList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.only(top: 10),
@@ -168,7 +171,7 @@ class GroupList extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                AppStrings.editGroup,
+                                l.t('edit_group'),
                                 style: Styles.containerTextName,
                               ),
                               onPressed: () async {},
@@ -209,7 +212,7 @@ class GroupList extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                AppStrings.outText,
+                                l.t('leave_text'),
                                 style: Styles.containerTextName,
                               ),
                               onPressed: () async {
@@ -260,7 +263,7 @@ class GroupList extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                AppStrings.joinMe,
+                                l.t('join_me'),
                                 style: Styles.textLightBlack,
                               ),
                               onPressed: () async {

@@ -66,28 +66,7 @@ class InformationDetailsScreen extends StatelessWidget {
         ),
         content: SingleChildScrollView(
           child: Text(
-            '''Términos y Condiciones de Biux
-
-1. ACEPTACIÓN DE TÉRMINOS
-Al usar la aplicación Biux, aceptas estos términos y condiciones en su totalidad.
-
-2. USO RESPONSABLE
-El usuario se compromete a usar la aplicación de forma responsable y legal.
-
-3. CONTENIDO DEL USUARIO
-El usuario es responsable del contenido que publique en la plataforma.
-
-4. PRIVACIDAD
-Tus datos personales serán protegidos según nuestra política de privacidad.
-
-5. LIMITACIÓN DE RESPONSABILIDAD
-Biux no es responsable por daños indirectos o pérdidas de datos.
-
-6. CAMBIOS EN LOS TÉRMINOS
-Nos reservamos el derecho de modificar estos términos en cualquier momento.
-
-7. CONTACTO
-Para preguntas sobre estos términos, contáctanos a support@biux.com''',
+            l.t('terms_content'),
             style: TextStyle(
               color: isDark ? Colors.white70 : Colors.black87,
               fontSize: 12,

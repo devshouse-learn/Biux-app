@@ -85,7 +85,7 @@ class ShopProvider with ChangeNotifier {
       _isLoadingProducts = false;
       notifyListeners();
     } catch (e) {
-      _errorMessage = 'Error al cargar productos: $e';
+      _errorMessage = 'shop_load_error';
       _isLoadingProducts = false;
       notifyListeners();
     }
@@ -219,7 +219,7 @@ class ShopProvider with ChangeNotifier {
 
     // Validar que hay items en el carrito
     if (_cartItems.isEmpty) {
-      _couponErrorMessage = 'Agrega productos al carrito primero';
+      _couponErrorMessage = 'shop_cart_empty_coupon';
       notifyListeners();
       return false;
     }
@@ -238,44 +238,50 @@ class ShopProvider with ChangeNotifier {
       // Cupones generales
       'BIUX10': CouponData(
         discount: 0.10,
-        description: 'Descuento general 10%',
+        description: 'shop_discount_general_10',
       ),
       'BIUX15': CouponData(
         discount: 0.15,
-        description: 'Descuento general 15%',
+        description: 'shop_discount_general_15',
       ),
       'BIUX20': CouponData(
         discount: 0.20,
-        description: 'Descuento general 20%',
+        description: 'shop_discount_general_20',
       ),
 
       // Cupones especiales
       'PRIMERACOMPRA': CouponData(
         discount: 0.15,
-        description: 'Primera compra 15%',
+        description: 'shop_discount_first_purchase',
       ),
-      'CICLISTA': CouponData(discount: 0.12, description: 'Ciclistas 12%'),
+      'CICLISTA': CouponData(
+        discount: 0.12,
+        description: 'shop_discount_cyclists',
+      ),
       'NUEVOCLIENTE': CouponData(
         discount: 0.18,
-        description: 'Nuevo cliente 18%',
+        description: 'shop_discount_new_client',
       ),
 
       // Cupones estacionales
       'VERANO2026': CouponData(
         discount: 0.25,
-        description: 'Verano 2026 - 25%',
+        description: 'shop_discount_summer',
       ),
-      'ENERO2026': CouponData(discount: 0.20, description: 'Enero 2026 - 20%'),
+      'ENERO2026': CouponData(
+        discount: 0.20,
+        description: 'shop_discount_january',
+      ),
 
       // Cupones VIP
       'VIP30': CouponData(
         discount: 0.30,
-        description: 'Cliente VIP 30%',
+        description: 'shop_discount_vip',
         minPurchase: 200000,
       ),
       'ELITE40': CouponData(
         discount: 0.40,
-        description: 'Elite 40%',
+        description: 'shop_discount_elite',
         minPurchase: 500000,
       ),
     };
@@ -283,7 +289,7 @@ class ShopProvider with ChangeNotifier {
     final couponData = validCoupons[couponCode.toUpperCase()];
 
     if (couponData == null) {
-      _couponErrorMessage = 'Cupón inválido o expirado';
+      _couponErrorMessage = 'shop_coupon_invalid';
       notifyListeners();
       return false;
     }
@@ -300,7 +306,9 @@ class ShopProvider with ChangeNotifier {
     _couponDiscount = cartTotal * couponData.discount;
     _appliedCoupon = couponCode.toUpperCase();
 
-    debugPrint('🎟️ Cupón aplicado: $_appliedCoupon (${couponData.description})');
+    debugPrint(
+      '🎟️ Cupón aplicado: $_appliedCoupon (${couponData.description})',
+    );
     debugPrint(
       '💰 Descuento: \$${_couponDiscount.toStringAsFixed(0)} COP (${(couponData.discount * 100).toStringAsFixed(0)}%)',
     );
@@ -405,7 +413,7 @@ class ShopProvider with ChangeNotifier {
     String? notes,
   }) async {
     if (_cartItems.isEmpty) {
-      _errorMessage = 'El carrito está vacío';
+      _errorMessage = 'shop_cart_empty';
       notifyListeners();
       return null;
     }
@@ -451,7 +459,7 @@ class ShopProvider with ChangeNotifier {
 
       return orderId;
     } catch (e) {
-      _errorMessage = 'Error al crear orden: $e';
+      _errorMessage = 'shop_order_error';
       notifyListeners();
       return null;
     }
@@ -472,14 +480,14 @@ class ShopProvider with ChangeNotifier {
     try {
       // Validar stock
       if (product.stock < quantity) {
-        _errorMessage = 'Stock insuficiente';
+        _errorMessage = 'shop_stock_insufficient';
         notifyListeners();
         return null;
       }
 
       // Validar talla si es necesaria
       if (product.sizes.isNotEmpty && selectedSize == null) {
-        _errorMessage = 'Debes seleccionar una talla';
+        _errorMessage = 'shop_size_required';
         notifyListeners();
         return null;
       }
@@ -516,7 +524,7 @@ class ShopProvider with ChangeNotifier {
 
       return orderId;
     } catch (e) {
-      _errorMessage = 'Error al realizar compra: $e';
+      _errorMessage = 'shop_purchase_error';
       notifyListeners();
       return null;
     }
@@ -532,7 +540,7 @@ class ShopProvider with ChangeNotifier {
       _isLoadingOrders = false;
       notifyListeners();
     } catch (e) {
-      _errorMessage = 'Error al cargar órdenes: $e';
+      _errorMessage = 'shop_orders_load_error';
       _isLoadingOrders = false;
       notifyListeners();
     }
@@ -554,7 +562,7 @@ class ShopProvider with ChangeNotifier {
 
       return true;
     } catch (e) {
-      _errorMessage = 'Error al cancelar orden: $e';
+      _errorMessage = 'shop_cancel_error';
       notifyListeners();
       return false;
     }
@@ -577,7 +585,7 @@ class ShopProvider with ChangeNotifier {
       await loadProducts(); // Recargar productos
       return true;
     } catch (e) {
-      _errorMessage = 'Error al crear producto: $e';
+      _errorMessage = 'shop_create_product_error';
       notifyListeners();
       return false;
     }
@@ -590,7 +598,7 @@ class ShopProvider with ChangeNotifier {
       await loadProducts(); // Recargar productos
       return true;
     } catch (e) {
-      _errorMessage = 'Error al actualizar producto: $e';
+      _errorMessage = 'shop_update_product_error';
       notifyListeners();
       return false;
     }
@@ -603,7 +611,7 @@ class ShopProvider with ChangeNotifier {
       await loadProducts(); // Recargar productos
       return true;
     } catch (e) {
-      _errorMessage = 'Error al eliminar producto: $e';
+      _errorMessage = 'shop_delete_product_error';
       notifyListeners();
       return false;
     }
@@ -648,7 +656,7 @@ class ShopProvider with ChangeNotifier {
       debugPrint('✅ Productos eliminados: $deletedCount');
       return deletedCount;
     } catch (e) {
-      _errorMessage = 'Error en limpieza de productos: $e';
+      _errorMessage = 'shop_cleanup_error';
       notifyListeners();
       return deletedCount;
     }
@@ -657,9 +665,13 @@ class ShopProvider with ChangeNotifier {
   /// Dar like/unlike a un producto (operación atómica en Firestore)
   Future<bool> toggleProductLike(String productId, String userId) async {
     try {
-      debugPrint('LIKE_PROVIDER>>> toggleProductLike productId=$productId userId=$userId');
+      debugPrint(
+        'LIKE_PROVIDER>>> toggleProductLike productId=$productId userId=$userId',
+      );
       final productIndex = _allProducts.indexWhere((p) => p.id == productId);
-      debugPrint('LIKE_PROVIDER>>> productIndex=$productIndex allProducts=${_allProducts.length}');
+      debugPrint(
+        'LIKE_PROVIDER>>> productIndex=$productIndex allProducts=${_allProducts.length}',
+      );
       if (productIndex == -1) return false;
 
       final product = _allProducts[productIndex];
@@ -677,7 +689,9 @@ class ShopProvider with ChangeNotifier {
       final updatedProduct = ProductModel.fromEntity(updatedEntity);
       _allProducts[productIndex] = updatedProduct;
       _applyFilters();
-      debugPrint('LIKE_PROVIDER>>> filteredProducts=${_filteredProducts.length} notifying...');
+      debugPrint(
+        'LIKE_PROVIDER>>> filteredProducts=${_filteredProducts.length} notifying...',
+      );
       notifyListeners();
 
       // Luego guardar en Firestore (si hay userId valido)
@@ -687,7 +701,9 @@ class ShopProvider with ChangeNotifier {
           await productRepository.toggleProductLike(productId, userId);
           debugPrint('LIKE_PROVIDER>>> Firestore saved OK');
         } catch (e) {
-          debugPrint('LIKE_PROVIDER>>> Firestore error (like se mantiene local): $e');
+          debugPrint(
+            'LIKE_PROVIDER>>> Firestore error (like se mantiene local): $e',
+          );
           // NO revertimos - el like se queda como Instagram/TikTok
         }
       }
@@ -725,7 +741,7 @@ class ShopProvider with ChangeNotifier {
 
       return true;
     } catch (e) {
-      _errorMessage = 'Error al marcar como vendido: $e';
+      _errorMessage = 'shop_sold_error';
       notifyListeners();
       return false;
     }

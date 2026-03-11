@@ -325,7 +325,6 @@ final GoRouter _router = GoRouter(
   refreshListenable: _authNotifier,
   routes: [
     // Ruta de splash
-
     GoRoute(
       path: AppRoutes.splash,
       name: AppRoutes.splashName,
@@ -538,12 +537,13 @@ final GoRouter _router = GoRouter(
           path: '/edit-post/:postId',
           name: 'editPost',
           builder: (context, state) {
+            final l = Provider.of<LocaleNotifier>(context, listen: false);
             // ignore: unused_local_variable
             final postId = state.pathParameters['postId']!;
             final experience = state.extra as ExperienceEntity?;
             if (experience == null) {
-              return const Scaffold(
-                body: Center(child: Text('Error: Publicación no encontrada')),
+              return Scaffold(
+                body: Center(child: Text(l.t('error_post_not_found'))),
               );
             }
             return EditExperienceScreen(experience: experience);
@@ -854,12 +854,13 @@ final GoRouter _router = GoRouter(
           path: '/store/seller-dashboard',
           name: 'sellerDashboard',
           builder: (context, state) {
+            final l = Provider.of<LocaleNotifier>(context, listen: false);
             final userProvider = context.read<UserProvider>();
             final currentUser = userProvider.user;
 
             if (currentUser == null) {
-              return const Scaffold(
-                body: Center(child: Text('Usuario no encontrado')),
+              return Scaffold(
+                body: Center(child: Text(l.t('error_user_not_found'))),
               );
             }
 
@@ -920,14 +921,12 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const AchievementsScreen(),
         ),
 
-
         // Onboarding
         GoRoute(
           path: '/onboarding',
           name: 'onboarding',
           builder: (context, state) => const OnboardingScreen(),
         ),
-
 
         // Búsqueda global
         GoRoute(
@@ -936,18 +935,20 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const GlobalSearchScreen(),
         ),
 
-
         // Seguidores/Siguiendo
         GoRoute(
           path: '/users/:userId/followers',
           name: 'followers',
           builder: (context, state) {
             final userId = state.pathParameters['userId']!;
-            final showFollowers = state.uri.queryParameters['tab'] != 'following';
-            return FollowersScreen(userId: userId, showFollowers: showFollowers);
+            final showFollowers =
+                state.uri.queryParameters['tab'] != 'following';
+            return FollowersScreen(
+              userId: userId,
+              showFollowers: showFollowers,
+            );
           },
         ),
-
 
         // Clima
         GoRoute(
@@ -955,7 +956,6 @@ final GoRouter _router = GoRouter(
           name: 'weather',
           builder: (context, state) => const WeatherScreen(),
         ),
-
 
         // Reportar Accidente
         GoRoute(
@@ -975,12 +975,13 @@ final GoRouter _router = GoRouter(
           path: '/store/admin-dashboard',
           name: 'storeAdminDashboard',
           builder: (context, state) {
+            final l = Provider.of<LocaleNotifier>(context, listen: false);
             final userProvider = context.read<UserProvider>();
             final currentUser = userProvider.user;
 
             if (currentUser == null) {
-              return const Scaffold(
-                body: Center(child: Text('Usuario no encontrado')),
+              return Scaffold(
+                body: Center(child: Text(l.t('error_user_not_found'))),
               );
             }
 
@@ -1024,11 +1025,18 @@ final GoRouter _router = GoRouter(
         children: [
           const Icon(Icons.error, size: 64, color: ColorTokens.error50),
           const SizedBox(height: 16),
-          Text('Error: ${state.error}'),
+          Text(
+            '${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: ${state.error}',
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.go(AppRoutes.splash),
-            child: const Text('Ir al inicio'),
+            child: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('go_to_home'),
+            ),
           ),
         ],
       ),
@@ -1089,11 +1097,12 @@ extension AppRouterExtension on BuildContext {
   void goToAchievements() => go(AppRoutes.achievements);
   void goToEducation() => go(AppRoutes.education);
 
-
   // Nuevas navegaciones
   void goToSearch() => push('/search');
   void goToWeather() => push('/weather');
-  void goToFollowers(String userId, {bool showFollowers = true}) => push('/users/$userId/followers?tab=${showFollowers ? "followers" : "following"}');
+  void goToFollowers(String userId, {bool showFollowers = true}) => push(
+    '/users/$userId/followers?tab=${showFollowers ? "followers" : "following"}',
+  );
   void goToOnboarding() => go('/onboarding');
   void goToAccidentReport() => push('/accidents/report');
 

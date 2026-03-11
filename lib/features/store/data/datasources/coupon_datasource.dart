@@ -40,7 +40,7 @@ class CouponDataSource {
     ),
     'ENVIOGRATIS': CouponEntity(
       code: 'ENVIOGRATIS',
-      description: 'Envío gratis (equivalente a \$10,000)',
+      description: 'cart_free_shipping',
       type: CouponType.fixed,
       value: 10000,
       minPurchase: 50000,

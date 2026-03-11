@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 import 'package:go_router/go_router.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
@@ -16,7 +18,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   @override
   void initState() {
     super.initState();
-    // Cargar datos del usuario
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserProvider>().loadUserData();
     });
@@ -24,498 +25,185 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context);
+
     return Scaffold(
-      backgroundColor: ColorTokens.primary30,
-      appBar: AppBar(
-        backgroundColor: ColorTokens.primary30,
-        foregroundColor: ColorTokens.neutral100,
-        title: Text(
-          'Configuración de Cuenta',
-          style: TextStyle(
-            color: ColorTokens.neutral100,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: ColorTokens.neutral100),
-          onPressed: () => context.pop(),
-        ),
-        elevation: 0,
-      ),
+      backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
+      appBar: SettingsWidgets.buildAppBar(context, l.t('account_settings')),
       body: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
           final user = userProvider.user;
 
           if (user == null) {
-            return Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  ColorTokens.secondary50,
-                ),
-              ),
+            return const Center(
+              child: CircularProgressIndicator(color: ColorTokens.primary30),
             );
           }
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 8),
-                // Sección de Información de Cuenta
-                Text(
-                  'Información de Cuenta',
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // --- Información de Cuenta ---
+              SettingsWidgets.buildSectionTitle(l.t('account_info'), isDark),
+              const SizedBox(height: 12),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.email_outlined,
+                title: l.t('email_label'),
+                subtitle: (user.email?.isNotEmpty ?? false)
+                    ? user.email!
+                    : l.t('not_linked'),
+                isDark: isDark,
+                iconColor: (user.email?.isNotEmpty ?? false)
+                    ? Colors.green.shade400
+                    : null,
+                onTap: () {},
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.phone_android_outlined,
+                title: l.t('phone_number'),
+                subtitle: user.phoneNumber.isNotEmpty
+                    ? _formatPhoneNumber(user.phoneNumber)
+                    : l.t('not_linked'),
+                isDark: isDark,
+                iconColor: user.phoneNumber.isNotEmpty
+                    ? Colors.green.shade400
+                    : null,
+                onTap: () {},
+              ),
 
-                // Tarjeta de Correo Electrónico
-                _buildAccountInfoCard(
-                  icon: Icons.email_outlined,
-                  title: 'Correo Electrónico',
-                  value: (user.email?.isNotEmpty ?? false)
-                      ? user.email!
-                      : 'No vinculado',
-                  isLinked: user.email?.isNotEmpty ?? false,
-                  context: context,
-                ),
-                SizedBox(height: 12),
+              const SizedBox(height: 24),
 
-                // Tarjeta de Teléfono
-                _buildAccountInfoCard(
-                  icon: Icons.phone_android_outlined,
-                  title: 'Número de Teléfono',
-                  value: user.phoneNumber.isNotEmpty
-                      ? _formatPhoneNumber(user.phoneNumber)
-                      : 'No vinculado',
-                  isLinked: user.phoneNumber.isNotEmpty,
-                  context: context,
-                ),
-                SizedBox(height: 32),
+              // --- Dispositivos ---
+              SettingsWidgets.buildSectionTitle(l.t('linked_devices'), isDark),
+              const SizedBox(height: 12),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.smartphone,
+                title: l.t('this_device'),
+                subtitle: l.t('currently_logged_in'),
+                isDark: isDark,
+                iconColor: Colors.green.shade400,
+                onTap: () {},
+              ),
 
-                // Sección de Dispositivos
-                Text(
-                  'Dispositivos Vinculados',
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
+              const SizedBox(height: 24),
 
-                // Tarjeta de Dispositivo Actual
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: ColorTokens.primary40,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: ColorTokens.secondary50.withValues(alpha: 0.3),
-                      width: 1,
+              // --- Privacidad y Seguridad ---
+              SettingsWidgets.buildSectionTitle(
+                l.t('privacy_security'),
+                isDark,
+              ),
+              const SizedBox(height: 12),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.lock_outline,
+                title: l.t('change_password'),
+                subtitle: l.t('change_password_subtitle'),
+                isDark: isDark,
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('feature_in_development')),
+                      backgroundColor: Colors.orange.shade600,
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: ColorTokens.secondary50.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.smartphone,
-                          color: ColorTokens.secondary50,
-                          size: 24,
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Este Dispositivo',
-                              style: TextStyle(
-                                color: ColorTokens.neutral100,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Actualmente sesión iniciada',
-                              style: TextStyle(
-                                color: ColorTokens.neutral80,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: ColorTokens.success50.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'Activo',
-                          style: TextStyle(
-                            color: ColorTokens.success50,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 32),
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.history,
+                title: l.t('activity_history'),
+                subtitle: l.t('see_where_logged_in'),
+                isDark: isDark,
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('feature_in_development')),
+                      backgroundColor: Colors.orange.shade600,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.verified_user,
+                title: l.t('verify_account'),
+                subtitle: l.t('confirm_identity'),
+                isDark: isDark,
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('feature_in_development')),
+                      backgroundColor: Colors.orange.shade600,
+                    ),
+                  );
+                },
+              ),
 
-                // Sección de Privacidad
-                Text(
-                  'Privacidad y Seguridad',
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
+              const SizedBox(height: 24),
 
-                // Botón para cambiar contraseña
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.lock_outline,
-                  title: 'Cambiar Contraseña',
-                  subtitle: 'Actualiza tu contraseña regularmente',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Función en desarrollo'),
-                        backgroundColor: ColorTokens.warning50,
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 12),
+              // --- Apariencia ---
+              SettingsWidgets.buildSectionTitle(l.t('appearance'), isDark),
+              const SizedBox(height: 12),
+              Consumer<ThemeNotifier>(
+                builder: (context, themeNotifier, child) {
+                  final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
+                  return SettingsWidgets.buildToggleCard(
+                    context: context,
+                    icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                    title: l.t('dark_mode'),
+                    subtitle: isDarkMode
+                        ? l.t('activated')
+                        : l.t('deactivated'),
+                    isDark: isDark,
+                    value: isDarkMode,
+                    onChanged: (value) {
+                      themeNotifier.setThemeMode(
+                        value ? ThemeMode.dark : ThemeMode.light,
+                      );
+                    },
+                    iconColor: isDarkMode
+                        ? const Color(0xFF1A237E)
+                        : const Color(0xFFFF9800),
+                  );
+                },
+              ),
 
-                // Botón para ver actividad
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.history,
-                  title: 'Historial de Actividad',
-                  subtitle: 'Ve dónde iniciaste sesión',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Función en desarrollo'),
-                        backgroundColor: ColorTokens.warning50,
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 12),
+              const SizedBox(height: 24),
 
-                // Botón para verificación de cuenta
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.verified_user,
-                  title: 'Verificar Cuenta',
-                  subtitle: 'Confirma tu identidad',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Función en desarrollo'),
-                        backgroundColor: ColorTokens.warning50,
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 32),
+              // --- Opciones de Cuenta ---
+              SettingsWidgets.buildSectionTitle(l.t('account_options'), isDark),
+              const SizedBox(height: 12),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.logout,
+                title: l.t('logout'),
+                subtitle: l.t('close_current_session'),
+                isDark: isDark,
+                iconColor: Colors.orange.shade400,
+                onTap: () => _showLogoutDialog(),
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.delete_forever,
+                title: l.t('delete_account'),
+                subtitle: l.t('permanently_delete_account'),
+                isDark: isDark,
+                iconColor: Colors.red.shade400,
+                onTap: () => _showDeleteAccountDialog(),
+              ),
 
-                // Sección de Apariencia
-                Text(
-                  'Apariencia',
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
-
-                Consumer<ThemeNotifier>(
-                  builder: (context, themeNotifier, child) {
-                    final isDark = themeNotifier.themeMode == ThemeMode.dark;
-                    return Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: ColorTokens.primary40,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: ColorTokens.neutral60.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: ColorTokens.primary50,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              isDark ? Icons.dark_mode : Icons.light_mode,
-                              color: ColorTokens.neutral100,
-                              size: 24,
-                            ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Modo Oscuro',
-                                  style: TextStyle(
-                                    color: ColorTokens.neutral100,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  isDark ? 'Activado' : 'Desactivado',
-                                  style: TextStyle(
-                                    color: ColorTokens.neutral80,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Switch(
-                            value: isDark,
-                            onChanged: (value) {
-                              themeNotifier.setThemeMode(
-                                value ? ThemeMode.dark : ThemeMode.light,
-                              );
-                            },
-                            activeThumbColor: ColorTokens.secondary50,
-                            activeTrackColor: ColorTokens.secondary50
-                                .withValues(alpha: 0.4),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-
-                SizedBox(height: 32),
-
-                // Sección de Opciones de Cuenta
-                Text(
-                  'Opciones de Cuenta',
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
-
-                // Botón Cerrar Sesión
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.logout,
-                  title: 'Cerrar Sesión',
-                  subtitle: 'Cierra tu sesión actual',
-                  onTap: () {
-                    _showLogoutDialog();
-                  },
-                ),
-                SizedBox(height: 12),
-
-                // Botón Eliminar Cuenta
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.delete_forever,
-                  title: 'Eliminar Cuenta',
-                  subtitle: 'Elimina permanentemente tu cuenta',
-                  onTap: () {
-                    _showDeleteAccountDialog();
-                  },
-                ),
-
-                SizedBox(height: 32),
-              ],
-            ),
+              const SizedBox(height: 32),
+            ],
           );
         },
-      ),
-    );
-  }
-
-  /// Construye una tarjeta con información de cuenta
-  Widget _buildAccountInfoCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required bool isLinked,
-    required BuildContext context,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: ColorTokens.primary40,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isLinked
-              ? ColorTokens.success50.withValues(alpha: 0.3)
-              : ColorTokens.neutral60.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isLinked
-                  ? ColorTokens.success50.withValues(alpha: 0.2)
-                  : ColorTokens.neutral60.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              color: isLinked ? ColorTokens.success50 : ColorTokens.neutral80,
-              size: 24,
-            ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: isLinked
-                        ? ColorTokens.neutral100
-                        : ColorTokens.neutral80,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 8),
-          if (isLinked)
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: ColorTokens.success50.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check_circle,
-                color: ColorTokens.success50,
-                size: 20,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  /// Construye un botón de opción de configuración
-  Widget _buildSettingOptionButton({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: ColorTokens.primary40,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: ColorTokens.neutral60.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: ColorTokens.primary50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: ColorTokens.neutral100, size: 24),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: ColorTokens.neutral100,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: ColorTokens.neutral80,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: ColorTokens.neutral80,
-                size: 18,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -538,18 +226,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   void _showLogoutDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Cerrar Sesión'),
-          content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+          title: Text(l.t('logout')),
+          content: Text(l.t('sign_out_confirm')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -560,7 +249,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text('Confirmar'),
+              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -569,21 +258,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   void _showDeleteAccountDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Eliminar Cuenta'),
-          content: const Text(
-            '¿Estás seguro de que deseas eliminar tu cuenta? '
-            'Esta acción no se puede deshacer.',
-          ),
+          title: Text(l.t('delete_account')),
+          content: Text(l.t('delete_account_confirm')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -594,7 +281,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text('Confirmar'),
+              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );
