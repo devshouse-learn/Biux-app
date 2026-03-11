@@ -181,11 +181,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final currentUser = userProvider.user;
     if (currentUser == null || _product == null) return;
     final shopProvider = context.read<ShopProvider>();
-    final success = await shopProvider.toggleProductLike(_product!.id, currentUser.uid);
-    if (success && mounted) {
-      final updated = shopProvider.products.firstWhere((p) => p.id == _product!.id, orElse: () => _product!);
-      setState(() { _product = updated; });
+    // Actualizar localmente de inmediato para UI reactiva
+    final likedByUsers = List<String>.from(_product!.likedByUsers);
+    if (likedByUsers.contains(currentUser.uid)) {
+      likedByUsers.remove(currentUser.uid);
+    } else {
+      likedByUsers.add(currentUser.uid);
     }
+    setState(() {
+      _product = _product!.copyWith(likedByUsers: likedByUsers);
+    });
+    // Persistir en Firestore via provider
+    await shopProvider.toggleProductLike(_product!.id, currentUser.uid);
   }
   void _addToCart() {
     if (_product == null) {
