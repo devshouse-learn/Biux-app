@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../domain/entities/comment_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 import '../providers/comments_provider.dart';
@@ -26,6 +27,7 @@ class CommentsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CommentsProvider>();
+    final l = Provider.of<LocaleNotifier>(context);
 
     return Column(
       children: [
@@ -49,7 +51,7 @@ class CommentsList extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
                     child: Text(
-                      'No hay comentarios aún',
+                      l.t('no_comments_yet'),
                       style: TextStyle(
                         color: Theme.of(
                           context,
@@ -80,7 +82,7 @@ class CommentsList extends StatelessWidget {
             type: type,
             targetId: targetId,
             targetOwnerId: targetOwnerId,
-            placeholder: placeholder ?? 'Escribe un comentario...',
+            placeholder: placeholder ?? l.t('write_comment'),
           ),
       ],
     );
@@ -150,22 +152,20 @@ class _CommentTextFieldState extends State<_CommentTextField> {
     // Verificar si el error es por perfil incompleto
     if (commentId == null && provider.error == 'complete_profile') {
       if (mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         final shouldNavigate = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Completa tu perfil'),
-            content: const Text(
-              'Para comentar necesitas completar tu perfil con tu nombre. '
-              '¿Quieres ir a editar tu perfil ahora?',
-            ),
+            title: Text(l.t('complete_profile_title')),
+            content: Text(l.t('complete_profile_message')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
+                child: Text(l.t('cancel')),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Ir a perfil'),
+                child: Text(l.t('go_to_profile')),
               ),
             ],
           ),

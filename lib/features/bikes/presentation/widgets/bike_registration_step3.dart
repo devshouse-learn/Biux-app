@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 
 /// Tercer paso del registro: Propiedad y Compra (datos opcionales)
@@ -53,6 +53,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: ListView(
@@ -75,7 +76,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                     Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      'Información Opcional',
+                      l.t('optional_info'),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -86,7 +87,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Estos datos son opcionales pero ayudan a tener un registro más completo de tu bicicleta.',
+                  l.t('optional_data_help'),
                   style: TextStyle(fontSize: 12, color: Colors.blue[600]),
                 ),
               ],
@@ -98,7 +99,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
           // Barrio
           _buildTextField(
             controller: _neighborhoodController,
-            label: AppStrings.neighborhoodLabel,
+            label: l.t('neighborhood_label'),
             onChanged: (value) {
               context.read<BikeProvider>().updateRegistrationData(
                 'neighborhood',
@@ -117,7 +118,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
           // Lugar de compra
           _buildTextField(
             controller: _purchasePlaceController,
-            label: AppStrings.purchasePlaceLabel,
+            label: l.t('purchase_place_label'),
             onChanged: (value) {
               context.read<BikeProvider>().updateRegistrationData(
                 'purchasePlace',
@@ -131,7 +132,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
           // Componentes destacados
           _buildTextField(
             controller: _featuredComponentsController,
-            label: AppStrings.featuredComponentsLabel,
+            label: l.t('featured_components_label'),
             maxLines: 3,
             onChanged: (value) {
               context.read<BikeProvider>().updateRegistrationData(
@@ -197,11 +198,12 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
   }
 
   Widget _buildDateField() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.purchaseDateLabel,
+          l.t('purchase_date_label'),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -229,7 +231,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                 Text(
                   _selectedPurchaseDate != null
                       ? '${_selectedPurchaseDate!.day}/${_selectedPurchaseDate!.month}/${_selectedPurchaseDate!.year}'
-                      : 'Seleccionar fecha',
+                      : l.t('select_date_placeholder'),
                   style: TextStyle(
                     fontSize: 16,
                     color: _selectedPurchaseDate != null
@@ -264,11 +266,12 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
   }
 
   Widget _buildInvoiceSection() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.invoiceLabel,
+          l.t('invoice_label'),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -319,7 +322,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                 TextButton.icon(
                   onPressed: _pickInvoiceImage,
                   icon: const Icon(Icons.edit, size: 16),
-                  label: const Text('Cambiar'),
+                  label: Text(l.t('change')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.primary30,
                   ),
@@ -336,7 +339,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                     );
                   },
                   icon: const Icon(Icons.delete, size: 16),
-                  label: const Text('Eliminar'),
+                  label: Text(l.t('delete')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.error50,
                   ),
@@ -349,6 +352,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
   }
 
   Widget _buildInvoicePlaceholder(bool hasError) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -359,7 +363,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
         ),
         const SizedBox(height: 8),
         Text(
-          hasError ? 'Error al cargar imagen' : 'Toca para agregar factura',
+          hasError ? l.t('error_loading_image') : l.t('tap_to_add_invoice'),
           style: TextStyle(
             fontSize: 12,
             color: hasError ? ColorTokens.error50 : ColorTokens.neutral70,
@@ -421,6 +425,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
   }
 
   Future<ImageSource?> _showImageSourceDialog() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return showModalBottomSheet<ImageSource>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -436,7 +441,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                   Icons.photo_camera,
                   color: ColorTokens.primary30,
                 ),
-                title: const Text('Tomar foto'),
+                title: Text(l.t('take_photo')),
                 onTap: () {
                   Navigator.pop(context, ImageSource.camera);
                 },
@@ -446,7 +451,7 @@ class _BikeRegistrationStep3State extends State<BikeRegistrationStep3> {
                   Icons.photo_library,
                   color: ColorTokens.primary30,
                 ),
-                title: const Text('Seleccionar de galería'),
+                title: Text(l.t('select_from_gallery')),
                 onTap: () {
                   Navigator.pop(context, ImageSource.gallery);
                 },

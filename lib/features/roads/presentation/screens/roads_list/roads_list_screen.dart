@@ -1,10 +1,10 @@
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
-import 'package:biux/core/design_system/color_tokens.dart';
 
 class RoadsListScreen extends StatefulWidget {
   const RoadsListScreen({Key? key}) : super(key: key);
@@ -24,12 +24,13 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
-        title: const Text(
-          'Rodadas',
-          style: TextStyle(color: ColorTokens.neutral100),
+        title: Text(
+          l.t('rides'),
+          style: const TextStyle(color: ColorTokens.neutral100),
         ),
         backgroundColor: ColorTokens.primary30,
         iconTheme: const IconThemeData(color: ColorTokens.neutral100),
@@ -48,7 +49,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Error: ${rideProvider.error}',
+                    '${l.t('error')}: ${rideProvider.error}',
                     style: const TextStyle(color: ColorTokens.error50),
                     textAlign: TextAlign.center,
                   ),
@@ -58,9 +59,9 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary30,
                     ),
-                    child: const Text(
-                      'Reintentar',
-                      style: TextStyle(color: ColorTokens.neutral100),
+                    child: Text(
+                      l.t('retry'),
+                      style: const TextStyle(color: ColorTokens.neutral100),
                     ),
                   ),
                 ],
@@ -80,7 +81,7 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No hay rodadas disponibles',
+                    l.t('no_rides_available'),
                     style: TextStyle(
                       fontSize: 18,
                       color: ColorTokens.neutral60,
@@ -88,14 +89,14 @@ class _RoadsListScreenState extends State<RoadsListScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Únete a un grupo para participar en rodadas',
+                    l.t('join_group_for_rides'),
                     style: TextStyle(color: ColorTokens.neutral60),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => context.push('/groups'),
                     icon: const Icon(Icons.group),
-                    label: const Text('Ver Grupos'),
+                    label: Text(l.t('view_groups')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary30,
                       foregroundColor: ColorTokens.neutral100,
@@ -132,6 +133,7 @@ class _RideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -184,7 +186,7 @@ class _RideCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          _formatDateTime(ride.dateTime),
+                          _formatDateTime(ride.dateTime, l),
                           style: const TextStyle(
                             color: ColorTokens.neutral60,
                             fontSize: 14,
@@ -222,7 +224,7 @@ class _RideCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'Dificultad: ${_getDifficultyText(ride.difficulty)}',
+                          '${l.t('difficulty')}: ${_getDifficultyText(ride.difficulty, l)}',
                           style: const TextStyle(
                             color: ColorTokens.neutral60,
                             fontSize: 14,
@@ -241,7 +243,7 @@ class _RideCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${ride.participants.length} participantes',
+                          '${ride.participants.length} ${l.t('n_participants')}',
                           style: const TextStyle(
                             color: ColorTokens.neutral60,
                             fontSize: 14,
@@ -249,7 +251,7 @@ class _RideCard extends StatelessWidget {
                         ),
                         if (ride.maybeParticipants.isNotEmpty) ...[
                           Text(
-                            '  ${ride.maybeParticipants.length} tal vez',
+                            '  ${ride.maybeParticipants.length} ${l.t('n_maybe')}',
                             style: const TextStyle(
                               color: ColorTokens.neutral60,
                               fontSize: 14,
@@ -287,46 +289,46 @@ class _RideCard extends StatelessWidget {
     }
   }
 
-  String _getDifficultyText(DifficultyLevel difficulty) {
+  String _getDifficultyText(DifficultyLevel difficulty, LocaleNotifier l) {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return 'Fácil';
+        return l.t('difficulty_easy');
       case DifficultyLevel.medium:
-        return 'Medio';
+        return l.t('difficulty_medium');
       case DifficultyLevel.hard:
-        return 'Difícil';
+        return l.t('difficulty_hard');
       case DifficultyLevel.expert:
-        return 'Experto';
+        return l.t('difficulty_expert');
     }
   }
 
-  String _formatDateTime(DateTime dateTime) {
+  String _formatDateTime(DateTime dateTime, LocaleNotifier l) {
     final now = DateTime.now();
     final difference = dateTime.difference(now);
+    final time =
+        '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
 
-    if (difference.inDays == 0) {
-      if (dateTime.day == now.day) {
-        return 'Hoy ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-      }
+    if (difference.inDays == 0 && dateTime.day == now.day) {
+      return '${l.t('today')} $time';
     } else if (difference.inDays == 1) {
-      return 'Mañana ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+      return '${l.t('tomorrow')} $time';
     }
 
-    final months = [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic',
+    final monthKeys = [
+      'month_jan',
+      'month_feb',
+      'month_mar',
+      'month_apr',
+      'month_may',
+      'month_jun',
+      'month_jul',
+      'month_aug',
+      'month_sep',
+      'month_oct',
+      'month_nov',
+      'month_dec',
     ];
 
-    return '${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    return '${dateTime.day} ${l.t(monthKeys[dateTime.month - 1])} $time';
   }
 }

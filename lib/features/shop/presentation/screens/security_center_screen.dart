@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 const _kPrimaryColor = Color(0xFF16242D);
 
@@ -28,12 +30,13 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text(
-          'Centro de Seguridad',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l.t('security_center'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: _kPrimaryColor,
         foregroundColor: Colors.white,
@@ -43,28 +46,31 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
-          tabs: const [
-            Tab(icon: Icon(Icons.directions_bike), text: 'Mis Bicis'),
-            Tab(icon: Icon(Icons.warning_amber), text: 'Alertas'),
-            Tab(icon: Icon(Icons.info_outline), text: 'Info'),
+          tabs: [
+            Tab(
+              icon: const Icon(Icons.directions_bike),
+              text: l.t('my_bikes_tab'),
+            ),
+            Tab(icon: const Icon(Icons.warning_amber), text: l.t('alerts_tab')),
+            Tab(icon: const Icon(Icons.info_outline), text: l.t('info_tab')),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [_buildMyBikesTab(), _buildAlertsTab(), _buildInfoTab()],
+        children: [_buildMyBikesTab(l), _buildAlertsTab(l), _buildInfoTab(l)],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showRegisterBikeDialog,
         backgroundColor: _kPrimaryColor,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text('Registrar Bici'),
+        label: Text(l.t('register_bike')),
       ),
     );
   }
 
-  Widget _buildMyBikesTab() {
+  Widget _buildMyBikesTab(LocaleNotifier l) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -74,7 +80,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
             Icon(Icons.directions_bike, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 16),
             Text(
-              'Registra tu Bicicleta',
+              l.t('register_your_bike'),
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -83,9 +89,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Protege tu bicicleta registrándola con su número de serie, '
-              'fotos y código QR único. En caso de robo, la comunidad Biux '
-              'te ayudará a recuperarla.',
+              l.t('register_your_bike_desc'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -96,23 +100,23 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
             const SizedBox(height: 24),
             _buildFeatureCard(
               Icons.qr_code,
-              'Código QR Único',
-              'Genera un QR verificable vinculado a tu bici',
+              l.t('unique_qr_code'),
+              l.t('unique_qr_desc'),
             ),
             _buildFeatureCard(
               Icons.camera_alt,
-              'Registro Fotográfico',
-              'Sube fotos de tu bicicleta como evidencia',
+              l.t('photo_record'),
+              l.t('photo_record_desc'),
             ),
             _buildFeatureCard(
               Icons.notifications_active,
-              'Alertas Comunitarias',
-              'La comunidad te avisa si ven tu bici reportada',
+              l.t('community_alerts'),
+              l.t('community_alerts_desc'),
             ),
             _buildFeatureCard(
               Icons.shield,
-              'Verificación de Propiedad',
-              'Demuestra que eres dueño con tu registro digital',
+              l.t('ownership_verification'),
+              l.t('ownership_verification_desc'),
             ),
           ],
         ),
@@ -163,7 +167,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
     );
   }
 
-  Widget _buildAlertsTab() {
+  Widget _buildAlertsTab(LocaleNotifier l) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -177,7 +181,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Sin alertas activas',
+              l.t('no_active_alerts'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -186,8 +190,7 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Aquí aparecerán las alertas de bicis robadas en tu zona. '
-              'La comunidad Biux está comprometida con la seguridad.',
+              l.t('no_active_alerts_desc'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
             ),
@@ -195,14 +198,12 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
             ElevatedButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Primero registra tu bici en "Mis Bicis"'),
-                  ),
+                  SnackBar(content: Text(l.t('register_bike_first'))),
                 );
                 _tabController.animateTo(0);
               },
               icon: const Icon(Icons.report),
-              label: const Text('Reportar Bici Robada'),
+              label: Text(l.t('report_stolen_bike_btn')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade600,
                 foregroundColor: Colors.white,
@@ -221,37 +222,27 @@ class _SecurityCenterScreenState extends State<SecurityCenterScreen>
     );
   }
 
-  Widget _buildInfoTab() {
+  Widget _buildInfoTab(LocaleNotifier l) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildInfoSection(
-            '🔒 ¿Cómo funciona el sistema anti-robo?',
-            'Biux te permite registrar tu bicicleta con fotos, número de serie '
-                'y un código QR único. Si tu bici es robada, puedes reportarla '
-                'y toda la comunidad recibirá una alerta.',
+            '🔒 ${l.t('anti_theft_info_title')}',
+            l.t('anti_theft_info_desc'),
           ),
           _buildInfoSection(
-            '📱 Verificación QR',
-            'Cualquier persona puede escanear el QR de una bicicleta para verificar '
-                'si está registrada y si ha sido reportada como robada.',
+            '📱 ${l.t('qr_verification_title')}',
+            l.t('qr_verification_desc'),
           ),
           _buildInfoSection(
-            '🤝 Comunidad Segura',
-            'Al comprar una bici usada en Biux, puedes verificar que no esté '
-                'reportada como robada.',
+            '🤝 ${l.t('safe_community_title')}',
+            l.t('safe_community_desc'),
           ),
           _buildInfoSection(
-            '📋 Consejos de Seguridad',
-            '• Usa siempre un candado tipo U-lock\n'
-                '• Registra el número de serie de tu cuadro\n'
-                '• Toma fotos detalladas de tu bicicleta\n'
-                '• Guarda tu factura de compra\n'
-                '• Usa luces y reflectantes\n'
-                '• No dejes tu bici sin supervisión en zonas inseguras\n'
-                '• Reporta inmediatamente si tu bici es robada',
+            '📋 ${l.t('safety_tips_title')}',
+            l.t('safety_tips_content'),
           ),
         ],
       ),
@@ -333,6 +324,7 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
@@ -356,9 +348,12 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
               children: [
                 const Icon(Icons.directions_bike, color: _kPrimaryColor),
                 const SizedBox(width: 8),
-                const Text(
-                  'Registrar Bicicleta',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('register_bike_form'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
@@ -379,35 +374,39 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
                   children: [
                     _buildTextField(
                       _brandController,
-                      'Marca *',
-                      'Ej: Trek, Specialized...',
+                      '${l.t('brand_label')} *',
+                      l.t('brand_required_hint'),
                       Icons.branding_watermark,
                       required: true,
+                      l: l,
                     ),
                     _buildTextField(
                       _modelController,
-                      'Modelo *',
-                      'Ej: Domane SL 6...',
+                      '${l.t('model_label')} *',
+                      l.t('model_required_hint'),
                       Icons.two_wheeler,
                       required: true,
+                      l: l,
                     ),
                     _buildTextField(
                       _serialController,
-                      'Número de Serie',
-                      'Debajo del eje de pedalier',
+                      l.t('serial_number_label'),
+                      l.t('serial_number_hint'),
                       Icons.numbers,
+                      l: l,
                     ),
                     _buildTextField(
                       _colorController,
-                      'Color',
-                      'Ej: Negro mate',
+                      l.t('color_label'),
+                      l.t('color_hint'),
                       Icons.color_lens,
+                      l: l,
                     ),
                     const SizedBox(height: 16),
                     OutlinedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.camera_alt),
-                      label: const Text('Agregar Fotos'),
+                      label: Text(l.t('add_photos_btn')),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: const BorderSide(color: _kPrimaryColor),
@@ -420,9 +419,9 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
                     ElevatedButton.icon(
                       onPressed: _saveBike,
                       icon: const Icon(Icons.save),
-                      label: const Text(
-                        'Registrar Bicicleta',
-                        style: TextStyle(fontSize: 16),
+                      label: Text(
+                        l.t('register_bike_form'),
+                        style: const TextStyle(fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _kPrimaryColor,
@@ -449,6 +448,7 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
     String hint,
     IconData icon, {
     bool required = false,
+    LocaleNotifier? l,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -463,7 +463,9 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
           fillColor: Colors.grey.shade50,
         ),
         validator: required
-            ? (v) => (v == null || v.isEmpty) ? 'Campo requerido' : null
+            ? (v) => (v == null || v.isEmpty)
+                  ? (l?.t('field_required') ?? 'Campo requerido')
+                  : null
             : null,
       ),
     );
@@ -471,9 +473,10 @@ class _RegisterBikeFormState extends State<_RegisterBikeForm> {
 
   void _saveBike() {
     if (_formKey.currentState?.validate() ?? false) {
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Bicicleta registrada exitosamente'),
+        SnackBar(
+          content: Text('✅ ${l.t('bike_registered_success')}'),
           backgroundColor: Colors.green,
         ),
       );

@@ -1,639 +1,93 @@
 import 'package:flutter/material.dart';
-import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/design_system/color_tokens.dart';
-import '../providers/notification_settings_provider.dart';
-// import '../../../../core/debug/notification_debug_widget.dart';
+import '../../../../core/design_system/locale_notifier.dart';
+import '../widgets/settings_shared_widgets.dart';
+import 'notifications_details_screen.dart';
+import 'appearance_details_screen.dart';
+import 'privacy_details_screen.dart';
+import 'information_details_screen.dart';
 
-class NotificationSettingsScreen extends StatefulWidget {
+class NotificationSettingsScreen extends StatelessWidget {
   const NotificationSettingsScreen({super.key});
-
-  @override
-  State<NotificationSettingsScreen> createState() =>
-      _NotificationSettingsScreenState();
-}
-
-class _NotificationSettingsScreenState
-    extends State<NotificationSettingsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Cargar configuración al iniciar
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NotificationSettingsProvider>().loadSettings();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context);
 
     return Scaffold(
-      backgroundColor: isDark ? ColorTokens.primary30 : Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: ColorTokens.primary30,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Notificaciones',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          // Botón de debug comentado temporalmente
-          // IconButton(
-          //   icon: const Icon(Icons.bug_report, color: Colors.orange),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const NotificationDebugWidget(),
-          //       ),
-          //     );
-          //   },
-          // ),
-          Consumer<NotificationSettingsProvider>(
-            builder: (context, provider, _) {
-              return IconButton(
-                icon: const Icon(Icons.refresh, color: Colors.white),
-                onPressed: provider.isLoading ? null : provider.loadSettings,
-              );
-            },
-          ),
-
-        ],
-      ),
-      body: Consumer<NotificationSettingsProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoading && provider.settings == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: ColorTokens.primary30),
-            );
-          }
-
-          if (provider.error != null && provider.settings == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red.shade300,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error al cargar configuración',
-                    style: TextStyle(
-                      color: isDark ? Colors.white70 : Colors.black87,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: provider.loadSettings,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ColorTokens.primary30,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (provider.settings == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: ColorTokens.primary30),
-            );
-          }
-
-          final settings = provider.settings!;
-
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              // Sección: Apariencia
-              _buildSectionTitle('Apariencia', isDark),
-              const SizedBox(height: 12),
-              _buildThemeToggleCard(context, isDark),
-              const SizedBox(height: 24),
-
-              // Switch principal
-              _buildMainToggleCard(
-                context,
-                isDark,
-                settings.enablePushNotifications,
-                provider,
-              ),
-
-              const SizedBox(height: 24),
-
-              // Sección: Interacciones Sociales
-              _buildSectionTitle('Interacciones Sociales', isDark),
-              const SizedBox(height: 12),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.favorite,
-                iconColor: Colors.red.shade400,
-                title: 'Likes',
-                description: 'Cuando alguien le da like a tus publicaciones',
-                value: settings.enableLikes,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleLikes,
-              ),
-              const SizedBox(height: 8),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.comment,
-                iconColor: Colors.blue.shade400,
-                title: 'Comentarios',
-                description: 'Cuando alguien comenta en tus publicaciones',
-                value: settings.enableComments,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleComments,
-              ),
-              const SizedBox(height: 8),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.person_add,
-                iconColor: Colors.green.shade400,
-                title: 'Nuevos Seguidores',
-                description: 'Cuando alguien comienza a seguirte',
-                value: settings.enableFollows,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleFollows,
-              ),
-              const SizedBox(height: 8),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.auto_stories,
-                iconColor: Colors.purple.shade400,
-                title: 'Historias',
-                description: 'Cuando tus amigos publican nuevas historias',
-                value: settings.enableStories,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleStories,
-              ),
-
-              const SizedBox(height: 24),
-
-              // Sección: Rodadas y Grupos
-              _buildSectionTitle('Rodadas y Grupos', isDark),
-              const SizedBox(height: 12),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.pedal_bike,
-                iconColor: Colors.orange.shade400,
-                title: 'Invitaciones a Rodadas',
-                description: 'Cuando te invitan a participar en una rodada',
-                value: settings.enableRideInvitations,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleRideInvitations,
-              ),
-              const SizedBox(height: 8),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.group,
-                iconColor: Colors.teal.shade400,
-                title: 'Invitaciones a Grupos',
-                description: 'Cuando te invitan a unirte a un grupo',
-                value: settings.enableGroupInvitations,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleGroupInvitations,
-              ),
-              const SizedBox(height: 8),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.notifications_active,
-                iconColor: Colors.amber.shade600,
-                title: 'Recordatorios de Rodadas',
-                description: 'Recordatorios de rodadas próximas',
-                value: settings.enableRideReminders,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleRideReminders,
-              ),
-              const SizedBox(height: 8),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.update,
-                iconColor: Colors.cyan.shade400,
-                title: 'Actualizaciones de Grupos',
-                description: 'Nuevas publicaciones y eventos en tus grupos',
-                value: settings.enableGroupUpdates,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleGroupUpdates,
-              ),
-
-              const SizedBox(height: 24),
-
-              // Sección: Sistema
-              _buildSectionTitle('Sistema', isDark),
-              const SizedBox(height: 12),
-              _buildNotificationCard(
-                context,
-                isDark,
-                icon: Icons.info_outline,
-                iconColor: Colors.indigo.shade400,
-                title: 'Notificaciones del Sistema',
-                description: 'Avisos importantes de Biux',
-                value: settings.enableSystemNotifications,
-                enabled: settings.enablePushNotifications,
-                onChanged: provider.toggleSystemNotifications,
-              ),
-
-              const SizedBox(height: 32),
-
-              // Botón para resetear a valores por defecto
-              OutlinedButton.icon(
-                onPressed: () => _showResetDialog(context, provider),
-                icon: const Icon(Icons.restore),
-                label: const Text('Restaurar Valores por Defecto'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: isDark ? Colors.white70 : Colors.black87,
-                  side: BorderSide(
-                    color: isDark ? Colors.white30 : Colors.black26,
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Información adicional
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? ColorTokens.primary30.withValues(alpha: 0.1)
-                      : ColorTokens.primary30.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: ColorTokens.primary30.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: ColorTokens.primary30,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Puedes cambiar estas preferencias en cualquier momento',
-                        style: TextStyle(
-                          color: isDark ? Colors.white70 : Colors.black87,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 32),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildThemeToggleCard(BuildContext context, bool isDark) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final isLightMode = themeNotifier.themeMode == ThemeMode.light ||
-        (themeNotifier.themeMode == ThemeMode.system &&
-            MediaQuery.of(context).platformBrightness == Brightness.light);
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isLightMode
-              ? [const Color(0xFFFFA726), const Color(0xFFFF9800)]
-              : [const Color(0xFF1A237E), const Color(0xFF283593)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: isLightMode
-                ? Colors.orange.withValues(alpha: 0.3)
-                : Colors.indigo.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              isLightMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Tema de la App',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  isLightMode ? 'Modo Claro' : 'Modo Oscuro',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              themeNotifier.toggleTheme();
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: 64,
-              height: 34,
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(17),
-                color: Colors.white.withValues(alpha: 0.3),
-              ),
-              child: AnimatedAlign(
-                duration: const Duration(milliseconds: 300),
-                alignment:
-                    isLightMode ? Alignment.centerLeft : Alignment.centerRight,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: Icon(
-                    isLightMode
-                        ? Icons.wb_sunny_rounded
-                        : Icons.nightlight_round,
-                    size: 18,
-                    color: isLightMode
-                        ? const Color(0xFFFF9800)
-                        : const Color(0xFF1A237E),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMainToggleCard(
-    BuildContext context,
-    bool isDark,
-    bool enabled,
-    NotificationSettingsProvider provider,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: enabled
-              ? [
-                  ColorTokens.primary30,
-                  ColorTokens.primary30.withValues(alpha: 0.7),
-                ]
-              : [Colors.grey.shade600, Colors.grey.shade700],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: enabled
-                ? ColorTokens.primary30.withValues(alpha: 0.3)
-                : Colors.grey.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              enabled ? Icons.notifications_active : Icons.notifications_off,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Notificaciones Push',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  enabled ? 'Activadas' : 'Desactivadas',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: enabled,
-            onChanged: provider.togglePushNotifications,
-            activeThumbColor: Colors.white,
-            activeTrackColor: Colors.white.withValues(alpha: 0.5),
-            inactiveThumbColor: Colors.white70,
-            inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: isDark ? Colors.white : Colors.black87,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNotificationCard(
-    BuildContext context,
-    bool isDark, {
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String description,
-    required bool value,
-    required bool enabled,
-    required Function(bool) onChanged,
-  }) {
-    return Opacity(
-      opacity: enabled ? 1.0 : 0.5,
-      child: Container(
+      backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
+      appBar: SettingsWidgets.buildAppBar(context, l.t('settings')),
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isDark ? ColorTokens.primary20 : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: iconColor, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black87,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      color: isDark ? Colors.white60 : Colors.black54,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Switch(
-              value: value,
-              onChanged: enabled ? onChanged : null,
-              activeThumbColor: ColorTokens.primary30,
-              activeTrackColor: ColorTokens.primary30.withValues(alpha: 0.5),
-              inactiveThumbColor: isDark
-                  ? Colors.grey.shade500
-                  : Colors.grey.shade400,
-              inactiveTrackColor: isDark
-                  ? Colors.grey.shade700
-                  : Colors.grey.shade300,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showResetDialog(
-    BuildContext context,
-    NotificationSettingsProvider provider,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Restaurar Valores por Defecto'),
-        content: const Text(
-          '¿Estás seguro de que deseas restaurar todas las configuraciones de notificaciones a sus valores por defecto? Esto activará todas las notificaciones.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral60),
-            child: const Text(
-              'Cancelar',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              provider.resetToDefaults();
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Configuración restaurada correctamente'),
-                  backgroundColor: Colors.green,
+        children: [
+          const SizedBox(height: 8),
+          SettingsWidgets.buildSectionTitle(l.t('preferences'), isDark),
+          const SizedBox(height: 16),
+          SettingsWidgets.buildMenuCard(
+            context,
+            icon: Icons.notifications,
+            title: l.t('notifications'),
+            subtitle: l.t('notifications_subtitle'),
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsDetailsScreen(),
                 ),
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorTokens.primary30,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text(
-              'Continuar',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
           ),
+          const SizedBox(height: 12),
+          SettingsWidgets.buildMenuCard(
+            context,
+            icon: Icons.palette,
+            title: l.t('appearance'),
+            subtitle: l.t('appearance_subtitle'),
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AppearanceScreenDetails(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          SettingsWidgets.buildMenuCard(
+            context,
+            icon: Icons.security,
+            title: l.t('privacy'),
+            subtitle: l.t('privacy_subtitle'),
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacyDetailsScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          SettingsWidgets.buildMenuCard(
+            context,
+            icon: Icons.info,
+            title: l.t('information'),
+            subtitle: l.t('information_subtitle'),
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const InformationDetailsScreen(),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 32),
         ],
       ),
     );

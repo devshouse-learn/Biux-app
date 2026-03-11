@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/domain/entities/report_entity.dart';
 
 const _kPrimaryColor = Color(0xFF16242D);
@@ -31,12 +33,13 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text(
-          'Reportes e Informes',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l.t('reports_and_info'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: _kPrimaryColor,
         foregroundColor: Colors.white,
@@ -47,10 +50,13 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
           tabs: [
-            const Tab(icon: Icon(Icons.add_circle), text: 'Nuevo'),
-            const Tab(icon: Icon(Icons.list_alt), text: 'Mis Reportes'),
+            Tab(icon: const Icon(Icons.add_circle), text: l.t('new_report')),
+            Tab(icon: const Icon(Icons.list_alt), text: l.t('my_reports')),
             if (widget.isAdmin)
-              const Tab(icon: Icon(Icons.admin_panel_settings), text: 'Admin'),
+              Tab(
+                icon: const Icon(Icons.admin_panel_settings),
+                text: l.t('admin'),
+              ),
           ],
         ),
       ),
@@ -66,14 +72,15 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
   }
 
   Widget _buildNewReportTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '¿Qué deseas reportar?',
-            style: TextStyle(
+          Text(
+            l.t('what_to_report'),
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: _kPrimaryColor,
@@ -81,43 +88,43 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
           ),
           const SizedBox(height: 4),
           Text(
-            'Selecciona el tipo de reporte que deseas crear',
+            l.t('select_report_type'),
             style: TextStyle(color: Colors.grey.shade600),
           ),
           const SizedBox(height: 20),
           _buildReportTypeCard(
             ReportType.productReport,
             Icons.inventory_2,
-            'Reportar Producto',
-            'Producto falso, descripción engañosa, precio incorrecto',
+            l.t('report_product'),
+            l.t('report_product_desc'),
             Colors.orange,
           ),
           _buildReportTypeCard(
             ReportType.sellerReport,
             Icons.person_off,
-            'Reportar Vendedor',
-            'Vendedor fraudulento, mal servicio',
+            l.t('report_seller'),
+            l.t('report_seller_desc'),
             Colors.red,
           ),
           _buildReportTypeCard(
             ReportType.orderIssue,
             Icons.local_shipping,
-            'Problema con Pedido',
-            'No recibí mi pedido, producto dañado',
+            l.t('order_issue'),
+            l.t('order_issue_desc'),
             Colors.blue,
           ),
           _buildReportTypeCard(
             ReportType.securityAlert,
             Icons.security,
-            'Alerta de Seguridad',
-            'Bicicleta robada, actividad sospechosa',
+            l.t('security_alert'),
+            l.t('security_alert_desc'),
             Colors.red.shade800,
           ),
           _buildReportTypeCard(
             ReportType.suggestion,
             Icons.lightbulb,
-            'Sugerencia',
-            'Ideas para mejorar la tienda',
+            l.t('suggestion'),
+            l.t('suggestion_desc'),
             Colors.green,
           ),
         ],
@@ -183,6 +190,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
   }
 
   Widget _buildMyReportsTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -192,7 +200,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
             Icon(Icons.flag_outlined, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 16),
             Text(
-              'Sin reportes',
+              l.t('no_reports'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -201,7 +209,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'No has creado ningún reporte todavía.',
+              l.t('no_reports_created'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
             ),
@@ -212,6 +220,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
   }
 
   Widget _buildAdminReportsTab() {
+    final l = Provider.of<LocaleNotifier>(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -225,7 +234,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Panel de Reportes Admin',
+              l.t('admin_reports_panel'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -236,9 +245,9 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildStatBadge('Pendientes', '0', Colors.orange),
-                _buildStatBadge('En Revisión', '0', Colors.blue),
-                _buildStatBadge('Resueltos', '0', Colors.green),
+                _buildStatBadge(l.t('pending'), '0', Colors.orange),
+                _buildStatBadge(l.t('in_review'), '0', Colors.blue),
+                _buildStatBadge(l.t('resolved'), '0', Colors.green),
               ],
             ),
           ],
@@ -272,6 +281,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
   }
 
   void _showCreateReportDialog(ReportType type) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
 
@@ -315,7 +325,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                 TextField(
                   controller: titleController,
                   decoration: InputDecoration(
-                    labelText: 'Título del reporte',
+                    labelText: l.t('report_title_field'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -328,7 +338,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                   controller: descriptionController,
                   maxLines: 5,
                   decoration: InputDecoration(
-                    labelText: 'Descripción detallada',
+                    labelText: l.t('detailed_description'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -341,7 +351,7 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                 OutlinedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.attach_file),
-                  label: const Text('Adjuntar Evidencia'),
+                  label: Text(l.t('attach_evidence')),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -356,14 +366,14 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
                     onPressed: () {
                       Navigator.pop(ctx);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('✅ Reporte enviado exitosamente'),
+                        SnackBar(
+                          content: Text('✅ ${l.t('report_sent_success')}'),
                           backgroundColor: Colors.green,
                         ),
                       );
                     },
                     icon: const Icon(Icons.send),
-                    label: const Text('Enviar Reporte'),
+                    label: Text(l.t('send_report')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _kPrimaryColor,
                       foregroundColor: Colors.white,
@@ -383,17 +393,18 @@ class _ShopReportsScreenState extends State<ShopReportsScreen>
   }
 
   String _getReportTitle(ReportType type) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     switch (type) {
       case ReportType.productReport:
-        return '🏷️ Reportar Producto';
+        return '🏷️ ${l.t('report_product')}';
       case ReportType.sellerReport:
-        return '👤 Reportar Vendedor';
+        return '👤 ${l.t('report_seller')}';
       case ReportType.orderIssue:
-        return '📦 Problema con Pedido';
+        return '📦 ${l.t('order_issue')}';
       case ReportType.securityAlert:
-        return '🔒 Alerta de Seguridad';
+        return '🔒 ${l.t('security_alert')}';
       case ReportType.suggestion:
-        return '💡 Sugerencia';
+        return '💡 ${l.t('suggestion')}';
     }
   }
 }

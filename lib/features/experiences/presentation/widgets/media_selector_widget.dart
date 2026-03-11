@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para seleccionar el tipo de multimedia a agregar
 class MediaSelectorWidget extends StatelessWidget {
@@ -20,6 +22,7 @@ class MediaSelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[50],
@@ -30,7 +33,7 @@ class MediaSelectorWidget extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Agregar contenido',
+            l.t('add_content'),
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -45,7 +48,7 @@ class MediaSelectorWidget extends StatelessWidget {
               Expanded(
                 child: _MediaButton(
                   icon: Icons.photo_library,
-                  label: 'Galería',
+                  label: l.t('gallery'),
                   onTap: onImageFromGallery,
                 ),
               ),
@@ -53,7 +56,7 @@ class MediaSelectorWidget extends StatelessWidget {
               Expanded(
                 child: _MediaButton(
                   icon: Icons.camera_alt,
-                  label: 'Cámara',
+                  label: l.t('camera'),
                   onTap: onTakePhoto,
                 ),
               ),

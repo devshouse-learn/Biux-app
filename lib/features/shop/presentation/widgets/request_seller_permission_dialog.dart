@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../../users/presentation/providers/user_provider.dart';
 import '../providers/seller_request_provider.dart';
 
@@ -14,12 +15,17 @@ class RequestSellerPermissionDialog extends StatefulWidget {
 
 class _RequestSellerPermissionDialogState
     extends State<RequestSellerPermissionDialog> {
-  final _messageController = TextEditingController(
-    text:
-        'Me gustaría vender productos en la tienda de Biux. '
-        'Tengo experiencia en ciclismo y productos de calidad para ofrecer.',
-  );
+  late final TextEditingController _messageController;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    _messageController = TextEditingController(
+      text: l.t('default_seller_request_message'),
+    );
+  }
 
   @override
   void dispose() {
@@ -28,10 +34,11 @@ class _RequestSellerPermissionDialogState
   }
 
   Future<void> _submitRequest() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_messageController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor escribe un mensaje'),
+        SnackBar(
+          content: Text(l.t('please_write_message')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -48,8 +55,8 @@ class _RequestSellerPermissionDialogState
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error: Usuario no encontrado'),
+          SnackBar(
+            content: Text(l.t('user_not_found')),
             backgroundColor: Colors.red,
           ),
         );
@@ -74,8 +81,8 @@ class _RequestSellerPermissionDialogState
         SnackBar(
           content: Text(
             success
-                ? '✅ Solicitud enviada. Un administrador la revisará pronto.'
-                : '❌ Error al enviar la solicitud. Intenta de nuevo.',
+                ? '✅ ${l.t('request_sent_success')}'
+                : '❌ ${l.t('request_error')}',
           ),
           backgroundColor: success ? Colors.green : Colors.red,
           duration: const Duration(seconds: 4),
@@ -86,12 +93,13 @@ class _RequestSellerPermissionDialogState
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return AlertDialog(
       title: Row(
         children: [
           const Icon(Icons.store, color: Colors.blue),
           const SizedBox(width: 8),
-          const Expanded(child: Text('Solicitar Permiso para Vender')),
+          Expanded(child: Text(l.t('request_sell_permission'))),
         ],
       ),
       content: SingleChildScrollView(
@@ -99,14 +107,11 @@ class _RequestSellerPermissionDialogState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Para vender productos en la tienda de Biux, necesitas autorización de un administrador.',
-              style: TextStyle(fontSize: 14),
-            ),
+            Text(l.t('sell_auth_needed'), style: const TextStyle(fontSize: 14)),
             const SizedBox(height: 16),
-            const Text(
-              'Cuéntanos por qué quieres vender:',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            Text(
+              l.t('tell_us_why_sell'),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -114,7 +119,7 @@ class _RequestSellerPermissionDialogState
               maxLines: 5,
               maxLength: 500,
               decoration: InputDecoration(
-                hintText: 'Escribe tu mensaje aquí...',
+                hintText: l.t('write_message_hint'),
                 border: const OutlineInputBorder(),
                 filled: true,
                 fillColor: Colors.grey[50],
@@ -128,14 +133,14 @@ class _RequestSellerPermissionDialogState
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.blue[200]!),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue, size: 20),
-                  SizedBox(width: 8),
+                  const Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Un administrador revisará tu solicitud y te notificará.',
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
+                      l.t('admin_will_review'),
+                      style: const TextStyle(fontSize: 12, color: Colors.blue),
                     ),
                   ),
                 ],
@@ -147,7 +152,7 @@ class _RequestSellerPermissionDialogState
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancelar'),
+          child: Text(l.t('cancel')),
         ),
         ElevatedButton.icon(
           onPressed: _isLoading ? null : _submitRequest,
@@ -161,7 +166,7 @@ class _RequestSellerPermissionDialogState
                   ),
                 )
               : const Icon(Icons.send),
-          label: Text(_isLoading ? 'Enviando...' : 'Enviar Solicitud'),
+          label: Text(_isLoading ? l.t('sending') : l.t('send_request')),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,

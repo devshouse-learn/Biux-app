@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class UserSearchScreen extends StatefulWidget {
   const UserSearchScreen({Key? key}) : super(key: key);
@@ -127,12 +128,13 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.primary30,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-        title: Text('Buscar Usuarios'),
+        title: Text(l.t('search_users')),
         elevation: 0,
       ),
       body: Column(
@@ -146,7 +148,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
               focusNode: _searchFocus,
               style: TextStyle(color: ColorTokens.neutral100, fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'Buscar usuarios...',
+                hintText: l.t('search_users_hint'),
                 hintStyle: TextStyle(
                   color: ColorTokens.neutral80,
                   fontSize: 16,
@@ -219,6 +221,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -226,7 +229,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
           Icon(Icons.search, size: 80, color: ColorTokens.neutral100),
           SizedBox(height: 24),
           Text(
-            'Busca usuarios',
+            l.t('search_users_empty_title'),
             style: TextStyle(
               color: ColorTokens.neutral100,
               fontSize: 20,
@@ -235,7 +238,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
           ),
           SizedBox(height: 8),
           Text(
-            'Escribe un nombre o usuario para encontrar amigos',
+            l.t('search_users_description'),
             textAlign: TextAlign.center,
             style: TextStyle(color: ColorTokens.neutral80, fontSize: 14),
           ),
@@ -245,6 +248,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildLoadingState() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -254,7 +258,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
           ),
           SizedBox(height: 16),
           Text(
-            'Buscando usuarios...',
+            l.t('searching_users'),
             style: TextStyle(color: ColorTokens.neutral100, fontSize: 16),
           ),
         ],
@@ -263,6 +267,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildNoResultsState() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -270,7 +275,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
           Icon(Icons.person_search, size: 80, color: ColorTokens.neutral100),
           SizedBox(height: 24),
           Text(
-            'No se encontraron usuarios',
+            l.t('no_users_found'),
             style: TextStyle(
               color: ColorTokens.neutral100,
               fontSize: 18,
@@ -279,7 +284,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
           ),
           SizedBox(height: 8),
           Text(
-            'Intenta con otro término de búsqueda',
+            l.t('try_another_search'),
             textAlign: TextAlign.center,
             style: TextStyle(color: ColorTokens.neutral80, fontSize: 14),
           ),
@@ -347,6 +352,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) => _controller.reverse(),
@@ -405,7 +411,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
                         Text(
                           widget.user.fullName.isNotEmpty
                               ? widget.user.fullName
-                              : 'Sin nombre',
+                              : l.t('no_name'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -456,7 +462,7 @@ class _InstagramStyleUserCardState extends State<_InstagramStyleUserCard>
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                '${widget.user.followerS} ${widget.user.followerS == 1 ? 'seguidor' : 'seguidores'}',
+                                '${widget.user.followerS} ${widget.user.followerS == 1 ? l.t('follower_singular') : l.t('followers')}',
                                 style: TextStyle(
                                   color: ColorTokens.primary30,
                                   fontSize: 11,

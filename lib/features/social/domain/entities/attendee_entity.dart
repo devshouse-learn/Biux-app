@@ -34,11 +34,11 @@ enum CyclingLevel {
   String get displayName {
     switch (this) {
       case CyclingLevel.beginner:
-        return 'Principiante';
+        return 'cycling_level_beginner';
       case CyclingLevel.intermediate:
-        return 'Intermedio';
+        return 'cycling_level_intermediate';
       case CyclingLevel.advanced:
-        return 'Avanzado';
+        return 'cycling_level_advanced';
     }
   }
 }

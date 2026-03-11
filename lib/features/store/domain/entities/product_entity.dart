@@ -13,23 +13,23 @@ enum ProductCategory {
   String get displayName {
     switch (this) {
       case ProductCategory.bicicletas:
-        return 'Bicicletas';
+        return 'cat_bicycles';
       case ProductCategory.componentes:
-        return 'Componentes';
+        return 'cat_components';
       case ProductCategory.accesorios:
-        return 'Accesorios';
+        return 'cat_accessories';
       case ProductCategory.ropa:
-        return 'Ropa y Calzado';
+        return 'cat_clothing';
       case ProductCategory.nutricion:
-        return 'Nutrición';
+        return 'cat_nutrition';
       case ProductCategory.electronica:
-        return 'Electrónica';
+        return 'cat_electronics';
       case ProductCategory.herramientas:
-        return 'Herramientas';
+        return 'cat_tools';
       case ProductCategory.proteccion:
-        return 'Protección';
+        return 'cat_protection';
       case ProductCategory.otros:
-        return 'Otros';
+        return 'cat_other';
     }
   }
 }

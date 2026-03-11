@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../domain/entities/notification_entity.dart';
 import '../providers/notifications_provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -12,6 +13,7 @@ class NotificationsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NotificationsProvider>();
+    final l = Provider.of<LocaleNotifier>(context);
 
     return Column(
       children: [
@@ -23,14 +25,16 @@ class NotificationsList extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${provider.unreadCount} sin leer',
+                  l
+                      .t('unread_count')
+                      .replaceAll('{n}', provider.unreadCount.toString()),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: provider.isLoading
                       ? null
                       : () => provider.markAllAsRead(),
-                  child: const Text('Marcar todas como leídas'),
+                  child: Text(l.t('mark_all_read')),
                 ),
               ],
             ),
@@ -40,7 +44,7 @@ class NotificationsList extends StatelessWidget {
           child: provider.isLoading
               ? const Center(child: CircularProgressIndicator())
               : provider.notifications.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -51,7 +55,7 @@ class NotificationsList extends StatelessWidget {
                       ),
                       SizedBox(height: 16),
                       Text(
-                        'No tienes notificaciones',
+                        l.t('no_notifications'),
                         style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                     ],
@@ -84,6 +88,7 @@ class NotificationItem extends StatelessWidget {
     timeago.setLocaleMessages('es', timeago.EsMessages());
 
     final provider = context.read<NotificationsProvider>();
+    final l = Provider.of<LocaleNotifier>(context);
 
     return Dismissible(
       key: Key(notification.id),
@@ -98,7 +103,7 @@ class NotificationItem extends StatelessWidget {
         provider.deleteNotification(notification.id);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Notificación eliminada')));
+        ).showSnackBar(SnackBar(content: Text(l.t('notification_deleted'))));
       },
       child: ListTile(
         leading: CircleAvatar(

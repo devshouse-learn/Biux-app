@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../domain/entities/comment_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 import '../providers/comments_provider.dart';
@@ -31,6 +32,7 @@ class CommentItem extends StatelessWidget {
     timeago.setLocaleMessages('es', timeago.EsMessages());
 
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -96,7 +98,7 @@ class CommentItem extends StatelessWidget {
                         ),
                         if (comment.isEdited)
                           Text(
-                            ' (editado)',
+                            l.t('edited_tag'),
                             style: TextStyle(
                               color: theme.textTheme.bodySmall?.color
                                   ?.withValues(alpha: 0.6),
@@ -217,9 +219,9 @@ class CommentItem extends StatelessWidget {
                                 children: [
                                   const Icon(Icons.reply, size: 16),
                                   const SizedBox(width: 4),
-                                  const Text(
-                                    'Responder',
-                                    style: TextStyle(fontSize: 12),
+                                  Text(
+                                    l.t('reply'),
+                                    style: const TextStyle(fontSize: 12),
                                   ),
                                   if (comment.repliesCount > 0) ...[
                                     const SizedBox(width: 4),
@@ -263,28 +265,31 @@ class CommentItem extends StatelessWidget {
           _showDeleteConfirmation(context);
         }
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit, size: 18),
-              SizedBox(width: 8),
-              Text('Editar'),
-            ],
+      itemBuilder: (context) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
+        return [
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(
+              children: [
+                const Icon(Icons.edit, size: 18),
+                const SizedBox(width: 8),
+                Text(l.t('edit')),
+              ],
+            ),
           ),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, size: 18),
-              SizedBox(width: 8),
-              Text('Eliminar'),
-            ],
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                const Icon(Icons.delete, size: 18),
+                const SizedBox(width: 8),
+                Text(l.t('delete')),
+              ],
+            ),
           ),
-        ),
-      ],
+        ];
+      },
     );
   }
 
@@ -316,6 +321,7 @@ class CommentItem extends StatelessWidget {
   void _showReplyField(BuildContext context) {
     final controller = TextEditingController();
     final provider = context.read<CommentsProvider>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showModalBottomSheet(
       context: context,
@@ -332,7 +338,7 @@ class CommentItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Responder a ${comment.userName}',
+              l.t('reply_to').replaceAll('{name}', comment.userName),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -341,9 +347,9 @@ class CommentItem extends StatelessWidget {
               autofocus: true,
               maxLength: 500,
               maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: 'Escribe tu respuesta...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: l.t('write_reply_hint'),
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -352,7 +358,7 @@ class CommentItem extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'),
+                  child: Text(l.t('cancel')),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
@@ -382,15 +388,15 @@ class CommentItem extends StatelessWidget {
                       Navigator.pop(context);
                       if (commentId != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Respuesta publicada'),
-                            duration: Duration(seconds: 2),
+                          SnackBar(
+                            content: Text(l.t('reply_posted')),
+                            duration: const Duration(seconds: 2),
                           ),
                         );
                       }
                     }
                   },
-                  child: const Text('Responder'),
+                  child: Text(l.t('reply')),
                 ),
               ],
             ),
@@ -404,23 +410,22 @@ class CommentItem extends StatelessWidget {
   void _showEditDialog(BuildContext context) {
     final controller = TextEditingController(text: comment.text);
     final provider = context.read<CommentsProvider>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Editar comentario'),
+        title: Text(l.t('edit_comment')),
         content: TextField(
           controller: controller,
           maxLength: 500,
           maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: 'Escribe tu comentario...',
-          ),
+          decoration: InputDecoration(hintText: l.t('write_comment')),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -436,9 +441,9 @@ class CommentItem extends StatelessWidget {
                 // Mostrar feedback basado en el resultado
                 if (provider.error == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Comentario actualizado'),
-                      duration: Duration(seconds: 2),
+                    SnackBar(
+                      content: Text(l.t('comment_updated')),
+                      duration: const Duration(seconds: 2),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -446,7 +451,7 @@ class CommentItem extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        provider.error ?? 'Error al actualizar comentario',
+                        provider.error ?? l.t('comment_update_error'),
                       ),
                       duration: const Duration(seconds: 3),
                       backgroundColor: Colors.red,
@@ -455,7 +460,7 @@ class CommentItem extends StatelessWidget {
                 }
               }
             },
-            child: const Text('Guardar'),
+            child: Text(l.t('save')),
           ),
         ],
       ),
@@ -464,18 +469,17 @@ class CommentItem extends StatelessWidget {
 
   void _showDeleteConfirmation(BuildContext context) {
     final provider = context.read<CommentsProvider>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar comentario'),
-        content: const Text(
-          '¿Estás seguro de que deseas eliminar este comentario?',
-        ),
+        title: Text(l.t('delete_comment')),
+        content: Text(l.t('delete_comment_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -490,9 +494,9 @@ class CommentItem extends StatelessWidget {
                 // Mostrar feedback basado en el resultado
                 if (provider.error == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Comentario eliminado'),
-                      duration: Duration(seconds: 2),
+                    SnackBar(
+                      content: Text(l.t('comment_deleted')),
+                      duration: const Duration(seconds: 2),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -500,7 +504,7 @@ class CommentItem extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        provider.error ?? 'Error al eliminar comentario',
+                        provider.error ?? l.t('comment_delete_error'),
                       ),
                       duration: const Duration(seconds: 3),
                       backgroundColor: Colors.red,
@@ -510,7 +514,7 @@ class CommentItem extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),

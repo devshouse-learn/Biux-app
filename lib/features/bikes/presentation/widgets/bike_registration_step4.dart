@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
 import 'package:biux/shared/widgets/photo_viewer.dart';
@@ -15,6 +15,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<BikeProvider>(
       builder: (context, bikeProvider, child) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         final registrationData = bikeProvider.registrationData;
 
         return Padding(
@@ -39,9 +40,9 @@ class BikeRegistrationStep4 extends StatelessWidget {
                       color: ColorTokens.primary30,
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      AppStrings.step4Title,
-                      style: TextStyle(
+                    Text(
+                      l.t('step4_title'),
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: ColorTokens.primary30,
@@ -49,9 +50,9 @@ class BikeRegistrationStep4 extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      AppStrings.step4Description,
-                      style: TextStyle(
+                    Text(
+                      l.t('step4_description'),
+                      style: const TextStyle(
                         fontSize: 14,
                         color: ColorTokens.neutral30,
                       ),
@@ -82,7 +83,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Al presionar "Finalizar" se registrará tu bicicleta y recibirás tu código QR.',
+                        l.t('finalize_bike_info'),
                         style: TextStyle(fontSize: 13, color: Colors.blue[900]),
                       ),
                     ),
@@ -99,6 +100,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
   }
 
   Widget _buildBikeSummary(BuildContext context, Map<String, dynamic> data) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final bikeType = data['type'] as BikeType?;
 
     return Container(
@@ -127,7 +129,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Resumen de tu bicicleta',
+                l.t('bike_summary_title'),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -144,17 +146,20 @@ class BikeRegistrationStep4 extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Información básica
-          _buildInfoRow('Marca:', data['brand'] ?? ''),
-          _buildInfoRow('Modelo:', data['model'] ?? ''),
-          _buildInfoRow('Año:', data['year']?.toString() ?? ''),
-          _buildInfoRow('Color:', data['color'] ?? ''),
-          _buildInfoRow('Talla:', data['size'] ?? ''),
-          _buildInfoRow('Tipo:', bikeType?.displayName ?? ''),
-          _buildInfoRow('Ciudad:', data['city'] ?? ''),
+          _buildInfoRow(l.t('brand_colon'), data['brand'] ?? ''),
+          _buildInfoRow(l.t('model_colon'), data['model'] ?? ''),
+          _buildInfoRow(l.t('year_colon'), data['year']?.toString() ?? ''),
+          _buildInfoRow(l.t('color_colon'), data['color'] ?? ''),
+          _buildInfoRow(l.t('size_colon'), data['size'] ?? ''),
+          _buildInfoRow(
+            l.t('type_colon'),
+            bikeType != null ? l.t(bikeType.displayName) : '',
+          ),
+          _buildInfoRow(l.t('city_colon'), data['city'] ?? ''),
 
           if (data['neighborhood'] != null &&
               data['neighborhood'].toString().isNotEmpty)
-            _buildInfoRow('Barrio:', data['neighborhood']),
+            _buildInfoRow(l.t('neighborhood_colon'), data['neighborhood']),
         ],
       ),
     );
@@ -189,6 +194,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
   }
 
   Widget _buildPhotosSection(BuildContext context, Map<String, dynamic> data) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final mainPhoto = data['mainPhoto'] as String?;
     final serialPhoto = data['serialPhoto'] as String?;
     final additionalPhotos = data['additionalPhotos'] as List<dynamic>?;
@@ -198,18 +204,21 @@ class BikeRegistrationStep4 extends StatelessWidget {
     final photos = <Map<String, String>>[];
 
     if (mainPhoto != null) {
-      photos.add({'path': mainPhoto, 'label': 'Principal'});
+      photos.add({'path': mainPhoto, 'label': l.t('main_photo')});
     }
     if (serialPhoto != null) {
-      photos.add({'path': serialPhoto, 'label': 'Nº Serie'});
+      photos.add({'path': serialPhoto, 'label': l.t('serial_number_short')});
     }
     if (additionalPhotos != null && additionalPhotos.isNotEmpty) {
       for (int i = 0; i < additionalPhotos.length; i++) {
-        photos.add({'path': additionalPhotos[i], 'label': 'Foto ${i + 1}'});
+        photos.add({
+          'path': additionalPhotos[i],
+          'label': '${l.t('photo')} ${i + 1}',
+        });
       }
     }
     if (invoice != null) {
-      photos.add({'path': invoice, 'label': 'Factura'});
+      photos.add({'path': invoice, 'label': l.t('invoice')});
     }
 
     if (photos.isEmpty) return const SizedBox.shrink();
@@ -221,9 +230,9 @@ class BikeRegistrationStep4 extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Fotos',
-          style: TextStyle(
+        Text(
+          l.t('photos'),
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: ColorTokens.primary30,
@@ -235,7 +244,7 @@ class BikeRegistrationStep4 extends StatelessWidget {
             Icon(Icons.zoom_in, size: 16, color: ColorTokens.neutral60),
             const SizedBox(width: 4),
             Text(
-              'Toca cualquier foto para ampliar',
+              l.t('tap_to_enlarge_photo'),
               style: TextStyle(fontSize: 12, color: ColorTokens.neutral60),
             ),
           ],

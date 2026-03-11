@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 const _kPrimaryColor = Color(0xFF16242D);
 
@@ -10,12 +11,13 @@ class ShopStatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text(
-          'Estadísticas de la Tienda',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l.t('store_stats'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: _kPrimaryColor,
         foregroundColor: Colors.white,
@@ -39,13 +41,13 @@ class ShopStatsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header con resumen
-                _buildSummaryHeader(totalProducts, categoryCount.length),
+                _buildSummaryHeader(l, totalProducts, categoryCount.length),
                 const SizedBox(height: 24),
 
                 // Estadísticas rápidas
-                const Text(
-                  'Resumen General',
-                  style: TextStyle(
+                Text(
+                  l.t('general_summary'),
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: _kPrimaryColor,
@@ -61,26 +63,28 @@ class ShopStatsScreen extends StatelessWidget {
                   childAspectRatio: 1.4,
                   children: [
                     _buildStatCard(
-                      'Productos Totales',
+                      l.t('total_products'),
                       '$totalProducts',
                       Icons.inventory_2,
                       Colors.blue,
                     ),
                     _buildStatCard(
-                      'Categorías',
+                      l.t('categories'),
                       '${categoryCount.length}',
                       Icons.category,
                       Colors.purple,
                     ),
                     _buildStatCard(
-                      'Artículos en Carrito',
+                      l.t('cart_items'),
                       '${shopProvider.cartItemCount}',
                       Icons.shopping_cart,
                       Colors.orange,
                     ),
                     _buildStatCard(
-                      'Estado',
-                      shopProvider.isLoadingProducts ? 'Cargando' : 'Activo',
+                      l.t('status_label'),
+                      shopProvider.isLoadingProducts
+                          ? l.t('loading')
+                          : l.t('active_status'),
                       Icons.circle,
                       shopProvider.isLoadingProducts
                           ? Colors.amber
@@ -91,9 +95,9 @@ class ShopStatsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Distribución por categoría
-                const Text(
-                  'Distribución por Categoría',
-                  style: TextStyle(
+                Text(
+                  l.t('distribution_by_category'),
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: _kPrimaryColor,
@@ -101,13 +105,14 @@ class ShopStatsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 if (categoryCount.isEmpty)
-                  _buildEmptyState()
+                  _buildEmptyState(l)
                 else
                   ...categoryCount.entries.map((entry) {
                     final percentage = totalProducts > 0
                         ? (entry.value / totalProducts)
                         : 0.0;
                     return _buildCategoryBar(
+                      l,
                       entry.key,
                       entry.value,
                       percentage,
@@ -117,9 +122,9 @@ class ShopStatsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Actividad reciente
-                const Text(
-                  'Actividad Reciente',
-                  style: TextStyle(
+                Text(
+                  l.t('recent_activity'),
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: _kPrimaryColor,
@@ -128,24 +133,24 @@ class ShopStatsScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _buildActivityItem(
                   Icons.shopping_bag,
-                  'Tienda operativa',
-                  'La tienda está funcionando correctamente',
+                  l.t('store_operational'),
+                  l.t('store_running_correctly'),
                   Colors.green,
-                  'Ahora',
+                  l.t('now'),
                 ),
                 _buildActivityItem(
                   Icons.inventory,
-                  'Inventario actualizado',
-                  '$totalProducts productos disponibles',
+                  l.t('inventory_updated'),
+                  '$totalProducts ${l.t('products_available')}',
                   Colors.blue,
-                  'Hoy',
+                  l.t('today'),
                 ),
                 _buildActivityItem(
                   Icons.trending_up,
-                  'Estadísticas disponibles',
-                  'Panel de control activo',
+                  l.t('stats_available'),
+                  l.t('dashboard_active'),
                   Colors.purple,
-                  'Hoy',
+                  l.t('today'),
                 ),
               ],
             ),
@@ -155,7 +160,11 @@ class ShopStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryHeader(int totalProducts, int totalCategories) {
+  Widget _buildSummaryHeader(
+    LocaleNotifier l,
+    int totalProducts,
+    int totalCategories,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -170,9 +179,10 @@ class ShopStatsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '📊 Tu Tienda en Números',
-            style: TextStyle(
+          const Text('📊 ', style: TextStyle(fontSize: 22)),
+          Text(
+            l.t('your_store_in_numbers'),
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -180,17 +190,17 @@ class ShopStatsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '$totalProducts productos en $totalCategories categorías',
+            '$totalProducts ${l.t('count_products')} ${l.t('in_preposition')} $totalCategories ${l.t('count_categories')}',
             style: const TextStyle(fontSize: 14, color: Colors.white70),
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              _buildMiniStat('🛒', 'Ventas', '-'),
+              _buildMiniStat('🛒', l.t('sales'), '-'),
               const SizedBox(width: 24),
-              _buildMiniStat('⭐', 'Rating', '-'),
+              _buildMiniStat('⭐', l.t('rating'), '-'),
               const SizedBox(width: 24),
-              _buildMiniStat('👁️', 'Vistas', '-'),
+              _buildMiniStat('👁️', l.t('views_label'), '-'),
             ],
           ),
         ],
@@ -262,7 +272,12 @@ class ShopStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryBar(String name, int count, double percentage) {
+  Widget _buildCategoryBar(
+    LocaleNotifier l,
+    String name,
+    int count,
+    double percentage,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
@@ -292,7 +307,7 @@ class ShopStatsScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '$count productos',
+                  '$count ${l.t('count_products')}',
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
@@ -345,7 +360,7 @@ class ShopStatsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(LocaleNotifier l) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -358,7 +373,7 @@ class ShopStatsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'No hay productos aún',
+              l.t('no_products_yet_stats'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -367,7 +382,7 @@ class ShopStatsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Las estadísticas se mostrarán cuando haya productos.',
+              l.t('stats_when_products'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
             ),

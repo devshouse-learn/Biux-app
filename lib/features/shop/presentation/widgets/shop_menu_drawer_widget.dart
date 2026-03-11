@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/presentation/screens/security_center_screen.dart';
@@ -15,6 +16,7 @@ class ShopMenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final userProvider = context.watch<UserProvider>();
     final shopProvider = context.watch<ShopProvider>();
     final user = userProvider.user;
@@ -43,13 +45,13 @@ class ShopMenuDrawer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.store, color: Colors.white, size: 32),
-                      SizedBox(width: 12),
+                      const Icon(Icons.store, color: Colors.white, size: 32),
+                      const SizedBox(width: 12),
                       Text(
-                        'BiuX Shop',
-                        style: TextStyle(
+                        l.t('biux_shop'),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -59,14 +61,15 @@ class ShopMenuDrawer extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    user?.name ?? 'Visitante',
+                    user?.name ?? l.t('visitor'),
                     style: const TextStyle(fontSize: 14, color: Colors.white70),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      if (isAdmin) _buildRoleBadge('Admin', Colors.amber),
-                      if (isSeller) _buildRoleBadge('Vendedor', Colors.green),
+                      if (isAdmin) _buildRoleBadge(l.t('admin'), Colors.amber),
+                      if (isSeller)
+                        _buildRoleBadge(l.t('seller'), Colors.green),
                     ],
                   ),
                 ],
@@ -81,15 +84,15 @@ class ShopMenuDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // --- Explorar ---
-                _buildSectionTitle('Explorar'),
+                _buildSectionTitle(l.t('explore')),
                 _buildMenuItem(
                   Icons.shopping_bag,
-                  'Catálogo',
+                  l.t('catalog'),
                   onTap: () => Navigator.pop(context),
                 ),
                 _buildMenuItem(
                   Icons.favorite,
-                  'Favoritos',
+                  l.t('favorites'),
                   onTap: () {
                     Navigator.pop(context);
                     context.push('/shop/favorites');
@@ -97,7 +100,7 @@ class ShopMenuDrawer extends StatelessWidget {
                 ),
                 _buildMenuItem(
                   Icons.shopping_cart,
-                  'Carrito',
+                  l.t('cart'),
                   badge: shopProvider.cartItemCount > 0
                       ? '${shopProvider.cartItemCount}'
                       : null,
@@ -110,11 +113,11 @@ class ShopMenuDrawer extends StatelessWidget {
                 const Divider(height: 1, indent: 16, endIndent: 16),
 
                 // --- Seguridad ---
-                _buildSectionTitle('Seguridad'),
+                _buildSectionTitle(l.t('security_section')),
                 _buildMenuItem(
                   Icons.security,
-                  'Centro de Seguridad',
-                  subtitle: 'Registro, alertas y QR',
+                  l.t('security_center'),
+                  subtitle: l.t('security_center_subtitle'),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(
@@ -128,11 +131,11 @@ class ShopMenuDrawer extends StatelessWidget {
                 const Divider(height: 1, indent: 16, endIndent: 16),
 
                 // --- Informes ---
-                _buildSectionTitle('Informes'),
+                _buildSectionTitle(l.t('reports')),
                 _buildMenuItem(
                   Icons.flag,
-                  'Reportes',
-                  subtitle: 'Reportar productos o usuarios',
+                  l.t('reports'),
+                  subtitle: l.t('reports_subtitle'),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(
@@ -144,8 +147,8 @@ class ShopMenuDrawer extends StatelessWidget {
                 ),
                 _buildMenuItem(
                   Icons.bar_chart,
-                  'Estadísticas',
-                  subtitle: 'Datos de la tienda',
+                  l.t('statistics'),
+                  subtitle: l.t('statistics_subtitle'),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(
@@ -159,12 +162,12 @@ class ShopMenuDrawer extends StatelessWidget {
                 // --- Administración (solo admin/seller) ---
                 if (isAdmin || isSeller) ...[
                   const Divider(height: 1, indent: 16, endIndent: 16),
-                  _buildSectionTitle('Administración'),
+                  _buildSectionTitle(l.t('administration')),
                   if (isAdmin)
                     _buildMenuItem(
                       Icons.admin_panel_settings,
-                      'Panel Admin',
-                      subtitle: 'Gestión completa',
+                      l.t('admin_panel'),
+                      subtitle: l.t('admin_panel_subtitle'),
                       onTap: () {
                         Navigator.pop(context);
                         context.push('/shop/admin');
@@ -173,8 +176,8 @@ class ShopMenuDrawer extends StatelessWidget {
                   if (isAdmin)
                     _buildMenuItem(
                       Icons.people,
-                      'Solicitudes de Vendedor',
-                      subtitle: 'Aprobar/rechazar solicitudes',
+                      l.t('seller_requests'),
+                      subtitle: l.t('seller_requests_subtitle'),
                       onTap: () {
                         Navigator.pop(context);
                         context.push('/shop/seller-requests');
@@ -183,7 +186,7 @@ class ShopMenuDrawer extends StatelessWidget {
                   if (isAdmin)
                     _buildMenuItem(
                       Icons.manage_accounts,
-                      'Gestionar Vendedores',
+                      l.t('manage_sellers'),
                       onTap: () {
                         Navigator.pop(context);
                         context.push('/shop/manage-sellers');
@@ -192,8 +195,8 @@ class ShopMenuDrawer extends StatelessWidget {
                   if (isSeller && !isAdmin)
                     _buildMenuItem(
                       Icons.add_business,
-                      'Mis Productos',
-                      subtitle: 'Gestionar mis productos',
+                      l.t('my_products'),
+                      subtitle: l.t('my_products_subtitle'),
                       onTap: () {
                         Navigator.pop(context);
                         context.push('/shop/admin');
@@ -204,10 +207,10 @@ class ShopMenuDrawer extends StatelessWidget {
                 const Divider(height: 1, indent: 16, endIndent: 16),
 
                 // --- Información ---
-                _buildSectionTitle('Información'),
+                _buildSectionTitle(l.t('information')),
                 _buildMenuItem(
                   Icons.info_outline,
-                  'Acerca de la Tienda',
+                  l.t('about_store'),
                   onTap: () {
                     Navigator.pop(context);
                     _showAboutDialog(context);
@@ -215,7 +218,7 @@ class ShopMenuDrawer extends StatelessWidget {
                 ),
                 _buildMenuItem(
                   Icons.policy,
-                  'Políticas',
+                  l.t('policies'),
                   onTap: () {
                     Navigator.pop(context);
                     _showPoliciesDialog(context);
@@ -223,7 +226,7 @@ class ShopMenuDrawer extends StatelessWidget {
                 ),
                 _buildMenuItem(
                   Icons.help_outline,
-                  'Ayuda',
+                  l.t('help'),
                   onTap: () {
                     Navigator.pop(context);
                     _showHelpDialog(context);
@@ -312,20 +315,16 @@ class ShopMenuDrawer extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('BiuX Shop'),
-        content: const Text(
-          'Tu tienda de ciclismo de confianza.\n\n'
-          'Encuentra los mejores productos para tu bicicleta, '
-          'accesorios, equipamiento y más.\n\n'
-          'Versión 1.0.0',
-        ),
+        title: Text(l.t('biux_shop')),
+        content: Text(l.t('about_store_content')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
         ],
       ),
@@ -333,45 +332,40 @@ class ShopMenuDrawer extends StatelessWidget {
   }
 
   void _showPoliciesDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Políticas de la Tienda'),
-        content: const SingleChildScrollView(
+        title: Text(l.t('store_policies')),
+        content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('📦 Envíos', style: TextStyle(fontWeight: FontWeight.bold)),
               Text(
-                'Los envíos se realizan a través del vendedor. '
-                'Consulta las condiciones de cada producto.',
+                '📦 ${l.t('shipping_title')}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 12),
+              Text(l.t('shipping_content')),
+              const SizedBox(height: 12),
               Text(
-                '🔄 Devoluciones',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                '🔄 ${l.t('returns_title')}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
+              Text(l.t('returns_content')),
+              const SizedBox(height: 12),
               Text(
-                'Contacta al vendedor dentro de las primeras 48h '
-                'para gestionar devoluciones.',
+                '🔒 ${l.t('privacy_title')}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 12),
-              Text(
-                '🔒 Privacidad',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Tu información personal está protegida. '
-                'No compartimos datos con terceros.',
-              ),
+              Text(l.t('privacy_content')),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Entendido'),
+            child: Text(l.t('accept')),
           ),
         ],
       ),
@@ -379,54 +373,46 @@ class ShopMenuDrawer extends StatelessWidget {
   }
 
   void _showHelpDialog(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Centro de Ayuda'),
-        content: const SingleChildScrollView(
+        title: Text(l.t('help_center')),
+        content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '❓ ¿Cómo comprar?',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                '❓ ${l.t('how_to_buy')}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
+              Text(l.t('how_to_buy_content')),
+              const SizedBox(height: 12),
               Text(
-                'Explora el catálogo, añade productos al carrito '
-                'y realiza tu pedido.',
+                '🏪 ${l.t('how_to_sell')}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 12),
+              Text(l.t('how_to_sell_content')),
+              const SizedBox(height: 12),
               Text(
-                '🏪 ¿Cómo vender?',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                '🔐 ${l.t('bike_registration')}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
+              Text(l.t('bike_registration_content')),
+              const SizedBox(height: 12),
               Text(
-                'Solicita permisos de vendedor desde tu perfil '
-                'y espera la aprobación del admin.',
+                '📧 ${l.t('contact')}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 12),
-              Text(
-                '🔐 Registro de Bicicleta',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Registra tu bici en el Centro de Seguridad '
-                'para protegerla contra robos.',
-              ),
-              SizedBox(height: 12),
-              Text(
-                '📧 Contacto',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text('soporte@biux.app'),
+              const Text('soporte@biux.app'),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(l.t('close')),
           ),
         ],
       ),

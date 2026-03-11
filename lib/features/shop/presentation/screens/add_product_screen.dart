@@ -9,6 +9,7 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para agregar un nuevo producto a la tienda
 class AddProductScreen extends StatefulWidget {
@@ -63,6 +64,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
@@ -72,9 +74,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => _onBack(),
         ),
-        title: const Text(
-          'Agregar Producto',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+        title: Text(
+          l.t('add_product'),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
         elevation: 0,
       ),
@@ -84,33 +86,35 @@ class _AddProductScreenState extends State<AddProductScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             // === INFORMACIÓN BÁSICA ===
-            _buildSectionHeader('Información del Producto', Icons.info_outline),
+            _buildSectionHeader(
+              l.t('product_info_section'),
+              Icons.info_outline,
+            ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _nameController,
-              label: 'Nombre del producto',
-              hint: 'Ej: Jersey Ciclismo Pro Team',
+              label: l.t('product_name_label'),
+              hint: l.t('product_name_hint'),
               icon: Icons.label_outline,
-              validator: (v) => v == null || v.trim().isEmpty
-                  ? 'El nombre es obligatorio'
-                  : null,
+              validator: (v) =>
+                  v == null || v.trim().isEmpty ? l.t('name_required') : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _descriptionController,
-              label: 'Descripción corta',
-              hint: 'Breve descripción del producto',
+              label: l.t('short_description'),
+              hint: l.t('short_description_hint'),
               icon: Icons.short_text,
               maxLines: 2,
               validator: (v) => v == null || v.trim().isEmpty
-                  ? 'La descripción es obligatoria'
+                  ? l.t('description_required')
                   : null,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _longDescriptionController,
-              label: 'Descripción detallada (opcional)',
-              hint: 'Características, materiales, etc.',
+              label: l.t('detailed_description'),
+              hint: l.t('detailed_description_hint'),
               icon: Icons.description_outlined,
               maxLines: 4,
             ),
@@ -118,29 +122,31 @@ class _AddProductScreenState extends State<AddProductScreen> {
             const SizedBox(height: 24),
 
             // === CATEGORÍA ===
-            _buildSectionHeader('Categoría', Icons.category_outlined),
+            _buildSectionHeader(l.t('category_label'), Icons.category_outlined),
             const SizedBox(height: 12),
             _buildCategorySelector(),
 
             const SizedBox(height: 24),
 
             // === PRECIO Y STOCK ===
-            _buildSectionHeader('Precio y Stock', Icons.attach_money),
+            _buildSectionHeader(l.t('price_and_stock'), Icons.attach_money),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: _buildTextField(
                     controller: _priceController,
-                    label: 'Precio (COP)',
+                    label: l.t('price_cop'),
                     hint: '150000',
                     icon: Icons.monetization_on_outlined,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Obligatorio';
+                      if (v == null || v.trim().isEmpty)
+                        return l.t('required_label');
                       final price = double.tryParse(v);
-                      if (price == null || price <= 0) return 'Precio inválido';
+                      if (price == null || price <= 0)
+                        return l.t('invalid_price');
                       return null;
                     },
                   ),
@@ -149,15 +155,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 Expanded(
                   child: _buildTextField(
                     controller: _stockController,
-                    label: 'Stock',
+                    label: l.t('stock_field'),
                     hint: '1',
                     icon: Icons.inventory_2_outlined,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Obligatorio';
+                      if (v == null || v.trim().isEmpty)
+                        return l.t('required_label');
                       final stock = int.tryParse(v);
-                      if (stock == null || stock < 1) return 'Mínimo 1';
+                      if (stock == null || stock < 1) return l.t('min_one');
                       return null;
                     },
                   ),
@@ -168,29 +175,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
             const SizedBox(height: 24),
 
             // === TALLAS Y TAGS ===
-            _buildSectionHeader('Tallas y Tags', Icons.straighten),
+            _buildSectionHeader(l.t('sizes_and_tags'), Icons.straighten),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _sizesController,
-              label: 'Tallas (separadas por coma)',
-              hint: 'S, M, L, XL',
+              label: l.t('sizes_hint'),
+              hint: l.t('sizes_placeholder'),
               icon: Icons.straighten,
             ),
             const SizedBox(height: 12),
             _buildTextField(
               controller: _tagsController,
-              label: 'Tags de búsqueda (separados por coma)',
-              hint: 'ciclismo, jersey, pro',
+              label: l.t('search_tags_hint'),
+              hint: l.t('search_tags_placeholder'),
               icon: Icons.tag,
             ),
 
             const SizedBox(height: 24),
 
             // === IMÁGENES (OBLIGATORIO) ===
-            _buildSectionHeader('Imágenes *', Icons.image_outlined),
+            _buildSectionHeader(l.t('images_required'), Icons.image_outlined),
             const SizedBox(height: 4),
             Text(
-              'Mínimo 1 foto obligatoria',
+              l.t('min_one_photo'),
               style: TextStyle(
                 fontSize: 12,
                 color: _selectedImages.isEmpty
@@ -200,17 +207,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            _buildImagePicker(),
+            _buildImagePicker(l),
 
             const SizedBox(height: 24),
 
             // === SECCIÓN BICICLETA ===
-            _buildBicycleSection(),
+            _buildBicycleSection(l),
 
             const SizedBox(height: 32),
 
             // === BOTONES ===
-            _buildActionButtons(),
+            _buildActionButtons(l),
 
             const SizedBox(height: 32),
           ],
@@ -347,7 +354,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildImagePicker() {
+  Widget _buildImagePicker(LocaleNotifier l) {
     return Column(
       children: [
         // Preview de imágenes seleccionadas
@@ -437,8 +444,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 const SizedBox(height: 8),
                 Text(
                   _selectedImages.isEmpty
-                      ? '📷 Toca para agregar fotos (obligatorio)'
-                      : 'Agregar más imágenes (${_selectedImages.length}/5)',
+                      ? '📷 ${l.t('tap_add_photos')}'
+                      : '${l.t('add_more_images')} (${_selectedImages.length}/5)',
                   style: TextStyle(
                     color: _selectedImages.isEmpty
                         ? Colors.red.shade400
@@ -457,7 +464,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   // ===== SECCIÓN BICICLETA CON VERIFICACIÓN ANTIRROBO =====
 
-  Widget _buildBicycleSection() {
+  Widget _buildBicycleSection(LocaleNotifier l) {
     return Column(
       children: [
         // Toggle de bicicleta
@@ -476,16 +483,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '¿Es una bicicleta?',
-                      style: TextStyle(
+                    Text(
+                      l.t('is_bicycle_question'),
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: ColorTokens.neutral10,
                       ),
                     ),
                     Text(
-                      'Se requiere verificación antirrobo',
+                      l.t('anti_theft_verification_required'),
                       style: TextStyle(
                         fontSize: 12,
                         color: ColorTokens.neutral50,
@@ -536,8 +543,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Las bicicletas registradas como robadas NO pueden ser publicadas. '
-                    'Se verificará el número de serie antes de permitir la venta.',
+                    l.t('stolen_bikes_warning'),
                     style: TextStyle(
                       fontSize: 13,
                       color: ColorTokens.neutral20,
@@ -553,24 +559,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
           _buildTextField(
             controller: _frameSerialController,
-            label: 'Número de serie del cuadro *',
-            hint: 'Ej: WBK12345678',
+            label: l.t('frame_serial_label'),
+            hint: l.t('frame_serial_hint'),
             icon: Icons.qr_code,
             validator: _isBicycle
                 ? (v) => v == null || v.trim().isEmpty
-                      ? 'El número de serie es obligatorio para bicicletas'
+                      ? l.t('serial_required_bikes')
                       : null
                 : null,
           ),
           const SizedBox(height: 12),
           _buildTextField(
             controller: _bikeBrandController,
-            label: 'Marca *',
-            hint: 'Ej: Specialized, Trek, Giant',
+            label: '${l.t('brand_label')} *',
+            hint: l.t('bike_brand_hint'),
             icon: Icons.branding_watermark,
             validator: _isBicycle
                 ? (v) => v == null || v.trim().isEmpty
-                      ? 'La marca es obligatoria'
+                      ? l.t('brand_required_msg')
                       : null
                 : null,
           ),
@@ -580,8 +586,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
               Expanded(
                 child: _buildTextField(
                   controller: _bikeModelController,
-                  label: 'Modelo',
-                  hint: 'Ej: Tarmac SL7',
+                  label: l.t('model_label'),
+                  hint: l.t('bike_model_hint'),
                   icon: Icons.directions_bike,
                 ),
               ),
@@ -589,7 +595,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               Expanded(
                 child: _buildTextField(
                   controller: _bikeYearController,
-                  label: 'Año',
+                  label: l.t('year_label'),
                   hint: '2024',
                   icon: Icons.calendar_today,
                   keyboardType: TextInputType.number,
@@ -601,21 +607,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
           const SizedBox(height: 12),
           _buildTextField(
             controller: _bikeColorController,
-            label: 'Color',
-            hint: 'Ej: Negro mate, Rojo/Blanco',
+            label: l.t('color_label'),
+            hint: l.t('bike_color_hint'),
             icon: Icons.palette_outlined,
           ),
 
           const SizedBox(height: 16),
 
           // Botón de verificación antirrobo
-          _buildStolenCheckButton(),
+          _buildStolenCheckButton(l),
         ],
       ],
     );
   }
 
-  Widget _buildStolenCheckButton() {
+  Widget _buildStolenCheckButton(LocaleNotifier l) {
     if (_isStolenCheckDone && _isStolenCheckPassed) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -635,7 +641,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Verificación aprobada ✓',
+                    l.t('verification_approved'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -644,7 +650,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'La bicicleta no está reportada como robada',
+                    l.t('bike_not_reported_stolen'),
                     style: TextStyle(
                       fontSize: 12,
                       color: ColorTokens.success40,
@@ -675,7 +681,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Bicicleta reportada como robada',
+                    l.t('bike_reported_stolen'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -684,8 +690,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'No se puede publicar este producto. Si crees que es un error, '
-                    'contacta a un administrador.',
+                    l.t('cannot_publish_contact_admin'),
                     style: TextStyle(fontSize: 12, color: ColorTokens.error50),
                   ),
                 ],
@@ -711,7 +716,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               )
             : const Icon(Icons.verified_user),
         label: Text(
-          _isCheckingStolen ? 'Verificando...' : 'Verificar que no es robada',
+          _isCheckingStolen ? l.t('verifying') : l.t('verify_not_stolen_btn'),
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         style: ElevatedButton.styleFrom(
@@ -728,7 +733,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   // ===== BOTONES DE ACCIÓN =====
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(LocaleNotifier l) {
     return Column(
       children: [
         // Botón Agregar
@@ -748,7 +753,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   )
                 : const Icon(Icons.publish),
             label: Text(
-              _isSubmitting ? 'Publicando...' : 'Publicar Producto',
+              _isSubmitting ? l.t('publishing') : l.t('publish_product'),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             ),
             style: ElevatedButton.styleFrom(
@@ -769,9 +774,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: OutlinedButton.icon(
             onPressed: _isSubmitting ? null : _onBack,
             icon: const Icon(Icons.close),
-            label: const Text(
-              'Cancelar',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            label: Text(
+              l.t('cancel'),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
             style: OutlinedButton.styleFrom(
               foregroundColor: ColorTokens.neutral40,
@@ -789,6 +794,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   // ===== ACCIONES =====
 
   void _onBack() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_nameController.text.isNotEmpty ||
         _descriptionController.text.isNotEmpty ||
         _priceController.text.isNotEmpty) {
@@ -798,12 +804,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: const Text('¿Descartar cambios?'),
-          content: const Text('Si sales ahora, perderás los datos ingresados.'),
+          title: Text(l.t('discard_changes')),
+          content: Text(l.t('discard_changes_msg')),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Seguir editando'),
+              child: Text(l.t('keep_editing')),
             ),
             TextButton(
               onPressed: () {
@@ -811,7 +817,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 _goBack();
               },
               child: Text(
-                'Descartar',
+                l.t('discard'),
                 style: TextStyle(color: ColorTokens.error50),
               ),
             ),
@@ -832,10 +838,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Future<void> _pickImages() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_selectedImages.length >= 5) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Máximo 5 imágenes por producto')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('max_5_images'))));
       return;
     }
 
@@ -859,11 +866,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Future<void> _checkStolenStatus() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final serial = _frameSerialController.text.trim();
     if (serial.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ingresa el número de serie para verificar'),
+        SnackBar(
+          content: Text(l.t('enter_serial_to_verify')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -896,9 +904,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (!_isStolenCheckPassed) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            '⚠️ Esta bicicleta está reportada como robada. No se puede publicar.',
-          ),
+          content: Text('⚠️ ${l.t('bike_stolen_cannot_publish')}'),
           backgroundColor: ColorTokens.error50,
           duration: const Duration(seconds: 4),
         ),
@@ -907,15 +913,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   Future<void> _submitProduct() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
     // Validar bicicleta
     if (_isBicycle && !_isStolenCheckDone) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Debes verificar que la bicicleta no está robada antes de publicar',
-          ),
+        SnackBar(
+          content: Text(l.t('must_verify_bike_first')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -925,9 +930,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (_isBicycle && !_isStolenCheckPassed) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            'No se puede publicar una bicicleta reportada como robada',
-          ),
+          content: Text(l.t('cannot_publish_stolen_bike')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -937,8 +940,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
     // Validar al menos una imagen
     if (_selectedImages.isEmpty && _imageUrls.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Agrega al menos una imagen del producto'),
+        SnackBar(
+          content: Text(l.t('add_product_image')),
           backgroundColor: Colors.orange,
         ),
       );
@@ -953,7 +956,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       final currentUser = userProvider.user;
 
       if (currentUser == null) {
-        throw Exception('Usuario no autenticado');
+        throw Exception(l.t('user_not_authenticated'));
       }
 
       // Parsear tallas y tags
@@ -973,8 +976,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
       // Si no hay imágenes reales, no permitir publicar
       if (_selectedImages.isEmpty && _imageUrls.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Debes agregar al menos una foto del producto'),
+          SnackBar(
+            content: Text(l.t('must_add_product_photo')),
             backgroundColor: Colors.red,
           ),
         );
@@ -989,10 +992,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
         // IMPLEMENTADO (STUB): Implementar subida real a Firebase Storage
         // Por ahora, los productos sin URLs reales no se publican
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Error: No se pudieron procesar las imágenes. Inténtalo de nuevo.',
-            ),
+          SnackBar(
+            content: Text(l.t('image_processing_error')),
             backgroundColor: Colors.red,
           ),
         );
@@ -1010,10 +1011,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
         price: double.parse(_priceController.text.trim()),
         images: imageUrls,
         category: _selectedCategory,
-        sizes: sizes.isNotEmpty ? sizes : ['Única'],
+        sizes: sizes.isNotEmpty ? sizes : [l.t('unique_size')],
         stock: int.parse(_stockController.text.trim()),
         sellerId: currentUser.uid,
-        sellerName: currentUser.name ?? 'Vendedor',
+        sellerName: currentUser.name ?? l.t('default_seller'),
         sellerCity: null,
         createdAt: DateTime.now(),
         tags: tags,
@@ -1043,7 +1044,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('✅ Producto publicado exitosamente'),
+            content: Text('✅ ${l.t('product_published_success')}'),
             backgroundColor: ColorTokens.success40,
           ),
         );
@@ -1051,7 +1052,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(shopProvider.errorMessage ?? 'Error al publicar'),
+            content: Text(shopProvider.errorMessage ?? l.t('error_publishing')),
             backgroundColor: ColorTokens.error50,
           ),
         );

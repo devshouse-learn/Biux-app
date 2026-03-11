@@ -1,4 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/stories/data/models/comment_story.dart';
 import 'package:biux/features/stories/data/models/story.dart';
@@ -73,6 +74,7 @@ class _StoryCommentsBottomSheetState extends State<StoryCommentsBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       decoration: BoxDecoration(
@@ -99,7 +101,7 @@ class _StoryCommentsBottomSheetState extends State<StoryCommentsBottomSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Comentarios (${widget.story.listComments.length})',
+                  '${l.t('comments')} (${widget.story.listComments.length})',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -119,7 +121,7 @@ class _StoryCommentsBottomSheetState extends State<StoryCommentsBottomSheet> {
             child: widget.story.listComments.isEmpty
                 ? Center(
                     child: Text(
-                      'Sin comentarios aún',
+                      l.t('no_comments_yet'),
                       style: TextStyle(color: Colors.grey, fontSize: 14),
                     ),
                   )
@@ -160,7 +162,7 @@ class _StoryCommentsBottomSheetState extends State<StoryCommentsBottomSheet> {
                   child: TextField(
                     controller: _commentController,
                     decoration: InputDecoration(
-                      hintText: 'Añade un comentario...',
+                      hintText: l.t('add_comment_hint'),
                       hintStyle: TextStyle(color: Colors.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),

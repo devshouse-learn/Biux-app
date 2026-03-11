@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
@@ -32,6 +33,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         // Añadir botón de volver explícito (flecha)
@@ -47,7 +49,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
           },
         ),
         automaticallyImplyLeading: false,
-        title: const Text('Grupos'),
+        title: Text(l.t('groups')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
       ),
@@ -93,7 +95,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
               onPressed: () => context.go('/groups/create'),
               backgroundColor: ColorTokens.primary30,
               child: const Icon(Icons.add, color: ColorTokens.neutral100),
-              tooltip: 'Crear Grupo',
+              tooltip: l.t('create_group'),
             );
           }
           return const SizedBox.shrink();
@@ -103,6 +105,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   Widget _buildEmptyState(GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -110,14 +113,14 @@ class _GroupListScreenState extends State<GroupListScreen> {
           Icon(Icons.group_outlined, size: 80, color: ColorTokens.neutral60),
           const SizedBox(height: 16),
           Text(
-            'No hay grupos disponibles',
+            l.t('no_groups_available'),
             style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
           ),
           const SizedBox(height: 8),
           Text(
             provider.canCreateGroup
-                ? 'Sé el primero en crear un grupo'
-                : 'Explora grupos para unirte',
+                ? l.t('be_first_create_group')
+                : l.t('explore_groups_to_join'),
             style: TextStyle(color: ColorTokens.neutral60),
           ),
           const SizedBox(height: 24),
@@ -125,7 +128,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
             ElevatedButton.icon(
               onPressed: () => context.go('/groups/create'),
               icon: const Icon(Icons.add),
-              label: const Text('Crear Grupo'),
+              label: Text(l.t('create_group')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: ColorTokens.neutral100,
@@ -137,6 +140,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   Widget _buildGroupCard(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     final status = provider.getUserStatus(group);
 
     return Card(
@@ -226,7 +230,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${group.memberIds.length} miembros',
+                              '${group.memberIds.length} ${l.t('members')}',
                               style: TextStyle(
                                 color: ColorTokens.neutral60,
                                 fontSize: 14,
@@ -270,7 +274,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
 
                   // Estados de rodadas
                   Text(
-                    'Estados de Rodadas:',
+                    '${l.t('ride_statuses')}:',
                     style: TextStyle(
                       color: ColorTokens.neutral60,
                       fontSize: 12,
@@ -281,11 +285,20 @@ class _GroupListScreenState extends State<GroupListScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      _buildRideStatusBadge('Próxima', ColorTokens.warning50),
+                      _buildRideStatusBadge(
+                        l.t('status_upcoming'),
+                        ColorTokens.warning50,
+                      ),
                       const SizedBox(width: 8),
-                      _buildRideStatusBadge('Cancelada', ColorTokens.error50),
+                      _buildRideStatusBadge(
+                        l.t('status_cancelled'),
+                        ColorTokens.error50,
+                      ),
                       const SizedBox(width: 8),
-                      _buildRideStatusBadge('Realizada', ColorTokens.success40),
+                      _buildRideStatusBadge(
+                        l.t('status_done'),
+                        ColorTokens.success40,
+                      ),
                     ],
                   ),
 
@@ -303,7 +316,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '👤 Cargando líder...',
+                            '👤 ${l.t('loading_leader')}',
                             style: TextStyle(
                               color: ColorTokens.neutral60,
                               fontSize: 12,
@@ -351,7 +364,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '👑 ${admin['fullName'] ?? 'Líder'}',
+                                      '👑 ${admin['fullName'] ?? l.t('ride_leader')}',
                                       style: TextStyle(
                                         color: ColorTokens.neutral100,
                                         fontSize: 12,
@@ -361,7 +374,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      '@${admin['userName'] ?? 'usuario'}',
+                                      '@${admin['userName'] ?? l.t('user')}',
                                       style: TextStyle(
                                         color: ColorTokens.neutral60,
                                         fontSize: 11,
@@ -384,7 +397,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          '👤 Líder no disponible',
+                          '👤 ${l.t('leader_not_available')}',
                           style: TextStyle(
                             color: ColorTokens.neutral60,
                             fontSize: 12,
@@ -465,6 +478,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   Widget _buildStatusChip(GroupMembershipStatus status) {
+    final l = Provider.of<LocaleNotifier>(context);
     String text;
     Color backgroundColor;
     Color textColor;
@@ -472,25 +486,25 @@ class _GroupListScreenState extends State<GroupListScreen> {
 
     switch (status) {
       case GroupMembershipStatus.admin:
-        text = 'Admin';
+        text = l.t('admin');
         backgroundColor = ColorTokens.success40;
         textColor = ColorTokens.neutral100;
         borderColor = ColorTokens.success40;
         break;
       case GroupMembershipStatus.member:
-        text = 'Miembro';
+        text = l.t('member');
         backgroundColor = ColorTokens.primary30;
         textColor = ColorTokens.neutral100;
         borderColor = ColorTokens.primary30;
         break;
       case GroupMembershipStatus.pending:
-        text = 'Pendiente';
+        text = l.t('pending');
         backgroundColor = ColorTokens.warning50;
         textColor = ColorTokens.neutral100;
         borderColor = ColorTokens.warning50;
         break;
       case GroupMembershipStatus.notMember:
-        text = 'Unirse';
+        text = l.t('join');
         backgroundColor = ColorTokens.neutral60;
         textColor = ColorTokens.neutral100;
         borderColor = ColorTokens.neutral60;
@@ -520,6 +534,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
     GroupMembershipStatus status,
     GroupProvider provider,
   ) {
+    final l = Provider.of<LocaleNotifier>(context);
     switch (status) {
       case GroupMembershipStatus.admin:
       case GroupMembershipStatus.member:
@@ -529,7 +544,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
         return ElevatedButton.icon(
           onPressed: () => _cancelJoinRequest(group.id, provider),
           icon: const Icon(Icons.cancel, size: 16),
-          label: const Text('Cancelar'),
+          label: Text(l.t('cancel')),
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorTokens.error50,
             foregroundColor: ColorTokens.neutral100,
@@ -541,7 +556,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
         return ElevatedButton.icon(
           onPressed: () => _requestJoinGroup(group.id, provider),
           icon: const Icon(Icons.group_add, size: 16),
-          label: const Text('Unirse'),
+          label: Text(l.t('join')),
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorTokens.primary30,
             foregroundColor: ColorTokens.neutral100,
@@ -552,26 +567,25 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   void _requestJoinGroup(String groupId, GroupProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // El nuevo método devuelve un Map con información detallada
     final result = await provider.requestJoinGroup(groupId);
 
     if (result['success'] == true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Solicitud enviada correctamente'),
+        SnackBar(
+          content: Text(l.t('request_sent')),
           backgroundColor: ColorTokens.success50,
         ),
       );
     } else {
       // Verificar si requiere completar el perfil
       if (result['requiresProfile'] == true) {
-        _showProfileRequiredDialog(
-          result['error'] ?? 'Debes completar tu perfil',
-        );
+        _showProfileRequiredDialog(result['error'] ?? l.t('to_join_you_need'));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['error'] ?? 'Error al enviar solicitud'),
+            content: Text(result['error'] ?? l.t('error_sending_request')),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -580,16 +594,17 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   void _showProfileRequiredDialog(String message) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Row(
+          title: Row(
             children: [
               Icon(Icons.person_outline, color: ColorTokens.error50),
               SizedBox(width: 8),
-              Text('Completar Perfil'),
+              Text(l.t('complete_profile')),
             ],
           ),
           content: Column(
@@ -598,8 +613,8 @@ class _GroupListScreenState extends State<GroupListScreen> {
             children: [
               Text(message),
               const SizedBox(height: 12),
-              const Text(
-                'Para unirte a grupos, los administradores necesitan saber quién eres.',
+              Text(
+                l.t('admins_need_to_know'),
                 style: TextStyle(fontSize: 14, color: ColorTokens.neutral60),
               ),
             ],
@@ -607,7 +622,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             ElevatedButton(
               onPressed: () {
@@ -619,7 +634,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: ColorTokens.neutral100,
               ),
-              child: const Text('Ir al Perfil'),
+              child: Text(l.t('go_to_profile')),
             ),
           ],
         );
@@ -628,18 +643,19 @@ class _GroupListScreenState extends State<GroupListScreen> {
   }
 
   void _cancelJoinRequest(String groupId, GroupProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Solicitud cancelada'),
+        SnackBar(
+          content: Text(l.t('request_cancelled')),
           backgroundColor: ColorTokens.success50,
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(provider.error ?? 'Error al cancelar solicitud'),
+          content: Text(provider.error ?? l.t('error_cancelling_request')),
           backgroundColor: ColorTokens.error50,
         ),
       );

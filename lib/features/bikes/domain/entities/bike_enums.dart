@@ -20,26 +20,26 @@ extension BikeStatusExtension on BikeStatus {
   String get displayName {
     switch (this) {
       case BikeStatus.active:
-        return 'Activa';
+        return 'bike_status_active';
       case BikeStatus.stolen:
-        return 'Robada';
+        return 'bike_status_stolen';
       case BikeStatus.recovered:
-        return 'Recuperada';
+        return 'bike_status_recovered';
       case BikeStatus.verified:
-        return 'Verificada';
+        return 'bike_status_verified';
     }
   }
 
   String get description {
     switch (this) {
       case BikeStatus.active:
-        return 'La bicicleta está registrada y activa';
+        return 'bike_status_active_desc';
       case BikeStatus.stolen:
-        return 'Reportada como robada';
+        return 'bike_status_stolen_desc';
       case BikeStatus.recovered:
-        return 'Recuperada después de robo';
+        return 'bike_status_recovered_desc';
       case BikeStatus.verified:
-        return 'Verificada por tienda aliada';
+        return 'bike_status_verified_desc';
     }
   }
 }
@@ -48,17 +48,17 @@ extension BikeTypeExtension on BikeType {
   String get displayName {
     switch (this) {
       case BikeType.mtb:
-        return 'MTB';
+        return 'bike_type_mtb';
       case BikeType.road:
-        return 'Ruta';
+        return 'bike_type_road';
       case BikeType.urban:
-        return 'Urbana';
+        return 'bike_type_urban';
       case BikeType.electric:
-        return 'Eléctrica';
+        return 'bike_type_electric';
       case BikeType.kids:
-        return 'Infantil';
+        return 'bike_type_kids';
       case BikeType.other:
-        return 'Otro';
+        return 'bike_type_other';
     }
   }
 }

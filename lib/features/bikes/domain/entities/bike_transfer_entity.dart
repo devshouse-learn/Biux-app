@@ -68,13 +68,13 @@ extension TransferStatusExtension on TransferStatus {
   String get displayName {
     switch (this) {
       case TransferStatus.pending:
-        return 'Pendiente';
+        return 'transfer_status_pending';
       case TransferStatus.accepted:
-        return 'Aceptada';
+        return 'transfer_status_accepted';
       case TransferStatus.rejected:
-        return 'Rechazada';
+        return 'transfer_status_rejected';
       case TransferStatus.cancelled:
-        return 'Cancelada';
+        return 'transfer_status_cancelled';
     }
   }
 }

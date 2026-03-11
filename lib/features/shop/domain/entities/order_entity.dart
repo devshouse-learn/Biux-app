@@ -74,15 +74,15 @@ class OrderStatus {
   static String getDisplayName(String status) {
     switch (status) {
       case pending:
-        return 'Pendiente';
+        return 'order_status_pending';
       case processing:
-        return 'En proceso';
+        return 'order_status_processing';
       case completed:
-        return 'Completada';
+        return 'order_status_completed';
       case cancelled:
-        return 'Cancelada';
+        return 'order_status_cancelled';
       default:
-        return 'Desconocido';
+        return 'unknown';
     }
   }
 }

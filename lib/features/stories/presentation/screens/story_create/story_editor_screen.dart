@@ -1,7 +1,9 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class StoryEditorScreen extends StatefulWidget {
   final List<AssetEntity> images;
@@ -49,15 +51,13 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final sizeScreen = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
-        title: const Text(
-          'Editar Historia',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: Text(l.t('edit_story'), style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -77,8 +77,8 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
                 });
               },
               icon: const Icon(Icons.check),
-              label: const Text(
-                'Publicar',
+              label: Text(
+                l.t('publish'),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -186,7 +186,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
                     maxLines: 3,
                     onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
-                      hintText: 'Añade una descripción...',
+                      hintText: l.t('add_description_placeholder'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -198,7 +198,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
 
                   // Posición del texto
                   Text(
-                    'Posición del texto',
+                    l.t('text_position'),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -209,9 +209,9 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildPositionButton('Arriba', 0.0),
-                      _buildPositionButton('Centro', 0.5),
-                      _buildPositionButton('Abajo', 1.0),
+                      _buildPositionButton(l.t('position_top'), 0.0),
+                      _buildPositionButton(l.t('position_center'), 0.5),
+                      _buildPositionButton(l.t('position_bottom'), 1.0),
                     ],
                   ),
 
@@ -219,7 +219,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
 
                   // Tamaño del texto
                   Text(
-                    'Tamaño de texto: ${_textSize.toStringAsFixed(0)}',
+                    '${l.t('text_size_label')}: ${_textSize.toStringAsFixed(0)}',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -240,7 +240,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
 
                   // Color del texto
                   Text(
-                    'Color del texto',
+                    l.t('text_color_label'),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -279,7 +279,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
 
                   // Zoom de la foto
                   Text(
-                    'Zoom de foto: ${_photoZoom.toStringAsFixed(2)}x',
+                    '${l.t('photo_zoom_label')}: ${_photoZoom.toStringAsFixed(2)}x',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -333,7 +333,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Publicar como publicidad',
+                              l.t('publish_as_advertisement'),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,

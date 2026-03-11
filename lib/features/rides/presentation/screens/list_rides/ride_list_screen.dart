@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
@@ -42,9 +43,10 @@ class _RideListScreenState extends State<RideListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rodadas'),
+        title: Text(l.t('rides')),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
       ),
@@ -87,17 +89,17 @@ class _RideListScreenState extends State<RideListScreen> {
               onPressed: () => context.push('/rides/create/${widget.groupId}'),
               backgroundColor: ColorTokens.primary30,
               child: Icon(Icons.add, color: ColorTokens.neutral100),
-              tooltip: 'Crear Rodada',
+              tooltip: l.t('create_ride'),
             );
           }
 
-          // Si estamos en el listado general y el usuario es admin de alg�n grupo
+          // Si estamos en el listado general y el usuario es admin de algún grupo
           if (groupProvider.adminGroups.isNotEmpty) {
             return FloatingActionButton(
               onPressed: () => _showCreateRideDialog(context, groupProvider),
               backgroundColor: ColorTokens.primary30,
               child: Icon(Icons.add, color: ColorTokens.neutral100),
-              tooltip: 'Crear Rodada',
+              tooltip: l.t('create_ride'),
             );
           }
 
@@ -110,6 +112,7 @@ class _RideListScreenState extends State<RideListScreen> {
   Widget _buildEmptyState() {
     return Consumer<GroupProvider>(
       builder: (context, groupProvider, child) {
+        final l = Provider.of<LocaleNotifier>(context);
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -122,17 +125,17 @@ class _RideListScreenState extends State<RideListScreen> {
               SizedBox(height: 16),
               Text(
                 widget.groupId != null
-                    ? 'No hay rodadas en este grupo'
-                    : 'No hay rodadas programadas',
+                    ? l.t('no_rides_in_group')
+                    : l.t('no_rides_scheduled'),
                 style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
               ),
               SizedBox(height: 8),
               Text(
                 widget.groupId != null
-                    ? 'Sé el primero en organizar una rodada en este grupo'
+                    ? l.t('be_first_to_organize')
                     : groupProvider.adminGroups.isNotEmpty
-                    ? 'Organiza la primera rodada para tu grupo'
-                    : 'Únete a un grupo para participar en rodadas',
+                    ? l.t('organize_first_ride')
+                    : l.t('join_group_for_rides'),
                 style: TextStyle(color: ColorTokens.neutral60),
               ),
               SizedBox(height: 24),
@@ -142,7 +145,7 @@ class _RideListScreenState extends State<RideListScreen> {
                   onPressed: () =>
                       context.push('/rides/create/${widget.groupId}'),
                   icon: Icon(Icons.add),
-                  label: Text('Crear Rodada'),
+                  label: Text(l.t('create_ride')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -153,7 +156,7 @@ class _RideListScreenState extends State<RideListScreen> {
                   onPressed: () =>
                       _showCreateRideDialog(context, groupProvider),
                   icon: Icon(Icons.add),
-                  label: Text('Crear Rodada'),
+                  label: Text(l.t('create_ride')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -163,7 +166,7 @@ class _RideListScreenState extends State<RideListScreen> {
                 ElevatedButton.icon(
                   onPressed: () => context.push('/groups'),
                   icon: Icon(Icons.group),
-                  label: Text('Ver Grupos'),
+                  label: Text(l.t('view_groups')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -177,6 +180,7 @@ class _RideListScreenState extends State<RideListScreen> {
   }
 
   Widget _buildRideCard(RideModel ride, RideProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context);
     final participationStatus = provider.getParticipationStatus(ride);
     final isCreator = provider.isCreator(ride);
     final isPastRide = ride.dateTime.isBefore(DateTime.now());
@@ -280,7 +284,7 @@ class _RideListScreenState extends State<RideListScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              'Organizador',
+                              l.t('organizer'),
                               style: TextStyle(
                                 color: ColorTokens.neutral100,
                                 fontSize: 12,
@@ -339,7 +343,7 @@ class _RideListScreenState extends State<RideListScreen> {
                                       SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          'Organizado por ${groupInfo['name']}',
+                                          '${l.t('organized_by')} ${groupInfo['name']}',
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
@@ -429,7 +433,7 @@ class _RideListScreenState extends State<RideListScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              '${ride.participantCount} confirmados',
+                              '${ride.participantCount} ${l.t('confirmed')}',
                               style: TextStyle(
                                 color: ColorTokens.neutral60,
                                 fontSize: 14,
@@ -441,7 +445,7 @@ class _RideListScreenState extends State<RideListScreen> {
                                 style: TextStyle(color: ColorTokens.neutral60),
                               ),
                               Text(
-                                '${ride.maybeParticipantCount} tal vez',
+                                '${ride.maybeParticipantCount} ${l.t('maybe')}',
                                 style: TextStyle(
                                   color: ColorTokens.warning60,
                                   fontSize: 14,
@@ -453,7 +457,7 @@ class _RideListScreenState extends State<RideListScreen> {
                         SizedBox(height: 12),
 
                         // Estado de participación del usuario
-                        _buildParticipationChip(participationStatus),
+                        _buildParticipationChip(participationStatus, l),
                         SizedBox(height: 16),
 
                         // Botones de acción
@@ -488,7 +492,7 @@ class _RideListScreenState extends State<RideListScreen> {
                       Icon(Icons.history, size: 14, color: Colors.white),
                       SizedBox(width: 4),
                       Text(
-                        'Finalizada',
+                        l.t('finished'),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -505,7 +509,10 @@ class _RideListScreenState extends State<RideListScreen> {
     );
   }
 
-  Widget _buildParticipationChip(RideParticipationStatus status) {
+  Widget _buildParticipationChip(
+    RideParticipationStatus status,
+    LocaleNotifier l,
+  ) {
     Color color;
     String text;
     IconData icon;
@@ -513,12 +520,12 @@ class _RideListScreenState extends State<RideListScreen> {
     switch (status) {
       case RideParticipationStatus.participating:
         color = ColorTokens.success40;
-        text = 'Voy a ir';
+        text = l.t('going_to_attend');
         icon = Icons.check_circle;
         break;
       case RideParticipationStatus.maybeParticipating:
         color = ColorTokens.warning50;
-        text = 'Tal vez voy';
+        text = l.t('maybe_going');
         icon = Icons.help;
         break;
       case RideParticipationStatus.notParticipating:
@@ -538,6 +545,7 @@ class _RideListScreenState extends State<RideListScreen> {
     RideParticipationStatus status,
     RideProvider provider,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // No mostrar botones si la rodada ya pas� o est� cancelada
     if (ride.status == RideStatus.completed ||
         ride.status == RideStatus.cancelled ||
@@ -550,7 +558,7 @@ class _RideListScreenState extends State<RideListScreen> {
         return ElevatedButton.icon(
           onPressed: () => _leaveRide(ride.id, provider),
           icon: Icon(Icons.cancel, size: 16),
-          label: Text('No voy'),
+          label: Text(l.t('not_going')),
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorTokens.error50,
             foregroundColor: ColorTokens.neutral100,
@@ -566,7 +574,7 @@ class _RideListScreenState extends State<RideListScreen> {
             ElevatedButton.icon(
               onPressed: () => _joinRide(ride.id, provider),
               icon: Icon(Icons.check, size: 16),
-              label: Text('Confirmar'),
+              label: Text(l.t('confirm')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.success40,
                 foregroundColor: ColorTokens.neutral100,
@@ -578,7 +586,7 @@ class _RideListScreenState extends State<RideListScreen> {
             ElevatedButton.icon(
               onPressed: () => _leaveRide(ride.id, provider),
               icon: Icon(Icons.close, size: 16),
-              label: Text('No'),
+              label: Text(l.t('no_label')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.error50,
                 foregroundColor: ColorTokens.neutral100,
@@ -596,7 +604,7 @@ class _RideListScreenState extends State<RideListScreen> {
             ElevatedButton.icon(
               onPressed: () => _joinRide(ride.id, provider),
               icon: Icon(Icons.directions_bike, size: 16),
-              label: Text('Voy'),
+              label: Text(l.t('going')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.success40,
                 foregroundColor: ColorTokens.neutral100,
@@ -608,7 +616,7 @@ class _RideListScreenState extends State<RideListScreen> {
             ElevatedButton.icon(
               onPressed: () => _maybeJoinRide(ride.id, provider),
               icon: Icon(Icons.help_outline, size: 16),
-              label: Text('Tal vez'),
+              label: Text(l.t('maybe')),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.warning50,
                 foregroundColor: ColorTokens.neutral100,
@@ -648,19 +656,20 @@ class _RideListScreenState extends State<RideListScreen> {
   }
 
   String _formatDateTime(DateTime dateTime) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final months = [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic',
+      l.t('month_jan'),
+      l.t('month_feb'),
+      l.t('month_mar'),
+      l.t('month_apr'),
+      l.t('month_may'),
+      l.t('month_jun'),
+      l.t('month_jul'),
+      l.t('month_aug'),
+      l.t('month_sep'),
+      l.t('month_oct'),
+      l.t('month_nov'),
+      l.t('month_dec'),
     ];
 
     final day = dateTime.day;
@@ -672,11 +681,12 @@ class _RideListScreenState extends State<RideListScreen> {
   }
 
   void _joinRide(String rideId, RideProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.joinRide(rideId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('¡Genial! Te has unido a la rodada'),
+          content: Text(l.t('joined_ride')),
           backgroundColor: ColorTokens.success40,
         ),
       );
@@ -684,11 +694,12 @@ class _RideListScreenState extends State<RideListScreen> {
   }
 
   void _maybeJoinRide(String rideId, RideProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.maybeJoinRide(rideId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Marcado como "tal vez voy"'),
+          content: Text(l.t('marked_maybe')),
           backgroundColor: ColorTokens.warning60,
         ),
       );
@@ -696,11 +707,12 @@ class _RideListScreenState extends State<RideListScreen> {
   }
 
   void _leaveRide(String rideId, RideProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.leaveRide(rideId);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Has salido de la rodada'),
+          content: Text(l.t('left_ride')),
           backgroundColor: ColorTokens.neutral60,
         ),
       );
@@ -711,6 +723,7 @@ class _RideListScreenState extends State<RideListScreen> {
     BuildContext context,
     GroupProvider groupProvider,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // Si solo es admin de un grupo, ir directamente a crear rodada
     if (groupProvider.adminGroups.length == 1) {
       final group = groupProvider.adminGroups.first;
@@ -726,12 +739,12 @@ class _RideListScreenState extends State<RideListScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Crear nueva rodada'),
+              title: Text(l.t('create_new_ride')),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Selecciona el grupo con el que deseas crear la rodada:',
+                    l.t('select_group_for_ride'),
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 16),
@@ -766,25 +779,25 @@ class _RideListScreenState extends State<RideListScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Cancelar'),
+                  child: Text(l.t('cancel')),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     if (selectedGroupId != null) {
-                      // Navegar a la pantalla de creaci�n de rodada con el ID del grupo seleccionado
+                      // Navegar a la pantalla de creación de rodada con el ID del grupo seleccionado
                       context.push('/rides/create/$selectedGroupId');
                       Navigator.of(context).pop();
                     } else {
-                      // Mostrar un mensaje de error si no se ha seleccionado ning�n grupo
+                      // Mostrar un mensaje de error si no se ha seleccionado ningún grupo
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Por favor, selecciona un grupo'),
+                          content: Text(l.t('please_select_group')),
                           backgroundColor: ColorTokens.error50,
                         ),
                       );
                     }
                   },
-                  child: Text('Continuar'),
+                  child: Text(l.t('continue_action')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,

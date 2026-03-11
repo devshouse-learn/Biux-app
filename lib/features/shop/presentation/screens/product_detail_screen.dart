@@ -7,6 +7,7 @@ import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/presentation/widgets/price_tag.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pantalla de detalle de producto mejorada
@@ -51,6 +52,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _loadProduct() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       debugPrint('🔍 Buscando producto con ID: ${widget.productId}');
       final shopProvider = context.read<ShopProvider>();
@@ -61,7 +63,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         await shopProvider.loadProducts();
         debugPrint('✅ Productos cargados: ${shopProvider.products.length}');
       } else {
-        debugPrint('📦 Ya hay ${shopProvider.products.length} productos cargados');
+        debugPrint(
+          '📦 Ya hay ${shopProvider.products.length} productos cargados',
+        );
       }
 
       // Buscar el producto específico
@@ -88,10 +92,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Producto no encontrado'),
+              SnackBar(
+                content: Text(l.t('product_not_found')),
                 backgroundColor: Colors.red,
-                duration: Duration(seconds: 2),
+                duration: const Duration(seconds: 2),
               ),
             );
 
@@ -137,7 +141,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Error al cargar el producto'),
+                content: Text(l.t('error_loading_product')),
                 backgroundColor: Colors.red,
               ),
             );
@@ -176,6 +180,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _addToCart() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_product == null) {
       debugPrint('⚠️ ERROR: Producto es null');
       return;
@@ -193,9 +198,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     if (_product!.sizes.isNotEmpty && _selectedSize == null) {
       debugPrint('⚠️ ERROR: Debe seleccionar una talla');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor selecciona una talla')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('select_size'))));
       return;
     }
 
@@ -212,9 +217,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$_quantity ${_product!.name} agregado(s) al carrito'),
+          content: Text('$_quantity ${_product!.name} ${l.t('added_to_cart')}'),
           action: SnackBarAction(
-            label: 'Ver carrito',
+            label: l.t('view_cart'),
             onPressed: () => context.push('/shop/cart'),
           ),
         ),
@@ -224,11 +229,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void _buyNow() {
     if (_product == null) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     if (_product!.sizes.isNotEmpty && _selectedSize == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor selecciona una talla')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('select_size'))));
       return;
     }
 
@@ -236,6 +242,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _showBuyNowDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final TextEditingController addressController = TextEditingController();
     final TextEditingController phoneController = TextEditingController();
     final TextEditingController notesController = TextEditingController();
@@ -243,7 +250,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Comprar Ahora'),
+        title: Text(l.t('buy_now')),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -257,27 +264,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: addressController,
-                decoration: const InputDecoration(
-                  labelText: 'Dirección de entrega',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l.t('delivery_address'),
+                  border: const OutlineInputBorder(),
                 ),
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono de contacto',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l.t('contact_phone'),
+                  border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Notas adicionales (opcional)',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l.t('additional_notes'),
+                  border: const OutlineInputBorder(),
                 ),
                 maxLines: 2,
               ),
@@ -287,16 +294,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
               if (addressController.text.isEmpty ||
                   phoneController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Por favor completa todos los campos'),
-                  ),
+                  SnackBar(content: Text(l.t('fill_required_fields'))),
                 );
                 return;
               }
@@ -308,9 +313,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               final currentUser = userProvider.user;
 
               if (currentUser == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Error: usuario no encontrado')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.t('user_not_found'))));
                 return;
               }
 
@@ -329,8 +334,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               if (orderId != null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('¡Compra realizada con éxito!'),
+                  SnackBar(
+                    content: Text(l.t('purchase_success')),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -339,7 +344,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      shopProvider.errorMessage ?? 'Error al realizar compra',
+                      shopProvider.errorMessage ?? l.t('purchase_error'),
                     ),
                     backgroundColor: Colors.red,
                   ),
@@ -349,7 +354,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.secondary50,
             ),
-            child: const Text('Confirmar Compra'),
+            child: Text(l.t('confirm_purchase')),
           ),
         ],
       ),
@@ -357,18 +362,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _showMarkAsSoldDialog(String userId) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Marcar como vendido'),
-        content: const Text(
-          '¿Estás seguro de que quieres marcar este producto como vendido? '
-          'Ya no estará disponible para compra.',
-        ),
+        title: Text(l.t('mark_as_sold')),
+        content: Text(l.t('mark_sold_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -385,8 +388,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   _product = _product!.copyWith(isSold: true, stock: 0);
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Producto marcado como vendido'),
+                  SnackBar(
+                    content: Text(l.t('product_marked_sold')),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -394,8 +397,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      shopProvider.errorMessage ??
-                          'Error al marcar como vendido',
+                      shopProvider.errorMessage ?? l.t('error_marking_sold'),
                     ),
                     backgroundColor: Colors.red,
                   ),
@@ -403,7 +405,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Marcar vendido'),
+            child: Text(l.t('mark_sold_btn')),
           ),
         ],
       ),
@@ -411,18 +413,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _showDeleteProductDialog(String userId) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Eliminar publicación'),
-        content: const Text(
-          '¿Estás seguro de que quieres eliminar esta publicación? '
-          'Esta acción no se puede deshacer.',
-        ),
+        title: Text(l.t('delete_post')),
+        content: Text(l.t('delete_listing_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -433,8 +433,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Publicación eliminada'),
+                  SnackBar(
+                    content: Text(l.t('post_deleted')),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -444,7 +444,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   SnackBar(
                     content: Text(
                       shopProvider.errorMessage ??
-                          'Error al eliminar publicación',
+                          l.t('error_deleting_listing'),
                     ),
                     backgroundColor: Colors.red,
                   ),
@@ -452,7 +452,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -461,9 +461,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_hasError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Producto')),
+        appBar: AppBar(title: Text(l.t('product_label'))),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -472,14 +473,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               children: [
                 const Icon(Icons.error_outline, size: 78, color: Colors.red),
                 const SizedBox(height: 16),
-                const Text(
-                  'No se pudo cargar el producto',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l.t('could_not_load_product'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => _goBack(),
-                  child: const Text('Volver a la tienda'),
+                  child: Text(l.t('back_to_store')),
                 ),
               ],
             ),
@@ -512,7 +516,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   color: Colors.black.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
               onPressed: () => _goBack(),
             ),
@@ -562,24 +570,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     },
                     itemBuilder: (context) => [
                       if (!_product!.isSold)
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'mark_sold',
                           child: Row(
                             children: [
-                              Icon(Icons.check_circle, color: Colors.green),
-                              SizedBox(width: 8),
-                              Text('Marcar como vendido'),
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(l.t('mark_as_sold')),
                             ],
                           ),
                         ),
                       if (_product!.isSold)
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text('Eliminar publicación'),
+                              const Icon(Icons.delete, color: Colors.red),
+                              const SizedBox(width: 8),
+                              Text(l.t('delete_post')),
                             ],
                           ),
                         ),
@@ -627,9 +638,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text(
-                        '🔴 PRODUCTO VENDIDO',
-                        style: TextStyle(
+                      child: Text(
+                        l.t('product_sold_badge'),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -653,7 +664,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Ubicación: ${_product!.sellerCity}',
+                          '${l.t('location_prefix')} ${_product!.sellerCity}',
                           style: TextStyle(
                             color: Colors.grey[700],
                             fontSize: 14,
@@ -670,7 +681,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       Icon(Icons.person, size: 20, color: Colors.grey[600]),
                       const SizedBox(width: 8),
                       Text(
-                        'Vendedor: ${_product!.sellerName}',
+                        '${l.t('seller_prefix')} ${_product!.sellerName}',
                         style: TextStyle(color: Colors.grey[700], fontSize: 14),
                       ),
                     ],
@@ -679,9 +690,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   // Tallas
                   if (_product!.sizes.isNotEmpty) ...[
-                    const Text(
-                      'Tallas disponibles',
-                      style: TextStyle(
+                    Text(
+                      l.t('available_sizes'),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -703,9 +714,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           selectedColor: ColorTokens.primary30,
                           backgroundColor: Colors.grey[100],
                           labelStyle: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : Colors.grey[800],
+                            color: isSelected ? Colors.white : Colors.grey[800],
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
@@ -722,9 +731,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ],
 
                   // Descripción detallada
-                  const Text(
-                    'Descripción',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l.t('description'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -833,6 +845,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildVideoPlayer() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_isVideoInitialized || _videoController == null) {
       return Container(
         color: Colors.black,
@@ -880,14 +893,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               color: Colors.black.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.videocam, color: Colors.white, size: 16),
-                SizedBox(width: 4),
+                const Icon(Icons.videocam, color: Colors.white, size: 16),
+                const SizedBox(width: 4),
                 Text(
-                  'Video',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
+                  l.t('admin_video_label'),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ],
             ),
@@ -921,6 +934,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildStockIndicator() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Row(
       children: [
         Icon(
@@ -931,8 +945,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         const SizedBox(width: 8),
         Text(
           _product!.isAvailable
-              ? 'En stock (${_product!.stock} disponibles)'
-              : 'Agotado',
+              ? l.t('in_stock_count').replaceAll('{n}', '${_product!.stock}')
+              : l.t('out_of_stock'),
           style: TextStyle(
             color: _product!.isAvailable ? Colors.green : Colors.red,
             fontWeight: FontWeight.w600,
@@ -943,6 +957,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildBottomBar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1008,7 +1023,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   child: OutlinedButton.icon(
                     onPressed: _product!.isAvailable ? _addToCart : null,
                     icon: const Icon(Icons.shopping_cart_outlined),
-                    label: const Text('Agregar al carrito'),
+                    label: Text(l.t('add_to_cart')),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: ColorTokens.secondary50,
                       side: BorderSide(color: ColorTokens.secondary50),
@@ -1026,7 +1041,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   child: ElevatedButton.icon(
                     onPressed: _product!.isAvailable ? _buyNow : null,
                     icon: const Icon(Icons.flash_on),
-                    label: const Text('Comprar ahora'),
+                    label: Text(l.t('buy_now_btn')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.secondary50,
                       foregroundColor: Colors.white,
@@ -1065,7 +1080,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '✅ Bicicleta Verificada',
+                                l.t('verified_bike_badge'),
                                 style: TextStyle(
                                   color: ColorTokens.success30,
                                   fontWeight: FontWeight.bold,
@@ -1073,7 +1088,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
                               ),
                               Text(
-                                'Esta bicicleta ha sido verificada como NO robada',
+                                l.t('bike_verified_not_stolen'),
                                 style: TextStyle(
                                   color: ColorTokens.neutral50,
                                   fontSize: 12,
@@ -1102,7 +1117,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         );
                       },
                       icon: const Icon(Icons.qr_code_2),
-                      label: const Text('Ver Código QR de Verificación'),
+                      label: Text(l.t('view_qr_verification')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorTokens.success40,
                         foregroundColor: Colors.white,

@@ -1,5 +1,6 @@
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/utils/strings_utils.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
@@ -64,6 +65,7 @@ class _StoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: PostCard(
@@ -108,7 +110,7 @@ class _StoryWidget extends StatelessWidget {
                   const Icon(Icons.flash_on, color: Colors.white, size: 12),
                   const SizedBox(width: 2),
                   Text(
-                    'PUBLICIDAD',
+                    l.t('advertising_label'),
                     style: Styles.accentTextThemeWhite.copyWith(
                       color: Colors.white,
                       fontSize: 9,
@@ -179,34 +181,30 @@ class _StoryWidget extends StatelessWidget {
 
   void _showDeleteConfirmation(BuildContext context) {
     final bloc = context.read<StoryViewBloc>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Eliminar historia'),
-          content: const Text(
-            '¿Estás seguro de que deseas eliminar esta historia? Esta acción no se puede deshacer.',
-          ),
+          title: Text(l.t('delete_story')),
+          content: Text(l.t('delete_story_confirm_no_undo')),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () {
                 bloc.deleteStory(story: story);
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Historia eliminada exitosamente'),
+                  SnackBar(
+                    content: Text(l.t('story_deleted')),
                     duration: Duration(seconds: 2),
                   ),
                 );
               },
-              child: const Text(
-                'Eliminar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: Text(l.t('delete'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -307,29 +305,38 @@ class _StoryActionsBar extends StatelessWidget {
             ),
           ),
           // Botón Compartir
-          GestureDetector(
-            onTap: () {
-              ShareUtils().shareFile(
-                filePath: story.fileUrl1,
-                text: '${story.user.userName}${AppStrings.textShareStory}',
-                title: AppStrings.titleShareStory,
+          Builder(
+            builder: (context) {
+              final l = Provider.of<LocaleNotifier>(context, listen: false);
+              return GestureDetector(
+                onTap: () {
+                  ShareUtils().shareFile(
+                    filePath: story.fileUrl1,
+                    text: '${story.user.userName}${AppStrings.textShareStory}',
+                    title: AppStrings.titleShareStory,
+                  );
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.share_outlined,
+                      color: Colors.white70,
+                      size: 26,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      l.t('share'),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.share_outlined, color: Colors.white70, size: 26),
-                SizedBox(width: 6),
-                Text(
-                  'Compartir',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
