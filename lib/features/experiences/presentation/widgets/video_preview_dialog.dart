@@ -142,10 +142,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                         side: BorderSide(color: Colors.grey[400]!),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text(
-                        'Cancelar',
-                        style: TextStyle(color: Colors.black87),
-                      ),
+                      child: const Text('Cancelar'),
                     ),
                   ),
                   const SizedBox(width: 12),

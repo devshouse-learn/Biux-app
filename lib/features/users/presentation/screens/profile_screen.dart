@@ -131,9 +131,15 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 'Editar publicación',
                 style: TextStyle(color: ColorTokens.neutral100),
               ),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(ctx);
-                context.push('/edit-post/${experience.id}', extra: experience);
+                final result = await context.push(
+                  '/edit-post/${experience.id}',
+                  extra: experience,
+                );
+                if (result == true && mounted) {
+                  _refreshExperiences();
+                }
               },
             ),
             ListTile(
@@ -159,10 +165,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogCtx),
-                        child: Text(
-                          'Cancelar',
-                          style: TextStyle(color: ColorTokens.primary50),
-                        ),
+                        child: Text('Cancelar'),
                       ),
                       TextButton(
                         onPressed: () async {
@@ -189,10 +192,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             }
                           }
                         },
-                        child: Text(
-                          'Eliminar',
-                          style: TextStyle(color: ColorTokens.error50),
-                        ),
+                        child: Text('Eliminar'),
                       ),
                     ],
                   ),
@@ -347,10 +347,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   }
                 }
               },
-              child: Text(
-                'Cerrar Sesión',
-                style: TextStyle(color: ColorTokens.error50),
-              ),
+              child: Text('Cerrar Sesión'),
             ),
           ],
         );
@@ -388,10 +385,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   );
                 }
               },
-              child: Text(
-                'Eliminar',
-                style: TextStyle(color: ColorTokens.error50),
-              ),
+              child: Text('Eliminar'),
             ),
           ],
         );

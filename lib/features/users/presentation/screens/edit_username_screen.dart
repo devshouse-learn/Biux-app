@@ -244,7 +244,6 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: ColorTokens.neutral70,
                             ),
                           ),
                         ),

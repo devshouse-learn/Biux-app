@@ -560,10 +560,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text(
-                'Confirmar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: const Text('Confirmar'),
             ),
           ],
         );
@@ -597,10 +594,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text(
-                'Confirmar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: const Text('Confirmar'),
             ),
           ],
         );

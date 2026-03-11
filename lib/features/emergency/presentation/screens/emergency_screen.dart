@@ -85,7 +85,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: (p.sosActive ? Colors.orange : Colors.red).withValues(alpha: 0.4),
+            color: (p.sosActive ? Colors.orange : Colors.red).withValues(
+              alpha: 0.4,
+            ),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -97,7 +99,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           const SizedBox(height: 12),
           Text(
             p.sosActive ? 'ALERTA ACTIVA' : 'BOTÓN DE EMERGENCIA',
-            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -121,7 +127,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               child: Center(
                 child: Text(
                   p.sosActive ? '✓' : 'SOS',
-                  style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -132,7 +142,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               onPressed: () => p.cancelSOS(),
               child: const Text(
                 'Cancelar alerta',
-                style: TextStyle(color: Colors.white, decoration: TextDecoration.underline),
+                style: TextStyle(
+                  color: Colors.white,
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           ],
@@ -144,7 +157,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Future<void> _triggerSOS(BuildContext context, EmergencyProvider p) async {
     try {
       final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       final name = context.read<UserProvider>().user?.name ?? 'Ciclista';
@@ -157,7 +172,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('¡Alerta SOS enviada!'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('¡Alerta SOS enviada!'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
@@ -178,7 +196,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +221,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   TextButton.icon(
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const AccidentReportScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const AccidentReportScreen(),
+                      ),
                     ),
                     icon: const Icon(Icons.add, size: 16),
                     label: const Text('Reportar'),
@@ -226,7 +248,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 );
               }
 
@@ -254,7 +278,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        Icon(Icons.check_circle_outline, size: 40, color: Colors.green[300]),
+                        Icon(
+                          Icons.check_circle_outline,
+                          size: 40,
+                          color: Colors.green[300],
+                        ),
                         const SizedBox(height: 8),
                         const Text(
                           '¡Sin accidentes reportados!',
@@ -263,7 +291,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                         const SizedBox(height: 4),
                         Text(
                           'Las vías están despejadas',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -285,7 +316,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const AccidentsListScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const AccidentsListScreen(),
+                        ),
                       ),
                       icon: const Icon(Icons.map, size: 18),
                       label: const Text('Ver todos en mapa'),
@@ -338,14 +371,21 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           _severityLabel(a.severity),
-                          style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: color,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -354,7 +394,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                           a.description,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
@@ -362,21 +405,42 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      Icon(Icons.person_outline, size: 12, color: Colors.grey[400]),
+                      Icon(
+                        Icons.person_outline,
+                        size: 12,
+                        color: Colors.grey[400],
+                      ),
                       const SizedBox(width: 3),
                       Text(
                         a.userName.isNotEmpty ? a.userName : 'Anónimo',
                         style: TextStyle(color: Colors.grey[500], fontSize: 11),
                       ),
                       const SizedBox(width: 8),
-                      Icon(Icons.access_time, size: 12, color: Colors.grey[400]),
+                      Icon(
+                        Icons.access_time,
+                        size: 12,
+                        color: Colors.grey[400],
+                      ),
                       const SizedBox(width: 3),
-                      Text(timeAgo, style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+                      Text(
+                        timeAgo,
+                        style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                      ),
                       if (a.imageUrls.isNotEmpty) ...[
                         const SizedBox(width: 8),
-                        Icon(Icons.photo_camera, size: 12, color: Colors.grey[400]),
+                        Icon(
+                          Icons.photo_camera,
+                          size: 12,
+                          color: Colors.grey[400],
+                        ),
                         const SizedBox(width: 3),
-                        Text('${a.imageUrls.length}', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+                        Text(
+                          '${a.imageUrls.length}',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ],
                   ),
@@ -392,25 +456,34 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   Color _severityColor(String severity) {
     switch (severity) {
-      case 'severe': return Colors.red;
-      case 'moderate': return Colors.orange;
-      default: return Colors.yellow[700]!;
+      case 'severe':
+        return Colors.red;
+      case 'moderate':
+        return Colors.orange;
+      default:
+        return Colors.yellow[700]!;
     }
   }
 
   String _severityLabel(String severity) {
     switch (severity) {
-      case 'severe': return 'Grave';
-      case 'moderate': return 'Moderado';
-      default: return 'Leve';
+      case 'severe':
+        return 'Grave';
+      case 'moderate':
+        return 'Moderado';
+      default:
+        return 'Leve';
     }
   }
 
   IconData _severityIcon(String severity) {
     switch (severity) {
-      case 'severe': return Icons.dangerous;
-      case 'moderate': return Icons.warning;
-      default: return Icons.warning_amber;
+      case 'severe':
+        return Icons.dangerous;
+      case 'moderate':
+        return Icons.warning;
+      default:
+        return Icons.warning_amber;
     }
   }
 
@@ -430,12 +503,17 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Números de Emergencia', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            'Números de Emergencia',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
           _eTile('🚑 Emergencias', '123', Colors.red),
           _eTile('�� Policía', '112', Colors.blue),
@@ -471,7 +549,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,9 +559,15 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Mis Contactos de Emergencia', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                'Mis Contactos de Emergencia',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               IconButton(
-                icon: const Icon(Icons.add_circle, color: ColorTokens.primary30),
+                icon: const Icon(
+                  Icons.add_circle,
+                  color: ColorTokens.primary30,
+                ),
                 onPressed: () => _showAdd(context),
               ),
             ],
@@ -496,34 +582,51 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               ),
             )
           else
-            ...p.contacts.map((c) => ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                backgroundColor: ColorTokens.primary30.withValues(alpha: 0.1),
-                child: Text(_relIcon(c.relationship), style: const TextStyle(fontSize: 18)),
-              ),
-              title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w500)),
-              subtitle: Text(
-                '${c.phone}${c.relationship != null && c.relationship!.isNotEmpty ? " • ${c.relationship}" : ""}',
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.phone, color: Colors.green, size: 20),
-                    onPressed: () => _makeCall(c.phone, c.name),
+            ...p.contacts.map(
+              (c) => ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(
+                  backgroundColor: ColorTokens.primary30.withValues(alpha: 0.1),
+                  child: Text(
+                    _relIcon(c.relationship),
+                    style: const TextStyle(fontSize: 18),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                    onPressed: () {
-                      final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-                      p.removeContact(uid, c.id);
-                    },
-                  ),
-                ],
+                ),
+                title: Text(
+                  c.name,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                subtitle: Text(
+                  '${c.phone}${c.relationship != null && c.relationship!.isNotEmpty ? " • ${c.relationship}" : ""}',
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.phone,
+                        color: Colors.green,
+                        size: 20,
+                      ),
+                      onPressed: () => _makeCall(c.phone, c.name),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        final uid =
+                            FirebaseAuth.instance.currentUser?.uid ?? '';
+                        p.removeContact(uid, c.id);
+                      },
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
         ],
       ),
     );
@@ -549,7 +652,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           });
           return Dialog(
             backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
               child: Column(
@@ -561,18 +666,42 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       shape: BoxShape.circle,
                       color: Colors.green.withValues(alpha: 0.1),
                     ),
-                    child: const Icon(Icons.phone_in_talk, size: 50, color: Colors.green),
+                    child: const Icon(
+                      Icons.phone_in_talk,
+                      size: 50,
+                      color: Colors.green,
+                    ),
                   ),
                   const SizedBox(height: 20),
-                  const Text('Llamando...', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)),
+                  const Text(
+                    'Llamando...',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Text(name, style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+                  Text(
+                    name,
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                  ),
                   const SizedBox(height: 4),
-                  Text(number, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black87)),
+                  Text(
+                    number,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   const SizedBox(
                     width: 200,
-                    child: LinearProgressIndicator(color: Colors.green, backgroundColor: Color(0xFFE0E0E0)),
+                    child: LinearProgressIndicator(
+                      color: Colors.green,
+                      backgroundColor: Color(0xFFE0E0E0),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
@@ -585,12 +714,20 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                         }
                       },
                       icon: const Icon(Icons.call_end, size: 20),
-                      label: const Text('Colgar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      label: const Text(
+                        'Colgar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
                     ),
                   ),
@@ -624,16 +761,28 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     final phoneC = TextEditingController();
     String? selRel;
     const rels = [
-      'Mamá', 'Papá', 'Hermano/a', 'Esposo/a', 'Novio/a',
-      'Hijo/a', 'Tío/a', 'Abuelo/a', 'Primo/a', 'Amigo/a',
-      'Compañero/a', 'Vecino/a', 'Otro',
+      'Mamá',
+      'Papá',
+      'Hermano/a',
+      'Esposo/a',
+      'Novio/a',
+      'Hijo/a',
+      'Tío/a',
+      'Abuelo/a',
+      'Primo/a',
+      'Amigo/a',
+      'Compañero/a',
+      'Vecino/a',
+      'Otro',
     ];
 
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setD) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Row(
             children: [
               Icon(Icons.person_add, color: ColorTokens.primary30),
@@ -650,7 +799,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   decoration: InputDecoration(
                     labelText: 'Nombre',
                     prefixIcon: const Icon(Icons.person),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   textCapitalization: TextCapitalization.words,
                 ),
@@ -660,7 +811,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   decoration: InputDecoration(
                     labelText: 'Teléfono',
                     prefixIcon: const Icon(Icons.phone),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     hintText: 'Ej: 3001234567',
                   ),
                   keyboardType: TextInputType.phone,
@@ -671,10 +824,14 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   decoration: InputDecoration(
                     labelText: 'Relación',
                     prefixIcon: const Icon(Icons.family_restroom),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   isExpanded: true,
-                  items: rels.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                  items: rels
+                      .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                      .toList(),
                   onChanged: (v) => setD(() => selRel = v),
                 ),
               ],
@@ -719,7 +876,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           ],
@@ -744,7 +903,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             children: [
               Icon(Icons.tips_and_updates, color: Colors.amber),
               SizedBox(width: 8),
-              Text('Tips de Seguridad', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                'Tips de Seguridad',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           const SizedBox(height: 12),

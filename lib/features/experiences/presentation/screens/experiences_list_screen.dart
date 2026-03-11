@@ -575,7 +575,7 @@ class _ExperienceCard extends StatelessWidget {
               Navigator.pop(context);
               _deletePost(context);
             },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+            child: const Text('Eliminar'),
           ),
         ],
       ),

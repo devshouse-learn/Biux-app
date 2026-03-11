@@ -672,7 +672,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                            color: const Color(
+                              0xFF16242D,
+                            ).withValues(alpha: 0.12),
                           ),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -681,7 +683,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                             isExpanded: true,
                             icon: Icon(
                               Icons.keyboard_arrow_down,
-                              color: const Color(0xFF16242D).withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.5),
                             ),
                             style: const TextStyle(
                               color: Color(0xFF16242D),
@@ -761,7 +765,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.12),
                             ),
                           ),
                           child: Row(
@@ -769,7 +775,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 18,
-                                color: const Color(0xFF16242D).withValues(alpha: 0.4),
+                                color: const Color(
+                                  0xFF16242D,
+                                ).withValues(alpha: 0.4),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -886,7 +894,6 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                       _tabController.animateTo(0);
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF16242D),
                       side: const BorderSide(color: Color(0xFF16242D)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -1110,10 +1117,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Cancelar',
-              style: TextStyle(color: Color(0xFF5A7A8A)),
-            ),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {

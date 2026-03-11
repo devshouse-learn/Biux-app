@@ -542,10 +542,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               Navigator.pop(dialogContext);
               _deleteStory(context);
             },
-            child: const Text(
-              'Eliminar historia',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Eliminar historia'),
           ),
         ],
       ),
@@ -600,10 +597,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               Navigator.pop(dialogContext);
               _deleteMedia(context);
             },
-            child: const Text(
-              'Eliminar foto',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Eliminar foto'),
           ),
         ],
       ),
