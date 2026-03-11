@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 
 /// Segundo paso del registro: Fotos
@@ -37,6 +37,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: ListView(
@@ -45,8 +46,8 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
 
           // Foto Principal (Obligatoria)
           _buildPhotoSection(
-            title: AppStrings.mainPhotoLabel,
-            subtitle: 'Obligatoria',
+            title: l.t('main_photo_label'),
+            subtitle: l.t('required_label'),
             isRequired: true,
             currentPhoto: _mainPhoto,
             onPhotoSelected: (photo) {
@@ -64,8 +65,8 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
 
           // Foto del Número de Serie (Muy recomendada)
           _buildPhotoSection(
-            title: AppStrings.serialPhotoLabel,
-            subtitle: 'Muy recomendada',
+            title: l.t('serial_photo_label'),
+            subtitle: l.t('highly_recommended'),
             isRequired: false,
             currentPhoto: _serialPhoto,
             onPhotoSelected: (photo) {
@@ -97,6 +98,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
     String? currentPhoto,
     required Function(String?) onPhotoSelected,
   }) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -178,7 +180,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                 TextButton.icon(
                   onPressed: () => _pickImage(onPhotoSelected),
                   icon: const Icon(Icons.edit, size: 16),
-                  label: const Text('Cambiar'),
+                  label: Text(l.t('change')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.primary30,
                   ),
@@ -191,7 +193,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                     });
                   },
                   icon: const Icon(Icons.delete, size: 16),
-                  label: const Text('Eliminar'),
+                  label: Text(l.t('delete')),
                   style: TextButton.styleFrom(
                     foregroundColor: ColorTokens.error50,
                   ),
@@ -204,6 +206,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
   }
 
   Widget _buildPhotoPlaceholder(bool hasError) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -214,7 +217,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
         ),
         const SizedBox(height: 12),
         Text(
-          hasError ? 'Error al cargar imagen' : 'Toca para agregar foto',
+          hasError ? l.t('error_loading_image') : l.t('tap_to_add_photo'),
           style: TextStyle(
             fontSize: 14,
             color: hasError ? ColorTokens.error50 : ColorTokens.neutral70,
@@ -225,13 +228,14 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
   }
 
   Widget _buildAdditionalPhotosSection() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              AppStrings.additionalPhotosLabel,
+              l.t('additional_photos_label'),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -246,7 +250,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Opcional (2-4 fotos)',
+                l.t('optional_2_4_photos'),
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
@@ -351,6 +355,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
   }
 
   Widget _buildAddPhotoCard() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return GestureDetector(
       onTap: _additionalPhotos.length < 4 ? _pickAdditionalImage : null,
       child: Container(
@@ -367,7 +372,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
             Icon(Icons.add, size: 32, color: ColorTokens.neutral70),
             const SizedBox(height: 8),
             Text(
-              'Agregar foto',
+              l.t('add_photo'),
               style: TextStyle(fontSize: 12, color: ColorTokens.neutral70),
             ),
           ],
@@ -419,6 +424,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
   }
 
   Future<ImageSource?> _showImageSourceDialog() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return showModalBottomSheet<ImageSource>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -434,7 +440,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                   Icons.photo_camera,
                   color: ColorTokens.primary30,
                 ),
-                title: const Text('Tomar foto'),
+                title: Text(l.t('take_photo')),
                 onTap: () {
                   Navigator.pop(context, ImageSource.camera);
                 },
@@ -444,7 +450,7 @@ class _BikeRegistrationStep2State extends State<BikeRegistrationStep2> {
                   Icons.photo_library,
                   color: ColorTokens.primary30,
                 ),
-                title: const Text('Seleccionar de galería'),
+                title: Text(l.t('select_from_gallery')),
                 onTap: () {
                   Navigator.pop(context, ImageSource.gallery);
                 },

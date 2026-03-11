@@ -7,11 +7,11 @@ enum SellerRequestStatus {
   String get displayName {
     switch (this) {
       case SellerRequestStatus.pending:
-        return 'Pendiente';
+        return 'seller_status_pending';
       case SellerRequestStatus.approved:
-        return 'Aprobada';
+        return 'seller_status_approved';
       case SellerRequestStatus.rejected:
-        return 'Rechazada';
+        return 'seller_status_rejected';
     }
   }
 

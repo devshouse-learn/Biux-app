@@ -1,4 +1,6 @@
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/attendees_list.dart';
 
 /// Pantalla de asistentes a una rodada
@@ -14,9 +16,10 @@ class RideAttendeesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Asistentes'),
+        title: Text(l.t('attendees_title')),
         backgroundColor: const Color(0xFF16242D), // AppColors.blackPearl
       ),
       body: SafeArea(

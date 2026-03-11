@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar experiencias en formato circular tipo Instagram Stories
 /// Diferencia entre experiencias de rodadas (arriba) y experiencias normales
@@ -21,6 +23,7 @@ class ExperienceCirclesRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       height: 100,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -28,7 +31,7 @@ class ExperienceCirclesRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         children: [
           // Botón para crear nueva experiencia
-          if (onCreateTap != null) _buildCreateButton(),
+          if (onCreateTap != null) _buildCreateButton(l),
 
           const SizedBox(width: 8),
 
@@ -54,7 +57,7 @@ class ExperienceCirclesRow extends StatelessWidget {
     );
   }
 
-  Widget _buildCreateButton() {
+  Widget _buildCreateButton(LocaleNotifier l) {
     return GestureDetector(
       onTap: onCreateTap,
       child: Column(
@@ -74,9 +77,9 @@ class ExperienceCirclesRow extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Tu historia',
-            style: TextStyle(fontSize: 11, color: ColorTokens.neutral80),
+          Text(
+            l.t('your_story'),
+            style: const TextStyle(fontSize: 11, color: ColorTokens.neutral80),
             textAlign: TextAlign.center,
           ),
         ],

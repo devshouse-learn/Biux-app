@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Configuración de calidad de compresión
 enum CompressionQuality {
-  low(0.3, 'Baja', 'Menor tamaño, menor calidad'),
-  medium(0.6, 'Media', 'Balance entre tamaño y calidad'),
-  high(0.8, 'Alta', 'Mayor calidad, mayor tamaño'),
-  original(1.0, 'Original', 'Sin compresión');
+  low(0.3, 'quality_low', 'quality_low_desc'),
+  medium(0.6, 'quality_medium', 'quality_medium_desc'),
+  high(0.8, 'quality_high', 'quality_high_desc'),
+  original(1.0, 'quality_original', 'quality_original_desc');
 
-  const CompressionQuality(this.value, this.label, this.description);
+  const CompressionQuality(this.value, this.labelKey, this.descriptionKey);
 
   final double value;
-  final String label;
-  final String description;
+  final String labelKey;
+  final String descriptionKey;
 }
 
 /// Widget para configurar la calidad de compresión
@@ -34,6 +36,7 @@ class CompressionSettingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -49,9 +52,9 @@ class CompressionSettingsWidget extends StatelessWidget {
             children: [
               Icon(Icons.tune, color: ColorTokens.primary50, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Configuración de compresión',
-                style: TextStyle(
+              Text(
+                l.t('compression_settings_title'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
@@ -63,9 +66,9 @@ class CompressionSettingsWidget extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Calidad de compresión
-          const Text(
-            'Calidad de multimedia',
-            style: TextStyle(
+          Text(
+            l.t('media_quality_label'),
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Colors.black87,
@@ -89,9 +92,9 @@ class CompressionSettingsWidget extends StatelessWidget {
             const Divider(),
             const SizedBox(height: 16),
 
-            const Text(
-              'Configuración de video',
-              style: TextStyle(
+            Text(
+              l.t('video_settings_title'),
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
@@ -103,9 +106,9 @@ class CompressionSettingsWidget extends StatelessWidget {
             // Duración máxima de video
             Row(
               children: [
-                const Text(
-                  'Duración máxima:',
-                  style: TextStyle(fontSize: 13, color: Colors.black87),
+                Text(
+                  l.t('max_duration_label'),
+                  style: const TextStyle(fontSize: 13, color: Colors.black87),
                 ),
                 const Spacer(),
                 Container(
@@ -165,7 +168,7 @@ class CompressionSettingsWidget extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              'Los videos se cortarán automáticamente si exceden esta duración',
+              l.t('videos_auto_cut'),
               style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             ),
           ],
@@ -189,6 +192,7 @@ class _QualityOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -235,7 +239,7 @@ class _QualityOption extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        quality.label,
+                        l.t(quality.labelKey),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -259,7 +263,7 @@ class _QualityOption extends StatelessWidget {
                   const SizedBox(height: 2),
 
                   Text(
-                    quality.description,
+                    l.t(quality.descriptionKey),
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],

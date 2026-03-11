@@ -51,13 +51,13 @@ class RegisteredBikeEntity {
   String get statusLabel {
     switch (status) {
       case BikeStatus.active:
-        return '✅ Activa';
+        return 'bike_reg_status_active';
       case BikeStatus.stolen:
-        return '🚨 Robada';
+        return 'bike_reg_status_stolen';
       case BikeStatus.recovered:
-        return '🔄 Recuperada';
+        return 'bike_reg_status_recovered';
       case BikeStatus.sold:
-        return '💰 Vendida';
+        return 'bike_reg_status_sold';
     }
   }
 

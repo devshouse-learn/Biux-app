@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/users/presentation/providers/edit_username_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla para editar el nombre de usuario (@username)
 class EditUsernameScreen extends StatefulWidget {
@@ -39,12 +40,13 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral10,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
-        title: const Text('Editar Usuario'),
+        title: Text(l.t('edit_user')),
         elevation: 0,
       ),
       body: Consumer<EditUsernameProvider>(
@@ -76,7 +78,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Nombre de usuario',
+                              l.t('username_label'),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -87,7 +89,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Tu nombre de usuario (@username) es como te encontrarán otros usuarios. Debe ser único y solo puede contener letras, números y guiones bajos.',
+                          l.t('username_info_desc'),
                           style: TextStyle(
                             fontSize: 14,
                             color: ColorTokens.neutral70,
@@ -101,7 +103,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
 
                   // Campo de username
                   Text(
-                    'Nombre de usuario',
+                    l.t('username_label'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -119,7 +121,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'miusuario',
+                      hintText: l.t('username_hint'),
                       hintStyle: TextStyle(color: ColorTokens.neutral60),
                       prefixText: '@',
                       prefixStyle: TextStyle(
@@ -180,26 +182,26 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'El nombre de usuario es obligatorio';
+                        return l.t('username_required');
                       }
 
                       if (value.trim().length < 3) {
-                        return 'Debe tener al menos 3 caracteres';
+                        return l.t('username_min_chars');
                       }
 
                       if (value.trim().length > 30) {
-                        return 'No puede tener más de 30 caracteres';
+                        return l.t('username_max_chars');
                       }
 
                       // Validar formato
                       final regex = RegExp(r'^[a-zA-Z0-9_]+$');
                       if (!regex.hasMatch(value.trim())) {
-                        return 'Solo letras, números y guiones bajos';
+                        return l.t('username_only_valid_chars');
                       }
 
                       // Validar disponibilidad
                       if (provider.usernameAvailable == false) {
-                        return 'Este nombre de usuario no está disponible';
+                        return l.t('username_not_available');
                       }
 
                       return null;
@@ -240,7 +242,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                             ),
                           ),
                           child: Text(
-                            'Cancelar',
+                            l.t('cancel'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -279,7 +281,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
                                   ),
                                 )
                               : Text(
-                                  'Guardar',
+                                  l.t('save'),
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -301,6 +303,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
   }
 
   Future<void> _saveUsername(EditUsernameProvider provider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
     final success = await provider.updateUsername(
@@ -315,7 +318,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Nombre de usuario actualizado correctamente'),
+            content: Text(l.t('username_updated_success')),
             backgroundColor: ColorTokens.success50,
           ),
         );
@@ -323,9 +326,7 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              provider.error ?? 'Error al actualizar el nombre de usuario',
-            ),
+            content: Text(provider.error ?? l.t('error_updating_username')),
             backgroundColor: ColorTokens.error50,
           ),
         );

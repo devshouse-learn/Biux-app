@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/presentation/providers/product_provider.dart';
 import 'package:biux/features/store/presentation/providers/cart_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla principal de la tienda con diseño profesional y moderno
 /// Incluye precios formateados en COP con separadores de miles
@@ -39,6 +40,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: PreferredSize(
@@ -51,7 +53,7 @@ class _StoreScreenState extends State<StoreScreen> {
               colors: [const Color(0xFF1E3A8A), const Color(0xFF3B82F6)],
             ),
             boxShadow: [
-                BoxShadow(
+              BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
@@ -78,22 +80,25 @@ class _StoreScreenState extends State<StoreScreen> {
                   ),
                   const SizedBox(width: 12),
                   // Título
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Tienda Biux',
-                          style: TextStyle(
+                          l.t('biux_store'),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          'Todo para tu ciclismo',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                          l.t('everything_for_cycling'),
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -108,7 +113,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     child: IconButton(
                       icon: const Icon(Icons.receipt_long),
                       color: Colors.white,
-                      tooltip: 'Mis pedidos',
+                      tooltip: l.t('my_orders'),
                       onPressed: () {
                         _showMyOrdersScreen(context);
                       },
@@ -124,7 +129,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     child: IconButton(
                       icon: const Icon(Icons.favorite_border),
                       color: Colors.white,
-                      tooltip: 'Favoritos',
+                      tooltip: l.t('favorites'),
                       onPressed: () {
                         _showFavoritesScreen(context);
                       },
@@ -162,7 +167,9 @@ class _StoreScreenState extends State<StoreScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.3),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -220,7 +227,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Buscar productos...',
+                        hintText: l.t('search_products'),
                         prefixIcon: const Icon(
                           Icons.search,
                           color: Colors.grey,
@@ -276,7 +283,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       Icons.filter_list_off,
                       color: Colors.white,
                     ),
-                    tooltip: 'Limpiar filtros',
+                    tooltip: l.t('clear_filters'),
                   ),
                 ),
               ],
@@ -301,14 +308,14 @@ class _StoreScreenState extends State<StoreScreen> {
                   children: [
                     _buildCategoryChip(
                       context,
-                      'Todas',
+                      l.t('all_categories'),
                       null,
                       provider.selectedCategory == null,
                     ),
                     ...ProductCategory.values.map((category) {
                       return _buildCategoryChip(
                         context,
-                        category.displayName,
+                        l.t(category.displayName),
                         category,
                         provider.selectedCategory == category,
                       );
@@ -324,13 +331,13 @@ class _StoreScreenState extends State<StoreScreen> {
             child: Consumer<ProductProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 16),
-                        Text('Cargando productos...'),
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(l.t('loading_products')),
                       ],
                     ),
                   );
@@ -348,7 +355,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Error al cargar productos',
+                          l.t('error_loading_products'),
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.red[700],
@@ -366,7 +373,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           onPressed: () {
                             provider.loadAllProducts();
                           },
-                          child: const Text('Reintentar'),
+                          child: Text(l.t('retry')),
                         ),
                       ],
                     ),
@@ -386,7 +393,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No se encontraron productos',
+                          l.t('no_products_found'),
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.grey[700],
@@ -395,7 +402,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Intenta con otros filtros o palabras clave',
+                          l.t('try_other_filters'),
                           style: TextStyle(color: Colors.grey[600]),
                         ),
                       ],
@@ -456,7 +463,7 @@ class _StoreScreenState extends State<StoreScreen> {
         backgroundColor: Colors.grey[100],
         elevation: isSelected ? 4 : 1,
         pressElevation: 2,
-  shadowColor: Colors.blue.withValues(alpha: 0.3),
+        shadowColor: Colors.blue.withValues(alpha: 0.3),
       ),
     );
   }
@@ -647,6 +654,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   /// Imagen placeholder para productos sin imagen
   Widget _buildPlaceholderImage(ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -667,7 +675,7 @@ class _StoreScreenState extends State<StoreScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            product.categoria.displayName,
+            l.t(product.categoria.displayName),
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
@@ -702,6 +710,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   /// Agregar producto al carrito con feedback mejorado
   void _addToCart(BuildContext context, ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       context.read<CartProvider>().addItem(product);
 
@@ -717,7 +726,7 @@ class _StoreScreenState extends State<StoreScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '${product.nombre} agregado al carrito',
+                  '${product.nombre} ${l.t('added_to_cart')}',
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
               ),
@@ -728,7 +737,7 @@ class _StoreScreenState extends State<StoreScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           duration: const Duration(seconds: 2),
           action: SnackBarAction(
-            label: 'Ver carrito',
+            label: l.t('view_cart'),
             textColor: Colors.white,
             onPressed: () {
               Navigator.pushNamed(context, '/cart');
@@ -756,6 +765,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   /// Mostrar pantalla de Mis Pedidos con estado vacío
   void _showMyOrdersScreen(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -801,21 +811,24 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Mis Pedidos',
-                          style: TextStyle(
+                          l.t('my_orders'),
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
                         ),
                         Text(
-                          'Historial de compras',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          l.t('purchase_history'),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -846,9 +859,9 @@ class _StoreScreenState extends State<StoreScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      '¡Aún no tienes pedidos!',
-                      style: TextStyle(
+                    Text(
+                      l.t('no_orders_yet'),
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -858,7 +871,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
-                        'Pon aquí tus productos favoritos y realiza tu primera compra',
+                        l.t('put_favorite_products'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -873,7 +886,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.shopping_cart),
-                      label: const Text('Explorar productos'),
+                      label: Text(l.t('explore_products')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF3B82F6),
                         foregroundColor: Colors.white,
@@ -899,6 +912,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   /// Mostrar pantalla de Favoritos con estado vacío
   void _showFavoritesScreen(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -944,21 +958,24 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Favoritos',
-                          style: TextStyle(
+                          l.t('favorites'),
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
                         ),
                         Text(
-                          'Productos que te gustan',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          l.t('products_you_like'),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -989,9 +1006,9 @@ class _StoreScreenState extends State<StoreScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      '¡Aún no tienes favoritos!',
-                      style: TextStyle(
+                    Text(
+                      l.t('no_favorites_yet'),
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -1001,7 +1018,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Text(
-                        'Guarda tus productos favoritos para encontrarlos fácilmente',
+                        l.t('save_favorite_products'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -1016,7 +1033,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.search),
-                      label: const Text('Descubrir productos'),
+                      label: Text(l.t('discover_products')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,

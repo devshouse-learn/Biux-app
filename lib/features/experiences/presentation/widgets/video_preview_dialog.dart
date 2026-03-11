@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Diálogo para previsualizar videos antes de agregarlos
 class VideoPreviewDialog extends StatefulWidget {
@@ -66,6 +68,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -97,7 +100,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      widget.title ?? 'Vista previa del video',
+                      widget.title ?? l.t('video_preview'),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -142,8 +145,8 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                         side: BorderSide(color: Colors.grey[400]!),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text(
-                        'Cancelar',
+                      child: Text(
+                        l.t('cancel'),
                         style: TextStyle(color: Colors.black87),
                       ),
                     ),
@@ -161,8 +164,8 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                         backgroundColor: ColorTokens.primary50,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text(
-                        'Usar video',
+                      child: Text(
+                        l.t('use_video'),
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
@@ -194,7 +197,10 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
               Icon(Icons.error_outline, size: 48, color: Colors.red[400]),
               const SizedBox(height: 8),
               Text(
-                _errorMessage ?? 'Error al cargar el video',
+                _errorMessage ??
+                    Provider.of<LocaleNotifier>(
+                      context,
+                    ).t('error_loading_video'),
                 style: TextStyle(color: Colors.red[600], fontSize: 14),
                 textAlign: TextAlign.center,
               ),

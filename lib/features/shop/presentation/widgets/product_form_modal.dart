@@ -5,6 +5,7 @@ import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ProductFormModal extends StatefulWidget {
   final ProductEntity? product;
@@ -60,6 +61,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
   Future<void> _saveProduct() async {
     if (!_formKey.currentState!.validate()) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final user = context.read<UserProvider>().user;
     if (user == null) return;
 
@@ -76,7 +78,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
       sizes: [],
       stock: int.tryParse(_stockController.text) ?? 0,
       sellerId: user.uid,
-      sellerName: user.username ?? user.name ?? 'Vendedor',
+      sellerName: user.username ?? user.name ?? l.t('seller'),
       sellerCity: _cityController.text.isEmpty ? null : _cityController.text,
       createdAt: widget.product?.createdAt ?? DateTime.now(),
       isActive: true,
@@ -102,19 +104,22 @@ class _ProductFormModalState extends State<ProductFormModal> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            widget.product == null ? 'Producto creado' : 'Producto actualizado',
+            widget.product == null
+                ? l.t('product_created')
+                : l.t('product_updated'),
           ),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(shop.errorMessage ?? 'Error al guardar')),
+        SnackBar(content: Text(shop.errorMessage ?? l.t('error_saving'))),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
       minChildSize: 0.5,
@@ -145,7 +150,9 @@ class _ProductFormModalState extends State<ProductFormModal> {
               ),
               const SizedBox(height: 20),
               Text(
-                widget.product == null ? 'Crear Producto' : 'Editar Producto',
+                widget.product == null
+                    ? l.t('create_product')
+                    : l.t('edit_product'),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -156,12 +163,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Nombre *',
+                  labelText: l.t('product_name_required'),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
                 ),
                 validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Ingresa el nombre' : null,
+                    (v == null || v.isEmpty) ? l.t('enter_name') : null,
               ),
               const SizedBox(height: 12),
               Row(
@@ -170,13 +177,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
                     child: TextFormField(
                       controller: _priceController,
                       decoration: InputDecoration(
-                        labelText: 'Precio *',
+                        labelText: l.t('price_required'),
                         filled: true,
                         fillColor: ColorTokens.neutral100,
                       ),
                       keyboardType: TextInputType.number,
                       validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Ingresa el precio' : null,
+                          (v == null || v.isEmpty) ? l.t('enter_price') : null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -184,13 +191,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
                     child: TextFormField(
                       controller: _stockController,
                       decoration: InputDecoration(
-                        labelText: 'Stock *',
+                        labelText: l.t('stock_required'),
                         filled: true,
                         fillColor: ColorTokens.neutral100,
                       ),
                       keyboardType: TextInputType.number,
                       validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Ingresa el stock' : null,
+                          (v == null || v.isEmpty) ? l.t('enter_stock') : null,
                     ),
                   ),
                 ],
@@ -210,7 +217,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   () => _selectedCategory = v ?? ProductCategories.all,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Categoría',
+                  labelText: l.t('category_label'),
                   filled: true,
                   fillColor: ColorTokens.neutral100,
                 ),
@@ -219,13 +226,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
               CheckboxListTile(
                 value: _isBicycle,
                 onChanged: (v) => setState(() => _isBicycle = v ?? false),
-                title: const Text('¿Es una bicicleta completa?'),
+                title: Text(l.t('is_complete_bike')),
               ),
               if (_isBicycle) ...[
                 TextFormField(
                   controller: _bikeFrameSerialController,
                   decoration: InputDecoration(
-                    labelText: 'Número de Serie / Chasis',
+                    labelText: l.t('serial_number_chassis'),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -236,7 +243,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancelar'),
+                      child: Text(l.t('cancel')),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -245,8 +252,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
                       onPressed: _saveProduct,
                       child: Text(
                         widget.product == null
-                            ? 'Crear Producto'
-                            : 'Actualizar',
+                            ? l.t('create_product')
+                            : l.t('update'),
                       ),
                     ),
                   ),

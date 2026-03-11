@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
 import 'package:biux/shared/widgets/text_form_field_biux_widget.dart';
@@ -64,6 +64,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -75,7 +76,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Marca
             TextFormFieldBiuxWidget(
               controller: _brandController,
-              text: AppStrings.brandLabel,
+              text: l.t('brand_label'),
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'brand',
@@ -84,18 +85,18 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
+                  return l.t('field_required');
                 }
                 if (value.trim().length < 2) {
-                  return 'La marca debe tener al menos 2 caracteres';
+                  return l.t('brand_min_chars');
                 }
                 if (value.trim().length > 100) {
-                  return 'La marca no puede exceder 100 caracteres';
+                  return l.t('brand_max_chars');
                 }
                 if (!RegExp(
                   r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-]+$',
                 ).hasMatch(value.trim())) {
-                  return 'Solo se permiten letras, números, espacios y guiones';
+                  return l.t('only_letters_numbers_spaces_hyphens');
                 }
                 return null;
               },
@@ -106,7 +107,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Modelo
             TextFormFieldBiuxWidget(
               controller: _modelController,
-              text: AppStrings.modelLabel,
+              text: l.t('model_label'),
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'model',
@@ -115,18 +116,18 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
+                  return l.t('field_required');
                 }
                 if (value.trim().length < 2) {
-                  return 'El modelo debe tener al menos 2 caracteres';
+                  return l.t('model_min_chars');
                 }
                 if (value.trim().length > 100) {
-                  return 'El modelo no puede exceder 100 caracteres';
+                  return l.t('model_max_chars');
                 }
                 if (!RegExp(
                   r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-/]+$',
                 ).hasMatch(value.trim())) {
-                  return 'Solo se permiten letras, números, espacios, guiones y barras';
+                  return l.t('only_letters_numbers_spaces_hyphens_slashes');
                 }
                 return null;
               },
@@ -142,7 +143,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Color
             TextFormFieldBiuxWidget(
               controller: _colorController,
-              text: AppStrings.colorLabel,
+              text: l.t('color_label'),
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'color',
@@ -151,18 +152,18 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
+                  return l.t('field_required');
                 }
                 if (value.trim().length < 2) {
-                  return 'El color debe tener al menos 2 caracteres';
+                  return l.t('color_min_chars');
                 }
                 if (value.trim().length > 100) {
-                  return 'El color no puede exceder 100 caracteres';
+                  return l.t('color_max_chars');
                 }
                 if (!RegExp(
                   r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-/]+$',
                 ).hasMatch(value.trim())) {
-                  return 'Solo se permiten letras, números, espacios, guiones y barras';
+                  return l.t('only_letters_numbers_spaces_hyphens_slashes');
                 }
                 return null;
               },
@@ -173,7 +174,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Talla
             TextFormFieldBiuxWidget(
               controller: _sizeController,
-              text: AppStrings.sizeLabel,
+              text: l.t('size_label'),
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'size',
@@ -182,18 +183,18 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
+                  return l.t('field_required');
                 }
                 final trimmed = value.trim();
                 if (trimmed.length > 10) {
-                  return 'La talla no puede exceder 10 caracteres';
+                  return l.t('size_max_chars');
                 }
                 // Acepta: XS, S, M, L, XL, XXL, XXXL o números (14, 16, 18, etc.) o medidas en pulgadas
                 if (!RegExp(
                   r'^(XXS|XS|S|M|L|XL|XXL|XXXL|\d{1,2}(\.\d)?|\d{1,2}")$',
                   caseSensitive: false,
                 ).hasMatch(trimmed)) {
-                  return 'Ingresa una talla válida (ej: XS, S, M, L, XL, 16, 18")';
+                  return l.t('valid_size_hint');
                 }
                 return null;
               },
@@ -209,7 +210,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Número de serie del marco
             TextFormFieldBiuxWidget(
               controller: _frameSerialController,
-              text: AppStrings.frameSerialLabel,
+              text: l.t('frame_serial_label'),
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'frameSerial',
@@ -218,16 +219,16 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
+                  return l.t('field_required');
                 }
                 if (value.trim().length < 4) {
-                  return 'El número de serie debe tener al menos 4 caracteres';
+                  return l.t('serial_min_chars');
                 }
                 if (value.trim().length > 100) {
-                  return 'El número de serie no puede exceder 100 caracteres';
+                  return l.t('serial_max_chars');
                 }
                 if (!RegExp(r'^[A-Za-z0-9\-]+$').hasMatch(value.trim())) {
-                  return 'Solo se permiten letras, números y guiones (sin espacios)';
+                  return l.t('only_letters_numbers_hyphens');
                 }
                 return null;
               },
@@ -237,7 +238,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 12),
               child: Text(
-                AppStrings.frameSerialHelp,
+                l.t('frame_serial_help'),
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ),
@@ -247,7 +248,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             // Ciudad * - Campo de texto libre con validación
             TextFormFieldBiuxWidget(
               controller: _cityController,
-              text: '${AppStrings.cityLabel}, Departamento/Estado',
+              text: l.t('city_department_label'),
               onChanged: (value) {
                 context.read<BikeProvider>().updateRegistrationData(
                   'city',
@@ -256,30 +257,30 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
               },
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppStrings.fieldRequired;
+                  return l.t('field_required');
                 }
                 // Validar formato: debe contener al menos una coma separando ciudad de departamento/estado
                 final parts = value.split(',').map((e) => e.trim()).toList();
                 if (parts.length < 2) {
-                  return 'Ingresa el formato: Ciudad, Departamento/Estado (ej: Bogotá, Cundinamarca)';
+                  return l.t('city_format_hint');
                 }
                 if (parts[0].isEmpty || parts[1].isEmpty) {
-                  return 'Ingresa tanto la ciudad como el departamento/estado';
+                  return l.t('city_and_department_required');
                 }
                 if (parts[0].length < 2) {
-                  return 'El nombre de la ciudad debe tener al menos 2 caracteres';
+                  return l.t('city_min_chars');
                 }
                 if (parts[1].length < 2) {
-                  return 'El nombre del departamento/estado debe tener al menos 2 caracteres';
+                  return l.t('department_min_chars');
                 }
                 if (value.trim().length > 150) {
-                  return 'El texto no puede exceder 150 caracteres';
+                  return l.t('text_max_150_chars');
                 }
                 // Validar que solo contenga letras, espacios, comas, acentos y guiones
                 if (!RegExp(
                   r'^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s,\-\.]+$',
                 ).hasMatch(value.trim())) {
-                  return 'Solo se permiten letras, espacios, comas, puntos y guiones';
+                  return l.t('only_letters_spaces_commas_hyphens');
                 }
                 return null;
               },
@@ -289,7 +290,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 12),
               child: Text(
-                'Ejemplo: Bogotá, Cundinamarca o New York, New York',
+                l.t('city_example_hint'),
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ),
@@ -302,11 +303,12 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   }
 
   Widget _buildBikeTypeSelector() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.bikeTypeLabel,
+          l.t('bike_type_label'),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -339,8 +341,9 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  _selectedType?.displayName ??
-                      'Selecciona el tipo de bicicleta',
+                  _selectedType?.displayName != null
+                      ? l.t(_selectedType!.displayName)
+                      : l.t('select_bike_type'),
                   style: TextStyle(
                     fontSize: 16,
                     color: _selectedType != null
@@ -358,7 +361,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
           Padding(
             padding: const EdgeInsets.only(top: 8, left: 12),
             child: Text(
-              AppStrings.fieldRequired,
+              l.t('field_required'),
               style: TextStyle(fontSize: 12, color: ColorTokens.error40),
             ),
           ),
@@ -367,6 +370,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   }
 
   void _showBikeTypePicker() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: ColorTokens.primary30,
@@ -383,9 +387,9 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Selecciona el Tipo de Bicicleta',
-                style: TextStyle(
+              Text(
+                l.t('select_bike_type_title'),
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: ColorTokens.neutral100,
@@ -396,7 +400,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 final isSelected = type == _selectedType;
                 return ListTile(
                   title: Text(
-                    type.displayName,
+                    l.t(type.displayName),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: isSelected
@@ -436,6 +440,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   }
 
   Widget _buildYearSelector() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentYear = DateTime.now().year;
     final years = List.generate(
       currentYear - 1899 + 1,
@@ -446,7 +451,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${AppStrings.yearLabel} *',
+          '${l.t('year_label')} *',
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -479,8 +484,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  _selectedYear?.toString() ??
-                      'Seleccionar año de la bicicleta',
+                  _selectedYear?.toString() ?? l.t('select_bike_year'),
                   style: TextStyle(
                     fontSize: 16,
                     color: _selectedYear != null
@@ -498,7 +502,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
           Padding(
             padding: const EdgeInsets.only(top: 8, left: 12),
             child: Text(
-              AppStrings.fieldRequired,
+              l.t('field_required'),
               style: TextStyle(fontSize: 12, color: ColorTokens.error40),
             ),
           ),
@@ -507,6 +511,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
   }
 
   void _showYearPicker(List<int> years) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       backgroundColor: ColorTokens.primary30,
@@ -528,14 +533,14 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Cancelar',
-                      style: TextStyle(color: ColorTokens.neutral100),
+                    child: Text(
+                      l.t('cancel'),
+                      style: const TextStyle(color: ColorTokens.neutral100),
                     ),
                   ),
-                  const Text(
-                    'Selecciona el Año',
-                    style: TextStyle(
+                  Text(
+                    l.t('select_year_title'),
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: ColorTokens.neutral100,
@@ -548,7 +553,7 @@ class _BikeRegistrationStep1State extends State<BikeRegistrationStep1> {
                       }
                     },
                     child: Text(
-                      'Listo',
+                      l.t('done'),
                       style: TextStyle(
                         color: _selectedYear != null
                             ? ColorTokens.secondary50

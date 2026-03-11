@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import '../../data/models/promotion_request_model.dart';
 import '../providers/promotions_provider.dart';
@@ -32,11 +33,17 @@ class _PromotionsScreenState extends State<PromotionsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Negocios y Eventos',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(
+          l.t('promotions_businesses_and_events'),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: ColorTokens.primary30,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -51,9 +58,12 @@ class _PromotionsScreenState extends State<PromotionsScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
           labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-          tabs: const [
-            Tab(icon: Icon(Icons.storefront), text: 'Negocios'),
-            Tab(icon: Icon(Icons.event), text: 'Eventos'),
+          tabs: [
+            Tab(
+              icon: const Icon(Icons.storefront),
+              text: l.t('promotions_businesses'),
+            ),
+            Tab(icon: const Icon(Icons.event), text: l.t('promotions_events')),
           ],
         ),
         actions: [
@@ -62,7 +72,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
               if (!(up.user?.isAdmin ?? false)) return const SizedBox.shrink();
               return IconButton(
                 icon: const Icon(Icons.admin_panel_settings),
-                tooltip: 'Panel Admin',
+                tooltip: l.t('promotions_admin_panel'),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const _AdminPanelScreen()),
                 ),
@@ -87,8 +97,13 @@ class _PromotionsScreenState extends State<PromotionsScreen>
               ),
               backgroundColor: const Color(0xFF6A1B9A),
               icon: const Icon(Icons.verified_user, color: Colors.white),
-              label: const Text('Ser Promotor',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              label: Text(
+                l.t('promotions_become_promoter'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             );
           }
           return FloatingActionButton(
@@ -99,9 +114,9 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                   MaterialPageRoute(builder: (_) => const _BusinessForm()),
                 );
               } else {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const _EventForm()),
-                );
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const _EventForm()));
               }
             },
             backgroundColor: ColorTokens.primary30,
@@ -138,15 +153,15 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
   bool _isLoading = false;
   int _currentStep = 0;
 
-  final _types = {
-    'tienda_bicicletas': 'Tienda de Bicicletas',
-    'taller_reparacion': 'Taller de Reparacion',
-    'accesorios': 'Accesorios y Repuestos',
-    'ropa_ciclismo': 'Ropa de Ciclismo',
-    'eventos': 'Organizador de Eventos',
-    'cafe_ciclista': 'Cafe / Punto de Encuentro',
-    'turismo': 'Turismo en Bicicleta',
-    'otro': 'Otro',
+  Map<String, String> _getTypes(LocaleNotifier l) => {
+    'tienda_bicicletas': l.t('promotions_type_bike_shop'),
+    'taller_reparacion': l.t('promotions_type_repair_shop'),
+    'accesorios': l.t('promotions_type_accessories'),
+    'ropa_ciclismo': l.t('promotions_type_cycling_clothing'),
+    'eventos': l.t('promotions_type_event_organizer'),
+    'cafe_ciclista': l.t('promotions_type_cafe'),
+    'turismo': l.t('promotions_type_bike_tourism'),
+    'otro': l.t('promotions_type_other'),
   };
 
   @override
@@ -164,11 +179,18 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final types = _getTypes(l);
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Verificar Negocio',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(
+          l.t('promotions_verify_business'),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0xFF6A1B9A),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -190,26 +212,52 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                           backgroundColor: const Color(0xFF6A1B9A),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        child: const Text('Siguiente', style: TextStyle(fontWeight: FontWeight.w600)),
+                        child: Text(
+                          l.t('promotions_next'),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   if (_currentStep == 2)
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: (_isLoading || !_acceptTerms) ? null : _submit,
+                        onPressed: (_isLoading || !_acceptTerms)
+                            ? null
+                            : _submit,
                         icon: _isLoading
-                            ? const SizedBox(width: 18, height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Icon(Icons.send, color: Colors.white, size: 18),
-                        label: Text(_isLoading ? 'Enviando...' : 'Enviar Solicitud',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                        label: Text(
+                          _isLoading
+                              ? l.t('promotions_sending')
+                              : l.t('promotions_send_request'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF6A1B9A),
                           disabledBackgroundColor: Colors.grey[400],
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -217,7 +265,7 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     const SizedBox(width: 12),
                     TextButton(
                       onPressed: details.onStepCancel,
-                      child: const Text('Atras'),
+                      child: Text(l.t('promotions_back')),
                     ),
                   ],
                 ],
@@ -226,18 +274,28 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
           },
           onStepContinue: () {
             if (_currentStep == 0) {
-              if (_businessNameCtrl.text.trim().isEmpty || _businessDescCtrl.text.trim().isEmpty) {
+              if (_businessNameCtrl.text.trim().isEmpty ||
+                  _businessDescCtrl.text.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Completa nombre y descripcion del negocio'),
-                      backgroundColor: ColorTokens.error50));
+                  SnackBar(
+                    content: Text(
+                      l.t('promotions_complete_name_and_description'),
+                    ),
+                    backgroundColor: ColorTokens.error50,
+                  ),
+                );
                 return;
               }
             }
             if (_currentStep == 1) {
-              if (_addressCtrl.text.trim().isEmpty || _phoneCtrl.text.trim().isEmpty) {
+              if (_addressCtrl.text.trim().isEmpty ||
+                  _phoneCtrl.text.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Completa direccion y telefono'),
-                      backgroundColor: ColorTokens.error50));
+                  SnackBar(
+                    content: Text(l.t('promotions_complete_address_and_phone')),
+                    backgroundColor: ColorTokens.error50,
+                  ),
+                );
                 return;
               }
             }
@@ -250,36 +308,61 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
           steps: [
             // PASO 1: Datos del negocio
             Step(
-              title: const Text('Datos del Negocio', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text('Informacion basica'),
+              title: Text(
+                l.t('promotions_business_data'),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(l.t('promotions_basic_info')),
               isActive: _currentStep >= 0,
               state: _currentStep > 0 ? StepState.complete : StepState.indexed,
               content: Column(
                 children: [
-                  _field(_businessNameCtrl, 'Nombre del negocio *', Icons.storefront),
+                  _field(
+                    _businessNameCtrl,
+                    l.t('promotions_business_name_required'),
+                    Icons.storefront,
+                  ),
                   const SizedBox(height: 14),
                   DropdownButtonFormField<String>(
                     initialValue: _businessType,
                     decoration: InputDecoration(
-                      labelText: 'Tipo de negocio',
+                      labelText: l.t('promotions_business_type'),
                       prefixIcon: const Icon(Icons.category),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      filled: true, fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
-                    items: _types.entries.map((e) =>
-                        DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
-                    onChanged: (v) => setState(() => _businessType = v ?? 'otro'),
+                    items: types.entries
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e.key,
+                            child: Text(e.value),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) =>
+                        setState(() => _businessType = v ?? 'otro'),
                   ),
                   const SizedBox(height: 14),
-                  _field(_businessDescCtrl, 'Descripcion del negocio *', Icons.description,
-                      maxLines: 3, hint: 'Productos, servicios, horarios...'),
+                  _field(
+                    _businessDescCtrl,
+                    l.t('promotions_business_description_required'),
+                    Icons.description,
+                    maxLines: 3,
+                    hint: l.t('promotions_products_services_hint'),
+                  ),
                 ],
               ),
             ),
             // PASO 2: Verificacion y contacto
             Step(
-              title: const Text('Verificacion', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text('Datos para verificar tu negocio'),
+              title: Text(
+                l.t('promotions_verification'),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(l.t('promotions_verification_data')),
               isActive: _currentStep >= 1,
               state: _currentStep > 1 ? StepState.complete : StepState.indexed,
               content: Column(
@@ -290,50 +373,97 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     decoration: BoxDecoration(
                       color: Colors.blue.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: Colors.blue.withValues(alpha: 0.2),
+                      ),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue, size: 20),
-                        SizedBox(width: 8),
-                        Expanded(child: Text(
-                          'Estos datos nos ayudan a verificar que tu negocio es real. El NIT es opcional pero agiliza la aprobacion.',
-                          style: TextStyle(fontSize: 12, color: Colors.blue),
-                        )),
+                        const Icon(
+                          Icons.info_outline,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l.t('promotions_verification_info_text'),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 14),
-                  _field(_nitCtrl, 'NIT o Registro Mercantil (opcional)', Icons.badge,
-                      hint: 'Ej: 900.123.456-7'),
+                  _field(
+                    _nitCtrl,
+                    l.t('promotions_nit_optional'),
+                    Icons.badge,
+                    hint: l.t('promotions_nit_hint'),
+                  ),
                   const SizedBox(height: 14),
                   SwitchListTile(
                     value: _hasPhysicalStore,
                     onChanged: (v) => setState(() => _hasPhysicalStore = v),
-                    title: const Text('Tengo local fisico', style: TextStyle(fontSize: 14)),
-                    secondary: Icon(Icons.store, color: _hasPhysicalStore ? const Color(0xFF6A1B9A) : Colors.grey),
-                    
+                    title: Text(
+                      l.t('promotions_has_physical_store'),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    secondary: Icon(
+                      Icons.store,
+                      color: _hasPhysicalStore
+                          ? const Color(0xFF6A1B9A)
+                          : Colors.grey,
+                    ),
+
                     contentPadding: EdgeInsets.zero,
                   ),
-                  _field(_addressCtrl, 'Direccion *', Icons.location_on),
+                  _field(
+                    _addressCtrl,
+                    l.t('promotions_address_required'),
+                    Icons.location_on,
+                  ),
                   const SizedBox(height: 14),
-                  _field(_cityCtrl, 'Ciudad', Icons.location_city, hint: 'Ej: Bogota'),
+                  _field(
+                    _cityCtrl,
+                    l.t('promotions_city'),
+                    Icons.location_city,
+                    hint: l.t('promotions_city_hint'),
+                  ),
                   const SizedBox(height: 14),
-                  _field(_phoneCtrl, 'Telefono de contacto *', Icons.phone,
-                      keyboardType: TextInputType.phone),
+                  _field(
+                    _phoneCtrl,
+                    l.t('promotions_phone_required'),
+                    Icons.phone,
+                    keyboardType: TextInputType.phone,
+                  ),
                   const SizedBox(height: 14),
-                  _field(_emailCtrl, 'Correo electronico (opcional)', Icons.email,
-                      keyboardType: TextInputType.emailAddress),
+                  _field(
+                    _emailCtrl,
+                    l.t('promotions_email_optional'),
+                    Icons.email,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
                   const SizedBox(height: 14),
-                  _field(_webCtrl, 'Redes sociales / Web (opcional)', Icons.language,
-                      hint: '@mi_negocio o www.minegocio.com'),
+                  _field(
+                    _webCtrl,
+                    l.t('promotions_social_web_optional'),
+                    Icons.language,
+                    hint: l.t('promotions_social_web_hint'),
+                  ),
                 ],
               ),
             ),
             // PASO 3: Confirmacion
             Step(
-              title: const Text('Confirmacion', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text('Revisa y envia'),
+              title: Text(
+                l.t('promotions_confirmation'),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(l.t('promotions_review_and_send')),
               isActive: _currentStep >= 2,
               content: Column(
                 children: [
@@ -344,23 +474,51 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: Colors.grey.withValues(alpha: 0.2),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Resumen de tu solicitud',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(
+                          l.t('promotions_request_summary'),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
                         const Divider(),
-                        _summaryRow('Negocio', _businessNameCtrl.text),
-                        _summaryRow('Tipo', _types[_businessType] ?? _businessType),
-                        _summaryRow('Direccion', _addressCtrl.text),
-                        if (_cityCtrl.text.isNotEmpty) _summaryRow('Ciudad', _cityCtrl.text),
-                        _summaryRow('Telefono', _phoneCtrl.text),
-                        if (_nitCtrl.text.isNotEmpty) _summaryRow('NIT', _nitCtrl.text),
-                        if (_emailCtrl.text.isNotEmpty) _summaryRow('Email', _emailCtrl.text),
-                        if (_webCtrl.text.isNotEmpty) _summaryRow('Web/Redes', _webCtrl.text),
-                        _summaryRow('Local fisico', _hasPhysicalStore ? 'Si' : 'No'),
+                        _summaryRow(
+                          l.t('promotions_business'),
+                          _businessNameCtrl.text,
+                        ),
+                        _summaryRow(
+                          l.t('promotions_type'),
+                          types[_businessType] ?? _businessType,
+                        ),
+                        _summaryRow(
+                          l.t('promotions_address'),
+                          _addressCtrl.text,
+                        ),
+                        if (_cityCtrl.text.isNotEmpty)
+                          _summaryRow(l.t('promotions_city'), _cityCtrl.text),
+                        _summaryRow(l.t('promotions_phone'), _phoneCtrl.text),
+                        if (_nitCtrl.text.isNotEmpty)
+                          _summaryRow(l.t('promotions_nit'), _nitCtrl.text),
+                        if (_emailCtrl.text.isNotEmpty)
+                          _summaryRow(l.t('promotions_email'), _emailCtrl.text),
+                        if (_webCtrl.text.isNotEmpty)
+                          _summaryRow(
+                            l.t('promotions_web_social'),
+                            _webCtrl.text,
+                          ),
+                        _summaryRow(
+                          l.t('promotions_physical_store'),
+                          _hasPhysicalStore
+                              ? l.t('promotions_yes')
+                              : l.t('promotions_no'),
+                        ),
                       ],
                     ),
                   ),
@@ -372,15 +530,33 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                       color: const Color(0xFF6A1B9A).withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Al ser aprobado podras:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                        SizedBox(height: 8),
-                        _BenefitRow(icon: Icons.campaign, text: 'Publicar anuncios de tu negocio'),
-                        _BenefitRow(icon: Icons.event, text: 'Crear eventos con registro'),
-                        _BenefitRow(icon: Icons.verified, text: 'Obtener sello de verificado'),
-                        _BenefitRow(icon: Icons.auto_awesome, text: 'Publicaciones aprobadas automaticamente'),
+                        Text(
+                          l.t('promotions_once_approved'),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _BenefitRow(
+                          icon: Icons.campaign,
+                          text: l.t('promotions_benefit_publish_ads'),
+                        ),
+                        _BenefitRow(
+                          icon: Icons.event,
+                          text: l.t('promotions_benefit_create_events'),
+                        ),
+                        _BenefitRow(
+                          icon: Icons.verified,
+                          text: l.t('promotions_benefit_verified_badge'),
+                        ),
+                        _BenefitRow(
+                          icon: Icons.auto_awesome,
+                          text: l.t('promotions_benefit_auto_approved'),
+                        ),
                       ],
                     ),
                   ),
@@ -390,11 +566,11 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                     value: _acceptTerms,
                     onChanged: (v) => setState(() => _acceptTerms = v ?? false),
                     controlAffinity: ListTileControlAffinity.leading,
-                    
+
                     contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Confirmo que la informacion es veridica y que mi negocio esta relacionado con el ciclismo.',
-                      style: TextStyle(fontSize: 13),
+                    title: Text(
+                      l.t('promotions_terms_confirmation'),
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ),
                 ],
@@ -406,14 +582,25 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
     );
   }
 
-  Widget _field(TextEditingController ctrl, String label, IconData icon,
-      {int maxLines = 1, String? hint, TextInputType? keyboardType}) {
+  Widget _field(
+    TextEditingController ctrl,
+    String label,
+    IconData icon, {
+    int maxLines = 1,
+    String? hint,
+    TextInputType? keyboardType,
+  }) {
     return TextFormField(
-      controller: ctrl, maxLines: maxLines, keyboardType: keyboardType,
+      controller: ctrl,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
-        labelText: label, hintText: hint, prefixIcon: Icon(icon),
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true, fillColor: Colors.white,
+        filled: true,
+        fillColor: Colors.white,
       ),
     );
   }
@@ -425,7 +612,17 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 90, child: Text('$label:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.grey[600]))),
+          SizedBox(
+            width: 90,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
           Expanded(child: Text(value, style: const TextStyle(fontSize: 13))),
         ],
       ),
@@ -433,12 +630,15 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
   }
 
   Future<void> _submit() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final types = _getTypes(l);
     setState(() => _isLoading = true);
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final name = context.read<UserProvider>().user?.name ?? 'Usuario';
     final provider = context.read<PromotionsProvider>();
 
-    final info = '${_types[_businessType]} | Dir: ${_addressCtrl.text.trim()}'
+    final info =
+        '${types[_businessType]} | Dir: ${_addressCtrl.text.trim()}'
         '${_cityCtrl.text.trim().isNotEmpty ? ", ${_cityCtrl.text.trim()}" : ""}'
         ' | Tel: ${_phoneCtrl.text.trim()}'
         ' | Local fisico: ${_hasPhysicalStore ? "Si" : "No"}'
@@ -447,7 +647,12 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
         '${_webCtrl.text.trim().isNotEmpty ? " | Web: ${_webCtrl.text.trim()}" : ""}'
         '\n\n${_businessDescCtrl.text.trim()}';
 
-    final ok = await provider.requestPromoterStatus(uid, name, _businessNameCtrl.text.trim(), info);
+    final ok = await provider.requestPromoterStatus(
+      uid,
+      name,
+      _businessNameCtrl.text.trim(),
+      info,
+    );
     if (!mounted) return;
     setState(() => _isLoading = false);
 
@@ -456,32 +661,58 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), shape: BoxShape.circle),
-                child: const Icon(Icons.check_circle, color: Colors.green, size: 56),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 56,
+                ),
               ),
               const SizedBox(height: 16),
-              const Text('Solicitud Enviada!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(
+                l.t('promotions_request_sent'),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
-              Text('Un administrador verificara los datos de tu negocio y te notificara cuando sea aprobada.',
-                  textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+              Text(
+                l.t('promotions_admin_will_verify'),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              ),
             ],
           ),
           actions: [
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () { Navigator.pop(ctx); Navigator.pop(context); },
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6A1B9A),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: const Text('Entendido', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  l.t('promotions_understood'),
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -489,7 +720,11 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al enviar. Intenta de nuevo.'), backgroundColor: ColorTokens.error50));
+        SnackBar(
+          content: Text(l.t('promotions_send_error')),
+          backgroundColor: ColorTokens.error50,
+        ),
+      );
     }
   }
 }
@@ -502,15 +737,16 @@ class _BenefitRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-      child: Row(children: [
-        Icon(icon, size: 16, color: const Color(0xFF6A1B9A)),
-        const SizedBox(width: 8),
-        Expanded(child: Text(text, style: const TextStyle(fontSize: 12))),
-      ]),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: const Color(0xFF6A1B9A)),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 12))),
+        ],
+      ),
     );
   }
 }
-
 
 // =============================================================================
 // FORMULARIO: Crear Negocio
@@ -541,11 +777,17 @@ class _BusinessFormState extends State<_BusinessForm> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Publicar Negocio',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(
+          l.t('promotions_publish_business'),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: ColorTokens.primary30,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -562,44 +804,88 @@ class _BusinessFormState extends State<_BusinessForm> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [ColorTokens.primary30, ColorTokens.primary30.withValues(alpha: 0.8)],
-                    begin: Alignment.topLeft, end: Alignment.bottomRight,
+                    colors: [
+                      ColorTokens.primary30,
+                      ColorTokens.primary30.withValues(alpha: 0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.storefront, color: Colors.white, size: 48),
-                    SizedBox(height: 8),
-                    Text('Nuevo Negocio',
-                        style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('Publica tu negocio para la comunidad ciclista',
-                        style: TextStyle(color: Colors.white70, fontSize: 13)),
+                    const Icon(Icons.storefront, color: Colors.white, size: 48),
+                    const SizedBox(height: 8),
+                    Text(
+                      l.t('promotions_new_business'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l.t('promotions_publish_for_community'),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
 
               // Seccion datos
-              _sectionTitle('Informacion del Negocio', Icons.info_outline),
+              _sectionTitle(
+                l.t('promotions_business_info'),
+                Icons.info_outline,
+              ),
               const SizedBox(height: 12),
-              _buildField(_titleCtrl, 'Nombre del negocio *', Icons.storefront,
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'El nombre es obligatorio' : null),
+              _buildField(
+                _titleCtrl,
+                l.t('promotions_business_name_required'),
+                Icons.storefront,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.t('promotions_name_required_error')
+                    : null,
+              ),
               const SizedBox(height: 14),
-              _buildField(_descCtrl, 'Descripcion *', Icons.description, maxLines: 4,
-                  hint: 'Describe tus productos, servicios, horarios de atencion...',
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'La descripcion es obligatoria' : null),
+              _buildField(
+                _descCtrl,
+                l.t('promotions_description_required'),
+                Icons.description,
+                maxLines: 4,
+                hint: l.t('promotions_describe_hint'),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.t('promotions_description_required_error')
+                    : null,
+              ),
               const SizedBox(height: 24),
 
-              _sectionTitle('Ubicacion y Contacto', Icons.contact_phone),
+              _sectionTitle(
+                l.t('promotions_location_and_contact'),
+                Icons.contact_phone,
+              ),
               const SizedBox(height: 12),
-              _buildField(_locationCtrl, 'Direccion / Ubicacion *', Icons.location_on,
-                  hint: 'Ej: Cra 7 #45-12, Bogota',
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'La direccion es obligatoria' : null),
+              _buildField(
+                _locationCtrl,
+                l.t('promotions_address_location_required'),
+                Icons.location_on,
+                hint: l.t('promotions_address_hint'),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.t('promotions_address_required_error')
+                    : null,
+              ),
               const SizedBox(height: 14),
-              _buildField(_contactCtrl, 'Telefono o email de contacto', Icons.phone,
-                  hint: 'Ej: 300 123 4567'),
+              _buildField(
+                _contactCtrl,
+                l.t('promotions_contact_phone_email'),
+                Icons.phone,
+                hint: l.t('promotions_phone_hint'),
+              ),
               const SizedBox(height: 32),
 
               // Boton
@@ -609,15 +895,31 @@ class _BusinessFormState extends State<_BusinessForm> {
                 child: ElevatedButton.icon(
                   onPressed: _isLoading ? null : _submit,
                   icon: _isLoading
-                      ? const SizedBox(width: 20, height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                       : const Icon(Icons.publish, color: Colors.white),
-                  label: Text(_isLoading ? 'Publicando...' : 'Publicar Negocio',
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    _isLoading
+                        ? l.t('promotions_publishing')
+                        : l.t('promotions_publish_business'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     disabledBackgroundColor: Colors.grey[400],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     elevation: 2,
                   ),
                 ),
@@ -631,28 +933,45 @@ class _BusinessFormState extends State<_BusinessForm> {
   }
 
   Widget _sectionTitle(String title, IconData icon) {
-    return Row(children: [
-      Icon(icon, color: ColorTokens.primary30, size: 22),
-      const SizedBox(width: 8),
-      Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-    ]);
+    return Row(
+      children: [
+        Icon(icon, color: ColorTokens.primary30, size: 22),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
   }
 
-  Widget _buildField(TextEditingController ctrl, String label, IconData icon,
-      {int maxLines = 1, String? hint, String? Function(String?)? validator}) {
+  Widget _buildField(
+    TextEditingController ctrl,
+    String label,
+    IconData icon, {
+    int maxLines = 1,
+    String? hint,
+    String? Function(String?)? validator,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
-      controller: ctrl, maxLines: maxLines, validator: validator,
+      controller: ctrl,
+      maxLines: maxLines,
+      validator: validator,
       decoration: InputDecoration(
-        labelText: label, hintText: hint, prefixIcon: Icon(icon),
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true, fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        filled: true,
+        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       ),
     );
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     setState(() => _isLoading = true);
 
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -663,8 +982,12 @@ class _BusinessFormState extends State<_BusinessForm> {
       title: _titleCtrl.text.trim(),
       description: _descCtrl.text.trim(),
       type: 'negocio',
-      contact: _contactCtrl.text.trim().isNotEmpty ? _contactCtrl.text.trim() : null,
-      location: _locationCtrl.text.trim().isNotEmpty ? _locationCtrl.text.trim() : null,
+      contact: _contactCtrl.text.trim().isNotEmpty
+          ? _contactCtrl.text.trim()
+          : null,
+      location: _locationCtrl.text.trim().isNotEmpty
+          ? _locationCtrl.text.trim()
+          : null,
       ownerUid: uid,
       ownerName: name,
     );
@@ -673,7 +996,11 @@ class _BusinessFormState extends State<_BusinessForm> {
     if (!mounted) return;
     setState(() => _isLoading = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Negocio publicado exitosamente!'), backgroundColor: ColorTokens.success40));
+      SnackBar(
+        content: Text(l.t('promotions_business_published')),
+        backgroundColor: ColorTokens.success40,
+      ),
+    );
     Navigator.pop(context);
   }
 }
@@ -711,11 +1038,17 @@ class _EventFormState extends State<_EventForm> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Crear Evento',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(
+          l.t('promotions_create_event'),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0xFF6A1B9A),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -733,37 +1066,62 @@ class _EventFormState extends State<_EventForm> {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF6A1B9A), Color(0xFF8E24AA)],
-                    begin: Alignment.topLeft, end: Alignment.bottomRight,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.event, color: Colors.white, size: 48),
-                    SizedBox(height: 8),
-                    Text('Nuevo Evento',
-                        style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('Crea un evento con registro de asistencia',
-                        style: TextStyle(color: Colors.white70, fontSize: 13)),
+                    const Icon(Icons.event, color: Colors.white, size: 48),
+                    const SizedBox(height: 8),
+                    Text(
+                      l.t('promotions_new_event'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l.t('promotions_create_event_subtitle'),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
 
               // Info del evento
-              _sectionTitle('Informacion del Evento', Icons.info_outline),
+              _sectionTitle(l.t('promotions_event_info'), Icons.info_outline),
               const SizedBox(height: 12),
-              _field(_titleCtrl, 'Nombre del evento *', Icons.title,
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Obligatorio' : null),
+              _field(
+                _titleCtrl,
+                l.t('promotions_event_name_required'),
+                Icons.title,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.t('promotions_required')
+                    : null,
+              ),
               const SizedBox(height: 14),
-              _field(_descCtrl, 'Descripcion del evento *', Icons.description, maxLines: 4,
-                  hint: 'Describe el evento, actividades, que llevar...',
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Obligatorio' : null),
+              _field(
+                _descCtrl,
+                l.t('promotions_event_description_required'),
+                Icons.description,
+                maxLines: 4,
+                hint: l.t('promotions_event_describe_hint'),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.t('promotions_required')
+                    : null,
+              ),
               const SizedBox(height: 24),
 
               // Fecha y hora
-              _sectionTitle('Fecha y Hora', Icons.schedule),
+              _sectionTitle(l.t('promotions_date_and_time'), Icons.schedule),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -775,17 +1133,27 @@ class _EventFormState extends State<_EventForm> {
               const SizedBox(height: 24),
 
               // Ubicacion y cupos
-              _sectionTitle('Ubicacion y Cupos', Icons.place),
+              _sectionTitle(l.t('promotions_location_and_spots'), Icons.place),
               const SizedBox(height: 12),
-              _field(_locationCtrl, 'Lugar del evento *', Icons.location_on,
-                  hint: 'Ej: Parque Simon Bolivar, Bogota',
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Obligatorio' : null),
+              _field(
+                _locationCtrl,
+                l.t('promotions_event_location_required'),
+                Icons.location_on,
+                hint: l.t('promotions_event_location_hint'),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.t('promotions_required')
+                    : null,
+              ),
               const SizedBox(height: 14),
-              _field(_maxCtrl, 'Cupos maximos (opcional)', Icons.people,
-                  hint: 'Dejar vacio = cupos ilimitados',
-                  keyboardType: TextInputType.number),
+              _field(
+                _maxCtrl,
+                l.t('promotions_max_spots_optional'),
+                Icons.people,
+                hint: l.t('promotions_unlimited_spots_hint'),
+                keyboardType: TextInputType.number,
+              ),
               const SizedBox(height: 14),
-              _field(_contactCtrl, 'Contacto (telefono o email)', Icons.phone),
+              _field(_contactCtrl, l.t('promotions_contact_info'), Icons.phone),
               const SizedBox(height: 32),
 
               // Boton
@@ -795,15 +1163,31 @@ class _EventFormState extends State<_EventForm> {
                 child: ElevatedButton.icon(
                   onPressed: _isLoading ? null : _submit,
                   icon: _isLoading
-                      ? const SizedBox(width: 20, height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                       : const Icon(Icons.event_available, color: Colors.white),
-                  label: Text(_isLoading ? 'Creando...' : 'Crear Evento',
-                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                  label: Text(
+                    _isLoading
+                        ? l.t('promotions_creating')
+                        : l.t('promotions_create_event'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6A1B9A),
                     disabledBackgroundColor: Colors.grey[400],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     elevation: 2,
                   ),
                 ),
@@ -817,28 +1201,46 @@ class _EventFormState extends State<_EventForm> {
   }
 
   Widget _sectionTitle(String title, IconData icon) {
-    return Row(children: [
-      Icon(icon, color: const Color(0xFF6A1B9A), size: 22),
-      const SizedBox(width: 8),
-      Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-    ]);
+    return Row(
+      children: [
+        Icon(icon, color: const Color(0xFF6A1B9A), size: 22),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
   }
 
-  Widget _field(TextEditingController ctrl, String label, IconData icon,
-      {int maxLines = 1, String? hint, TextInputType? keyboardType,
-      String? Function(String?)? validator}) {
+  Widget _field(
+    TextEditingController ctrl,
+    String label,
+    IconData icon, {
+    int maxLines = 1,
+    String? hint,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
-      controller: ctrl, maxLines: maxLines, keyboardType: keyboardType, validator: validator,
+      controller: ctrl,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      validator: validator,
       decoration: InputDecoration(
-        labelText: label, hintText: hint, prefixIcon: Icon(icon),
+        labelText: label,
+        hintText: hint,
+        prefixIcon: Icon(icon),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: true, fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        filled: true,
+        fillColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       ),
     );
   }
 
   Widget _datePicker(bool isDark) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return InkWell(
       onTap: () async {
         final d = await showDatePicker(
@@ -862,28 +1264,36 @@ class _EventFormState extends State<_EventForm> {
             width: _eventDate != null ? 1.5 : 1,
           ),
         ),
-        child: Row(children: [
-          Icon(Icons.calendar_today, size: 20,
-              color: _eventDate != null ? const Color(0xFF6A1B9A) : Colors.grey),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              _eventDate != null
-                  ? DateFormat('dd MMM yyyy', 'es').format(_eventDate!)
-                  : 'Fecha *',
-              style: TextStyle(
-                color: _eventDate != null ? null : Colors.grey[600],
-                fontWeight: _eventDate != null ? FontWeight.w500 : FontWeight.normal,
-                fontSize: 14,
+        child: Row(
+          children: [
+            Icon(
+              Icons.calendar_today,
+              size: 20,
+              color: _eventDate != null ? const Color(0xFF6A1B9A) : Colors.grey,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                _eventDate != null
+                    ? DateFormat('dd MMM yyyy', 'es').format(_eventDate!)
+                    : l.t('promotions_date_required'),
+                style: TextStyle(
+                  color: _eventDate != null ? null : Colors.grey[600],
+                  fontWeight: _eventDate != null
+                      ? FontWeight.w500
+                      : FontWeight.normal,
+                  fontSize: 14,
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
 
   Widget _timePicker(bool isDark) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return InkWell(
       onTap: () async {
         final t = await showTimePicker(
@@ -905,33 +1315,51 @@ class _EventFormState extends State<_EventForm> {
             width: _eventTime != null ? 1.5 : 1,
           ),
         ),
-        child: Row(children: [
-          Icon(Icons.access_time, size: 20,
-              color: _eventTime != null ? const Color(0xFF6A1B9A) : Colors.grey),
-          const SizedBox(width: 8),
-          Text(
-            _eventTime != null ? _eventTime!.format(context) : 'Hora *',
-            style: TextStyle(
-              color: _eventTime != null ? null : Colors.grey[600],
-              fontWeight: _eventTime != null ? FontWeight.w500 : FontWeight.normal,
-              fontSize: 14,
+        child: Row(
+          children: [
+            Icon(
+              Icons.access_time,
+              size: 20,
+              color: _eventTime != null ? const Color(0xFF6A1B9A) : Colors.grey,
             ),
-          ),
-        ]),
+            const SizedBox(width: 8),
+            Text(
+              _eventTime != null
+                  ? _eventTime!.format(context)
+                  : l.t('promotions_time_required'),
+              style: TextStyle(
+                color: _eventTime != null ? null : Colors.grey[600],
+                fontWeight: _eventTime != null
+                    ? FontWeight.w500
+                    : FontWeight.normal,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (_eventDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona la fecha del evento'), backgroundColor: ColorTokens.error50));
+        SnackBar(
+          content: Text(l.t('promotions_select_event_date')),
+          backgroundColor: ColorTokens.error50,
+        ),
+      );
       return;
     }
     if (_eventTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona la hora del evento'), backgroundColor: ColorTokens.error50));
+        SnackBar(
+          content: Text(l.t('promotions_select_event_time')),
+          backgroundColor: ColorTokens.error50,
+        ),
+      );
       return;
     }
 
@@ -941,14 +1369,19 @@ class _EventFormState extends State<_EventForm> {
     final provider = context.read<PromotionsProvider>();
 
     int? maxAtt;
-    if (_maxCtrl.text.trim().isNotEmpty) maxAtt = int.tryParse(_maxCtrl.text.trim());
+    if (_maxCtrl.text.trim().isNotEmpty)
+      maxAtt = int.tryParse(_maxCtrl.text.trim());
 
     final req = PromotionRequestModel(
       title: _titleCtrl.text.trim(),
       description: _descCtrl.text.trim(),
       type: 'evento',
-      contact: _contactCtrl.text.trim().isNotEmpty ? _contactCtrl.text.trim() : null,
-      location: _locationCtrl.text.trim().isNotEmpty ? _locationCtrl.text.trim() : null,
+      contact: _contactCtrl.text.trim().isNotEmpty
+          ? _contactCtrl.text.trim()
+          : null,
+      location: _locationCtrl.text.trim().isNotEmpty
+          ? _locationCtrl.text.trim()
+          : null,
       eventDate: _eventDate,
       eventTime: _eventTime!.format(context),
       maxAttendees: maxAtt,
@@ -960,7 +1393,11 @@ class _EventFormState extends State<_EventForm> {
     if (!mounted) return;
     setState(() => _isLoading = false);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Evento creado exitosamente!'), backgroundColor: ColorTokens.success40));
+      SnackBar(
+        content: Text(l.t('promotions_event_created')),
+        backgroundColor: ColorTokens.success40,
+      ),
+    );
     Navigator.pop(context);
   }
 }
@@ -973,14 +1410,15 @@ class _BusinessTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Consumer<PromotionsProvider>(
       builder: (context, provider, _) {
         final items = provider.approvedBusinesses;
         if (items.isEmpty) {
-          return const _EmptyState(
+          return _EmptyState(
             icon: Icons.storefront,
-            title: 'No hay negocios publicados',
-            subtitle: 'Los promotores verificados pueden\npublicar sus negocios aqui',
+            title: l.t('promotions_no_businesses'),
+            subtitle: l.t('promotions_no_businesses_subtitle'),
           );
         }
         return RefreshIndicator(
@@ -1008,8 +1446,13 @@ class _BusinessCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1019,33 +1462,65 @@ class _BusinessCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [ColorTokens.primary30, ColorTokens.primary30.withValues(alpha: 0.8)]),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            ),
-            child: Row(children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12)),
-                child: const Icon(Icons.storefront, color: Colors.white, size: 24),
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(business.title,
-                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 2),
-                  Row(children: [
-                    const Icon(Icons.verified, color: Colors.amber, size: 14),
-                    const SizedBox(width: 4),
-                    Text(business.ownerName,
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13)),
-                  ]),
+                colors: [
+                  ColorTokens.primary30,
+                  ColorTokens.primary30.withValues(alpha: 0.8),
                 ],
-              )),
-            ]),
+              ),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.storefront,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        business.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.verified,
+                            color: Colors.amber,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            business.ownerName,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           // Body
           Padding(
@@ -1053,8 +1528,13 @@ class _BusinessCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(business.description,
-                    style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : Colors.grey[700])),
+                Text(
+                  business.description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.white70 : Colors.grey[700],
+                  ),
+                ),
                 const SizedBox(height: 12),
                 if (business.location != null && business.location!.isNotEmpty)
                   _infoRow(Icons.location_on, business.location!, Colors.red),
@@ -1071,10 +1551,13 @@ class _BusinessCard extends StatelessWidget {
   Widget _infoRow(IconData icon, String text, Color color) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-      child: Row(children: [
-        Icon(icon, size: 16, color: color), const SizedBox(width: 6),
-        Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
-      ]),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
+        ],
+      ),
     );
   }
 }
@@ -1087,14 +1570,15 @@ class _EventsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Consumer<PromotionsProvider>(
       builder: (context, provider, _) {
         final items = provider.approvedEvents;
         if (items.isEmpty) {
-          return const _EmptyState(
+          return _EmptyState(
             icon: Icons.event,
-            title: 'No hay eventos programados',
-            subtitle: 'Los promotores verificados pueden\ncrear eventos con registro de asistencia',
+            title: l.t('promotions_no_events'),
+            subtitle: l.t('promotions_no_events_subtitle'),
           );
         }
         return RefreshIndicator(
@@ -1117,6 +1601,7 @@ class _EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final isRegistered = event.attendees.contains(uid);
     final isFull = event.isFull;
@@ -1126,8 +1611,13 @@ class _EventCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1136,40 +1626,83 @@ class _EventCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
-              gradient: LinearGradient(colors: [Color(0xFF6A1B9A), Color(0xFF8E24AA)]),
+              gradient: LinearGradient(
+                colors: [Color(0xFF6A1B9A), Color(0xFF8E24AA)],
+              ),
               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
             ),
-            child: Row(children: [
-              if (event.eventDate != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12)),
-                  child: Column(children: [
-                    Text(DateFormat('dd').format(event.eventDate!),
-                        style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                    Text(DateFormat('MMM', 'es').format(event.eventDate!).toUpperCase(),
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.9),
-                            fontSize: 12, fontWeight: FontWeight.w600)),
-                  ]),
+            child: Row(
+              children: [
+                if (event.eventDate != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          DateFormat('dd').format(event.eventDate!),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          DateFormat(
+                            'MMM',
+                            'es',
+                          ).format(event.eventDate!).toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        event.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.verified,
+                            color: Colors.amber,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            event.ownerName,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              const SizedBox(width: 12),
-              Expanded(child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(event.title,
-                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Row(children: [
-                    const Icon(Icons.verified, color: Colors.amber, size: 14),
-                    const SizedBox(width: 4),
-                    Text(event.ownerName,
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13)),
-                  ]),
-                ],
-              )),
-            ]),
+              ],
+            ),
           ),
           // Body
           Padding(
@@ -1177,8 +1710,13 @@ class _EventCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(event.description,
-                    style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : Colors.grey[700])),
+                Text(
+                  event.description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.white70 : Colors.grey[700],
+                  ),
+                ),
                 const SizedBox(height: 12),
                 if (event.eventTime != null)
                   _infoRow(Icons.access_time, event.eventTime!, Colors.blue),
@@ -1194,51 +1732,90 @@ class _EventCard extends StatelessWidget {
                     color: Colors.grey.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Row(children: [
-                    Icon(Icons.people, size: 20, color: Colors.grey[600]),
-                    const SizedBox(width: 8),
-                    Text('${event.attendees.length} registrados',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[700], fontWeight: FontWeight.w600)),
-                    if (event.maxAttendees != null)
-                      Text(' / ${event.maxAttendees} cupos',
-                          style: TextStyle(fontSize: 13, color: Colors.grey[500])),
-                    const Spacer(),
-                    if (isFull && !isRegistered)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8)),
-                        child: const Text('LLENO',
-                            style: TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.bold)),
-                      ),
-                    if (isRegistered)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8)),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check_circle, color: Colors.green, size: 14),
-                            SizedBox(width: 4),
-                            Text('INSCRITO',
-                                style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold)),
-                          ],
+                  child: Row(
+                    children: [
+                      Icon(Icons.people, size: 20, color: Colors.grey[600]),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${event.attendees.length} ${l.t('promotions_registered_count')}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                  ]),
+                      if (event.maxAttendees != null)
+                        Text(
+                          ' / ${event.maxAttendees} ${l.t('promotions_spots')}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      const Spacer(),
+                      if (isFull && !isRegistered)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            l.t('promotions_full'),
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      if (isRegistered)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                l.t('promotions_enrolled'),
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
                 if (event.maxAttendees != null) ...[
                   const SizedBox(height: 10),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
-                      value: (event.attendees.length / event.maxAttendees!).clamp(0.0, 1.0),
+                      value: (event.attendees.length / event.maxAttendees!)
+                          .clamp(0.0, 1.0),
                       backgroundColor: Colors.grey[200],
                       valueColor: AlwaysStoppedAnimation<Color>(
-                          isFull ? Colors.red : const Color(0xFF6A1B9A)),
+                        isFull ? Colors.red : const Color(0xFF6A1B9A),
+                      ),
                       minHeight: 6,
                     ),
                   ),
@@ -1248,32 +1825,65 @@ class _EventCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: (isFull && !isRegistered) ? null : () async {
-                      final prov = context.read<PromotionsProvider>();
-                      bool ok;
-                      if (isRegistered) {
-                        ok = await prov.unregisterFromEvent(event.id, uid);
-                      } else {
-                        ok = await prov.registerToEvent(event.id, uid);
-                      }
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(isRegistered
-                              ? (ok ? 'Registro cancelado' : 'Error al cancelar')
-                              : (ok ? 'Te registraste exitosamente!' : 'Error al registrarte')),
-                          backgroundColor: ok ? ColorTokens.success40 : ColorTokens.error50,
-                        ));
-                      }
-                    },
-                    icon: Icon(isRegistered ? Icons.cancel : Icons.how_to_reg, color: Colors.white),
+                    onPressed: (isFull && !isRegistered)
+                        ? null
+                        : () async {
+                            final prov = context.read<PromotionsProvider>();
+                            bool ok;
+                            if (isRegistered) {
+                              ok = await prov.unregisterFromEvent(
+                                event.id,
+                                uid,
+                              );
+                            } else {
+                              ok = await prov.registerToEvent(event.id, uid);
+                            }
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isRegistered
+                                        ? (ok
+                                              ? l.t(
+                                                  'promotions_registration_cancelled',
+                                                )
+                                              : l.t('promotions_cancel_error'))
+                                        : (ok
+                                              ? l.t(
+                                                  'promotions_registered_successfully',
+                                                )
+                                              : l.t(
+                                                  'promotions_register_error',
+                                                )),
+                                  ),
+                                  backgroundColor: ok
+                                      ? ColorTokens.success40
+                                      : ColorTokens.error50,
+                                ),
+                              );
+                            }
+                          },
+                    icon: Icon(
+                      isRegistered ? Icons.cancel : Icons.how_to_reg,
+                      color: Colors.white,
+                    ),
                     label: Text(
-                      isRegistered ? 'Cancelar registro' : 'Registrarse al evento',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      isRegistered
+                          ? l.t('promotions_cancel_registration')
+                          : l.t('promotions_register_to_event'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isRegistered ? ColorTokens.error50 : const Color(0xFF6A1B9A),
+                      backgroundColor: isRegistered
+                          ? ColorTokens.error50
+                          : const Color(0xFF6A1B9A),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       disabledBackgroundColor: Colors.grey[300],
                       elevation: 1,
                     ),
@@ -1290,10 +1900,13 @@ class _EventCard extends StatelessWidget {
   Widget _infoRow(IconData icon, String text, Color color) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-      child: Row(children: [
-        Icon(icon, size: 16, color: color), const SizedBox(width: 6),
-        Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
-      ]),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
+        ],
+      ),
     );
   }
 }
@@ -1305,7 +1918,11 @@ class _EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  const _EmptyState({required this.icon, required this.title, required this.subtitle});
+  const _EmptyState({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1324,10 +1941,20 @@ class _EmptyState extends StatelessWidget {
               child: Icon(icon, size: 64, color: Colors.grey[350]),
             ),
             const SizedBox(height: 20),
-            Text(title, style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.w600)),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(subtitle, textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey[400])),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey[400]),
+            ),
           ],
         ),
       ),
@@ -1343,65 +1970,120 @@ class _AdminPanelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Panel de Administracion',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(
+          l.t('promotions_admin_panel_title'),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: ColorTokens.primary30,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Consumer<PromotionsProvider>(
         builder: (context, provider, _) {
           final pending = provider.pendingRequests;
-          return Column(children: [
-            // Stats
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-              decoration: BoxDecoration(
-                color: ColorTokens.primary30.withValues(alpha: 0.04),
-                border: Border(bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.15))),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _stat('Pendientes', '${pending.length}', Colors.orange),
-                  _stat('Negocios', '${provider.approvedBusinesses.length}', Colors.green),
-                  _stat('Eventos', '${provider.approvedEvents.length}', const Color(0xFF6A1B9A)),
-                ],
-              ),
-            ),
-            // List
-            Expanded(
-              child: pending.isEmpty
-                  ? Center(child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.check_circle_outline, size: 64, color: Colors.green[300]),
-                        const SizedBox(height: 12),
-                        Text('Todo al dia!', style: TextStyle(color: Colors.grey[500], fontSize: 18, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 4),
-                        Text('No hay solicitudes pendientes', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
-                      ],
-                    ))
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: pending.length,
-                      itemBuilder: (_, i) => _AdminCard(req: pending[i]),
+          return Column(
+            children: [
+              // Stats
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: ColorTokens.primary30.withValues(alpha: 0.04),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey.withValues(alpha: 0.15),
                     ),
-            ),
-          ]);
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _stat(
+                      l.t('promotions_pending'),
+                      '${pending.length}',
+                      Colors.orange,
+                    ),
+                    _stat(
+                      l.t('promotions_businesses'),
+                      '${provider.approvedBusinesses.length}',
+                      Colors.green,
+                    ),
+                    _stat(
+                      l.t('promotions_events'),
+                      '${provider.approvedEvents.length}',
+                      const Color(0xFF6A1B9A),
+                    ),
+                  ],
+                ),
+              ),
+              // List
+              Expanded(
+                child: pending.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              size: 64,
+                              color: Colors.green[300],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              l.t('promotions_all_up_to_date'),
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l.t('promotions_no_pending_requests'),
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: pending.length,
+                        itemBuilder: (_, i) => _AdminCard(req: pending[i]),
+                      ),
+              ),
+            ],
+          );
         },
       ),
     );
   }
 
   Widget _stat(String label, String value, Color color) {
-    return Column(children: [
-      Text(value, style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: color)),
-      const SizedBox(height: 4),
-      Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-    ]);
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+      ],
+    );
   }
 }
 
@@ -1411,6 +2093,7 @@ class _AdminCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -1420,36 +2103,74 @@ class _AdminCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              Icon(req.type == 'evento' ? Icons.event : Icons.storefront, color: ColorTokens.primary30),
-              const SizedBox(width: 8),
-              Expanded(child: Text(req.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8)),
-                child: Text(req.type.toUpperCase(),
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange)),
-              ),
-            ]),
+            Row(
+              children: [
+                Icon(
+                  req.type == 'evento' ? Icons.event : Icons.storefront,
+                  color: ColorTokens.primary30,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    req.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    req.type.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
-            Text(req.description, style: TextStyle(color: Colors.grey[600], fontSize: 13), maxLines: 3, overflow: TextOverflow.ellipsis),
+            Text(
+              req.description,
+              style: TextStyle(color: Colors.grey[600], fontSize: 13),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
             const SizedBox(height: 6),
-            Row(children: [
-              const Icon(Icons.person, size: 14, color: Colors.grey),
-              const SizedBox(width: 4),
-              Text('Por: ${req.ownerName}', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
-            ]),
+            Row(
+              children: [
+                const Icon(Icons.person, size: 14, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(
+                  '${l.t('promotions_by')}: ${req.ownerName}',
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                ),
+              ],
+            ),
             if (req.location != null && req.location!.isNotEmpty) ...[
               const SizedBox(height: 4),
-              Row(children: [
-                const Icon(Icons.location_on, size: 14, color: Colors.red),
-                const SizedBox(width: 4),
-                Expanded(child: Text(req.location!,
-                    style: TextStyle(color: Colors.grey[500], fontSize: 12))),
-              ]),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 14, color: Colors.red),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      req.location!,
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
             ],
             const Divider(height: 24),
             Row(
@@ -1461,14 +2182,19 @@ class _AdminCard extends StatelessWidget {
                     await provider.reject(req.id);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Solicitud rechazada'), backgroundColor: ColorTokens.error50));
+                        SnackBar(
+                          content: Text(l.t('promotions_request_rejected')),
+                          backgroundColor: ColorTokens.error50,
+                        ),
+                      );
                     }
                   },
                   icon: const Icon(Icons.close, size: 18),
-                  label: const Text('Rechazar'),
+                  label: Text(l.t('promotions_reject')),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: ColorTokens.error50,
-                    side: const BorderSide(color: ColorTokens.error50)),
+                    side: const BorderSide(color: ColorTokens.error50),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton.icon(
@@ -1477,12 +2203,21 @@ class _AdminCard extends StatelessWidget {
                     await provider.approve(req.id);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Solicitud aprobada!'), backgroundColor: ColorTokens.success40));
+                        SnackBar(
+                          content: Text(l.t('promotions_request_approved')),
+                          backgroundColor: ColorTokens.success40,
+                        ),
+                      );
                     }
                   },
                   icon: const Icon(Icons.check, size: 18, color: Colors.white),
-                  label: const Text('Aprobar', style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(backgroundColor: ColorTokens.success40),
+                  label: Text(
+                    l.t('promotions_approve'),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorTokens.success40,
+                  ),
                 ),
               ],
             ),

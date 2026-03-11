@@ -1,7 +1,9 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 /// Widget OPTIMIZADO que usa la metadata de participantes almacenada en la rodada
 /// en lugar de consultar Firestore por cada usuario.
@@ -25,6 +27,7 @@ class RideAttendeesListOptimized extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final hasConfirmed = confirmedMetadata.isNotEmpty;
     final hasMaybe = maybeMetadata.isNotEmpty;
 
@@ -32,7 +35,7 @@ class RideAttendeesListOptimized extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Text(
-          'Aún no hay participantes',
+          l.t('no_participants_yet'),
           style: TextStyle(
             color: ColorTokens.neutral60,
             fontStyle: FontStyle.italic,
@@ -52,7 +55,7 @@ class RideAttendeesListOptimized extends StatelessWidget {
         // Confirmados
         if (hasConfirmed) ...[
           _SectionHeader(
-            title: '✅ Confirmados (${confirmedMetadata.length})',
+            title: '✅ ${l.t('confirmed_count')} (${confirmedMetadata.length})',
             color: ColorTokens.success50,
           ),
           SizedBox(height: 8),
@@ -65,7 +68,7 @@ class RideAttendeesListOptimized extends StatelessWidget {
         // Tal vez
         if (hasMaybe) ...[
           _SectionHeader(
-            title: '🤔 Tal vez (${maybeMetadata.length})',
+            title: '🤔 ${l.t('maybe_count')} (${maybeMetadata.length})',
             color: ColorTokens.warning50,
           ),
           SizedBox(height: 8),
@@ -84,7 +87,7 @@ class RideAttendeesListOptimized extends StatelessWidget {
               },
               icon: Icon(Icons.people, color: ColorTokens.primary50),
               label: Text(
-                'Ver todos los participantes ($totalParticipants)',
+                '${l.t('view_all_participants')} ($totalParticipants)',
                 style: TextStyle(
                   color: ColorTokens.primary50,
                   fontWeight: FontWeight.w600,
@@ -124,6 +127,7 @@ class _AttendeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // Debug para ver qué datos tiene el metadata
     debugPrint(
       '📋 AttendeeCard - userId: ${metadata.userId}, userName: "${metadata.userName}", photoUrl: "${metadata.photoUrl}"',
@@ -147,7 +151,7 @@ class _AttendeeCard extends StatelessWidget {
               child: Text(
                 metadata.userName.isNotEmpty
                     ? metadata.userName
-                    : 'Usuario sin nombre',
+                    : l.t('user_no_name'),
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                 overflow: TextOverflow.ellipsis,
               ),

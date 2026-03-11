@@ -12,12 +12,12 @@ import 'package:biux/features/social/presentation/providers/likes_provider.dart'
 import 'package:biux/features/social/domain/entities/like_entity.dart';
 import 'package:biux/features/social/domain/repositories/likes_repository.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story
 /// Soporta reproducción automática de videos e imágenes con duración
 class ExperienceStoryViewer extends StatefulWidget {
   final ExperienceEntity experience;
-  final List<({String experienceId, int mediaIndex})>? mediaOrigins;
   final VoidCallback? onTap;
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
@@ -26,7 +26,6 @@ class ExperienceStoryViewer extends StatefulWidget {
   const ExperienceStoryViewer({
     super.key,
     required this.experience,
-    this.mediaOrigins,
     this.onTap,
     this.onNext,
     this.onPrevious,
@@ -40,8 +39,6 @@ class ExperienceStoryViewer extends StatefulWidget {
 class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     with SingleTickerProviderStateMixin {
   late AnimationController _progressController;
-  late List<ExperienceMediaEntity> _mediaItems;
-  late List<({String experienceId, int mediaIndex})> _mediaOrigins;
 
   int currentMediaIndex = 0;
   bool isPaused = false;
@@ -52,13 +49,6 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   @override
   void initState() {
     super.initState();
-    _mediaItems = List.from(widget.experience.media);
-    _mediaOrigins = widget.mediaOrigins != null
-        ? List.from(widget.mediaOrigins!)
-        : List.generate(
-            widget.experience.media.length,
-            (i) => (experienceId: widget.experience.id, mediaIndex: i),
-          );
     _initializeControllers();
     _startCurrentMedia();
   }
@@ -78,7 +68,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   void _startCurrentMedia() {
-    if (currentMediaIndex >= _mediaItems.length) return;
+    if (currentMediaIndex >= widget.experience.media.length) return;
 
     setState(() {
       isMediaReady = false; // Reset del estado de carga
@@ -90,7 +80,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     // Solo iniciar el progreso después de que el media esté listo
     // Para imágenes, se inicia inmediatamente
     // Para videos, se inicia cuando el VideoPlayerWidget notifique que está listo
-    final currentMedia = _mediaItems[currentMediaIndex];
+    final currentMedia = widget.experience.media[currentMediaIndex];
     if (currentMedia.mediaType == MediaType.image) {
       _startProgressTimer(standardDuration);
     }
@@ -118,7 +108,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   void _nextMedia() {
-    if (currentMediaIndex < _mediaItems.length - 1) {
+    if (currentMediaIndex < widget.experience.media.length - 1) {
       setState(() {
         currentMediaIndex++;
       });
@@ -175,11 +165,11 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   @override
   Widget build(BuildContext context) {
-    if (_mediaItems.isEmpty) {
+    if (widget.experience.media.isEmpty) {
       return const SizedBox();
     }
 
-    final currentMedia = _mediaItems[currentMediaIndex];
+    final currentMedia = widget.experience.media[currentMediaIndex];
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -208,7 +198,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             ),
 
             // Footer con descripción centrada
-            if (_getCurrentDescription().isNotEmpty)
+            if (widget.experience.description.isNotEmpty)
               Positioned(
                 bottom: MediaQuery.of(context).padding.bottom + 10,
                 left: 10,
@@ -233,7 +223,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ),
 
-            // Botón de visualizadores (ojo con número de vistas) y likes - abajo a la derecha
+            // Botón de visualizadores (ojo con número de vistas) - abajo a la derecha
             if (FirebaseAuth.instance.currentUser?.uid ==
                 widget.experience.user.id)
               Positioned(
@@ -254,52 +244,24 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         width: 1.5,
                       ),
                     ),
-                    child: StreamBuilder<List<LikeEntity>>(
-                      stream: context.read<LikesProvider>().watchLikes(
-                        LikeableType.story,
-                        widget.experience.id,
-                      ),
-                      builder: (context, likesSnap) {
-                        final likesCount = likesSnap.hasData
-                            ? likesSnap.data!.where((l) => !l.isExpired).length
-                            : 0;
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.visibility,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              widget.experience.viewers.length.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            if (likesCount > 0) ...[
-                              const SizedBox(width: 10),
-                              const Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                likesCount.toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ],
-                        );
-                      },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          widget.experience.viewers.length.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -385,7 +347,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   Widget _buildProgressBar() {
     return Row(
       children: List.generate(
-        _mediaItems.length,
+        widget.experience.media.length,
         (index) => Expanded(
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: index == 0 ? 0 : 1),
@@ -423,6 +385,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   Widget _buildUserHeader() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final user = widget.experience.user;
 
     return Row(
@@ -460,7 +423,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             ? user.fullName
                             : (user.userName.isNotEmpty
                                   ? user.userName
-                                  : 'Usuario sin datos'),
+                                  : l.t('user_no_data')),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: const TextStyle(
@@ -502,9 +465,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             ),
             if (isPaused) const SizedBox(height: 4),
             if (isPaused)
-              const Text(
-                'Pausado',
-                style: TextStyle(color: Colors.white, fontSize: 12),
+              Text(
+                l.t('story_paused'),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
           ],
         ),
@@ -519,32 +482,33 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   /// Muestra diálogo de confirmación para eliminar
   void _confirmDeleteStory(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          '¿Estás seguro/a que quieres eliminar esta historia?',
+          l.t('story_delete_confirm_question'),
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
-          'No podrás recuperar esta historia después de eliminada',
+          l.t('cannot_recover_story'),
           style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
               _deleteStory(context);
             },
-            child: const Text(
-              'Eliminar historia',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              l.t('delete_story'),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -552,115 +516,32 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     );
   }
 
-  /// Elimina la historia (todas las experiencias originales del merge)
+  /// Elimina la historia
   void _deleteStory(BuildContext context) async {
-    final provider = context.read<ExperienceProvider>();
-    final messenger = ScaffoldMessenger.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    try {
+      final provider = context.read<ExperienceProvider>();
+      final success = await provider.deleteExperience(widget.experience.id);
 
-    // Cerrar el visor inmediatamente para UX instantánea
-    Navigator.of(context).pop();
-
-    // Recolectar todos los experienceId únicos del merge
-    final uniqueIds = _mediaOrigins.map((o) => o.experienceId).toSet();
-    for (final id in uniqueIds) {
-      provider.deleteExperience(id);
-    }
-
-    messenger.showSnackBar(
-      const SnackBar(
-        content: Text('Story eliminada correctamente'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
-  /// Confirma eliminación de una foto individual
-  void _confirmDeleteMedia(BuildContext context) {
-    final theme = Theme.of(context);
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: theme.dialogTheme.backgroundColor,
-        title: Text(
-          '¿Eliminar esta foto?',
-          style: TextStyle(color: theme.textTheme.titleLarge?.color),
-        ),
-        content: Text(
-          'Solo se eliminará esta foto. Las demás fotos de la historia se mantendrán.',
-          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              _deleteMedia(context);
-            },
-            child: const Text(
-              'Eliminar foto',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Elimina solo la foto actual de la historia
-  void _deleteMedia(BuildContext context) async {
-    final provider = context.read<ExperienceProvider>();
-    final mediaIdx = currentMediaIndex;
-
-    // Obtener el origen real de esta foto
-    final origin = _mediaOrigins[mediaIdx];
-
-    // Si después de eliminar no quedan más media, cerrar el visor y eliminar todo
-    if (_mediaItems.length <= 1) {
-      final messenger = ScaffoldMessenger.of(context);
-      Navigator.of(context).pop();
-      // Eliminar todas las experiencias originales
-      final uniqueIds = _mediaOrigins.map((o) => o.experienceId).toSet();
-      for (final id in uniqueIds) {
-        provider.deleteExperience(id);
+      if (context.mounted) {
+        if (success) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('story_deleted_success'))));
+          // Cerrar el visor de stories (un solo pop)
+          Navigator.of(context).pop();
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('story_delete_error'))));
+        }
       }
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Story eliminada correctamente'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-      return;
-    }
-
-    // Remover de la lista local inmediatamente para que la UI se actualice
-    setState(() {
-      _mediaItems.removeAt(mediaIdx);
-      _mediaOrigins.removeAt(mediaIdx);
-      if (currentMediaIndex >= _mediaItems.length) {
-        currentMediaIndex = _mediaItems.length - 1;
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
-    });
-    _progressController.reset();
-    _startCurrentMedia();
-
-    // Verificar si quedan más medias de esa misma experiencia
-    final remainingFromSameExp = _mediaOrigins
-        .where((o) => o.experienceId == origin.experienceId)
-        .length;
-
-    if (remainingFromSameExp == 0) {
-      // No quedan más fotos de esa experiencia, eliminarla completa
-      provider.deleteExperience(origin.experienceId);
-    } else {
-      // Eliminar solo esa foto de la experiencia original
-      provider.removeMediaFromExperience(
-        origin.experienceId,
-        origin.mediaIndex,
-      );
     }
   }
 
@@ -672,27 +553,17 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         color: Colors.black.withValues(alpha: 0.5),
       ),
       child: Text(
-        _getCurrentDescription(),
+        widget.experience.description,
         textAlign: TextAlign.center,
         style: const TextStyle(color: Colors.white, fontSize: 16),
       ),
     );
   }
 
-  /// Obtiene la descripción del media actual (individual o de la experiencia)
-  String _getCurrentDescription() {
-    if (currentMediaIndex < _mediaItems.length) {
-      final mediaDesc = _mediaItems[currentMediaIndex].description;
-      if (mediaDesc != null && mediaDesc.isNotEmpty) {
-        return mediaDesc;
-      }
-    }
-    return widget.experience.description;
-  }
-
   /// Muestra opciones de la historia (eliminar, compartir)
   void _showStoryOptions(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     // Pausar el progreso mientras se muestra el menú
     _progressController.stop();
@@ -732,11 +603,11 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   ),
                   child: const Icon(Icons.share, color: ColorTokens.primary50),
                 ),
-                title: const Text(
-                  'Compartir',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                title: Text(
+                  l.t('share_label'),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
-                subtitle: const Text('Comparte esta historia'),
+                subtitle: Text(l.t('share_this_story')),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -748,7 +619,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
               const SizedBox(height: 8),
 
-              // Opción: Eliminar esta foto
+              // Opción: Eliminar
               ListTile(
                 leading: Container(
                   padding: const EdgeInsets.all(8),
@@ -759,29 +630,19 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   child: const Icon(Icons.delete_outline, color: Colors.red),
                 ),
                 title: Text(
-                  _mediaItems.length > 1
-                      ? 'Eliminar esta foto'
-                      : 'Eliminar historia',
+                  l.t('delete_story'),
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.red,
                   ),
                 ),
-                subtitle: Text(
-                  _mediaItems.length > 1
-                      ? 'Solo se eliminará esta foto, no las demás'
-                      : 'Esta acción no se puede deshacer',
-                ),
+                subtitle: Text(l.t('action_cannot_undo')),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 onTap: () {
                   Navigator.pop(modalContext);
-                  if (_mediaItems.length > 1) {
-                    _confirmDeleteMedia(context);
-                  } else {
-                    _confirmDeleteStory(context);
-                  }
+                  _confirmDeleteStory(context);
                 },
               ),
 
@@ -790,7 +651,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               // Cancelar
               TextButton(
                 onPressed: () => Navigator.pop(modalContext),
-                child: const Text('Cancelar'),
+                child: Text(l.t('cancel')),
               ),
             ],
           ),
@@ -805,18 +666,19 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   /// Comparte la historia
-  void _shareStory(BuildContext context) async {
+  void _shareStory(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final user = widget.experience.user;
     final description = widget.experience.description;
-    final mediaUrl = _mediaItems.isNotEmpty
-        ? _mediaItems[currentMediaIndex].url
+    final mediaUrl = widget.experience.media.isNotEmpty
+        ? widget.experience.media[currentMediaIndex].url
         : '';
 
     final shareText = StringBuffer();
     if (user.fullName.isNotEmpty) {
-      shareText.write('Historia de ${user.fullName}');
+      shareText.write('${l.t('story_of')} ${user.fullName}');
     } else {
-      shareText.write('Historia de @${user.userName}');
+      shareText.write('${l.t('story_of')} @${user.userName}');
     }
     if (description.isNotEmpty) {
       shareText.write('\n\n$description');
@@ -824,29 +686,19 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     if (mediaUrl.isNotEmpty) {
       shareText.write('\n\n$mediaUrl');
     }
-    shareText.write('\n\nCompartido desde Biux');
+    shareText.write('\n\n${l.t('shared_from_biux')}');
 
-    try {
-      await SharePlus.instance.share(ShareParams(text: shareText.toString()));
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo compartir la historia')),
-        );
-      }
-    }
+    SharePlus.instance.share(ShareParams(text: shareText.toString()));
   }
 
   /// Muestra modal con información de visualizaciones y likes
   void _showViewersModal(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final viewers = widget.experience.viewers;
     final viewsCount = viewers.length;
     final hasViewers = viewers.isNotEmpty;
     final likesProvider = context.read<LikesProvider>();
-
-    // Pausar el progreso mientras se muestra el modal
-    _progressController.stop();
 
     showModalBottomSheet(
       context: context,
@@ -879,56 +731,34 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
                 const SizedBox(height: 16),
 
-                // Encabezado con vistas y likes
-                StreamBuilder<List<LikeEntity>>(
-                  stream: likesProvider.watchLikes(
-                    LikeableType.story,
-                    widget.experience.id,
-                  ),
-                  builder: (context, likesHeaderSnapshot) {
-                    final likesCount = likesHeaderSnapshot.hasData
-                        ? likesHeaderSnapshot.data!
-                              .where((l) => !l.isExpired)
-                              .length
-                        : 0;
-
-                    return Row(
+                // Encabezado
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.visibility,
+                      color: ColorTokens.primary50,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.visibility,
-                          color: ColorTokens.primary50,
-                          size: 28,
-                        ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '$viewsCount ${viewsCount == 1 ? 'visualización' : 'visualizaciones'}',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        if (likesCount > 0) ...[
-                          const Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                            size: 24,
+                        Text(
+                          l.t('who_saw_story'),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '$likesCount',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$viewsCount ${viewsCount == 1 ? l.t('views_count_singular') : l.t('views_count_plural')}',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[600],
                           ),
-                        ],
+                        ),
                       ],
-                    );
-                  },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
 
@@ -1079,7 +909,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Nadie ha visto tu historia aún',
+                          l.t('no_views_yet'),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
@@ -1087,7 +917,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Comparte tu historia con más amigos para que la vean',
+                          l.t('share_story_more_friends'),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
@@ -1101,12 +931,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
           ),
         ),
       ),
-    ).whenComplete(() {
-      // Reanudar el progreso cuando se cierre el modal
-      if (!isPaused && isMediaReady) {
-        _progressController.forward();
-      }
-    });
+    );
   }
 
   Widget _buildTouchAreas() {
@@ -1144,7 +969,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
             flex: 3,
             child: GestureDetector(
               onTap: () {
-                if (currentMediaIndex == _mediaItems.length - 1) {
+                if (currentMediaIndex == widget.experience.media.length - 1) {
                   widget.onNext?.call();
                 } else {
                   _nextMedia();
@@ -1159,6 +984,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   String _getTimeAgo(DateTime createdAt) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final now = DateTime.now();
     final difference = now.difference(createdAt);
 
@@ -1169,7 +995,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes}m';
     } else {
-      return 'ahora';
+      return l.t('experiences_time_now');
     }
   }
 

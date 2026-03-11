@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../../users/domain/repositories/user_repository.dart';
 import '../../../users/domain/entities/user_entity.dart';
 import 'package:go_router/go_router.dart';
@@ -20,13 +21,14 @@ class RideAttendeesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     if (confirmedIds.isEmpty && maybeIds.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(32.0),
           child: Text(
-            'Aún no hay asistentes confirmados',
-            style: TextStyle(color: Colors.grey, fontSize: 16),
+            l.t('no_attendees_yet'),
+            style: const TextStyle(color: Colors.grey, fontSize: 16),
           ),
         ),
       );
@@ -37,11 +39,11 @@ class RideAttendeesList extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       children: [
         if (confirmedIds.isNotEmpty) ...[
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Confirmados',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              l.t('confirmed_count'),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           ...confirmedIds.map(
@@ -53,11 +55,11 @@ class RideAttendeesList extends StatelessWidget {
           ),
         ],
         if (maybeIds.isNotEmpty) ...[
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Tal vez',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              l.t('maybe_count'),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           ...maybeIds.map(
@@ -84,17 +86,18 @@ class _AttendeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final userRepository = Provider.of<UserRepository>(context, listen: false);
 
     return FutureBuilder<UserEntity>(
       future: userRepository.getUserById(userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ListTile(
-            leading: CircleAvatar(
+          return ListTile(
+            leading: const CircleAvatar(
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            title: Text('Cargando...'),
+            title: Text(l.t('loading')),
           );
         }
 
@@ -102,7 +105,7 @@ class _AttendeeCard extends StatelessWidget {
           return ListTile(
             leading: CircleAvatar(child: Text(_getInitials(userId))),
             title: Text(userId),
-            subtitle: const Text('Error al cargar datos'),
+            subtitle: Text(l.t('error_loading_data')),
             trailing: _getStatusIcon(),
           );
         }

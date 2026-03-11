@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/presentation/widgets/bike_registration_step1.dart';
 import 'package:biux/features/bikes/presentation/widgets/bike_registration_step2.dart';
@@ -30,6 +30,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) {
@@ -46,7 +47,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
-            AppStrings.registerBike,
+            l.t('register_bike'),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -159,15 +160,16 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   String _getStepTitle(int step) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     switch (step) {
       case 0:
-        return AppStrings.step1Title;
+        return l.t('step1_title');
       case 1:
-        return AppStrings.step2Title;
+        return l.t('step2_title');
       case 2:
-        return AppStrings.step3Title;
+        return l.t('step3_title');
       case 3:
-        return AppStrings.step4Title;
+        return l.t('step4_title');
       default:
         return '';
     }
@@ -189,6 +191,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   Widget _buildNavigationButtons(BikeProvider bikeProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -213,9 +216,9 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
                 side: const BorderSide(color: ColorTokens.error50),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(
+              child: Text(
+                l.t('cancel'),
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
                 ),
@@ -260,29 +263,29 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   String _getNextButtonText(int currentStep) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     switch (currentStep) {
       case 3:
-        return AppStrings.finish;
+        return l.t('finish');
       default:
-        return AppStrings.next;
+        return l.t('next');
     }
   }
 
   void _showCancelDialog(BikeProvider bikeProvider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancelar registro'),
-        content: const Text(
-          '¿Estás seguro de que deseas cancelar el registro de la bicicleta? Se perderán todos los datos ingresados.',
-        ),
+        title: Text(l.t('cancel_registration')),
+        content: Text(l.t('cancel_registration_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral60),
-            child: const Text(
-              'Continuar editando',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            child: Text(
+              l.t('continue_editing'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ),
           ElevatedButton(
@@ -295,9 +298,9 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
               backgroundColor: ColorTokens.error50,
               foregroundColor: Colors.white,
             ),
-            child: const Text(
-              'Cancelar registro',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            child: Text(
+              l.t('cancel_registration'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -324,11 +327,10 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
   }
 
   void _showValidationError([String? message]) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          message ?? 'Por favor completa todos los campos obligatorios',
-        ),
+        content: Text(message ?? l.t('complete_required_fields')),
         backgroundColor: ColorTokens.error50,
         duration: const Duration(seconds: 3),
       ),
@@ -340,9 +342,10 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     if (userId == null) {
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes iniciar sesión para registrar una bicicleta'),
+        SnackBar(
+          content: Text(l.t('must_login_register')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -354,10 +357,11 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
     if (!mounted) return;
 
     if (bike != null) {
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       // Mostrar mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppStrings.bikeRegistrationSuccess),
+          content: Text(l.t('bike_registered_success')),
           backgroundColor: ColorTokens.success40,
           duration: const Duration(seconds: 3),
         ),
@@ -375,7 +379,11 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            bikeProvider.errorMessage ?? 'Error al registrar la bicicleta',
+            bikeProvider.errorMessage ??
+                Provider.of<LocaleNotifier>(
+                  context,
+                  listen: false,
+                ).t('error_registering_bike'),
           ),
           backgroundColor: ColorTokens.error50,
         ),

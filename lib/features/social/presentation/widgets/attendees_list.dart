@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../domain/entities/attendee_entity.dart';
 import '../providers/attendees_provider.dart';
 import 'user_avatar.dart';
@@ -21,6 +22,7 @@ class AttendeesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AttendeesProvider>();
+    final l = Provider.of<LocaleNotifier>(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,14 +38,14 @@ class AttendeesList extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '$count ${count == 1 ? 'asistente confirmado' : 'asistentes confirmados'}',
+                    '$count ${count == 1 ? l.t('confirmed_attendee') : l.t('confirmed_attendees')}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   if (showJoinButton && rideOwnerId != null)
-                    _buildJoinButton(context, provider),
+                    _buildJoinButton(context, provider, l),
                 ],
               ),
             );
@@ -65,12 +67,12 @@ class AttendeesList extends StatelessWidget {
             final attendees = snapshot.data ?? [];
 
             if (attendees.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.all(32.0),
+              return Padding(
+                padding: const EdgeInsets.all(32.0),
                 child: Center(
                   child: Text(
-                    'Aún no hay asistentes',
-                    style: TextStyle(color: Colors.grey),
+                    l.t('no_attendees_yet'),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ),
               );
@@ -91,7 +93,11 @@ class AttendeesList extends StatelessWidget {
     );
   }
 
-  Widget _buildJoinButton(BuildContext context, AttendeesProvider provider) {
+  Widget _buildJoinButton(
+    BuildContext context,
+    AttendeesProvider provider,
+    LocaleNotifier l,
+  ) {
     return StreamBuilder<bool>(
       stream: provider.watchUserIsAttending(rideId),
       builder: (context, snapshot) {
@@ -107,10 +113,10 @@ class AttendeesList extends StatelessWidget {
                 children: [
                   Text(
                     status == AttendeeStatus.confirmed
-                        ? 'Confirmado ✓'
+                        ? l.t('status_confirmed')
                         : status == AttendeeStatus.maybe
-                        ? 'Tal vez ?'
-                        : 'Cancelado',
+                        ? l.t('status_maybe')
+                        : l.t('status_cancelled'),
                     style: TextStyle(
                       color: status == AttendeeStatus.confirmed
                           ? Colors.green
@@ -120,7 +126,7 @@ class AttendeesList extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.more_vert),
-                    onPressed: () => _showStatusMenu(context, provider),
+                    onPressed: () => _showStatusMenu(context, provider, l),
                   ),
                 ],
               );
@@ -131,7 +137,7 @@ class AttendeesList extends StatelessWidget {
         return ElevatedButton.icon(
           onPressed: provider.isJoining
               ? null
-              : () => _showJoinDialog(context, provider),
+              : () => _showJoinDialog(context, provider, l),
           icon: provider.isJoining
               ? const SizedBox(
                   width: 16,
@@ -139,22 +145,26 @@ class AttendeesList extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.check_circle_outline),
-          label: const Text('Unirme'),
+          label: Text(l.t('join_ride')),
         );
       },
     );
   }
 
-  void _showJoinDialog(BuildContext context, AttendeesProvider provider) {
+  void _showJoinDialog(
+    BuildContext context,
+    AttendeesProvider provider,
+    LocaleNotifier l,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Unirse a la rodada'),
-        content: const Text('¿Confirmas tu asistencia a esta rodada?'),
+        title: Text(l.t('join_ride_title')),
+        content: Text(l.t('join_ride_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -165,14 +175,18 @@ class AttendeesList extends StatelessWidget {
               );
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text('Confirmar'),
+            child: Text(l.t('confirm')),
           ),
         ],
       ),
     );
   }
 
-  void _showStatusMenu(BuildContext context, AttendeesProvider provider) {
+  void _showStatusMenu(
+    BuildContext context,
+    AttendeesProvider provider,
+    LocaleNotifier l,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Column(
@@ -180,7 +194,7 @@ class AttendeesList extends StatelessWidget {
         children: [
           ListTile(
             leading: const Icon(Icons.check_circle, color: Colors.green),
-            title: const Text('Confirmar asistencia'),
+            title: Text(l.t('confirm_attendance')),
             onTap: () async {
               await provider.updateStatus(
                 rideId: rideId,
@@ -191,7 +205,7 @@ class AttendeesList extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.help_outline, color: Colors.orange),
-            title: const Text('Marcar como "Tal vez"'),
+            title: Text(l.t('mark_as_maybe')),
             onTap: () async {
               await provider.updateStatus(
                 rideId: rideId,
@@ -202,7 +216,7 @@ class AttendeesList extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.cancel, color: Colors.red),
-            title: const Text('Salir de la rodada'),
+            title: Text(l.t('leave_ride')),
             onTap: () async {
               await provider.leaveRide(rideId);
               if (context.mounted) Navigator.pop(context);
@@ -223,6 +237,7 @@ class AttendeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return ListTile(
       leading: UserAvatar(
         userName: attendee.userName,
@@ -242,9 +257,12 @@ class AttendeeCard extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (attendee.bikeType != null) Text('Bici: ${attendee.bikeType}'),
+          if (attendee.bikeType != null)
+            Text('${l.t('bike')}: ${attendee.bikeType}'),
           if (attendee.level != null)
-            Text('Nivel: ${attendee.level!.displayName}'),
+            Text(
+              '${l.t('difficulty_level')}: ${l.t(attendee.level!.displayName)}',
+            ),
         ],
       ),
       onTap: () {

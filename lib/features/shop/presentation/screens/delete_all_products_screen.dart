@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Pantalla administrativa para limpiar todos los productos
 /// Solo accesible por administradores
@@ -31,31 +33,37 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
           .collection('products')
           .get();
 
+      if (!mounted) return;
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       setState(() {
         _totalProducts = snapshot.docs.length;
-        _status = 'Hay $_totalProducts productos en la base de datos';
+        _status =
+            '${l.t('there_are')} $_totalProducts ${l.t('products_in_database')}';
       });
     } catch (e) {
+      if (!mounted) return;
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       setState(() {
-        _status = 'Error al contar productos: $e';
+        _status = '${l.t('error_counting_products')}: $e';
       });
     }
   }
 
   Future<void> _deleteAllProducts() async {
     // Confirmación
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('⚠️ Confirmar Eliminación'),
+        title: Text('⚠️ ${l.t('confirm_deletion')}'),
         content: Text(
-          '¿Estás seguro de que deseas eliminar TODOS los $_totalProducts productos?\n\n'
-          'Esta acción NO se puede deshacer.',
+          '${l.t('delete_all_confirm')}\n\n'
+          '${l.t('action_irreversible')}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -63,7 +71,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Eliminar Todo'),
+            child: Text(l.t('delete_all')),
           ),
         ],
       ),
@@ -74,7 +82,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
     setState(() {
       _isDeleting = true;
       _deletedProducts = 0;
-      _status = 'Iniciando eliminación...';
+      _status = l.t('starting_deletion');
     });
 
     try {
@@ -91,7 +99,8 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
 
         setState(() {
           _deletedProducts = count;
-          _status = 'Eliminando... $_deletedProducts/$_totalProducts';
+          _status =
+              '${l.t('deleting_progress')} $_deletedProducts/$_totalProducts';
         });
 
         // Ejecutar batch cada 500 productos
@@ -107,7 +116,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
 
       setState(() {
         _isDeleting = false;
-        _status = '✅ Eliminados $_deletedProducts productos exitosamente';
+        _status = '✅ $_deletedProducts ${l.t('products_deleted_successfully')}';
         _totalProducts = 0;
       });
 
@@ -115,7 +124,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ $_deletedProducts productos eliminados'),
+            content: Text('✅ $_deletedProducts ${l.t('products_eliminated')}'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 3),
           ),
@@ -124,12 +133,15 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
     } catch (e) {
       setState(() {
         _isDeleting = false;
-        _status = '❌ Error: $e';
+        _status = '❌ ${l.t('error')}: $e';
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${l.t('error')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -137,14 +149,15 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/shop'),
-          tooltip: 'Volver a la tienda',
+          tooltip: l.t('back_to_store'),
         ),
-        title: const Text('Eliminar Todos los Productos'),
+        title: Text(l.t('delete_all_products_title')),
         backgroundColor: ColorTokens.primary30,
       ),
       body: Padding(
@@ -161,9 +174,9 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             const SizedBox(height: 24),
 
             // Título
-            const Text(
-              '⚠️ ZONA PELIGROSA',
-              style: TextStyle(
+            Text(
+              '⚠️ ${l.t('danger_zone')}',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.red,
@@ -173,11 +186,10 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             const SizedBox(height: 16),
 
             // Descripción
-            const Text(
-              'Esta acción eliminará TODOS los productos de la base de datos de Firebase. '
-              'Solo úsala si estás seguro de que quieres limpiar todos los productos de prueba.',
+            Text(
+              l.t('danger_zone_desc'),
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 32),
 
@@ -219,7 +231,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
             OutlinedButton.icon(
               onPressed: _isDeleting ? null : _countProducts,
               icon: const Icon(Icons.refresh),
-              label: const Text('Actualizar Conteo'),
+              label: Text(l.t('refresh_count')),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
@@ -234,8 +246,8 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
               icon: const Icon(Icons.delete_forever),
               label: Text(
                 _totalProducts > 0
-                    ? 'Eliminar $_totalProducts Productos'
-                    : 'No hay productos para eliminar',
+                    ? '${l.t('delete')} $_totalProducts ${l.t('products_label')}'
+                    : l.t('no_products_to_delete'),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -257,14 +269,14 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
                 border: Border.all(color: Colors.red),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.red),
-                  SizedBox(width: 12),
+                  const Icon(Icons.info_outline, color: Colors.red),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '⚠️ Esta acción NO se puede deshacer',
-                      style: TextStyle(
+                      '⚠️ ${l.t('action_irreversible')}',
+                      style: const TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
                       ),

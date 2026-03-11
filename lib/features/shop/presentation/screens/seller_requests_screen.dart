@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/design_system/color_tokens.dart';
+import '../../../../core/design_system/locale_notifier.dart';
 import '../../../users/presentation/providers/user_provider.dart';
 import '../../domain/entities/seller_request_entity.dart';
 import '../providers/seller_request_provider.dart';
@@ -38,6 +39,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final userProvider = context.watch<UserProvider>();
     final currentUser = userProvider.user;
 
@@ -45,7 +47,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
     if (currentUser?.isAdmin != true) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Acceso Denegado'),
+          title: Text(l.t('access_denied')),
           backgroundColor: ColorTokens.neutral0,
         ),
         body: Center(
@@ -54,14 +56,17 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
             children: [
               const Icon(Icons.block, size: 64, color: Colors.red),
               const SizedBox(height: 16),
-              const Text(
-                'Solo administradores pueden acceder',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              Text(
+                l.t('admin_only_access'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => context.pop(),
-                child: const Text('Volver'),
+                child: Text(l.t('go_back')),
               ),
             ],
           ),
@@ -74,9 +79,9 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/shop'),
-          tooltip: 'Volver a la tienda',
+          tooltip: l.t('back_to_store'),
         ),
-        title: const Text('Solicitudes de Vendedores'),
+        title: Text(l.t('seller_requests')),
         backgroundColor: ColorTokens.neutral0,
         bottom: TabBar(
           controller: _tabController,
@@ -87,20 +92,20 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                 if (provider.pendingCount > 0) {
                   return Badge(
                     label: Text('${provider.pendingCount}'),
-                    child: const Tab(
-                      icon: Icon(Icons.pending_actions),
-                      text: 'Pendientes',
+                    child: Tab(
+                      icon: const Icon(Icons.pending_actions),
+                      text: l.t('pending'),
                     ),
                   );
                 }
-                return const Tab(
-                  icon: Icon(Icons.pending_actions),
-                  text: 'Pendientes',
+                return Tab(
+                  icon: const Icon(Icons.pending_actions),
+                  text: l.t('pending'),
                 );
               },
             ),
-            const Tab(icon: Icon(Icons.check_circle), text: 'Aprobadas'),
-            const Tab(icon: Icon(Icons.cancel), text: 'Rechazadas'),
+            Tab(icon: const Icon(Icons.check_circle), text: l.t('approved')),
+            Tab(icon: const Icon(Icons.cancel), text: l.t('rejected_tab')),
           ],
         ),
       ),
@@ -143,6 +148,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
     String adminId,
     bool canReview,
   ) {
+    final l = Provider.of<LocaleNotifier>(context);
     if (requests.isEmpty) {
       return Center(
         child: Column(
@@ -151,7 +157,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
             Icon(Icons.inbox, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'No hay solicitudes',
+              l.t('no_requests'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -184,6 +190,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
     String adminId,
     bool canReview,
   ) {
+    final l = Provider.of<LocaleNotifier>(context);
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
     return Card(
@@ -259,7 +266,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        request.status.displayName,
+                        l.t(request.status.displayName),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -275,7 +282,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
 
             // Mensaje
             Text(
-              'Mensaje:',
+              l.t('message_label'),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -303,7 +310,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                 Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
                 const SizedBox(width: 4),
                 Text(
-                  'Solicitado: ${dateFormat.format(request.createdAt)}',
+                  '${l.t('requested_on')} ${dateFormat.format(request.createdAt)}',
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
@@ -321,7 +328,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Revisado: ${dateFormat.format(request.reviewedAt!)}',
+                    '${l.t('reviewed_on')} ${dateFormat.format(request.reviewedAt!)}',
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
@@ -329,7 +336,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
               if (request.reviewComment != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Comentario del admin:',
+                  l.t('admin_comment'),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -357,7 +364,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                     child: ElevatedButton.icon(
                       onPressed: () => _showApproveDialog(request, adminId),
                       icon: const Icon(Icons.check),
-                      label: const Text('Aprobar'),
+                      label: Text(l.t('approve')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -369,7 +376,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                     child: ElevatedButton.icon(
                       onPressed: () => _showRejectDialog(request, adminId),
                       icon: const Icon(Icons.close),
-                      label: const Text('Rechazar'),
+                      label: Text(l.t('reject')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -386,31 +393,31 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
   }
 
   void _showApproveDialog(SellerRequestEntity request, String adminId) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final commentController = TextEditingController(
-      text:
-          '¡Felicidades! Tu solicitud ha sido aprobada. Ya puedes vender productos.',
+      text: l.t('default_approve_comment'),
     );
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Aprobar Solicitud'),
+        title: Text(l.t('approve_request')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '¿Aprobar la solicitud de ${request.userName}?',
+              '${l.t('confirm_approve_request_of')} ${request.userName}?',
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: commentController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Comentario (opcional)',
-                border: OutlineInputBorder(),
-                hintText: 'Agrega un comentario...',
+              decoration: InputDecoration(
+                labelText: l.t('comment_optional'),
+                border: const OutlineInputBorder(),
+                hintText: l.t('add_comment_hint'),
               ),
             ),
           ],
@@ -418,7 +425,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -434,7 +441,9 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? '✅ Solicitud aprobada' : '❌ Error al aprobar',
+                      success
+                          ? '✅ ${l.t('request_approved')}'
+                          : '❌ ${l.t('error_approving')}',
                     ),
                     backgroundColor: success ? Colors.green : Colors.red,
                   ),
@@ -442,7 +451,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Aprobar'),
+            child: Text(l.t('approve')),
           ),
         ],
       ),
@@ -450,28 +459,29 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
   }
 
   void _showRejectDialog(SellerRequestEntity request, String adminId) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final commentController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Rechazar Solicitud'),
+        title: Text(l.t('reject_request')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '¿Rechazar la solicitud de ${request.userName}?',
+              '${l.t('confirm_reject_request_of')} ${request.userName}?',
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: commentController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Motivo del rechazo',
-                border: OutlineInputBorder(),
-                hintText: 'Por favor indica el motivo...',
+              decoration: InputDecoration(
+                labelText: l.t('rejection_reason'),
+                border: const OutlineInputBorder(),
+                hintText: l.t('indicate_reason_hint'),
               ),
             ),
           ],
@@ -479,14 +489,14 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
               if (commentController.text.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Por favor indica el motivo del rechazo'),
+                  SnackBar(
+                    content: Text(l.t('indicate_rejection_reason')),
                     backgroundColor: Colors.orange,
                   ),
                 );
@@ -505,7 +515,9 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? '❌ Solicitud rechazada' : '❌ Error al rechazar',
+                      success
+                          ? '❌ ${l.t('request_rejected')}'
+                          : '❌ ${l.t('error_rejecting')}',
                     ),
                     backgroundColor: success ? Colors.orange : Colors.red,
                   ),
@@ -513,7 +525,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Rechazar'),
+            child: Text(l.t('reject')),
           ),
         ],
       ),

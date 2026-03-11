@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
@@ -39,8 +39,13 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
       debugPrint('❌ MyBikesScreen: No hay usuario autenticado');
       // Si no hay usuario autenticado, mostrar error
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes iniciar sesión para ver tus bicicletas'),
+        SnackBar(
+          content: Text(
+            Provider.of<LocaleNotifier>(
+              context,
+              listen: false,
+            ).t('must_login_bikes'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -49,11 +54,12 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          AppStrings.myBikes,
+          l.t('nav_my_bikes'),
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -95,12 +101,13 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: Text(AppStrings.registerBike),
+        label: Text(l.t('register_bike')),
       ),
     );
   }
 
   Widget _buildErrorState(String? errorMessage) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -108,7 +115,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
           const Icon(Icons.error_outline, size: 64, color: ColorTokens.error50),
           const SizedBox(height: 16),
           Text(
-            errorMessage ?? 'Error al cargar las bicicletas',
+            errorMessage ?? l.t('error_loading_bikes'),
             style: const TextStyle(fontSize: 16),
             textAlign: TextAlign.center,
           ),
@@ -119,7 +126,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
               backgroundColor: ColorTokens.primary30,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Reintentar'),
+            child: Text(l.t('retry')),
           ),
         ],
       ),
@@ -127,6 +134,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -134,7 +142,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
           Icon(Icons.directions_bike, size: 120, color: Colors.grey[300]),
           const SizedBox(height: 24),
           Text(
-            AppStrings.noBikesRegistered,
+            l.t('no_bikes_registered'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -143,12 +151,12 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            AppStrings.registerFirstBike,
+            l.t('register_first_bike'),
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
           const SizedBox(height: 8),
           Text(
-            'Toca el botón + para agregar tu primera bicicleta',
+            l.t('tap_add_first_bike'),
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[400],
@@ -161,6 +169,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   }
 
   Widget _buildStatsCard(Map<String, int> stats) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -178,26 +187,18 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(
-            AppStrings.totalBikes,
-            stats['total'] ?? 0,
-            Colors.white,
-          ),
+          _buildStatItem(l.t('total_bikes'), stats['total'] ?? 0, Colors.white),
           _buildStatDivider(),
           _buildStatItem(
-            AppStrings.activeBikes,
+            l.t('active_bikes'),
             stats['active'] ?? 0,
             Colors.green,
           ),
           _buildStatDivider(),
-          _buildStatItem(
-            AppStrings.stolenBikes,
-            stats['stolen'] ?? 0,
-            Colors.red,
-          ),
+          _buildStatItem(l.t('stolen_stat'), stats['stolen'] ?? 0, Colors.red),
           _buildStatDivider(),
           _buildStatItem(
-            AppStrings.verifiedBikes,
+            l.t('verified_bikes'),
             stats['verified'] ?? 0,
             Colors.blue,
           ),
@@ -242,6 +243,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   }
 
   Widget _buildBikeCard(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -282,7 +284,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${bike.year} • ${bike.color} • ${bike.type.displayName}',
+                      '${bike.year} • ${bike.color} • ${l.t(bike.type.displayName)}',
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

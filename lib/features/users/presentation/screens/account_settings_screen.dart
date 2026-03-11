@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:go_router/go_router.dart';
@@ -24,13 +25,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.primary30,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         title: Text(
-          'Configuración de Cuenta',
+          l.t('account_settings'),
           style: TextStyle(
             color: ColorTokens.neutral100,
             fontSize: 20,
@@ -65,7 +67,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 SizedBox(height: 8),
                 // Sección de Información de Cuenta
                 Text(
-                  'Información de Cuenta',
+                  l.t('account_info'),
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -77,10 +79,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 // Tarjeta de Correo Electrónico
                 _buildAccountInfoCard(
                   icon: Icons.email_outlined,
-                  title: 'Correo Electrónico',
+                  title: l.t('email_label'),
                   value: (user.email?.isNotEmpty ?? false)
                       ? user.email!
-                      : 'No vinculado',
+                      : l.t('not_linked'),
                   isLinked: user.email?.isNotEmpty ?? false,
                   context: context,
                 ),
@@ -89,10 +91,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 // Tarjeta de Teléfono
                 _buildAccountInfoCard(
                   icon: Icons.phone_android_outlined,
-                  title: 'Número de Teléfono',
+                  title: l.t('phone_number'),
                   value: user.phoneNumber.isNotEmpty
                       ? _formatPhoneNumber(user.phoneNumber)
-                      : 'No vinculado',
+                      : l.t('not_linked'),
                   isLinked: user.phoneNumber.isNotEmpty,
                   context: context,
                 ),
@@ -100,7 +102,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
                 // Sección de Dispositivos
                 Text(
-                  'Dispositivos Vinculados',
+                  l.t('linked_devices'),
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -140,7 +142,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Este Dispositivo',
+                              l.t('this_device'),
                               style: TextStyle(
                                 color: ColorTokens.neutral100,
                                 fontSize: 16,
@@ -149,7 +151,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Actualmente sesión iniciada',
+                              l.t('currently_logged_in'),
                               style: TextStyle(
                                 color: ColorTokens.neutral80,
                                 fontSize: 13,
@@ -168,7 +170,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Activo',
+                          l.t('active_status'),
                           style: TextStyle(
                             color: ColorTokens.success50,
                             fontSize: 12,
@@ -183,7 +185,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
                 // Sección de Privacidad
                 Text(
-                  'Privacidad y Seguridad',
+                  l.t('privacy_security'),
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -196,12 +198,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildSettingOptionButton(
                   context: context,
                   icon: Icons.lock_outline,
-                  title: 'Cambiar Contraseña',
-                  subtitle: 'Actualiza tu contraseña regularmente',
+                  title: l.t('change_password'),
+                  subtitle: l.t('change_password_subtitle'),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Función en desarrollo'),
+                        content: Text(l.t('feature_in_development')),
                         backgroundColor: ColorTokens.warning50,
                       ),
                     );
@@ -213,12 +215,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildSettingOptionButton(
                   context: context,
                   icon: Icons.history,
-                  title: 'Historial de Actividad',
-                  subtitle: 'Ve dónde iniciaste sesión',
+                  title: l.t('activity_history'),
+                  subtitle: l.t('see_where_logged_in'),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Función en desarrollo'),
+                        content: Text(l.t('feature_in_development')),
                         backgroundColor: ColorTokens.warning50,
                       ),
                     );
@@ -230,12 +232,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildSettingOptionButton(
                   context: context,
                   icon: Icons.verified_user,
-                  title: 'Verificar Cuenta',
-                  subtitle: 'Confirma tu identidad',
+                  title: l.t('verify_account'),
+                  subtitle: l.t('confirm_identity'),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Función en desarrollo'),
+                        content: Text(l.t('feature_in_development')),
                         backgroundColor: ColorTokens.warning50,
                       ),
                     );
@@ -245,7 +247,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
                 // Sección de Apariencia
                 Text(
-                  'Apariencia',
+                  l.t('appearance'),
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -287,7 +289,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Modo Oscuro',
+                                  l.t('dark_mode'),
                                   style: TextStyle(
                                     color: ColorTokens.neutral100,
                                     fontSize: 16,
@@ -296,7 +298,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  isDark ? 'Activado' : 'Desactivado',
+                                  isDark
+                                      ? l.t('activated')
+                                      : l.t('deactivated'),
                                   style: TextStyle(
                                     color: ColorTokens.neutral80,
                                     fontSize: 13,
@@ -326,7 +330,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
                 // Sección de Opciones de Cuenta
                 Text(
-                  'Opciones de Cuenta',
+                  l.t('account_options'),
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -339,8 +343,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildSettingOptionButton(
                   context: context,
                   icon: Icons.logout,
-                  title: 'Cerrar Sesión',
-                  subtitle: 'Cierra tu sesión actual',
+                  title: l.t('logout'),
+                  subtitle: l.t('close_current_session'),
                   onTap: () {
                     _showLogoutDialog();
                   },
@@ -351,8 +355,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 _buildSettingOptionButton(
                   context: context,
                   icon: Icons.delete_forever,
-                  title: 'Eliminar Cuenta',
-                  subtitle: 'Elimina permanentemente tu cuenta',
+                  title: l.t('delete_account'),
+                  subtitle: l.t('permanently_delete_account'),
                   onTap: () {
                     _showDeleteAccountDialog();
                   },
@@ -538,18 +542,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   void _showLogoutDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Cerrar Sesión'),
-          content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+          title: Text(l.t('logout')),
+          content: Text(l.t('sign_out_confirm')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -560,10 +565,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text(
-                'Confirmar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -572,21 +574,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   void _showDeleteAccountDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Eliminar Cuenta'),
-          content: const Text(
-            '¿Estás seguro de que deseas eliminar tu cuenta? '
-            'Esta acción no se puede deshacer.',
-          ),
+          title: Text(l.t('delete_account')),
+          content: Text(l.t('delete_account_confirm')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             TextButton(
               onPressed: () async {
@@ -597,10 +597,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   context.go('/login');
                 }
               },
-              child: const Text(
-                'Confirmar',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: Text(l.t('confirm'), style: TextStyle(color: Colors.red)),
             ),
           ],
         );

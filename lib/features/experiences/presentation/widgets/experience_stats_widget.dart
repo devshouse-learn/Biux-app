@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar estadísticas de la experiencia
 class ExperienceStatsWidget extends StatelessWidget {
@@ -20,6 +22,7 @@ class ExperienceStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -36,9 +39,9 @@ class ExperienceStatsWidget extends StatelessWidget {
             children: [
               Icon(Icons.analytics_outlined, color: _getIconColor(), size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Resumen de contenido',
-                style: TextStyle(
+              Text(
+                l.t('content_summary'),
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
@@ -68,7 +71,7 @@ class ExperienceStatsWidget extends StatelessWidget {
               Expanded(
                 child: _StatItem(
                   icon: Icons.photo_library,
-                  label: 'Archivos',
+                  label: l.t('files_label'),
                   value: mediaCount.toString(),
                   color: ColorTokens.primary50,
                 ),
@@ -78,7 +81,7 @@ class ExperienceStatsWidget extends StatelessWidget {
               Expanded(
                 child: _StatItem(
                   icon: Icons.storage,
-                  label: 'Tamaño',
+                  label: l.t('size_stat_label'),
                   value: _formatSize(totalSizeMB),
                   color: _getSizeColor(),
                 ),
@@ -89,7 +92,7 @@ class ExperienceStatsWidget extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.cloud_upload,
-                    label: 'Subida',
+                    label: l.t('upload_stat_label'),
                     value: _formatUploadTime(estimatedUploadTime!),
                     color: _getUploadTimeColor(),
                   ),
@@ -100,7 +103,7 @@ class ExperienceStatsWidget extends StatelessWidget {
           // Recomendación de optimización
           if (_shouldShowOptimizationTip()) ...[
             const SizedBox(height: 12),
-            _buildOptimizationTip(),
+            _buildOptimizationTip(l),
           ],
         ],
       ),
@@ -143,7 +146,7 @@ class ExperienceStatsWidget extends StatelessWidget {
     return totalSizeMB > 20 && onOptimize != null && !isCompressing;
   }
 
-  Widget _buildOptimizationTip() {
+  Widget _buildOptimizationTip(LocaleNotifier l) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -157,7 +160,7 @@ class ExperienceStatsWidget extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Tu contenido es algo pesado. ¿Quieres optimizarlo para una subida más rápida?',
+              l.t('content_heavy_optimize'),
               style: TextStyle(fontSize: 12, color: ColorTokens.warning40),
             ),
           ),
@@ -169,7 +172,7 @@ class ExperienceStatsWidget extends StatelessWidget {
               minimumSize: Size.zero,
             ),
             child: Text(
-              'Optimizar',
+              l.t('optimize_btn'),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,

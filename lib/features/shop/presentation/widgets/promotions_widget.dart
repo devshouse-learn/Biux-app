@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Modelo de promoción
 class Promotion {
@@ -82,15 +84,15 @@ class Promotion {
   String get typeLabel {
     switch (type) {
       case 'descuento':
-        return 'Descuento';
+        return 'promo_type_discount';
       case 'oferta':
-        return 'Oferta';
+        return 'promo_type_offer';
       case 'evento':
-        return 'Evento';
+        return 'promo_type_event';
       case 'novedad':
-        return 'Novedad';
+        return 'promo_type_new';
       default:
-        return 'Promoción';
+        return 'promo_type_promo';
     }
   }
 }
@@ -106,6 +108,10 @@ class PromotionsWidget extends StatefulWidget {
 class _PromotionsWidgetState extends State<PromotionsWidget>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
+  String _translatePromoType(LocaleNotifier l, String type) {
+    return l.t('promo_type_$type');
+  }
 
   // Form controllers
   final _titleController = TextEditingController();
@@ -143,6 +149,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       children: [
         const SizedBox(height: 8),
@@ -172,9 +179,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             ),
             dividerColor: Colors.transparent,
             indicatorSize: TabBarIndicatorSize.tab,
-            tabs: const [
-              Tab(text: '📋 Activas'),
-              Tab(text: '➕ Crear Nueva'),
+            tabs: [
+              Tab(text: '📋 ${l.t('promo_tab_active')}'),
+              Tab(text: '➕ ${l.t('promo_tab_create')}'),
             ],
           ),
         ),
@@ -192,6 +199,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
 
   /// ===== TAB 1: Lista de promociones activas =====
   Widget _buildPromotionsList() {
+    final l = Provider.of<LocaleNotifier>(context);
     return StreamBuilder<QuerySnapshot>(
       stream: _promotionsRef
           .orderBy('createdAt', descending: true)
@@ -207,9 +215,8 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         if (snapshot.hasError) {
           return _buildEmptyState(
             icon: Icons.error_outline,
-            title: 'Error al cargar',
-            subtitle:
-                'No se pudieron cargar las promociones.\nIntenta de nuevo.',
+            title: l.t('promo_error_loading'),
+            subtitle: l.t('promo_error_loading_desc'),
           );
         }
 
@@ -225,9 +232,8 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         if (active.isEmpty && expired.isEmpty) {
           return _buildEmptyState(
             icon: Icons.campaign_outlined,
-            title: 'Sin promociones aún',
-            subtitle:
-                'Sé el primero en compartir una\npromoción con la comunidad ciclista.',
+            title: l.t('promo_no_promotions'),
+            subtitle: l.t('promo_no_promotions_desc'),
             showButton: true,
           );
         }
@@ -237,7 +243,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
           children: [
             if (active.isNotEmpty) ...[
               _buildSectionHeader(
-                '🔥 Activas (${active.length})',
+                '🔥 ${l.t('promo_active_count')} (${active.length})',
                 color: const Color(0xFF16242D),
               ),
               const SizedBox(height: 12),
@@ -246,7 +252,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             if (expired.isNotEmpty) ...[
               const SizedBox(height: 24),
               _buildSectionHeader(
-                '⏰ Expiradas (${expired.length})',
+                '⏰ ${l.t('promo_expired_count')} (${expired.length})',
                 color: Colors.grey,
               ),
               const SizedBox(height: 12),
@@ -274,6 +280,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
   }
 
   Widget _buildPromotionCard(Promotion promo, {bool isExpired = false}) {
+    final l = Provider.of<LocaleNotifier>(context);
     final currentUserId = _auth.currentUser?.uid;
     final isOwner = promo.userId == currentUserId;
     final dateFormat = DateFormat('dd MMM yyyy', 'es');
@@ -344,7 +351,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                promo.typeLabel,
+                                _translatePromoType(l, promo.type),
                                 style: const TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
@@ -354,7 +361,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'por ${promo.userName}',
+                              '${l.t('promo_by')} ${promo.userName}',
                               style: const TextStyle(
                                 fontSize: 11,
                                 color: Color(0xFF5A7A8A),
@@ -379,19 +386,19 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                         }
                       },
                       itemBuilder: (ctx) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.delete_outline,
                                 size: 18,
                                 color: Colors.red,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
-                                'Eliminar',
-                                style: TextStyle(color: Colors.red),
+                                l.t('promo_delete'),
+                                style: const TextStyle(color: Colors.red),
                               ),
                             ],
                           ),
@@ -482,8 +489,8 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                     const SizedBox(width: 4),
                     Text(
                       isExpired
-                          ? 'Expiró ${dateFormat.format(promo.expiresAt!)}'
-                          : 'Expira ${dateFormat.format(promo.expiresAt!)}',
+                          ? '${l.t('promo_expired_prefix')} ${dateFormat.format(promo.expiresAt!)}'
+                          : '${l.t('promo_expires_prefix')} ${dateFormat.format(promo.expiresAt!)}',
                       style: TextStyle(
                         fontSize: 11,
                         color: isExpired ? Colors.red[300] : Colors.orange[600],
@@ -506,6 +513,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
     required String subtitle,
     bool showButton = false,
   }) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -546,7 +554,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   _tabController.animateTo(1);
                 },
                 icon: const Icon(Icons.add, size: 18),
-                label: const Text('Crear Promoción'),
+                label: Text(l.t('promo_create_promotion')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF16242D),
                   foregroundColor: Colors.white,
@@ -568,6 +576,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
 
   /// ===== TAB 2: Formulario de creación =====
   Widget _buildCreateForm() {
+    final l = Provider.of<LocaleNotifier>(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Form(
@@ -585,30 +594,30 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   color: const Color(0xFF16242D).withValues(alpha: 0.08),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.campaign_outlined,
                     color: Color(0xFF16242D),
                     size: 22,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Nueva Promoción',
-                          style: TextStyle(
+                          l.t('promo_new_promotion'),
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFF16242D),
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
-                          'Comparte ofertas y eventos con otros ciclistas',
-                          style: TextStyle(
+                          l.t('promo_share_with_cyclists'),
+                          style: const TextStyle(
                             fontSize: 12,
                             color: Color(0xFF5A7A8A),
                           ),
@@ -622,15 +631,15 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             const SizedBox(height: 24),
 
             // Campo: Título
-            _buildLabel('Título de la promoción *'),
+            _buildLabel(l.t('promo_title_label')),
             const SizedBox(height: 8),
             TextFormField(
               controller: _titleController,
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'El título es obligatorio'
+                  ? l.t('promo_title_required')
                   : null,
               decoration: _inputDecoration(
-                hint: 'Ej: Descuento en cascos de ciclismo',
+                hint: l.t('promo_title_hint'),
                 icon: Icons.title,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -638,17 +647,16 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             const SizedBox(height: 20),
 
             // Campo: Descripción
-            _buildLabel('Descripción *'),
+            _buildLabel(l.t('promo_description_label')),
             const SizedBox(height: 8),
             TextFormField(
               controller: _descriptionController,
               maxLines: 3,
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'La descripción es obligatoria'
+                  ? l.t('promo_description_required')
                   : null,
               decoration: _inputDecoration(
-                hint:
-                    'Describe tu promoción con detalles: ubicación, horarios, condiciones...',
+                hint: l.t('promo_description_hint'),
                 icon: Icons.description_outlined,
                 alignTop: true,
               ),
@@ -664,7 +672,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLabel('Tipo'),
+                      _buildLabel(l.t('promo_type_label')),
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -672,7 +680,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                            color: const Color(
+                              0xFF16242D,
+                            ).withValues(alpha: 0.12),
                           ),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -681,21 +691,26 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                             isExpanded: true,
                             icon: Icon(
                               Icons.keyboard_arrow_down,
-                              color: const Color(0xFF16242D).withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.5),
                             ),
                             style: const TextStyle(
                               color: Color(0xFF16242D),
                               fontSize: 14,
                             ),
                             dropdownColor: Colors.white,
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'descuento',
                                 child: Row(
                                   children: [
-                                    Text('🏷️', style: TextStyle(fontSize: 16)),
-                                    SizedBox(width: 8),
-                                    Text('Descuento'),
+                                    const Text(
+                                      '🏷️',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(l.t('promo_type_descuento')),
                                   ],
                                 ),
                               ),
@@ -703,9 +718,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                 value: 'oferta',
                                 child: Row(
                                   children: [
-                                    Text('🎁', style: TextStyle(fontSize: 16)),
-                                    SizedBox(width: 8),
-                                    Text('Oferta'),
+                                    const Text(
+                                      '🎁',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(l.t('promo_type_oferta')),
                                   ],
                                 ),
                               ),
@@ -713,9 +731,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                 value: 'evento',
                                 child: Row(
                                   children: [
-                                    Text('🚴', style: TextStyle(fontSize: 16)),
-                                    SizedBox(width: 8),
-                                    Text('Evento'),
+                                    const Text(
+                                      '🚴',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(l.t('promo_type_evento')),
                                   ],
                                 ),
                               ),
@@ -723,9 +744,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                 value: 'novedad',
                                 child: Row(
                                   children: [
-                                    Text('✨', style: TextStyle(fontSize: 16)),
-                                    SizedBox(width: 8),
-                                    Text('Novedad'),
+                                    const Text(
+                                      '✨',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(l.t('promo_type_novedad')),
                                   ],
                                 ),
                               ),
@@ -748,7 +772,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLabel('Expira'),
+                      _buildLabel(l.t('promo_expires_label')),
                       const SizedBox(height: 8),
                       GestureDetector(
                         onTap: _pickDate,
@@ -761,7 +785,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color(0xFF16242D).withValues(alpha: 0.12),
+                              color: const Color(
+                                0xFF16242D,
+                              ).withValues(alpha: 0.12),
                             ),
                           ),
                           child: Row(
@@ -769,7 +795,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 18,
-                                color: const Color(0xFF16242D).withValues(alpha: 0.4),
+                                color: const Color(
+                                  0xFF16242D,
+                                ).withValues(alpha: 0.4),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -778,7 +806,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                                       ? DateFormat(
                                           'dd/MM/yy',
                                         ).format(_selectedDate!)
-                                      : 'Seleccionar',
+                                      : l.t('promo_select_date'),
                                   style: TextStyle(
                                     color: _selectedDate != null
                                         ? const Color(0xFF16242D)
@@ -815,12 +843,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             const SizedBox(height: 20),
 
             // Campo: Ubicación
-            _buildLabel('Ubicación (opcional)'),
+            _buildLabel(l.t('promo_location_label')),
             const SizedBox(height: 8),
             TextFormField(
               controller: _locationController,
               decoration: _inputDecoration(
-                hint: 'Ej: Tienda de ciclismo Calle 80, Bogotá',
+                hint: l.t('promo_location_hint'),
                 icon: Icons.location_on_outlined,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -828,12 +856,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
             const SizedBox(height: 20),
 
             // Campo: Enlace o contacto
-            _buildLabel('Enlace o contacto (opcional)'),
+            _buildLabel(l.t('promo_contact_label')),
             const SizedBox(height: 8),
             TextFormField(
               controller: _contactController,
               decoration: _inputDecoration(
-                hint: 'Ej: https://mitienda.com o +57 300 123 4567',
+                hint: l.t('promo_contact_hint'),
                 icon: Icons.link,
               ),
               style: const TextStyle(color: Color(0xFF16242D), fontSize: 14),
@@ -850,13 +878,13 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                   color: const Color(0xFF16242D).withValues(alpha: 0.08),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.info_outline, size: 18, color: Color(0xFF5A7A8A)),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Las promociones serán visibles para todos los ciclistas de tu comunidad.',
+                      l.t('promo_info_visibility'),
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF5A7A8A),
@@ -893,8 +921,8 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Cancelar',
+                    child: Text(
+                      l.t('promo_cancel'),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -918,7 +946,9 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                           )
                         : const Icon(Icons.send_rounded, size: 18),
                     label: Text(
-                      _isPublishing ? 'Publicando...' : 'Publicar Promoción',
+                      _isPublishing
+                          ? l.t('promo_publishing')
+                          : l.t('promo_publish_promotion'),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -1045,10 +1075,11 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
 
   Future<void> _publishPromotion() async {
     if (!_formKey.currentState!.validate()) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     final user = _auth.currentUser;
     if (user == null) {
-      _showSnackBar('Debes iniciar sesión para publicar', isError: true);
+      _showSnackBar(l.t('promo_login_required'), isError: true);
       return;
     }
 
@@ -1065,7 +1096,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         expiresAt: _selectedDate,
         createdAt: DateTime.now(),
         userId: user.uid,
-        userName: user.displayName ?? 'Ciclista',
+        userName: user.displayName ?? l.t('promo_default_username'),
       );
 
       await _promotionsRef.add(promotion.toMap());
@@ -1080,38 +1111,39 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         _selectedDate = null;
       });
 
-      _showSnackBar('Promoción publicada exitosamente 🎉');
+      _showSnackBar(l.t('promo_published_success'));
 
       // Ir a pestaña de activas
       _tabController.animateTo(0);
     } catch (e) {
-      _showSnackBar('Error al publicar: $e', isError: true);
+      _showSnackBar('${l.t('promo_error_publishing')}: $e', isError: true);
     } finally {
       setState(() => _isPublishing = false);
     }
   }
 
   void _confirmDelete(Promotion promo) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Eliminar Promoción',
+        title: Text(
+          l.t('promo_delete_title'),
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: Color(0xFF16242D),
           ),
         ),
         content: Text(
-          '¿Estás seguro de eliminar "${promo.title}"?\nEsta acción no se puede deshacer.',
+          '${l.t('promo_confirm_delete')} "${promo.title}"?\n${l.t('promo_action_irreversible')}',
           style: const TextStyle(color: Color(0xFF5A7A8A)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Cancelar',
+            child: Text(
+              l.t('promo_cancel'),
               style: TextStyle(color: Color(0xFF5A7A8A)),
             ),
           ),
@@ -1120,9 +1152,12 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
               Navigator.pop(ctx);
               try {
                 await _promotionsRef.doc(promo.id).delete();
-                _showSnackBar('Promoción eliminada');
+                _showSnackBar(l.t('promo_deleted_success'));
               } catch (e) {
-                _showSnackBar('Error al eliminar: $e', isError: true);
+                _showSnackBar(
+                  '${l.t('promo_error_deleting')}: $e',
+                  isError: true,
+                );
               }
             },
             style: ElevatedButton.styleFrom(
@@ -1132,7 +1167,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Eliminar'),
+            child: Text(l.t('promo_delete_button')),
           ),
         ],
       ),

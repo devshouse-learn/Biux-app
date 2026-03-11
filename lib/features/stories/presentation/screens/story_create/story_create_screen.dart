@@ -1,4 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
@@ -89,7 +90,10 @@ class _GallerySectionState extends State<GallerySection> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
-          content: AppStrings.permissionNotAccessibleCreateStory,
+          content: Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('permission_gallery_denied'),
           backgroundColor: ColorTokens.primary30,
         ),
       );
@@ -109,7 +113,10 @@ class _GallerySectionState extends State<GallerySection> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
-          content: AppStrings.pathsNotFoundCreateStory,
+          content: Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('images_not_found'),
           backgroundColor: ColorTokens.primary30,
         ),
       );
@@ -161,10 +168,16 @@ class _GallerySectionState extends State<GallerySection> {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
     if (_path == null) {
-      return const Center(child: Text(AppStrings.pathsRequestCreateStory));
+      return Center(
+        child: Text(
+          Provider.of<LocaleNotifier>(context).t('allow_gallery_access'),
+        ),
+      );
     }
     if (widget.entitiesList.isNotEmpty != true) {
-      return const Center(child: Text(AppStrings.assetsNotFoundCreateStory));
+      return Center(
+        child: Text(Provider.of<LocaleNotifier>(context).t('no_assets_found')),
+      );
     }
     return GridView.custom(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -193,7 +206,10 @@ class _GallerySectionState extends State<GallerySection> {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
-                    content: AppStrings.warnignNoMoreImages,
+                    content: Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    ).t('max_3_images'),
                     backgroundColor: ColorTokens.primary30,
                   ),
                 );
@@ -288,6 +304,7 @@ class _AppbarCreateStory extends StatelessWidget
     implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final bloc = context.watch<StoryCreateBloc>();
     return AppBar(
       backgroundColor: ColorTokens.primary30,
@@ -298,7 +315,7 @@ class _AppbarCreateStory extends StatelessWidget
         },
       ),
       title: Text(
-        AppStrings.titleAppBarCreateStory,
+        l.t('new_biux_story'),
         style: TextStyle(
           color: Colors.white,
           fontSize: 18,
@@ -320,7 +337,7 @@ class _AppbarCreateStory extends StatelessWidget
             ),
             icon: Icon(Icons.check, size: 20),
             label: Text(
-              'Publicar',
+              l.t('publish'),
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             ),
             onPressed: () {
@@ -347,8 +364,8 @@ class _AppbarCreateStory extends StatelessWidget
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: result
-                            ? AppStrings.textSuccessfulCreateStory
-                            : AppStrings.textErrorCreateStory,
+                            ? l.t('story_created_success')
+                            : l.t('error_creating_story'),
                         backgroundColor: result
                             ? ColorTokens.secondary50
                             : ColorTokens.error50,
@@ -362,7 +379,7 @@ class _AppbarCreateStory extends StatelessWidget
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
-                    content: 'Selecciona al menos una foto',
+                    content: l.t('select_at_least_one_photo'),
                     backgroundColor: ColorTokens.error50,
                   ),
                 );
@@ -400,6 +417,7 @@ class _CarouselImagesSelected extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final bloc = context.watch<StoryCreateBloc>();
     final sizeScreen = MediaQuery.of(context).size;
     final List<Widget> imageSliders = bloc.imgList
@@ -439,7 +457,7 @@ class _CarouselImagesSelected extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Selecciona hasta 3 fotos',
+                  l.t('select_up_to_3_photos'),
                   style: TextStyle(color: Colors.grey[400], fontSize: 16),
                 ),
               ],
@@ -545,6 +563,7 @@ void showDialogCreateStory({
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
   bool _isAdvertisement = false;
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
 
   return await showDialog(
     context: context,
@@ -584,7 +603,7 @@ void showDialogCreateStory({
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Crear Historia',
+                            l.t('create_story'),
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -650,7 +669,7 @@ void showDialogCreateStory({
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Impulsa tu historia',
+                                    l.t('boost_your_story'),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -671,7 +690,7 @@ void showDialogCreateStory({
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
-                                        'PREMIUM',
+                                        l.t('premium_label'),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w900,
@@ -712,7 +731,7 @@ void showDialogCreateStory({
 
                             // Descripción y beneficios
                             Text(
-                              '✨ Tu historia aparecerá con un distintivo especial y mayor alcance a todos los usuarios',
+                              l.t('ad_special_badge_desc'),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF1A1A1A),
@@ -727,17 +746,19 @@ void showDialogCreateStory({
                             Wrap(
                               spacing: 6,
                               children: [
-                                _buildAdvertisementBadge('🎯 Alcance +500%'),
-                                _buildAdvertisementBadge('⭐ Destaque premium'),
+                                _buildAdvertisementBadge(l.t('ad_reach_500')),
                                 _buildAdvertisementBadge(
-                                  '📊 Más interacciones',
+                                  l.t('ad_premium_highlight'),
+                                ),
+                                _buildAdvertisementBadge(
+                                  l.t('ad_more_interactions'),
                                 ),
                               ],
                             ),
                           ] else ...[
                             const SizedBox(height: 8),
                             Text(
-                              'Activa la publicidad para impulsar tu historia y alcanzar más usuarios',
+                              l.t('activate_ad_to_boost'),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: ColorTokens.neutral70,
@@ -786,8 +807,8 @@ void showDialogCreateStory({
                         ),
                         label: Text(
                           _isAdvertisement
-                              ? 'Publicar como Publicidad'
-                              : 'Publicar',
+                              ? l.t('publish_as_ad')
+                              : l.t('publish'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

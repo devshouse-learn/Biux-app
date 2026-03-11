@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 const _kPrimaryColor = Color(0xFF16242D);
 
@@ -25,6 +26,7 @@ class ShopAdminDashboardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final user = context.watch<UserProvider>().user;
     final isAdmin = user?.isAdmin ?? false;
 
@@ -58,63 +60,63 @@ class ShopAdminDashboardWidget extends StatelessWidget {
                 size: 22,
               ),
             ),
-            title: const Text(
-              'Panel de Administración',
-              style: TextStyle(
+            title: Text(
+              l.t('admin_panel_title'),
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: _kPrimaryColor,
               ),
             ),
             subtitle: Text(
-              'Gestiona tu tienda',
+              l.t('manage_your_store'),
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
             children: [
               const Divider(height: 1),
               // ── Sección: Gestión ──
-              _buildSectionHeader('Gestión'),
+              _buildSectionHeader(l.t('management_section')),
               _buildMenuItem(
                 icon: Icons.inventory_2_outlined,
-                label: 'Administrar productos',
-                subtitle: 'Agregar, editar y eliminar',
+                label: l.t('manage_products'),
+                subtitle: l.t('add_edit_delete'),
                 onTap: onManageProducts,
               ),
               _buildMenuItem(
                 icon: Icons.storefront_outlined,
-                label: 'Gestionar vendedores',
-                subtitle: 'Permisos y aprobaciones',
+                label: l.t('manage_sellers'),
+                subtitle: l.t('permissions_approvals'),
                 onTap: onManageSellers,
               ),
               _buildMenuItem(
                 icon: Icons.pending_actions_outlined,
-                label: 'Solicitudes pendientes',
-                subtitle: 'Revisar nuevas solicitudes',
+                label: l.t('pending_requests'),
+                subtitle: l.t('review_new_requests'),
                 onTap: onViewRequests,
                 badge: true,
               ),
               const Divider(height: 1, indent: 56),
               // ── Sección: Análisis ──
-              _buildSectionHeader('Análisis'),
+              _buildSectionHeader(l.t('analysis_section')),
               _buildMenuItem(
                 icon: Icons.bar_chart_rounded,
-                label: 'Reportes de ventas',
-                subtitle: 'Estadísticas y tendencias',
+                label: l.t('sales_reports'),
+                subtitle: l.t('stats_trends'),
                 onTap: onViewReports,
               ),
               _buildMenuItem(
                 icon: Icons.analytics_outlined,
-                label: 'Estadísticas generales',
-                subtitle: 'Métricas de la tienda',
+                label: l.t('general_stats'),
+                subtitle: l.t('store_metrics'),
                 onTap: onViewStats,
               ),
               const Divider(height: 1, indent: 56),
               // ── Sección: Seguridad ──
-              _buildSectionHeader('Seguridad'),
+              _buildSectionHeader(l.t('security_section')),
               _buildMenuItem(
                 icon: Icons.shield_outlined,
-                label: 'Centro de seguridad',
-                subtitle: 'Alertas y bicicletas robadas',
+                label: l.t('security_center'),
+                subtitle: l.t('alerts_stolen_bikes'),
                 onTap: onSecurityCenter,
                 iconColor: Colors.orange.shade700,
               ),

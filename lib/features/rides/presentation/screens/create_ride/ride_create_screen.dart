@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:location/location.dart' as loc;
 
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class RideCreateScreen extends StatefulWidget {
   final String groupId;
@@ -86,10 +87,11 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.rideToEdit != null ? 'Editar Rodada' : 'Crear Rodada',
+          widget.rideToEdit != null ? l.t('edit_ride') : l.t('create_ride'),
         ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
@@ -107,7 +109,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      labelText: 'Nombre de la rodada',
+                      labelText: l.t('ride_name_label'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -115,10 +117,10 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'El nombre es requerido';
+                        return l.t('name_required');
                       }
                       if (value.trim().length < 3) {
-                        return 'El nombre debe tener al menos 3 caracteres';
+                        return l.t('name_min_chars');
                       }
                       return null;
                     },
@@ -126,22 +128,22 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   SizedBox(height: 16),
 
                   // Punto de encuentro
-                  _buildMeetingPointSelector(meetingPointProvider),
+                  _buildMeetingPointSelector(meetingPointProvider, l),
                   SizedBox(height: 16),
 
                   // Fecha
-                  _buildDateSelector(),
+                  _buildDateSelector(l),
                   SizedBox(height: 16),
 
                   // Hora
-                  _buildTimeSelector(),
+                  _buildTimeSelector(l),
                   SizedBox(height: 16),
 
                   // Kilómetros
                   TextFormField(
                     controller: _kilometersController,
                     decoration: InputDecoration(
-                      labelText: 'Kilómetros',
+                      labelText: l.t('kilometers'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -153,11 +155,11 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Los Kilómetros son requeridos';
+                        return l.t('km_required');
                       }
                       final km = double.tryParse(value);
                       if (km == null || km <= 0) {
-                        return 'Ingresa un valor válido';
+                        return l.t('enter_valid_value');
                       }
                       return null;
                     },
@@ -165,7 +167,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   SizedBox(height: 16),
 
                   // Nivel de dificultad
-                  _buildDifficultySelector(),
+                  _buildDifficultySelector(l),
                   SizedBox(height: 16),
 
                   // Instrucciones
@@ -173,7 +175,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     controller: _instructionsController,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      labelText: 'Instrucciones',
+                      labelText: l.t('instructions'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -182,7 +184,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Las instrucciones son requeridas';
+                        return l.t('instructions_required');
                       }
                       return null;
                     },
@@ -194,7 +196,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     controller: _recommendationsController,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      labelText: 'Recomendaciones',
+                      labelText: l.t('recommendations'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -203,7 +205,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Las recomendaciones son requeridas';
+                        return l.t('recommendations_required');
                       }
                       return null;
                     },
@@ -212,7 +214,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
                   // Imagen de la rodada
                   Text(
-                    'Imagen de la rodada (opcional)',
+                    l.t('ride_image_optional'),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
@@ -250,7 +252,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'Agregar imagen',
+                            l.t('add_image'),
                             style: TextStyle(
                               color: ColorTokens.neutral40,
                               fontSize: 16,
@@ -280,8 +282,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                         ),
                         child: Text(
                           widget.rideToEdit != null
-                              ? 'Actualizar Rodada'
-                              : 'Crear Rodada',
+                              ? l.t('update_ride')
+                              : l.t('create_ride'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -324,12 +326,15 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     );
   }
 
-  Widget _buildMeetingPointSelector(MeetingPointProvider provider) {
+  Widget _buildMeetingPointSelector(
+    MeetingPointProvider provider,
+    LocaleNotifier l,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Punto de encuentro',
+          l.t('meeting_point'),
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
@@ -426,7 +431,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                   Expanded(
                     child: Text(
                       _selectedMeetingPoint?.name ??
-                          'Selecciona un punto de encuentro',
+                          l.t('select_a_meeting_point'),
                       style: TextStyle(
                         color: _selectedMeetingPoint != null
                             ? ColorTokens.neutral20
@@ -449,8 +454,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
           icon: Icon(Icons.add_location),
           label: Text(
             _customMeetingPointName != null
-                ? 'Cambiar punto personalizado'
-                : 'Agregar punto personalizado',
+                ? l.t('change_custom_point')
+                : l.t('add_custom_point'),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: ColorTokens.secondary50,
@@ -464,7 +469,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
           Padding(
             padding: EdgeInsets.only(top: 8, left: 12),
             child: Text(
-              'El punto de encuentro es requerido',
+              l.t('meeting_point_required'),
               style: TextStyle(color: ColorTokens.error50, fontSize: 12),
             ),
           ),
@@ -472,7 +477,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     );
   }
 
-  Widget _buildDateSelector() {
+  Widget _buildDateSelector(LocaleNotifier l) {
     return GestureDetector(
       onTap: _selectDate,
       child: Container(
@@ -489,7 +494,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
             Text(
               _selectedDate != null
                   ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                  : 'Selecciona la fecha',
+                  : l.t('select_date'),
               style: TextStyle(
                 color: _selectedDate != null
                     ? ColorTokens.neutral20
@@ -503,7 +508,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     );
   }
 
-  Widget _buildTimeSelector() {
+  Widget _buildTimeSelector(LocaleNotifier l) {
     return GestureDetector(
       onTap: _selectTime,
       child: Container(
@@ -520,7 +525,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
             Text(
               _selectedTime != null
                   ? '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
-                  : 'Selecciona la hora',
+                  : l.t('select_time'),
               style: TextStyle(
                 color: _selectedTime != null
                     ? ColorTokens.neutral20
@@ -534,12 +539,12 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     );
   }
 
-  Widget _buildDifficultySelector() {
+  Widget _buildDifficultySelector(LocaleNotifier l) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Nivel de dificultad',
+          l.t('difficulty_level'),
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
@@ -584,7 +589,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       ),
                     ),
                     SizedBox(width: 8),
-                    Text(_getDifficultyName(difficulty)),
+                    Text(_getDifficultyName(difficulty, l)),
                   ],
                 ),
               );
@@ -602,24 +607,26 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     );
   }
 
-  String _getDifficultyName(DifficultyLevel difficulty) {
+  String _getDifficultyName(DifficultyLevel difficulty, [LocaleNotifier? l]) {
+    l ??= Provider.of<LocaleNotifier>(context, listen: false);
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return 'Fácil';
+        return l.t('difficulty_easy');
       case DifficultyLevel.medium:
-        return 'Intermedio';
+        return l.t('difficulty_medium');
       case DifficultyLevel.hard:
-        return 'Difícil';
+        return l.t('difficulty_hard');
       case DifficultyLevel.expert:
-        return 'Experto';
+        return l.t('difficulty_expert');
     }
   }
 
   void _showMeetingPointPicker(MeetingPointProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (provider.meetingPoints.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Cargando puntos de encuentro...'),
+          content: Text(l.t('loading_meeting_points')),
           backgroundColor: ColorTokens.warning60,
         ),
       );
@@ -630,7 +637,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Seleccionar Punto de Encuentro'),
+          title: Text(l.t('select_meeting_point')),
           content: Container(
             width: double.maxFinite,
             height: 300,
@@ -661,7 +668,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
           ],
         );
@@ -696,13 +703,14 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
   }
 
   void _saveRide() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
     // Validar que hay al menos un punto de encuentro (predefinido o personalizado)
     if (_selectedMeetingPoint == null && _customMeetingPointName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Por favor selecciona o agrega un punto de encuentro'),
+          content: Text(l.t('please_select_meeting_point')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -714,7 +722,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         (_customMeetingPointLat == null || _customMeetingPointLng == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('El punto personalizado debe tener una ubicación'),
+          content: Text(l.t('custom_point_needs_location')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -724,7 +732,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     if (_selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Por favor selecciona la fecha'),
+          content: Text(l.t('please_select_date')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -734,7 +742,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     if (_selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Por favor selecciona la hora'),
+          content: Text(l.t('please_select_time')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -752,7 +760,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     if (dateTime.isBefore(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('La fecha y hora deben ser en el futuro'),
+          content: Text(l.t('date_must_be_future')),
           backgroundColor: ColorTokens.error50,
         ),
       );
@@ -807,8 +815,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         SnackBar(
           content: Text(
             widget.rideToEdit != null
-                ? 'Rodada actualizada exitosamente'
-                : 'Rodada creada exitosamente',
+                ? l.t('ride_updated_success')
+                : l.t('ride_created_success'),
           ),
           backgroundColor: ColorTokens.success50,
         ),
@@ -822,6 +830,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
     double lng,
     String name,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final googleMapsUrl = 'https://www.google.com/maps?q=$lat,$lng&z=16';
       final appleMapsUrl = 'https://maps.apple.com/?q=$lat,$lng';
@@ -835,21 +844,22 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         await launchUrl(appleMapsUri);
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('No se encontró aplicación de mapas')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('maps_app_not_found'))));
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error al abrir mapas: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l.t('error_opening_maps')}: $e')),
+        );
       }
     }
   }
 
   Future<void> _showCustomMeetingPointDialog() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final nameController = TextEditingController();
 
     return showDialog(
@@ -858,8 +868,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         return AlertDialog(
           title: Text(
             _customMeetingPointName != null
-                ? 'Cambiar punto personalizado'
-                : 'Agregar punto personalizado',
+                ? l.t('change_custom_point')
+                : l.t('add_custom_point'),
           ),
           content: SingleChildScrollView(
             child: Column(
@@ -868,8 +878,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
-                    labelText: 'Nombre del punto',
-                    hintText: 'Ej: Parque Central, Puente Sur',
+                    labelText: l.t('point_name'),
+                    hintText: l.t('point_name_hint'),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -897,7 +907,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Permiso de ubicación denegado'),
+                              content: Text(l.t('location_permission_denied')),
                             ),
                           );
                         }
@@ -906,14 +916,16 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Error al obtener ubicación: $e'),
+                            content: Text(
+                              '${l.t('error_getting_location')}: $e',
+                            ),
                           ),
                         );
                       }
                     }
                   },
                   icon: Icon(Icons.location_on),
-                  label: Text('Usar ubicación actual'),
+                  label: Text(l.t('use_current_location')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -932,7 +944,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       child: Column(
                         children: [
                           Text(
-                            'Coordenadas guardadas:',
+                            l.t('saved_coordinates'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Text(
@@ -950,20 +962,20 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancelar'),
+              child: Text(l.t('cancel')),
             ),
             ElevatedButton(
               onPressed: () {
                 if (nameController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Ingresa un nombre para el punto')),
+                    SnackBar(content: Text(l.t('enter_point_name'))),
                   );
                   return;
                 }
                 if (_customMeetingPointLat == null ||
                     _customMeetingPointLng == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Selecciona una ubicación')),
+                    SnackBar(content: Text(l.t('select_a_location'))),
                   );
                   return;
                 }
@@ -976,7 +988,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                 backgroundColor: ColorTokens.primary30,
                 foregroundColor: ColorTokens.neutral100,
               ),
-              child: Text('Guardar'),
+              child: Text(l.t('save')),
             ),
           ],
         );

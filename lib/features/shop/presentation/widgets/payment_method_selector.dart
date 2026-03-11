@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Enum de métodos de pago disponibles
 enum PaymentMethod {
-  pse('PSE', Icons.account_balance, 'Transferencia desde tu banco'),
-  creditCard('Tarjeta de Crédito', Icons.credit_card, 'Visa, Mastercard, Amex'),
-  debitCard('Tarjeta de Débito', Icons.payment, 'Débito nacional'),
-  nequi('Nequi', Icons.phone_android, 'Paga con tu celular'),
-  daviplata('Daviplata', Icons.phone_iphone, 'Billetera digital');
+  pse('payment_pse', Icons.account_balance, 'payment_pse_desc'),
+  creditCard(
+    'payment_credit_card',
+    Icons.credit_card,
+    'payment_credit_card_desc',
+  ),
+  debitCard('payment_debit_card', Icons.payment, 'payment_debit_card_desc'),
+  nequi('payment_nequi', Icons.phone_android, 'payment_nequi_desc'),
+  daviplata('payment_daviplata', Icons.phone_iphone, 'payment_daviplata_desc');
 
-  final String label;
+  final String labelKey;
   final IconData icon;
-  final String description;
+  final String descriptionKey;
 
-  const PaymentMethod(this.label, this.icon, this.description);
+  const PaymentMethod(this.labelKey, this.icon, this.descriptionKey);
 }
 
 /// Widget para seleccionar método de pago
@@ -34,15 +40,16 @@ class PaymentMethodSelector extends StatefulWidget {
 class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Título
-        const Padding(
-          padding: EdgeInsets.only(bottom: 12),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
           child: Text(
-            'Método de pago',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            l.t('payment_method_label'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
 
@@ -80,6 +87,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
     required bool isFirst,
     required bool isLast,
   }) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Material(
       color: isSelected
           ? ColorTokens.primary30.withValues(alpha: 0.1)
@@ -126,7 +134,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      method.label,
+                      l.t(method.labelKey),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: isSelected
@@ -139,7 +147,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      method.description,
+                      l.t(method.descriptionKey),
                       style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                     ),
                   ],
@@ -187,16 +195,17 @@ class CompactPaymentMethodSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return DropdownButtonFormField<PaymentMethod>(
       initialValue: selectedMethod,
       decoration: InputDecoration(
-        labelText: 'Método de pago',
+        labelText: l.t('payment_method_label'),
         prefixIcon: const Icon(Icons.payment),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
         fillColor: Colors.grey[100],
       ),
-      hint: const Text('Selecciona un método'),
+      hint: Text(l.t('select_method')),
       items: PaymentMethod.values.map((method) {
         return DropdownMenuItem(
           value: method,
@@ -204,7 +213,7 @@ class CompactPaymentMethodSelector extends StatelessWidget {
             children: [
               Icon(method.icon, size: 20),
               const SizedBox(width: 12),
-              Text(method.label),
+              Text(l.t(method.labelKey)),
             ],
           ),
         );
@@ -212,7 +221,7 @@ class CompactPaymentMethodSelector extends StatelessWidget {
       onChanged: onChanged,
       validator: (value) {
         if (value == null) {
-          return 'Por favor selecciona un método de pago';
+          return l.t('select_payment_method_error');
         }
         return null;
       },

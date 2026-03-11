@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
@@ -218,24 +220,39 @@ class PublicBikeCard extends StatelessWidget {
   }
 
   Widget _buildInfoGrid() {
-    return Column(
-      children: [
-        Row(
+    return Builder(
+      builder: (context) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
+        return Column(
           children: [
-            Expanded(child: _buildInfoItem('Año', bike.year.toString())),
-            Expanded(child: _buildInfoItem('Color', bike.color)),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildInfoItem(
+                    l.t('year_label'),
+                    bike.year.toString(),
+                  ),
+                ),
+                Expanded(child: _buildInfoItem(l.t('color_label'), bike.color)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: _buildInfoItem(l.t('size_label'), bike.size)),
+                Expanded(
+                  child: _buildInfoItem(
+                    l.t('type_label'),
+                    l.t(bike.type.displayName),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildInfoItem(l.t('city_label'), bike.city, fullWidth: true),
           ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(child: _buildInfoItem('Talla', bike.size)),
-            Expanded(child: _buildInfoItem('Tipo', bike.type.displayName)),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildInfoItem('Ciudad', bike.city, fullWidth: true),
-      ],
+        );
+      },
     );
   }
 
