@@ -19,7 +19,7 @@ class FavoritesScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Mis Favoritos'), backgroundColor: ColorTokens.primary30),
       body: Consumer<ShopProvider>(
         builder: (context, shopProvider, child) {
-          final uid = currentUser?.uid ?? '';
+          final uid = currentUser?.uid ?? 'local_user';
           final favs = shopProvider.products.where((p) => p.isLikedBy(uid)).toList();
           if (favs.isEmpty) {
             return Center(child: Column(

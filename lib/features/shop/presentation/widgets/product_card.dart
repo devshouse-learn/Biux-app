@@ -32,7 +32,9 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'local_user';
+    debugPrint('LIKE_CARD>>> uid=$uid');
+    debugPrint('LIKE_CARD>>> uid=$uid');
 
     return GestureDetector(
       onTap: onTap,
@@ -51,7 +53,6 @@ class ProductCard extends StatelessWidget {
                     child: SizedBox(width: double.infinity, height: double.infinity, child: _buildImage()),
                   ),
                   // Boton de like
-                  if (uid.isNotEmpty)
                     Positioned(
                       top: 8,
                       right: 8,
