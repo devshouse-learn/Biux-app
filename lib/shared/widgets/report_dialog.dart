@@ -109,11 +109,10 @@ class _ReportDialogState extends State<ReportDialog> {
           const SizedBox(height: 12),
           ..._reasons.map((r) => ListTile(
             title: Text(r, style: const TextStyle(fontSize: 14)),
-            leading: Radio<String>(
-              value: r,
-              groupValue: _reason,
-              onChanged: (v) => setState(() => _reason = v),
-              activeColor: ColorTokens.primary30,
+            leading: Icon(
+              _reason == r ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              color: _reason == r ? ColorTokens.primary30 : Colors.grey,
+              size: 20,
             ),
             dense: true,
             contentPadding: EdgeInsets.zero,
