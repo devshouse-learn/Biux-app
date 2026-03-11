@@ -4474,12 +4474,12 @@ void _showReportsSheet(BuildContext context) {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(24),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
                       child: Center(
                         child: Text(
-                          'Sin datos de ventas aÃºn',
-                          style: TextStyle(color: Colors.grey),
+                          l.t('shop_no_sales_data'),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -4925,12 +4925,12 @@ void _showStatsSheet(BuildContext context) {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(24),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
                       child: Center(
                         child: Text(
-                          'Sin datos de visitas aÃºn',
-                          style: TextStyle(color: Colors.grey),
+                          l.t('shop_no_visits_data'),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -5026,9 +5026,7 @@ void _showSecuritySheet(BuildContext context) {
                                     color: Colors.green[700],
                                   ),
                                 ),
-                                const Text(
-                                  'No se detectaron problemas de seguridad',
-                                ),
+                                Text(l.t('shop_no_security_issues')),
                               ],
                             ),
                           ),

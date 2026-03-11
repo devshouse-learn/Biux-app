@@ -1,4 +1,3 @@
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/utils/strings_utils.dart';
@@ -133,8 +132,8 @@ class _StoryWidget extends StatelessWidget {
           GestureDetector(
             onTap: () => ShareUtils().shareFile(
               filePath: story.fileUrl1,
-              text: '${story.user.userName}${AppStrings.textShareStory}',
-              title: AppStrings.titleShareStory,
+              text: '${story.user.userName}${l.t('text_share_story')}',
+              title: l.t('title_share_story'),
             ),
             child: const Icon(Icons.share, color: Colors.white70, size: 20),
           ),
@@ -163,8 +162,8 @@ class _StoryWidget extends StatelessWidget {
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
                   trimLines: 2,
                   trimMode: TrimMode.Line,
-                  trimCollapsedText: AppStrings.seeMore,
-                  trimExpandedText: AppStrings.seeLess,
+                  trimCollapsedText: l.t('see_more'),
+                  trimExpandedText: l.t('see_less'),
                   moreStyle: Styles.moreStyle.copyWith(
                     color: Theme.of(context).primaryColor,
                   ),
@@ -312,8 +311,8 @@ class _StoryActionsBar extends StatelessWidget {
                 onTap: () {
                   ShareUtils().shareFile(
                     filePath: story.fileUrl1,
-                    text: '${story.user.userName}${AppStrings.textShareStory}',
-                    title: AppStrings.titleShareStory,
+                    text: '${story.user.userName}${l.t('text_share_story')}',
+                    title: l.t('title_share_story'),
                   );
                 },
                 child: Row(

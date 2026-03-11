@@ -700,9 +700,10 @@ class _ExperienceCard extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));
       }
     }
   }
@@ -1195,7 +1196,7 @@ class _AdvertisementCard extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));
       }
     }
   }

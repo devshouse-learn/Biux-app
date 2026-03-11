@@ -89,7 +89,9 @@ class BikeProvider extends ChangeNotifier {
       debugPrint('🚴 BikeProvider: Cargando bicicletas para userId: "$userId"');
       _setState(BikeProviderState.loading);
       _userBikes = await _getUserBikesUseCase(userId);
-      debugPrint('🚴 BikeProvider: Se encontraron ${_userBikes.length} bicicletas');
+      debugPrint(
+        '🚴 BikeProvider: Se encontraron ${_userBikes.length} bicicletas',
+      );
       if (_userBikes.isNotEmpty) {
         debugPrint('🚴 Primera bici - ownerId: "${_userBikes.first.ownerId}"');
       }
@@ -158,90 +160,90 @@ class BikeProvider extends ChangeNotifier {
         // Marca
         final brand = _registrationData['brand']?.toString().trim() ?? '';
         if (brand.isEmpty) {
-          return 'Falta ingresar la marca de la bicicleta';
+          return 'bike_brand_required';
         }
         if (brand.length < 2) {
-          return 'La marca debe tener al menos 2 caracteres';
+          return 'bike_brand_min_chars';
         }
         if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-]+$').hasMatch(brand)) {
-          return 'La marca solo puede contener letras, números y guiones';
+          return 'bike_brand_invalid_chars';
         }
 
         // Modelo
         final model = _registrationData['model']?.toString().trim() ?? '';
         if (model.isEmpty) {
-          return 'Falta ingresar el modelo de la bicicleta';
+          return 'bike_model_required';
         }
         if (model.length < 2) {
-          return 'El modelo debe tener al menos 2 caracteres';
+          return 'bike_model_min_chars';
         }
 
         // Año
         final year = _registrationData['year'];
         final currentYear = DateTime.now().year;
         if (year == null || year is! int) {
-          return 'Falta seleccionar el año de la bicicleta';
+          return 'bike_year_required';
         }
         if (year < 1900 || year > currentYear + 1) {
-          return 'El año debe estar entre 1900 y ${currentYear + 1}';
+          return 'bike_year_range';
         }
 
         // Color
         final color = _registrationData['color']?.toString().trim() ?? '';
         if (color.isEmpty) {
-          return 'Falta ingresar el color de la bicicleta';
+          return 'bike_color_required';
         }
         if (color.length < 3) {
-          return 'Ingresa un color válido (ej: Rojo, Azul, Negro)';
+          return 'bike_color_hint';
         }
         if (!RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\/\-]+$').hasMatch(color)) {
-          return 'El color solo puede contener letras';
+          return 'bike_color_invalid';
         }
 
         // Talla
         final size = _registrationData['size']?.toString().trim() ?? '';
         if (size.isEmpty) {
-          return 'Falta ingresar la talla de la bicicleta';
+          return 'bike_size_required';
         }
         if (!RegExp(
           r'^(XXS|XS|S|M|L|XL|XXL|XXXL|\d{1,2}(\.\d)?|\d{1,2}"?)$',
           caseSensitive: false,
         ).hasMatch(size)) {
-          return 'Ingresa una talla válida (ej: S, M, L, XL, 16, 18")';
+          return 'bike_size_hint';
         }
 
         // Tipo
         if (_registrationData['type'] == null) {
-          return 'Falta seleccionar el tipo de bicicleta';
+          return 'bike_type_required';
         }
 
         // Número de serie
         final frameSerial =
             _registrationData['frameSerial']?.toString().trim() ?? '';
         if (frameSerial.isEmpty) {
-          return 'Falta ingresar el número de serie del cuadro';
+          return 'bike_serial_required';
         }
         if (frameSerial.length < 4) {
-          return 'El número de serie debe tener al menos 4 caracteres';
+          return 'bike_serial_min_chars';
         }
         if (!RegExp(r'^[A-Za-z0-9\-]+$').hasMatch(frameSerial)) {
-          return 'El número de serie solo puede contener letras, números y guiones';
+          return 'bike_serial_invalid_chars';
         }
 
         // Ciudad
         final city = _registrationData['city']?.toString().trim() ?? '';
         if (city.isEmpty) {
-          return 'Falta ingresar la ciudad';
+          return 'bike_city_required';
         }
         if (city.length < 2) {
-          return 'Ingresa un nombre de ciudad válido';
+          return 'bike_city_hint';
         }
 
         return null; // Todos los campos están completos
 
       case 1: // Fotos
         if (_registrationData['mainPhoto']?.toString().trim().isEmpty ?? true) {
-          return 'Falta agregar la foto principal de la bicicleta';
+          return 'bike_photo_required';
         }
         return null;
 
@@ -252,7 +254,7 @@ class BikeProvider extends ChangeNotifier {
         return null;
 
       default:
-        return 'Paso inválido';
+        return 'bike_invalid_step';
     }
   }
 
@@ -281,7 +283,7 @@ class BikeProvider extends ChangeNotifier {
         );
 
         if (mainPhotoUrl == null) {
-          throw Exception('Error al subir la foto principal de la bicicleta');
+          throw Exception('bike_upload_main_photo_error');
         }
       }
 

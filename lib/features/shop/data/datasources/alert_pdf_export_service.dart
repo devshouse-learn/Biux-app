@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 class AlertPdfExportService {
   static Future<void> exportAlerts({
     required List<QueryDocumentSnapshot> alerts,
+    required String Function(String) t,
     String? cityFilter,
     String? dateRange,
   }) async {
@@ -24,7 +25,7 @@ class AlertPdfExportService {
     for (final doc in alerts) {
       final data = doc.data() as Map<String, dynamic>;
       final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
-      final city = bike['city']?.toString() ?? 'Desconocida';
+      final city = bike['city']?.toString() ?? t('pdf_unknown_city');
       uniqueCities.add(city);
     }
 
@@ -33,7 +34,7 @@ class AlertPdfExportService {
     for (final doc in alerts) {
       final data = doc.data() as Map<String, dynamic>;
       final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
-      final c = bike['city']?.toString() ?? 'Desconocida';
+      final c = bike['city']?.toString() ?? t('pdf_unknown_city');
       cityCount[c] = (cityCount[c] ?? 0) + 1;
     }
     final sortedCities = cityCount.entries.toList()
@@ -44,7 +45,7 @@ class AlertPdfExportService {
     for (final doc in alerts) {
       final data = doc.data() as Map<String, dynamic>;
       final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
-      final b = bike['brand']?.toString() ?? 'Desconocida';
+      final b = bike['brand']?.toString() ?? t('pdf_unknown_city');
       brandCount[b] = (brandCount[b] ?? 0) + 1;
     }
     final sortedBrands = brandCount.entries.toList()
@@ -54,47 +55,62 @@ class AlertPdfExportService {
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
-        header: (context) => _buildPdfHeader(dateStr, cityFilter, dateRange),
-        footer: (context) => _buildPdfFooter(context),
+        header: (context) => _buildPdfHeader(dateStr, cityFilter, dateRange, t),
+        footer: (context) => _buildPdfFooter(context, t),
         build: (context) => [
           // Summary
-          _buildSummarySection(totalAlerts, uniqueSellers, uniqueCities.length),
+          _buildSummarySection(
+            totalAlerts,
+            uniqueSellers,
+            uniqueCities.length,
+            t,
+          ),
           pw.SizedBox(height: 20),
 
           // City stats
           if (sortedCities.isNotEmpty) ...[
-            _buildSectionTitle('Alertas por Ciudad'),
+            _buildSectionTitle(t('pdf_alerts_by_city')),
             pw.SizedBox(height: 8),
             _buildStatsTable(
-              headers: ['Ciudad', 'Alertas', 'Porcentaje'],
-              rows: sortedCities.take(15).map((e) => [
-                e.key,
-                e.value.toString(),
-                '${(e.value / totalAlerts * 100).toStringAsFixed(1)}%',
-              ]).toList(),
+              headers: [t('pdf_city'), t('pdf_alerts'), t('pdf_percentage')],
+              rows: sortedCities
+                  .take(15)
+                  .map(
+                    (e) => [
+                      e.key,
+                      e.value.toString(),
+                      '${(e.value / totalAlerts * 100).toStringAsFixed(1)}%',
+                    ],
+                  )
+                  .toList(),
             ),
             pw.SizedBox(height: 20),
           ],
 
           // Brand stats
           if (sortedBrands.isNotEmpty) ...[
-            _buildSectionTitle('Marcas mas Afectadas'),
+            _buildSectionTitle(t('pdf_most_affected_brands')),
             pw.SizedBox(height: 8),
             _buildStatsTable(
-              headers: ['Marca', 'Alertas', 'Porcentaje'],
-              rows: sortedBrands.take(10).map((e) => [
-                e.key,
-                e.value.toString(),
-                '${(e.value / totalAlerts * 100).toStringAsFixed(1)}%',
-              ]).toList(),
+              headers: [t('pdf_brand'), t('pdf_alerts'), t('pdf_percentage')],
+              rows: sortedBrands
+                  .take(10)
+                  .map(
+                    (e) => [
+                      e.key,
+                      e.value.toString(),
+                      '${(e.value / totalAlerts * 100).toStringAsFixed(1)}%',
+                    ],
+                  )
+                  .toList(),
             ),
             pw.SizedBox(height: 20),
           ],
 
           // Detailed alerts
-          _buildSectionTitle('Detalle de Alertas'),
+          _buildSectionTitle(t('pdf_alert_details')),
           pw.SizedBox(height: 8),
-          ...alerts.map((doc) => _buildAlertRow(doc)),
+          ...alerts.map((doc) => _buildAlertRow(doc, t)),
         ],
       ),
     );
@@ -105,11 +121,18 @@ class AlertPdfExportService {
     );
   }
 
-  static pw.Widget _buildPdfHeader(String date, String? city, String? dateRange) {
+  static pw.Widget _buildPdfHeader(
+    String date,
+    String? city,
+    String? dateRange,
+    String Function(String) t,
+  ) {
     return pw.Container(
       padding: const pw.EdgeInsets.only(bottom: 16),
       decoration: const pw.BoxDecoration(
-        border: pw.Border(bottom: pw.BorderSide(color: PdfColors.red, width: 2)),
+        border: pw.Border(
+          bottom: pw.BorderSide(color: PdfColors.red, width: 2),
+        ),
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -117,23 +140,47 @@ class AlertPdfExportService {
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('BIUX', style: pw.TextStyle(
-                fontSize: 28, fontWeight: pw.FontWeight.bold, color: PdfColors.red800,
-              )),
+              pw.Text(
+                'BIUX',
+                style: pw.TextStyle(
+                  fontSize: 28,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.red800,
+                ),
+              ),
               pw.SizedBox(height: 2),
-              pw.Text('Reporte de Alertas de Bicicletas Robadas', style: pw.TextStyle(
-                fontSize: 12, color: PdfColors.grey700,
-              )),
+              pw.Text(
+                t('pdf_stolen_bike_report'),
+                style: pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+              ),
             ],
           ),
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.end,
             children: [
-              pw.Text('Generado: $date', style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
+              pw.Text(
+                '${t('pdf_generated')}: $date',
+                style: const pw.TextStyle(
+                  fontSize: 9,
+                  color: PdfColors.grey600,
+                ),
+              ),
               if (city != null && city != 'Todas')
-                pw.Text('Ciudad: $city', style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
+                pw.Text(
+                  '${t('pdf_city')}: $city',
+                  style: const pw.TextStyle(
+                    fontSize: 9,
+                    color: PdfColors.grey600,
+                  ),
+                ),
               if (dateRange != null)
-                pw.Text('Periodo: $dateRange', style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600)),
+                pw.Text(
+                  '${t('pdf_period')}: $dateRange',
+                  style: const pw.TextStyle(
+                    fontSize: 9,
+                    color: PdfColors.grey600,
+                  ),
+                ),
             ],
           ),
         ],
@@ -141,7 +188,10 @@ class AlertPdfExportService {
     );
   }
 
-  static pw.Widget _buildPdfFooter(pw.Context context) {
+  static pw.Widget _buildPdfFooter(
+    pw.Context context,
+    String Function(String) t,
+  ) {
     return pw.Container(
       padding: const pw.EdgeInsets.only(top: 8),
       decoration: const pw.BoxDecoration(
@@ -150,15 +200,25 @@ class AlertPdfExportService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text('Biux - Plataforma de Ciclismo', style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey500)),
-          pw.Text('Pagina ${context.pageNumber} de ${context.pagesCount}',
-            style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey500)),
+          pw.Text(
+            'Biux - ${t('pdf_cycling_platform')}',
+            style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey500),
+          ),
+          pw.Text(
+            '${t('pdf_page')} ${context.pageNumber} ${t('pdf_of')} ${context.pagesCount}',
+            style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey500),
+          ),
         ],
       ),
     );
   }
 
-  static pw.Widget _buildSummarySection(int total, int sellers, int cities) {
+  static pw.Widget _buildSummarySection(
+    int total,
+    int sellers,
+    int cities,
+    String Function(String) t,
+  ) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(16),
       decoration: pw.BoxDecoration(
@@ -169,20 +229,44 @@ class AlertPdfExportService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
         children: [
-          _summaryItem('Total Alertas', total.toString(), PdfColors.red800),
-          _summaryItem('Vendedores Unicos', sellers.toString(), PdfColors.orange800),
-          _summaryItem('Ciudades Afectadas', cities.toString(), PdfColors.blue800),
+          _summaryItem(
+            t('pdf_total_alerts'),
+            total.toString(),
+            PdfColors.red800,
+          ),
+          _summaryItem(
+            t('pdf_unique_sellers'),
+            sellers.toString(),
+            PdfColors.orange800,
+          ),
+          _summaryItem(
+            t('pdf_affected_cities'),
+            cities.toString(),
+            PdfColors.blue800,
+          ),
         ],
       ),
     );
   }
 
   static pw.Widget _summaryItem(String label, String value, PdfColor color) {
-    return pw.Column(children: [
-      pw.Text(value, style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: color)),
-      pw.SizedBox(height: 4),
-      pw.Text(label, style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
-    ]);
+    return pw.Column(
+      children: [
+        pw.Text(
+          value,
+          style: pw.TextStyle(
+            fontSize: 24,
+            fontWeight: pw.FontWeight.bold,
+            color: color,
+          ),
+        ),
+        pw.SizedBox(height: 4),
+        pw.Text(
+          label,
+          style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700),
+        ),
+      ],
+    );
   }
 
   static pw.Widget _buildSectionTitle(String title) {
@@ -193,9 +277,14 @@ class AlertPdfExportService {
         color: PdfColors.grey800,
         borderRadius: pw.BorderRadius.circular(4),
       ),
-      child: pw.Text(title, style: pw.TextStyle(
-        fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.white,
-      )),
+      child: pw.Text(
+        title,
+        style: pw.TextStyle(
+          fontSize: 12,
+          fontWeight: pw.FontWeight.bold,
+          color: PdfColors.white,
+        ),
+      ),
     );
   }
 
@@ -204,7 +293,11 @@ class AlertPdfExportService {
     required List<List<String>> rows,
   }) {
     return pw.TableHelper.fromTextArray(
-      headerStyle: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+      headerStyle: pw.TextStyle(
+        fontSize: 10,
+        fontWeight: pw.FontWeight.bold,
+        color: PdfColors.white,
+      ),
       headerDecoration: const pw.BoxDecoration(color: PdfColors.red400),
       cellStyle: const pw.TextStyle(fontSize: 9),
       cellHeight: 24,
@@ -224,11 +317,16 @@ class AlertPdfExportService {
     );
   }
 
-  static pw.Widget _buildAlertRow(QueryDocumentSnapshot doc) {
+  static pw.Widget _buildAlertRow(
+    QueryDocumentSnapshot doc,
+    String Function(String) t,
+  ) {
     final data = doc.data() as Map<String, dynamic>;
     final ts = data['timestamp'] as Timestamp?;
-    final date = ts != null ? DateFormat('dd/MM/yyyy HH:mm').format(ts.toDate()) : 'Sin fecha';
-    final seller = data['sellerName']?.toString() ?? 'Desconocido';
+    final date = ts != null
+        ? DateFormat('dd/MM/yyyy HH:mm').format(ts.toDate())
+        : t('pdf_no_date');
+    final seller = data['sellerName']?.toString() ?? t('pdf_unknown_seller');
     final sellerUid = data['sellerUid']?.toString() ?? '';
     final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
     final serial = bike['frameSerial']?.toString() ?? 'N/A';
@@ -251,37 +349,109 @@ class AlertPdfExportService {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               pw.Container(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: pw.BoxDecoration(color: PdfColors.red, borderRadius: pw.BorderRadius.circular(3)),
-                child: pw.Text('ALERTA', style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
+                padding: const pw.EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.red,
+                  borderRadius: pw.BorderRadius.circular(3),
+                ),
+                child: pw.Text(
+                  t('pdf_alert_badge'),
+                  style: pw.TextStyle(
+                    fontSize: 8,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.white,
+                  ),
+                ),
               ),
-              pw.Text(date, style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600)),
+              pw.Text(
+                date,
+                style: const pw.TextStyle(
+                  fontSize: 8,
+                  color: PdfColors.grey600,
+                ),
+              ),
             ],
           ),
           pw.SizedBox(height: 6),
-          pw.Row(children: [
-            pw.Expanded(
-              child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-                pw.Text('Vendedor', style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold, color: PdfColors.grey600)),
-                pw.Text(seller, style: const pw.TextStyle(fontSize: 10)),
-                pw.Text('UID: $sellerUid', style: const pw.TextStyle(fontSize: 7, color: PdfColors.grey500)),
-              ]),
-            ),
-            pw.Expanded(
-              child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-                pw.Text('Bicicleta', style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold, color: PdfColors.grey600)),
-                pw.Text('$brand $model', style: const pw.TextStyle(fontSize: 10)),
-                pw.Text('Color: $color', style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600)),
-              ]),
-            ),
-            pw.Expanded(
-              child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
-                pw.Text('Serial', style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold, color: PdfColors.grey600)),
-                pw.Text(serial, style: const pw.TextStyle(fontSize: 10)),
-                pw.Text('Ciudad: $city', style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600)),
-              ]),
-            ),
-          ]),
+          pw.Row(
+            children: [
+              pw.Expanded(
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      t('pdf_seller'),
+                      style: pw.TextStyle(
+                        fontSize: 8,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.grey600,
+                      ),
+                    ),
+                    pw.Text(seller, style: const pw.TextStyle(fontSize: 10)),
+                    pw.Text(
+                      'UID: $sellerUid',
+                      style: const pw.TextStyle(
+                        fontSize: 7,
+                        color: PdfColors.grey500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      t('pdf_bicycle'),
+                      style: pw.TextStyle(
+                        fontSize: 8,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.grey600,
+                      ),
+                    ),
+                    pw.Text(
+                      '$brand $model',
+                      style: const pw.TextStyle(fontSize: 10),
+                    ),
+                    pw.Text(
+                      '${t('pdf_color')}: $color',
+                      style: const pw.TextStyle(
+                        fontSize: 8,
+                        color: PdfColors.grey600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      t('pdf_serial'),
+                      style: pw.TextStyle(
+                        fontSize: 8,
+                        fontWeight: pw.FontWeight.bold,
+                        color: PdfColors.grey600,
+                      ),
+                    ),
+                    pw.Text(serial, style: const pw.TextStyle(fontSize: 10)),
+                    pw.Text(
+                      '${t('pdf_city')}: $city',
+                      style: const pw.TextStyle(
+                        fontSize: 8,
+                        color: PdfColors.grey600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -960,7 +960,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
         sellerName:
             currentUser?.name ??
             currentFirebaseUser?.phoneNumber ??
-            'Vendedor desconocido',
+            l.t('seller_unknown'),
       );
 
       setState(() {
@@ -1206,7 +1206,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
       sizes: _selectedSizes,
       stock: int.parse(_stockController.text),
       sellerId: currentUser.uid,
-      sellerName: currentUser.username ?? currentUser.name ?? 'Vendedor',
+      sellerName:
+          currentUser.username ?? currentUser.name ?? l.t('seller_default'),
       sellerCity: _cityController.text.isEmpty ? null : _cityController.text,
       createdAt: widget.product?.createdAt ?? DateTime.now(),
       isActive: true,

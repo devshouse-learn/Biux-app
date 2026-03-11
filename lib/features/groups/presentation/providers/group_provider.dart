@@ -104,7 +104,7 @@ class GroupProvider extends ChangeNotifier {
       _setLoading(false);
       return groupId != null;
     } catch (e) {
-      _setError('Error al crear el grupo: ${e.toString()}');
+      _setError('group_error_create');
       _setLoading(false);
       return false;
     }
@@ -152,7 +152,7 @@ class GroupProvider extends ChangeNotifier {
       _setLoading(false);
       return success;
     } catch (e) {
-      _setError('Error al editar el grupo: ${e.toString()}');
+      _setError('group_error_edit');
       _setLoading(false);
       return false;
     }
@@ -169,7 +169,7 @@ class GroupProvider extends ChangeNotifier {
         await _loadUsersForGroup(_selectedGroup!);
       }
     } catch (e) {
-      _setError('Error al cargar el grupo: ${e.toString()}');
+      _setError('group_error_load');
     }
     _setLoading(false);
   }
@@ -177,7 +177,7 @@ class GroupProvider extends ChangeNotifier {
   // Solicitar unirse a grupo CON VALIDACIÓN DE NOMBRE
   Future<Map<String, dynamic>> requestJoinGroup(String groupId) async {
     if (currentUserId == null) {
-      return {'success': false, 'error': 'Usuario no autenticado'};
+      return {'success': false, 'error': 'group_error_not_authenticated'};
     }
 
     _setLoading(true);
@@ -191,7 +191,7 @@ class GroupProvider extends ChangeNotifier {
         _setLoading(false);
         return {
           'success': false,
-          'error': 'Usuario no encontrado',
+          'error': 'group_error_user_not_found',
           'requiresProfile': true,
         };
       }
@@ -200,8 +200,7 @@ class GroupProvider extends ChangeNotifier {
         _setLoading(false);
         return {
           'success': false,
-          'error':
-              'Debes completar tu nombre en el perfil antes de unirte a grupos',
+          'error': 'group_error_complete_profile',
           'requiresProfile': true,
         };
       }
@@ -222,7 +221,7 @@ class GroupProvider extends ChangeNotifier {
       _setLoading(false);
       return {'success': success};
     } catch (e) {
-      _setError('Error al solicitar ingreso: ${e.toString()}');
+      _setError('group_error_request_join');
       _setLoading(false);
       return {'success': false, 'error': e.toString()};
     }
@@ -246,7 +245,7 @@ class GroupProvider extends ChangeNotifier {
       _setLoading(false);
       return success;
     } catch (e) {
-      _setError('Error al aprobar solicitud: ${e.toString()}');
+      _setError('group_error_approve');
       _setLoading(false);
       return false;
     }
@@ -270,7 +269,7 @@ class GroupProvider extends ChangeNotifier {
       _setLoading(false);
       return success;
     } catch (e) {
-      _setError('Error al rechazar solicitud: ${e.toString()}');
+      _setError('group_error_reject');
       _setLoading(false);
       return false;
     }
@@ -297,7 +296,7 @@ class GroupProvider extends ChangeNotifier {
       _setLoading(false);
       return success;
     } catch (e) {
-      _setError('Error al cancelar solicitud: ${e.toString()}');
+      _setError('group_error_cancel_request');
       _setLoading(false);
       return false;
     }
@@ -322,7 +321,7 @@ class GroupProvider extends ChangeNotifier {
       _setLoading(false);
       return success;
     } catch (e) {
-      _setError('Error al salir del grupo: ${e.toString()}');
+      _setError('group_error_leave');
       _setLoading(false);
       return false;
     }
@@ -364,7 +363,6 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-
   // Obtener información de usuario (con cache)
   Future<UserModel?> getUserInfo(String userId) async {
     // Verificar cache primero
@@ -394,9 +392,9 @@ class GroupProvider extends ChangeNotifier {
       final user = await getUserInfo(userId);
       requests.add({
         'userId': userId,
-        'userName': user?.name ?? 'Usuario sin nombre',
+        'userName': user?.name ?? 'group_user_no_name',
         'userPhoto': user?.photoUrl,
-        'phoneNumber': user?.phoneNumber ?? 'Sin teléfono',
+        'phoneNumber': user?.phoneNumber ?? 'group_no_phone',
       });
     }
 
@@ -428,9 +426,9 @@ class GroupProvider extends ChangeNotifier {
 
       members.add({
         'userId': userId,
-        'userName': user?.name ?? 'Usuario sin nombre',
+        'userName': user?.name ?? 'group_user_no_name',
         'userPhoto': user?.photoUrl,
-        'phoneNumber': user?.phoneNumber ?? 'Sin teléfono',
+        'phoneNumber': user?.phoneNumber ?? 'group_no_phone',
         'isAdmin': group.isAdmin(userId),
       });
     }
@@ -478,7 +476,7 @@ class GroupProvider extends ChangeNotifier {
       return image;
     } catch (e) {
       debugPrint('Error seleccionando imagen: $e');
-      _setError('Error al seleccionar imagen: ${e.toString()}');
+      _setError('group_error_select_image');
       return null;
     }
   }
@@ -503,24 +501,24 @@ class GroupProvider extends ChangeNotifier {
 
       if (user != null) {
         return {
-          'fullName': user.name ?? 'Usuario',
-          'userName': user.username ?? 'usuario',
+          'fullName': user.name ?? 'group_default_user',
+          'userName': user.username ?? 'group_default_username',
           'photo': user.photoUrl ?? '',
           'email': user.email ?? '',
         };
       }
 
       return {
-        'fullName': 'Usuario',
-        'userName': 'usuario',
+        'fullName': 'group_default_user',
+        'userName': 'group_default_username',
         'photo': '',
         'email': '',
       };
     } catch (e) {
       debugPrint('Error obteniendo info del admin: $e');
       return {
-        'fullName': 'Usuario',
-        'userName': 'usuario',
+        'fullName': 'group_default_user',
+        'userName': 'group_default_username',
         'photo': '',
         'email': '',
       };

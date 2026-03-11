@@ -228,9 +228,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     } catch (e) {
       setState(() => _isVerifying = false);
       if (mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${l.t('error_generic')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );

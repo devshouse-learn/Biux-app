@@ -22,7 +22,6 @@ class AppTranslations {
     // General
     'settings': 'Configuración',
     'back': 'Atrás',
-    'cancel': 'Cancelar',
     'send': 'Enviar',
     'understood': 'Entendido',
     'currently': 'Actualmente',
@@ -33,7 +32,7 @@ class AppTranslations {
     'notifications': 'Notificaciones',
     'notifications_subtitle': 'Activar/desactivar, Sonido, Vibración',
     'appearance': 'Apariencia',
-    'appearance_subtitle': 'Modo claro/oscuro, Tamaño de letra, Idioma',
+    'appearance_subtitle': 'Modo claro/oscuro, Idioma',
     'privacy': 'Privacidad',
     'privacy_subtitle': 'Quién puede ver tu perfil, Permisos',
     'information': 'Información',
@@ -74,14 +73,8 @@ class AppTranslations {
     'app_theme': 'Tema de la App',
     'light_mode': 'Modo Claro',
     'dark_mode': 'Modo Oscuro',
-    'text': 'Texto',
-    'font_size': 'Tamaño de Letra',
     'language': 'Idioma',
     'select_language': 'Seleccionar Idioma',
-    'small': 'Pequeño',
-    'medium': 'Mediano',
-    'large': 'Grande',
-    'very_large': 'Muy Grande',
 
     // Privacy
     'privacy_control': 'Control de Privacidad',
@@ -106,6 +99,8 @@ class AppTranslations {
     'legal_policies': 'Legal y Políticas',
     'terms_conditions': 'Términos y Condiciones',
     'terms_subtitle': 'Lee nuestros términos de servicio',
+    'terms_content':
+        'Términos y Condiciones de Biux\n\n1. ACEPTACIÓN DE TÉRMINOS\nAl usar la aplicación Biux, aceptas estos términos y condiciones en su totalidad.\n\n2. USO RESPONSABLE\nEl usuario se compromete a usar la aplicación de forma responsable y legal.\n\n3. CONTENIDO DEL USUARIO\nEl usuario es responsable del contenido que publique en la plataforma.\n\n4. PRIVACIDAD\nTus datos personales serán protegidos según nuestra política de privacidad.\n\n5. LIMITACIÓN DE RESPONSABILIDAD\nBiux no es responsable por daños indirectos o pérdidas de datos.\n\n6. CAMBIOS EN LOS TÉRMINOS\nNos reservamos el derecho de modificar estos términos en cualquier momento.\n\n7. CONTACTO\nPara preguntas sobre estos términos, contáctanos a support@biux.com',
     'support': 'Soporte',
     'tech_support': 'Soporte Técnico',
     'tech_support_subtitle': 'Contacta con nuestro equipo',
@@ -159,15 +154,12 @@ class AppTranslations {
     'yes_cancel': 'Sí, cancelar',
     'view': 'Ver',
     'gallery': 'Galería',
-    'take_photo': 'Tomar foto',
-    'select_from_gallery': 'Seleccionar de galería',
     'delete_image': 'Eliminar imagen',
     'uploading': 'Subiendo...',
     'save_changes': 'Guardar cambios',
 
     // Profile/Users
     'my_profile': 'Mi Perfil',
-    'edit_profile': 'Editar Perfil',
     'profile': 'Perfil',
     'user_profile': 'Perfil de Usuario',
     'followers': 'Seguidores',
@@ -195,10 +187,7 @@ class AppTranslations {
     'share_profile': 'Compartir perfil',
     'could_not_load_profile': 'No se pudo cargar el perfil',
     'loading_followers': 'Cargando seguidores...',
-    'no_followers_yet': 'Sin seguidores aún',
-    'not_following_anyone': 'No sigue a nadie aún',
     'no_name': 'Sin nombre',
-    'retry': 'Reintentar',
     'check_connection_retry': 'Verifica tu conexión e intenta nuevamente',
     'closing_session': 'Cerrando sesión...',
     'error_deleting': 'Error eliminando',
@@ -210,8 +199,6 @@ class AppTranslations {
         'Escribe un nombre o usuario para encontrar amigos',
     'edit_user': 'Editar Usuario',
     'error_updating_username': 'Error al actualizar el nombre de usuario',
-    'edit_username': 'Editar nombre de usuario',
-    'error_updating_profile': 'Error al actualizar perfil',
     'tap_add_cover_photo': 'Tap para agregar foto de portada',
     'account_info': 'Información de Cuenta',
     'change_password': 'Cambiar Contraseña',
@@ -224,7 +211,6 @@ class AppTranslations {
 
     // Rides
     'rides': 'Rodadas',
-    'create_ride': 'Crear Rodada',
     'create_new_ride': 'Crear nueva rodada',
     'edit_ride': 'Editar rodada',
     'ride_not_found': 'Rodada no encontrada',
@@ -289,7 +275,6 @@ class AppTranslations {
     'ride_image_optional': 'Imagen de la rodada (opcional)',
     'add_image': 'Agregar imagen',
     'update_ride': 'Actualizar Rodada',
-    'meeting_point': 'Punto de encuentro',
     'custom_point': 'Punto personalizado',
     'select_a_meeting_point': 'Selecciona un punto de encuentro',
     'add_custom_point': 'Agregar punto personalizado',
@@ -303,7 +288,6 @@ class AppTranslations {
     'difficulty_hard': 'Difícil',
     'difficulty_expert': 'Experto',
     'ride_updated_success': 'Rodada actualizada exitosamente',
-    'ride_created_success': 'Rodada creada exitosamente',
     'saved_coordinates': 'Coordenadas guardadas:',
     'custom_point_needs_location':
         'El punto personalizado debe tener una ubicación',
@@ -338,7 +322,6 @@ class AppTranslations {
         '¿Estás seguro de que ya no vas a asistir a esta rodada?',
     'no_attendees_yet': 'Aún no hay asistentes confirmados',
     'user_no_name': 'Usuario sin nombre',
-    'members': 'miembros',
     'confirmed': 'confirmados',
     'no_label': 'No',
 
@@ -347,7 +330,6 @@ class AppTranslations {
     'create_group': 'Crear Grupo',
     'create_new_group': 'Crear nuevo grupo',
     'my_groups': 'Mis Grupos',
-    'edit_group': 'Editar Grupo',
     'group_not_found': 'Grupo no encontrado',
     'back_to_groups': 'Volver a Grupos',
     'no_members': 'No hay miembros en este grupo',
@@ -380,7 +362,6 @@ class AppTranslations {
     'city': 'Ciudad',
     'select_city': 'Selecciona una ciudad',
     'already_admin': 'Ya eres administrador de otro grupo',
-    'group_created_success': 'Grupo creado exitosamente',
     'group_updated_success': 'Grupo actualizado exitosamente',
     'view_my_group': 'Ver Mi Grupo',
     'user_accepted': 'ha sido aceptado en el grupo',
@@ -451,7 +432,6 @@ class AppTranslations {
     'could_not_open_link': 'No se pudo abrir el enlace',
     'link_not_available': 'Enlace no disponible',
     'cancel_all': 'Cancelar todo',
-    'new_notification': 'Nueva notificación',
     'no_notifications': 'No tienes notificaciones',
     'share_photo_coming_soon': 'Compartir foto próximamente',
 
@@ -463,7 +443,6 @@ class AppTranslations {
         '¿Estás seguro de que deseas eliminar esta historia?',
     'story_deleted': 'Historia eliminada exitosamente',
     'promoted_story': 'HISTORIA PROMOCIONADA',
-    'publish': 'Publicar',
     'publish_as_ad': 'Publicar como Publicidad',
     'boost_your_story': 'Impulsa tu historia',
 
@@ -487,7 +466,6 @@ class AppTranslations {
     'explore_store_favorites':
         'Explora la tienda y marca tus productos favoritos',
     'go_to_store': 'Ir a la tienda',
-    'send_report': 'Enviar Reporte',
     'must_login': 'Debes iniciar sesión',
     // Shop drawer
     'biux_shop': 'BiuX Shop',
@@ -581,9 +559,7 @@ class AppTranslations {
     'product_not_found': 'Producto no encontrado',
     // Stolen bikes
     'stolen_bikes_title': 'Bicicletas Robadas',
-    'list_tab': 'Listado',
     'verify_tab': 'Verificar',
-    'report_tab': 'Reportar',
     'reported_stat': 'Reportadas',
     'cities_stat': 'Ciudades',
     'this_month_stat': 'Este mes',
@@ -592,7 +568,6 @@ class AppTranslations {
     'type_label': 'Tipo',
     'order_label': 'Orden',
     'no_results': 'Sin resultados',
-    'no_results_found': 'No se encontraron resultados',
     'bike_verifier': 'Verificador de Bicicletas',
     'bike_verifier_desc':
         'Ingresa el numero de serie para saber si esta reportada como robada.',
@@ -630,8 +605,6 @@ class AppTranslations {
     'complaint_label': 'Denuncia',
     'required_field': 'Obligatorio',
     'results_count': 'resultado(s)',
-    'search_hint': 'Buscar...',
-    'filter_all': 'Todas',
     'sort_recent': 'Reciente',
     'sort_city': 'Ciudad',
     'sort_brand': 'Marca',
@@ -1082,9 +1055,6 @@ class AppTranslations {
 
     // Time ago
     'time_now': 'Ahora',
-    'time_ago_days': 'Hace {n}d',
-    'time_ago_hours': 'Hace {n}h',
-    'time_ago_minutes': 'Hace {n}m',
     'time_full_second': 'hace {n} segundo',
     'time_full_seconds': 'hace {n} segundos',
     'time_full_minute': 'hace {n} minuto',
@@ -1173,7 +1143,6 @@ class AppTranslations {
     'no_bikes_registered': 'No tienes bicicletas registradas',
     'register_first_bike': 'Registra tu primera bicicleta',
     'step': 'Paso',
-    'next': 'Siguiente',
     'previous': 'Anterior',
     'finish': 'Finalizar',
     'main_photo_label': 'Foto Principal',
@@ -1385,7 +1354,6 @@ class AppTranslations {
         'Explora nuestra tienda y agrega los productos que más te gusten',
     'find_amazing_products': 'Encuentra productos increíbles para tu ciclismo',
     'cop_each': 'COP c/u',
-    'products_label': 'Productos',
     'card': 'Tarjeta',
     'available_shipping': 'Envíos disponibles a',
     'all_colombia': 'Todo Colombia',
@@ -1523,7 +1491,6 @@ class AppTranslations {
     'no_reports_created': 'No has creado ningún reporte todavía.',
     'admin_reports_panel': 'Panel de Reportes Admin',
     'in_review': 'En Revisión',
-    'resolved': 'Resueltos',
     'report_title_field': 'Título del reporte',
     'attach_evidence': 'Adjuntar Evidencia',
     'report_sent_success': 'Reporte enviado exitosamente',
@@ -1588,7 +1555,6 @@ class AppTranslations {
     'admin_will_review':
         'Un administrador revisará tu solicitud y te notificará.',
     'please_write_message': 'Por favor escribe un mensaje',
-    'sending': 'Enviando...',
     'request_sent_success':
         'Solicitud enviada. Un administrador la revisará pronto.',
     'request_error': 'Error al enviar la solicitud. Intenta de nuevo.',
@@ -1634,7 +1600,6 @@ class AppTranslations {
     'products_eliminated': 'productos eliminados',
 
     // My orders - remaining
-    'order_number_prefix': 'Pedido',
     'more_products_suffix': 'más',
     'total_colon': 'Total:',
 
@@ -1902,7 +1867,6 @@ class AppTranslations {
     'processing_multimedia': 'Procesando multimedia',
     'completed_label': 'Completados',
     'profile_photo': 'Foto de Perfil',
-    'cover_photo': 'Foto de Portada',
     'your_full_name': 'Tu nombre completo',
     'username_label': 'Nombre de Usuario',
     'your_username': 'tu_nombre_usuario',
@@ -2044,14 +2008,12 @@ class AppTranslations {
     'ride_details': 'Detalles de la rodada',
     'attendees': 'Asistentes',
     'cancel_registration': 'Cancelar inscripción',
-    'route': 'Ruta',
     'departure_time': 'Hora de salida',
     'emergency': 'Emergencia',
     'call': 'Llamar',
     'police': 'Policía',
     'firefighters': 'Bomberos',
     'ambulance': 'Ambulancia',
-    'report_accident': 'Reportar accidente',
     'chats': 'Chats',
     'write_message': 'Escribir mensaje...',
     'no_messages': 'Sin mensajes',
@@ -2434,12 +2396,796 @@ class AppTranslations {
     'continue_editing': 'Continuar editando',
     'chat': 'Chat',
     'send_first_message': '¡Envía el primer mensaje!',
+
+    // === Accidents ===
+    'time_ago_now': 'Ahora',
+    'time_ago_minutes': 'Hace {n} min',
+    'time_ago_hours': 'Hace {n} h',
+    'time_ago_days': 'Hace {n} d',
+    'severity_severe': 'Grave',
+    'severity_moderate': 'Moderado',
+    'severity_minor': 'Leve',
+    'permission_required': 'Permiso requerido',
+    'camera_permission_message':
+        'Biux necesita acceso a tu cámara. Ve a Configuración para habilitarlo.',
+    'gallery_permission_message':
+        'Biux necesita acceso a tu galería. Ve a Configuración para habilitarlo.',
+    'open_settings': 'Abrir Configuración',
+    'camera_permission_needed': 'Se necesita permiso de cámara',
+    'gallery_permission_needed': 'Se necesita permiso de galería',
+    'take_photo': 'Tomar foto',
+    'select_from_gallery': 'Seleccionar de galería',
+    'accident_description_required': 'Escribe una descripción del accidente',
+    'accident_location_required': 'Selecciona la ubicación del accidente',
+    'anonymous': 'Anónimo',
+    'accident_reported_success':
+        '✅ Accidente reportado. Ya es visible para todos.',
+    'accident_location': 'Ubicación del accidente',
+    'accidents_title': 'Accidentes',
+    'reports_tab': 'Reportes',
+    'map_tab': 'Mapa',
+    'report_tab': 'Reportar',
+    'error_loading_reports': 'Error al cargar reportes',
+    'no_accidents_reported': '¡Sin accidentes reportados!',
+    'no_active_accidents': 'No hay accidentes activos en este momento',
+    'report_accident': 'Reportar un accidente',
+    'active_count': '{n} activo(s)',
+    'visible_for_all': 'Visible para todos',
+    'active_label': 'ACTIVOS',
+    'resolved_label': 'RESUELTOS',
+    'resolved': 'Resuelto',
+    'mine': 'Mío',
+    'accident_location_section': '📍 Ubicación del accidente',
+    'change_location': 'Cambiar',
+    'tap_to_select_location': 'Toca para seleccionar ubicación',
+    'severity_section': '⚠️ Gravedad',
+    'description_section': '📝 Descripción',
+    'accident_description_hint':
+        'Describe qué pasó, tipo de vehículo, lesiones, etc.',
+    'photos_optional_section': '📸 Fotos (opcional)',
+    'sending': 'Enviando...',
+    'send_report': 'Enviar reporte',
+    'call_911_disclaimer': 'Si hay heridos, llama al 911 primero.',
+    'report_visible_disclaimer':
+        'Tu reporte será visible para todos los ciclistas de Biux',
+    'accident_detail_title': 'Detalle del Accidente',
+    'mark_as_resolved': 'Marcar como resuelto',
+    'accident_resolved_question': '¿El accidente ya fue atendido?',
+    'yes_resolved': 'Sí, resuelto',
+    'accident_marked_resolved': 'Accidente marcado como resuelto',
+    'mark_resolved': 'Marcar resuelto',
+    'reported_by': 'Reportado por',
+    'call_911': 'Si hay heridos, llama al 911',
+    'reported_accidents_title': 'Accidentes Reportados',
+    'list_tab': 'Lista',
+    'report_button': 'Reportar',
+    'no_active_accidents_zone': 'No hay accidentes activos en tu zona',
+
+    // === Onboarding ===
+    'onboarding_title_1': 'Bienvenido a BiUX',
+    'onboarding_desc_1':
+        'La comunidad de ciclistas más grande. Conecta con otros ciclistas, organiza rodadas y explora nuevas rutas.',
+    'onboarding_title_2': 'Grupos y Rodadas',
+    'onboarding_desc_2':
+        'Únete a grupos de ciclismo, organiza rodadas grupales y conoce ciclistas con tus mismos intereses.',
+    'onboarding_title_3': 'Tracking GPS',
+    'onboarding_desc_3':
+        'Graba tus rodadas con GPS en tiempo real. Mide tu velocidad, distancia, calorías y más.',
+    'onboarding_title_4': 'Logros y Estadísticas',
+    'onboarding_desc_4':
+        'Desbloquea medallas, sube de nivel y compite con otros ciclistas. ¡Cada pedalazo cuenta!',
+    'onboarding_title_5': 'Seguridad Primero',
+    'onboarding_desc_5':
+        'Botón SOS de emergencia, reportes viales, registro de bicicletas y contactos de emergencia.',
+    'onboarding_title_6': 'Tienda y Comunidad',
+    'onboarding_desc_6':
+        'Compra y vende accesorios, comparte experiencias y mantente informado con educación vial.',
+    'skip': 'Saltar',
+    'get_started': '¡Comenzar!',
+    'next': 'Siguiente',
+
+    // === Weather ===
+    'weather_for_cycling': 'Clima para Ciclismo',
+    'loading_weather': 'Cargando clima...',
+    'wind': 'Viento',
+    'humidity': 'Humedad',
+    'feels_like': 'Sensación',
+    'good_weather_to_ride': 'Buen clima para rodar',
+    'caution_riding': 'Precaución al rodar',
+    'weather_tips_title': '🚴 Consejos según el clima',
+    'tip_carry_water': 'Lleva siempre agua suficiente',
+    'tip_sunscreen': 'Usa protector solar en días soleados',
+    'tip_rain_braking': 'Con lluvia, frena con anticipación',
+    'tip_use_lights': 'Usa luces si hay poca visibilidad',
+    'tip_dress_layers': 'Viste capas en clima frío',
+    'advice_no_ride_storm': '⚠️ No se recomienda rodar con tormenta',
+    'advice_rain_caution': '🌧️ Lleva impermeable y cuidado con el piso mojado',
+    'advice_sun_hydrate': '☀️ Lleva protector solar e hidrátate bien',
+    'advice_strong_wind': '💨 Viento fuerte, cuidado en zonas abiertas',
+    'advice_excellent_day': '✅ Excelente día para rodar',
+    'advice_good_day': '🚴 Buen día para rodar',
+    'your_location': 'Tu ubicación',
+    'weather_clear': 'Despejado',
+    'weather_cloudy': 'Nublado',
+    'weather_fog': 'Niebla',
+    'weather_drizzle': 'Llovizna',
+    'weather_rain': 'Lluvia',
+    'weather_snow': 'Nieve',
+    'weather_heavy_rain': 'Lluvia fuerte',
+    'weather_thunderstorm': 'Tormenta',
+    'error_loading_weather': 'Error al cargar el clima',
+
+    // === Search ===
+    'search_hint': 'Buscar',
+    'search_users_groups_rides': 'Buscar usuarios, grupos, rodadas...',
+    'users_tab_count': 'Usuarios ({n})',
+    'groups_tab_count': 'Grupos ({n})',
+    'rides_tab_count': 'Rodadas ({n})',
+    'search_in_biux': 'Busca en BiUX',
+    'search_min_chars': 'Escribe al menos 2 caracteres',
+    'search_suggestion_1': 'Rodadas MTB',
+    'search_suggestion_2': 'Grupos Bogotá',
+    'search_suggestion_3': 'Ciclismo urbano',
+    'search_suggestion_4': 'Ruta nocturna',
+    'cyclist_default_name': 'Ciclista',
+    'group_default_name': 'Grupo',
+    'ride_default_name': 'Rodada',
+    'no_results_found': 'No se encontraron {type}',
+    'for_query': 'para "{query}"',
+
+    // === Social / Followers ===
+    'connections_title': 'Conexiones',
+    'followers_tab': 'Seguidores',
+    'following_tab': 'Siguiendo',
+    'no_followers_yet': 'Sin seguidores aún',
+    'not_following_anyone': 'No sigues a nadie aún',
+
+    // === Edit User ===
+    'edit_profile': 'Editar perfil',
+    'edit_username': 'Editar nombre de usuario',
+    'error_updating_profile': 'Error al actualizar perfil',
+    'complete_all_required_fields':
+        'Por favor completa todos los campos obligatorios',
+    'cover_photo': 'Foto de Portada',
+    'tap_to_change_photo': 'Tap para cambiar foto',
+    'tap_to_add_cover_photo': 'Tap para agregar foto de portada',
+    'share_profile_text': '🚴 Mira el perfil de {name} en Biux\n\n{url}',
+
+    // === Create User / Auth ===
+    'welcome_part_1': 'Bienvenido a',
+    'sign_up_to_roll': '¡Registrate para rodar!',
+    'full_name': 'Nombre Completo',
+    'username': 'Nombre de usuario',
+    'email_label': 'Correo',
+    'phone_label': 'Teléfono',
+    'password_label': 'Contraseña',
+    'repeat_password': 'Repetir Contraseña',
+    'terms_accept': 'He leído y acepto los términos y condiciones',
+    'urban': 'Urbano',
+    'route': 'Ruta',
+    'must_complete_all_fields': 'Debe completar todos los campos',
+    'profile_image_not_selected': 'La imagen de perfil no ha sido seleccionada',
+    'accept_terms_to_continue':
+        'Acepte los terminos y condiciones para continuar',
+    'now_biux_user': '¡Ahora eres usuario BIUX!',
+    'email_already_registered': 'El correo {email} ya se encuentra registrado',
+    'username_already_registered':
+        'El usuario {username} ya se encuentra registrado',
+    'enter_your_name': 'Ingresa tu nombre',
+    'enter_your_number': 'Ingresa tu numero',
+    'enter_your_city': 'Ingresa tu ciudad',
+    'enter_your_description': 'Ingresa tu descripción',
+    'email_field': 'Correo electronico',
+    'number_field': 'Numero',
+    'description_field': 'Descripción',
+    'city_field': 'Ciudad',
+    'current_location_field': 'Ubicación actual',
+    'update_button': 'Actualizar',
+    'user_updated': 'Tu usuario se ha actualizado',
+
+    // === Shop / Order ===
+    'order_detail_title': 'Detalle del pedido',
+    'order_not_found': 'Pedido no encontrado',
+    'order_number_prefix': 'Pedido #',
+    'order_status_label': 'Estado del pedido',
+    'order_date_prefix': 'Fecha: ',
+    'products_label': 'Productos',
+    'total_label': 'Total',
+    'filter_all': 'Todas',
+
+    // === Empty States ===
+    'empty_no_rides_title': 'Sin rodadas aún',
+    'empty_no_rides_desc': 'No hay rodadas programadas. ¡Crea la primera!',
+    'empty_create_ride': 'Crear rodada',
+    'empty_no_groups_title': 'Sin grupos',
+    'empty_no_groups_desc': 'Únete a un grupo o crea el tuyo propio.',
+    'empty_explore_groups': 'Explorar grupos',
+    'empty_no_posts_title': 'Sin publicaciones',
+    'empty_no_posts_desc':
+        'Aquí aparecerán las publicaciones. ¡Comparte tu primera experiencia!',
+    'empty_no_messages_title': 'Sin mensajes',
+    'empty_no_messages_desc': 'Inicia una conversación con otro ciclista.',
+    'empty_new_message': 'Nuevo mensaje',
+    'empty_no_notifications_title': 'Sin notificaciones',
+    'empty_no_notifications_desc':
+        'Las notificaciones de actividad aparecerán aquí.',
+    'empty_no_results_title': 'Sin resultados',
+    'empty_no_results_desc': 'Intenta buscar con otros términos.',
+    'empty_no_bikes_title': 'Sin bicicletas',
+    'empty_no_bikes_desc': 'Registra tu bicicleta para protegerla.',
+    'empty_register_bike': 'Registrar bicicleta',
+
+    // === Report Dialog ===
+    'report_reason_inappropriate': 'Contenido inapropiado',
+    'report_reason_spam': 'Spam o publicidad',
+    'report_reason_harassment': 'Acoso o bullying',
+    'report_reason_false_info': 'Información falsa',
+    'report_reason_impersonation': 'Suplantación de identidad',
+    'report_reason_violence': 'Contenido violento',
+    'report_reason_illegal_sales': 'Venta de productos ilegales',
+    'report_reason_other': 'Otro',
+    'report_sent_review': 'Reporte enviado. Revisaremos tu caso.',
+    'report_content_title': 'Reportar contenido',
+    'report_reason_question': '¿Por qué quieres reportar esto?',
+    'report_additional_details': 'Detalles adicionales (opcional)',
+    'report_submit': 'Enviar reporte',
+
+    // === Connectivity ===
+    'no_internet_connection': 'Sin conexión a internet',
+    'connection_restored': 'Conexión restaurada',
+
+    // === Notifications ===
+    'new_notification': 'Nueva notificación',
+    'view_action': 'Ver',
+
+    // === Image Upload ===
+    'uploading_label': 'Subiendo...',
+    'image_uploaded_success': 'Imagen subida con éxito',
+    'error_uploading_image': 'Error subiendo imagen',
+    'error_upload_generic': 'Error en la carga',
+
+    // === Roads / Create Ride ===
+    'create_ride': 'Crear Rodada',
+    'route_name': 'Nombre Ruta',
+    'meeting_point': 'Punto de encuentro',
+    'geolocation_point': 'Geolocalización del punto',
+    'distance_label': 'Distancia',
+    'date_time_label': 'Fecha y hora',
+    'description_recommendations': 'Descripción y recomendaciones',
+    'level_label': 'Nivel',
+    'ride_created_success': 'Rodada creada con éxito',
+    'error_create_ride': 'Error al crear la Rodada. Inténtelo mas tarde',
+    'distance_numbers_only': 'Distancia solo debe contener numeros',
+    'publish': 'Publicar',
+    'save_point': 'Guardar el punto',
+
+    // === Maps ===
+    'go_to_meeting_point': 'Ir al punto de encuentro',
+    'available_routes': 'Rutas disponibles:',
+    'tap_to_see_route': 'Toca para ver ruta',
+    'route_shown': 'Ruta mostrada',
+
+    // === Stories ===
+    'time_seconds_ago': 'Hace unos segundos',
+    'time_minutes_ago': 'Hace {n} min',
+    'time_hours_ago': 'Hace {n} h',
+    'time_days_ago': 'Hace {n} días',
+    'unknown_date': 'Fecha desconocida',
+    'text_share_story': ' ha compartido esta historia en Biux...',
+    'title_share_story': '¡No te pierdas esta historia de Biux!',
+    'see_more': 'más',
+    'see_less': ' menos',
+    'gallery_label': 'Galería',
+    'tell_your_story_hint': 'Cuéntanos la historia...',
+
+    // === Groups ===
+    'edit_group': 'Editar grupo',
+    'leave_text': 'Abandonar',
+    'join_me': 'Unirme',
+    'see_more_text': 'Ver más',
+    'group_created_success': '¡Tu grupo fue creado con Exito!',
+
+    // === Experiences ===
+    'error_add_media_required': 'Debes agregar al menos una imagen o video',
+    'error_description_required': 'Debes agregar una descripción',
+    'error_select_experience_type': 'Debes seleccionar un tipo de experiencia',
+    'user_default_name': 'Usuario',
+    'experiences_demo_title': 'Experiencias Demo',
+    'recent_experiences': 'Experiencias Recientes',
+
+    // === Generic ===
+    'error_generic': 'Error',
+    'cancel': 'Cancelar',
+    'retry': 'Reintentar',
+    'members': 'miembros',
+
+    // === Error Handler ===
+    'err_no_connection': 'Sin conexión a internet. Verifica tu red.',
+    'err_timeout': 'La operación tardó demasiado. Intenta de nuevo.',
+    'err_invalid_format': 'Datos con formato inválido.',
+    'err_connection': 'Error de conexión. Verifica tu red.',
+    'err_no_permission': 'No tienes permisos para esta acción.',
+    'err_unexpected': 'Ocurrió un error inesperado. Intenta de nuevo.',
+    'err_invalid_phone': 'Número de teléfono inválido. Verifica el formato.',
+    'err_too_many_requests': 'Demasiados intentos. Espera unos minutos.',
+    'err_session_expired': 'La sesión expiró. Solicita un nuevo código.',
+    'err_invalid_verification_code': 'Código de verificación inválido.',
+    'err_user_disabled': 'Tu cuenta ha sido deshabilitada.',
+    'err_credential_in_use': 'Este número ya está asociado a otra cuenta.',
+    'err_no_internet': 'Sin conexión a internet.',
+    'err_auth_generic': 'Error de autenticación.',
+    'err_resource_not_found': 'El recurso solicitado no existe.',
+    'err_service_unavailable': 'Servicio no disponible. Intenta más tarde.',
+    'err_operation_cancelled': 'Operación cancelada.',
+    'err_rate_limit': 'Límite de solicitudes alcanzado. Espera un momento.',
+    'err_server': 'Error del servidor.',
+
+    // === Auth Repository ===
+    'err_send_otp': 'Error al enviar el código OTP',
+    'err_connection_timeout':
+        'Tiempo de espera agotado. Verifica tu conexión a internet.',
+    'err_send_timeout': 'Tiempo de envío agotado. Verifica tu conexión.',
+    'err_receive_timeout': 'Servidor tardó demasiado. Intenta nuevamente.',
+    'err_invalid_phone_number': 'Número de teléfono inválido.',
+    'err_too_many_attempts': 'Demasiados intentos. Intenta en unos minutos.',
+    'err_server_error': 'Error del servidor. Por favor intenta más tarde.',
+    'err_no_wifi': 'Sin conexión a internet. Verifica tu WiFi o datos móviles.',
+    'err_ssl':
+        'Error de seguridad SSL. Verifica la fecha/hora del dispositivo.',
+    'err_validate_code': 'Error al validar el código',
+    'err_wrong_code': 'Código incorrecto. Intenta nuevamente.',
+    'err_code_expired': 'Código expirado. Solicita uno nuevo.',
+    'err_code_timeout': 'Tiempo de espera agotado. Verifica tu conexión.',
+    'err_code_invalid_or_expired': 'Código inválido o expirado',
+    'err_code_6_digits': 'El código debe tener exactamente 6 dígitos',
+    'err_server_status':
+        'Servidor respondió con código {code}. Intenta nuevamente.',
+
+    // === Native Phone Auth Provider ===
+    'err_invalid_phone_format':
+        'Número inválido. Verifica el formato (+57XXXXXXXXXX)',
+    'err_send_code': 'Error al enviar código',
+    'err_send_code_detail': 'Error al enviar código: {error}',
+    'err_request_new_code': 'Error: Solicita un nuevo código',
+    'err_invalid_code': 'Código inválido',
+    'err_code_expired_request_new': 'Código expirado. Solicita uno nuevo',
+    'err_verify_code': 'Error al verificar código',
+    'err_create_session': 'No se pudo crear sesión',
+    'err_admin_login': 'Error al iniciar sesión como admin: {error}',
+    'err_sign_out': 'Error al cerrar sesión',
+
+    // === Auth Provider ===
+    'err_max_attempts':
+        'Se alcanzó el máximo de intentos. Por favor intenta en unos minutos.',
+    'err_no_phone_found': 'Error: No se encontró número de teléfono',
+    'err_guest_login': 'Error al iniciar como invitado: {error}',
+
+    // === Authentication Repository ===
+    'err_network': 'Error de red. Verifica tu conexión.',
+    'err_user_not_found': 'El usuario no se encuentra registrado',
+    'err_wrong_password': 'Contraseña incorrecta',
+    'err_invalid_email': 'Correo electrónico inválido',
+    'err_login': 'Error al ingresar',
+    'err_email_already_use': 'El correo ya está registrado en Biux',
+    'err_register_user': 'Error al registrar el usuario',
+
+    // === Bike Provider Validations ===
+    'bike_brand_required': 'Falta ingresar la marca de la bicicleta',
+    'bike_brand_min_chars': 'La marca debe tener al menos 2 caracteres',
+    'bike_brand_invalid_chars':
+        'La marca solo puede contener letras, números y guiones',
+    'bike_model_required': 'Falta ingresar el modelo de la bicicleta',
+    'bike_model_min_chars': 'El modelo debe tener al menos 2 caracteres',
+    'bike_year_required': 'Falta seleccionar el año de la bicicleta',
+    'bike_year_range': 'El año debe estar entre 1900 y {year}',
+    'bike_color_required': 'Falta ingresar el color de la bicicleta',
+    'bike_color_invalid': 'El color solo puede contener letras',
+    'bike_size_required': 'Falta ingresar la talla de la bicicleta',
+    'bike_size_hint': 'Ingresa una talla válida (ej: S, M, L, XL, 16, 18")',
+    'bike_type_required': 'Falta seleccionar el tipo de bicicleta',
+    'bike_serial_required': 'Falta ingresar el número de serie del cuadro',
+    'bike_serial_min_chars':
+        'El número de serie debe tener al menos 4 caracteres',
+    'bike_serial_invalid_chars':
+        'El número de serie solo puede contener letras, números y guiones',
+    'bike_city_required': 'Falta ingresar la ciudad',
+    'bike_city_hint': 'Ingresa un nombre de ciudad válido',
+    'bike_photo_required': 'Falta agregar la foto principal de la bicicleta',
+    'bike_invalid_step': 'Paso inválido',
+    'bike_upload_main_photo_error':
+        'Error al subir la foto principal de la bicicleta',
+    'bike_registered_biux': 'Registrada en Biux',
+
+    // === Shop Provider ===
+    'shop_load_error': 'Error al cargar productos: {error}',
+    'shop_cart_empty_coupon': 'Agrega productos al carrito primero',
+    'shop_discount_general_10': 'Descuento general 10%',
+    'shop_discount_general_15': 'Descuento general 15%',
+    'shop_discount_general_20': 'Descuento general 20%',
+    'shop_discount_first_purchase': 'Primera compra 15%',
+    'shop_discount_cyclists': 'Ciclistas 12%',
+    'shop_discount_new_client': 'Nuevo cliente 18%',
+    'shop_discount_summer': 'Verano 2026 - 25%',
+    'shop_discount_january': 'Enero 2026 - 20%',
+    'shop_discount_vip': 'Cliente VIP 30%',
+    'shop_discount_elite': 'Elite 40%',
+    'shop_coupon_invalid': 'Cupón inválido o expirado',
+    'shop_cart_empty': 'El carrito está vacío',
+    'shop_order_error': 'Error al crear orden: {error}',
+    'shop_stock_insufficient': 'Stock insuficiente',
+    'shop_size_required': 'Debes seleccionar una talla',
+    'shop_purchase_error': 'Error al realizar compra: {error}',
+    'shop_orders_load_error': 'Error al cargar órdenes: {error}',
+    'shop_cancel_error': 'Error al cancelar orden: {error}',
+    'shop_create_product_error': 'Error al crear producto: {error}',
+    'shop_update_product_error': 'Error al actualizar producto: {error}',
+    'shop_delete_product_error': 'Error al eliminar producto: {error}',
+    'shop_cleanup_error': 'Error en limpieza de productos: {error}',
+    'shop_like_error': 'Error al dar me gusta: {error}',
+    'shop_sold_error': 'Error al marcar como vendido: {error}',
+    'shop_no_sales_data': 'Sin datos de ventas aún',
+    'shop_no_visits_data': 'Sin datos de visitas aún',
+    'shop_no_security_issues': 'No se detectaron problemas de seguridad',
+    'shop_access_alerts': 'Recibe alertas cuando alguien accede',
+    'shop_action_log': 'Guarda un log de todas las acciones',
+    'shop_block_attempts': 'Bloquea tras 5 intentos fallidos',
+    'shop_hint_serial': 'Ej: AB123456789',
+    'shop_hint_brand': 'Ej: Trek, Giant, Specialized...',
+    'shop_hint_year': '2024',
+
+    // === Cart Provider ===
+    'cart_stock_insufficient': 'Stock insuficiente. Disponibles: {count}',
+    'cart_enter_coupon': 'Ingresa un código de cupón',
+    'cart_coupon_invalid': 'Cupón no válido',
+    'cart_coupon_expired': 'Cupón expirado o inactivo',
+    'cart_free_shipping': 'Envío gratis (equivalente a \$10,000)',
+
+    // === Comments Provider ===
+    'comments_login_required': 'Debes iniciar sesión para comentar',
+    'comments_no_permission': 'Sin permisos. Verifica reglas de Firebase',
+    'comments_no_connection': 'Sin conexión a internet',
+    'comments_post_error': 'Error al publicar comentario: {error}',
+    'comments_edit_error': 'Error al editar comentario: {error}',
+    'comments_cooldown': 'Espera unos segundos antes de comentar nuevamente',
+    'comments_empty': 'El comentario no puede estar vacío',
+    'comments_too_long': 'El comentario no puede tener más de 500 caracteres',
+    'comments_missing_plugin': 'Firebase DB no cargado. Reinicia la app',
+    'comments_delete_no_permission':
+        'No tienes permiso para eliminar este comentario',
+    'comments_not_exist': 'El comentario no existe',
+    'comments_delete_error': 'Error al eliminar comentario',
+
+    // === Likes Provider ===
+    'likes_error': 'Error al dar like',
+    'likes_unlike_error': 'Error al quitar like',
+
+    // === Attendees Provider ===
+    'attendees_join_error': 'Error al unirse a la rodada',
+    'attendees_update_error': 'Error al actualizar estado',
+    'attendees_leave_error': 'Error al salir de la rodada',
+
+    // === Notifications Provider ===
+    'notif_mark_read_error': 'Error al marcar como leída',
+    'notif_mark_all_read_error': 'Error al marcar todas como leídas',
+    'notif_delete_error': 'Error al eliminar notificación',
+    'notif_delete_all_error': 'Error al eliminar todas las notificaciones',
+
+    // === User Providers ===
+    'user_update_error': 'Error al actualizar el perfil. Intenta nuevamente.',
+    'user_authorize_seller_error': 'Error al autorizar vendedor',
+    'user_revoke_permission_error': 'Error al revocar permiso',
+    'user_follow_error': 'Error al seguir al usuario',
+    'user_unfollow_error': 'Error al dejar de seguir',
+    'user_profile_load_error': 'Error al cargar el perfil del usuario',
+    'user_username_update_error': 'Error al actualizar el nombre de usuario',
+
+    // === Group Provider ===
+    'group_complete_name_required':
+        'Debes completar tu nombre en el perfil antes de unirte a grupos',
+    'group_no_phone': 'Sin teléfono',
+
+    // === Ride Tracker Provider ===
+    'tracker_gps_required': 'Activa el GPS para grabar tu rodada',
+    'tracker_location_permission':
+        'Se necesita permiso de ubicación para grabar',
+    'tracker_location_denied':
+        'Permiso de ubicación denegado. Actívalo en Configuración.',
+    'cyclist_level_legend': 'leyenda',
+    'cyclist_level_expert': 'experto',
+    'cyclist_level_advanced': 'avanzado',
+    'cyclist_level_intermediate': 'intermedio',
+    'cyclist_level_novice': 'novato',
+
+    // === Cycling Stats ===
+    'time_just_now': 'Justo ahora',
+
+    // === Achievements ===
+    'achievement_first_pedals': 'Primeros Pedales',
+    'achievement_first_pedals_desc': 'Recorre 10 km',
+    'achievement_explorer': 'Explorador',
+    'achievement_explorer_desc': 'Recorre 50 km',
+    'achievement_centenary': 'Centenario',
+    'achievement_centenary_desc': 'Recorre 100 km',
+    'achievement_tireless': 'Rodador Incansable',
+    'achievement_tireless_desc': 'Recorre 500 km',
+    'achievement_thousand_club': 'Mil Km Club',
+    'achievement_thousand_club_desc': 'Recorre 1,000 km',
+    'achievement_ultra': 'Ultra Ciclista',
+    'achievement_ultra_desc': 'Recorre 5,000 km',
+    'achievement_first_ride': 'Primera Rodada',
+    'achievement_first_ride_desc': 'Completa tu primera rodada',
+    'achievement_regular': 'Habitual',
+    'achievement_regular_desc': 'Completa 10 rodadas',
+    'achievement_veteran': 'Veterano',
+    'achievement_veteran_desc': 'Completa 50 rodadas',
+    'achievement_centurion': 'Centurion',
+    'achievement_centurion_desc': 'Completa 100 rodadas',
+    'achievement_sprinter': 'Velocista',
+    'achievement_sprinter_desc': 'Alcanza 30 km/h',
+    'achievement_lightning': 'Rayo',
+    'achievement_lightning_desc': 'Alcanza 40 km/h',
+    'achievement_supersonic': 'Supersonica',
+    'achievement_supersonic_desc': 'Alcanza 50 km/h',
+    'achievement_consistent': 'Constante',
+    'achievement_consistent_desc': '3 dias seguidos pedaleando',
+    'achievement_perfect_week': 'Semana Perfecta',
+    'achievement_perfect_week_desc': '7 dias seguidos',
+    'achievement_machine': 'Maquina',
+    'achievement_machine_desc': '30 dias seguidos',
+    'achievement_social': 'Social',
+    'achievement_social_desc': 'Unete a un grupo',
+    'achievement_popular': 'Popular',
+    'achievement_popular_desc': 'Unete a 5 grupos',
+    'achievement_nocturnal': 'Nocturno',
+    'achievement_nocturnal_desc': 'Completa una rodada nocturna',
+    'achievement_rain_or_shine': 'Lluvia o Sol',
+    'achievement_rain_or_shine_desc': 'Pedalea bajo la lluvia',
+    'achievement_early_bird': 'Madrugador',
+    'achievement_early_bird_desc': 'Rodada antes de las 6am',
+
+    // === Shared Screens ===
+    'location_move_map': 'Mueve el mapa para seleccionar',
+    'location_confirm': 'Confirmar',
+    'location_selected': 'Ubicación seleccionada',
+    'location_move_pin':
+        'Mueve el mapa para posicionar el pin rojo en el lugar exacto del accidente',
+    'no_connection_title': 'Sin conexión',
+    'no_connection_message':
+        'Verifica tu conexión a internet e intenta de nuevo.',
+    'error_something_wrong': 'Algo salió mal',
+    'select_location_title': 'Seleccionar ubicación',
+    'post_edited': 'editado',
+    'post_invalid_url': 'URL no válida',
+
+    // === QR / Stolen bike verification ===
+    'qr_invalid': 'Código QR inválido',
+    'qr_product_not_found': 'Producto no encontrado en el sistema',
+    'qr_serial_mismatch': 'El número de serie no coincide',
+    'qr_not_verified': 'Esta bicicleta no está verificada como segura',
+    'qr_verify_error': 'Error al verificar el código QR',
+    'stolen_not_registered': 'Bicicleta no registrada en el sistema Biux',
+    'stolen_sale_blocked':
+        'No se permite la venta de bicicletas robadas. Se ha notificado al propietario y a las autoridades.',
+    'stolen_verified_safe':
+        'Bicicleta registrada en Biux y verificada como segura',
+    'stolen_partial_verification': 'Verificación parcial completada',
+    'stolen_verify_error': 'Error al verificar la bicicleta',
+
+    // === Roads Repository ===
+    'roads_join_group_required':
+        'Debes unirte al grupo para poder participar en esta rodada',
+
+    // === Payments ===
+    'payments_coming_soon': 'Pagos proximamente disponibles',
+
+    // === Experiences Extra ===
+    'experience_add_media_required':
+        'Debes agregar al menos una imagen o video',
+    'experience_post_multimedia': 'Post con Multimedia',
+    'experience_photos_only': 'Solo fotos',
+    'experience_post_text': 'Post de Texto',
+    'experience_text_only': 'Solo texto, sin multimedia',
+    'experience_tags_optional': 'Tags (opcional)',
+    'experience_tags_hint':
+        'ej: ciclismo, montaña, aventura (separados por comas)',
+    'experience_story_label': 'Story',
+    'experience_post_label': 'Post',
+    'experience_processing': 'Procesando...',
+    'experience_video_error': 'Error al cargar el video: {error}',
+    'experience_biux_premium': 'Biux Premium',
+
+    // === Misc ===
+    'open_google_maps': 'Google Maps',
+    'only_numbers': 'Solo números',
+    'following_label': 'Siguiendo',
+    'points_label': 'Puntos',
+    'admin_revoke_error': 'No se puede revocar permisos a un administrador',
+    'notification_channel_desc': 'Notificaciones generales de la aplicación',
+
+    // === Bike Actions Stubs ===
+    'stub_theft_report': 'Reporte de robo enviado (stub).',
+    'stub_recovered': 'Marcado como recuperada (stub).',
+    'stub_transfer': 'Transferencia iniciada (stub).',
+
+    // === Firebase Diagnostic ===
+    'diagnostic_not_tested': 'Sin probar',
+    'diagnostic_title': 'Diagnóstico Firebase DB',
+    'diagnostic_rebuild_hint':
+        'Si aparece MissingPluginException, necesitas rebuild completo',
+
+    // === PDF Export ===
+    'pdf_report_title': 'Reporte de Alertas de Bicicletas Robadas',
+    'pdf_footer': 'Biux - Plataforma de Ciclismo',
+    'pdf_no_date': 'Sin fecha',
+    'pdf_alert': 'ALERTA',
+    'pdf_seller': 'Vendedor',
+    'pdf_bicycle': 'Bicicleta',
+    'pdf_serial': 'Serial',
+
+    // === Seller ===
+    'seller_no_name': 'Sin nombre',
+
+    // === User Provider ===
+    'user_error_creating_test': 'Error creando usuario de prueba',
+    'user_error_loading_data': 'Error cargando datos del usuario',
+    'user_error_not_logged_in':
+        'No has iniciado sesión. Por favor, inicia sesión primero.',
+    'user_error_empty_fields':
+        'Por favor ingresa al menos un campo para actualizar',
+    'user_error_update_profile':
+        'Error al actualizar el perfil. Intenta nuevamente.',
+    'user_error_upload_image': 'Error subiendo imagen',
+    'user_error_request_deletion': 'Error solicitando eliminación de cuenta',
+    'user_error_admin_only_authorize':
+        'Solo los administradores pueden autorizar vendedores',
+    'user_error_authorize_seller': 'Error al autorizar vendedor',
+    'user_error_admin_only_revoke':
+        'Solo los administradores pueden revocar permisos',
+    'user_error_revoke_permission': 'Error al revocar permiso',
+    'user_error_admin_only_list':
+        'Solo los administradores pueden ver la lista de usuarios',
+    'user_error_load_users': 'Error al cargar usuarios',
+    'user_error_not_authenticated': 'No estás autenticado',
+    'user_error_follow': 'Error al seguir al usuario',
+    'user_error_unfollow': 'Error al dejar de seguir',
+    'user_error_load_profile': 'Error al cargar el perfil del usuario',
+
+    // === Username Provider ===
+    'username_current': 'Username actual',
+    'username_invalid_format': 'Formato inválido',
+    'username_checking': 'Verificando disponibilidad...',
+    'username_available': '✓ Disponible',
+    'username_not_available': '✗ No disponible',
+    'username_check_error': 'Error verificando disponibilidad',
+    'username_not_authenticated': 'Usuario no autenticado',
+    'username_already_taken': 'El username ya no está disponible',
+    'username_update_error': 'Error al actualizar el nombre de usuario',
+
+    // === Group Provider ===
+    'group_error_create': 'Error al crear el grupo',
+    'group_error_edit': 'Error al editar el grupo',
+    'group_error_load': 'Error al cargar el grupo',
+    'group_error_not_authenticated': 'Usuario no autenticado',
+    'group_error_user_not_found': 'Usuario no encontrado',
+    'group_error_complete_profile':
+        'Debes completar tu nombre en el perfil antes de unirte a grupos',
+    'group_error_request_join': 'Error al solicitar ingreso',
+    'group_error_approve': 'Error al aprobar solicitud',
+    'group_error_reject': 'Error al rechazar solicitud',
+    'group_error_cancel_request': 'Error al cancelar solicitud',
+    'group_error_leave': 'Error al salir del grupo',
+    'group_error_select_image': 'Error al seleccionar imagen',
+    'group_user_no_name': 'Usuario sin nombre',
+    'group_default_user': 'Usuario',
+    'group_default_username': 'usuario',
+
+    // === Ride Tracker Provider ===
+    'ride_error_gps_disabled': 'Activa el GPS para grabar tu rodada',
+    'ride_error_location_permission':
+        'Se necesita permiso de ubicación para grabar',
+    'ride_error_location_denied':
+        'Permiso de ubicación denegado. Actívalo en Configuración.',
+
+    // === Cycling Stats Provider ===
+    'stats_just_now': 'Justo ahora',
+    'stats_seconds_ago': 'Hace unos segundos',
+    'stats_minutes_ago': 'Hace unos minutos',
+    'stats_hours_ago': 'Hace unas horas',
+    'stats_error_load': 'Error al cargar estadísticas',
+    'stats_error_refresh': 'Error al actualizar',
+    'stats_error_add_ride': 'Error al registrar rodada',
+    'stats_error_leaderboard': 'Error al cargar ranking',
+
+    // === Cycling Stats Entity ===
+    'level_novice': 'Novato',
+
+    // === Migrated hardcoded strings ===
+    'seller_unknown': 'Vendedor desconocido',
+    'seller_default': 'Vendedor',
+    'exp_demo_title': 'Experiencias Demo',
+    'exp_demo_recent': 'Experiencias Recientes',
+    'exp_max_files_allowed': 'Máximo 10 archivos permitidos',
+    'exp_file_not_available': 'El archivo seleccionado no está disponible',
+    'exp_error_selecting_image': 'Error seleccionando imagen',
+    'exp_max_images_reached': 'Ya tienes el máximo de 10 imágenes',
+    'exp_error_selecting_images': 'Error seleccionando imágenes',
+    'exp_photo_not_available': 'La foto tomada no está disponible',
+    'exp_error_taking_photo': 'Error tomando foto',
+    'exp_cropped_not_available': 'El archivo recortado no está disponible',
+    'exp_error_adding_cropped': 'Error agregando imagen recortada',
+    'exp_video_not_available': 'El video seleccionado no está disponible',
+    'exp_video_too_long': 'El video debe durar máximo 30 segundos',
+    'exp_error_selecting_video': 'Error seleccionando video',
+    'exp_recorded_not_available': 'El video grabado no está disponible',
+    'exp_error_recording_video': 'Error grabando video',
+    'exp_media_required': 'Debes agregar al menos una imagen o video',
+    'exp_description_required': 'La descripción es requerida para este post',
+    'exp_error_creating': 'Error creando experiencia',
+    'validator_number': r'^[0-9]+$',
+    'exp_content_story': 'Story',
+    'exp_content_post': 'Publicación',
+
+    // === Misc migration batch ===
+    // PDF Export
+    'pdf_unknown_city': 'Desconocida',
+    'pdf_alerts_by_city': 'Alertas por Ciudad',
+    'pdf_city': 'Ciudad',
+    'pdf_alerts': 'Alertas',
+    'pdf_percentage': 'Porcentaje',
+    'pdf_most_affected_brands': 'Marcas más Afectadas',
+    'pdf_brand': 'Marca',
+    'pdf_alert_details': 'Detalle de Alertas',
+    'pdf_stolen_bike_report': 'Reporte de Alertas de Bicicletas Robadas',
+    'pdf_generated': 'Generado',
+    'pdf_period': 'Periodo',
+    'pdf_cycling_platform': 'Plataforma de Ciclismo',
+    'pdf_page': 'Página',
+    'pdf_of': 'de',
+    'pdf_total_alerts': 'Total Alertas',
+    'pdf_unique_sellers': 'Vendedores Únicos',
+    'pdf_affected_cities': 'Ciudades Afectadas',
+    'pdf_alert_badge': 'ALERTA',
+    'pdf_unknown_seller': 'Desconocido',
+    'pdf_color': 'Color',
+    // Admin usecases
+    'error_invalid_user_id': 'ID de usuario inválido',
+    'error_cannot_revoke_admin':
+        'No se puede revocar permisos a un administrador',
+    // Payments
+    // Roads repository
+    'error_update_group': 'Fallo en actualizar grupo',
+    'must_join_group_for_ride':
+        'Debes unirte al grupo para poder participar en esta rodada',
+    'deleted_successfully': 'Se eliminó con éxito',
+    // Bike stubs
+    'stub_theft_report_sent': 'Reporte de robo enviado (stub).',
+    'stub_marked_recovered': 'Marcado como recuperada (stub).',
+    'stub_transfer_initiated': 'Transferencia iniciada (stub).',
+    // Notifications
+    'notif_new_notification': 'Nueva notificación',
+    'notif_stolen_bike_alert_title':
+        '🚨 ALERTA: Intento de venta de tu bicicleta robada',
+    'notif_admin_theft_alert_title':
+        '⚠️ Alerta de Seguridad: Intento de venta de bici robada',
+    // Hardcoded strings fix
+    'error_post_not_found': 'Publicación no encontrada',
+    'error_user_not_found': 'Usuario no encontrado',
+    'field_full_name': 'nombre completo',
+    'field_username': 'nombre de usuario',
+    'field_photo_url': 'foto de perfil',
+    'field_gender': 'género',
+    'field_birth_date': 'fecha de nacimiento',
+    'field_phone': 'número de teléfono',
+    'field_city': 'ciudad',
+    'please_complete_fields': 'Por favor completa: {fields}',
+    'exp_tags_hint': 'ej: ciclismo, montaña, aventura (separados por comas)',
   };
+
+  // ─── ENGLISH ────────────────────────────────────────────────────
   static const Map<String, String> _en = {
     // General
     'settings': 'Settings',
     'back': 'Back',
-    'cancel': 'Cancel',
     'send': 'Send',
     'understood': 'Got it',
     'currently': 'Currently',
@@ -2450,7 +3196,7 @@ class AppTranslations {
     'notifications': 'Notifications',
     'notifications_subtitle': 'Enable/disable, Sound, Vibration',
     'appearance': 'Appearance',
-    'appearance_subtitle': 'Light/dark mode, Font size, Language',
+    'appearance_subtitle': 'Light/dark mode, Language',
     'privacy': 'Privacy',
     'privacy_subtitle': 'Who can see your profile, Permissions',
     'information': 'Information',
@@ -2491,14 +3237,8 @@ class AppTranslations {
     'app_theme': 'App Theme',
     'light_mode': 'Light Mode',
     'dark_mode': 'Dark Mode',
-    'text': 'Text',
-    'font_size': 'Font Size',
     'language': 'Language',
     'select_language': 'Select Language',
-    'small': 'Small',
-    'medium': 'Medium',
-    'large': 'Large',
-    'very_large': 'Very Large',
 
     // Privacy
     'privacy_control': 'Privacy Control',
@@ -2523,6 +3263,8 @@ class AppTranslations {
     'legal_policies': 'Legal & Policies',
     'terms_conditions': 'Terms & Conditions',
     'terms_subtitle': 'Read our terms of service',
+    'terms_content':
+        'Biux Terms & Conditions\n\n1. ACCEPTANCE OF TERMS\nBy using the Biux app, you accept these terms and conditions in their entirety.\n\n2. RESPONSIBLE USE\nThe user agrees to use the app responsibly and legally.\n\n3. USER CONTENT\nThe user is responsible for the content they publish on the platform.\n\n4. PRIVACY\nYour personal data will be protected according to our privacy policy.\n\n5. LIMITATION OF LIABILITY\nBiux is not responsible for indirect damages or data loss.\n\n6. CHANGES TO TERMS\nWe reserve the right to modify these terms at any time.\n\n7. CONTACT\nFor questions about these terms, contact us at support@biux.com',
     'support': 'Support',
     'tech_support': 'Technical Support',
     'tech_support_subtitle': 'Contact our team',
@@ -2576,15 +3318,12 @@ class AppTranslations {
     'yes_cancel': 'Yes, cancel',
     'view': 'View',
     'gallery': 'Gallery',
-    'take_photo': 'Take photo',
-    'select_from_gallery': 'Select from gallery',
     'delete_image': 'Delete image',
     'uploading': 'Uploading...',
     'save_changes': 'Save changes',
 
     // Profile/Users
     'my_profile': 'My Profile',
-    'edit_profile': 'Edit Profile',
     'profile': 'Profile',
     'user_profile': 'User Profile',
     'followers': 'Followers',
@@ -2611,10 +3350,7 @@ class AppTranslations {
     'share_profile': 'Share profile',
     'could_not_load_profile': 'Could not load the profile',
     'loading_followers': 'Loading followers...',
-    'no_followers_yet': 'No followers yet',
-    'not_following_anyone': 'Not following anyone yet',
     'no_name': 'No name',
-    'retry': 'Retry',
     'check_connection_retry': 'Check your connection and try again',
     'closing_session': 'Signing out...',
     'error_deleting': 'Error deleting',
@@ -2625,8 +3361,6 @@ class AppTranslations {
     'search_users_description': 'Type a name or username to find friends',
     'edit_user': 'Edit User',
     'error_updating_username': 'Error updating username',
-    'edit_username': 'Edit username',
-    'error_updating_profile': 'Error updating profile',
     'tap_add_cover_photo': 'Tap to add cover photo',
     'account_info': 'Account Information',
     'change_password': 'Change Password',
@@ -2639,7 +3373,6 @@ class AppTranslations {
 
     // Rides
     'rides': 'Rides',
-    'create_ride': 'Create Ride',
     'create_new_ride': 'Create new ride',
     'edit_ride': 'Edit ride',
     'ride_not_found': 'Ride not found',
@@ -2701,7 +3434,6 @@ class AppTranslations {
     'ride_image_optional': 'Ride image (optional)',
     'add_image': 'Add image',
     'update_ride': 'Update Ride',
-    'meeting_point': 'Meeting point',
     'custom_point': 'Custom point',
     'select_a_meeting_point': 'Select a meeting point',
     'add_custom_point': 'Add custom point',
@@ -2715,7 +3447,6 @@ class AppTranslations {
     'difficulty_hard': 'Hard',
     'difficulty_expert': 'Expert',
     'ride_updated_success': 'Ride updated successfully',
-    'ride_created_success': 'Ride created successfully',
     'saved_coordinates': 'Saved coordinates:',
     'custom_point_needs_location': 'Custom point must have a location',
     'enter_point_name': 'Enter a name for the point',
@@ -2749,7 +3480,6 @@ class AppTranslations {
         'Are you sure you no longer want to attend this ride?',
     'no_attendees_yet': 'No confirmed attendees yet',
     'user_no_name': 'User without name',
-    'members': 'members',
     'confirmed': 'confirmed',
     'no_label': 'No',
 
@@ -2758,7 +3488,6 @@ class AppTranslations {
     'create_group': 'Create Group',
     'create_new_group': 'Create new group',
     'my_groups': 'My Groups',
-    'edit_group': 'Edit Group',
     'group_not_found': 'Group not found',
     'back_to_groups': 'Back to Groups',
     'no_members': 'No members in this group',
@@ -2791,7 +3520,6 @@ class AppTranslations {
     'city': 'City',
     'select_city': 'Select a city',
     'already_admin': 'You\'re already admin of another group',
-    'group_created_success': 'Group created successfully',
     'group_updated_success': 'Group updated successfully',
     'view_my_group': 'View My Group',
     'user_accepted': 'has been accepted in the group',
@@ -2861,7 +3589,6 @@ class AppTranslations {
     'could_not_open_link': 'Could not open the link',
     'link_not_available': 'Link not available',
     'cancel_all': 'Cancel all',
-    'new_notification': 'New notification',
     'no_notifications': 'You have no notifications',
     'share_photo_coming_soon': 'Share photo coming soon',
 
@@ -2872,7 +3599,6 @@ class AppTranslations {
     'delete_story_confirm': 'Are you sure you want to delete this story?',
     'story_deleted': 'Story deleted successfully',
     'promoted_story': 'PROMOTED STORY',
-    'publish': 'Publish',
     'publish_as_ad': 'Publish as Ad',
     'boost_your_story': 'Boost your story',
 
@@ -2896,7 +3622,6 @@ class AppTranslations {
     'explore_store_favorites':
         'Explore the store and mark your favorite products',
     'go_to_store': 'Go to store',
-    'send_report': 'Send Report',
     'must_login': 'You must log in',
     'biux_shop': 'BiuX Shop',
     'visitor': 'Visitor',
@@ -2985,9 +3710,7 @@ class AppTranslations {
     'favorite_products': 'favorite product(s)',
     'product_not_found': 'Product not found',
     'stolen_bikes_title': 'Stolen Bikes',
-    'list_tab': 'List',
     'verify_tab': 'Verify',
-    'report_tab': 'Report',
     'reported_stat': 'Reported',
     'cities_stat': 'Cities',
     'this_month_stat': 'This month',
@@ -2996,7 +3719,6 @@ class AppTranslations {
     'type_label': 'Type',
     'order_label': 'Order',
     'no_results': 'No results',
-    'no_results_found': 'No results found',
     'bike_verifier': 'Bike Verifier',
     'bike_verifier_desc':
         'Enter the serial number to check if it is reported as stolen.',
@@ -3034,8 +3756,6 @@ class AppTranslations {
     'complaint_label': 'Complaint',
     'required_field': 'Required',
     'results_count': 'result(s)',
-    'search_hint': 'Search...',
-    'filter_all': 'All',
     'sort_recent': 'Recent',
     'sort_city': 'City',
     'sort_brand': 'Brand',
@@ -3473,9 +4193,6 @@ class AppTranslations {
 
     // Time ago
     'time_now': 'Now',
-    'time_ago_days': '{n}d ago',
-    'time_ago_hours': '{n}h ago',
-    'time_ago_minutes': '{n}m ago',
     'time_full_second': '{n} second ago',
     'time_full_seconds': '{n} seconds ago',
     'time_full_minute': '{n} minute ago',
@@ -3562,7 +4279,6 @@ class AppTranslations {
     'no_bikes_registered': 'You have no registered bikes',
     'register_first_bike': 'Register your first bike',
     'step': 'Step',
-    'next': 'Next',
     'previous': 'Previous',
     'finish': 'Finish',
     'main_photo_label': 'Main Photo',
@@ -3764,7 +4480,6 @@ class AppTranslations {
         'Explore our store and add the products you like the most',
     'find_amazing_products': 'Find amazing products for your cycling',
     'cop_each': 'COP each',
-    'products_label': 'Products',
     'card': 'Card',
     'available_shipping': 'Available shipping to',
     'all_colombia': 'All Colombia',
@@ -3900,7 +4615,6 @@ class AppTranslations {
     'no_reports_created': 'You haven\'t created any reports yet.',
     'admin_reports_panel': 'Admin Reports Panel',
     'in_review': 'In Review',
-    'resolved': 'Resolved',
     'report_title_field': 'Report title',
     'attach_evidence': 'Attach Evidence',
     'report_sent_success': 'Report sent successfully',
@@ -3963,7 +4677,6 @@ class AppTranslations {
     'admin_will_review':
         'An administrator will review your request and notify you.',
     'please_write_message': 'Please write a message',
-    'sending': 'Sending...',
     'request_sent_success': 'Request sent. An admin will review it soon.',
     'request_error': 'Error sending request. Try again.',
 
@@ -4009,7 +4722,6 @@ class AppTranslations {
     'products_eliminated': 'products deleted',
 
     // My orders - remaining
-    'order_number_prefix': 'Order',
     'more_products_suffix': 'more',
     'total_colon': 'Total:',
 
@@ -4041,7 +4753,6 @@ class AppTranslations {
     'error_unfollow': 'Error unfollowing',
 
     // Account settings screen
-    'email_label': 'Email',
     'not_linked': 'Not linked',
     'linked_devices': 'Linked Devices',
     'this_device': 'This Device',
@@ -4387,7 +5098,6 @@ class AppTranslations {
     'processing_multimedia': 'Processing multimedia',
     'completed_label': 'Completed',
     'profile_photo': 'Profile Photo',
-    'cover_photo': 'Cover Photo',
     'your_full_name': 'Your full name',
     'your_username': 'your_username',
     'description_bio': 'Description / Bio',
@@ -4528,14 +5238,12 @@ class AppTranslations {
     'ride_details': 'Ride details',
     'attendees': 'Attendees',
     'cancel_registration': 'Cancel registration',
-    'route': 'Route',
     'departure_time': 'Departure time',
     'emergency': 'Emergency',
     'call': 'Call',
     'police': 'Police',
     'firefighters': 'Firefighters',
     'ambulance': 'Ambulance',
-    'report_accident': 'Report accident',
     'chats': 'Chats',
     'write_message': 'Write a message...',
     'no_messages': 'No messages',
@@ -4912,6 +5620,772 @@ class AppTranslations {
     'continue_editing': 'Continue editing',
     'chat': 'Chat',
     'send_first_message': 'Send the first message!',
+
+    // === Accidents ===
+    'time_ago_now': 'Now',
+    'time_ago_minutes': '{n} min ago',
+    'time_ago_hours': '{n} h ago',
+    'time_ago_days': '{n} d ago',
+    'severity_severe': 'Severe',
+    'severity_moderate': 'Moderate',
+    'severity_minor': 'Minor',
+    'permission_required': 'Permission required',
+    'camera_permission_message':
+        'Biux needs access to your camera. Go to Settings to enable it.',
+    'gallery_permission_message':
+        'Biux needs access to your gallery. Go to Settings to enable it.',
+    'open_settings': 'Open Settings',
+    'camera_permission_needed': 'Camera permission needed',
+    'gallery_permission_needed': 'Gallery permission needed',
+    'take_photo': 'Take photo',
+    'select_from_gallery': 'Select from gallery',
+    'accident_description_required': 'Write a description of the accident',
+    'accident_location_required': 'Select the accident location',
+    'anonymous': 'Anonymous',
+    'accident_reported_success':
+        '✅ Accident reported. Now visible to everyone.',
+    'accident_location': 'Accident location',
+    'accidents_title': 'Accidents',
+    'reports_tab': 'Reports',
+    'map_tab': 'Map',
+    'report_tab': 'Report',
+    'error_loading_reports': 'Error loading reports',
+    'no_accidents_reported': 'No accidents reported!',
+    'no_active_accidents': 'No active accidents at this time',
+    'report_accident': 'Report an accident',
+    'active_count': '{n} active',
+    'visible_for_all': 'Visible for all',
+    'active_label': 'ACTIVE',
+    'resolved_label': 'RESOLVED',
+    'resolved': 'Resolved',
+    'mine': 'Mine',
+    'accident_location_section': '📍 Accident location',
+    'change_location': 'Change',
+    'tap_to_select_location': 'Tap to select location',
+    'severity_section': '⚠️ Severity',
+    'description_section': '📝 Description',
+    'accident_description_hint':
+        'Describe what happened, vehicle type, injuries, etc.',
+    'photos_optional_section': '📸 Photos (optional)',
+    'sending': 'Sending...',
+    'send_report': 'Send report',
+    'call_911_disclaimer': 'If there are injuries, call 911 first.',
+    'report_visible_disclaimer':
+        'Your report will be visible to all Biux cyclists',
+    'accident_detail_title': 'Accident Detail',
+    'mark_as_resolved': 'Mark as resolved',
+    'accident_resolved_question': 'Has the accident been attended?',
+    'yes_resolved': 'Yes, resolved',
+    'accident_marked_resolved': 'Accident marked as resolved',
+    'mark_resolved': 'Mark resolved',
+    'reported_by': 'Reported by',
+    'call_911': 'If there are injuries, call 911',
+    'reported_accidents_title': 'Reported Accidents',
+    'list_tab': 'List',
+    'report_button': 'Report',
+    'no_active_accidents_zone': 'No active accidents in your area',
+
+    // === Onboarding ===
+    'onboarding_title_1': 'Welcome to BiUX',
+    'onboarding_desc_1':
+        'The largest cycling community. Connect with other cyclists, organize rides and explore new routes.',
+    'onboarding_title_2': 'Groups and Rides',
+    'onboarding_desc_2':
+        'Join cycling groups, organize group rides and meet cyclists with your same interests.',
+    'onboarding_title_3': 'GPS Tracking',
+    'onboarding_desc_3':
+        'Record your rides with real-time GPS. Measure your speed, distance, calories and more.',
+    'onboarding_title_4': 'Achievements and Statistics',
+    'onboarding_desc_4':
+        'Unlock medals, level up and compete with other cyclists. Every pedal stroke counts!',
+    'onboarding_title_5': 'Safety First',
+    'onboarding_desc_5':
+        'Emergency SOS button, road reports, bike registration and emergency contacts.',
+    'onboarding_title_6': 'Shop and Community',
+    'onboarding_desc_6':
+        'Buy and sell accessories, share experiences and stay informed with road education.',
+    'skip': 'Skip',
+    'get_started': 'Get started!',
+    'next': 'Next',
+
+    // === Weather ===
+    'weather_for_cycling': 'Weather for Cycling',
+    'loading_weather': 'Loading weather...',
+    'wind': 'Wind',
+    'humidity': 'Humidity',
+    'feels_like': 'Feels like',
+    'good_weather_to_ride': 'Good weather to ride',
+    'caution_riding': 'Caution riding',
+    'weather_tips_title': '🚴 Weather tips',
+    'tip_carry_water': 'Always carry enough water',
+    'tip_sunscreen': 'Use sunscreen on sunny days',
+    'tip_rain_braking': 'In rain, brake ahead of time',
+    'tip_use_lights': 'Use lights in low visibility',
+    'tip_dress_layers': 'Dress in layers in cold weather',
+    'advice_no_ride_storm': '⚠️ Not recommended to ride in a storm',
+    'advice_rain_caution': '🌧️ Bring a raincoat and watch for wet roads',
+    'advice_sun_hydrate': '☀️ Bring sunscreen and stay hydrated',
+    'advice_strong_wind': '💨 Strong wind, be careful in open areas',
+    'advice_excellent_day': '✅ Excellent day to ride',
+    'advice_good_day': '🚴 Good day to ride',
+    'your_location': 'Your location',
+    'weather_clear': 'Clear',
+    'weather_cloudy': 'Cloudy',
+    'weather_fog': 'Fog',
+    'weather_drizzle': 'Drizzle',
+    'weather_rain': 'Rain',
+    'weather_snow': 'Snow',
+    'weather_heavy_rain': 'Heavy rain',
+    'weather_thunderstorm': 'Thunderstorm',
+    'error_loading_weather': 'Error loading weather',
+
+    // === Search ===
+    'search_hint': 'Search',
+    'search_users_groups_rides': 'Search users, groups, rides...',
+    'users_tab_count': 'Users ({n})',
+    'groups_tab_count': 'Groups ({n})',
+    'rides_tab_count': 'Rides ({n})',
+    'search_in_biux': 'Search in BiUX',
+    'search_min_chars': 'Type at least 2 characters',
+    'search_suggestion_1': 'MTB Rides',
+    'search_suggestion_2': 'Bogotá Groups',
+    'search_suggestion_3': 'Urban cycling',
+    'search_suggestion_4': 'Night route',
+    'cyclist_default_name': 'Cyclist',
+    'group_default_name': 'Group',
+    'ride_default_name': 'Ride',
+    'no_results_found': 'No {type} found',
+    'for_query': 'for "{query}"',
+
+    // === Social / Followers ===
+    'connections_title': 'Connections',
+    'followers_tab': 'Followers',
+    'following_tab': 'Following',
+    'no_followers_yet': 'No followers yet',
+    'not_following_anyone': 'Not following anyone yet',
+
+    // === Edit User ===
+    'edit_profile': 'Edit profile',
+    'edit_username': 'Edit username',
+    'error_updating_profile': 'Error updating profile',
+    'complete_all_required_fields': 'Please complete all required fields',
+    'cover_photo': 'Cover Photo',
+    'tap_to_change_photo': 'Tap to change photo',
+    'tap_to_add_cover_photo': 'Tap to add cover photo',
+    'share_profile_text': '🚴 Check out {name}\'s profile on Biux\n\n{url}',
+
+    // === Create User / Auth ===
+    'welcome_part_1': 'Welcome to',
+    'sign_up_to_roll': 'Sign up to ride!',
+    'full_name': 'Full Name',
+    'username': 'Username',
+    'email_label': 'Email',
+    'phone_label': 'Phone',
+    'password_label': 'Password',
+    'repeat_password': 'Repeat Password',
+    'terms_accept': 'I have read and accept the terms and conditions',
+    'urban': 'Urban',
+    'route': 'Route',
+    'must_complete_all_fields': 'You must complete all fields',
+    'profile_image_not_selected': 'Profile image has not been selected',
+    'accept_terms_to_continue': 'Accept the terms and conditions to continue',
+    'now_biux_user': 'You are now a BIUX user!',
+    'email_already_registered': 'The email {email} is already registered',
+    'username_already_registered':
+        'The username {username} is already registered',
+    'enter_your_name': 'Enter your name',
+    'enter_your_number': 'Enter your number',
+    'enter_your_city': 'Enter your city',
+    'enter_your_description': 'Enter your description',
+    'email_field': 'Email address',
+    'number_field': 'Number',
+    'description_field': 'Description',
+    'city_field': 'City',
+    'current_location_field': 'Current location',
+    'update_button': 'Update',
+    'user_updated': 'Your user has been updated',
+
+    // === Shop / Order ===
+    'order_detail_title': 'Order detail',
+    'order_not_found': 'Order not found',
+    'order_number_prefix': 'Order #',
+    'order_status_label': 'Order status',
+    'order_date_prefix': 'Date: ',
+    'products_label': 'Products',
+    'total_label': 'Total',
+    'filter_all': 'All',
+
+    // === Empty States ===
+    'empty_no_rides_title': 'No rides yet',
+    'empty_no_rides_desc': 'No rides scheduled. Create the first one!',
+    'empty_create_ride': 'Create ride',
+    'empty_no_groups_title': 'No groups',
+    'empty_no_groups_desc': 'Join a group or create your own.',
+    'empty_explore_groups': 'Explore groups',
+    'empty_no_posts_title': 'No posts',
+    'empty_no_posts_desc':
+        'Posts will appear here. Share your first experience!',
+    'empty_no_messages_title': 'No messages',
+    'empty_no_messages_desc': 'Start a conversation with another cyclist.',
+    'empty_new_message': 'New message',
+    'empty_no_notifications_title': 'No notifications',
+    'empty_no_notifications_desc': 'Activity notifications will appear here.',
+    'empty_no_results_title': 'No results',
+    'empty_no_results_desc': 'Try searching with different terms.',
+    'empty_no_bikes_title': 'No bikes',
+    'empty_no_bikes_desc': 'Register your bike to protect it.',
+    'empty_register_bike': 'Register bike',
+
+    // === Report Dialog ===
+    'report_reason_inappropriate': 'Inappropriate content',
+    'report_reason_spam': 'Spam or advertising',
+    'report_reason_harassment': 'Harassment or bullying',
+    'report_reason_false_info': 'False information',
+    'report_reason_impersonation': 'Impersonation',
+    'report_reason_violence': 'Violent content',
+    'report_reason_illegal_sales': 'Sale of illegal products',
+    'report_reason_other': 'Other',
+    'report_sent_review': 'Report sent. We will review your case.',
+    'report_content_title': 'Report content',
+    'report_reason_question': 'Why do you want to report this?',
+    'report_additional_details': 'Additional details (optional)',
+    'report_submit': 'Send report',
+
+    // === Connectivity ===
+    'no_internet_connection': 'No internet connection',
+    'connection_restored': 'Connection restored',
+
+    // === Notifications ===
+    'new_notification': 'New notification',
+    'view_action': 'View',
+
+    // === Image Upload ===
+    'uploading_label': 'Uploading...',
+    'image_uploaded_success': 'Image uploaded successfully',
+    'error_uploading_image': 'Error uploading image',
+    'error_upload_generic': 'Upload error',
+
+    // === Roads / Create Ride ===
+    'create_ride': 'Create Ride',
+    'route_name': 'Route Name',
+    'meeting_point': 'Meeting point',
+    'geolocation_point': 'Point geolocation',
+    'distance_label': 'Distance',
+    'date_time_label': 'Date and time',
+    'description_recommendations': 'Description and recommendations',
+    'level_label': 'Level',
+    'ride_created_success': 'Ride created successfully',
+    'error_create_ride': 'Error creating the Ride. Try again later',
+    'distance_numbers_only': 'Distance must contain numbers only',
+    'publish': 'Publish',
+    'save_point': 'Save the point',
+
+    // === Maps ===
+    'go_to_meeting_point': 'Go to meeting point',
+    'available_routes': 'Available routes:',
+    'tap_to_see_route': 'Tap to see route',
+    'route_shown': 'Route shown',
+
+    // === Stories ===
+    'time_seconds_ago': 'A few seconds ago',
+    'time_minutes_ago': '{n} min ago',
+    'time_hours_ago': '{n} h ago',
+    'time_days_ago': '{n} days ago',
+    'unknown_date': 'Unknown date',
+    'text_share_story': ' shared this story on Biux...',
+    'title_share_story': 'Don\'t miss this Biux story!',
+    'see_more': 'more',
+    'see_less': ' less',
+    'gallery_label': 'Gallery',
+    'tell_your_story_hint': 'Tell us the story...',
+
+    // === Groups ===
+    'edit_group': 'Edit group',
+    'leave_text': 'Leave',
+    'join_me': 'Join',
+    'see_more_text': 'See more',
+    'group_created_success': 'Your group was created successfully!',
+
+    // === Experiences ===
+    'error_add_media_required': 'You must add at least one image or video',
+    'error_description_required': 'You must add a description',
+    'error_select_experience_type': 'You must select an experience type',
+    'user_default_name': 'User',
+    'experiences_demo_title': 'Experiences Demo',
+    'recent_experiences': 'Recent Experiences',
+
+    // === Generic ===
+    'error_generic': 'Error',
+    'cancel': 'Cancel',
+    'retry': 'Retry',
+    'members': 'members',
+
+    // === Error Handler ===
+    'err_no_connection': 'No internet connection. Check your network.',
+    'err_timeout': 'The operation took too long. Try again.',
+    'err_invalid_format': 'Invalid data format.',
+    'err_connection': 'Connection error. Check your network.',
+    'err_no_permission': 'You do not have permission for this action.',
+    'err_unexpected': 'An unexpected error occurred. Try again.',
+    'err_invalid_phone': 'Invalid phone number. Check the format.',
+    'err_too_many_requests': 'Too many attempts. Wait a few minutes.',
+    'err_session_expired': 'Session expired. Request a new code.',
+    'err_invalid_verification_code': 'Invalid verification code.',
+    'err_user_disabled': 'Your account has been disabled.',
+    'err_credential_in_use':
+        'This number is already linked to another account.',
+    'err_no_internet': 'No internet connection.',
+    'err_auth_generic': 'Authentication error.',
+    'err_resource_not_found': 'The requested resource does not exist.',
+    'err_service_unavailable': 'Service unavailable. Try later.',
+    'err_operation_cancelled': 'Operation cancelled.',
+    'err_rate_limit': 'Request limit reached. Wait a moment.',
+    'err_server': 'Server error.',
+
+    // === Auth Repository ===
+    'err_send_otp': 'Error sending OTP code',
+    'err_connection_timeout': 'Connection timed out. Check your internet.',
+    'err_send_timeout': 'Send timed out. Check your connection.',
+    'err_receive_timeout': 'Server took too long. Try again.',
+    'err_invalid_phone_number': 'Invalid phone number.',
+    'err_too_many_attempts': 'Too many attempts. Try in a few minutes.',
+    'err_server_error': 'Server error. Please try later.',
+    'err_no_wifi': 'No internet. Check your WiFi or mobile data.',
+    'err_ssl': 'SSL security error. Check your device date/time.',
+    'err_validate_code': 'Error validating the code',
+    'err_wrong_code': 'Incorrect code. Try again.',
+    'err_code_expired': 'Code expired. Request a new one.',
+    'err_code_timeout': 'Timed out. Check your connection.',
+    'err_code_invalid_or_expired': 'Invalid or expired code',
+    'err_code_6_digits': 'The code must be exactly 6 digits',
+    'err_server_status': 'Server responded with code {code}. Try again.',
+
+    // === Native Phone Auth Provider ===
+    'err_invalid_phone_format':
+        'Invalid number. Check the format (+57XXXXXXXXXX)',
+    'err_send_code': 'Error sending code',
+    'err_send_code_detail': 'Error sending code: {error}',
+    'err_request_new_code': 'Error: Request a new code',
+    'err_invalid_code': 'Invalid code',
+    'err_code_expired_request_new': 'Code expired. Request a new one',
+    'err_verify_code': 'Error verifying code',
+    'err_create_session': 'Could not create session',
+    'err_admin_login': 'Error logging in as admin: {error}',
+    'err_sign_out': 'Error signing out',
+
+    // === Auth Provider ===
+    'err_max_attempts':
+        'Maximum attempts reached. Please try in a few minutes.',
+    'err_no_phone_found': 'Error: Phone number not found',
+    'err_guest_login': 'Error starting guest session: {error}',
+
+    // === Authentication Repository ===
+    'err_network': 'Network error. Check your connection.',
+    'err_user_not_found': 'User not found',
+    'err_wrong_password': 'Wrong password',
+    'err_invalid_email': 'Invalid email address',
+    'err_login': 'Login error',
+    'err_email_already_use': 'Email already registered in Biux',
+    'err_register_user': 'Error registering user',
+
+    // === Bike Provider Validations ===
+    'bike_brand_required': 'Bike brand is required',
+    'bike_brand_min_chars': 'Brand must be at least 2 characters',
+    'bike_brand_invalid_chars':
+        'Brand can only contain letters, numbers and hyphens',
+    'bike_model_required': 'Bike model is required',
+    'bike_model_min_chars': 'Model must be at least 2 characters',
+    'bike_year_required': 'Bike year is required',
+    'bike_year_range': 'Year must be between 1900 and {year}',
+    'bike_color_required': 'Bike color is required',
+    'bike_color_invalid': 'Color can only contain letters',
+    'bike_size_required': 'Bike size is required',
+    'bike_size_hint': 'Enter a valid size (e.g. S, M, L, XL, 16, 18")',
+    'bike_type_required': 'Bike type is required',
+    'bike_serial_required': 'Frame serial number is required',
+    'bike_serial_min_chars': 'Serial number must be at least 4 characters',
+    'bike_serial_invalid_chars':
+        'Serial number can only contain letters, numbers and hyphens',
+    'bike_city_required': 'City is required',
+    'bike_city_hint': 'Enter a valid city name',
+    'bike_photo_required': 'Main bike photo is required',
+    'bike_invalid_step': 'Invalid step',
+    'bike_upload_main_photo_error': 'Error uploading main bike photo',
+    'bike_registered_biux': 'Registered on Biux',
+
+    // === Shop Provider ===
+    'shop_load_error': 'Error loading products: {error}',
+    'shop_cart_empty_coupon': 'Add products to cart first',
+    'shop_discount_general_10': '10% general discount',
+    'shop_discount_general_15': '15% general discount',
+    'shop_discount_general_20': '20% general discount',
+    'shop_discount_first_purchase': 'First purchase 15%',
+    'shop_discount_cyclists': 'Cyclists 12%',
+    'shop_discount_new_client': 'New client 18%',
+    'shop_discount_summer': 'Summer 2026 - 25%',
+    'shop_discount_january': 'January 2026 - 20%',
+    'shop_discount_vip': 'VIP Client 30%',
+    'shop_discount_elite': 'Elite 40%',
+    'shop_coupon_invalid': 'Invalid or expired coupon',
+    'shop_cart_empty': 'Cart is empty',
+    'shop_order_error': 'Error creating order: {error}',
+    'shop_stock_insufficient': 'Insufficient stock',
+    'shop_size_required': 'You must select a size',
+    'shop_purchase_error': 'Error completing purchase: {error}',
+    'shop_orders_load_error': 'Error loading orders: {error}',
+    'shop_cancel_error': 'Error cancelling order: {error}',
+    'shop_create_product_error': 'Error creating product: {error}',
+    'shop_update_product_error': 'Error updating product: {error}',
+    'shop_delete_product_error': 'Error deleting product: {error}',
+    'shop_cleanup_error': 'Error in product cleanup: {error}',
+    'shop_like_error': 'Error liking: {error}',
+    'shop_sold_error': 'Error marking as sold: {error}',
+    'shop_no_sales_data': 'No sales data yet',
+    'shop_no_visits_data': 'No visits data yet',
+    'shop_no_security_issues': 'No security issues detected',
+    'shop_access_alerts': 'Receive alerts when someone accesses',
+    'shop_action_log': 'Save a log of all actions',
+    'shop_block_attempts': 'Block after 5 failed attempts',
+    'shop_hint_serial': 'E.g.: AB123456789',
+    'shop_hint_brand': 'E.g.: Trek, Giant, Specialized...',
+    'shop_hint_year': '2024',
+
+    // === Cart Provider ===
+    'cart_stock_insufficient': 'Insufficient stock. Available: {count}',
+    'cart_enter_coupon': 'Enter a coupon code',
+    'cart_coupon_invalid': 'Invalid coupon',
+    'cart_coupon_expired': 'Expired or inactive coupon',
+    'cart_free_shipping': 'Free shipping (equivalent to \$10,000)',
+
+    // === Comments Provider ===
+    'comments_login_required': 'You must log in to comment',
+    'comments_no_permission': 'No permissions. Check Firebase rules',
+    'comments_no_connection': 'No internet connection',
+    'comments_post_error': 'Error posting comment: {error}',
+    'comments_edit_error': 'Error editing comment: {error}',
+    'comments_cooldown': 'Wait a few seconds before commenting again',
+    'comments_empty': 'Comment cannot be empty',
+    'comments_too_long': 'Comment cannot exceed 500 characters',
+    'comments_missing_plugin': 'Firebase DB not loaded. Restart the app',
+    'comments_delete_no_permission':
+        'You do not have permission to delete this comment',
+    'comments_not_exist': 'Comment does not exist',
+    'comments_delete_error': 'Error deleting comment',
+
+    // === Likes Provider ===
+    'likes_error': 'Error liking',
+    'likes_unlike_error': 'Error unliking',
+
+    // === Attendees Provider ===
+    'attendees_join_error': 'Error joining the ride',
+    'attendees_update_error': 'Error updating status',
+    'attendees_leave_error': 'Error leaving the ride',
+
+    // === Notifications Provider ===
+    'notif_mark_read_error': 'Error marking as read',
+    'notif_mark_all_read_error': 'Error marking all as read',
+    'notif_delete_error': 'Error deleting notification',
+    'notif_delete_all_error': 'Error deleting all notifications',
+
+    // === User Providers ===
+    'user_update_error': 'Error updating profile. Try again.',
+    'user_authorize_seller_error': 'Error authorizing seller',
+    'user_revoke_permission_error': 'Error revoking permission',
+    'user_follow_error': 'Error following user',
+    'user_unfollow_error': 'Error unfollowing',
+    'user_profile_load_error': 'Error loading user profile',
+    'user_username_update_error': 'Error updating username',
+
+    // === Group Provider ===
+    'group_complete_name_required':
+        'Complete your profile name before joining groups',
+    'group_no_phone': 'No phone',
+
+    // === Ride Tracker Provider ===
+    'tracker_gps_required': 'Enable GPS to record your ride',
+    'tracker_location_permission': 'Location permission needed to record',
+    'tracker_location_denied':
+        'Location permission denied. Enable it in Settings.',
+    'cyclist_level_legend': 'legend',
+    'cyclist_level_expert': 'expert',
+    'cyclist_level_advanced': 'advanced',
+    'cyclist_level_intermediate': 'intermediate',
+    'cyclist_level_novice': 'novice',
+
+    // === Cycling Stats ===
+    'time_just_now': 'Just now',
+
+    // === Achievements ===
+    'achievement_first_pedals': 'First Pedals',
+    'achievement_first_pedals_desc': 'Ride 10 km',
+    'achievement_explorer': 'Explorer',
+    'achievement_explorer_desc': 'Ride 50 km',
+    'achievement_centenary': 'Centenary',
+    'achievement_centenary_desc': 'Ride 100 km',
+    'achievement_tireless': 'Tireless Rider',
+    'achievement_tireless_desc': 'Ride 500 km',
+    'achievement_thousand_club': 'Thousand Km Club',
+    'achievement_thousand_club_desc': 'Ride 1,000 km',
+    'achievement_ultra': 'Ultra Cyclist',
+    'achievement_ultra_desc': 'Ride 5,000 km',
+    'achievement_first_ride': 'First Ride',
+    'achievement_first_ride_desc': 'Complete your first ride',
+    'achievement_regular': 'Regular',
+    'achievement_regular_desc': 'Complete 10 rides',
+    'achievement_veteran': 'Veteran',
+    'achievement_veteran_desc': 'Complete 50 rides',
+    'achievement_centurion': 'Centurion',
+    'achievement_centurion_desc': 'Complete 100 rides',
+    'achievement_sprinter': 'Sprinter',
+    'achievement_sprinter_desc': 'Reach 30 km/h',
+    'achievement_lightning': 'Lightning',
+    'achievement_lightning_desc': 'Reach 40 km/h',
+    'achievement_supersonic': 'Supersonic',
+    'achievement_supersonic_desc': 'Reach 50 km/h',
+    'achievement_consistent': 'Consistent',
+    'achievement_consistent_desc': '3 consecutive days cycling',
+    'achievement_perfect_week': 'Perfect Week',
+    'achievement_perfect_week_desc': '7 consecutive days',
+    'achievement_machine': 'Machine',
+    'achievement_machine_desc': '30 consecutive days',
+    'achievement_social': 'Social',
+    'achievement_social_desc': 'Join a group',
+    'achievement_popular': 'Popular',
+    'achievement_popular_desc': 'Join 5 groups',
+    'achievement_nocturnal': 'Nocturnal',
+    'achievement_nocturnal_desc': 'Complete a night ride',
+    'achievement_rain_or_shine': 'Rain or Shine',
+    'achievement_rain_or_shine_desc': 'Ride in the rain',
+    'achievement_early_bird': 'Early Bird',
+    'achievement_early_bird_desc': 'Ride before 6am',
+
+    // === Shared Screens ===
+    'location_move_map': 'Move the map to select',
+    'location_confirm': 'Confirm',
+    'location_selected': 'Selected location',
+    'location_move_pin':
+        'Move the map to position the red pin at the exact accident location',
+    'no_connection_title': 'No connection',
+    'no_connection_message': 'Check your internet connection and try again.',
+    'error_something_wrong': 'Something went wrong',
+    'select_location_title': 'Select location',
+    'post_edited': 'edited',
+    'post_invalid_url': 'Invalid URL',
+
+    // === QR / Stolen bike verification ===
+    'qr_invalid': 'Invalid QR code',
+    'qr_product_not_found': 'Product not found in system',
+    'qr_serial_mismatch': 'Serial number does not match',
+    'qr_not_verified': 'This bike is not verified as safe',
+    'qr_verify_error': 'Error verifying QR code',
+    'stolen_not_registered': 'Bike not registered in Biux system',
+    'stolen_sale_blocked':
+        'Sale of stolen bikes is not allowed. The owner and authorities have been notified.',
+    'stolen_verified_safe': 'Bike registered on Biux and verified as safe',
+    'stolen_partial_verification': 'Partial verification completed',
+    'stolen_verify_error': 'Error verifying bike',
+
+    // === Roads Repository ===
+    'roads_join_group_required':
+        'You must join the group to participate in this ride',
+
+    // === Payments ===
+    'payments_coming_soon': 'Payments coming soon',
+
+    // === Experiences Extra ===
+    'experience_add_media_required': 'You must add at least one image or video',
+    'experience_post_multimedia': 'Multimedia Post',
+    'experience_photos_only': 'Photos only',
+    'experience_post_text': 'Text Post',
+    'experience_text_only': 'Text only, no media',
+    'experience_tags_optional': 'Tags (optional)',
+    'experience_tags_hint':
+        'e.g. cycling, mountain, adventure (comma separated)',
+    'experience_story_label': 'Story',
+    'experience_post_label': 'Post',
+    'experience_processing': 'Processing...',
+    'experience_video_error': 'Error loading video: {error}',
+    'experience_biux_premium': 'Biux Premium',
+
+    // === Misc ===
+    'open_google_maps': 'Google Maps',
+    'only_numbers': 'Numbers only',
+    'following_label': 'Following',
+    'points_label': 'Points',
+    'admin_revoke_error': 'Cannot revoke permissions from an administrator',
+    'notification_channel_desc': 'General app notifications',
+
+    // === Bike Actions Stubs ===
+    'stub_theft_report': 'Theft report sent (stub).',
+    'stub_recovered': 'Marked as recovered (stub).',
+    'stub_transfer': 'Transfer started (stub).',
+
+    // === Firebase Diagnostic ===
+    'diagnostic_not_tested': 'Not tested',
+    'diagnostic_title': 'Firebase DB Diagnostic',
+    'diagnostic_rebuild_hint':
+        'If MissingPluginException appears, you need a full rebuild',
+
+    // === PDF Export ===
+    'pdf_report_title': 'Stolen Bike Alerts Report',
+    'pdf_footer': 'Biux - Cycling Platform',
+    'pdf_no_date': 'No date',
+    'pdf_alert': 'ALERT',
+    'pdf_seller': 'Seller',
+    'pdf_bicycle': 'Bicycle',
+    'pdf_serial': 'Serial',
+
+    // === Seller ===
+    'seller_no_name': 'No name',
+
+    // === User Provider ===
+    'user_error_creating_test': 'Error creating test user',
+    'user_error_loading_data': 'Error loading user data',
+    'user_error_not_logged_in': 'You are not logged in. Please log in first.',
+    'user_error_empty_fields': 'Please fill in at least one field to update',
+    'user_error_update_profile': 'Error updating profile. Please try again.',
+    'user_error_upload_image': 'Error uploading image',
+    'user_error_request_deletion': 'Error requesting account deletion',
+    'user_error_admin_only_authorize':
+        'Only administrators can authorize sellers',
+    'user_error_authorize_seller': 'Error authorizing seller',
+    'user_error_admin_only_revoke':
+        'Only administrators can revoke permissions',
+    'user_error_revoke_permission': 'Error revoking permission',
+    'user_error_admin_only_list': 'Only administrators can view the user list',
+    'user_error_load_users': 'Error loading users',
+    'user_error_not_authenticated': 'You are not authenticated',
+    'user_error_follow': 'Error following user',
+    'user_error_unfollow': 'Error unfollowing user',
+    'user_error_load_profile': 'Error loading user profile',
+
+    // === Username Provider ===
+    'username_current': 'Current username',
+    'username_invalid_format': 'Invalid format',
+    'username_checking': 'Checking availability...',
+    'username_available': '✓ Available',
+    'username_check_error': 'Error checking availability',
+    'username_not_authenticated': 'User not authenticated',
+    'username_already_taken': 'Username is no longer available',
+    'username_update_error': 'Error updating username',
+
+    // === Group Provider ===
+    'group_error_create': 'Error creating group',
+    'group_error_edit': 'Error editing group',
+    'group_error_load': 'Error loading group',
+    'group_error_not_authenticated': 'User not authenticated',
+    'group_error_user_not_found': 'User not found',
+    'group_error_complete_profile':
+        'You must complete your name in your profile before joining groups',
+    'group_error_request_join': 'Error requesting to join',
+    'group_error_approve': 'Error approving request',
+    'group_error_reject': 'Error rejecting request',
+    'group_error_cancel_request': 'Error canceling request',
+    'group_error_leave': 'Error leaving group',
+    'group_error_select_image': 'Error selecting image',
+    'group_user_no_name': 'User without name',
+    'group_default_user': 'User',
+    'group_default_username': 'user',
+
+    // === Ride Tracker Provider ===
+    'ride_error_gps_disabled': 'Enable GPS to record your ride',
+    'ride_error_location_permission': 'Location permission is needed to record',
+    'ride_error_location_denied':
+        'Location permission denied. Enable it in Settings.',
+
+    // === Cycling Stats Provider ===
+    'stats_just_now': 'Just now',
+    'stats_seconds_ago': 'A few seconds ago',
+    'stats_minutes_ago': 'A few minutes ago',
+    'stats_hours_ago': 'A few hours ago',
+    'stats_error_load': 'Error loading statistics',
+    'stats_error_refresh': 'Error refreshing',
+    'stats_error_add_ride': 'Error recording ride',
+    'stats_error_leaderboard': 'Error loading leaderboard',
+
+    // === Cycling Stats Entity ===
+    'level_novice': 'Novice',
+
+    // === Migrated hardcoded strings ===
+    'seller_unknown': 'Unknown seller',
+    'seller_default': 'Seller',
+    'exp_demo_title': 'Experiences Demo',
+    'exp_demo_recent': 'Recent Experiences',
+    'exp_max_files_allowed': 'Maximum 10 files allowed',
+    'exp_file_not_available': 'The selected file is not available',
+    'exp_error_selecting_image': 'Error selecting image',
+    'exp_max_images_reached': 'You already have the maximum of 10 images',
+    'exp_error_selecting_images': 'Error selecting images',
+    'exp_photo_not_available': 'The photo taken is not available',
+    'exp_error_taking_photo': 'Error taking photo',
+    'exp_cropped_not_available': 'The cropped file is not available',
+    'exp_error_adding_cropped': 'Error adding cropped image',
+    'exp_video_not_available': 'The selected video is not available',
+    'exp_video_too_long': 'Video must be 30 seconds or less',
+    'exp_error_selecting_video': 'Error selecting video',
+    'exp_recorded_not_available': 'The recorded video is not available',
+    'exp_error_recording_video': 'Error recording video',
+    'exp_media_required': 'You must add at least one image or video',
+    'exp_description_required': 'Description is required for this post',
+    'exp_error_creating': 'Error creating experience',
+    'validator_number': r'^[0-9]+$',
+    'exp_content_story': 'Story',
+    'exp_content_post': 'Post',
+
+    // === Misc migration batch ===
+    // PDF Export
+    'pdf_unknown_city': 'Unknown',
+    'pdf_alerts_by_city': 'Alerts by City',
+    'pdf_city': 'City',
+    'pdf_alerts': 'Alerts',
+    'pdf_percentage': 'Percentage',
+    'pdf_most_affected_brands': 'Most Affected Brands',
+    'pdf_brand': 'Brand',
+    'pdf_alert_details': 'Alert Details',
+    'pdf_stolen_bike_report': 'Stolen Bike Alert Report',
+    'pdf_generated': 'Generated',
+    'pdf_period': 'Period',
+    'pdf_cycling_platform': 'Cycling Platform',
+    'pdf_page': 'Page',
+    'pdf_of': 'of',
+    'pdf_total_alerts': 'Total Alerts',
+    'pdf_unique_sellers': 'Unique Sellers',
+    'pdf_affected_cities': 'Affected Cities',
+    'pdf_alert_badge': 'ALERT',
+    'pdf_unknown_seller': 'Unknown',
+    'pdf_color': 'Color',
+    // Admin usecases
+    'error_invalid_user_id': 'Invalid user ID',
+    'error_cannot_revoke_admin':
+        'Cannot revoke permissions from an administrator',
+    // Payments
+    // Roads repository
+    'error_update_group': 'Failed to update group',
+    'must_join_group_for_ride':
+        'You must join the group to participate in this ride',
+    'deleted_successfully': 'Deleted successfully',
+    // Bike stubs
+    'stub_theft_report_sent': 'Theft report sent (stub).',
+    'stub_marked_recovered': 'Marked as recovered (stub).',
+    'stub_transfer_initiated': 'Transfer initiated (stub).',
+    // Notifications
+    'notif_new_notification': 'New notification',
+    'notif_stolen_bike_alert_title':
+        '🚨 ALERT: Attempt to sell your stolen bike',
+    'notif_admin_theft_alert_title':
+        '⚠️ Security Alert: Attempt to sell stolen bike',
+    // Hardcoded strings fix
+    'error_post_not_found': 'Post not found',
+    'error_user_not_found': 'User not found',
+    'field_full_name': 'full name',
+    'field_username': 'username',
+    'field_photo_url': 'profile photo',
+    'field_gender': 'gender',
+    'field_birth_date': 'date of birth',
+    'field_phone': 'phone number',
+    'field_city': 'city',
+    'please_complete_fields': 'Please complete: {fields}',
+    'exp_tags_hint': 'e.g.: cycling, mountain, adventure (separated by commas)',
   };
 
   // ─── PORTUGUÊS ──────────────────────────────────────────────────
@@ -4919,7 +6393,6 @@ class AppTranslations {
     // General
     'settings': 'Configurações',
     'back': 'Voltar',
-    'cancel': 'Cancelar',
     'send': 'Enviar',
     'understood': 'Entendido',
     'currently': 'Atualmente',
@@ -4930,7 +6403,7 @@ class AppTranslations {
     'notifications': 'Notificações',
     'notifications_subtitle': 'Ativar/desativar, Som, Vibração',
     'appearance': 'Aparência',
-    'appearance_subtitle': 'Modo claro/escuro, Tamanho da fonte, Idioma',
+    'appearance_subtitle': 'Modo claro/escuro, Idioma',
     'privacy': 'Privacidade',
     'privacy_subtitle': 'Quem pode ver seu perfil, Permissões',
     'information': 'Informação',
@@ -4972,14 +6445,8 @@ class AppTranslations {
     'app_theme': 'Tema do App',
     'light_mode': 'Modo Claro',
     'dark_mode': 'Modo Escuro',
-    'text': 'Texto',
-    'font_size': 'Tamanho da Fonte',
     'language': 'Idioma',
     'select_language': 'Selecionar Idioma',
-    'small': 'Pequeno',
-    'medium': 'Médio',
-    'large': 'Grande',
-    'very_large': 'Muito Grande',
 
     // Privacy
     'privacy_control': 'Controle de Privacidade',
@@ -5004,6 +6471,8 @@ class AppTranslations {
     'legal_policies': 'Legal e Políticas',
     'terms_conditions': 'Termos e Condições',
     'terms_subtitle': 'Leia nossos termos de serviço',
+    'terms_content':
+        'Termos e Condições do Biux\n\n1. ACEITAÇÃO DOS TERMOS\nAo usar o aplicativo Biux, você aceita estes termos e condições em sua totalidade.\n\n2. USO RESPONSÁVEL\nO usuário se compromete a usar o aplicativo de forma responsável e legal.\n\n3. CONTEÚDO DO USUÁRIO\nO usuário é responsável pelo conteúdo que publica na plataforma.\n\n4. PRIVACIDADE\nSeus dados pessoais serão protegidos de acordo com nossa política de privacidade.\n\n5. LIMITAÇÃO DE RESPONSABILIDADE\nO Biux não é responsável por danos indiretos ou perda de dados.\n\n6. ALTERAÇÕES NOS TERMOS\nReservamo-nos o direito de modificar estes termos a qualquer momento.\n\n7. CONTATO\nPara perguntas sobre estes termos, entre em contato em support@biux.com',
     'support': 'Suporte',
     'tech_support': 'Suporte Técnico',
     'tech_support_subtitle': 'Entre em contato com nossa equipe',
@@ -5058,15 +6527,12 @@ class AppTranslations {
     'yes_cancel': 'Sim, cancelar',
     'view': 'Ver',
     'gallery': 'Galeria',
-    'take_photo': 'Tirar foto',
-    'select_from_gallery': 'Selecionar da galeria',
     'delete_image': 'Excluir imagem',
     'uploading': 'Enviando...',
     'save_changes': 'Salvar alterações',
 
     // Profile/Users
     'my_profile': 'Meu Perfil',
-    'edit_profile': 'Editar Perfil',
     'profile': 'Perfil',
     'user_profile': 'Perfil de Usuário',
     'followers': 'Seguidores',
@@ -5094,10 +6560,7 @@ class AppTranslations {
     'share_profile': 'Compartilhar perfil',
     'could_not_load_profile': 'Não foi possível carregar o perfil',
     'loading_followers': 'Carregando seguidores...',
-    'no_followers_yet': 'Sem seguidores ainda',
-    'not_following_anyone': 'Não segue ninguém ainda',
     'no_name': 'Sem nome',
-    'retry': 'Tentar novamente',
     'check_connection_retry': 'Verifique sua conexão e tente novamente',
     'closing_session': 'Saindo...',
     'error_deleting': 'Erro ao excluir',
@@ -5109,8 +6572,6 @@ class AppTranslations {
         'Digite um nome ou usuário para encontrar amigos',
     'edit_user': 'Editar Usuário',
     'error_updating_username': 'Erro ao atualizar o nome de usuário',
-    'edit_username': 'Editar nome de usuário',
-    'error_updating_profile': 'Erro ao atualizar perfil',
     'tap_add_cover_photo': 'Toque para adicionar foto de capa',
     'account_info': 'Informações da Conta',
     'change_password': 'Alterar Senha',
@@ -5123,7 +6584,6 @@ class AppTranslations {
 
     // Rides
     'rides': 'Pedaladas',
-    'create_ride': 'Criar Pedalada',
     'create_new_ride': 'Criar nova pedalada',
     'edit_ride': 'Editar pedalada',
     'ride_not_found': 'Pedalada não encontrada',
@@ -5187,7 +6647,6 @@ class AppTranslations {
     'ride_image_optional': 'Imagem da pedalada (opcional)',
     'add_image': 'Adicionar imagem',
     'update_ride': 'Atualizar Pedalada',
-    'meeting_point': 'Ponto de encontro',
     'custom_point': 'Ponto personalizado',
     'select_a_meeting_point': 'Selecione um ponto de encontro',
     'add_custom_point': 'Adicionar ponto personalizado',
@@ -5201,7 +6660,6 @@ class AppTranslations {
     'difficulty_hard': 'Difícil',
     'difficulty_expert': 'Especialista',
     'ride_updated_success': 'Pedalada atualizada com sucesso',
-    'ride_created_success': 'Pedalada criada com sucesso',
     'saved_coordinates': 'Coordenadas salvas:',
     'custom_point_needs_location':
         'O ponto personalizado deve ter uma localização',
@@ -5236,7 +6694,6 @@ class AppTranslations {
         'Tem certeza de que não vai mais participar desta pedalada?',
     'no_attendees_yet': 'Ainda sem participantes confirmados',
     'user_no_name': 'Usuário sem nome',
-    'members': 'membros',
     'confirmed': 'confirmados',
     'no_label': 'Não',
 
@@ -5245,7 +6702,6 @@ class AppTranslations {
     'create_group': 'Criar Grupo',
     'create_new_group': 'Criar novo grupo',
     'my_groups': 'Meus Grupos',
-    'edit_group': 'Editar Grupo',
     'group_not_found': 'Grupo não encontrado',
     'back_to_groups': 'Voltar para Grupos',
     'no_members': 'Sem membros neste grupo',
@@ -5278,7 +6734,6 @@ class AppTranslations {
     'city': 'Cidade',
     'select_city': 'Selecione uma cidade',
     'already_admin': 'Você já é administrador de outro grupo',
-    'group_created_success': 'Grupo criado com sucesso',
     'group_updated_success': 'Grupo atualizado com sucesso',
     'view_my_group': 'Ver Meu Grupo',
     'user_accepted': 'foi aceito no grupo',
@@ -5349,7 +6804,6 @@ class AppTranslations {
     'could_not_open_link': 'Não foi possível abrir o link',
     'link_not_available': 'Link não disponível',
     'cancel_all': 'Cancelar tudo',
-    'new_notification': 'Nova notificação',
     'no_notifications': 'Você não tem notificações',
     'share_photo_coming_soon': 'Compartilhar foto em breve',
 
@@ -5360,7 +6814,6 @@ class AppTranslations {
     'delete_story_confirm': 'Tem certeza que deseja excluir esta história?',
     'story_deleted': 'História excluída com sucesso',
     'promoted_story': 'HISTÓRIA PROMOVIDA',
-    'publish': 'Publicar',
     'publish_as_ad': 'Publicar como Publicidade',
     'boost_your_story': 'Impulsione sua história',
 
@@ -5384,7 +6837,6 @@ class AppTranslations {
     'explore_store_favorites':
         'Explore a loja e marque seus produtos favoritos',
     'go_to_store': 'Ir para a loja',
-    'send_report': 'Enviar Relatório',
     'must_login': 'Você deve fazer login',
     'biux_shop': 'BiuX Shop',
     'visitor': 'Visitante',
@@ -5473,9 +6925,7 @@ class AppTranslations {
     'favorite_products': 'produto(s) favorito(s)',
     'product_not_found': 'Produto não encontrado',
     'stolen_bikes_title': 'Bicicletas Roubadas',
-    'list_tab': 'Lista',
     'verify_tab': 'Verificar',
-    'report_tab': 'Reportar',
     'reported_stat': 'Reportadas',
     'cities_stat': 'Cidades',
     'this_month_stat': 'Este mês',
@@ -5484,7 +6934,6 @@ class AppTranslations {
     'type_label': 'Tipo',
     'order_label': 'Ordem',
     'no_results': 'Sem resultados',
-    'no_results_found': 'Nenhum resultado encontrado',
     'bike_verifier': 'Verificador de Bicicletas',
     'bike_verifier_desc':
         'Digite o número de série para saber se está reportada como roubada.',
@@ -5522,8 +6971,6 @@ class AppTranslations {
     'complaint_label': 'Denúncia',
     'required_field': 'Obrigatório',
     'results_count': 'resultado(s)',
-    'search_hint': 'Buscar...',
-    'filter_all': 'Todas',
     'sort_recent': 'Recente',
     'sort_city': 'Cidade',
     'sort_brand': 'Marca',
@@ -5971,9 +7418,6 @@ class AppTranslations {
 
     // Time ago
     'time_now': 'Agora',
-    'time_ago_days': 'Há {n}d',
-    'time_ago_hours': 'Há {n}h',
-    'time_ago_minutes': 'Há {n}m',
     'time_full_second': 'há {n} segundo',
     'time_full_seconds': 'há {n} segundos',
     'time_full_minute': 'há {n} minuto',
@@ -6061,7 +7505,6 @@ class AppTranslations {
     'no_bikes_registered': 'Você não tem bicicletas registradas',
     'register_first_bike': 'Registre sua primeira bicicleta',
     'step': 'Passo',
-    'next': 'Próximo',
     'previous': 'Anterior',
     'finish': 'Finalizar',
     'main_photo_label': 'Foto Principal',
@@ -6270,7 +7713,6 @@ class AppTranslations {
         'Explore nossa loja e adicione os produtos que mais gostar',
     'find_amazing_products': 'Encontre produtos incríveis para o seu ciclismo',
     'cop_each': 'COP cada',
-    'products_label': 'Produtos',
     'card': 'Cartão',
     'available_shipping': 'Envios disponíveis para',
     'all_colombia': 'Toda Colômbia',
@@ -6406,7 +7848,6 @@ class AppTranslations {
     'no_reports_created': 'Você ainda não criou nenhum relatório.',
     'admin_reports_panel': 'Painel de Relatórios Admin',
     'in_review': 'Em Revisão',
-    'resolved': 'Resolvidos',
     'report_title_field': 'Título do relatório',
     'attach_evidence': 'Anexar Evidência',
     'report_sent_success': 'Relatório enviado com sucesso',
@@ -6472,7 +7913,6 @@ class AppTranslations {
     'admin_will_review':
         'Um administrador revisará sua solicitação e te notificará.',
     'please_write_message': 'Por favor escreva uma mensagem',
-    'sending': 'Enviando...',
     'request_sent_success':
         'Solicitação enviada. Um administrador a revisará em breve.',
     'request_error': 'Erro ao enviar a solicitação. Tente novamente.',
@@ -6518,7 +7958,6 @@ class AppTranslations {
     'products_eliminated': 'produtos excluídos',
 
     // My orders - remaining
-    'order_number_prefix': 'Pedido',
     'more_products_suffix': 'mais',
     'total_colon': 'Total:',
 
@@ -6550,7 +7989,6 @@ class AppTranslations {
     'error_unfollow': 'Erro ao deixar de seguir',
 
     // Account settings screen
-    'email_label': 'E-mail',
     'not_linked': 'Não vinculado',
     'linked_devices': 'Dispositivos Vinculados',
     'this_device': 'Este Dispositivo',
@@ -6899,7 +8337,6 @@ class AppTranslations {
     'processing_multimedia': 'Processando multimídia',
     'completed_label': 'Concluídos',
     'profile_photo': 'Foto de Perfil',
-    'cover_photo': 'Foto de Capa',
     'your_full_name': 'Seu nome completo',
     'your_username': 'seu_nome_usuario',
     'description_bio': 'Descrição / Bio',
@@ -7040,14 +8477,12 @@ class AppTranslations {
     'ride_details': 'Detalhes da pedalada',
     'attendees': 'Participantes',
     'cancel_registration': 'Cancelar inscrição',
-    'route': 'Rota',
     'departure_time': 'Hora de saída',
     'emergency': 'Emergência',
     'call': 'Ligar',
     'police': 'Polícia',
     'firefighters': 'Bombeiros',
     'ambulance': 'Ambulância',
-    'report_accident': 'Reportar acidente',
     'chats': 'Chats',
     'write_message': 'Escrever mensagem...',
     'no_messages': 'Sem mensagens',
@@ -7430,6 +8865,790 @@ class AppTranslations {
     'continue_editing': 'Continuar editando',
     'chat': 'Chat',
     'send_first_message': 'Envie a primeira mensagem!',
+
+    // === Accidents ===
+    'time_ago_now': 'Agora',
+    'time_ago_minutes': 'Há {n} min',
+    'time_ago_hours': 'Há {n} h',
+    'time_ago_days': 'Há {n} d',
+    'severity_severe': 'Grave',
+    'severity_moderate': 'Moderado',
+    'severity_minor': 'Leve',
+    'permission_required': 'Permissão necessária',
+    'camera_permission_message':
+        'Biux precisa de acesso à sua câmera. Vá para Configurações para habilitá-lo.',
+    'gallery_permission_message':
+        'Biux precisa de acesso à sua galeria. Vá para Configurações para habilitá-lo.',
+    'open_settings': 'Abrir Configurações',
+    'camera_permission_needed': 'Permissão de câmera necessária',
+    'gallery_permission_needed': 'Permissão de galeria necessária',
+    'take_photo': 'Tirar foto',
+    'select_from_gallery': 'Selecionar da galeria',
+    'accident_description_required': 'Escreva uma descrição do acidente',
+    'accident_location_required': 'Selecione a localização do acidente',
+    'anonymous': 'Anônimo',
+    'accident_reported_success':
+        '✅ Acidente reportado. Agora visível para todos.',
+    'accident_location': 'Localização do acidente',
+    'accidents_title': 'Acidentes',
+    'reports_tab': 'Relatórios',
+    'map_tab': 'Mapa',
+    'report_tab': 'Reportar',
+    'error_loading_reports': 'Erro ao carregar relatórios',
+    'no_accidents_reported': 'Nenhum acidente reportado!',
+    'no_active_accidents': 'Não há acidentes ativos no momento',
+    'report_accident': 'Reportar um acidente',
+    'active_count': '{n} ativo(s)',
+    'visible_for_all': 'Visível para todos',
+    'active_label': 'ATIVOS',
+    'resolved_label': 'RESOLVIDOS',
+    'resolved': 'Resolvido',
+    'mine': 'Meu',
+    'accident_location_section': '📍 Localização do acidente',
+    'change_location': 'Alterar',
+    'tap_to_select_location': 'Toque para selecionar localização',
+    'severity_section': '⚠️ Gravidade',
+    'description_section': '📝 Descrição',
+    'accident_description_hint':
+        'Descreva o que aconteceu, tipo de veículo, lesões, etc.',
+    'photos_optional_section': '📸 Fotos (opcional)',
+    'sending': 'Enviando...',
+    'send_report': 'Enviar relatório',
+    'call_911_disclaimer': 'Se houver feridos, ligue para o 192 primeiro.',
+    'report_visible_disclaimer':
+        'Seu relatório será visível para todos os ciclistas do Biux',
+    'accident_detail_title': 'Detalhe do Acidente',
+    'mark_as_resolved': 'Marcar como resolvido',
+    'accident_resolved_question': 'O acidente já foi atendido?',
+    'yes_resolved': 'Sim, resolvido',
+    'accident_marked_resolved': 'Acidente marcado como resolvido',
+    'mark_resolved': 'Marcar resolvido',
+    'reported_by': 'Reportado por',
+    'call_911': 'Se houver feridos, ligue para o 192',
+    'reported_accidents_title': 'Acidentes Reportados',
+    'list_tab': 'Lista',
+    'report_button': 'Reportar',
+    'no_active_accidents_zone': 'Não há acidentes ativos na sua área',
+
+    // === Onboarding ===
+    'onboarding_title_1': 'Bem-vindo ao BiUX',
+    'onboarding_desc_1':
+        'A maior comunidade de ciclistas. Conecte-se com outros ciclistas, organize pedaladas e explore novas rotas.',
+    'onboarding_title_2': 'Grupos e Pedaladas',
+    'onboarding_desc_2':
+        'Junte-se a grupos de ciclismo, organize pedaladas em grupo e conheça ciclistas com seus mesmos interesses.',
+    'onboarding_title_3': 'Rastreamento GPS',
+    'onboarding_desc_3':
+        'Grave suas pedaladas com GPS em tempo real. Meça sua velocidade, distância, calorias e mais.',
+    'onboarding_title_4': 'Conquistas e Estatísticas',
+    'onboarding_desc_4':
+        'Desbloqueie medalhas, suba de nível e compita com outros ciclistas. Cada pedalada conta!',
+    'onboarding_title_5': 'Segurança em Primeiro',
+    'onboarding_desc_5':
+        'Botão SOS de emergência, relatórios viários, registro de bicicletas e contatos de emergência.',
+    'onboarding_title_6': 'Loja e Comunidade',
+    'onboarding_desc_6':
+        'Compre e venda acessórios, compartilhe experiências e mantenha-se informado com educação viária.',
+    'skip': 'Pular',
+    'get_started': 'Começar!',
+    'next': 'Próximo',
+
+    // === Weather ===
+    'weather_for_cycling': 'Clima para Ciclismo',
+    'loading_weather': 'Carregando clima...',
+    'wind': 'Vento',
+    'humidity': 'Umidade',
+    'feels_like': 'Sensação',
+    'good_weather_to_ride': 'Bom clima para pedalar',
+    'caution_riding': 'Precaução ao pedalar',
+    'weather_tips_title': '🚴 Dicas de clima',
+    'tip_carry_water': 'Sempre leve água suficiente',
+    'tip_sunscreen': 'Use protetor solar em dias ensolarados',
+    'tip_rain_braking': 'Com chuva, freie com antecedência',
+    'tip_use_lights': 'Use luzes em baixa visibilidade',
+    'tip_dress_layers': 'Vista camadas em clima frio',
+    'advice_no_ride_storm': '⚠️ Não é recomendado pedalar em tempestade',
+    'advice_rain_caution':
+        '🌧️ Leve capa de chuva e cuidado com o piso molhado',
+    'advice_sun_hydrate': '☀️ Leve protetor solar e hidrate-se bem',
+    'advice_strong_wind': '💨 Vento forte, cuidado em áreas abertas',
+    'advice_excellent_day': '✅ Excelente dia para pedalar',
+    'advice_good_day': '🚴 Bom dia para pedalar',
+    'your_location': 'Sua localização',
+    'weather_clear': 'Limpo',
+    'weather_cloudy': 'Nublado',
+    'weather_fog': 'Nevoeiro',
+    'weather_drizzle': 'Garoa',
+    'weather_rain': 'Chuva',
+    'weather_snow': 'Neve',
+    'weather_heavy_rain': 'Chuva forte',
+    'weather_thunderstorm': 'Tempestade',
+    'error_loading_weather': 'Erro ao carregar o clima',
+
+    // === Search ===
+    'search_hint': 'Buscar',
+    'search_users_groups_rides': 'Buscar usuários, grupos, pedaladas...',
+    'users_tab_count': 'Usuários ({n})',
+    'groups_tab_count': 'Grupos ({n})',
+    'rides_tab_count': 'Pedaladas ({n})',
+    'search_in_biux': 'Buscar no BiUX',
+    'search_min_chars': 'Digite pelo menos 2 caracteres',
+    'search_suggestion_1': 'Pedaladas MTB',
+    'search_suggestion_2': 'Grupos Bogotá',
+    'search_suggestion_3': 'Ciclismo urbano',
+    'search_suggestion_4': 'Rota noturna',
+    'cyclist_default_name': 'Ciclista',
+    'group_default_name': 'Grupo',
+    'ride_default_name': 'Pedalada',
+    'no_results_found': 'Nenhum {type} encontrado',
+    'for_query': 'para "{query}"',
+
+    // === Social / Followers ===
+    'connections_title': 'Conexões',
+    'followers_tab': 'Seguidores',
+    'following_tab': 'Seguindo',
+    'no_followers_yet': 'Sem seguidores ainda',
+    'not_following_anyone': 'Você não segue ninguém ainda',
+
+    // === Edit User ===
+    'edit_profile': 'Editar perfil',
+    'edit_username': 'Editar nome de usuário',
+    'error_updating_profile': 'Erro ao atualizar perfil',
+    'complete_all_required_fields':
+        'Por favor, complete todos os campos obrigatórios',
+    'cover_photo': 'Foto de Capa',
+    'tap_to_change_photo': 'Toque para mudar foto',
+    'tap_to_add_cover_photo': 'Toque para adicionar foto de capa',
+    'share_profile_text': '🚴 Veja o perfil de {name} no Biux\n\n{url}',
+
+    // === Create User / Auth ===
+    'welcome_part_1': 'Bem-vindo ao',
+    'sign_up_to_roll': 'Cadastre-se para pedalar!',
+    'full_name': 'Nome Completo',
+    'username': 'Nome de usuário',
+    'email_label': 'E-mail',
+    'phone_label': 'Telefone',
+    'password_label': 'Senha',
+    'repeat_password': 'Repetir Senha',
+    'terms_accept': 'Eu li e aceito os termos e condições',
+    'urban': 'Urbano',
+    'route': 'Rota',
+    'must_complete_all_fields': 'Você deve completar todos os campos',
+    'profile_image_not_selected': 'A imagem de perfil não foi selecionada',
+    'accept_terms_to_continue': 'Aceite os termos e condições para continuar',
+    'now_biux_user': 'Agora você é um usuário BIUX!',
+    'email_already_registered': 'O e-mail {email} já está registrado',
+    'username_already_registered': 'O usuário {username} já está registrado',
+    'enter_your_name': 'Digite seu nome',
+    'enter_your_number': 'Digite seu número',
+    'enter_your_city': 'Digite sua cidade',
+    'enter_your_description': 'Digite sua descrição',
+    'email_field': 'Endereço de e-mail',
+    'number_field': 'Número',
+    'description_field': 'Descrição',
+    'city_field': 'Cidade',
+    'current_location_field': 'Localização atual',
+    'update_button': 'Atualizar',
+    'user_updated': 'Seu usuário foi atualizado',
+
+    // === Shop / Order ===
+    'order_detail_title': 'Detalhe do pedido',
+    'order_not_found': 'Pedido não encontrado',
+    'order_number_prefix': 'Pedido #',
+    'order_status_label': 'Status do pedido',
+    'order_date_prefix': 'Data: ',
+    'products_label': 'Produtos',
+    'total_label': 'Total',
+    'filter_all': 'Todas',
+
+    // === Empty States ===
+    'empty_no_rides_title': 'Sem pedaladas ainda',
+    'empty_no_rides_desc': 'Não há pedaladas programadas. Crie a primeira!',
+    'empty_create_ride': 'Criar pedalada',
+    'empty_no_groups_title': 'Sem grupos',
+    'empty_no_groups_desc': 'Junte-se a um grupo ou crie o seu próprio.',
+    'empty_explore_groups': 'Explorar grupos',
+    'empty_no_posts_title': 'Sem publicações',
+    'empty_no_posts_desc':
+        'As publicações aparecerão aqui. Compartilhe sua primeira experiência!',
+    'empty_no_messages_title': 'Sem mensagens',
+    'empty_no_messages_desc': 'Inicie uma conversa com outro ciclista.',
+    'empty_new_message': 'Nova mensagem',
+    'empty_no_notifications_title': 'Sem notificações',
+    'empty_no_notifications_desc':
+        'As notificações de atividade aparecerão aqui.',
+    'empty_no_results_title': 'Sem resultados',
+    'empty_no_results_desc': 'Tente buscar com outros termos.',
+    'empty_no_bikes_title': 'Sem bicicletas',
+    'empty_no_bikes_desc': 'Registre sua bicicleta para protegê-la.',
+    'empty_register_bike': 'Registrar bicicleta',
+
+    // === Report Dialog ===
+    'report_reason_inappropriate': 'Conteúdo inapropriado',
+    'report_reason_spam': 'Spam ou publicidade',
+    'report_reason_harassment': 'Assédio ou bullying',
+    'report_reason_false_info': 'Informação falsa',
+    'report_reason_impersonation': 'Falsificação de identidade',
+    'report_reason_violence': 'Conteúdo violento',
+    'report_reason_illegal_sales': 'Venda de produtos ilegais',
+    'report_reason_other': 'Outro',
+    'report_sent_review': 'Relatório enviado. Revisaremos seu caso.',
+    'report_content_title': 'Reportar conteúdo',
+    'report_reason_question': 'Por que você quer reportar isso?',
+    'report_additional_details': 'Detalhes adicionais (opcional)',
+    'report_submit': 'Enviar relatório',
+
+    // === Connectivity ===
+    'no_internet_connection': 'Sem conexão com a internet',
+    'connection_restored': 'Conexão restaurada',
+
+    // === Notifications ===
+    'new_notification': 'Nova notificação',
+    'view_action': 'Ver',
+
+    // === Image Upload ===
+    'uploading_label': 'Enviando...',
+    'image_uploaded_success': 'Imagem enviada com sucesso',
+    'error_uploading_image': 'Erro ao enviar imagem',
+    'error_upload_generic': 'Erro no envio',
+
+    // === Roads / Create Ride ===
+    'create_ride': 'Criar Pedalada',
+    'route_name': 'Nome da Rota',
+    'meeting_point': 'Ponto de encontro',
+    'geolocation_point': 'Geolocalização do ponto',
+    'distance_label': 'Distância',
+    'date_time_label': 'Data e hora',
+    'description_recommendations': 'Descrição e recomendações',
+    'level_label': 'Nível',
+    'ride_created_success': 'Pedalada criada com sucesso',
+    'error_create_ride': 'Erro ao criar a Pedalada. Tente novamente mais tarde',
+    'distance_numbers_only': 'Distância deve conter apenas números',
+    'publish': 'Publicar',
+    'save_point': 'Salvar o ponto',
+
+    // === Maps ===
+    'go_to_meeting_point': 'Ir ao ponto de encontro',
+    'available_routes': 'Rotas disponíveis:',
+    'tap_to_see_route': 'Toque para ver rota',
+    'route_shown': 'Rota exibida',
+
+    // === Stories ===
+    'time_seconds_ago': 'Há alguns segundos',
+    'time_minutes_ago': 'Há {n} min',
+    'time_hours_ago': 'Há {n} h',
+    'time_days_ago': 'Há {n} dias',
+    'unknown_date': 'Data desconhecida',
+    'text_share_story': ' compartilhou esta história no Biux...',
+    'title_share_story': 'Não perca esta história do Biux!',
+    'see_more': 'mais',
+    'see_less': ' menos',
+    'gallery_label': 'Galeria',
+    'tell_your_story_hint': 'Conte-nos a história...',
+
+    // === Groups ===
+    'edit_group': 'Editar grupo',
+    'leave_text': 'Sair',
+    'join_me': 'Entrar',
+    'see_more_text': 'Ver mais',
+    'group_created_success': 'Seu grupo foi criado com sucesso!',
+
+    // === Experiences ===
+    'error_add_media_required':
+        'Você deve adicionar pelo menos uma imagem ou vídeo',
+    'error_description_required': 'Você deve adicionar uma descrição',
+    'error_select_experience_type':
+        'Você deve selecionar um tipo de experiência',
+    'user_default_name': 'Usuário',
+    'experiences_demo_title': 'Experiências Demo',
+    'recent_experiences': 'Experiências Recentes',
+
+    // === Generic ===
+    'error_generic': 'Erro',
+    'cancel': 'Cancelar',
+    'retry': 'Tentar novamente',
+    'members': 'membros',
+
+    // === Error Handler ===
+    'err_no_connection': 'Sem conexão com a internet. Verifique sua rede.',
+    'err_timeout': 'A operação demorou muito. Tente novamente.',
+    'err_invalid_format': 'Formato de dados inválido.',
+    'err_connection': 'Erro de conexão. Verifique sua rede.',
+    'err_no_permission': 'Você não tem permissão para esta ação.',
+    'err_unexpected': 'Ocorreu um erro inesperado. Tente novamente.',
+    'err_invalid_phone': 'Número de telefone inválido. Verifique o formato.',
+    'err_too_many_requests': 'Muitas tentativas. Aguarde alguns minutos.',
+    'err_session_expired': 'Sessão expirada. Solicite um novo código.',
+    'err_invalid_verification_code': 'Código de verificação inválido.',
+    'err_user_disabled': 'Sua conta foi desabilitada.',
+    'err_credential_in_use': 'Este número já está vinculado a outra conta.',
+    'err_no_internet': 'Sem conexão com a internet.',
+    'err_auth_generic': 'Erro de autenticação.',
+    'err_resource_not_found': 'O recurso solicitado não existe.',
+    'err_service_unavailable': 'Serviço indisponível. Tente mais tarde.',
+    'err_operation_cancelled': 'Operação cancelada.',
+    'err_rate_limit': 'Limite de solicitações atingido. Aguarde um momento.',
+    'err_server': 'Erro no servidor.',
+
+    // === Auth Repository ===
+    'err_send_otp': 'Erro ao enviar código OTP',
+    'err_connection_timeout':
+        'Tempo de conexão esgotado. Verifique sua internet.',
+    'err_send_timeout': 'Tempo de envio esgotado. Verifique sua conexão.',
+    'err_receive_timeout': 'Servidor demorou muito. Tente novamente.',
+    'err_invalid_phone_number': 'Número de telefone inválido.',
+    'err_too_many_attempts': 'Muitas tentativas. Tente em alguns minutos.',
+    'err_server_error': 'Erro no servidor. Tente mais tarde.',
+    'err_no_wifi': 'Sem internet. Verifique seu WiFi ou dados móveis.',
+    'err_ssl': 'Erro de segurança SSL. Verifique a data/hora do dispositivo.',
+    'err_validate_code': 'Erro ao validar o código',
+    'err_wrong_code': 'Código incorreto. Tente novamente.',
+    'err_code_expired': 'Código expirado. Solicite um novo.',
+    'err_code_timeout': 'Tempo esgotado. Verifique sua conexão.',
+    'err_code_invalid_or_expired': 'Código inválido ou expirado',
+    'err_code_6_digits': 'O código deve ter exatamente 6 dígitos',
+    'err_server_status':
+        'Servidor respondeu com código {code}. Tente novamente.',
+
+    // === Native Phone Auth Provider ===
+    'err_invalid_phone_format':
+        'Número inválido. Verifique o formato (+57XXXXXXXXXX)',
+    'err_send_code': 'Erro ao enviar código',
+    'err_send_code_detail': 'Erro ao enviar código: {error}',
+    'err_request_new_code': 'Erro: Solicite um novo código',
+    'err_invalid_code': 'Código inválido',
+    'err_code_expired_request_new': 'Código expirado. Solicite um novo',
+    'err_verify_code': 'Erro ao verificar código',
+    'err_create_session': 'Não foi possível criar sessão',
+    'err_admin_login': 'Erro ao fazer login como admin: {error}',
+    'err_sign_out': 'Erro ao encerrar sessão',
+
+    // === Auth Provider ===
+    'err_max_attempts':
+        'Máximo de tentativas atingido. Tente em alguns minutos.',
+    'err_no_phone_found': 'Erro: Número de telefone não encontrado',
+    'err_guest_login': 'Erro ao iniciar como convidado: {error}',
+
+    // === Authentication Repository ===
+    'err_network': 'Erro de rede. Verifique sua conexão.',
+    'err_user_not_found': 'Usuário não encontrado',
+    'err_wrong_password': 'Senha incorreta',
+    'err_invalid_email': 'Endereço de e-mail inválido',
+    'err_login': 'Erro ao fazer login',
+    'err_email_already_use': 'E-mail já registrado no Biux',
+    'err_register_user': 'Erro ao registrar usuário',
+
+    // === Bike Provider Validations ===
+    'bike_brand_required': 'É necessário inserir a marca da bicicleta',
+    'bike_brand_min_chars': 'A marca deve ter pelo menos 2 caracteres',
+    'bike_brand_invalid_chars':
+        'A marca só pode conter letras, números e hífens',
+    'bike_model_required': 'É necessário inserir o modelo da bicicleta',
+    'bike_model_min_chars': 'O modelo deve ter pelo menos 2 caracteres',
+    'bike_year_required': 'É necessário selecionar o ano da bicicleta',
+    'bike_year_range': 'O ano deve estar entre 1900 e {year}',
+    'bike_color_required': 'É necessário inserir a cor da bicicleta',
+    'bike_color_invalid': 'A cor só pode conter letras',
+    'bike_size_required': 'É necessário inserir o tamanho da bicicleta',
+    'bike_size_hint': 'Insira um tamanho válido (ex: S, M, L, XL, 16, 18")',
+    'bike_type_required': 'É necessário selecionar o tipo de bicicleta',
+    'bike_serial_required': 'É necessário inserir o número de série do quadro',
+    'bike_serial_min_chars':
+        'O número de série deve ter pelo menos 4 caracteres',
+    'bike_serial_invalid_chars':
+        'O número de série só pode conter letras, números e hífens',
+    'bike_city_required': 'É necessário inserir a cidade',
+    'bike_city_hint': 'Insira um nome de cidade válido',
+    'bike_photo_required':
+        'É necessário adicionar a foto principal da bicicleta',
+    'bike_invalid_step': 'Passo inválido',
+    'bike_upload_main_photo_error':
+        'Erro ao enviar a foto principal da bicicleta',
+    'bike_registered_biux': 'Registrada no Biux',
+
+    // === Shop Provider ===
+    'shop_load_error': 'Erro ao carregar produtos: {error}',
+    'shop_cart_empty_coupon': 'Adicione produtos ao carrinho primeiro',
+    'shop_discount_general_10': 'Desconto geral 10%',
+    'shop_discount_general_15': 'Desconto geral 15%',
+    'shop_discount_general_20': 'Desconto geral 20%',
+    'shop_discount_first_purchase': 'Primeira compra 15%',
+    'shop_discount_cyclists': 'Ciclistas 12%',
+    'shop_discount_new_client': 'Novo cliente 18%',
+    'shop_discount_summer': 'Verão 2026 - 25%',
+    'shop_discount_january': 'Janeiro 2026 - 20%',
+    'shop_discount_vip': 'Cliente VIP 30%',
+    'shop_discount_elite': 'Elite 40%',
+    'shop_coupon_invalid': 'Cupom inválido ou expirado',
+    'shop_cart_empty': 'O carrinho está vazio',
+    'shop_order_error': 'Erro ao criar pedido: {error}',
+    'shop_stock_insufficient': 'Estoque insuficiente',
+    'shop_size_required': 'Você deve selecionar um tamanho',
+    'shop_purchase_error': 'Erro ao realizar compra: {error}',
+    'shop_orders_load_error': 'Erro ao carregar pedidos: {error}',
+    'shop_cancel_error': 'Erro ao cancelar pedido: {error}',
+    'shop_create_product_error': 'Erro ao criar produto: {error}',
+    'shop_update_product_error': 'Erro ao atualizar produto: {error}',
+    'shop_delete_product_error': 'Erro ao excluir produto: {error}',
+    'shop_cleanup_error': 'Erro na limpeza de produtos: {error}',
+    'shop_like_error': 'Erro ao curtir: {error}',
+    'shop_sold_error': 'Erro ao marcar como vendido: {error}',
+    'shop_no_sales_data': 'Sem dados de vendas ainda',
+    'shop_no_visits_data': 'Sem dados de visitas ainda',
+    'shop_no_security_issues': 'Nenhum problema de segurança detectado',
+    'shop_access_alerts': 'Receba alertas quando alguém acessar',
+    'shop_action_log': 'Salve um registro de todas as ações',
+    'shop_block_attempts': 'Bloqueie após 5 tentativas falhas',
+    'shop_hint_serial': 'Ex: AB123456789',
+    'shop_hint_brand': 'Ex: Trek, Giant, Specialized...',
+    'shop_hint_year': '2024',
+
+    // === Cart Provider ===
+    'cart_stock_insufficient': 'Estoque insuficiente. Disponíveis: {count}',
+    'cart_enter_coupon': 'Insira um código de cupom',
+    'cart_coupon_invalid': 'Cupom inválido',
+    'cart_coupon_expired': 'Cupom expirado ou inativo',
+    'cart_free_shipping': 'Frete grátis (equivalente a R\$10.000)',
+
+    // === Comments Provider ===
+    'comments_login_required': 'Você precisa fazer login para comentar',
+    'comments_no_permission': 'Sem permissões. Verifique as regras do Firebase',
+    'comments_no_connection': 'Sem conexão com a internet',
+    'comments_post_error': 'Erro ao publicar comentário: {error}',
+    'comments_edit_error': 'Erro ao editar comentário: {error}',
+    'comments_cooldown': 'Aguarde alguns segundos antes de comentar novamente',
+    'comments_empty': 'O comentário não pode estar vazio',
+    'comments_too_long': 'O comentário não pode ter mais de 500 caracteres',
+    'comments_missing_plugin': 'Firebase DB não carregado. Reinicie o app',
+    'comments_delete_no_permission':
+        'Você não tem permissão para excluir este comentário',
+    'comments_not_exist': 'O comentário não existe',
+    'comments_delete_error': 'Erro ao excluir comentário',
+
+    // === Likes Provider ===
+    'likes_error': 'Erro ao curtir',
+    'likes_unlike_error': 'Erro ao descurtir',
+
+    // === Attendees Provider ===
+    'attendees_join_error': 'Erro ao participar da pedalada',
+    'attendees_update_error': 'Erro ao atualizar status',
+    'attendees_leave_error': 'Erro ao sair da pedalada',
+
+    // === Notifications Provider ===
+    'notif_mark_read_error': 'Erro ao marcar como lida',
+    'notif_mark_all_read_error': 'Erro ao marcar todas como lidas',
+    'notif_delete_error': 'Erro ao excluir notificação',
+    'notif_delete_all_error': 'Erro ao excluir todas as notificações',
+
+    // === User Providers ===
+    'user_update_error': 'Erro ao atualizar o perfil. Tente novamente.',
+    'user_authorize_seller_error': 'Erro ao autorizar vendedor',
+    'user_revoke_permission_error': 'Erro ao revogar permissão',
+    'user_follow_error': 'Erro ao seguir o usuário',
+    'user_unfollow_error': 'Erro ao deixar de seguir',
+    'user_profile_load_error': 'Erro ao carregar o perfil do usuário',
+    'user_username_update_error': 'Erro ao atualizar nome de usuário',
+
+    // === Group Provider ===
+    'group_complete_name_required':
+        'Complete seu nome no perfil antes de participar de grupos',
+    'group_no_phone': 'Sem telefone',
+
+    // === Ride Tracker Provider ===
+    'tracker_gps_required': 'Ative o GPS para gravar sua pedalada',
+    'tracker_location_permission':
+        'Permissão de localização necessária para gravar',
+    'tracker_location_denied':
+        'Permissão de localização negada. Ative nas Configurações.',
+    'cyclist_level_legend': 'lenda',
+    'cyclist_level_expert': 'especialista',
+    'cyclist_level_advanced': 'avançado',
+    'cyclist_level_intermediate': 'intermediário',
+    'cyclist_level_novice': 'iniciante',
+
+    // === Cycling Stats ===
+    'time_just_now': 'Agora mesmo',
+
+    // === Achievements ===
+    'achievement_first_pedals': 'Primeiras Pedaladas',
+    'achievement_first_pedals_desc': 'Percorra 10 km',
+    'achievement_explorer': 'Explorador',
+    'achievement_explorer_desc': 'Percorra 50 km',
+    'achievement_centenary': 'Centenário',
+    'achievement_centenary_desc': 'Percorra 100 km',
+    'achievement_tireless': 'Pedaleiro Incansável',
+    'achievement_tireless_desc': 'Percorra 500 km',
+    'achievement_thousand_club': 'Clube dos Mil Km',
+    'achievement_thousand_club_desc': 'Percorra 1.000 km',
+    'achievement_ultra': 'Ultra Ciclista',
+    'achievement_ultra_desc': 'Percorra 5.000 km',
+    'achievement_first_ride': 'Primeira Pedalada',
+    'achievement_first_ride_desc': 'Complete sua primeira pedalada',
+    'achievement_regular': 'Habitual',
+    'achievement_regular_desc': 'Complete 10 pedaladas',
+    'achievement_veteran': 'Veterano',
+    'achievement_veteran_desc': 'Complete 50 pedaladas',
+    'achievement_centurion': 'Centurião',
+    'achievement_centurion_desc': 'Complete 100 pedaladas',
+    'achievement_sprinter': 'Velocista',
+    'achievement_sprinter_desc': 'Alcance 30 km/h',
+    'achievement_lightning': 'Raio',
+    'achievement_lightning_desc': 'Alcance 40 km/h',
+    'achievement_supersonic': 'Supersônico',
+    'achievement_supersonic_desc': 'Alcance 50 km/h',
+    'achievement_consistent': 'Constante',
+    'achievement_consistent_desc': '3 dias seguidos pedalando',
+    'achievement_perfect_week': 'Semana Perfeita',
+    'achievement_perfect_week_desc': '7 dias seguidos',
+    'achievement_machine': 'Máquina',
+    'achievement_machine_desc': '30 dias seguidos',
+    'achievement_social': 'Social',
+    'achievement_social_desc': 'Participe de um grupo',
+    'achievement_popular': 'Popular',
+    'achievement_popular_desc': 'Participe de 5 grupos',
+    'achievement_nocturnal': 'Noturno',
+    'achievement_nocturnal_desc': 'Complete uma pedalada noturna',
+    'achievement_rain_or_shine': 'Chuva ou Sol',
+    'achievement_rain_or_shine_desc': 'Pedale na chuva',
+    'achievement_early_bird': 'Madrugador',
+    'achievement_early_bird_desc': 'Pedalada antes das 6h',
+
+    // === Shared Screens ===
+    'location_move_map': 'Mova o mapa para selecionar',
+    'location_confirm': 'Confirmar',
+    'location_selected': 'Local selecionado',
+    'location_move_pin':
+        'Mova o mapa para posicionar o pino vermelho no local exato do acidente',
+    'no_connection_title': 'Sem conexão',
+    'no_connection_message':
+        'Verifique sua conexão com a internet e tente novamente.',
+    'error_something_wrong': 'Algo deu errado',
+    'select_location_title': 'Selecionar localização',
+    'post_edited': 'editado',
+    'post_invalid_url': 'URL inválida',
+
+    // === QR / Stolen bike verification ===
+    'qr_invalid': 'Código QR inválido',
+    'qr_product_not_found': 'Produto não encontrado no sistema',
+    'qr_serial_mismatch': 'O número de série não corresponde',
+    'qr_not_verified': 'Esta bicicleta não é verificada como segura',
+    'qr_verify_error': 'Erro ao verificar o código QR',
+    'stolen_not_registered': 'Bicicleta não registrada no sistema Biux',
+    'stolen_sale_blocked':
+        'A venda de bicicletas roubadas não é permitida. O proprietário e as autoridades foram notificados.',
+    'stolen_verified_safe':
+        'Bicicleta registrada no Biux e verificada como segura',
+    'stolen_partial_verification': 'Verificação parcial concluída',
+    'stolen_verify_error': 'Erro ao verificar a bicicleta',
+
+    // === Roads Repository ===
+    'roads_join_group_required':
+        'Você deve participar do grupo para participar desta pedalada',
+
+    // === Payments ===
+    'payments_coming_soon': 'Pagamentos disponíveis em breve',
+
+    // === Experiences Extra ===
+    'experience_add_media_required':
+        'Você deve adicionar pelo menos uma imagem ou vídeo',
+    'experience_post_multimedia': 'Post com Multimídia',
+    'experience_photos_only': 'Apenas fotos',
+    'experience_post_text': 'Post de Texto',
+    'experience_text_only': 'Apenas texto, sem mídia',
+    'experience_tags_optional': 'Tags (opcional)',
+    'experience_tags_hint':
+        'ex: ciclismo, montanha, aventura (separados por vírgulas)',
+    'experience_story_label': 'Story',
+    'experience_post_label': 'Post',
+    'experience_processing': 'Processando...',
+    'experience_video_error': 'Erro ao carregar vídeo: {error}',
+    'experience_biux_premium': 'Biux Premium',
+
+    // === Misc ===
+    'open_google_maps': 'Google Maps',
+    'only_numbers': 'Apenas números',
+    'following_label': 'Seguindo',
+    'points_label': 'Pontos',
+    'admin_revoke_error':
+        'Não é possível revogar permissões de um administrador',
+    'notification_channel_desc': 'Notificações gerais do aplicativo',
+
+    // === Bike Actions Stubs ===
+    'stub_theft_report': 'Relatório de roubo enviado (stub).',
+    'stub_recovered': 'Marcada como recuperada (stub).',
+    'stub_transfer': 'Transferência iniciada (stub).',
+
+    // === Firebase Diagnostic ===
+    'diagnostic_not_tested': 'Não testado',
+    'diagnostic_title': 'Diagnóstico Firebase DB',
+    'diagnostic_rebuild_hint':
+        'Se aparecer MissingPluginException, você precisa de rebuild completo',
+
+    // === PDF Export ===
+    'pdf_report_title': 'Relatório de Alertas de Bicicletas Roubadas',
+    'pdf_footer': 'Biux - Plataforma de Ciclismo',
+    'pdf_no_date': 'Sem data',
+    'pdf_alert': 'ALERTA',
+    'pdf_seller': 'Vendedor',
+    'pdf_bicycle': 'Bicicleta',
+    'pdf_serial': 'Serial',
+
+    // === Seller ===
+    'seller_no_name': 'Sem nome',
+
+    // === User Provider ===
+    'user_error_creating_test': 'Erro ao criar usuário de teste',
+    'user_error_loading_data': 'Erro ao carregar dados do usuário',
+    'user_error_not_logged_in':
+        'Você não está conectado. Por favor, faça login primeiro.',
+    'user_error_empty_fields':
+        'Por favor, preencha pelo menos um campo para atualizar',
+    'user_error_update_profile': 'Erro ao atualizar o perfil. Tente novamente.',
+    'user_error_upload_image': 'Erro ao enviar imagem',
+    'user_error_request_deletion': 'Erro ao solicitar exclusão da conta',
+    'user_error_admin_only_authorize':
+        'Apenas administradores podem autorizar vendedores',
+    'user_error_authorize_seller': 'Erro ao autorizar vendedor',
+    'user_error_admin_only_revoke':
+        'Apenas administradores podem revogar permissões',
+    'user_error_revoke_permission': 'Erro ao revogar permissão',
+    'user_error_admin_only_list':
+        'Apenas administradores podem ver a lista de usuários',
+    'user_error_load_users': 'Erro ao carregar usuários',
+    'user_error_not_authenticated': 'Você não está autenticado',
+    'user_error_follow': 'Erro ao seguir o usuário',
+    'user_error_unfollow': 'Erro ao deixar de seguir',
+    'user_error_load_profile': 'Erro ao carregar o perfil do usuário',
+
+    // === Username Provider ===
+    'username_current': 'Nome de usuário atual',
+    'username_invalid_format': 'Formato inválido',
+    'username_checking': 'Verificando disponibilidade...',
+    'username_available': '✓ Disponível',
+    'username_check_error': 'Erro ao verificar disponibilidade',
+    'username_not_authenticated': 'Usuário não autenticado',
+    'username_already_taken': 'O nome de usuário não está mais disponível',
+    'username_update_error': 'Erro ao atualizar o nome de usuário',
+
+    // === Group Provider ===
+    'group_error_create': 'Erro ao criar o grupo',
+    'group_error_edit': 'Erro ao editar o grupo',
+    'group_error_load': 'Erro ao carregar o grupo',
+    'group_error_not_authenticated': 'Usuário não autenticado',
+    'group_error_user_not_found': 'Usuário não encontrado',
+    'group_error_complete_profile':
+        'Você deve completar seu nome no perfil antes de entrar em grupos',
+    'group_error_request_join': 'Erro ao solicitar entrada',
+    'group_error_approve': 'Erro ao aprovar solicitação',
+    'group_error_reject': 'Erro ao rejeitar solicitação',
+    'group_error_cancel_request': 'Erro ao cancelar solicitação',
+    'group_error_leave': 'Erro ao sair do grupo',
+    'group_error_select_image': 'Erro ao selecionar imagem',
+    'group_user_no_name': 'Usuário sem nome',
+    'group_default_user': 'Usuário',
+    'group_default_username': 'usuário',
+
+    // === Ride Tracker Provider ===
+    'ride_error_gps_disabled': 'Ative o GPS para gravar sua pedalada',
+    'ride_error_location_permission':
+        'É necessária permissão de localização para gravar',
+    'ride_error_location_denied':
+        'Permissão de localização negada. Ative nas Configurações.',
+
+    // === Cycling Stats Provider ===
+    'stats_just_now': 'Agora mesmo',
+    'stats_seconds_ago': 'Há alguns segundos',
+    'stats_minutes_ago': 'Há alguns minutos',
+    'stats_hours_ago': 'Há algumas horas',
+    'stats_error_load': 'Erro ao carregar estatísticas',
+    'stats_error_refresh': 'Erro ao atualizar',
+    'stats_error_add_ride': 'Erro ao registrar pedalada',
+    'stats_error_leaderboard': 'Erro ao carregar ranking',
+
+    // === Cycling Stats Entity ===
+    'level_novice': 'Iniciante',
+
+    // === Migrated hardcoded strings ===
+    'seller_unknown': 'Vendedor desconhecido',
+    'seller_default': 'Vendedor',
+    'exp_demo_title': 'Experiências Demo',
+    'exp_demo_recent': 'Experiências Recentes',
+    'exp_max_files_allowed': 'Máximo de 10 arquivos permitidos',
+    'exp_file_not_available': 'O arquivo selecionado não está disponível',
+    'exp_error_selecting_image': 'Erro ao selecionar imagem',
+    'exp_max_images_reached': 'Você já tem o máximo de 10 imagens',
+    'exp_error_selecting_images': 'Erro ao selecionar imagens',
+    'exp_photo_not_available': 'A foto tirada não está disponível',
+    'exp_error_taking_photo': 'Erro ao tirar foto',
+    'exp_cropped_not_available': 'O arquivo recortado não está disponível',
+    'exp_error_adding_cropped': 'Erro ao adicionar imagem recortada',
+    'exp_video_not_available': 'O vídeo selecionado não está disponível',
+    'exp_video_too_long': 'O vídeo deve ter no máximo 30 segundos',
+    'exp_error_selecting_video': 'Erro ao selecionar vídeo',
+    'exp_recorded_not_available': 'O vídeo gravado não está disponível',
+    'exp_error_recording_video': 'Erro ao gravar vídeo',
+    'exp_media_required': 'Você deve adicionar pelo menos uma imagem ou vídeo',
+    'exp_description_required': 'A descrição é obrigatória para este post',
+    'exp_error_creating': 'Erro ao criar experiência',
+    'validator_number': r'^[0-9]+$',
+    'exp_content_story': 'Story',
+    'exp_content_post': 'Publicação',
+
+    // === Misc migration batch ===
+    // PDF Export
+    'pdf_unknown_city': 'Desconhecida',
+    'pdf_alerts_by_city': 'Alertas por Cidade',
+    'pdf_city': 'Cidade',
+    'pdf_alerts': 'Alertas',
+    'pdf_percentage': 'Porcentagem',
+    'pdf_most_affected_brands': 'Marcas mais Afetadas',
+    'pdf_brand': 'Marca',
+    'pdf_alert_details': 'Detalhes dos Alertas',
+    'pdf_stolen_bike_report': 'Relatório de Alertas de Bicicletas Roubadas',
+    'pdf_generated': 'Gerado',
+    'pdf_period': 'Período',
+    'pdf_cycling_platform': 'Plataforma de Ciclismo',
+    'pdf_page': 'Página',
+    'pdf_of': 'de',
+    'pdf_total_alerts': 'Total de Alertas',
+    'pdf_unique_sellers': 'Vendedores Únicos',
+    'pdf_affected_cities': 'Cidades Afetadas',
+    'pdf_alert_badge': 'ALERTA',
+    'pdf_unknown_seller': 'Desconhecido',
+    'pdf_color': 'Cor',
+    // Admin usecases
+    'error_invalid_user_id': 'ID de usuário inválido',
+    'error_cannot_revoke_admin':
+        'Não é possível revogar permissões de um administrador',
+    // Payments
+    // Roads repository
+    'error_update_group': 'Erro ao atualizar grupo',
+    'must_join_group_for_ride':
+        'Você deve entrar no grupo para participar desta pedalada',
+    'deleted_successfully': 'Eliminado com sucesso',
+    // Bike stubs
+    'stub_theft_report_sent': 'Relatório de roubo enviado (stub).',
+    'stub_marked_recovered': 'Marcado como recuperada (stub).',
+    'stub_transfer_initiated': 'Transferência iniciada (stub).',
+    // Notifications
+    'notif_new_notification': 'Nova notificação',
+    'notif_stolen_bike_alert_title':
+        '🚨 ALERTA: Tentativa de venda da sua bicicleta roubada',
+    'notif_admin_theft_alert_title':
+        '⚠️ Alerta de Segurança: Tentativa de venda de bicicleta roubada',
+    // Hardcoded strings fix
+    'error_post_not_found': 'Publicação não encontrada',
+    'error_user_not_found': 'Usuário não encontrado',
+    'field_full_name': 'nome completo',
+    'field_username': 'nome de usuário',
+    'field_photo_url': 'foto de perfil',
+    'field_gender': 'gênero',
+    'field_birth_date': 'data de nascimento',
+    'field_phone': 'número de telefone',
+    'field_city': 'cidade',
+    'please_complete_fields': 'Por favor complete: {fields}',
+    'exp_tags_hint':
+        'ex: ciclismo, montanha, aventura (separados por vírgulas)',
   };
 
   // ─── FRANÇAIS ───────────────────────────────────────────────────
@@ -7437,7 +9656,6 @@ class AppTranslations {
     // General
     'settings': 'Paramètres',
     'back': 'Retour',
-    'cancel': 'Annuler',
     'send': 'Envoyer',
     'understood': 'Compris',
     'currently': 'Actuellement',
@@ -7448,7 +9666,7 @@ class AppTranslations {
     'notifications': 'Notifications',
     'notifications_subtitle': 'Activer/désactiver, Son, Vibration',
     'appearance': 'Apparence',
-    'appearance_subtitle': 'Mode clair/sombre, Taille de police, Langue',
+    'appearance_subtitle': 'Mode clair/sombre, Langue',
     'privacy': 'Confidentialité',
     'privacy_subtitle': 'Qui peut voir votre profil, Autorisations',
     'information': 'Information',
@@ -7490,14 +9708,8 @@ class AppTranslations {
     'app_theme': 'Thème de l\'App',
     'light_mode': 'Mode Clair',
     'dark_mode': 'Mode Sombre',
-    'text': 'Texte',
-    'font_size': 'Taille de Police',
     'language': 'Langue',
     'select_language': 'Sélectionner la Langue',
-    'small': 'Petit',
-    'medium': 'Moyen',
-    'large': 'Grand',
-    'very_large': 'Très Grand',
 
     // Privacy
     'privacy_control': 'Contrôle de Confidentialité',
@@ -7522,6 +9734,8 @@ class AppTranslations {
     'legal_policies': 'Mentions Légales',
     'terms_conditions': 'Conditions Générales',
     'terms_subtitle': 'Lisez nos conditions d\'utilisation',
+    'terms_content':
+        'Conditions Générales de Biux\n\n1. ACCEPTATION DES CONDITIONS\nEn utilisant l\'application Biux, vous acceptez ces conditions générales dans leur intégralité.\n\n2. UTILISATION RESPONSABLE\nL\'utilisateur s\'engage à utiliser l\'application de manière responsable et légale.\n\n3. CONTENU UTILISATEUR\nL\'utilisateur est responsable du contenu qu\'il publie sur la plateforme.\n\n4. CONFIDENTIALITÉ\nVos données personnelles seront protégées conformément à notre politique de confidentialité.\n\n5. LIMITATION DE RESPONSABILITÉ\nBiux n\'est pas responsable des dommages indirects ou de la perte de données.\n\n6. MODIFICATIONS DES CONDITIONS\nNous nous réservons le droit de modifier ces conditions à tout moment.\n\n7. CONTACT\nPour toute question concernant ces conditions, contactez-nous à support@biux.com',
     'support': 'Support',
     'tech_support': 'Support Technique',
     'tech_support_subtitle': 'Contactez notre équipe',
@@ -7576,15 +9790,12 @@ class AppTranslations {
     'yes_cancel': 'Oui, annuler',
     'view': 'Voir',
     'gallery': 'Galerie',
-    'take_photo': 'Prendre une photo',
-    'select_from_gallery': 'Sélectionner de la galerie',
     'delete_image': 'Supprimer l\'image',
     'uploading': 'Envoi...',
     'save_changes': 'Enregistrer les modifications',
 
     // Profile/Users
     'my_profile': 'Mon Profil',
-    'edit_profile': 'Modifier le profil',
     'profile': 'Profil',
     'user_profile': 'Profil d\'utilisateur',
     'followers': 'Abonnés',
@@ -7612,10 +9823,7 @@ class AppTranslations {
     'share_profile': 'Partager le profil',
     'could_not_load_profile': 'Impossible de charger le profil',
     'loading_followers': 'Chargement des abonnés...',
-    'no_followers_yet': 'Aucun abonné encore',
-    'not_following_anyone': 'Ne suit personne encore',
     'no_name': 'Sans nom',
-    'retry': 'Réessayer',
     'check_connection_retry': 'Vérifiez votre connexion et réessayez',
     'closing_session': 'Déconnexion...',
     'error_deleting': 'Erreur lors de la suppression',
@@ -7628,8 +9836,6 @@ class AppTranslations {
     'edit_user': 'Modifier l\'utilisateur',
     'error_updating_username':
         'Erreur lors de la mise à jour du nom d\'utilisateur',
-    'edit_username': 'Modifier le nom d\'utilisateur',
-    'error_updating_profile': 'Erreur lors de la mise à jour du profil',
     'tap_add_cover_photo': 'Appuyez pour ajouter une photo de couverture',
     'account_info': 'Informations du compte',
     'change_password': 'Changer le mot de passe',
@@ -7644,7 +9850,6 @@ class AppTranslations {
 
     // Rides
     'rides': 'Sorties',
-    'create_ride': 'Créer une sortie',
     'create_new_ride': 'Créer une nouvelle sortie',
     'edit_ride': 'Modifier la sortie',
     'ride_not_found': 'Sortie non trouvée',
@@ -7708,7 +9913,6 @@ class AppTranslations {
     'ride_image_optional': 'Image de la sortie (optionnel)',
     'add_image': 'Ajouter une image',
     'update_ride': 'Mettre à jour la sortie',
-    'meeting_point': 'Point de rencontre',
     'custom_point': 'Point personnalisé',
     'select_a_meeting_point': 'Sélectionnez un point de rencontre',
     'add_custom_point': 'Ajouter un point personnalisé',
@@ -7722,7 +9926,6 @@ class AppTranslations {
     'difficulty_hard': 'Difficile',
     'difficulty_expert': 'Expert',
     'ride_updated_success': 'Sortie mise à jour avec succès',
-    'ride_created_success': 'Sortie créée avec succès',
     'saved_coordinates': 'Coordonnées enregistrées:',
     'custom_point_needs_location':
         'Le point personnalisé doit avoir une position',
@@ -7757,7 +9960,6 @@ class AppTranslations {
         'Êtes-vous sûr de ne plus vouloir participer à cette sortie?',
     'no_attendees_yet': 'Pas encore de participants confirmés',
     'user_no_name': 'Utilisateur sans nom',
-    'members': 'membres',
     'confirmed': 'confirmés',
     'no_label': 'Non',
 
@@ -7766,7 +9968,6 @@ class AppTranslations {
     'create_group': 'Créer un groupe',
     'create_new_group': 'Créer un nouveau groupe',
     'my_groups': 'Mes Groupes',
-    'edit_group': 'Modifier le groupe',
     'group_not_found': 'Groupe non trouvé',
     'back_to_groups': 'Retour aux groupes',
     'no_members': 'Aucun membre dans ce groupe',
@@ -7800,7 +10001,6 @@ class AppTranslations {
     'city': 'Ville',
     'select_city': 'Sélectionnez une ville',
     'already_admin': 'Vous êtes déjà administrateur d\'un autre groupe',
-    'group_created_success': 'Groupe créé avec succès',
     'group_updated_success': 'Groupe mis à jour avec succès',
     'view_my_group': 'Voir Mon Groupe',
     'user_accepted': 'a été accepté dans le groupe',
@@ -7872,7 +10072,6 @@ class AppTranslations {
     'could_not_open_link': 'Impossible d\'ouvrir le lien',
     'link_not_available': 'Lien non disponible',
     'cancel_all': 'Tout annuler',
-    'new_notification': 'Nouvelle notification',
     'no_notifications': 'Vous n\'avez pas de notifications',
     'share_photo_coming_soon': 'Partager la photo bientôt',
 
@@ -7883,7 +10082,6 @@ class AppTranslations {
     'delete_story_confirm': 'Êtes-vous sûr de vouloir supprimer cette story?',
     'story_deleted': 'Story supprimée avec succès',
     'promoted_story': 'STORY SPONSORISÉE',
-    'publish': 'Publier',
     'publish_as_ad': 'Publier comme publicité',
     'boost_your_story': 'Boostez votre story',
 
@@ -7907,7 +10105,6 @@ class AppTranslations {
     'explore_store_favorites':
         'Explorez la boutique et marquez vos produits favoris',
     'go_to_store': 'Aller à la boutique',
-    'send_report': 'Envoyer le rapport',
     'must_login': 'Vous devez vous connecter',
     'biux_shop': 'BiuX Shop',
     'visitor': 'Visiteur',
@@ -7996,9 +10193,7 @@ class AppTranslations {
     'favorite_products': 'produit(s) favori(s)',
     'product_not_found': 'Produit non trouvé',
     'stolen_bikes_title': 'Vélos Volés',
-    'list_tab': 'Liste',
     'verify_tab': 'Vérifier',
-    'report_tab': 'Signaler',
     'reported_stat': 'Signalés',
     'cities_stat': 'Villes',
     'this_month_stat': 'Ce mois',
@@ -8007,7 +10202,6 @@ class AppTranslations {
     'type_label': 'Type',
     'order_label': 'Ordre',
     'no_results': 'Aucun résultat',
-    'no_results_found': 'Aucun résultat trouvé',
     'bike_verifier': 'Vérificateur de Vélos',
     'bike_verifier_desc':
         'Entrez le numéro de série pour savoir s\'il est signalé comme volé.',
@@ -8046,8 +10240,6 @@ class AppTranslations {
     'complaint_label': 'Plainte',
     'required_field': 'Obligatoire',
     'results_count': 'résultat(s)',
-    'search_hint': 'Rechercher...',
-    'filter_all': 'Toutes',
     'sort_recent': 'Récent',
     'sort_city': 'Ville',
     'sort_brand': 'Marque',
@@ -8502,9 +10694,6 @@ class AppTranslations {
 
     // Time ago
     'time_now': 'Maintenant',
-    'time_ago_days': 'Il y a {n}j',
-    'time_ago_hours': 'Il y a {n}h',
-    'time_ago_minutes': 'Il y a {n}min',
     'time_full_second': 'il y a {n} seconde',
     'time_full_seconds': 'il y a {n} secondes',
     'time_full_minute': 'il y a {n} minute',
@@ -8592,7 +10781,6 @@ class AppTranslations {
     'no_bikes_registered': 'Vous n\'avez pas de vélos enregistrés',
     'register_first_bike': 'Enregistrez votre premier vélo',
     'step': 'Étape',
-    'next': 'Suivant',
     'previous': 'Précédent',
     'finish': 'Terminer',
     'main_photo_label': 'Photo Principale',
@@ -8802,7 +10990,6 @@ class AppTranslations {
     'find_amazing_products':
         'Trouvez des produits incroyables pour votre cyclisme',
     'cop_each': 'COP chacun',
-    'products_label': 'Produits',
     'card': 'Carte',
     'available_shipping': 'Livraison disponible vers',
     'all_colombia': 'Toute la Colombie',
@@ -8944,7 +11131,6 @@ class AppTranslations {
     'no_reports_created': 'Vous n\'avez pas encore créé de rapport.',
     'admin_reports_panel': 'Panneau de Rapports Admin',
     'in_review': 'En Révision',
-    'resolved': 'Résolus',
     'report_title_field': 'Titre du rapport',
     'attach_evidence': 'Joindre une Preuve',
     'report_sent_success': 'Rapport envoyé avec succès',
@@ -9010,7 +11196,6 @@ class AppTranslations {
     'admin_will_review':
         'Un administrateur examinera votre demande et vous notifiera.',
     'please_write_message': 'Veuillez écrire un message',
-    'sending': 'Envoi...',
     'request_sent_success':
         'Demande envoyée. Un administrateur l\'examinera bientôt.',
     'request_error': 'Erreur lors de l\'envoi de la demande. Réessayez.',
@@ -9057,7 +11242,6 @@ class AppTranslations {
     'products_eliminated': 'produits supprimés',
 
     // My orders - remaining
-    'order_number_prefix': 'Commande',
     'more_products_suffix': 'de plus',
     'total_colon': 'Total :',
 
@@ -9089,7 +11273,6 @@ class AppTranslations {
     'error_unfollow': 'Erreur de désabonnement',
 
     // Account settings screen
-    'email_label': 'E-mail',
     'not_linked': 'Non lié',
     'linked_devices': 'Appareils Liés',
     'this_device': 'Cet Appareil',
@@ -9441,7 +11624,6 @@ class AppTranslations {
     'processing_multimedia': 'Traitement du multimédia',
     'completed_label': 'Terminés',
     'profile_photo': 'Photo de Profil',
-    'cover_photo': 'Photo de Couverture',
     'your_full_name': 'Votre nom complet',
     'your_username': 'votre_nom_utilisateur',
     'description_bio': 'Description / Bio',
@@ -9582,14 +11764,12 @@ class AppTranslations {
     'ride_details': 'Détails de la sortie',
     'attendees': 'Participants',
     'cancel_registration': "Annuler l'inscription",
-    'route': 'Itinéraire',
     'departure_time': 'Heure de départ',
     'emergency': 'Urgence',
     'call': 'Appeler',
     'police': 'Police',
     'firefighters': 'Pompiers',
     'ambulance': 'Ambulance',
-    'report_accident': 'Signaler un accident',
     'chats': 'Chats',
     'write_message': 'Écrire un message...',
     'no_messages': 'Aucun message',
@@ -9971,5 +12151,809 @@ class AppTranslations {
     'continue_editing': 'Continuer la modification',
     'chat': 'Chat',
     'send_first_message': 'Envoyez le premier message !',
+
+    // === Accidents ===
+    'time_ago_now': 'Maintenant',
+    'time_ago_minutes': 'Il y a {n} min',
+    'time_ago_hours': 'Il y a {n} h',
+    'time_ago_days': 'Il y a {n} j',
+    'severity_severe': 'Grave',
+    'severity_moderate': 'Modéré',
+    'severity_minor': 'Léger',
+    'permission_required': 'Permission requise',
+    'camera_permission_message':
+        'Biux a besoin d\'accéder à votre caméra. Allez dans Paramètres pour l\'activer.',
+    'gallery_permission_message':
+        'Biux a besoin d\'accéder à votre galerie. Allez dans Paramètres pour l\'activer.',
+    'open_settings': 'Ouvrir Paramètres',
+    'camera_permission_needed': 'Permission de caméra requise',
+    'gallery_permission_needed': 'Permission de galerie requise',
+    'take_photo': 'Prendre une photo',
+    'select_from_gallery': 'Sélectionner depuis la galerie',
+    'accident_description_required': 'Écrivez une description de l\'accident',
+    'accident_location_required': 'Sélectionnez l\'emplacement de l\'accident',
+    'anonymous': 'Anonyme',
+    'accident_reported_success':
+        '✅ Accident signalé. Maintenant visible pour tous.',
+    'accident_location': 'Emplacement de l\'accident',
+    'accidents_title': 'Accidents',
+    'reports_tab': 'Rapports',
+    'map_tab': 'Carte',
+    'report_tab': 'Signaler',
+    'error_loading_reports': 'Erreur de chargement des rapports',
+    'no_accidents_reported': 'Aucun accident signalé !',
+    'no_active_accidents': 'Aucun accident actif en ce moment',
+    'report_accident': 'Signaler un accident',
+    'active_count': '{n} actif(s)',
+    'visible_for_all': 'Visible pour tous',
+    'active_label': 'ACTIFS',
+    'resolved_label': 'RÉSOLUS',
+    'resolved': 'Résolu',
+    'mine': 'Le mien',
+    'accident_location_section': '📍 Emplacement de l\'accident',
+    'change_location': 'Changer',
+    'tap_to_select_location': 'Appuyez pour sélectionner l\'emplacement',
+    'severity_section': '⚠️ Gravité',
+    'description_section': '📝 Description',
+    'accident_description_hint':
+        'Décrivez ce qui s\'est passé, type de véhicule, blessures, etc.',
+    'photos_optional_section': '📸 Photos (facultatif)',
+    'sending': 'Envoi en cours...',
+    'send_report': 'Envoyer le rapport',
+    'call_911_disclaimer': 'S\'il y a des blessés, appelez le 112 d\'abord.',
+    'report_visible_disclaimer':
+        'Votre rapport sera visible pour tous les cyclistes de Biux',
+    'accident_detail_title': 'Détail de l\'Accident',
+    'mark_as_resolved': 'Marquer comme résolu',
+    'accident_resolved_question': 'L\'accident a-t-il été pris en charge ?',
+    'yes_resolved': 'Oui, résolu',
+    'accident_marked_resolved': 'Accident marqué comme résolu',
+    'mark_resolved': 'Marquer résolu',
+    'reported_by': 'Signalé par',
+    'call_911': 'S\'il y a des blessés, appelez le 112',
+    'reported_accidents_title': 'Accidents Signalés',
+    'list_tab': 'Liste',
+    'report_button': 'Signaler',
+    'no_active_accidents_zone': 'Aucun accident actif dans votre zone',
+
+    // === Onboarding ===
+    'onboarding_title_1': 'Bienvenue sur BiUX',
+    'onboarding_desc_1':
+        'La plus grande communauté de cyclistes. Connectez-vous avec d\'autres cyclistes, organisez des sorties et explorez de nouveaux itinéraires.',
+    'onboarding_title_2': 'Groupes et Sorties',
+    'onboarding_desc_2':
+        'Rejoignez des groupes de cyclisme, organisez des sorties en groupe et rencontrez des cyclistes partageant vos intérêts.',
+    'onboarding_title_3': 'Suivi GPS',
+    'onboarding_desc_3':
+        'Enregistrez vos sorties avec GPS en temps réel. Mesurez votre vitesse, distance, calories et plus.',
+    'onboarding_title_4': 'Réalisations et Statistiques',
+    'onboarding_desc_4':
+        'Débloquez des médailles, montez en niveau et rivalisez avec d\'autres cyclistes. Chaque coup de pédale compte !',
+    'onboarding_title_5': 'Sécurité d\'Abord',
+    'onboarding_desc_5':
+        'Bouton SOS d\'urgence, rapports routiers, enregistrement de vélos et contacts d\'urgence.',
+    'onboarding_title_6': 'Boutique et Communauté',
+    'onboarding_desc_6':
+        'Achetez et vendez des accessoires, partagez des expériences et restez informé sur la sécurité routière.',
+    'skip': 'Passer',
+    'get_started': 'Commencer !',
+    'next': 'Suivant',
+
+    // === Weather ===
+    'weather_for_cycling': 'Météo pour le Cyclisme',
+    'loading_weather': 'Chargement de la météo...',
+    'wind': 'Vent',
+    'humidity': 'Humidité',
+    'feels_like': 'Ressenti',
+    'good_weather_to_ride': 'Bon temps pour rouler',
+    'caution_riding': 'Prudence en roulant',
+    'weather_tips_title': '🚴 Conseils météo',
+    'tip_carry_water': 'Emportez toujours assez d\'eau',
+    'tip_sunscreen': 'Utilisez de la crème solaire les jours ensoleillés',
+    'tip_rain_braking': 'Sous la pluie, freinez à l\'avance',
+    'tip_use_lights': 'Utilisez des lumières en cas de faible visibilité',
+    'tip_dress_layers': 'Habillez-vous en couches par temps froid',
+    'advice_no_ride_storm': '⚠️ Déconseillé de rouler en cas de tempête',
+    'advice_rain_caution':
+        '🌧️ Prenez un imperméable et attention au sol mouillé',
+    'advice_sun_hydrate': '☀️ Prenez de la crème solaire et hydratez-vous bien',
+    'advice_strong_wind': '💨 Vent fort, prudence en zones ouvertes',
+    'advice_excellent_day': '✅ Excellente journée pour rouler',
+    'advice_good_day': '🚴 Bonne journée pour rouler',
+    'your_location': 'Votre localisation',
+    'weather_clear': 'Dégagé',
+    'weather_cloudy': 'Nuageux',
+    'weather_fog': 'Brouillard',
+    'weather_drizzle': 'Bruine',
+    'weather_rain': 'Pluie',
+    'weather_snow': 'Neige',
+    'weather_heavy_rain': 'Forte pluie',
+    'weather_thunderstorm': 'Orage',
+    'error_loading_weather': 'Erreur de chargement de la météo',
+
+    // === Search ===
+    'search_hint': 'Rechercher',
+    'search_users_groups_rides': 'Rechercher utilisateurs, groupes, sorties...',
+    'users_tab_count': 'Utilisateurs ({n})',
+    'groups_tab_count': 'Groupes ({n})',
+    'rides_tab_count': 'Sorties ({n})',
+    'search_in_biux': 'Rechercher dans BiUX',
+    'search_min_chars': 'Tapez au moins 2 caractères',
+    'search_suggestion_1': 'Sorties VTT',
+    'search_suggestion_2': 'Groupes Bogotá',
+    'search_suggestion_3': 'Cyclisme urbain',
+    'search_suggestion_4': 'Route nocturne',
+    'cyclist_default_name': 'Cycliste',
+    'group_default_name': 'Groupe',
+    'ride_default_name': 'Sortie',
+    'no_results_found': 'Aucun {type} trouvé',
+    'for_query': 'pour "{query}"',
+
+    // === Social / Followers ===
+    'connections_title': 'Connexions',
+    'followers_tab': 'Abonnés',
+    'following_tab': 'Abonnements',
+    'no_followers_yet': 'Pas encore d\'abonnés',
+    'not_following_anyone': 'Vous ne suivez personne encore',
+
+    // === Edit User ===
+    'edit_profile': 'Modifier le profil',
+    'edit_username': 'Modifier le nom d\'utilisateur',
+    'error_updating_profile': 'Erreur de mise à jour du profil',
+    'complete_all_required_fields':
+        'Veuillez compléter tous les champs obligatoires',
+    'cover_photo': 'Photo de couverture',
+    'tap_to_change_photo': 'Appuyez pour changer la photo',
+    'tap_to_add_cover_photo': 'Appuyez pour ajouter une photo de couverture',
+    'share_profile_text': '🚴 Découvrez le profil de {name} sur Biux\n\n{url}',
+
+    // === Create User / Auth ===
+    'welcome_part_1': 'Bienvenue sur',
+    'sign_up_to_roll': 'Inscrivez-vous pour rouler !',
+    'full_name': 'Nom Complet',
+    'username': 'Nom d\'utilisateur',
+    'email_label': 'E-mail',
+    'phone_label': 'Téléphone',
+    'password_label': 'Mot de passe',
+    'repeat_password': 'Répéter le mot de passe',
+    'terms_accept': 'J\'ai lu et j\'accepte les conditions générales',
+    'urban': 'Urbain',
+    'route': 'Route',
+    'must_complete_all_fields': 'Vous devez remplir tous les champs',
+    'profile_image_not_selected':
+        'L\'image de profil n\'a pas été sélectionnée',
+    'accept_terms_to_continue':
+        'Acceptez les conditions générales pour continuer',
+    'now_biux_user': 'Vous êtes maintenant un utilisateur BIUX !',
+    'email_already_registered': 'L\'e-mail {email} est déjà enregistré',
+    'username_already_registered':
+        'L\'utilisateur {username} est déjà enregistré',
+    'enter_your_name': 'Entrez votre nom',
+    'enter_your_number': 'Entrez votre numéro',
+    'enter_your_city': 'Entrez votre ville',
+    'enter_your_description': 'Entrez votre description',
+    'email_field': 'Adresse e-mail',
+    'number_field': 'Numéro',
+    'description_field': 'Description',
+    'city_field': 'Ville',
+    'current_location_field': 'Localisation actuelle',
+    'update_button': 'Mettre à jour',
+    'user_updated': 'Votre utilisateur a été mis à jour',
+
+    // === Shop / Order ===
+    'order_detail_title': 'Détail de la commande',
+    'order_not_found': 'Commande introuvable',
+    'order_number_prefix': 'Commande #',
+    'order_status_label': 'Statut de la commande',
+    'order_date_prefix': 'Date : ',
+    'products_label': 'Produits',
+    'total_label': 'Total',
+    'filter_all': 'Toutes',
+
+    // === Empty States ===
+    'empty_no_rides_title': 'Pas encore de sorties',
+    'empty_no_rides_desc': 'Aucune sortie programmée. Créez la première !',
+    'empty_create_ride': 'Créer une sortie',
+    'empty_no_groups_title': 'Pas de groupes',
+    'empty_no_groups_desc': 'Rejoignez un groupe ou créez le vôtre.',
+    'empty_explore_groups': 'Explorer les groupes',
+    'empty_no_posts_title': 'Pas de publications',
+    'empty_no_posts_desc':
+        'Les publications apparaîtront ici. Partagez votre première expérience !',
+    'empty_no_messages_title': 'Pas de messages',
+    'empty_no_messages_desc':
+        'Commencez une conversation avec un autre cycliste.',
+    'empty_new_message': 'Nouveau message',
+    'empty_no_notifications_title': 'Pas de notifications',
+    'empty_no_notifications_desc':
+        'Les notifications d\'activité apparaîtront ici.',
+    'empty_no_results_title': 'Aucun résultat',
+    'empty_no_results_desc': 'Essayez de rechercher avec d\'autres termes.',
+    'empty_no_bikes_title': 'Pas de vélos',
+    'empty_no_bikes_desc': 'Enregistrez votre vélo pour le protéger.',
+    'empty_register_bike': 'Enregistrer un vélo',
+
+    // === Report Dialog ===
+    'report_reason_inappropriate': 'Contenu inapproprié',
+    'report_reason_spam': 'Spam ou publicité',
+    'report_reason_harassment': 'Harcèlement ou intimidation',
+    'report_reason_false_info': 'Fausse information',
+    'report_reason_impersonation': 'Usurpation d\'identité',
+    'report_reason_violence': 'Contenu violent',
+    'report_reason_illegal_sales': 'Vente de produits illégaux',
+    'report_reason_other': 'Autre',
+    'report_sent_review': 'Rapport envoyé. Nous examinerons votre cas.',
+    'report_content_title': 'Signaler un contenu',
+    'report_reason_question': 'Pourquoi voulez-vous signaler ceci ?',
+    'report_additional_details': 'Détails supplémentaires (facultatif)',
+    'report_submit': 'Envoyer le rapport',
+
+    // === Connectivity ===
+    'no_internet_connection': 'Pas de connexion Internet',
+    'connection_restored': 'Connexion rétablie',
+
+    // === Notifications ===
+    'new_notification': 'Nouvelle notification',
+    'view_action': 'Voir',
+
+    // === Image Upload ===
+    'uploading_label': 'Envoi en cours...',
+    'image_uploaded_success': 'Image envoyée avec succès',
+    'error_uploading_image': 'Erreur d\'envoi de l\'image',
+    'error_upload_generic': 'Erreur d\'envoi',
+
+    // === Roads / Create Ride ===
+    'create_ride': 'Créer une Sortie',
+    'route_name': 'Nom de la Route',
+    'meeting_point': 'Point de rencontre',
+    'geolocation_point': 'Géolocalisation du point',
+    'distance_label': 'Distance',
+    'date_time_label': 'Date et heure',
+    'description_recommendations': 'Description et recommandations',
+    'level_label': 'Niveau',
+    'ride_created_success': 'Sortie créée avec succès',
+    'error_create_ride':
+        'Erreur lors de la création de la Sortie. Réessayez plus tard',
+    'distance_numbers_only': 'La distance ne doit contenir que des chiffres',
+    'publish': 'Publier',
+    'save_point': 'Enregistrer le point',
+
+    // === Maps ===
+    'go_to_meeting_point': 'Aller au point de rencontre',
+    'available_routes': 'Itinéraires disponibles :',
+    'tap_to_see_route': 'Appuyez pour voir l\'itinéraire',
+    'route_shown': 'Itinéraire affiché',
+
+    // === Stories ===
+    'time_seconds_ago': 'Il y a quelques secondes',
+    'time_minutes_ago': 'Il y a {n} min',
+    'time_hours_ago': 'Il y a {n} h',
+    'time_days_ago': 'Il y a {n} jours',
+    'unknown_date': 'Date inconnue',
+    'text_share_story': ' a partagé cette histoire sur Biux...',
+    'title_share_story': 'Ne manquez pas cette histoire de Biux !',
+    'see_more': 'plus',
+    'see_less': ' moins',
+    'gallery_label': 'Galerie',
+    'tell_your_story_hint': 'Racontez-nous l\'histoire...',
+
+    // === Groups ===
+    'edit_group': 'Modifier le groupe',
+    'leave_text': 'Quitter',
+    'join_me': 'Rejoindre',
+    'see_more_text': 'Voir plus',
+    'group_created_success': 'Votre groupe a été créé avec succès !',
+
+    // === Experiences ===
+    'error_add_media_required':
+        'Vous devez ajouter au moins une image ou vidéo',
+    'error_description_required': 'Vous devez ajouter une description',
+    'error_select_experience_type':
+        'Vous devez sélectionner un type d\'expérience',
+    'user_default_name': 'Utilisateur',
+    'experiences_demo_title': 'Expériences Démo',
+    'recent_experiences': 'Expériences Récentes',
+
+    // === Generic ===
+    'error_generic': 'Erreur',
+    'cancel': 'Annuler',
+    'retry': 'Réessayer',
+    'members': 'membres',
+
+    // === Error Handler ===
+    'err_no_connection': 'Pas de connexion internet. Vérifiez votre réseau.',
+    'err_timeout': 'L\'opération a pris trop de temps. Réessayez.',
+    'err_invalid_format': 'Format de données invalide.',
+    'err_connection': 'Erreur de connexion. Vérifiez votre réseau.',
+    'err_no_permission': 'Vous n\'avez pas la permission pour cette action.',
+    'err_unexpected': 'Une erreur inattendue s\'est produite. Réessayez.',
+    'err_invalid_phone': 'Numéro de téléphone invalide. Vérifiez le format.',
+    'err_too_many_requests': 'Trop de tentatives. Attendez quelques minutes.',
+    'err_session_expired': 'Session expirée. Demandez un nouveau code.',
+    'err_invalid_verification_code': 'Code de vérification invalide.',
+    'err_user_disabled': 'Votre compte a été désactivé.',
+    'err_credential_in_use': 'Ce numéro est déjà lié à un autre compte.',
+    'err_no_internet': 'Pas de connexion internet.',
+    'err_auth_generic': 'Erreur d\'authentification.',
+    'err_resource_not_found': 'La ressource demandée n\'existe pas.',
+    'err_service_unavailable': 'Service indisponible. Réessayez plus tard.',
+    'err_operation_cancelled': 'Opération annulée.',
+    'err_rate_limit': 'Limite de requêtes atteinte. Attendez un moment.',
+    'err_server': 'Erreur du serveur.',
+
+    // === Auth Repository ===
+    'err_send_otp': 'Erreur lors de l\'envoi du code OTP',
+    'err_connection_timeout':
+        'Délai de connexion dépassé. Vérifiez votre internet.',
+    'err_send_timeout': 'Délai d\'envoi dépassé. Vérifiez votre connexion.',
+    'err_receive_timeout': 'Le serveur a mis trop de temps. Réessayez.',
+    'err_invalid_phone_number': 'Numéro de téléphone invalide.',
+    'err_too_many_attempts':
+        'Trop de tentatives. Réessayez dans quelques minutes.',
+    'err_server_error': 'Erreur du serveur. Veuillez réessayer plus tard.',
+    'err_no_wifi': 'Pas d\'internet. Vérifiez votre WiFi ou données mobiles.',
+    'err_ssl': 'Erreur de sécurité SSL. Vérifiez la date/heure de l\'appareil.',
+    'err_validate_code': 'Erreur lors de la validation du code',
+    'err_wrong_code': 'Code incorrect. Réessayez.',
+    'err_code_expired': 'Code expiré. Demandez-en un nouveau.',
+    'err_code_timeout': 'Délai dépassé. Vérifiez votre connexion.',
+    'err_code_invalid_or_expired': 'Code invalide ou expiré',
+    'err_code_6_digits': 'Le code doit comporter exactement 6 chiffres',
+    'err_server_status': 'Le serveur a répondu avec le code {code}. Réessayez.',
+
+    // === Native Phone Auth Provider ===
+    'err_invalid_phone_format':
+        'Numéro invalide. Vérifiez le format (+57XXXXXXXXXX)',
+    'err_send_code': 'Erreur lors de l\'envoi du code',
+    'err_send_code_detail': 'Erreur lors de l\'envoi du code : {error}',
+    'err_request_new_code': 'Erreur : Demandez un nouveau code',
+    'err_invalid_code': 'Code invalide',
+    'err_code_expired_request_new': 'Code expiré. Demandez-en un nouveau',
+    'err_verify_code': 'Erreur lors de la vérification du code',
+    'err_create_session': 'Impossible de créer la session',
+    'err_admin_login': 'Erreur de connexion admin : {error}',
+    'err_sign_out': 'Erreur lors de la déconnexion',
+
+    // === Auth Provider ===
+    'err_max_attempts':
+        'Nombre maximum de tentatives atteint. Réessayez dans quelques minutes.',
+    'err_no_phone_found': 'Erreur : Numéro de téléphone non trouvé',
+    'err_guest_login': 'Erreur de connexion en tant qu\'invité : {error}',
+
+    // === Authentication Repository ===
+    'err_network': 'Erreur réseau. Vérifiez votre connexion.',
+    'err_user_not_found': 'Utilisateur non trouvé',
+    'err_wrong_password': 'Mot de passe incorrect',
+    'err_invalid_email': 'Adresse e-mail invalide',
+    'err_login': 'Erreur de connexion',
+    'err_email_already_use': 'E-mail déjà enregistré dans Biux',
+    'err_register_user': 'Erreur lors de l\'inscription de l\'utilisateur',
+
+    // === Bike Provider Validations ===
+    'bike_brand_required': 'La marque du vélo est requise',
+    'bike_brand_min_chars': 'La marque doit comporter au moins 2 caractères',
+    'bike_brand_invalid_chars':
+        'La marque ne peut contenir que des lettres, chiffres et tirets',
+    'bike_model_required': 'Le modèle du vélo est requis',
+    'bike_model_min_chars': 'Le modèle doit comporter au moins 2 caractères',
+    'bike_year_required': 'L\'année du vélo est requise',
+    'bike_year_range': 'L\'année doit être entre 1900 et {year}',
+    'bike_color_required': 'La couleur du vélo est requise',
+    'bike_color_invalid': 'La couleur ne peut contenir que des lettres',
+    'bike_size_required': 'La taille du vélo est requise',
+    'bike_size_hint': 'Entrez une taille valide (ex : S, M, L, XL, 16, 18")',
+    'bike_type_required': 'Le type de vélo est requis',
+    'bike_serial_required': 'Le numéro de série du cadre est requis',
+    'bike_serial_min_chars':
+        'Le numéro de série doit comporter au moins 4 caractères',
+    'bike_serial_invalid_chars':
+        'Le numéro de série ne peut contenir que des lettres, chiffres et tirets',
+    'bike_city_required': 'La ville est requise',
+    'bike_city_hint': 'Entrez un nom de ville valide',
+    'bike_photo_required': 'La photo principale du vélo est requise',
+    'bike_invalid_step': 'Étape invalide',
+    'bike_upload_main_photo_error':
+        'Erreur lors du téléchargement de la photo principale',
+    'bike_registered_biux': 'Enregistré sur Biux',
+
+    // === Shop Provider ===
+    'shop_load_error': 'Erreur lors du chargement des produits : {error}',
+    'shop_cart_empty_coupon': 'Ajoutez des produits au panier d\'abord',
+    'shop_discount_general_10': 'Réduction générale 10%',
+    'shop_discount_general_15': 'Réduction générale 15%',
+    'shop_discount_general_20': 'Réduction générale 20%',
+    'shop_discount_first_purchase': 'Premier achat 15%',
+    'shop_discount_cyclists': 'Cyclistes 12%',
+    'shop_discount_new_client': 'Nouveau client 18%',
+    'shop_discount_summer': 'Été 2026 - 25%',
+    'shop_discount_january': 'Janvier 2026 - 20%',
+    'shop_discount_vip': 'Client VIP 30%',
+    'shop_discount_elite': 'Elite 40%',
+    'shop_coupon_invalid': 'Coupon invalide ou expiré',
+    'shop_cart_empty': 'Le panier est vide',
+    'shop_order_error': 'Erreur lors de la création de la commande : {error}',
+    'shop_stock_insufficient': 'Stock insuffisant',
+    'shop_size_required': 'Vous devez sélectionner une taille',
+    'shop_purchase_error': 'Erreur lors de l\'achat : {error}',
+    'shop_orders_load_error':
+        'Erreur lors du chargement des commandes : {error}',
+    'shop_cancel_error':
+        'Erreur lors de l\'annulation de la commande : {error}',
+    'shop_create_product_error':
+        'Erreur lors de la création du produit : {error}',
+    'shop_update_product_error':
+        'Erreur lors de la mise à jour du produit : {error}',
+    'shop_delete_product_error':
+        'Erreur lors de la suppression du produit : {error}',
+    'shop_cleanup_error': 'Erreur lors du nettoyage des produits : {error}',
+    'shop_like_error': 'Erreur lors du like : {error}',
+    'shop_sold_error': 'Erreur lors du marquage comme vendu : {error}',
+    'shop_no_sales_data': 'Pas encore de données de ventes',
+    'shop_no_visits_data': 'Pas encore de données de visites',
+    'shop_no_security_issues': 'Aucun problème de sécurité détecté',
+    'shop_access_alerts': 'Recevez des alertes quand quelqu\'un accède',
+    'shop_action_log': 'Enregistrez un journal de toutes les actions',
+    'shop_block_attempts': 'Bloquer après 5 tentatives échouées',
+    'shop_hint_serial': 'Ex : AB123456789',
+    'shop_hint_brand': 'Ex : Trek, Giant, Specialized...',
+    'shop_hint_year': '2024',
+
+    // === Cart Provider ===
+    'cart_stock_insufficient': 'Stock insuffisant. Disponibles : {count}',
+    'cart_enter_coupon': 'Entrez un code coupon',
+    'cart_coupon_invalid': 'Coupon invalide',
+    'cart_coupon_expired': 'Coupon expiré ou inactif',
+    'cart_free_shipping': 'Livraison gratuite (équivalent à 10 000 €)',
+
+    // === Comments Provider ===
+    'comments_login_required': 'Vous devez vous connecter pour commenter',
+    'comments_no_permission':
+        'Pas de permissions. Vérifiez les règles Firebase',
+    'comments_no_connection': 'Pas de connexion internet',
+    'comments_post_error':
+        'Erreur lors de la publication du commentaire : {error}',
+    'comments_edit_error':
+        'Erreur lors de la modification du commentaire : {error}',
+    'comments_cooldown':
+        'Attendez quelques secondes avant de commenter à nouveau',
+    'comments_empty': 'Le commentaire ne peut pas être vide',
+    'comments_too_long': 'Le commentaire ne peut pas dépasser 500 caractères',
+    'comments_missing_plugin':
+        'Firebase DB non chargé. Redémarrez l\'application',
+    'comments_delete_no_permission':
+        'Vous n\'avez pas la permission de supprimer ce commentaire',
+    'comments_not_exist': 'Le commentaire n\'existe pas',
+    'comments_delete_error': 'Erreur lors de la suppression du commentaire',
+
+    // === Likes Provider ===
+    'likes_error': 'Erreur lors du like',
+    'likes_unlike_error': 'Erreur lors du retrait du like',
+
+    // === Attendees Provider ===
+    'attendees_join_error': 'Erreur lors de l\'inscription à la sortie',
+    'attendees_update_error': 'Erreur lors de la mise à jour du statut',
+    'attendees_leave_error': 'Erreur lors du départ de la sortie',
+
+    // === Notifications Provider ===
+    'notif_mark_read_error': 'Erreur lors du marquage comme lu',
+    'notif_mark_all_read_error': 'Erreur lors du marquage de toutes comme lues',
+    'notif_delete_error': 'Erreur lors de la suppression de la notification',
+    'notif_delete_all_error':
+        'Erreur lors de la suppression de toutes les notifications',
+
+    // === User Providers ===
+    'user_update_error': 'Erreur lors de la mise à jour du profil. Réessayez.',
+    'user_authorize_seller_error': 'Erreur lors de l\'autorisation du vendeur',
+    'user_revoke_permission_error':
+        'Erreur lors de la révocation de la permission',
+    'user_follow_error': 'Erreur lors du suivi de l\'utilisateur',
+    'user_unfollow_error': 'Erreur lors du désabonnement',
+    'user_profile_load_error': 'Erreur lors du chargement du profil',
+    'user_username_update_error':
+        'Erreur lors de la mise à jour du nom d\'utilisateur',
+
+    // === Group Provider ===
+    'group_complete_name_required':
+        'Complétez votre nom dans le profil avant de rejoindre des groupes',
+    'group_no_phone': 'Pas de téléphone',
+
+    // === Ride Tracker Provider ===
+    'tracker_gps_required': 'Activez le GPS pour enregistrer votre sortie',
+    'tracker_location_permission':
+        'Permission de localisation nécessaire pour enregistrer',
+    'tracker_location_denied':
+        'Permission de localisation refusée. Activez-la dans les Paramètres.',
+    'cyclist_level_legend': 'légende',
+    'cyclist_level_expert': 'expert',
+    'cyclist_level_advanced': 'avancé',
+    'cyclist_level_intermediate': 'intermédiaire',
+    'cyclist_level_novice': 'débutant',
+
+    // === Achievements ===
+    'achievement_first_pedals': 'Premiers Coups de Pédale',
+    'achievement_first_pedals_desc': 'Parcourez 10 km',
+    'achievement_explorer': 'Explorateur',
+    'achievement_explorer_desc': 'Parcourez 50 km',
+    'achievement_centenary': 'Centenaire',
+    'achievement_centenary_desc': 'Parcourez 100 km',
+    'achievement_tireless': 'Rouleur Infatigable',
+    'achievement_tireless_desc': 'Parcourez 500 km',
+    'achievement_thousand_club': 'Club des Mille Km',
+    'achievement_thousand_club_desc': 'Parcourez 1 000 km',
+    'achievement_ultra': 'Ultra Cycliste',
+    'achievement_ultra_desc': 'Parcourez 5 000 km',
+    'achievement_first_ride': 'Première Sortie',
+    'achievement_first_ride_desc': 'Complétez votre première sortie',
+    'achievement_regular': 'Habitué',
+    'achievement_regular_desc': 'Complétez 10 sorties',
+    'achievement_veteran': 'Vétéran',
+    'achievement_veteran_desc': 'Complétez 50 sorties',
+    'achievement_centurion': 'Centurion',
+    'achievement_centurion_desc': 'Complétez 100 sorties',
+    'achievement_sprinter': 'Sprinter',
+    'achievement_sprinter_desc': 'Atteignez 30 km/h',
+    'achievement_lightning': 'Éclair',
+    'achievement_lightning_desc': 'Atteignez 40 km/h',
+    'achievement_supersonic': 'Supersonique',
+    'achievement_supersonic_desc': 'Atteignez 50 km/h',
+    'achievement_consistent': 'Constant',
+    'achievement_consistent_desc': '3 jours consécutifs de vélo',
+    'achievement_perfect_week': 'Semaine Parfaite',
+    'achievement_perfect_week_desc': '7 jours consécutifs',
+    'achievement_machine': 'Machine',
+    'achievement_machine_desc': '30 jours consécutifs',
+    'achievement_social': 'Social',
+    'achievement_social_desc': 'Rejoignez un groupe',
+    'achievement_popular': 'Populaire',
+    'achievement_popular_desc': 'Rejoignez 5 groupes',
+    'achievement_nocturnal': 'Nocturne',
+    'achievement_nocturnal_desc': 'Complétez une sortie nocturne',
+    'achievement_rain_or_shine': 'Pluie ou Soleil',
+    'achievement_rain_or_shine_desc': 'Pédalez sous la pluie',
+    'achievement_early_bird': 'Lève-tôt',
+    'achievement_early_bird_desc': 'Sortie avant 6h du matin',
+
+    // === Shared Screens ===
+    'location_move_map': 'Déplacez la carte pour sélectionner',
+    'location_confirm': 'Confirmer',
+    'location_selected': 'Emplacement sélectionné',
+    'location_move_pin':
+        'Déplacez la carte pour positionner l\'épingle rouge à l\'endroit exact de l\'accident',
+    'no_connection_title': 'Pas de connexion',
+    'no_connection_message': 'Vérifiez votre connexion internet et réessayez.',
+    'error_something_wrong': 'Quelque chose s\'est mal passé',
+    'select_location_title': 'Sélectionner l\'emplacement',
+    'post_edited': 'modifié',
+    'post_invalid_url': 'URL invalide',
+
+    // === QR / Stolen bike verification ===
+    'qr_invalid': 'Code QR invalide',
+    'qr_product_not_found': 'Produit non trouvé dans le système',
+    'qr_serial_mismatch': 'Le numéro de série ne correspond pas',
+    'qr_not_verified': 'Ce vélo n\'est pas vérifié comme sûr',
+    'qr_verify_error': 'Erreur lors de la vérification du code QR',
+    'stolen_not_registered': 'Vélo non enregistré dans le système Biux',
+    'stolen_sale_blocked':
+        'La vente de vélos volés n\'est pas autorisée. Le propriétaire et les autorités ont été notifiés.',
+    'stolen_verified_safe': 'Vélo enregistré sur Biux et vérifié comme sûr',
+    'stolen_partial_verification': 'Vérification partielle terminée',
+    'stolen_verify_error': 'Erreur lors de la vérification du vélo',
+
+    // === Roads Repository ===
+    'roads_join_group_required':
+        'Vous devez rejoindre le groupe pour participer à cette sortie',
+
+    // === Payments ===
+    'payments_coming_soon': 'Paiements bientôt disponibles',
+
+    // === Experiences Extra ===
+    'experience_add_media_required':
+        'Vous devez ajouter au moins une image ou vidéo',
+    'experience_post_multimedia': 'Post Multimédia',
+    'experience_photos_only': 'Photos uniquement',
+    'experience_post_text': 'Post Texte',
+    'experience_text_only': 'Texte uniquement, sans média',
+    'experience_tags_optional': 'Tags (optionnel)',
+    'experience_tags_hint':
+        'ex : cyclisme, montagne, aventure (séparés par des virgules)',
+    'experience_story_label': 'Story',
+    'experience_post_label': 'Post',
+    'experience_processing': 'Traitement...',
+    'experience_video_error': 'Erreur lors du chargement de la vidéo : {error}',
+    'experience_biux_premium': 'Biux Premium',
+
+    // === Misc ===
+    'open_google_maps': 'Google Maps',
+    'only_numbers': 'Chiffres uniquement',
+    'following_label': 'Abonnements',
+    'points_label': 'Points',
+    'admin_revoke_error':
+        'Impossible de révoquer les permissions d\'un administrateur',
+    'notification_channel_desc': 'Notifications générales de l\'application',
+
+    // === Bike Actions Stubs ===
+    'stub_theft_report': 'Signalement de vol envoyé (stub).',
+    'stub_recovered': 'Marqué comme récupéré (stub).',
+    'stub_transfer': 'Transfert lancé (stub).',
+
+    // === Firebase Diagnostic ===
+    'diagnostic_not_tested': 'Non testé',
+    'diagnostic_title': 'Diagnostic Firebase DB',
+    'diagnostic_rebuild_hint':
+        'Si MissingPluginException apparaît, vous avez besoin d\'un rebuild complet',
+
+    // === PDF Export ===
+    'pdf_report_title': 'Rapport d\'Alertes de Vélos Volés',
+    'pdf_footer': 'Biux - Plateforme de Cyclisme',
+    'pdf_no_date': 'Sans date',
+    'pdf_alert': 'ALERTE',
+    'pdf_seller': 'Vendeur',
+    'pdf_bicycle': 'Vélo',
+    'pdf_serial': 'Série',
+
+    // === Seller ===
+    'seller_no_name': 'Sans nom',
+
+    // === User Provider ===
+    'user_error_creating_test':
+        'Erreur lors de la création de l\'utilisateur de test',
+    'user_error_loading_data':
+        'Erreur lors du chargement des données utilisateur',
+    'user_error_not_logged_in':
+        'Vous n\'êtes pas connecté. Veuillez d\'abord vous connecter.',
+    'user_error_empty_fields':
+        'Veuillez remplir au moins un champ à mettre à jour',
+    'user_error_update_profile':
+        'Erreur lors de la mise à jour du profil. Veuillez réessayer.',
+    'user_error_upload_image': 'Erreur lors du téléchargement de l\'image',
+    'user_error_request_deletion':
+        'Erreur lors de la demande de suppression du compte',
+    'user_error_admin_only_authorize':
+        'Seuls les administrateurs peuvent autoriser les vendeurs',
+    'user_error_authorize_seller': 'Erreur lors de l\'autorisation du vendeur',
+    'user_error_admin_only_revoke':
+        'Seuls les administrateurs peuvent révoquer les autorisations',
+    'user_error_revoke_permission':
+        'Erreur lors de la révocation de l\'autorisation',
+    'user_error_admin_only_list':
+        'Seuls les administrateurs peuvent voir la liste des utilisateurs',
+    'user_error_load_users': 'Erreur lors du chargement des utilisateurs',
+    'user_error_not_authenticated': 'Vous n\'êtes pas authentifié',
+    'user_error_follow': 'Erreur lors du suivi de l\'utilisateur',
+    'user_error_unfollow': 'Erreur lors du désabonnement',
+    'user_error_load_profile':
+        'Erreur lors du chargement du profil utilisateur',
+
+    // === Username Provider ===
+    'username_current': 'Nom d\'utilisateur actuel',
+    'username_invalid_format': 'Format invalide',
+    'username_checking': 'Vérification de la disponibilité...',
+    'username_available': '✓ Disponible',
+    'username_check_error':
+        'Erreur lors de la vérification de la disponibilité',
+    'username_not_authenticated': 'Utilisateur non authentifié',
+    'username_already_taken': 'Le nom d\'utilisateur n\'est plus disponible',
+    'username_update_error':
+        'Erreur lors de la mise à jour du nom d\'utilisateur',
+
+    // === Group Provider ===
+    'group_error_create': 'Erreur lors de la création du groupe',
+    'group_error_edit': 'Erreur lors de la modification du groupe',
+    'group_error_load': 'Erreur lors du chargement du groupe',
+    'group_error_not_authenticated': 'Utilisateur non authentifié',
+    'group_error_user_not_found': 'Utilisateur non trouvé',
+    'group_error_complete_profile':
+        'Vous devez compléter votre nom dans votre profil avant de rejoindre des groupes',
+    'group_error_request_join': 'Erreur lors de la demande d\'adhésion',
+    'group_error_approve': 'Erreur lors de l\'approbation de la demande',
+    'group_error_reject': 'Erreur lors du rejet de la demande',
+    'group_error_cancel_request': 'Erreur lors de l\'annulation de la demande',
+    'group_error_leave': 'Erreur lors de la sortie du groupe',
+    'group_error_select_image': 'Erreur lors de la sélection de l\'image',
+    'group_user_no_name': 'Utilisateur sans nom',
+    'group_default_user': 'Utilisateur',
+    'group_default_username': 'utilisateur',
+
+    // === Ride Tracker Provider ===
+    'ride_error_gps_disabled': 'Activez le GPS pour enregistrer votre sortie',
+    'ride_error_location_permission':
+        'L\'autorisation de localisation est nécessaire pour enregistrer',
+    'ride_error_location_denied':
+        'Autorisation de localisation refusée. Activez-la dans les Paramètres.',
+
+    // === Cycling Stats Provider ===
+    'stats_just_now': 'À l\'instant',
+    'stats_seconds_ago': 'Il y a quelques secondes',
+    'stats_minutes_ago': 'Il y a quelques minutes',
+    'stats_hours_ago': 'Il y a quelques heures',
+    'stats_error_load': 'Erreur lors du chargement des statistiques',
+    'stats_error_refresh': 'Erreur lors de la mise à jour',
+    'stats_error_add_ride': 'Erreur lors de l\'enregistrement de la sortie',
+    'stats_error_leaderboard': 'Erreur lors du chargement du classement',
+
+    // === Cycling Stats Entity ===
+    'level_novice': 'Débutant',
+
+    // === Migrated hardcoded strings ===
+    'seller_unknown': 'Vendeur inconnu',
+    'seller_default': 'Vendeur',
+    'exp_demo_title': 'Démo Expériences',
+    'exp_demo_recent': 'Expériences Récentes',
+    'exp_max_files_allowed': 'Maximum 10 fichiers autorisés',
+    'exp_file_not_available': 'Le fichier sélectionné n\'est pas disponible',
+    'exp_error_selecting_image': 'Erreur lors de la sélection de l\'image',
+    'exp_max_images_reached': 'Vous avez déjà le maximum de 10 images',
+    'exp_error_selecting_images': 'Erreur lors de la sélection des images',
+    'exp_photo_not_available': 'La photo prise n\'est pas disponible',
+    'exp_error_taking_photo': 'Erreur lors de la prise de photo',
+    'exp_cropped_not_available': 'Le fichier recadré n\'est pas disponible',
+    'exp_error_adding_cropped': 'Erreur lors de l\'ajout de l\'image recadrée',
+    'exp_video_not_available': 'La vidéo sélectionnée n\'est pas disponible',
+    'exp_video_too_long': 'La vidéo ne doit pas dépasser 30 secondes',
+    'exp_error_selecting_video': 'Erreur lors de la sélection de la vidéo',
+    'exp_recorded_not_available': 'La vidéo enregistrée n\'est pas disponible',
+    'exp_error_recording_video': 'Erreur lors de l\'enregistrement de la vidéo',
+    'exp_media_required': 'Vous devez ajouter au moins une image ou vidéo',
+    'exp_description_required': 'La description est requise pour ce post',
+    'exp_error_creating': 'Erreur lors de la création de l\'expérience',
+    'validator_number': r'^[0-9]+$',
+    'exp_content_story': 'Story',
+    'exp_content_post': 'Publication',
+
+    // === Misc migration batch ===
+    // PDF Export
+    'pdf_unknown_city': 'Inconnue',
+    'pdf_alerts_by_city': 'Alertes par Ville',
+    'pdf_city': 'Ville',
+    'pdf_alerts': 'Alertes',
+    'pdf_percentage': 'Pourcentage',
+    'pdf_most_affected_brands': 'Marques les plus Touchées',
+    'pdf_brand': 'Marque',
+    'pdf_alert_details': 'Détails des Alertes',
+    'pdf_stolen_bike_report': 'Rapport d\'Alertes de Vélos Volés',
+    'pdf_generated': 'Généré',
+    'pdf_period': 'Période',
+    'pdf_cycling_platform': 'Plateforme de Cyclisme',
+    'pdf_page': 'Page',
+    'pdf_of': 'de',
+    'pdf_total_alerts': 'Total des Alertes',
+    'pdf_unique_sellers': 'Vendeurs Uniques',
+    'pdf_affected_cities': 'Villes Touchées',
+    'pdf_alert_badge': 'ALERTE',
+    'pdf_unknown_seller': 'Inconnu',
+    'pdf_color': 'Couleur',
+    // Admin usecases
+    'error_invalid_user_id': 'ID d\'utilisateur invalide',
+    'error_cannot_revoke_admin':
+        'Impossible de révoquer les autorisations d\'un administrateur',
+    // Payments
+    // Roads repository
+    'error_update_group': 'Échec de la mise à jour du groupe',
+    'must_join_group_for_ride':
+        'Vous devez rejoindre le groupe pour participer à cette sortie',
+    'deleted_successfully': 'Supprimé avec succès',
+    // Bike stubs
+    'stub_theft_report_sent': 'Signalement de vol envoyé (stub).',
+    'stub_marked_recovered': 'Marqué comme récupéré (stub).',
+    'stub_transfer_initiated': 'Transfert initié (stub).',
+    // Notifications
+    'notif_new_notification': 'Nouvelle notification',
+    'notif_stolen_bike_alert_title':
+        '🚨 ALERTE: Tentative de vente de votre vélo volé',
+    'notif_admin_theft_alert_title':
+        '⚠️ Alerte de Sécurité: Tentative de vente de vélo volé',
+    // Hardcoded strings fix
+    'error_post_not_found': 'Publication non trouvée',
+    'error_user_not_found': 'Utilisateur non trouvé',
+    'field_full_name': 'nom complet',
+    'field_username': 'nom d\'utilisateur',
+    'field_photo_url': 'photo de profil',
+    'field_gender': 'genre',
+    'field_birth_date': 'date de naissance',
+    'field_phone': 'numéro de téléphone',
+    'field_city': 'ville',
+    'please_complete_fields': 'Veuillez compléter: {fields}',
+    'exp_tags_hint':
+        'ex: cyclisme, montagne, aventure (séparés par des virgules)',
   };
 }

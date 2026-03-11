@@ -1061,7 +1061,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('${l.t('error_generic')}: $e'),
           backgroundColor: ColorTokens.error50,
         ),
       );

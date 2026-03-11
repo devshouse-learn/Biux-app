@@ -17,7 +17,7 @@ class CartItem {
 class CartProvider with ChangeNotifier {
   final Map<String, CartItem> _items = {};
   final CouponDataSource _couponDataSource = CouponDataSource();
-  
+
   CouponEntity? _appliedCoupon;
   String? _couponErrorMessage;
   String? _selectedPayment;
@@ -71,7 +71,7 @@ class CartProvider with ChangeNotifier {
     }
 
     if (cantidad > product.stock) {
-      throw Exception('Stock insuficiente. Disponibles: ${product.stock}');
+      throw Exception('cart_stock_insufficient');
     }
 
     if (_items.containsKey(product.id)) {
@@ -79,7 +79,7 @@ class CartProvider with ChangeNotifier {
       final newQuantity = _items[product.id]!.cantidad + cantidad;
 
       if (newQuantity > product.stock) {
-        throw Exception('Stock insuficiente. Disponibles: ${product.stock}');
+        throw Exception('cart_stock_insufficient');
       }
 
       _items[product.id]!.cantidad = newQuantity;
@@ -111,7 +111,7 @@ class CartProvider with ChangeNotifier {
     }
 
     if (newQuantity > product.stock) {
-      throw Exception('Stock insuficiente. Disponibles: ${product.stock}');
+      throw Exception('cart_stock_insufficient');
     }
 
     _items[productId]!.cantidad = newQuantity;
@@ -143,7 +143,7 @@ class CartProvider with ChangeNotifier {
     _items.clear();
     _appliedCoupon = null;
     _couponErrorMessage = null;
-  _selectedPayment = null;
+    _selectedPayment = null;
     notifyListeners();
   }
 
@@ -167,7 +167,7 @@ class CartProvider with ChangeNotifier {
     _couponErrorMessage = null;
 
     if (code.trim().isEmpty) {
-      _couponErrorMessage = 'Ingresa un código de cupón';
+      _couponErrorMessage = 'cart_enter_coupon';
       notifyListeners();
       return false;
     }
@@ -175,13 +175,13 @@ class CartProvider with ChangeNotifier {
     final coupon = _couponDataSource.getCouponByCode(code);
 
     if (coupon == null) {
-      _couponErrorMessage = 'Cupón no válido';
+      _couponErrorMessage = 'cart_coupon_invalid';
       notifyListeners();
       return false;
     }
 
     if (!coupon.isValid) {
-      _couponErrorMessage = 'Cupón expirado o inactivo';
+      _couponErrorMessage = 'cart_coupon_expired';
       notifyListeners();
       return false;
     }

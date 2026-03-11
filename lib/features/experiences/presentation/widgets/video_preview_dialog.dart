@@ -54,7 +54,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
       if (mounted) {
         setState(() {
           _hasError = true;
-          _errorMessage = 'Error al cargar el video: $e';
+          _errorMessage = e.toString();
         });
       }
     }
@@ -197,10 +197,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
               Icon(Icons.error_outline, size: 48, color: Colors.red[400]),
               const SizedBox(height: 8),
               Text(
-                _errorMessage ??
-                    Provider.of<LocaleNotifier>(
-                      context,
-                    ).t('error_loading_video'),
+                '${Provider.of<LocaleNotifier>(context).t('error_loading_video')}${_errorMessage != null ? ': $_errorMessage' : ''}',
                 style: TextStyle(color: Colors.red[600], fontSize: 14),
                 textAlign: TextAlign.center,
               ),

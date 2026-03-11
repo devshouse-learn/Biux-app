@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Datos de usuario genéricos para el PostCard
 class PostCardUser {
@@ -134,6 +136,7 @@ class _PostCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       child: Row(
@@ -214,7 +217,7 @@ class _PostCardHeader extends StatelessWidget {
                 ),
                 if (isEdited)
                   Text(
-                    'editado',
+                    l.t('post_edited'),
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 10,
@@ -314,6 +317,10 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
                       (url.startsWith('http://') || url.startsWith('https://'));
 
                   if (!isValidUrl) {
+                    final l2 = Provider.of<LocaleNotifier>(
+                      context,
+                      listen: false,
+                    );
                     return Container(
                       color: Colors.grey[900],
                       child: Column(
@@ -326,7 +333,7 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'URL no válida',
+                            l2.t('post_invalid_url'),
                             style: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 14,

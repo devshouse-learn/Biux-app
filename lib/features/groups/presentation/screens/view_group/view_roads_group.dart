@@ -1,8 +1,8 @@
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/presentation/screens/view_group/view_group_bloc.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/core/utils/strings_utils.dart';
@@ -228,6 +228,7 @@ class _ButtonSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<ViewGroupBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.only(top: 170, left: 110),
       child: Row(
@@ -241,7 +242,7 @@ class _ButtonSection extends StatelessWidget {
               height: 40,
               child: ElevatedButton(
                 //color: ColorTokens.neutral100,
-                child: Text(AppStrings.outText, style: Styles.textLightBlack),
+                child: Text(l.t('leave_text'), style: Styles.textLightBlack),
                 onPressed: () {
                   bloc.onTapOutRoads(road);
                 },
@@ -257,7 +258,7 @@ class _ButtonSection extends StatelessWidget {
               height: 40,
               child: ElevatedButton(
                 // color: ColorTokens.primary30,
-                child: Text(AppStrings.joinMe, style: Styles.containerTextName),
+                child: Text(l.t('join_me'), style: Styles.containerTextName),
                 onPressed: () {
                   bloc.onTapJoinRoads(road);
                 },
@@ -275,7 +276,7 @@ class _ButtonSection extends StatelessWidget {
             child: ElevatedButton(
               //color: ColorTokens.secondary50,
               child: Text(
-                AppStrings.seeMoreText,
+                l.t('see_more_text'),
                 style: Styles.containerTextName,
               ),
               onPressed: () {},

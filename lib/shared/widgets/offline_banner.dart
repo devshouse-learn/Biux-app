@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/services/connectivity_service.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget que muestra un banner de "Sin conexión" cuando se pierde internet.
 /// Se coloca en un Column encima del contenido principal (sin child requerido).
@@ -60,6 +62,7 @@ class _OfflineBannerState extends State<OfflineBanner>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_isOffline && !_showReconnected) return const SizedBox.shrink();
 
     return SlideTransition(
@@ -88,8 +91,8 @@ class _OfflineBannerState extends State<OfflineBanner>
               const SizedBox(width: 8),
               Text(
                 _showReconnected
-                    ? 'Conexión restaurada'
-                    : 'Sin conexión a internet',
+                    ? l.t('connection_restored')
+                    : l.t('no_internet_connection'),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 13,

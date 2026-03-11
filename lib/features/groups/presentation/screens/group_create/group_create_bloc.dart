@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/groups/data/repositories/groups_firebase_repository.dart';
@@ -11,6 +12,7 @@ import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import 'package:biux/features/groups/data/models/group.dart';
 
@@ -72,7 +74,10 @@ class GroupCreateBloc extends ChangeNotifier {
     );
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBarUtils.customSnackBar(
-        content: AppStrings.groupCreatedText,
+        content: Provider.of<LocaleNotifier>(
+          context,
+          listen: false,
+        ).t('group_created_success'),
         backgroundColor: ColorTokens.secondary50,
       ),
     );

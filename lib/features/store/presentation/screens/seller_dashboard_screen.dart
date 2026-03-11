@@ -58,7 +58,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${provider.error}'),
+                  Text('${l.t('error_generic')}: ${provider.error}'),
                   ElevatedButton(
                     onPressed: _loadSellerProducts,
                     child: Text(l.t('retry')),
@@ -362,7 +362,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error: $e'),
+                      content: Text('${l.t('error_generic')}: $e'),
                       backgroundColor: Colors.red,
                     ),
                   );

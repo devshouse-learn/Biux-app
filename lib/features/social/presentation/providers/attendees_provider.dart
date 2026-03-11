@@ -183,7 +183,7 @@ class AttendeesProvider extends ChangeNotifier {
       _isJoining = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al unirse a la rodada: $e';
+      _error = 'attendees_join_error';
       _isJoining = false;
       notifyListeners();
     }
@@ -210,7 +210,7 @@ class AttendeesProvider extends ChangeNotifier {
       _isUpdating = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al actualizar estado: $e';
+      _error = 'attendees_update_error';
       _isUpdating = false;
       notifyListeners();
     }
@@ -230,7 +230,7 @@ class AttendeesProvider extends ChangeNotifier {
       _isLeaving = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al salir de la rodada: $e';
+      _error = 'attendees_leave_error';
       _isLeaving = false;
       notifyListeners();
     }

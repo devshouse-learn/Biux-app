@@ -540,7 +540,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));
       }
     }
   }

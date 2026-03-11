@@ -156,8 +156,7 @@ class CommentsProvider extends ChangeNotifier {
       debugPrint(
         '⏳ Comentario en cooldown para $targetId, espera ${_commentCooldownDuration.inSeconds}s',
       );
-      _error =
-          'Espera ${_commentCooldownDuration.inSeconds} segundos antes de comentar nuevamente';
+      _error = 'comments_cooldown';
       notifyListeners();
       return null;
     }
@@ -169,13 +168,13 @@ class CommentsProvider extends ChangeNotifier {
 
     // Validar longitud
     if (text.trim().isEmpty) {
-      _error = 'El comentario no puede estar vacío';
+      _error = 'comments_empty';
       notifyListeners();
       return null;
     }
 
     if (text.length > 500) {
-      _error = 'El comentario no puede tener más de 500 caracteres';
+      _error = 'comments_too_long';
       notifyListeners();
       return null;
     }
@@ -202,7 +201,7 @@ class CommentsProvider extends ChangeNotifier {
       // Verificar autenticación de Firebase
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
-        _error = 'Debes iniciar sesión para comentar';
+        _error = 'comments_login_required';
         _isPosting = false;
         notifyListeners();
         return null;
@@ -251,14 +250,13 @@ class CommentsProvider extends ChangeNotifier {
 
       // Detectar tipo de error específico
       if (e.toString().contains('MissingPluginException')) {
-        _error =
-            'Firebase DB no cargado. Reinicia la app (flutter run completo, NO hot reload)';
+        _error = 'comments_missing_plugin';
       } else if (e.toString().contains('permission')) {
-        _error = 'Sin permisos. Verifica reglas de Firebase';
+        _error = 'comments_no_permission';
       } else if (e.toString().contains('network')) {
-        _error = 'Sin conexión a internet';
+        _error = 'comments_no_connection';
       } else {
-        _error = 'Error al publicar comentario: $e';
+        _error = 'comments_post_error';
       }
 
       _isPosting = false;
@@ -277,13 +275,13 @@ class CommentsProvider extends ChangeNotifier {
     if (_isEditing) return;
 
     if (newText.trim().isEmpty) {
-      _error = 'El comentario no puede estar vacío';
+      _error = 'comments_empty';
       notifyListeners();
       return;
     }
 
     if (newText.length > 500) {
-      _error = 'El comentario no puede tener más de 500 caracteres';
+      _error = 'comments_too_long';
       notifyListeners();
       return;
     }
@@ -304,7 +302,7 @@ class CommentsProvider extends ChangeNotifier {
       _isEditing = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al editar comentario: $e';
+      _error = 'comments_edit_error';
       _isEditing = false;
       notifyListeners();
     }
@@ -345,11 +343,11 @@ class CommentsProvider extends ChangeNotifier {
       debugPrint('Stack trace: $st');
 
       if (errorMsg.contains('permiso')) {
-        _error = 'No tienes permiso para eliminar este comentario';
+        _error = 'comments_delete_no_permission';
       } else if (errorMsg.contains('No existe')) {
-        _error = 'El comentario no existe';
+        _error = 'comments_not_exist';
       } else {
-        _error = 'Error al eliminar: $errorMsg';
+        _error = 'comments_delete_error';
       }
 
       _isDeleting = false;

@@ -1,7 +1,7 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -175,6 +175,7 @@ class _button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<UserScreenBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     Size size = MediaQuery.of(context).size;
     return Stack(
       children: <Widget>[
@@ -203,10 +204,7 @@ class _button extends StatelessWidget {
                       style: Styles.containerBlack,
                     ),
                     SizedBox(width: 5),
-                    Text(
-                      AppStrings.following,
-                      style: Styles.containerFollowing,
-                    ),
+                    Text(l.t('following'), style: Styles.containerFollowing),
                   ],
                 ),
               ),
@@ -225,7 +223,7 @@ class _button extends StatelessWidget {
             child: ElevatedButton(
               //color: ColorTokens.neutral100,
               child: Text(
-                AppStrings.editProfile,
+                l.t('edit_profile'),
                 style: Styles.containerFollowing,
               ),
               onPressed: () {

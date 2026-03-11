@@ -61,13 +61,15 @@ class UserProvider extends ChangeNotifier {
       debugPrint('');
       debugPrint('⚠️  IMPORTANTE:');
       debugPrint('   - Este admin SOLO funciona en Chrome web');
-      debugPrint('   - En simuladores móviles, los usuarios deben pedir permiso');
+      debugPrint(
+        '   - En simuladores móviles, los usuarios deben pedir permiso',
+      );
       debugPrint('');
 
       notifyListeners(); // ← IMPORTANTE: Notificar a los listeners
     } catch (e) {
       debugPrint('❌ Error creando usuario de prueba: $e');
-      _error = 'Error creando usuario de prueba';
+      _error = 'user_error_creating_test';
     }
 
     _setLoading(false);
@@ -117,7 +119,7 @@ class UserProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      _error = 'Error cargando datos del usuario';
+      _error = 'user_error_loading_data';
       debugPrint('Error en loadUserData: $e');
     }
 
@@ -163,8 +165,10 @@ class UserProvider extends ChangeNotifier {
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
     if (firebaseUser == null) {
-      debugPrint('❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth');
-      _error = 'No has iniciado sesión. Por favor, inicia sesión primero.';
+      debugPrint(
+        '❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth',
+      );
+      _error = 'user_error_not_logged_in';
       notifyListeners();
       return false;
     }
@@ -187,7 +191,7 @@ class UserProvider extends ChangeNotifier {
 
     if (!hasTextUpdate && !hasPhotoUpdate) {
       debugPrint('❌ ERROR: Todos los campos vacíos');
-      _error = 'Por favor ingresa al menos un campo para actualizar';
+      _error = 'user_error_empty_fields';
       notifyListeners();
       return false;
     }
@@ -229,7 +233,7 @@ class UserProvider extends ChangeNotifier {
         _error = null;
       } else {
         debugPrint('❌ El servicio retornó false');
-        _error = 'Error al actualizar el perfil. Intenta nuevamente.';
+        _error = 'user_error_update_profile';
       }
 
       _setLoading(false);
@@ -241,7 +245,7 @@ class UserProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('❌ EXCEPCIÓN en updateProfile: $e');
       debugPrint('   Tipo: ${e.runtimeType}');
-      _error = 'Error al actualizar perfil: ${e.toString()}';
+      _error = 'user_error_update_profile';
       _setLoading(false);
       notifyListeners();
       debugPrint('🔍 ====== FIN updateProfile (EXCEPCIÓN) ======\n');
@@ -267,7 +271,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       return false;
     } catch (e) {
-      _error = 'Error subiendo imagen';
+      _error = 'user_error_upload_image';
       _setLoading(false);
       return false;
     }
@@ -292,7 +296,7 @@ class UserProvider extends ChangeNotifier {
       _setLoading(false);
       return success;
     } catch (e) {
-      _error = 'Error solicitando eliminación';
+      _error = 'user_error_request_deletion';
       _setLoading(false);
       return false;
     }
@@ -312,7 +316,7 @@ class UserProvider extends ChangeNotifier {
   /// Autorizar a un usuario para vender productos (solo administradores)
   Future<bool> authorizeSeller(String userId) async {
     if (_user == null || !_user!.isAdmin) {
-      _error = 'Solo los administradores pueden autorizar vendedores';
+      _error = 'user_error_admin_only_authorize';
       notifyListeners();
       return false;
     }
@@ -325,14 +329,14 @@ class UserProvider extends ChangeNotifier {
       bool success = await _userService.updateSellerPermission(userId, true);
 
       if (!success) {
-        _error = 'Error al autorizar vendedor';
+        _error = 'user_error_authorize_seller';
       }
 
       _setLoading(false);
       notifyListeners();
       return success;
     } catch (e) {
-      _error = 'Error al autorizar vendedor: $e';
+      _error = 'user_error_authorize_seller';
       _setLoading(false);
       notifyListeners();
       return false;
@@ -342,7 +346,7 @@ class UserProvider extends ChangeNotifier {
   /// Revocar autorización de vendedor (solo administradores)
   Future<bool> revokeSellerPermission(String userId) async {
     if (_user == null || !_user!.isAdmin) {
-      _error = 'Solo los administradores pueden revocar permisos';
+      _error = 'user_error_admin_only_revoke';
       notifyListeners();
       return false;
     }
@@ -355,14 +359,14 @@ class UserProvider extends ChangeNotifier {
       bool success = await _userService.updateSellerPermission(userId, false);
 
       if (!success) {
-        _error = 'Error al revocar permiso';
+        _error = 'user_error_revoke_permission';
       }
 
       _setLoading(false);
       notifyListeners();
       return success;
     } catch (e) {
-      _error = 'Error al revocar permiso: $e';
+      _error = 'user_error_revoke_permission';
       _setLoading(false);
       notifyListeners();
       return false;
@@ -372,7 +376,7 @@ class UserProvider extends ChangeNotifier {
   /// Obtener lista de todos los usuarios (solo administradores)
   Future<List<UserModel>> getAllUsers() async {
     if (_user == null || !_user!.isAdmin) {
-      _error = 'Solo los administradores pueden ver la lista de usuarios';
+      _error = 'user_error_admin_only_list';
       notifyListeners();
       return [];
     }
@@ -381,7 +385,7 @@ class UserProvider extends ChangeNotifier {
     try {
       return await _userService.getAllUsers();
     } catch (e) {
-      _error = 'Error al cargar usuarios: $e';
+      _error = 'user_error_load_users';
       notifyListeners();
       return [];
     }
@@ -392,7 +396,7 @@ class UserProvider extends ChangeNotifier {
     // Obtener el UID del usuario actual autenticado desde FirebaseAuth
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      _error = 'No estás autenticado';
+      _error = 'user_error_not_authenticated';
       notifyListeners();
       return false;
     }
@@ -416,14 +420,14 @@ class UserProvider extends ChangeNotifier {
         await loadUserData();
         debugPrint('✅ Ya sigues a $userIdToFollow');
       } else {
-        _error = 'Error al seguir al usuario';
+        _error = 'user_error_follow';
       }
 
       _setLoading(false);
       notifyListeners();
       return success;
     } catch (e) {
-      _error = 'Error al seguir: $e';
+      _error = 'user_error_follow';
       _setLoading(false);
       notifyListeners();
       return false;
@@ -435,7 +439,7 @@ class UserProvider extends ChangeNotifier {
     // Obtener el UID del usuario actual autenticado desde FirebaseAuth
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      _error = 'No estás autenticado';
+      _error = 'user_error_not_authenticated';
       notifyListeners();
       return false;
     }
@@ -459,14 +463,14 @@ class UserProvider extends ChangeNotifier {
         await loadUserData();
         debugPrint('✅ Dejaste de seguir a $userIdToUnfollow');
       } else {
-        _error = 'Error al dejar de seguir';
+        _error = 'user_error_unfollow';
       }
 
       _setLoading(false);
       notifyListeners();
       return success;
     } catch (e) {
-      _error = 'Error al dejar de seguir: $e';
+      _error = 'user_error_unfollow';
       _setLoading(false);
       notifyListeners();
       return false;

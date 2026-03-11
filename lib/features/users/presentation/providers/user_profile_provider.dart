@@ -140,7 +140,7 @@ class UserProfileProvider extends ChangeNotifier {
         await _loadUserContent(userId);
       }
     } catch (e) {
-      _error = 'Error al cargar el perfil del usuario';
+      _error = 'user_error_load_profile';
       _currentProfile = null;
       _isFollowing = false;
     } finally {

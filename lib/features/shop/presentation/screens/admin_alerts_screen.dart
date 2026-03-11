@@ -1945,6 +1945,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
 
       await AlertPdfExportService.exportAlerts(
         alerts: alerts,
+        t: l.t,
         cityFilter: _selectedCity,
         dateRange: dateRange,
       );

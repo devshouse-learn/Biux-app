@@ -1,5 +1,5 @@
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/groups/presentation/screens/group_list/group_list_screen_bloc.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +10,7 @@ class SearchBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final bloc = context.watch<GroupListScreenBloc>();
     return Container(
       width: 350,
@@ -30,7 +31,7 @@ class SearchBarWidget extends StatelessWidget {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(10.0, 15.0, 20.0, 15.0),
           border: InputBorder.none,
-          hintText: AppStrings.search,
+          hintText: l.t('search_hint'),
           hintStyle: Styles.TextSearch,
           prefixIcon: Icon(Icons.search, color: ColorTokens.neutral60),
           suffixIcon: bloc.focusNodeGrupo.hasFocus

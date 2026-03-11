@@ -360,7 +360,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Punto personalizado',
+                            l.t('custom_point'),
                             style: TextStyle(
                               fontSize: 12,
                               color: ColorTokens.neutral60,
@@ -397,7 +397,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                       onTap: () => _openMapWithCoordinates(
                         _customMeetingPointLat ?? 4.6097,
                         _customMeetingPointLng ?? -74.0817,
-                        _customMeetingPointName ?? 'Punto de Encuentro',
+                        _customMeetingPointName ?? l.t('meeting_point'),
                       ),
                       child: Container(
                         padding: EdgeInsets.all(8),
