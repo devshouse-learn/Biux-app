@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:video_player/video_player.dart';
@@ -519,6 +520,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
             actions: [
 
+              // Boton de favorito
+              Consumer<ShopProvider>(
+                builder: (context, shopProvider, _) {
+                  final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+                  if (uid.isEmpty || _product == null) return const SizedBox.shrink();
+                  final updatedProduct = shopProvider.products.where((p) => p.id == _product!.id).firstOrNull;
+                  final isLiked = updatedProduct?.isLikedBy(uid) ?? _product!.isLikedBy(uid);
+                  return GestureDetector(
+                    onTap: () => shopProvider.toggleProductLike(_product!.id, uid),
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        color: isLiked ? Colors.red : Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                  );
+                },
+              ),
               // Botón de opciones para el vendedor
               Consumer<UserProvider>(
                 builder: (context, userProvider, child) {
