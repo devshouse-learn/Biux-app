@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/seller_request_entity.dart';
-import '../../data/datasources/seller_request_service.dart';
+import '../../data/datasources/seller_request_datasource.dart';
 
 /// Provider para gestionar solicitudes de vendedores
 class SellerRequestProvider with ChangeNotifier {
@@ -33,7 +33,9 @@ class SellerRequestProvider with ChangeNotifier {
     _service.getPendingRequests().listen(
       (requests) {
         _pendingRequests = requests;
-        debugPrint('📋 Solicitudes pendientes actualizadas: ${requests.length}');
+        debugPrint(
+          '📋 Solicitudes pendientes actualizadas: ${requests.length}',
+        );
         notifyListeners();
       },
       onError: (error) {

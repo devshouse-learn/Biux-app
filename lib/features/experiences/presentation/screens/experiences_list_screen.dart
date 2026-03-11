@@ -168,7 +168,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   Widget _buildErrorState(String error, ExperienceProvider provider) {
-    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return Center(
@@ -215,7 +214,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   /// Estado vacío cuando no hay posts pero sí hay stories
   Widget _buildEmptyStateInLayout() {
-    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
@@ -375,6 +373,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     return advertisements[index % advertisements.length];
   }
 
+  // MÉTODOS COMENTADOS - Ya no se crean publicaciones generales
   /*
   void _navigateToCreatePostWithMedia(BuildContext context) {
     // Navegar a crear post CON multimedia (fotos/videos)
@@ -476,10 +475,8 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _showPostMenu(BuildContext context) {
-    // ignore: unused_local_variable
     final theme = Theme.of(context);
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    // ignore: unused_local_variable
     final isOwner = currentUserId == experience.user.id;
 
     showModalBottomSheet(
@@ -554,7 +551,6 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context) {
-    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     showDialog(
@@ -579,7 +575,7 @@ class _ExperienceCard extends StatelessWidget {
               Navigator.pop(context);
               _deletePost(context);
             },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+            child: const Text('Eliminar'),
           ),
         ],
       ),
@@ -714,7 +710,6 @@ class _AdvertisementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return Container(
@@ -880,7 +875,6 @@ class _AdvertisementCard extends StatelessWidget {
 
   /// Muestra un modal expandido con los detalles del anuncio
   void _showAdvertisementModal(BuildContext context) {
-    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     showModalBottomSheet(

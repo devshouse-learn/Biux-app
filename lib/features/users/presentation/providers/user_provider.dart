@@ -1,5 +1,5 @@
 import 'package:biux/features/users/data/models/user_model.dart';
-import 'package:biux/shared/services/user_service.dart';
+import 'package:biux/features/users/data/datasources/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -61,7 +61,9 @@ class UserProvider extends ChangeNotifier {
       debugPrint('');
       debugPrint('⚠️  IMPORTANTE:');
       debugPrint('   - Este admin SOLO funciona en Chrome web');
-      debugPrint('   - En simuladores móviles, los usuarios deben pedir permiso');
+      debugPrint(
+        '   - En simuladores móviles, los usuarios deben pedir permiso',
+      );
       debugPrint('');
 
       notifyListeners(); // ← IMPORTANTE: Notificar a los listeners
@@ -163,7 +165,9 @@ class UserProvider extends ChangeNotifier {
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
     if (firebaseUser == null) {
-      debugPrint('❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth');
+      debugPrint(
+        '❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth',
+      );
       _error = 'No has iniciado sesión. Por favor, inicia sesión primero.';
       notifyListeners();
       return false;

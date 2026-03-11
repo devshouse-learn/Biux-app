@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/features/shop/data/datasources/bike_qr_service.dart';
+import 'package:biux/features/shop/data/datasources/bike_qr_datasource.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 
@@ -329,7 +329,9 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
 
       if (qrImage != null && mounted) {
         final dir = await getApplicationDocumentsDirectory();
-        final file = File('${dir.path}/qr_bici_${DateTime.now().millisecondsSinceEpoch}.png');
+        final file = File(
+          '${dir.path}/qr_bici_${DateTime.now().millisecondsSinceEpoch}.png',
+        );
         await file.writeAsBytes(qrImage);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

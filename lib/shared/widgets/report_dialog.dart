@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/social/data/datasources/report_datasource.dart';
@@ -25,9 +26,7 @@ class ReportDialog extends StatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => ReportDialog(
         reporterId: reporterId,
         reportedUserId: reportedUserId,
@@ -42,16 +41,16 @@ class ReportDialog extends StatefulWidget {
 }
 
 class _ReportDialogState extends State<ReportDialog> {
-  String? _reason;
+  String? _selectedReason;
   final _detailsCtrl = TextEditingController();
   bool _submitting = false;
 
-  static const _reasons = [
+  final _reasons = [
     'Contenido inapropiado',
     'Spam o publicidad',
     'Acoso o bullying',
-    'Informacion falsa',
-    'Suplantacion de identidad',
+    'Información falsa',
+    'Suplantación de identidad',
     'Contenido violento',
     'Venta de productos ilegales',
     'Otro',
@@ -64,27 +63,31 @@ class _ReportDialogState extends State<ReportDialog> {
   }
 
   Future<void> _submit() async {
-    if (_reason == null) return;
+    if (_selectedReason == null) return;
     setState(() => _submitting = true);
+
     try {
       await ReportDatasource().reportContent(
         reporterId: widget.reporterId,
         reportedUserId: widget.reportedUserId,
         contentId: widget.contentId,
         type: widget.contentType,
-        reason: _reason!,
-        details: _detailsCtrl.text.trim().isEmpty ? null : _detailsCtrl.text.trim(),
+        reason: _selectedReason!,
+        details: _detailsCtrl.text.trim().isNotEmpty ? _detailsCtrl.text.trim() : null,
       );
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Reporte enviado. Revisaremos tu caso.'), backgroundColor: Colors.green),
-      );
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reporte enviado. Revisaremos tu caso.'), backgroundColor: Colors.green),
+        );
+      }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al enviar reporte'), backgroundColor: Colors.red),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
     if (mounted) setState(() => _submitting = false);
   }
@@ -92,33 +95,39 @@ class _ReportDialogState extends State<ReportDialog> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(context).viewInsets.bottom + 24),
+      padding: EdgeInsets.only(
+        left: 24, right: 24, top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
           const SizedBox(height: 20),
-          const Row(children: [
-            Icon(Icons.flag_rounded, color: Colors.red, size: 24),
-            SizedBox(width: 8),
-            Text('Reportar contenido', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ]),
+          const Row(
+            children: [
+              Icon(Icons.flag_rounded, color: Colors.red, size: 24),
+              SizedBox(width: 8),
+              Text('Reportar contenido', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ],
+          ),
           const SizedBox(height: 8),
-          Text('Por que quieres reportar esto?', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
-          const SizedBox(height: 12),
-          ..._reasons.map((r) => ListTile(
-            title: Text(r, style: const TextStyle(fontSize: 14)),
-            leading: Icon(
-              _reason == r ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-              color: _reason == r ? ColorTokens.primary30 : Colors.grey,
-              size: 20,
+          Text('¿Por qué quieres reportar esto?', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+          const SizedBox(height: 16),
+          RadioGroup<String>(
+            groupValue: _selectedReason ?? '',
+            onChanged: (v) => setState(() => _selectedReason = v),
+            child: Column(
+              children: List.generate(_reasons.length, (i) => RadioListTile<String>(
+                value: _reasons[i],
+                title: Text(_reasons[i], style: const TextStyle(fontSize: 14)),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                activeColor: ColorTokens.primary30,
+              )),
             ),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
-            onTap: () => setState(() => _reason = r),
-          )),
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _detailsCtrl,
@@ -135,7 +144,7 @@ class _ReportDialogState extends State<ReportDialog> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: _reason != null && !_submitting ? _submit : null,
+              onPressed: _selectedReason != null && !_submitting ? _submit : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,

@@ -55,7 +55,7 @@ class _CartScreenState extends State<CartScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
+              decoration: BoxDecoration(
                 color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
@@ -371,7 +371,7 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            
+
             // Subtotal
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -386,11 +386,11 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ],
             ),
-            
+
             // Cupón de descuento
             const SizedBox(height: 16),
             _buildCouponSection(context, cart),
-            
+
             // Descuento aplicado (si existe)
             if (cart.appliedCoupon != null) ...[
               const SizedBox(height: 8),
@@ -416,11 +416,11 @@ class _CartScreenState extends State<CartScreen> {
                 ],
               ),
             ],
-            
+
             const SizedBox(height: 12),
             const Divider(),
             const SizedBox(height: 8),
-            
+
             // Total
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -851,18 +851,28 @@ class _CartScreenState extends State<CartScreen> {
                       Icons.credit_card,
                       selected: _selectedPayment == 'Tarjeta de Crédito/Débito',
                       onTap: () {
-                        setState(() => _selectedPayment = 'Tarjeta de Crédito/Débito');
-                        context.read<CartProvider>().setSelectedPayment('Tarjeta de Crédito/Débito');
+                        setState(
+                          () => _selectedPayment = 'Tarjeta de Crédito/Débito',
+                        );
+                        context.read<CartProvider>().setSelectedPayment(
+                          'Tarjeta de Crédito/Débito',
+                        );
                       },
                     ),
                     _buildPaymentOption(
                       context,
                       'PSE - Transferencia Bancaria',
                       Icons.account_balance,
-                      selected: _selectedPayment == 'PSE - Transferencia Bancaria',
+                      selected:
+                          _selectedPayment == 'PSE - Transferencia Bancaria',
                       onTap: () {
-                        setState(() => _selectedPayment = 'PSE - Transferencia Bancaria');
-                        context.read<CartProvider>().setSelectedPayment('PSE - Transferencia Bancaria');
+                        setState(
+                          () =>
+                              _selectedPayment = 'PSE - Transferencia Bancaria',
+                        );
+                        context.read<CartProvider>().setSelectedPayment(
+                          'PSE - Transferencia Bancaria',
+                        );
                       },
                     ),
                     _buildPaymentOption(
@@ -872,7 +882,9 @@ class _CartScreenState extends State<CartScreen> {
                       selected: _selectedPayment == 'Nequi',
                       onTap: () {
                         setState(() => _selectedPayment = 'Nequi');
-                        context.read<CartProvider>().setSelectedPayment('Nequi');
+                        context.read<CartProvider>().setSelectedPayment(
+                          'Nequi',
+                        );
                       },
                     ),
                     _buildPaymentOption(
@@ -882,7 +894,9 @@ class _CartScreenState extends State<CartScreen> {
                       selected: _selectedPayment == 'Daviplata',
                       onTap: () {
                         setState(() => _selectedPayment = 'Daviplata');
-                        context.read<CartProvider>().setSelectedPayment('Daviplata');
+                        context.read<CartProvider>().setSelectedPayment(
+                          'Daviplata',
+                        );
                       },
                     ),
                     const SizedBox(height: 24),
@@ -1133,10 +1147,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   Text(
                     cart.appliedCoupon!.description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green[700],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.green[700]),
                   ),
                 ],
               ),
@@ -1216,7 +1227,9 @@ class _CartScreenState extends State<CartScreen> {
                   controller.clear();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Cupón "${cart.appliedCoupon!.code}" aplicado'),
+                      content: Text(
+                        'Cupón "${cart.appliedCoupon!.code}" aplicado',
+                      ),
                       backgroundColor: Colors.green,
                       duration: const Duration(seconds: 2),
                     ),
