@@ -55,9 +55,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     ? user.email!
                     : l.t('not_linked'),
                 isDark: isDark,
-                iconColor: (user.email?.isNotEmpty ?? false)
-                    ? Colors.green.shade400
-                    : null,
                 onTap: () {},
               ),
               const SizedBox(height: 8),
@@ -69,9 +66,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     ? _formatPhoneNumber(user.phoneNumber)
                     : l.t('not_linked'),
                 isDark: isDark,
-                iconColor: user.phoneNumber.isNotEmpty
-                    ? Colors.green.shade400
-                    : null,
                 onTap: () {},
               ),
 
@@ -86,7 +80,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 title: l.t('this_device'),
                 subtitle: l.t('currently_logged_in'),
                 isDark: isDark,
-                iconColor: Colors.green.shade400,
                 onTap: () {},
               ),
 
@@ -168,9 +161,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         value ? ThemeMode.dark : ThemeMode.light,
                       );
                     },
-                    iconColor: isDarkMode
-                        ? const Color(0xFF1A237E)
-                        : const Color(0xFFFF9800),
                   );
                 },
               ),
@@ -186,7 +176,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 title: l.t('logout'),
                 subtitle: l.t('close_current_session'),
                 isDark: isDark,
-                iconColor: Colors.orange.shade400,
                 onTap: () => _showLogoutDialog(),
               ),
               const SizedBox(height: 8),
@@ -196,7 +185,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 title: l.t('delete_account'),
                 subtitle: l.t('permanently_delete_account'),
                 isDark: isDark,
-                iconColor: Colors.red.shade400,
                 onTap: () => _showDeleteAccountDialog(),
               ),
 

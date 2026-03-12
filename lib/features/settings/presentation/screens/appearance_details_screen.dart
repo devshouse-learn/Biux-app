@@ -58,9 +58,6 @@ class AppearanceScreenDetails extends StatelessWidget {
       isDark: isDark,
       value: !isLightMode,
       onChanged: (_) => themeNotifier.toggleTheme(),
-      iconColor: isLightMode
-          ? const Color(0xFFFF9800)
-          : const Color(0xFF1A237E),
     );
   }
 
