@@ -80,7 +80,6 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> {
 
           return ExperienceStoryViewer(
             experience: story,
-            mediaOrigins: widget.mediaOrigins,
             onNext: _goToNextStory,
             onPrevious: _goToPreviousStory,
             onClose: () => Navigator.of(context).pop(),

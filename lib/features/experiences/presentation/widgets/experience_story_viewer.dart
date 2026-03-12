@@ -549,55 +549,61 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     );
   }
 
-  /// Elimina la historia (todas las experiencias originales del merge)
+  /// Elimina la historia
   void _deleteStory(BuildContext context) async {
-    final provider = context.read<ExperienceProvider>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final messenger = ScaffoldMessenger.of(context);
+    try {
+      final provider = context.read<ExperienceProvider>();
+      await provider.deleteExperience(widget.experience.id);
 
-    // Cerrar el visor inmediatamente para UX instantánea
-    Navigator.of(context).pop();
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
 
-    // Recolectar todos los experienceId únicos del merge
-    final uniqueIds = _mediaOrigins.map((o) => o.experienceId).toSet();
-    for (final id in uniqueIds) {
-      provider.deleteExperience(id);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l.t('story_deleted_success')),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (context.mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('${l.t('error_generic')}: $e')),
+        );
+      }
     }
-
-    messenger.showSnackBar(
-      const SnackBar(
-        content: Text('Story eliminada correctamente'),
-        duration: Duration(seconds: 2),
-      ),
-    );
   }
 
   /// Confirma eliminación de una foto individual
   void _confirmDeleteMedia(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          '¿Eliminar esta foto?',
+          l.t('delete_photo_title'),
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
-          'Solo se eliminará esta foto. Las demás fotos de la historia se mantendrán.',
+          l.t('delete_photo_description'),
           style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
               _deleteMedia(context);
             },
-            child: const Text('Eliminar foto'),
+            child: Text(l.t('delete_photo')),
           ),
         ],
       ),
@@ -606,55 +612,26 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   /// Elimina solo la foto actual de la historia
   void _deleteMedia(BuildContext context) async {
-    final provider = context.read<ExperienceProvider>();
-    final mediaIdx = currentMediaIndex;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final provider = context.read<ExperienceProvider>();
 
-    // Obtener el origen real de esta foto
-    final origin = _mediaOrigins[mediaIdx];
-
-    // Si después de eliminar no quedan más media, cerrar el visor y eliminar todo
-    if (_mediaItems.length <= 1) {
-      final messenger = ScaffoldMessenger.of(context);
-      Navigator.of(context).pop();
-      // Eliminar todas las experiencias originales
-      final uniqueIds = _mediaOrigins.map((o) => o.experienceId).toSet();
-      for (final id in uniqueIds) {
-        provider.deleteExperience(id);
+      if (widget.experience.media.length <= 1) {
+        Navigator.of(context).pop();
+        await provider.deleteExperience(widget.experience.id);
+      } else {
+        // TODO: implementar eliminación de media individual
+        messenger.showSnackBar(
+          SnackBar(content: Text(l.t('feature_coming_soon'))),
+        );
       }
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Story eliminada correctamente'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-      return;
-    }
-
-    // Remover de la lista local inmediatamente para que la UI se actualice
-    setState(() {
-      _mediaItems.removeAt(mediaIdx);
-      _mediaOrigins.removeAt(mediaIdx);
-      if (currentMediaIndex >= _mediaItems.length) {
-        currentMediaIndex = _mediaItems.length - 1;
+    } catch (e) {
+      if (context.mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('${l.t('error_generic')}: $e')),
+        );
       }
-    });
-    _progressController.reset();
-    _startCurrentMedia();
-
-    // Verificar si quedan más medias de esa misma experiencia
-    final remainingFromSameExp = _mediaOrigins
-        .where((o) => o.experienceId == origin.experienceId)
-        .length;
-
-    if (remainingFromSameExp == 0) {
-      // No quedan más fotos de esa experiencia, eliminarla completa
-      provider.deleteExperience(origin.experienceId);
-    } else {
-      // Eliminar solo esa foto de la experiencia original
-      provider.removeMediaFromExperience(
-        origin.experienceId,
-        origin.mediaIndex,
-      );
     }
   }
 
