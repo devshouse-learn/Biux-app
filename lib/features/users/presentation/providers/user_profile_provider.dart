@@ -30,6 +30,12 @@ class UserProfileProvider extends ChangeNotifier {
   bool _isLoadingFollowing = false;
   bool _isProcessingFollow = false; // ✅ NUEVA: Estado de procesamiento
 
+  // Estado de follow request (cuentas privadas)
+  bool _hasPendingFollowRequest = false;
+  bool _isPrivateAccount = false;
+  List<BiuxUser> _followRequests = [];
+  bool _isLoadingFollowRequests = false;
+
   // Estado de posts y stories del usuario
   List<dynamic> _userPosts = [];
   List<dynamic> _userStories = [];
@@ -46,6 +52,10 @@ class UserProfileProvider extends ChangeNotifier {
   bool get isLoading => _isLoadingProfile || _isLoadingContent;
   bool get isFollowing => _isFollowing;
   bool get isProcessingFollow => _isProcessingFollow; // ✅ NUEVO
+  bool get hasPendingFollowRequest => _hasPendingFollowRequest;
+  bool get isPrivateAccount => _isPrivateAccount;
+  List<BiuxUser> get followRequests => _followRequests;
+  bool get isLoadingFollowRequests => _isLoadingFollowRequests;
   List<BiuxUser> get followers => _followers;
   List<BiuxUser> get following => _following;
   bool get isLoadingFollowers => _isLoadingFollowers;
@@ -126,6 +136,8 @@ class UserProfileProvider extends ChangeNotifier {
     _error = null;
     _currentProfile =
         null; // Limpiar perfil anterior para asegurar datos frescos
+    _hasPendingFollowRequest = false;
+    _isPrivateAccount = false;
     notifyListeners();
 
     try {
@@ -136,8 +148,23 @@ class UserProfileProvider extends ChangeNotifier {
         // Verificar si ya lo sigue
         _isFollowing = await _repository.isFollowing(userId);
 
-        // Cargar posts y stories del usuario
-        await _loadUserContent(userId);
+        // Verificar si la cuenta es privada
+        _isPrivateAccount = profile.profileVisibility == 'private';
+
+        // Si es privada y no lo sigue, verificar solicitud pendiente
+        if (_isPrivateAccount && !_isFollowing) {
+          _hasPendingFollowRequest = await _repository.hasPendingFollowRequest(
+            userId,
+          );
+        }
+
+        // Cargar posts y stories solo si no es privada O si ya lo sigue
+        if (!_isPrivateAccount || _isFollowing) {
+          await _loadUserContent(userId);
+        } else {
+          _userPosts = [];
+          _userStories = [];
+        }
       }
     } catch (e) {
       _error = 'Error al cargar el perfil del usuario';
@@ -236,7 +263,7 @@ class UserProfileProvider extends ChangeNotifier {
     }
   }
 
-  // Seguir usuario
+  // Seguir usuario (o enviar solicitud si es privado)
   Future<bool> followUser(String userId) async {
     if (_isProcessingFollow) return false;
 
@@ -244,6 +271,17 @@ class UserProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Si la cuenta es privada, enviar solicitud en vez de seguir directamente
+      if (_isPrivateAccount) {
+        final success = await _repository.sendFollowRequest(userId);
+        if (success) {
+          _hasPendingFollowRequest = true;
+          notifyListeners();
+        }
+        return success;
+      }
+
+      // Cuenta pública: seguir directamente
       final success = await _repository.followUser(userId);
       if (success) {
         _isFollowing = true;
@@ -256,6 +294,71 @@ class UserProfileProvider extends ChangeNotifier {
       return false;
     } finally {
       _isProcessingFollow = false;
+      notifyListeners();
+    }
+  }
+
+  // Cancelar solicitud de seguimiento
+  Future<bool> cancelFollowRequest(String userId) async {
+    if (_isProcessingFollow) return false;
+
+    _isProcessingFollow = true;
+    notifyListeners();
+
+    try {
+      final success = await _repository.cancelFollowRequest(userId);
+      if (success) {
+        _hasPendingFollowRequest = false;
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      return false;
+    } finally {
+      _isProcessingFollow = false;
+      notifyListeners();
+    }
+  }
+
+  // Aceptar solicitud de seguimiento
+  Future<bool> acceptFollowRequest(String requesterId) async {
+    try {
+      final success = await _repository.acceptFollowRequest(requesterId);
+      if (success) {
+        _followRequests.removeWhere((user) => user.id == requesterId);
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Rechazar solicitud de seguimiento
+  Future<bool> rejectFollowRequest(String requesterId) async {
+    try {
+      final success = await _repository.rejectFollowRequest(requesterId);
+      if (success) {
+        _followRequests.removeWhere((user) => user.id == requesterId);
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Cargar solicitudes de seguimiento pendientes
+  Future<void> loadFollowRequests() async {
+    _isLoadingFollowRequests = true;
+    notifyListeners();
+
+    try {
+      _followRequests = await _repository.getFollowRequests();
+    } catch (e) {
+      _followRequests = [];
+    } finally {
+      _isLoadingFollowRequests = false;
       notifyListeners();
     }
   }
@@ -319,8 +422,11 @@ class UserProfileProvider extends ChangeNotifier {
     _profileStreamSubscription?.cancel();
     _currentProfile = null;
     _isFollowing = false;
+    _hasPendingFollowRequest = false;
+    _isPrivateAccount = false;
     _followers = [];
     _following = [];
+    _followRequests = [];
     notifyListeners();
   }
 

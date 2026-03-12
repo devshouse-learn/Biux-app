@@ -94,11 +94,17 @@ class AppTranslations {
     'microphone': 'Micrófono',
     'microphone_subtitle': 'Permiso para usar el micrófono',
     'public': 'Público',
-    'public_desc': 'Todos pueden ver tu perfil',
-    'friends': 'Amigos',
-    'friends_desc': 'Solo tus amigos pueden ver tu perfil',
+    'public_desc': 'Cualquiera puede ver tu perfil, historias y publicaciones',
     'private': 'Privado',
-    'private_desc': 'Nadie puede ver tu perfil excepto tú',
+    'private_desc':
+        'Solo tus seguidores pueden ver tus historias y publicaciones',
+    'this_account_is_private': 'Esta cuenta es privada',
+    'follow_to_see_posts':
+        'Sigue esta cuenta para ver sus publicaciones e historias',
+    'follow_request_sent': 'Solicitud de seguimiento enviada',
+    'follow_request_pending': 'Solicitud pendiente',
+    'requested': 'Solicitado',
+    'follow_requests': 'Solicitudes de seguimiento',
 
     // Information
     'about_app': 'Acerca de la App',
@@ -2511,11 +2517,15 @@ class AppTranslations {
     'microphone': 'Microphone',
     'microphone_subtitle': 'Permission to use the microphone',
     'public': 'Public',
-    'public_desc': 'Everyone can see your profile',
-    'friends': 'Friends',
-    'friends_desc': 'Only your friends can see your profile',
+    'public_desc': 'Anyone can see your profile, stories and posts',
     'private': 'Private',
-    'private_desc': 'No one can see your profile except you',
+    'private_desc': 'Only your followers can see your stories and posts',
+    'this_account_is_private': 'This account is private',
+    'follow_to_see_posts': 'Follow this account to see their posts and stories',
+    'follow_request_sent': 'Follow request sent',
+    'follow_request_pending': 'Request pending',
+    'requested': 'Requested',
+    'follow_requests': 'Follow requests',
 
     // Information
     'about_app': 'About the App',
@@ -4992,11 +5002,18 @@ class AppTranslations {
     'microphone': 'Microfone',
     'microphone_subtitle': 'Permissão para usar o microfone',
     'public': 'Público',
-    'public_desc': 'Todos podem ver seu perfil',
-    'friends': 'Amigos',
-    'friends_desc': 'Só seus amigos podem ver seu perfil',
+    'public_desc':
+        'Qualquer pessoa pode ver seu perfil, histórias e publicações',
     'private': 'Privado',
-    'private_desc': 'Ninguém pode ver seu perfil exceto você',
+    'private_desc':
+        'Apenas seus seguidores podem ver suas histórias e publicações',
+    'this_account_is_private': 'Esta conta é privada',
+    'follow_to_see_posts':
+        'Siga esta conta para ver suas publicações e histórias',
+    'follow_request_sent': 'Solicitação de seguimento enviada',
+    'follow_request_pending': 'Solicitação pendente',
+    'requested': 'Solicitado',
+    'follow_requests': 'Solicitações de seguimento',
 
     // Information
     'about_app': 'Sobre o App',
@@ -7510,11 +7527,18 @@ class AppTranslations {
     'microphone': 'Microphone',
     'microphone_subtitle': 'Autorisation d\'utiliser le microphone',
     'public': 'Public',
-    'public_desc': 'Tout le monde peut voir votre profil',
-    'friends': 'Amis',
-    'friends_desc': 'Seuls vos amis peuvent voir votre profil',
+    'public_desc':
+        'Tout le monde peut voir votre profil, stories et publications',
     'private': 'Privé',
-    'private_desc': 'Personne ne peut voir votre profil sauf vous',
+    'private_desc':
+        'Seuls vos abonnés peuvent voir vos stories et publications',
+    'this_account_is_private': 'Ce compte est privé',
+    'follow_to_see_posts':
+        'Suivez ce compte pour voir ses publications et stories',
+    'follow_request_sent': 'Demande de suivi envoyée',
+    'follow_request_pending': 'Demande en attente',
+    'requested': 'Demandé',
+    'follow_requests': 'Demandes de suivi',
 
     // Information
     'about_app': 'À propos de l\'App',

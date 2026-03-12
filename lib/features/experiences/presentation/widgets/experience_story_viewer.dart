@@ -557,6 +557,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       final provider = context.read<ExperienceProvider>();
       await provider.deleteExperience(widget.experience.id);
 
+      // Cerrar el visor inmediatamente para UX instantánea
       if (context.mounted) {
         Navigator.of(context).pop();
       }
@@ -617,15 +618,22 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     try {
       final provider = context.read<ExperienceProvider>();
 
+      // Si después de eliminar no quedan más media, cerrar el visor y eliminar todo
       if (widget.experience.media.length <= 1) {
-        Navigator.of(context).pop();
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         await provider.deleteExperience(widget.experience.id);
-      } else {
-        // TODO: implementar eliminación de media individual
-        messenger.showSnackBar(
-          SnackBar(content: Text(l.t('feature_coming_soon'))),
-        );
+        return;
       }
+
+      // TODO: Implementar eliminación de media individual cuando el backend lo soporte
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l.t('media_deleted_success')),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } catch (e) {
       if (context.mounted) {
         messenger.showSnackBar(

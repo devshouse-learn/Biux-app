@@ -3,11 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 
-/// Pantalla de perfil público de usuario
-/// Muestra información básica, posts y botón de seguir/dejar de seguir
+/// Pantalla de perfil p├║blico de usuario
+/// Muestra informaci├│n b├ísica, posts y bot├│n de seguir/dejar de seguir
 class PublicUserProfileScreen extends StatefulWidget {
   final String userId;
 
@@ -20,6 +22,7 @@ class PublicUserProfileScreen extends StatefulWidget {
 
 class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     with TickerProviderStateMixin {
+  LocaleNotifier get l => Provider.of<LocaleNotifier>(context, listen: false);
   TabController? _tabController;
   bool isFollowing = false;
   bool isCurrentUser = false;
@@ -39,7 +42,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
         isCurrentUser = currentUserUid == widget.userId;
       });
 
-      // Verificar si ya está siguiendo a este usuario
+      // Verificar si ya est├í siguiendo a este usuario
       if (!isCurrentUser && currentUserUid != null) {
         final userProvider = context.read<UserProvider>();
         if (userProvider.user?.following != null) {
@@ -170,7 +173,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                 fit: BoxFit.cover,
                                 onError: (exception, stackTrace) {
                                   print(
-                                    '❌ Error cargando profileCover: $exception',
+                                    'ÔØî Error cargando profileCover: $exception',
                                   );
                                 },
                               )
@@ -246,7 +249,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                                 print(
-                                                  '❌ Error cargando imagen: $error',
+                                                  'ÔØî Error cargando imagen: $error',
                                                 );
                                                 print(
                                                   'URL de imagen: ${user.photo}',
@@ -288,7 +291,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     ? user.fullName
                                     : (user.userName.isNotEmpty
                                           ? user.userName
-                                          : 'Usuario sin nombre'), // Solo mostrar info pública
+                                          : 'Usuario sin nombre'), // Solo mostrar info p├║blica
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -308,7 +311,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                 ),
                               const SizedBox(height: 12),
 
-                              // Descripción del usuario si existe
+                              // Descripci├│n del usuario si existe
                               // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
                               if (user.description != null &&
                                   // ignore: unnecessary_null_comparison, unnecessary_non_null_assertion
@@ -335,7 +338,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                 const SizedBox.shrink(),
                               const SizedBox(height: 20),
 
-                              // Estadísticas básicas
+                              // Estad├¡sticas b├ísicas
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 20,
@@ -380,7 +383,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
                               const SizedBox(height: 20),
 
-                              // Botón de Seguir/Dejar de Seguir
+                              // Botón de Seguir/Solicitado/Siguiendo (con soporte de privacidad)
                               if (!isCurrentUser)
                                 SizedBox(
                                   width: double.infinity,
@@ -388,105 +391,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 20.0,
                                     ),
-                                    child: isFollowing
-                                        ? OutlinedButton.icon(
-                                            onPressed: () async {
-                                              final userProvider = context
-                                                  .read<UserProvider>();
-                                              final profileProvider = context
-                                                  .read<UserProfileProvider>();
-                                              setState(() {
-                                                isFollowing = false;
-                                              });
-                                              final success = await userProvider
-                                                  .unfollowUser(widget.userId);
-                                              if (success && mounted) {
-                                                // Actualización rápida del perfil para ver cambios inmediatamente
-                                                await profileProvider
-                                                    .refreshProfileQuick(
-                                                      widget.userId,
-                                                    );
-                                              } else if (!success && mounted) {
-                                                setState(() {
-                                                  isFollowing = true;
-                                                });
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      userProvider.error ??
-                                                          'Error al dejar de seguir',
-                                                    ),
-                                                    backgroundColor:
-                                                        ColorTokens.error50,
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            icon: const Icon(Icons.check),
-                                            label: const Text('Siguiendo'),
-                                            style: OutlinedButton.styleFrom(
-                                              foregroundColor:
-                                                  ColorTokens.neutral100,
-                                              side: const BorderSide(
-                                                color: ColorTokens.primary30,
-                                                width: 1.5,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                  ),
-                                            ),
-                                          )
-                                        : ElevatedButton.icon(
-                                            onPressed: () async {
-                                              final userProvider = context
-                                                  .read<UserProvider>();
-                                              final profileProvider = context
-                                                  .read<UserProfileProvider>();
-                                              setState(() {
-                                                isFollowing = true;
-                                              });
-                                              final success = await userProvider
-                                                  .followUser(widget.userId);
-                                              if (success && mounted) {
-                                                // Actualización rápida del perfil para ver cambios inmediatamente
-                                                await profileProvider
-                                                    .refreshProfileQuick(
-                                                      widget.userId,
-                                                    );
-                                              } else if (!success && mounted) {
-                                                setState(() {
-                                                  isFollowing = false;
-                                                });
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      userProvider.error ??
-                                                          'Error al seguir',
-                                                    ),
-                                                    backgroundColor:
-                                                        ColorTokens.error50,
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            icon: const Icon(Icons.add),
-                                            label: const Text('Seguir'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  ColorTokens.primary30,
-                                              foregroundColor:
-                                                  ColorTokens.neutral100,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                  ),
-                                            ),
-                                          ),
+                                    child: _buildFollowButton(
+                                      provider,
+                                      widget.userId,
+                                    ),
                                   ),
                                 ),
 
@@ -524,15 +432,23 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 ),
               ];
             },
-            body: TabBarView(
-              controller: _tabController,
-              children: [
-                // Tab de Posts
-                _buildPostsTab(provider),
-                // Tab de Historias
-                _buildStoriesTab(provider),
-              ],
-            ),
+            body:
+                (provider.isPrivateAccount &&
+                    !provider.isFollowing &&
+                    AuthenticationRepository().getUserId != widget.userId)
+                ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: _buildPrivateAccountWall(),
+                  )
+                : TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Tab de Posts
+                      _buildPostsTab(provider),
+                      // Tab de Historias
+                      _buildStoriesTab(provider),
+                    ],
+                  ),
           );
         },
       ),
@@ -562,6 +478,138 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
           textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+
+  Widget _buildFollowButton(
+    UserProfileProvider provider,
+    String profileUserId,
+  ) {
+    final currentUserId = AuthenticationRepository().getUserId;
+    final isOwnProfile = currentUserId == profileUserId;
+
+    // Si es el perfil propio, no mostrar bot├│n de seguir
+    if (isOwnProfile) {
+      return SizedBox.shrink();
+    }
+
+    // Deshabilitar si est├í procesando
+    final isDisabled = provider.isProcessingFollow;
+
+    // Determinar estado: following, requested, or follow
+    final isFollowing = provider.isFollowing;
+    final hasPendingRequest = provider.hasPendingFollowRequest;
+    final isPrivate = provider.isPrivateAccount;
+
+    String buttonLabel;
+    if (isFollowing) {
+      buttonLabel = l.t('following');
+    } else if (hasPendingRequest) {
+      buttonLabel = l.t('requested');
+    } else {
+      buttonLabel = l.t('follow');
+    }
+
+    return SizedBox(
+      width: 100,
+      height: 36,
+      child: ElevatedButton(
+        onPressed: isDisabled
+            ? null
+            : () async {
+                if (isFollowing) {
+                  await provider.unfollowUser(profileUserId);
+                } else if (hasPendingRequest) {
+                  // Cancelar solicitud pendiente
+                  await provider.cancelFollowRequest(profileUserId);
+                } else {
+                  // Seguir (o enviar solicitud si es privado)
+                  await provider.followUser(profileUserId);
+                }
+              },
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          backgroundColor: (isFollowing || hasPendingRequest)
+              ? ColorTokens.neutral100.withValues(alpha: 0.2)
+              : ColorTokens.neutral100,
+          foregroundColor: (isFollowing || hasPendingRequest)
+              ? ColorTokens.neutral100
+              : ColorTokens.primary30,
+          side: BorderSide(
+            color: ColorTokens.neutral100,
+            width: (isFollowing || hasPendingRequest) ? 1 : 0,
+          ),
+          disabledBackgroundColor: ColorTokens.neutral100.withValues(
+            alpha: 0.5,
+          ),
+        ),
+        child: provider.isProcessingFollow
+            ? SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    (isFollowing || hasPendingRequest)
+                        ? ColorTokens.neutral100
+                        : ColorTokens.primary30,
+                  ),
+                ),
+              )
+            : Text(
+                buttonLabel,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildPrivateAccountWall() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+      decoration: BoxDecoration(
+        color: isDark
+            ? ColorTokens.primary30.withValues(alpha: 0.3)
+            : ColorTokens.neutral10,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark
+              ? ColorTokens.neutral60.withValues(alpha: 0.3)
+              : ColorTokens.neutral30,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.lock_outline,
+            size: 64,
+            color: isDark ? ColorTokens.neutral60 : ColorTokens.neutral70,
+          ),
+          SizedBox(height: 16),
+          Text(
+            l.t('this_account_is_private'),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDark ? ColorTokens.neutral100 : ColorTokens.neutral80,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            l.t('follow_to_see_posts'),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? ColorTokens.neutral60 : ColorTokens.neutral60,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -608,7 +656,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         color: ColorTokens.neutral60,
                       ),
                       const SizedBox(height: 12),
-                      const Text('Sin seguidores aún'),
+                      const Text('Sin seguidores a├║n'),
                     ],
                   ),
                 ),
@@ -706,7 +754,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                         color: ColorTokens.neutral60,
                       ),
                       const SizedBox(height: 12),
-                      const Text('No sigue a nadie aún'),
+                      const Text('No sigue a nadie a├║n'),
                     ],
                   ),
                 ),
@@ -774,7 +822,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             ),
             SizedBox(height: 16),
             Text(
-              'No hay posts aún',
+              'No hay posts a├║n',
               style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
             ),
           ],
@@ -793,7 +841,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
       itemBuilder: (context, index) {
         final post = provider.userPosts[index];
 
-        // ✅ VALIDACIÓN: Solo permitir acceder a posts con media disponible
+        // Ô£à VALIDACI├ôN: Solo permitir acceder a posts con media disponible
         final hasValidMedia = post.media != null && post.media.isNotEmpty;
 
         return GestureDetector(
@@ -853,7 +901,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
             ),
             SizedBox(height: 16),
             Text(
-              'No hay historias aún',
+              'No hay historias a├║n',
               style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
             ),
           ],
