@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
+import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:biux/features/shop/domain/entities/cart_item_entity.dart';
 import 'package:biux/features/shop/domain/entities/order_entity.dart';
@@ -664,7 +665,13 @@ class ShopProvider with ChangeNotifier {
   /// Dar like/unlike a un producto (operación atómica en Firestore)
   Future<bool> toggleProductLike(String productId, String userId) async {
     try {
+      debugPrint(
+        'LIKE_PROVIDER>>> toggleProductLike productId=$productId userId=$userId',
+      );
       final productIndex = _allProducts.indexWhere((p) => p.id == productId);
+      debugPrint(
+        'LIKE_PROVIDER>>> productIndex=$productIndex allProducts=${_allProducts.length}',
+      );
       if (productIndex == -1) return false;
 
       final product = _allProducts[productIndex];
@@ -677,16 +684,33 @@ class ShopProvider with ChangeNotifier {
         likedByUsers.add(userId);
       }
 
-      final updatedProduct = product.copyWith(likedByUsers: likedByUsers);
+      final updatedEntity = product.copyWith(likedByUsers: likedByUsers);
+      // Convertir a ProductModel para mantener el tipo correcto en _allProducts
+      final updatedProduct = ProductModel.fromEntity(updatedEntity);
       _allProducts[productIndex] = updatedProduct;
       _applyFilters();
+      debugPrint(
+        'LIKE_PROVIDER>>> filteredProducts=${_filteredProducts.length} notifying...',
+      );
       notifyListeners();
 
-      // Luego guardar en Firestore con operación atómica
-      await productRepository.toggleProductLike(productId, userId);
+      // Luego guardar en Firestore (si hay userId valido)
+      if (userId.isNotEmpty && userId != 'local_user') {
+        try {
+          debugPrint('LIKE_PROVIDER>>> saving to Firestore...');
+          await productRepository.toggleProductLike(productId, userId);
+          debugPrint('LIKE_PROVIDER>>> Firestore saved OK');
+        } catch (e) {
+          debugPrint(
+            'LIKE_PROVIDER>>> Firestore error (like se mantiene local): $e',
+          );
+          // NO revertimos - el like se queda como Instagram/TikTok
+        }
+      }
 
       return true;
     } catch (e) {
+      debugPrint('LIKE_PROVIDER>>> ERROR critico: $e');
       // Revertir cambio local si falla Firestore
       await loadProducts();
       _errorMessage = 'shop_like_error';

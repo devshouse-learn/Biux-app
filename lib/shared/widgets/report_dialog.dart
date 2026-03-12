@@ -45,7 +45,7 @@ class ReportDialog extends StatefulWidget {
 }
 
 class _ReportDialogState extends State<ReportDialog> {
-  String? _selectedReason;
+  String? _reason;
   final _detailsCtrl = TextEditingController();
   bool _submitting = false;
 
@@ -56,41 +56,37 @@ class _ReportDialogState extends State<ReportDialog> {
   }
 
   Future<void> _submit() async {
-    if (_selectedReason == null) return;
+    if (_reason == null) return;
     setState(() => _submitting = true);
-
     try {
       await ReportDatasource().reportContent(
         reporterId: widget.reporterId,
         reportedUserId: widget.reportedUserId,
         contentId: widget.contentId,
         type: widget.contentType,
-        reason: _selectedReason!,
-        details: _detailsCtrl.text.trim().isNotEmpty
-            ? _detailsCtrl.text.trim()
-            : null,
+        reason: _reason!,
+        details: _detailsCtrl.text.trim().isEmpty
+            ? null
+            : _detailsCtrl.text.trim(),
       );
-
-      if (mounted) {
-        final l = Provider.of<LocaleNotifier>(context, listen: false);
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.t('report_sent_review')),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
+      if (!mounted) return;
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.t('report_sent_review')),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        final l = Provider.of<LocaleNotifier>(context, listen: false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l.t('error_generic')}: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${l.t('error_generic')}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
     if (mounted) setState(() => _submitting = false);
   }
@@ -148,37 +144,21 @@ class _ReportDialogState extends State<ReportDialog> {
             l.t('report_reason_question'),
             style: TextStyle(color: Colors.grey[600], fontSize: 14),
           ),
-          const SizedBox(height: 16),
-          RadioGroup<String>(
-            groupValue: _selectedReason ?? '',
-            onChanged: (v) => setState(() => _selectedReason = v),
-            child: Column(
-              children: reasons
-                  .map(
-                    (reason) => InkWell(
-                      onTap: () => setState(() => _selectedReason = reason),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: Row(
-                          children: [
-                            Radio<String>(
-                              value: reason,
-                              activeColor: ColorTokens.primary30,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            Expanded(
-                              child: Text(
-                                reason,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+          const SizedBox(height: 12),
+          ...reasons.map(
+            (r) => ListTile(
+              title: Text(r, style: const TextStyle(fontSize: 14)),
+              leading: Icon(
+                _reason == r
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+                color: _reason == r ? ColorTokens.primary30 : Colors.grey,
+                size: 20,
+              ),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              onTap: () => setState(() => _reason = r),
             ),
           ),
           const SizedBox(height: 8),
@@ -199,9 +179,7 @@ class _ReportDialogState extends State<ReportDialog> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: _selectedReason != null && !_submitting
-                  ? _submit
-                  : null,
+              onPressed: _reason != null && !_submitting ? _submit : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,

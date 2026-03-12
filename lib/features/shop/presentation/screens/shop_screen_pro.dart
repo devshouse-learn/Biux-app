@@ -1,5 +1,6 @@
 ﻿// (conflict markers removed - keeping remote version)
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -198,7 +199,10 @@ class _ShopScreenProState extends State<ShopScreenPro>
             // Favoritos
             Consumer2<ShopProvider, UserProvider>(
               builder: (context, shopProvider, userProvider, child) {
-                final uid = userProvider.user?.uid ?? '';
+                final uid =
+                    userProvider.user?.uid ??
+                    FirebaseAuth.instance.currentUser?.uid ??
+                    '';
                 final favCount = uid.isEmpty
                     ? 0
                     : shopProvider.products
@@ -2412,23 +2416,29 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   Positioned(
                     top: 8,
                     right: 8,
-                    child: Consumer<UserProvider>(
-                      builder: (context, userProvider, child) {
+                    child: Consumer2<UserProvider, ShopProvider>(
+                      builder: (context, userProvider, shopProvider, child) {
                         final currentUser = userProvider.user;
-                        final isLiked =
-                            currentUser != null &&
-                            product.isLikedBy(currentUser.uid);
+                        if (currentUser == null) return const SizedBox.shrink();
+                        final uid = currentUser.uid.isNotEmpty
+                            ? currentUser.uid
+                            : (FirebaseAuth.instance.currentUser?.uid ??
+                                  'local_user');
+                        // Leer producto actualizado del provider
+                        final updatedProduct =
+                            shopProvider.products
+                                .where((p) => p.id == product.id)
+                                .firstOrNull ??
+                            product;
+                        final isLiked = updatedProduct.isLikedBy(uid);
                         return GestureDetector(
-                          onTap: currentUser != null
-                              ? () async {
-                                  await context
-                                      .read<ShopProvider>()
-                                      .toggleProductLike(
-                                        product.id,
-                                        currentUser.uid,
-                                      );
-                                }
-                              : null,
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            debugPrint(
+                              'LIKE_GRID>>> TAP on ${product.id} by $uid isLiked=$isLiked',
+                            );
+                            shopProvider.toggleProductLike(product.id, uid);
+                          },
                           child: CircleAvatar(
                             radius: 16,
                             backgroundColor: Colors.white.withValues(
@@ -2677,7 +2687,33 @@ class _ShopScreenProState extends State<ShopScreenPro>
             ),
           ),
 
-          // BotÃ³n agregar
+          // Botón favorito
+          Consumer2<UserProvider, ShopProvider>(
+            builder: (context, userProvider, shopProvider, child) {
+              final currentUser = userProvider.user;
+              if (currentUser == null) return const SizedBox.shrink();
+              final uid = currentUser.uid;
+              final updatedProduct =
+                  shopProvider.products
+                      .where((p) => p.id == product.id)
+                      .firstOrNull ??
+                  product;
+              final isLiked = updatedProduct.isLikedBy(uid);
+              return IconButton(
+                onPressed: () {
+                  debugPrint(
+                    'LIKE_LIST>>> TAP on ${product.id} by $uid isLiked=$isLiked',
+                  );
+                  shopProvider.toggleProductLike(product.id, uid);
+                },
+                icon: Icon(
+                  isLiked ? Icons.favorite : Icons.favorite_border,
+                  color: isLiked ? Colors.red : Colors.grey[700],
+                ),
+              );
+            },
+          ),
+          // Botón agregar
           IconButton(
             onPressed: () {
               context.read<ShopProvider>().addToCart(product);

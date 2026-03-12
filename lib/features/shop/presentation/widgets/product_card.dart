@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
+import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-/// Widget de tarjeta de producto para el grid
 class ProductCard extends StatelessWidget {
   final ProductEntity product;
   final VoidCallback onTap;
@@ -13,9 +14,52 @@ class ProductCard extends StatelessWidget {
   const ProductCard({Key? key, required this.product, required this.onTap})
     : super(key: key);
 
+  Widget _buildImage() {
+    final url = product.mainImage;
+    if (url.isEmpty) {
+      return Container(
+        color: Colors.grey[200],
+        child: const Icon(Icons.shopping_bag, size: 50, color: Colors.grey),
+      );
+    }
+    if (url.startsWith('asset://')) {
+      return Image.asset(
+        url.replaceFirst('asset://', ''),
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Container(
+          color: Colors.grey[200],
+          child: const Icon(Icons.shopping_bag, size: 50, color: Colors.grey),
+        ),
+      );
+    }
+    if (url.startsWith('mock://')) {
+      return Container(
+        color: Colors.grey[200],
+        child: const Icon(Icons.shopping_bag, size: 50, color: Colors.grey),
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: url,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      placeholder: (_, __) => Container(
+        color: Colors.grey[200],
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      errorWidget: (_, __, ___) => Container(
+        color: Colors.grey[200],
+        child: const Icon(Icons.shopping_bag, size: 50, color: Colors.grey),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'local_user';
+    debugPrint('LIKE_CARD>>> uid=$uid');
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -24,7 +68,6 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen del producto
             Expanded(
               flex: 3,
               child: Stack(
@@ -33,40 +76,22 @@ class ProductCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
-                    child: product.mainImage.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: product.mainImage,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: Colors.grey[200],
-                              child: const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: Colors.grey[200],
-                              child: const Icon(
-                                Icons.shopping_bag,
-                                size: 50,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          )
-                        : Container(
-                            color: Colors.grey[200],
-                            child: const Icon(
-                              Icons.shopping_bag,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: _buildImage(),
+                    ),
                   ),
-                  // Badge de stock bajo
+                  // Boton de like
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: _LikeButton(product: product, userId: uid),
+                  ),
                   if (product.stock < 5 && product.stock > 0)
                     Positioned(
                       top: 8,
-                      right: 8,
+                      left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -86,11 +111,10 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  // Badge de agotado
                   if (product.stock == 0)
                     Positioned(
                       top: 8,
-                      right: 8,
+                      left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -102,7 +126,7 @@ class ProductCard extends StatelessWidget {
                         ),
                         child: Text(
                           l.t('out_of_stock'),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -113,7 +137,6 @@ class ProductCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Información del producto
             Expanded(
               flex: 2,
               child: Padding(
@@ -122,7 +145,6 @@ class ProductCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Nombre del producto
                     Text(
                       product.name,
                       maxLines: 2,
@@ -132,7 +154,6 @@ class ProductCard extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
-                    // Precio
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -161,6 +182,52 @@ class ProductCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Widget separado para el boton de like - usa Consumer para reactividad
+class _LikeButton extends StatelessWidget {
+  final ProductEntity product;
+  final String userId;
+
+  const _LikeButton({required this.product, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ShopProvider>(
+      builder: (context, shopProvider, _) {
+        // Obtener el producto actualizado del provider
+        final updatedProduct = shopProvider.products
+            .where((p) => p.id == product.id)
+            .firstOrNull;
+        final isLiked =
+            updatedProduct?.isLikedBy(userId) ?? product.isLikedBy(userId);
+
+        return GestureDetector(
+          onTap: () {
+            shopProvider.toggleProductLike(product.id, userId);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: Icon(
+              isLiked ? Icons.favorite : Icons.favorite_border,
+              color: isLiked ? Colors.red : Colors.grey,
+              size: 20,
+            ),
+          ),
+        );
+      },
     );
   }
 }
