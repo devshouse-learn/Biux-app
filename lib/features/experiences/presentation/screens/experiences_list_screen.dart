@@ -684,10 +684,7 @@ class _ExperienceCard extends StatelessWidget {
               Navigator.pop(context);
               _deletePost(context);
             },
-            child: Text(
-              l.t('experiences_delete'),
-              style: const TextStyle(color: Colors.red),
-            ),
+            child: const Text('Eliminar'),
           ),
         ],
       ),

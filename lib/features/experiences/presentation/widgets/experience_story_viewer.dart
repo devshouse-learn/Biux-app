@@ -506,10 +506,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               Navigator.pop(dialogContext);
               _deleteStory(context);
             },
-            child: Text(
-              l.t('delete_story'),
-              style: const TextStyle(color: Colors.red),
-            ),
+            child: const Text('Eliminar historia'),
           ),
         ],
       ),
@@ -523,18 +520,72 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       final provider = context.read<ExperienceProvider>();
       final success = await provider.deleteExperience(widget.experience.id);
 
-      if (context.mounted) {
-        if (success) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l.t('story_deleted_success'))));
-          // Cerrar el visor de stories (un solo pop)
-          Navigator.of(context).pop();
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l.t('story_delete_error'))));
-        }
+    // Cerrar el visor inmediatamente para UX instantánea
+    Navigator.of(context).pop();
+
+    // Recolectar todos los experienceId únicos del merge
+    final uniqueIds = _mediaOrigins.map((o) => o.experienceId).toSet();
+    for (final id in uniqueIds) {
+      provider.deleteExperience(id);
+    }
+
+    messenger.showSnackBar(
+      const SnackBar(
+        content: Text('Story eliminada correctamente'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  /// Confirma eliminación de una foto individual
+  void _confirmDeleteMedia(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: theme.dialogTheme.backgroundColor,
+        title: Text(
+          '¿Eliminar esta foto?',
+          style: TextStyle(color: theme.textTheme.titleLarge?.color),
+        ),
+        content: Text(
+          'Solo se eliminará esta foto. Las demás fotos de la historia se mantendrán.',
+          style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              _deleteMedia(context);
+            },
+            child: const Text('Eliminar foto'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Elimina solo la foto actual de la historia
+  void _deleteMedia(BuildContext context) async {
+    final provider = context.read<ExperienceProvider>();
+    final mediaIdx = currentMediaIndex;
+
+    // Obtener el origen real de esta foto
+    final origin = _mediaOrigins[mediaIdx];
+
+    // Si después de eliminar no quedan más media, cerrar el visor y eliminar todo
+    if (_mediaItems.length <= 1) {
+      final messenger = ScaffoldMessenger.of(context);
+      Navigator.of(context).pop();
+      // Eliminar todas las experiencias originales
+      final uniqueIds = _mediaOrigins.map((o) => o.experienceId).toSet();
+      for (final id in uniqueIds) {
+        provider.deleteExperience(id);
       }
     } catch (e) {
       if (context.mounted) {

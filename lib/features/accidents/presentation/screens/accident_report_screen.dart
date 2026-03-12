@@ -72,7 +72,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
         final pos = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+          ),
         );
         setState(() {
           _selectedLocation = LatLng(pos.latitude, pos.longitude);
@@ -91,7 +93,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   String _distanceText(double lat, double lng) {
     if (_myPosition == null) return '';
     final meters = Geolocator.distanceBetween(
-      _myPosition!.latitude, _myPosition!.longitude, lat, lng,
+      _myPosition!.latitude,
+      _myPosition!.longitude,
+      lat,
+      lng,
     );
     if (meters < 1000) return '${meters.toInt()} m';
     return '${(meters / 1000).toStringAsFixed(1)} km';
@@ -173,7 +178,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     : 'Biux necesita acceso a tu galería. Ve a Configuración para habilitarlo.',
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancelar'),
+                ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(ctx);
@@ -189,9 +197,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(source == ImageSource.camera
-                  ? 'Se necesita permiso de cámara'
-                  : 'Se necesita permiso de galería'),
+              content: Text(
+                source == ImageSource.camera
+                    ? 'Se necesita permiso de cámara'
+                    : 'Se necesita permiso de galería',
+              ),
             ),
           );
         }
@@ -242,9 +252,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   Future<List<String>> _uploadPhotos(String accidentId) async {
     final List<String> urls = [];
     for (int i = 0; i < _photos.length; i++) {
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('accidents/$accidentId/photo_$i.jpg');
+      final ref = FirebaseStorage.instance.ref().child(
+        'accidents/$accidentId/photo_$i.jpg',
+      );
       await ref.putFile(_photos[i]);
       final url = await ref.getDownloadURL();
       urls.add(url);
@@ -280,17 +290,19 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         userName = user?.displayName ?? 'Anónimo';
       }
 
-      final docRef = await FirebaseFirestore.instance.collection('accidents').add({
-        'userId': uid,
-        'userName': userName,
-        'latitude': _selectedLocation!.latitude,
-        'longitude': _selectedLocation!.longitude,
-        'description': _descCtrl.text.trim(),
-        'severity': _severity,
-        'imageUrls': [],
-        'createdAt': DateTime.now().toIso8601String(),
-        'resolved': false,
-      });
+      final docRef = await FirebaseFirestore.instance
+          .collection('accidents')
+          .add({
+            'userId': uid,
+            'userName': userName,
+            'latitude': _selectedLocation!.latitude,
+            'longitude': _selectedLocation!.longitude,
+            'description': _descCtrl.text.trim(),
+            'severity': _severity,
+            'imageUrls': [],
+            'createdAt': DateTime.now().toIso8601String(),
+            'resolved': false,
+          });
 
       if (_photos.isNotEmpty) {
         final urls = await _uploadPhotos(docRef.id);
@@ -356,17 +368,16 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           tabs: const [
             Tab(icon: Icon(Icons.list_alt, size: 20), text: 'Reportes'),
             Tab(icon: Icon(Icons.map, size: 20), text: 'Mapa'),
-            Tab(icon: Icon(Icons.add_circle_outline, size: 20), text: 'Reportar'),
+            Tab(
+              icon: Icon(Icons.add_circle_outline, size: 20),
+              text: 'Reportar',
+            ),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildReportsTab(),
-          _buildMapTab(),
-          _buildReportForm(),
-        ],
+        children: [_buildReportsTab(), _buildMapTab(), _buildReportForm()],
       ),
     );
   }
@@ -393,7 +404,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 8),
-                Text('Error al cargar reportes', style: TextStyle(color: Colors.grey[600])),
+                Text(
+                  'Error al cargar reportes',
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () => setState(() {}),
@@ -419,13 +433,24 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 SizedBox(height: MediaQuery.of(context).size.height * 0.2),
                 Column(
                   children: [
-                    Icon(Icons.check_circle_outline, size: 64, color: Colors.green[300]),
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 64,
+                      color: Colors.green[300],
+                    ),
                     const SizedBox(height: 16),
-                    const Text('¡Sin accidentes reportados!',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      '¡Sin accidentes reportados!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text('No hay accidentes activos en este momento',
-                        style: TextStyle(color: Colors.grey[600])),
+                    Text(
+                      'No hay accidentes activos en este momento',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       onPressed: () => _tabController.animateTo(2),
@@ -434,7 +459,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[700],
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ],
@@ -463,11 +490,17 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             children: [
               // ── Header con contador ────────────────
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.red[50],
                         borderRadius: BorderRadius.circular(20),
@@ -491,7 +524,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     if (resolved.isNotEmpty) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green[50],
                           borderRadius: BorderRadius.circular(20),
@@ -499,7 +535,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.check_circle, size: 16, color: Colors.green[700]),
+                            Icon(
+                              Icons.check_circle,
+                              size: 16,
+                              color: Colors.green[700],
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '${resolved.length} resuelto${resolved.length != 1 ? "s" : ""}',
@@ -528,10 +568,15 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               if (active.isNotEmpty) ...[
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: Text('ACTIVOS', style: TextStyle(
-                    fontSize: 11, fontWeight: FontWeight.bold, color: Colors.red,
-                    letterSpacing: 1,
-                  )),
+                  child: Text(
+                    'ACTIVOS',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ),
                 ...active.map((a) => _accidentCard(a)),
               ],
@@ -540,10 +585,15 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               if (resolved.isNotEmpty) ...[
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
-                  child: Text('RESUELTOS', style: TextStyle(
-                    fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green,
-                    letterSpacing: 1,
-                  )),
+                  child: Text(
+                    'RESUELTOS',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ),
                 ...resolved.map((a) => _accidentCard(a, isResolved: true)),
               ],
@@ -570,7 +620,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           borderRadius: BorderRadius.circular(12),
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AccidentDetailScreen(accident: a)),
+            MaterialPageRoute(
+              builder: (_) => AccidentDetailScreen(accident: a),
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -599,32 +651,54 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: color.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              isResolved ? 'Resuelto' : _severityLabel(a.severity),
-                              style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
+                              isResolved
+                                  ? 'Resuelto'
+                                  : _severityLabel(a.severity),
+                              style: TextStyle(
+                                color: color,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           if (isMine) ...[
                             const SizedBox(width: 4),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.blue.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Text('Mío', style: TextStyle(
-                                color: Colors.blue, fontSize: 10, fontWeight: FontWeight.bold,
-                              )),
+                              child: const Text(
+                                'Mío',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ],
                           const Spacer(),
-                          Text(_timeAgo(a.createdAt),
-                              style: TextStyle(color: Colors.grey[400], fontSize: 11)),
+                          Text(
+                            _timeAgo(a.createdAt),
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -637,24 +711,50 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.person_outline, size: 13, color: Colors.grey[400]),
+                          Icon(
+                            Icons.person_outline,
+                            size: 13,
+                            color: Colors.grey[400],
+                          ),
                           const SizedBox(width: 3),
                           Text(
                             a.userName.isNotEmpty ? a.userName : 'Anónimo',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 11,
+                            ),
                           ),
                           if (dist.isNotEmpty) ...[
                             const SizedBox(width: 10),
-                            Icon(Icons.near_me, size: 13, color: Colors.grey[400]),
+                            Icon(
+                              Icons.near_me,
+                              size: 13,
+                              color: Colors.grey[400],
+                            ),
                             const SizedBox(width: 3),
-                            Text(dist, style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+                            Text(
+                              dist,
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 11,
+                              ),
+                            ),
                           ],
                           if (a.imageUrls.isNotEmpty) ...[
                             const SizedBox(width: 10),
-                            Icon(Icons.photo_camera, size: 13, color: Colors.grey[400]),
+                            Icon(
+                              Icons.photo_camera,
+                              size: 13,
+                              color: Colors.grey[400],
+                            ),
                             const SizedBox(width: 3),
-                            Text('${a.imageUrls.length}',
-                                style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+                            Text(
+                              '${a.imageUrls.length}',
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 11,
+                              ),
+                            ),
                           ],
                         ],
                       ),
@@ -700,8 +800,8 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               a.severity == 'severe'
                   ? BitmapDescriptor.hueRed
                   : a.severity == 'moderate'
-                      ? BitmapDescriptor.hueOrange
-                      : BitmapDescriptor.hueYellow,
+                  ? BitmapDescriptor.hueOrange
+                  : BitmapDescriptor.hueYellow,
             ),
             infoWindow: InfoWindow(
               title: '${_severityLabel(a.severity)} - ${_timeAgo(a.createdAt)}',
@@ -710,7 +810,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                   : a.description,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => AccidentDetailScreen(accident: a)),
+                MaterialPageRoute(
+                  builder: (_) => AccidentDetailScreen(accident: a),
+                ),
               ),
             ),
           );
@@ -719,13 +821,16 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         final initialPos = _myPosition != null
             ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
             : accidents.isNotEmpty
-                ? LatLng(accidents.first.latitude, accidents.first.longitude)
-                : const LatLng(19.4326, -99.1332);
+            ? LatLng(accidents.first.latitude, accidents.first.longitude)
+            : const LatLng(19.4326, -99.1332);
 
         return Stack(
           children: [
             GoogleMap(
-              initialCameraPosition: CameraPosition(target: initialPos, zoom: 13),
+              initialCameraPosition: CameraPosition(
+                target: initialPos,
+                zoom: 13,
+              ),
               markers: markers,
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
@@ -740,14 +845,24 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 8)],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('${accidents.length} accidente${accidents.length != 1 ? "s" : ""} activo${accidents.length != 1 ? "s" : ""}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text(
+                      '${accidents.length} accidente${accidents.length != 1 ? "s" : ""} activo${accidents.length != 1 ? "s" : ""}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     _legendItem(Colors.red, 'Grave'),
                     _legendItem(Colors.orange, 'Moderado'),
@@ -768,7 +883,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
           const SizedBox(width: 6),
           Text(label, style: const TextStyle(fontSize: 11)),
         ],
@@ -801,7 +920,11 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 Expanded(
                   child: Text(
                     'Tu reporte será visible para todos los ciclistas de Biux',
-                    style: TextStyle(color: Colors.red[800], fontSize: 12, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      color: Colors.red[800],
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -811,8 +934,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           const SizedBox(height: 20),
 
           // ── Ubicación ─────────────────────────────
-          const Text('📍 Ubicación del accidente',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '📍 Ubicación del accidente',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           GestureDetector(
             onTap: _openMapPicker,
@@ -827,63 +952,81 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               child: _loadingLocation
                   ? const Center(child: CircularProgressIndicator())
                   : _selectedLocation != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Stack(
-                            children: [
-                              GoogleMap(
-                                initialCameraPosition: CameraPosition(
-                                  target: _selectedLocation!,
-                                  zoom: 15,
-                                ),
-                                markers: {
-                                  Marker(
-                                    markerId: const MarkerId('accident'),
-                                    position: _selectedLocation!,
-                                    icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-                                  ),
-                                },
-                                liteModeEnabled: true,
-                                zoomControlsEnabled: false,
-                                scrollGesturesEnabled: false,
-                                myLocationButtonEnabled: false,
-                              ),
-                              Positioned.fill(
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(onTap: _openMapPicker),
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Stack(
+                        children: [
+                          GoogleMap(
+                            initialCameraPosition: CameraPosition(
+                              target: _selectedLocation!,
+                              zoom: 15,
+                            ),
+                            markers: {
+                              Marker(
+                                markerId: const MarkerId('accident'),
+                                position: _selectedLocation!,
+                                icon: BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueRed,
                                 ),
                               ),
-                              Positioned(
-                                bottom: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red[700],
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.edit_location_alt, color: Colors.white, size: 16),
-                                      SizedBox(width: 4),
-                                      Text('Cambiar', style: TextStyle(color: Colors.white, fontSize: 12)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                            },
+                            liteModeEnabled: true,
+                            zoomControlsEnabled: false,
+                            scrollGesturesEnabled: false,
+                            myLocationButtonEnabled: false,
                           ),
-                        )
-                      : const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.map, size: 48, color: Colors.grey),
-                            SizedBox(height: 8),
-                            Text('Toca para seleccionar ubicación', style: TextStyle(color: Colors.grey)),
-                          ],
+                          Positioned.fill(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(onTap: _openMapPicker),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red[700],
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.edit_location_alt,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Cambiar',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.map, size: 48, color: Colors.grey),
+                        SizedBox(height: 8),
+                        Text(
+                          'Toca para seleccionar ubicación',
+                          style: TextStyle(color: Colors.grey),
                         ),
+                      ],
+                    ),
             ),
           ),
           if (_selectedLocation != null)
@@ -898,14 +1041,26 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           const SizedBox(height: 20),
 
           // ── Gravedad ──────────────────────────────
-          const Text('⚠️ Gravedad',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '⚠️ Gravedad',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
-              _severityChip('minor', 'Leve', Colors.yellow[700]!, Icons.warning_amber),
+              _severityChip(
+                'minor',
+                'Leve',
+                Colors.yellow[700]!,
+                Icons.warning_amber,
+              ),
               const SizedBox(width: 8),
-              _severityChip('moderate', 'Moderado', Colors.orange, Icons.warning),
+              _severityChip(
+                'moderate',
+                'Moderado',
+                Colors.orange,
+                Icons.warning,
+              ),
               const SizedBox(width: 8),
               _severityChip('severe', 'Grave', Colors.red, Icons.dangerous),
             ],
@@ -914,15 +1069,19 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           const SizedBox(height: 20),
 
           // ── Descripción ───────────────────────────
-          const Text('📝 Descripción',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '📝 Descripción',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _descCtrl,
             maxLines: 4,
             decoration: InputDecoration(
               hintText: 'Describe qué pasó, tipo de vehículo, lesiones, etc.',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               filled: true,
               fillColor: Colors.grey[50],
             ),
@@ -931,8 +1090,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           const SizedBox(height: 20),
 
           // ── Fotos ─────────────────────────────────
-          const Text('📸 Fotos (opcional)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            '📸 Fotos (opcional)',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           SizedBox(
             height: 100,
@@ -952,38 +1113,63 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo,
-                            color: _photos.length < 5 ? Colors.red[700] : Colors.grey, size: 28),
+                        Icon(
+                          Icons.add_a_photo,
+                          color: _photos.length < 5
+                              ? Colors.red[700]
+                              : Colors.grey,
+                          size: 28,
+                        ),
                         const SizedBox(height: 4),
-                        Text('${_photos.length}/5',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 11)),
+                        Text(
+                          '${_photos.length}/5',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
-                ..._photos.asMap().entries.map((entry) => Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.file(entry.value, width: 100, height: 100, fit: BoxFit.cover),
+                ..._photos.asMap().entries.map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            entry.value,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
                           ),
-                          Positioned(
-                            top: 4,
-                            right: 4,
-                            child: GestureDetector(
-                              onTap: () => setState(() => _photos.removeAt(entry.key)),
-                              child: Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                                child: const Icon(Icons.close, color: Colors.white, size: 14),
+                        ),
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () =>
+                                setState(() => _photos.removeAt(entry.key)),
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 14,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -998,14 +1184,21 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
               onPressed: !_submitting ? _submit : null,
               icon: _submitting
                   ? const SizedBox(
-                      width: 20, height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                   : const Icon(Icons.send),
               label: Text(_submitting ? 'Enviando...' : 'Enviar reporte'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[700],
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
@@ -1050,16 +1243,23 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           decoration: BoxDecoration(
             color: selected ? color.withValues(alpha: 0.2) : Colors.grey[100],
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: selected ? color : Colors.transparent, width: 2),
+            border: Border.all(
+              color: selected ? color : Colors.transparent,
+              width: 2,
+            ),
           ),
           child: Column(
             children: [
               Icon(icon, color: selected ? color : Colors.grey, size: 24),
               const SizedBox(height: 4),
-              Text(label, style: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.w600,
-                color: selected ? color : Colors.grey,
-              )),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? color : Colors.grey,
+                ),
+              ),
             ],
           ),
         ),

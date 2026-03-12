@@ -867,9 +867,11 @@ class _CartScreenState extends State<CartScreen> {
                       Icons.credit_card,
                       selected: _selectedPayment == 'credit_debit_card',
                       onTap: () {
-                        setState(() => _selectedPayment = 'credit_debit_card');
+                        setState(
+                          () => _selectedPayment = 'Tarjeta de Crédito/Débito',
+                        );
                         context.read<CartProvider>().setSelectedPayment(
-                          'credit_debit_card',
+                          'Tarjeta de Crédito/Débito',
                         );
                       },
                     ),
@@ -877,11 +879,15 @@ class _CartScreenState extends State<CartScreen> {
                       context,
                       l.t('pse_transfer'),
                       Icons.account_balance,
-                      selected: _selectedPayment == 'pse_transfer',
+                      selected:
+                          _selectedPayment == 'PSE - Transferencia Bancaria',
                       onTap: () {
-                        setState(() => _selectedPayment = 'pse_transfer');
+                        setState(
+                          () =>
+                              _selectedPayment = 'PSE - Transferencia Bancaria',
+                        );
                         context.read<CartProvider>().setSelectedPayment(
-                          'pse_transfer',
+                          'PSE - Transferencia Bancaria',
                         );
                       },
                     ),
@@ -1242,7 +1248,7 @@ class _CartScreenState extends State<CartScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        '${l.t('coupon_applied_named')}: ${cart.appliedCoupon!.code}',
+                        'Cupón "${cart.appliedCoupon!.code}" aplicado',
                       ),
                       backgroundColor: Colors.green,
                       duration: const Duration(seconds: 2),

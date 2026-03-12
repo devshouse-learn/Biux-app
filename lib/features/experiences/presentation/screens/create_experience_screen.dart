@@ -869,10 +869,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               provider.reset();
               Navigator.of(context).pop(false);
             },
-            child: Text(
-              l.t('exp_create_discard'),
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Descartar'),
           ),
         ],
       ),

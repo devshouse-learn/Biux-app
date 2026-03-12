@@ -98,6 +98,21 @@ class AppTheme {
       selectedItemColor: ColorTokens.primary30,
       unselectedItemColor: ColorTokens.neutral70,
     ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral10),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(foregroundColor: ColorTokens.neutral10),
+    ),
+    dialogTheme: const DialogThemeData(
+      backgroundColor: ColorTokens.neutral100,
+      titleTextStyle: TextStyle(
+        color: ColorTokens.neutral10,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+      contentTextStyle: TextStyle(color: ColorTokens.neutral20, fontSize: 14),
+    ),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -194,6 +209,21 @@ class AppTheme {
       backgroundColor: ColorTokens.primary20,
       selectedItemColor: ColorTokens.primary60,
       unselectedItemColor: ColorTokens.neutral70,
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(foregroundColor: ColorTokens.neutral100),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(foregroundColor: ColorTokens.neutral100),
+    ),
+    dialogTheme: const DialogThemeData(
+      backgroundColor: ColorTokens.primary20,
+      titleTextStyle: TextStyle(
+        color: ColorTokens.neutral100,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+      contentTextStyle: TextStyle(color: ColorTokens.neutral90, fontSize: 14),
     ),
   );
 }

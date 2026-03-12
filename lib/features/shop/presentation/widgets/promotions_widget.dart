@@ -914,7 +914,6 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
                       _tabController.animateTo(0);
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF16242D),
                       side: const BorderSide(color: Color(0xFF16242D)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -1142,10 +1141,7 @@ class _PromotionsWidgetState extends State<PromotionsWidget>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              l.t('promo_cancel'),
-              style: TextStyle(color: Color(0xFF5A7A8A)),
-            ),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {

@@ -155,7 +155,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                   ),
                                   SizedBox(width: 6),
                                   Text(
-                                    l.t('edit'),
+                                    'Editar',
                                     style: TextStyle(
                                       color: Colors.white70,
                                       fontSize: 12,
@@ -198,12 +198,12 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 // ===== CICLISMO =====
-                _sec(l.t('cycling_section')),
+                _sec('CICLISMO'),
                 _item(
                   Icons.gps_fixed,
                   Colors.green,
-                  l.t('record_ride'),
-                  l.t('gps_tracking_realtime'),
+                  'Grabar Rodada',
+                  'GPS tracking en tiempo real',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.rideTracker);
@@ -212,8 +212,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.bar_chart_rounded,
                   Colors.blue,
-                  l.t('my_statistics'),
-                  l.t('stats_description'),
+                  'Mis Estadisticas',
+                  'Km, velocidad, nivel y ranking',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.cyclingStats);
@@ -222,8 +222,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.emoji_events,
                   Colors.amber,
-                  l.t('achievements'),
-                  l.t('achievements_description'),
+                  'Logros',
+                  'Medallas y desafios desbloqueados',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.achievements);
@@ -236,12 +236,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== COMUNIDAD =====
-                _sec(l.t('community_section')),
+                _sec('COMUNIDAD'),
                 _item(
                   Icons.chat_bubble_outline,
                   ColorTokens.primary30,
-                  l.t('messages'),
-                  l.t('chats_description'),
+                  'Mensajes',
+                  'Chats con otros ciclistas',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.chatList);
@@ -250,8 +250,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.storefront,
                   Colors.deepPurple,
-                  l.t('businesses_and_events'),
-                  l.t('businesses_events_description'),
+                  'Negocios y Eventos',
+                  'Publicidad y eventos con registro',
                   () {
                     Navigator.pop(context);
                     context.push('/promotions');
@@ -264,12 +264,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== SEGURIDAD =====
-                _sec(l.t('security_section')),
+                _sec('SEGURIDAD'),
                 _item(
                   Icons.sos,
                   Colors.red,
-                  l.t('emergency_sos'),
-                  l.t('emergency_description'),
+                  'Emergencia SOS',
+                  'Boton de panico y contactos',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.emergency);
@@ -278,18 +278,28 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.report_problem_outlined,
                   Colors.orange,
-                  l.t('road_reports'),
-                  l.t('road_reports_description'),
+                  'Reportes Viales',
+                  'Baches, obras y peligros en ruta',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.roadReports);
                   },
                 ),
                 _item(
+                  Icons.car_crash,
+                  Colors.deepOrange,
+                  'Reportar Accidente',
+                  'Reporta un incidente vial',
+                  () {
+                    Navigator.pop(context);
+                    context.push('/accidents/report');
+                  },
+                ),
+                _item(
                   Icons.warning_amber_rounded,
                   ColorTokens.error50,
-                  l.t('stolen_bikes'),
-                  l.t('stolen_bikes_description'),
+                  'Bicicletas Robadas',
+                  'Base de datos publica',
                   () {
                     Navigator.pop(context);
                     context.push('/shop/stolen-bikes');
@@ -303,8 +313,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     return _item(
                       Icons.admin_panel_settings,
                       ColorTokens.secondary50,
-                      l.t('alerts_dashboard'),
-                      l.t('alerts_dashboard_description'),
+                      'Dashboard Alertas',
+                      'Intentos venta bicis robadas',
                       () {
                         Navigator.pop(context);
                         context.push('/shop/admin-alerts');
@@ -319,15 +329,25 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== APRENDIZAJE =====
-                _sec(l.t('learning_section')),
+                _sec('APRENDIZAJE'),
                 _item(
                   Icons.menu_book_rounded,
                   Colors.teal,
-                  l.t('road_education'),
-                  l.t('education_description'),
+                  'Educacion Vial',
+                  'Seguridad, mecanica y consejos',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.education);
+                  },
+                ),
+                _item(
+                  Icons.cloud_rounded,
+                  Colors.lightBlue,
+                  'Clima',
+                  'Condiciones para rodar hoy',
+                  () {
+                    Navigator.pop(context);
+                    context.push('/weather');
                   },
                 ),
 
@@ -337,12 +357,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
 
                 // ===== AJUSTES =====
-                _sec(l.t('settings_section')),
+                _sec('AJUSTES'),
                 _item(
                   Icons.settings_outlined,
                   ColorTokens.neutral50,
-                  l.t('configuration'),
-                  l.t('settings_description'),
+                  'Configuracion',
+                  'Notificaciones y preferencias',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.notificationSettings);
@@ -351,8 +371,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.help_outline,
                   ColorTokens.neutral50,
-                  l.t('help_center'),
-                  l.t('help_description'),
+                  'Centro de Ayuda',
+                  'Soporte y preguntas frecuentes',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.help);
@@ -388,7 +408,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                   ),
                   title: Text(
-                    l.t('logout'),
+                    'Cerrar Sesion',
                     style: TextStyle(
                       color: ColorTokens.error50,
                       fontWeight: FontWeight.w600,
@@ -469,14 +489,14 @@ class _AppDrawerState extends State<AppDrawer> {
           children: [
             Icon(Icons.logout, color: ColorTokens.error50),
             const SizedBox(width: 8),
-            Text(l.t('logout')),
+            const Text('Cerrar Sesion'),
           ],
         ),
-        content: Text(l.t('logout_confirmation')),
+        content: const Text('Estas seguro que deseas cerrar sesion?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
-            child: Text(l.t('cancel')),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -490,7 +510,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text(l.t('logout')),
+            child: const Text('Cerrar Sesion'),
           ),
         ],
       ),
@@ -532,7 +552,7 @@ class _AppDrawerState extends State<AppDrawer> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l.t('error_generic')}: $e'),
+            content: Text('Error: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );
