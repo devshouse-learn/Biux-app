@@ -76,8 +76,9 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      color: Colors.black,
+      color: theme.colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -136,7 +137,8 @@ class _PostCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       child: Row(
@@ -146,7 +148,7 @@ class _PostCardHeader extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
+                color: isDark ? Colors.grey[800] : Colors.grey[100],
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -154,7 +156,9 @@ class _PostCardHeader extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 14,
-                    backgroundColor: Colors.grey[700],
+                    backgroundColor: isDark
+                        ? Colors.grey[700]
+                        : Colors.grey[300],
                     backgroundImage: user.photo.isNotEmpty
                         ? CachedNetworkImageProvider(
                             user.photo,
@@ -162,9 +166,9 @@ class _PostCardHeader extends StatelessWidget {
                           )
                         : null,
                     child: user.photo.isEmpty
-                        ? const Icon(
+                        ? Icon(
                             Icons.person,
-                            color: Colors.white,
+                            color: isDark ? Colors.grey[400] : Colors.grey,
                             size: 14,
                           )
                         : null,
@@ -178,8 +182,8 @@ class _PostCardHeader extends StatelessWidget {
                         user.fullName.isNotEmpty
                             ? user.fullName
                             : user.userName,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -190,7 +194,7 @@ class _PostCardHeader extends StatelessWidget {
                         Text(
                           '@${user.userName}',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
                             fontSize: 10,
                           ),
                           maxLines: 1,
@@ -211,7 +215,7 @@ class _PostCardHeader extends StatelessWidget {
                 Text(
                   timestamp,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
                     fontSize: 12,
                   ),
                 ),
@@ -219,7 +223,7 @@ class _PostCardHeader extends StatelessWidget {
                   Text(
                     l.t('post_edited'),
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
                       fontSize: 10,
                     ),
                   ),
@@ -505,8 +509,8 @@ class _PostCardDescription extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Text(
           '$description$tagsText',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 15,
             height: 1.5,
           ),

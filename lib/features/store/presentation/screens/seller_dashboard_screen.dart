@@ -225,7 +225,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                 children: [
                   Icon(Icons.delete, color: Colors.red),
                   SizedBox(width: 8),
-                  Text(l.t('delete'), style: TextStyle(color: Colors.red)),
+                  Text('Eliminar'),
                 ],
               ),
             ),

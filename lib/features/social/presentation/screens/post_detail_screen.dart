@@ -328,9 +328,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           value: 'edit',
           child: Row(
             children: [
-              const Icon(Icons.edit, color: Colors.white, size: 18),
-              const SizedBox(width: 8),
-              Text(l.t('edit'), style: const TextStyle(color: Colors.white)),
+              Icon(Icons.edit, size: 18),
+              SizedBox(width: 8),
+              Text('Editar'),
             ],
           ),
         ),
@@ -365,14 +365,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: Text(
-          l.t('delete_post_title'),
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          l.t('delete_post_confirm_body'),
-          style: const TextStyle(color: Colors.white70),
+        title: const Text('Eliminar publicación'),
+        content: const Text(
+          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
         ),
         actions: [
           TextButton(

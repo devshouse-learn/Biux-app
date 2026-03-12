@@ -78,9 +78,9 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
     if (provider.userGroups.isEmpty) {
       return _buildEmptyState(
         icon: Icons.group_outlined,
-        title: l.t('not_member_any_group'),
-        subtitle: l.t('explore_and_join'),
-        actionText: l.t('view_groups'),
+        title: 'No eres miembro de ningún grupo',
+        subtitle: 'Explora grupos disponibles y únete a alguno',
+        actionText: 'Ver Grupos',
         onAction: () => context.push('/groups'),
       );
     }

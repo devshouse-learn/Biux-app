@@ -343,8 +343,7 @@ class RideAttendanceButton extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(l.t('yes_cancel')),
+            child: const Text('Sí, cancelar'),
           ),
         ],
       ),
