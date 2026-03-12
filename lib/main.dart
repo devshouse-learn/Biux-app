@@ -30,7 +30,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_crea
 import 'package:biux/features/experiences/presentation/providers/story_groups_provider.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/usecases/group_stories_by_user_usecase.dart';
-import 'package:biux/features/experiences/data/datasources/story_views_local_service.dart';
+import 'package:biux/features/experiences/data/datasources/story_views_local_datasource.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/features/bikes/domain/usecases/register_bike_usecase.dart';
@@ -63,7 +63,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/social/presentation/providers/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
-
 
 // New feature providers
 import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats_provider.dart';
@@ -255,7 +254,6 @@ void main() async {
         // Social Providers (Notificaciones, Likes, Comentarios, Asistentes)
         ...SocialProvidersConfig.getProviders(),
 
-        
         // New feature providers
         ChangeNotifierProvider(create: (_) => CyclingStatsProvider()),
         ChangeNotifierProvider(create: (_) => EmergencyProvider()),

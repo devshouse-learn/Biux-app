@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/features/shop/domain/usecases/bike_qr_service.dart';
+import 'package:biux/features/shop/data/datasources/bike_qr_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';

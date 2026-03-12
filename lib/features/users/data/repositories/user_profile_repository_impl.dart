@@ -311,4 +311,231 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       return false;
     }
   }
+
+  // ========== FOLLOW REQUEST METHODS (for private accounts) ==========
+
+  @override
+  Future<bool> sendFollowRequest(String userId) async {
+    try {
+      if (_currentUserId == null || _currentUserId == userId) return false;
+
+      final currentUser = await _firestore
+          .collection('users')
+          .doc(_currentUserId)
+          .get();
+      final currentUserData = currentUser.data();
+
+      // Create follow request document in the target user's subcollection
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('followRequests')
+          .doc(_currentUserId)
+          .set({
+            'fromUserId': _currentUserId,
+            'fromUserName':
+                currentUserData?['fullName'] ??
+                currentUserData?['userName'] ??
+                'Usuario',
+            'fromUserPhoto': currentUserData?['photo'] ?? '',
+            'status': 'pending',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+      // Create notification
+      try {
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('notifications')
+            .add({
+              'type': 'follow_request',
+              'fromUserId': _currentUserId,
+              'fromUserName':
+                  currentUserData?['fullName'] ??
+                  currentUserData?['userName'] ??
+                  'Usuario',
+              'fromUserPhoto': currentUserData?['photo'],
+              'message': 'quiere seguirte',
+              'isRead': false,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+      } catch (notifError) {
+        debugPrint('Error creando notificación de solicitud: $notifError');
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint('Error enviando solicitud de seguimiento: $e');
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> cancelFollowRequest(String userId) async {
+    try {
+      if (_currentUserId == null) return false;
+
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('followRequests')
+          .doc(_currentUserId)
+          .delete();
+
+      return true;
+    } catch (e) {
+      debugPrint('Error cancelando solicitud de seguimiento: $e');
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> acceptFollowRequest(String requesterId) async {
+    try {
+      if (_currentUserId == null) return false;
+
+      final batch = _firestore.batch();
+
+      // Add to following/followers (same as followUser)
+      final requesterRef = _firestore.collection('users').doc(requesterId);
+      batch.update(requesterRef, {'following.$_currentUserId': true});
+
+      final currentUserRef = _firestore.collection('users').doc(_currentUserId);
+      batch.update(currentUserRef, {
+        'followers.$requesterId': true,
+        'followerS': FieldValue.increment(1),
+      });
+
+      await batch.commit();
+
+      // Delete the follow request
+      await _firestore
+          .collection('users')
+          .doc(_currentUserId)
+          .collection('followRequests')
+          .doc(requesterId)
+          .delete();
+
+      // Create notification for the requester
+      try {
+        final currentUser = await _firestore
+            .collection('users')
+            .doc(_currentUserId)
+            .get();
+        final currentUserData = currentUser.data();
+
+        await _firestore
+            .collection('users')
+            .doc(requesterId)
+            .collection('notifications')
+            .add({
+              'type': 'follow_request_accepted',
+              'fromUserId': _currentUserId,
+              'fromUserName':
+                  currentUserData?['fullName'] ??
+                  currentUserData?['userName'] ??
+                  'Usuario',
+              'fromUserPhoto': currentUserData?['photo'],
+              'message': 'aceptó tu solicitud de seguimiento',
+              'isRead': false,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+      } catch (notifError) {
+        debugPrint('Error creando notificación de aceptación: $notifError');
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint('Error aceptando solicitud de seguimiento: $e');
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> rejectFollowRequest(String requesterId) async {
+    try {
+      if (_currentUserId == null) return false;
+
+      await _firestore
+          .collection('users')
+          .doc(_currentUserId)
+          .collection('followRequests')
+          .doc(requesterId)
+          .delete();
+
+      return true;
+    } catch (e) {
+      debugPrint('Error rechazando solicitud de seguimiento: $e');
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> hasPendingFollowRequest(String userId) async {
+    try {
+      if (_currentUserId == null) return false;
+
+      final doc = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('followRequests')
+          .doc(_currentUserId)
+          .get();
+
+      return doc.exists && (doc.data()?['status'] == 'pending');
+    } catch (e) {
+      debugPrint('Error verificando solicitud pendiente: $e');
+      return false;
+    }
+  }
+
+  @override
+  Future<List<BiuxUser>> getFollowRequests() async {
+    try {
+      if (_currentUserId == null) return [];
+
+      final requestsSnapshot = await _firestore
+          .collection('users')
+          .doc(_currentUserId)
+          .collection('followRequests')
+          .where('status', isEqualTo: 'pending')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      List<BiuxUser> requesters = [];
+      for (var doc in requestsSnapshot.docs) {
+        final requesterDoc = await _firestore
+            .collection('users')
+            .doc(doc.id)
+            .get();
+        if (requesterDoc.exists) {
+          final data = requesterDoc.data() as Map<String, dynamic>;
+          data['id'] = requesterDoc.id;
+          requesters.add(BiuxUser.fromJsonMap(data));
+        }
+      }
+
+      return requesters;
+    } catch (e) {
+      debugPrint('Error obteniendo solicitudes de seguimiento: $e');
+      return [];
+    }
+  }
+
+  @override
+  Future<bool> updateProfileVisibility(String visibility) async {
+    try {
+      if (_currentUserId == null) return false;
+
+      await _firestore.collection('users').doc(_currentUserId).update({
+        'profileVisibility': visibility,
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('Error actualizando visibilidad del perfil: $e');
+      return false;
+    }
+  }
 }

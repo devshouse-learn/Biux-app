@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/design_system/color_tokens.dart';
 import '../../../../core/design_system/locale_notifier.dart';
 import '../widgets/settings_shared_widgets.dart';
@@ -39,6 +41,14 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('profile_visibility_key', visibilityKey);
     setState(() => _profileVisibilityKey = visibilityKey);
+
+    // Guardar también en Firestore para que otros usuarios puedan verlo
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'profileVisibility': visibilityKey,
+      });
+    }
   }
 
   Future<void> _savePermission(String permission, bool granted) async {
@@ -116,7 +126,7 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen> {
   void _showProfileVisibilityDialog(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l = context.read<LocaleNotifier>();
-    final optionKeys = ['public', 'friends', 'private'];
+    final optionKeys = ['public', 'private'];
 
     showDialog(
       context: context,

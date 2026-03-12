@@ -441,8 +441,13 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
 
                       SizedBox(height: 16),
 
-                      // Mostrar publicaciones del usuario
-                      _buildPublicationsSection(user),
+                      // Mostrar muro privado o publicaciones
+                      if (provider.isPrivateAccount &&
+                          !provider.isFollowing &&
+                          AuthenticationRepository().getUserId != user.id)
+                        _buildPrivateAccountWall()
+                      else
+                        _buildPublicationsSection(user),
 
                       SizedBox(height: 32),
                     ],
@@ -471,6 +476,20 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     // Deshabilitar si está procesando
     final isDisabled = provider.isProcessingFollow;
 
+    // Determinar estado: following, requested, or follow
+    final isFollowing = provider.isFollowing;
+    final hasPendingRequest = provider.hasPendingFollowRequest;
+    final isPrivate = provider.isPrivateAccount;
+
+    String buttonLabel;
+    if (isFollowing) {
+      buttonLabel = l.t('following');
+    } else if (hasPendingRequest) {
+      buttonLabel = l.t('requested');
+    } else {
+      buttonLabel = l.t('follow');
+    }
+
     return SizedBox(
       width: 100,
       height: 36,
@@ -478,23 +497,27 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
         onPressed: isDisabled
             ? null
             : () async {
-                if (provider.isFollowing) {
+                if (isFollowing) {
                   await provider.unfollowUser(profileUserId);
+                } else if (hasPendingRequest) {
+                  // Cancelar solicitud pendiente
+                  await provider.cancelFollowRequest(profileUserId);
                 } else {
+                  // Seguir (o enviar solicitud si es privado)
                   await provider.followUser(profileUserId);
                 }
               },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          backgroundColor: provider.isFollowing
+          backgroundColor: (isFollowing || hasPendingRequest)
               ? ColorTokens.neutral100.withValues(alpha: 0.2)
               : ColorTokens.neutral100,
-          foregroundColor: provider.isFollowing
+          foregroundColor: (isFollowing || hasPendingRequest)
               ? ColorTokens.neutral100
               : ColorTokens.primary30,
           side: BorderSide(
             color: ColorTokens.neutral100,
-            width: provider.isFollowing ? 1 : 0,
+            width: (isFollowing || hasPendingRequest) ? 1 : 0,
           ),
           disabledBackgroundColor: ColorTokens.neutral100.withValues(
             alpha: 0.5,
@@ -507,16 +530,65 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    provider.isFollowing
+                    (isFollowing || hasPendingRequest)
                         ? ColorTokens.neutral100
                         : ColorTokens.primary30,
                   ),
                 ),
               )
             : Text(
-                provider.isFollowing ? l.t('following') : l.t('follow'),
+                buttonLabel,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
+      ),
+    );
+  }
+
+  Widget _buildPrivateAccountWall() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+      decoration: BoxDecoration(
+        color: isDark
+            ? ColorTokens.primary30.withValues(alpha: 0.3)
+            : ColorTokens.neutral10,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark
+              ? ColorTokens.neutral60.withValues(alpha: 0.3)
+              : ColorTokens.neutral30,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.lock_outline,
+            size: 64,
+            color: isDark ? ColorTokens.neutral60 : ColorTokens.neutral70,
+          ),
+          SizedBox(height: 16),
+          Text(
+            l.t('this_account_is_private'),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDark ? ColorTokens.neutral100 : ColorTokens.neutral80,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            l.t('follow_to_see_posts'),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? ColorTokens.neutral60 : ColorTokens.neutral60,
+              height: 1.4,
+            ),
+          ),
+        ],
       ),
     );
   }

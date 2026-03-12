@@ -25,6 +25,7 @@ class BiuxUser {
   final Map following;
   final SituationAccident situationAccident;
   final String description;
+  final String profileVisibility;
 
   const BiuxUser({
     this.id = '',
@@ -49,6 +50,7 @@ class BiuxUser {
     this.following = const {},
     this.situationAccident = const SituationAccident(),
     this.description = '',
+    this.profileVisibility = 'public',
   });
 
   factory BiuxUser.fromJsonMap(Map json) {
@@ -90,6 +92,7 @@ class BiuxUser {
       modality: json["modality"] ?? [],
       situationAccident: _parseSituationAccident(json["situationAccident"]),
       description: json["description"] ?? '',
+      profileVisibility: json["profileVisibility"] ?? 'public',
     );
   }
   factory BiuxUser.fromMapStory(Map json) {
@@ -135,6 +138,7 @@ class BiuxUser {
       "groupId": groupId,
       'situationAccident': situationAccident.toJson(),
       "description": description,
+      "profileVisibility": profileVisibility,
     };
 
     var cleanUser = <String, dynamic>{};
