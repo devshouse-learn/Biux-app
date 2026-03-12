@@ -11,6 +11,7 @@ import 'package:biux/features/social/presentation/widgets/post_social_actions.da
 import 'package:biux/features/social/presentation/providers/likes_provider.dart';
 import 'package:biux/features/social/domain/entities/like_entity.dart';
 import 'package:biux/features/social/domain/repositories/likes_repository.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Widget para mostrar una experiencia individual tipo Instagram Story

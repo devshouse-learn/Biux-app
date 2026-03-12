@@ -499,7 +499,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen>
     // Determinar estado: following, requested, or follow
     final isFollowing = provider.isFollowing;
     final hasPendingRequest = provider.hasPendingFollowRequest;
-    final isPrivate = provider.isPrivateAccount;
 
     String buttonLabel;
     if (isFollowing) {
