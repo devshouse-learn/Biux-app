@@ -35,7 +35,7 @@ class ChatProvider with ChangeNotifier {
       _activeChatId = chatId;
       return chatId;
     } catch (e) {
-      _error = '\$e';
+      _error = 'Error al crear chat: \$e';
       return '';
     } finally {
       _isLoading = false;
@@ -45,35 +45,26 @@ class ChatProvider with ChangeNotifier {
 
   Future<String> startGroupChat(String groupId, List<String> members) async {
     try {
-      return await _datasource.createChat(
-        members,
-        groupId: groupId,
-        type: 'group',
-      );
+      return await _datasource.createChat(members, groupId: groupId, type: 'group');
     } catch (e) {
-      _error = '\$e';
+      _error = 'Error: \$e';
       notifyListeners();
       return '';
     }
   }
 
-  Future<void> sendMessage(
-    String chatId, {
+  Future<void> sendMessage(String chatId, {
     required String senderId,
     required String senderName,
     required String content,
     String type = 'text',
   }) async {
     try {
-      await _datasource.sendMessage(
-        chatId,
-        senderId: senderId,
-        senderName: senderName,
-        content: content,
-        type: type,
-      );
+      await _datasource.sendMessage(chatId,
+        senderId: senderId, senderName: senderName,
+        content: content, type: type);
     } catch (e) {
-      _error = '\$e';
+      _error = 'Error al enviar: \$e';
       notifyListeners();
     }
   }

@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   final LatLng? initialLocation;
-  final String? title;
+  final String title;
 
-  const LocationPickerScreen({Key? key, this.initialLocation, this.title})
-    : super(key: key);
+  const LocationPickerScreen({
+    Key? key,
+    this.initialLocation,
+    this.title = 'Seleccionar ubicación',
+  }) : super(key: key);
 
   @override
   State<LocationPickerScreen> createState() => _LocationPickerScreenState();
 }
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
-  GoogleMapController?
-  _mapController; // ignore: unused_field // ignore: unused_field
+  
+  GoogleMapController? _mapController; // ignore: unused_field // ignore: unused_field
   LatLng? _selectedLocation;
   bool _loading = true;
-  String? _address;
+  String _address = 'Mueve el mapa para seleccionar';
 
   @override
   void initState() {
@@ -46,9 +47,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
         final position = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-          ),
+          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
         );
         setState(() {
           _selectedLocation = LatLng(position.latitude, position.longitude);
@@ -71,22 +70,18 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        title: Text(widget.title ?? l.t('select_location_title')),
+        title: Text(widget.title),
         actions: [
           TextButton.icon(
             onPressed: _selectedLocation != null
                 ? () => Navigator.pop(context, _selectedLocation)
                 : null,
             icon: const Icon(Icons.check, color: Colors.white),
-            label: Text(
-              l.t('location_confirm'),
-              style: const TextStyle(color: Colors.white),
-            ),
+            label: const Text('Confirmar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -133,9 +128,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.1),
@@ -164,19 +157,13 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    l.t('location_selected'),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
+                                  const Text(
+                                    'Ubicación seleccionada',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                   ),
                                   Text(
-                                    _address ?? l.t('location_move_map'),
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 12,
-                                    ),
+                                    _address,
+                                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
                                   ),
                                 ],
                               ),
@@ -184,12 +171,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Text(
-                          l.t('location_move_pin'),
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                          ),
+                        const Text(
+                          'Mueve el mapa para posicionar el pin rojo en el lugar exacto del accidente',
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
                           textAlign: TextAlign.center,
                         ),
                       ],

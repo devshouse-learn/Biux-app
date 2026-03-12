@@ -1,9 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class GlobalSearchScreen extends StatefulWidget {
@@ -12,8 +11,7 @@ class GlobalSearchScreen extends StatefulWidget {
   State<GlobalSearchScreen> createState() => _GlobalSearchScreenState();
 }
 
-class _GlobalSearchScreenState extends State<GlobalSearchScreen>
-    with SingleTickerProviderStateMixin {
+class _GlobalSearchScreenState extends State<GlobalSearchScreen> with SingleTickerProviderStateMixin {
   final _searchCtrl = TextEditingController();
   late TabController _tabCtrl;
   String _query = '';
@@ -55,28 +53,22 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
       final q = query.trim();
 
       // Buscar usuarios
-      final usersSnap = await fs
-          .collection('users')
+      final usersSnap = await fs.collection('users')
           .where('name', isGreaterThanOrEqualTo: q)
           .where('name', isLessThanOrEqualTo: '$q\uf8ff')
-          .limit(15)
-          .get();
+          .limit(15).get();
 
       // Buscar grupos
-      final groupsSnap = await fs
-          .collection('groups')
+      final groupsSnap = await fs.collection('groups')
           .where('name', isGreaterThanOrEqualTo: q)
           .where('name', isLessThanOrEqualTo: '$q\uf8ff')
-          .limit(15)
-          .get();
+          .limit(15).get();
 
       // Buscar rodadas
-      final ridesSnap = await fs
-          .collection('rides')
+      final ridesSnap = await fs.collection('rides')
           .where('title', isGreaterThanOrEqualTo: q)
           .where('title', isLessThanOrEqualTo: '$q\uf8ff')
-          .limit(15)
-          .get();
+          .limit(15).get();
 
       if (mounted) {
         setState(() {
@@ -94,7 +86,6 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
@@ -105,16 +96,12 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
           autofocus: true,
           style: const TextStyle(color: Colors.white, fontSize: 16),
           decoration: InputDecoration(
-            hintText: l.t('search_users_groups_rides'),
+            hintText: 'Buscar usuarios, grupos, rodadas...',
             hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
             border: InputBorder.none,
             suffixIcon: _searchCtrl.text.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(
-                      Icons.clear,
-                      color: Colors.white70,
-                      size: 20,
-                    ),
+                    icon: const Icon(Icons.clear, color: Colors.white70, size: 20),
                     onPressed: () {
                       _searchCtrl.clear();
                       _search('');
@@ -133,126 +120,82 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
           tabs: [
-            Tab(
-              text: l
-                  .t('users_tab_count')
-                  .replaceAll('{n}', _userResults.length.toString()),
-            ),
-            Tab(
-              text: l
-                  .t('groups_tab_count')
-                  .replaceAll('{n}', _groupResults.length.toString()),
-            ),
-            Tab(
-              text: l
-                  .t('rides_tab_count')
-                  .replaceAll('{n}', _rideResults.length.toString()),
-            ),
+            Tab(text: 'Usuarios (${_userResults.length})'),
+            Tab(text: 'Grupos (${_groupResults.length})'),
+            Tab(text: 'Rodadas (${_rideResults.length})'),
           ],
         ),
       ),
       body: _isSearching
           ? const Center(child: CircularProgressIndicator())
           : _query.trim().length < 2
-          ? _buildEmptySearch(l)
-          : TabBarView(
-              controller: _tabCtrl,
-              children: [
-                _buildUserResults(l),
-                _buildGroupResults(l),
-                _buildRideResults(l),
-              ],
-            ),
+              ? _buildEmptySearch()
+              : TabBarView(
+                  controller: _tabCtrl,
+                  children: [
+                    _buildUserResults(),
+                    _buildGroupResults(),
+                    _buildRideResults(),
+                  ],
+                ),
     );
   }
 
-  Widget _buildEmptySearch(LocaleNotifier l) {
+  Widget _buildEmptySearch() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.search_rounded, size: 80, color: Colors.grey[300]),
           const SizedBox(height: 16),
-          Text(
-            l.t('search_in_biux'),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
-            ),
-          ),
+          Text('Busca en BiUX', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey[600])),
           const SizedBox(height: 8),
-          Text(
-            l.t('search_min_chars'),
-            style: TextStyle(color: Colors.grey[400]),
-          ),
+          Text('Escribe al menos 2 caracteres', style: TextStyle(color: Colors.grey[400])),
           const SizedBox(height: 32),
           // Sugerencias rápidas
           Wrap(
             spacing: 8,
             runSpacing: 8,
             alignment: WrapAlignment.center,
-            children:
-                [
-                      l.t('search_suggestion_1'),
-                      l.t('search_suggestion_2'),
-                      l.t('search_suggestion_3'),
-                      l.t('search_suggestion_4'),
-                    ]
-                    .map(
-                      (s) => ActionChip(
-                        label: Text(s, style: const TextStyle(fontSize: 13)),
-                        avatar: const Icon(Icons.trending_up, size: 16),
-                        onPressed: () {
-                          _searchCtrl.text = s;
-                          _search(s);
-                        },
-                      ),
-                    )
-                    .toList(),
+            children: ['Rodadas MTB', 'Grupos Bogotá', 'Ciclismo urbano', 'Ruta nocturna'].map((s) =>
+              ActionChip(
+                label: Text(s, style: const TextStyle(fontSize: 13)),
+                avatar: const Icon(Icons.trending_up, size: 16),
+                onPressed: () {
+                  _searchCtrl.text = s;
+                  _search(s);
+                },
+              ),
+            ).toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildUserResults(LocaleNotifier l) {
-    if (_userResults.isEmpty) return _buildNoResults('usuarios', l);
+  Widget _buildUserResults() {
+    if (_userResults.isEmpty) return _buildNoResults('usuarios');
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: _userResults.length,
       itemBuilder: (ctx, i) {
         final data = _userResults[i].data() as Map<String, dynamic>;
-        final name = data['name'] as String? ?? l.t('cyclist_default_name');
+        final name = data['name'] as String? ?? 'Ciclista';
         final photo = data['photoUrl'] as String? ?? '';
         final userName = data['userName'] as String? ?? '';
 
         return Card(
           margin: const EdgeInsets.only(bottom: 4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
             leading: CircleAvatar(
               radius: 24,
               backgroundColor: ColorTokens.primary30.withValues(alpha: 0.1),
-              backgroundImage: photo.isNotEmpty
-                  ? CachedNetworkImageProvider(photo)
-                  : null,
-              child: photo.isEmpty
-                  ? const Icon(Icons.person, color: ColorTokens.primary30)
-                  : null,
+              backgroundImage: photo.isNotEmpty ? CachedNetworkImageProvider(photo) : null,
+              child: photo.isEmpty ? const Icon(Icons.person, color: ColorTokens.primary30) : null,
             ),
-            title: Text(
-              name,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: userName.isNotEmpty
-                ? Text(
-                    '@$userName',
-                    style: TextStyle(color: Colors.grey[500], fontSize: 13),
-                  )
-                : null,
+            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+            subtitle: userName.isNotEmpty ? Text('@$userName', style: TextStyle(color: Colors.grey[500], fontSize: 13)) : null,
             trailing: const Icon(Icons.chevron_right, size: 20),
             onTap: () => context.push('/user-profile/${_userResults[i].id}'),
           ),
@@ -261,42 +204,30 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
     );
   }
 
-  Widget _buildGroupResults(LocaleNotifier l) {
-    if (_groupResults.isEmpty) return _buildNoResults('grupos', l);
+  Widget _buildGroupResults() {
+    if (_groupResults.isEmpty) return _buildNoResults('grupos');
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: _groupResults.length,
       itemBuilder: (ctx, i) {
         final data = _groupResults[i].data() as Map<String, dynamic>;
-        final name = data['name'] as String? ?? l.t('group_default_name');
+        final name = data['name'] as String? ?? 'Grupo';
         final city = data['city'] as String? ?? '';
         final logo = data['logoUrl'] as String? ?? '';
         final memberCount = (data['memberCount'] as num?)?.toInt() ?? 0;
 
         return Card(
           margin: const EdgeInsets.only(bottom: 4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
             leading: CircleAvatar(
               radius: 24,
               backgroundColor: Colors.blue.withValues(alpha: 0.1),
-              backgroundImage: logo.isNotEmpty
-                  ? CachedNetworkImageProvider(logo)
-                  : null,
-              child: logo.isEmpty
-                  ? const Icon(Icons.group, color: Colors.blue)
-                  : null,
+              backgroundImage: logo.isNotEmpty ? CachedNetworkImageProvider(logo) : null,
+              child: logo.isEmpty ? const Icon(Icons.group, color: Colors.blue) : null,
             ),
-            title: Text(
-              name,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              '${city.isNotEmpty ? "$city • " : ""}$memberCount ${l.t('members')}',
-              style: TextStyle(color: Colors.grey[500], fontSize: 13),
-            ),
+            title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+            subtitle: Text('${city.isNotEmpty ? "$city • " : ""}$memberCount miembros', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
             trailing: const Icon(Icons.chevron_right, size: 20),
             onTap: () => context.push('/groups/${_groupResults[i].id}'),
           ),
@@ -305,32 +236,27 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
     );
   }
 
-  Widget _buildRideResults(LocaleNotifier l) {
-    if (_rideResults.isEmpty) return _buildNoResults('rodadas', l);
+  Widget _buildRideResults() {
+    if (_rideResults.isEmpty) return _buildNoResults('rodadas');
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: _rideResults.length,
       itemBuilder: (ctx, i) {
         final data = _rideResults[i].data() as Map<String, dynamic>;
-        final title = data['title'] as String? ?? l.t('ride_default_name');
+        final title = data['title'] as String? ?? 'Rodada';
         final date = data['date'] as Timestamp?;
         final difficulty = data['difficulty'] as String? ?? '';
 
         return Card(
           margin: const EdgeInsets.only(bottom: 4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ListTile(
             leading: CircleAvatar(
               radius: 24,
               backgroundColor: Colors.green.withValues(alpha: 0.1),
               child: const Icon(Icons.directions_bike, color: Colors.green),
             ),
-            title: Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
+            title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
             subtitle: Text(
               '${date != null ? "${date.toDate().day}/${date.toDate().month}/${date.toDate().year}" : ""}${difficulty.isNotEmpty ? " • $difficulty" : ""}',
               style: TextStyle(color: Colors.grey[500], fontSize: 13),
@@ -343,21 +269,15 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
     );
   }
 
-  Widget _buildNoResults(String type, LocaleNotifier l) {
+  Widget _buildNoResults(String type) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.search_off, size: 48, color: Colors.grey[300]),
           const SizedBox(height: 12),
-          Text(
-            l.t('no_results_found').replaceAll('{type}', type),
-            style: TextStyle(color: Colors.grey[500], fontSize: 16),
-          ),
-          Text(
-            l.t('for_query').replaceAll('{query}', _query),
-            style: TextStyle(color: Colors.grey[400], fontSize: 14),
-          ),
+          Text('No se encontraron $type', style: TextStyle(color: Colors.grey[500], fontSize: 16)),
+          Text('para "$_query"', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
         ],
       ),
     );

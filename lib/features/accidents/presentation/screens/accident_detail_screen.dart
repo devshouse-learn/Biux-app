@@ -5,52 +5,39 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
-import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 
 class AccidentDetailScreen extends StatelessWidget {
   final AccidentEntity accident;
 
-  const AccidentDetailScreen({Key? key, required this.accident})
-    : super(key: key);
+  const AccidentDetailScreen({Key? key, required this.accident}) : super(key: key);
 
   Color _severityColor(String severity) {
     switch (severity) {
-      case 'severe':
-        return Colors.red;
-      case 'moderate':
-        return Colors.orange;
-      default:
-        return Colors.yellow[700]!;
+      case 'severe': return Colors.red;
+      case 'moderate': return Colors.orange;
+      default: return Colors.yellow[700]!;
     }
   }
 
-  String _severityLabel(String severity, LocaleNotifier l) {
+  String _severityLabel(String severity) {
     switch (severity) {
-      case 'severe':
-        return l.t('severity_severe');
-      case 'moderate':
-        return l.t('severity_moderate');
-      default:
-        return l.t('severity_minor');
+      case 'severe': return 'Grave';
+      case 'moderate': return 'Moderado';
+      default: return 'Leve';
     }
   }
 
   IconData _severityIcon(String severity) {
     switch (severity) {
-      case 'severe':
-        return Icons.dangerous;
-      case 'moderate':
-        return Icons.warning;
-      default:
-        return Icons.warning_amber;
+      case 'severe': return Icons.dangerous;
+      case 'moderate': return Icons.warning;
+      default: return Icons.warning_amber;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     final color = _severityColor(accident.severity);
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
 
@@ -58,7 +45,7 @@ class AccidentDetailScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        title: Text(l.t('accident_detail_title')),
+        title: const Text('Detalle del Accidente'),
         actions: [
           if (currentUid == accident.userId)
             PopupMenuButton<String>(
@@ -67,19 +54,17 @@ class AccidentDetailScreen extends StatelessWidget {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: Text(l.t('mark_as_resolved')),
-                      content: Text(l.t('accident_resolved_question')),
+                      title: const Text('Marcar como resuelto'),
+                      content: const Text('¿El accidente ya fue atendido?'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
-                          child: Text(l.t('cancel')),
+                          child: const Text('Cancelar'),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
-                          child: Text(
-                            l.t('yes_resolved'),
-                            style: const TextStyle(color: Colors.green),
-                          ),
+                          child: const Text('Sí, resuelto',
+                              style: TextStyle(color: Colors.green)),
                         ),
                       ],
                     ),
@@ -92,8 +77,8 @@ class AccidentDetailScreen extends StatelessWidget {
                     if (context.mounted) {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l.t('accident_marked_resolved')),
+                        const SnackBar(
+                          content: Text('Accidente marcado como resuelto'),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -102,13 +87,13 @@ class AccidentDetailScreen extends StatelessWidget {
                 }
               },
               itemBuilder: (ctx) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: 'resolve',
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle, color: Colors.green),
-                      const SizedBox(width: 8),
-                      Text(l.t('mark_resolved')),
+                      Icon(Icons.check_circle, color: Colors.green),
+                      SizedBox(width: 8),
+                      Text('Marcar resuelto'),
                     ],
                   ),
                 ),
@@ -136,8 +121,8 @@ class AccidentDetailScreen extends StatelessWidget {
                       accident.severity == 'severe'
                           ? BitmapDescriptor.hueRed
                           : accident.severity == 'moderate'
-                          ? BitmapDescriptor.hueOrange
-                          : BitmapDescriptor.hueYellow,
+                              ? BitmapDescriptor.hueOrange
+                              : BitmapDescriptor.hueYellow,
                     ),
                   ),
                 },
@@ -156,10 +141,7 @@ class AccidentDetailScreen extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
@@ -167,14 +149,10 @@ class AccidentDetailScreen extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              _severityIcon(accident.severity),
-                              color: color,
-                              size: 18,
-                            ),
+                            Icon(_severityIcon(accident.severity), color: color, size: 18),
                             const SizedBox(width: 6),
                             Text(
-                              _severityLabel(accident.severity, l),
+                              _severityLabel(accident.severity),
                               style: TextStyle(
                                 color: color,
                                 fontWeight: FontWeight.bold,
@@ -185,16 +163,10 @@ class AccidentDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Icon(
-                        Icons.access_time,
-                        size: 16,
-                        color: Colors.grey[500],
-                      ),
+                      Icon(Icons.access_time, size: 16, color: Colors.grey[500]),
                       const SizedBox(width: 4),
                       Text(
-                        DateFormat(
-                          'dd/MM/yyyy HH:mm',
-                        ).format(accident.createdAt),
+                        DateFormat('dd/MM/yyyy HH:mm').format(accident.createdAt),
                         style: TextStyle(color: Colors.grey[500], fontSize: 13),
                       ),
                     ],
@@ -208,31 +180,17 @@ class AccidentDetailScreen extends StatelessWidget {
                       CircleAvatar(
                         radius: 18,
                         backgroundColor: Colors.grey[200],
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.grey,
-                          size: 20,
-                        ),
+                        child: const Icon(Icons.person, color: Colors.grey, size: 20),
                       ),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const Text('Reportado por',
+                              style: TextStyle(color: Colors.grey, fontSize: 11)),
                           Text(
-                            l.t('reported_by'),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 11,
-                            ),
-                          ),
-                          Text(
-                            accident.userName.isNotEmpty
-                                ? accident.userName
-                                : l.t('anonymous'),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
+                            accident.userName.isNotEmpty ? accident.userName : 'Anónimo',
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                           ),
                         ],
                       ),
@@ -244,13 +202,8 @@ class AccidentDetailScreen extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   // ── Descripción ───────────────────────
-                  Text(
-                    l.t('description_field'),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  const Text('Descripción',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text(
                     accident.description,
@@ -268,19 +221,11 @@ class AccidentDetailScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.pin_drop,
-                          size: 18,
-                          color: Colors.grey,
-                        ),
+                        const Icon(Icons.pin_drop, size: 18, color: Colors.grey),
                         const SizedBox(width: 8),
                         Text(
                           '${accident.latitude.toStringAsFixed(5)}, ${accident.longitude.toStringAsFixed(5)}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                            fontFamily: 'monospace',
-                          ),
+                          style: TextStyle(color: Colors.grey[600], fontSize: 13, fontFamily: 'monospace'),
                         ),
                       ],
                     ),
@@ -289,13 +234,8 @@ class AccidentDetailScreen extends StatelessWidget {
                   // ── Fotos ─────────────────────────────
                   if (accident.imageUrls.isNotEmpty) ...[
                     const SizedBox(height: 20),
-                    Text(
-                      'Fotos (${accident.imageUrls.length})',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text('Fotos (${accident.imageUrls.length})',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     SizedBox(
                       height: 200,
@@ -307,10 +247,9 @@ class AccidentDetailScreen extends StatelessWidget {
                             padding: const EdgeInsets.only(right: 8),
                             child: GestureDetector(
                               onTap: () {
-                                final imageProvider =
-                                    CachedNetworkImageProvider(
-                                      accident.imageUrls[index],
-                                    );
+                                final imageProvider = CachedNetworkImageProvider(
+                                  accident.imageUrls[index],
+                                );
                                 showImageViewer(
                                   context,
                                   imageProvider,
@@ -329,20 +268,13 @@ class AccidentDetailScreen extends StatelessWidget {
                                     width: 200,
                                     height: 200,
                                     color: Colors.grey[200],
-                                    child: const Center(
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    ),
+                                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                                   ),
                                   errorWidget: (_, __, ___) => Container(
                                     width: 200,
                                     height: 200,
                                     color: Colors.grey[200],
-                                    child: const Icon(
-                                      Icons.broken_image,
-                                      color: Colors.grey,
-                                    ),
+                                    child: const Icon(Icons.broken_image, color: Colors.grey),
                                   ),
                                 ),
                               ),
@@ -364,17 +296,13 @@ class AccidentDetailScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.red[200]!),
                     ),
-                    child: Column(
+                    child: const Column(
                       children: [
-                        const Icon(
-                          Icons.emergency,
-                          color: Colors.red,
-                          size: 32,
-                        ),
-                        const SizedBox(height: 8),
+                        Icon(Icons.emergency, color: Colors.red, size: 32),
+                        SizedBox(height: 8),
                         Text(
-                          l.t('call_911'),
-                          style: const TextStyle(
+                          'Si hay heridos, llama al 911',
+                          style: TextStyle(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

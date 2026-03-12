@@ -1,8 +1,7 @@
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ConnectivityWrapper extends StatefulWidget {
   final Widget child;
@@ -19,10 +18,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
   void initState() {
     super.initState();
     _checkConnectivity();
-    _timer = Timer.periodic(
-      const Duration(seconds: 10),
-      (_) => _checkConnectivity(),
-    );
+    _timer = Timer.periodic(const Duration(seconds: 10), (_) => _checkConnectivity());
   }
 
   @override
@@ -33,14 +29,8 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
 
   Future<void> _checkConnectivity() async {
     try {
-      final result = await InternetAddress.lookup(
-        'google.com',
-      ).timeout(const Duration(seconds: 5));
-      if (mounted)
-        setState(
-          () =>
-              _isOnline = result.isNotEmpty && result[0].rawAddress.isNotEmpty,
-        );
+      final result = await InternetAddress.lookup('google.com').timeout(const Duration(seconds: 5));
+      if (mounted) setState(() => _isOnline = result.isNotEmpty && result[0].rawAddress.isNotEmpty);
     } on SocketException catch (_) {
       if (mounted) setState(() => _isOnline = false);
     } on TimeoutException catch (_) {
@@ -50,7 +40,6 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Column(
       children: [
         // Offline banner
@@ -64,17 +53,10 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
               : Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.wifi_off, color: Colors.white, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        l.t('no_internet_connection'),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                    children: const [
+                      Icon(Icons.wifi_off, color: Colors.white, size: 16),
+                      SizedBox(width: 8),
+                      Text('Sin conexión a internet', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
                     ],
                   ),
                 ),

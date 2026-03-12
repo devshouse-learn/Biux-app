@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:biux/features/achievements/data/datasources/achievements_datasource.dart';
-import 'package:biux/features/achievements/data/services/achievements_sync_service.dart';
+import 'package:biux/features/achievements/data/datasources/achievements_sync_service.dart';
 
 class AchievementsProvider with ChangeNotifier {
   final AchievementsDatasource _datasource = AchievementsDatasource();
@@ -76,7 +76,9 @@ class AchievementsProvider with ChangeNotifier {
         _isSyncing = true;
         notifyListeners();
 
-        debugPrint('\ud83d\udd04 Logros: Sync semanal (ultima vez hace \${daysSinceSync.toInt()} dias)');
+        debugPrint(
+          '\ud83d\udd04 Logros: Sync semanal (ultima vez hace \${daysSinceSync.toInt()} dias)',
+        );
         await AchievementsSyncService.fullSync(userId);
         await prefs.setInt(_lastSyncKey, now);
         debugPrint('\u2705 Logros: Sync semanal completada');

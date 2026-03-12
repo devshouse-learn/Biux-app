@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
@@ -37,9 +35,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
   Future<void> _getMyLocation() async {
     try {
       final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.medium,
-        ),
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
       );
       if (mounted) setState(() => _myPosition = pos);
     } catch (_) {}
@@ -48,24 +44,18 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
   String _distanceText(double lat, double lng) {
     if (_myPosition == null) return '';
     final meters = Geolocator.distanceBetween(
-      _myPosition!.latitude,
-      _myPosition!.longitude,
-      lat,
-      lng,
+      _myPosition!.latitude, _myPosition!.longitude, lat, lng,
     );
     if (meters < 1000) return '${meters.toInt()} m';
     return '${(meters / 1000).toStringAsFixed(1)} km';
   }
 
-  String _timeAgo(DateTime date, LocaleNotifier l) {
+  String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return l.t('time_ago_now');
-    if (diff.inMinutes < 60)
-      return l.t('time_ago_minutes').replaceAll('{n}', '${diff.inMinutes}');
-    if (diff.inHours < 24)
-      return l.t('time_ago_hours').replaceAll('{n}', '${diff.inHours}');
-    if (diff.inDays < 7)
-      return l.t('time_ago_days').replaceAll('{n}', '${diff.inDays}');
+    if (diff.inMinutes < 1) return 'Ahora';
+    if (diff.inMinutes < 60) return 'Hace ${diff.inMinutes} min';
+    if (diff.inHours < 24) return 'Hace ${diff.inHours} h';
+    if (diff.inDays < 7) return 'Hace ${diff.inDays} días';
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
@@ -80,14 +70,14 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     }
   }
 
-  String _severityLabel(String severity, LocaleNotifier l) {
+  String _severityLabel(String severity) {
     switch (severity) {
       case 'severe':
-        return l.t('severity_severe');
+        return 'Grave';
       case 'moderate':
-        return l.t('severity_moderate');
+        return 'Moderado';
       default:
-        return l.t('severity_minor');
+        return 'Leve';
     }
   }
 
@@ -104,26 +94,28 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        title: Text(l.t('reported_accidents_title')),
+        title: const Text('Accidentes Reportados'),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: [
-            Tab(icon: const Icon(Icons.list), text: l.t('list_tab')),
-            Tab(icon: const Icon(Icons.map), text: l.t('map_tab')),
+          tabs: const [
+            Tab(icon: Icon(Icons.list), text: 'Lista'),
+            Tab(icon: Icon(Icons.map), text: 'Mapa'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [_buildListView(l), _buildMapView(l)],
+        children: [
+          _buildListView(),
+          _buildMapView(),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(
@@ -133,13 +125,13 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: Text(l.t('report_button')),
+        label: const Text('Reportar'),
       ),
     );
   }
 
   // ── Lista de accidentes con pull-to-refresh ─────────
-  Widget _buildListView(LocaleNotifier l) {
+  Widget _buildListView() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
@@ -159,14 +151,12 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 8),
-                Text(
-                  '${l.t('error_generic')}: ${snapshot.error}',
-                  style: const TextStyle(color: Colors.red),
-                ),
+                Text('Error: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red)),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => setState(() {}),
-                  child: Text(l.t('retry')),
+                  child: const Text('Reintentar'),
                 ),
               ],
             ),
@@ -184,22 +174,15 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                 SizedBox(height: MediaQuery.of(context).size.height * 0.25),
                 Column(
                   children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      size: 64,
-                      color: Colors.green[300],
-                    ),
+                    Icon(Icons.check_circle_outline, size: 64, color: Colors.green[300]),
                     const SizedBox(height: 16),
-                    Text(
-                      l.t('no_accidents_reported'),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    const Text(
+                      '¡Sin accidentes reportados!',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l.t('no_active_accidents_zone'),
+                      'No hay accidentes activos en tu zona',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                   ],
@@ -225,7 +208,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
             itemCount: accidents.length,
             itemBuilder: (context, index) {
               final a = accidents[index];
-              return _accidentCard(a, l);
+              return _accidentCard(a);
             },
           ),
         );
@@ -233,7 +216,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 
-  Widget _accidentCard(AccidentEntity a, LocaleNotifier l) {
+  Widget _accidentCard(AccidentEntity a) {
     final color = _severityColor(a.severity);
     final dist = _distanceText(a.latitude, a.longitude);
 
@@ -270,16 +253,13 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _severityLabel(a.severity, l),
+                            _severityLabel(a.severity),
                             style: TextStyle(
                               color: color,
                               fontSize: 11,
@@ -289,11 +269,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                         ),
                         const Spacer(),
                         Text(
-                          _timeAgo(a.createdAt, l),
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 11,
-                          ),
+                          _timeAgo(a.createdAt),
+                          style: TextStyle(color: Colors.grey[500], fontSize: 11),
                         ),
                       ],
                     ),
@@ -307,46 +284,25 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
-                          Icons.person_outline,
-                          size: 14,
-                          color: Colors.grey[500],
-                        ),
+                        Icon(Icons.person_outline, size: 14, color: Colors.grey[500]),
                         const SizedBox(width: 4),
                         Text(
-                          a.userName.isNotEmpty ? a.userName : l.t('anonymous'),
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 12,
-                          ),
+                          a.userName.isNotEmpty ? a.userName : 'Anónimo',
+                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
                         ),
                         if (dist.isNotEmpty) ...[
                           const SizedBox(width: 12),
-                          Icon(
-                            Icons.near_me,
-                            size: 14,
-                            color: Colors.grey[500],
-                          ),
+                          Icon(Icons.near_me, size: 14, color: Colors.grey[500]),
                           const SizedBox(width: 4),
-                          Text(
-                            dist,
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 12,
-                            ),
-                          ),
+                          Text(dist,
+                              style: TextStyle(color: Colors.grey[500], fontSize: 12)),
                         ],
                         if (a.imageUrls.isNotEmpty) ...[
                           const SizedBox(width: 12),
                           Icon(Icons.photo, size: 14, color: Colors.grey[500]),
                           const SizedBox(width: 4),
-                          Text(
-                            '${a.imageUrls.length}',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 12,
-                            ),
-                          ),
+                          Text('${a.imageUrls.length}',
+                              style: TextStyle(color: Colors.grey[500], fontSize: 12)),
                         ],
                       ],
                     ),
@@ -362,7 +318,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
   }
 
   // ── Mapa de accidentes ──────────────────────────────
-  Widget _buildMapView(LocaleNotifier l) {
+  Widget _buildMapView() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
@@ -389,20 +345,17 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
               a.severity == 'severe'
                   ? BitmapDescriptor.hueRed
                   : a.severity == 'moderate'
-                  ? BitmapDescriptor.hueOrange
-                  : BitmapDescriptor.hueYellow,
+                      ? BitmapDescriptor.hueOrange
+                      : BitmapDescriptor.hueYellow,
             ),
             infoWindow: InfoWindow(
-              title:
-                  '${_severityLabel(a.severity, l)} - ${_timeAgo(a.createdAt, l)}',
+              title: '${_severityLabel(a.severity)} - ${_timeAgo(a.createdAt)}',
               snippet: a.description.length > 50
                   ? '${a.description.substring(0, 50)}...'
                   : a.description,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => AccidentDetailScreen(accident: a),
-                ),
+                MaterialPageRoute(builder: (_) => AccidentDetailScreen(accident: a)),
               ),
             ),
           );
@@ -411,8 +364,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         final initialPos = _myPosition != null
             ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
             : accidents.isNotEmpty
-            ? LatLng(accidents.first.latitude, accidents.first.longitude)
-            : const LatLng(19.4326, -99.1332);
+                ? LatLng(accidents.first.latitude, accidents.first.longitude)
+                : const LatLng(19.4326, -99.1332);
 
         return GoogleMap(
           initialCameraPosition: CameraPosition(target: initialPos, zoom: 13),

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 
@@ -30,12 +29,11 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final chatProvider = context.read<ChatProvider>();
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Scaffold(
       backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
-        title: Text(l.t('chat')),
+        title: const Text('Chat'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -45,11 +43,10 @@ class _ChatScreenState extends State<ChatScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: chatProvider.getMessagesStream(widget.chatId),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
-                  return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                 final docs = snapshot.data!.docs;
                 if (docs.isEmpty) {
-                  return Center(child: Text(l.t('send_first_message')));
+                  return const Center(child: Text('Envia el primer mensaje!'));
                 }
                 return ListView.builder(
                   controller: _scrollController,
@@ -64,18 +61,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     final time = data['createdAt'] as Timestamp?;
 
                     return Align(
-                      alignment: isMe
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.75,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
                         decoration: BoxDecoration(
                           color: isMe ? ColorTokens.primary30 : Colors.white,
                           borderRadius: BorderRadius.only(
@@ -84,44 +74,18 @@ class _ChatScreenState extends State<ChatScreen> {
                             bottomLeft: Radius.circular(isMe ? 16 : 4),
                             bottomRight: Radius.circular(isMe ? 4 : 16),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 4,
-                            ),
-                          ],
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)],
                         ),
                         child: Column(
-                          crossAxisAlignment: isMe
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
+                          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                           children: [
-                            if (!isMe)
-                              Text(
-                                senderName,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            Text(
-                              content,
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black87,
-                                fontSize: 15,
-                              ),
-                            ),
+                            if (!isMe) Text(senderName, style: TextStyle(fontSize: 11, color: Colors.grey[600], fontWeight: FontWeight.w600)),
+                            Text(content, style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 15)),
                             if (time != null) ...[
                               const SizedBox(height: 4),
                               Text(
                                 '\${time.toDate().hour.toString().padLeft(2, "0")}:\${time.toDate().minute.toString().padLeft(2, "0")}',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: isMe
-                                      ? Colors.white60
-                                      : Colors.grey[500],
-                                ),
+                                style: TextStyle(fontSize: 10, color: isMe ? Colors.white60 : Colors.grey[500]),
                               ),
                             ],
                           ],
@@ -135,20 +99,12 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Container(
             padding: EdgeInsets.only(
-              left: 12,
-              right: 8,
-              top: 8,
+              left: 12, right: 8, top: 8,
               bottom: MediaQuery.of(context).padding.bottom + 8,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, -2))],
             ),
             child: Row(
               children: [
@@ -156,17 +112,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _msgController,
                     decoration: InputDecoration(
-                      hintText: l.t('write_message'),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
-                      ),
+                      hintText: 'Escribe un mensaje...',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                       filled: true,
                       fillColor: ColorTokens.neutral99,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     ),
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => _send(context),
@@ -193,12 +143,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty) return;
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final name = context.read<UserProvider>().user?.name ?? 'Ciclista';
-    context.read<ChatProvider>().sendMessage(
-      widget.chatId,
-      senderId: uid,
-      senderName: name,
-      content: text,
-    );
+    context.read<ChatProvider>().sendMessage(widget.chatId, senderId: uid, senderName: name, content: text);
     _msgController.clear();
   }
 }

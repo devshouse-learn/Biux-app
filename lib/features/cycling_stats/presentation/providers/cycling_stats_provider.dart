@@ -23,10 +23,10 @@ class CyclingStatsProvider with ChangeNotifier {
     if (_lastUpdated == null) return '';
     final now = DateTime.now();
     final diff = now.difference(_lastUpdated!);
-    if (diff.inSeconds < 30) return 'stats_just_now';
-    if (diff.inMinutes < 1) return 'stats_seconds_ago';
-    if (diff.inMinutes < 60) return 'stats_minutes_ago';
-    if (diff.inHours < 24) return 'stats_hours_ago';
+    if (diff.inSeconds < 30) return 'Justo ahora';
+    if (diff.inMinutes < 1) return 'Hace ${diff.inSeconds}s';
+    if (diff.inMinutes < 60) return 'Hace ${diff.inMinutes} min';
+    if (diff.inHours < 24) return 'Hace ${diff.inHours}h';
     return '${_lastUpdated!.day}/${_lastUpdated!.month}/${_lastUpdated!.year}';
   }
 
@@ -53,21 +53,15 @@ class CyclingStatsProvider with ChangeNotifier {
               ? (data['lastRideDate']).toDate()
               : DateTime.now(),
           monthlyKm: Map<String, double>.from(
-            (data['monthlyKm'] as Map?)?.map(
-                  (k, v) => MapEntry(k.toString(), (v as num).toDouble()),
-                ) ??
-                {},
+            (data['monthlyKm'] as Map?)?.map((k, v) => MapEntry(k.toString(), (v as num).toDouble())) ?? {},
           ),
         );
       } else {
-        _stats = CyclingStatsEntity(
-          userId: userId,
-          lastRideDate: DateTime.now(),
-        );
+        _stats = CyclingStatsEntity(userId: userId, lastRideDate: DateTime.now());
       }
       _lastUpdated = DateTime.now();
     } catch (e) {
-      _error = 'stats_error_load';
+      _error = 'Error al cargar estadísticas: $e';
     }
 
     _isLoading = false;
@@ -83,7 +77,7 @@ class CyclingStatsProvider with ChangeNotifier {
       await loadLeaderboard();
       _lastUpdated = DateTime.now();
     } catch (e) {
-      _error = 'stats_error_refresh';
+      _error = 'Error al actualizar: $e';
     }
 
     _isSyncing = false;
@@ -109,7 +103,7 @@ class CyclingStatsProvider with ChangeNotifier {
       );
       await loadStats(userId);
     } catch (e) {
-      _error = 'stats_error_add_ride';
+      _error = 'Error al registrar rodada: $e';
       notifyListeners();
     }
   }
@@ -119,7 +113,7 @@ class CyclingStatsProvider with ChangeNotifier {
       _leaderboard = await _datasource.getLeaderboard();
       notifyListeners();
     } catch (e) {
-      _error = 'stats_error_leaderboard';
+      _error = 'Error al cargar ranking: $e';
       notifyListeners();
     }
   }

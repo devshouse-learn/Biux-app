@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/emergency/domain/entities/emergency_contact_entity.dart';
 import 'package:biux/features/emergency/data/datasources/emergency_datasource.dart';
@@ -24,7 +25,7 @@ class EmergencyProvider with ChangeNotifier {
       final data = await _datasource.getContacts(userId);
       _contacts = data.map((m) => EmergencyContactEntity.fromMap(m)).toList();
     } catch (e) {
-      _error = '\$e';
+      _error = 'Error: \$e';
     }
 
     _isLoading = false;
@@ -45,10 +46,7 @@ class EmergencyProvider with ChangeNotifier {
 
   Future<void> _saveContacts(String userId) async {
     try {
-      await _datasource.saveContacts(
-        userId,
-        _contacts.map((c) => c.toMap()).toList(),
-      );
+      await _datasource.saveContacts(userId, _contacts.map((c) => c.toMap()).toList());
     } catch (e) {
       _error = 'Error al guardar: \$e';
       notifyListeners();
@@ -63,8 +61,7 @@ class EmergencyProvider with ChangeNotifier {
     String? message,
   }) async {
     try {
-      await _datasource.sendSOS(
-        userId,
+      await _datasource.sendSOS(userId,
         userName: userName,
         latitude: latitude,
         longitude: longitude,
