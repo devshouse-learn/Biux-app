@@ -102,11 +102,10 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Consumer<ExperienceProvider>(
         builder: (context, provider, child) {
           return _buildBody(provider);
