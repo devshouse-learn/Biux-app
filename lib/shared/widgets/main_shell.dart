@@ -22,6 +22,16 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0; // Por defecto en Inicio (índice 0)
+  bool _isFullScreenRoute = false; // Rutas que ocultan AppBar y BottomNav
+
+  /// Rutas que tienen su propio AppBar y no necesitan el shell
+  static const List<String> _fullScreenRoutes = [
+    '/account-settings',
+    '/settings/',
+    '/help',
+    '/edit-username',
+    '/edit-user',
+  ];
 
   /// Retorna el título dinámico según el tab seleccionado
   String _titleForIndex(int index, LocaleNotifier l) {
@@ -46,6 +56,11 @@ class _MainShellState extends State<MainShell> {
     // Consumer garantiza rebuild cuando cambia el idioma
     return Consumer<LocaleNotifier>(
       builder: (context, l, _) {
+        // Si es una ruta de pantalla completa, mostrar solo el child sin shell
+        if (_isFullScreenRoute) {
+          return widget.child;
+        }
+
         // Key por idioma fuerza reconstrucción completa del Scaffold
         return Scaffold(
           key: ValueKey('shell_${l.langCode}'),
@@ -166,6 +181,16 @@ class _MainShellState extends State<MainShell> {
 
   void _updateSelectedIndex() {
     final location = GoRouterState.of(context).matchedLocation;
+
+    // Detectar si es una ruta de pantalla completa (sin shell)
+    final isFullScreen = _fullScreenRoutes.any(
+      (route) => location.startsWith(route),
+    );
+    if (isFullScreen != _isFullScreenRoute) {
+      setState(() {
+        _isFullScreenRoute = isFullScreen;
+      });
+    }
 
     if (location.startsWith('/stories')) {
       setState(() {
