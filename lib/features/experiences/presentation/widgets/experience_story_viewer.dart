@@ -6,6 +6,7 @@ import 'package:biux/features/experiences/domain/entities/experience_entity.dart
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/widgets/video_player_widget.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/features/social/presentation/providers/likes_provider.dart';

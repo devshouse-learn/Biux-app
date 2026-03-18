@@ -116,6 +116,7 @@ class UserService {
     String? username,
     String? photoUrl,
     String? coverPhotoUrl,
+    DateTime? birthDate,
   }) async {
     AppLogger.debug('updateUserProfile: $uid', tag: 'UserService');
 
@@ -138,6 +139,9 @@ class UserService {
         updateData['coverPhotoUrl'] = coverPhotoUrl.isEmpty
             ? null
             : coverPhotoUrl.trim();
+      }
+      if (birthDate != null) {
+        updateData['birthDate'] = birthDate.toIso8601String();
       }
 
       if (updateData.isEmpty) {

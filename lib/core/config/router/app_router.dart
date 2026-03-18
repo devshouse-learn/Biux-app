@@ -44,6 +44,11 @@ import '../../../features/users/presentation/screens/user_screen/user_screen.dar
 import '../../../features/users/presentation/screens/user_search_screen.dart';
 import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
 import '../../../features/users/presentation/screens/account_settings_screen.dart';
+import '../../../features/users/presentation/screens/activity_likes_screen.dart';
+import '../../../features/users/presentation/screens/activity_comments_screen.dart';
+import '../../../features/users/presentation/screens/activity_posts_screen.dart';
+import '../../../features/users/presentation/screens/activity_stories_screen.dart';
+import '../../../features/users/presentation/screens/activity_screen_time_screen.dart';
 
 // Bikes imports
 import '../../../features/bikes/presentation/screens/my_bikes_screen.dart';
@@ -325,7 +330,6 @@ final GoRouter _router = GoRouter(
   refreshListenable: _authNotifier,
   routes: [
     // Ruta de splash
-
     GoRoute(
       path: AppRoutes.splash,
       name: AppRoutes.splashName,
@@ -426,13 +430,6 @@ final GoRouter _router = GoRouter(
             final userId = state.pathParameters['userId']!;
             return PublicUserProfileScreen(userId: userId);
           },
-        ),
-
-        // Configuración de Cuenta
-        GoRoute(
-          path: AppRoutes.accountSettings,
-          name: AppRoutes.accountSettingsName,
-          builder: (context, state) => const AccountSettingsScreen(),
         ),
 
         // Grupos
@@ -867,7 +864,6 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-
         // ===== NEW FEATURES =====
 
         // Chat
@@ -920,14 +916,12 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const AchievementsScreen(),
         ),
 
-
         // Onboarding
         GoRoute(
           path: '/onboarding',
           name: 'onboarding',
           builder: (context, state) => const OnboardingScreen(),
         ),
-
 
         // Búsqueda global
         GoRoute(
@@ -936,18 +930,20 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const GlobalSearchScreen(),
         ),
 
-
         // Seguidores/Siguiendo
         GoRoute(
           path: '/users/:userId/followers',
           name: 'followers',
           builder: (context, state) {
             final userId = state.pathParameters['userId']!;
-            final showFollowers = state.uri.queryParameters['tab'] != 'following';
-            return FollowersScreen(userId: userId, showFollowers: showFollowers);
+            final showFollowers =
+                state.uri.queryParameters['tab'] != 'following';
+            return FollowersScreen(
+              userId: userId,
+              showFollowers: showFollowers,
+            );
           },
         ),
-
 
         // Clima
         GoRoute(
@@ -955,7 +951,6 @@ final GoRouter _router = GoRouter(
           name: 'weather',
           builder: (context, state) => const WeatherScreen(),
         ),
-
 
         // Reportar Accidente
         GoRoute(
@@ -991,6 +986,51 @@ final GoRouter _router = GoRouter(
     ),
 
     // Rutas fuera del shell principal
+
+    // Configuración de Cuenta (fuera del ShellRoute para ocultar bottom nav)
+    GoRoute(
+      path: AppRoutes.accountSettings,
+      name: AppRoutes.accountSettingsName,
+      builder: (context, state) => const AccountSettingsScreen(),
+    ),
+
+    // Pantallas de Tu Actividad
+    GoRoute(
+      path: '/activity/likes',
+      name: 'activityLikes',
+      builder: (context, state) => const ActivityLikesScreen(),
+    ),
+    GoRoute(
+      path: '/activity/comments',
+      name: 'activityComments',
+      builder: (context, state) => const ActivityCommentsScreen(),
+    ),
+    GoRoute(
+      path: '/activity/posts',
+      name: 'activityPosts',
+      builder: (context, state) => const ActivityPostsScreen(),
+    ),
+    GoRoute(
+      path: '/activity/stories',
+      name: 'activityStories',
+      builder: (context, state) => const ActivityStoriesScreen(),
+    ),
+
+    // Ver detalle de post (fuera del ShellRoute para evitar conflicto de navigator)
+    GoRoute(
+      path: '/post-detail/:postId',
+      name: 'postDetailStandalone',
+      builder: (context, state) {
+        final postId = state.pathParameters['postId']!;
+        return PostDetailScreen(postId: postId);
+      },
+    ),
+
+    GoRoute(
+      path: '/activity/screen-time',
+      name: 'activityScreenTime',
+      builder: (context, state) => const ActivityScreenTimeScreen(),
+    ),
 
     // Detalle de producto (fuera del shell para pantalla completa sin bottom nav)
     // Ruta para agregar producto (debe ir ANTES de /shop/:id)
@@ -1089,11 +1129,12 @@ extension AppRouterExtension on BuildContext {
   void goToAchievements() => go(AppRoutes.achievements);
   void goToEducation() => go(AppRoutes.education);
 
-
   // Nuevas navegaciones
   void goToSearch() => push('/search');
   void goToWeather() => push('/weather');
-  void goToFollowers(String userId, {bool showFollowers = true}) => push('/users/$userId/followers?tab=${showFollowers ? "followers" : "following"}');
+  void goToFollowers(String userId, {bool showFollowers = true}) => push(
+    '/users/$userId/followers?tab=${showFollowers ? "followers" : "following"}',
+  );
   void goToOnboarding() => go('/onboarding');
   void goToAccidentReport() => push('/accidents/report');
 

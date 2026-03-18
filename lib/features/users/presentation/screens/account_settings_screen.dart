@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -63,9 +62,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 8),
-                // Sección de Información de Cuenta
+
+                // ========== DATOS PERSONALES ==========
                 Text(
-                  'Información de Cuenta',
+                  'Datos Personales',
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -74,178 +74,78 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
                 SizedBox(height: 16),
 
-                // Tarjeta de Correo Electrónico
-                _buildAccountInfoCard(
-                  icon: Icons.email_outlined,
-                  title: 'Correo Electrónico',
-                  value: (user.email?.isNotEmpty ?? false)
-                      ? user.email!
-                      : 'No vinculado',
-                  isLinked: user.email?.isNotEmpty ?? false,
-                  context: context,
+                // Nombre Completo
+                _buildPersonalDataCard(
+                  icon: Icons.person_outline,
+                  title: 'Nombre Completo',
+                  value: (user.name?.isNotEmpty ?? false)
+                      ? user.name!
+                      : 'No registrado',
+                  hasValue: user.name?.isNotEmpty ?? false,
+                  onEdit: () => _showEditNameDialog(user.name ?? ''),
                 ),
                 SizedBox(height: 12),
 
-                // Tarjeta de Teléfono
-                _buildAccountInfoCard(
+                // Fecha de Nacimiento + Edad
+                _buildPersonalDataCard(
+                  icon: Icons.cake_outlined,
+                  title: 'Fecha de Nacimiento',
+                  value: user.birthDate != null
+                      ? _formatBirthDate(user.birthDate!)
+                      : 'No registrada',
+                  hasValue: user.birthDate != null,
+                  onEdit: () => _showEditBirthDateDialog(user.birthDate),
+                  trailing: user.birthDate != null
+                      ? Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: ColorTokens.secondary50.withValues(
+                              alpha: 0.2,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${_calculateAge(user.birthDate!)} años',
+                            style: TextStyle(
+                              color: ColorTokens.secondary50,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
+                SizedBox(height: 12),
+
+                // Número de Teléfono Vinculado
+                _buildPersonalDataCard(
                   icon: Icons.phone_android_outlined,
-                  title: 'Número de Teléfono',
+                  title: 'Número de Teléfono Vinculado',
                   value: user.phoneNumber.isNotEmpty
                       ? _formatPhoneNumber(user.phoneNumber)
                       : 'No vinculado',
-                  isLinked: user.phoneNumber.isNotEmpty,
-                  context: context,
-                ),
-                SizedBox(height: 32),
-
-                // Sección de Dispositivos
-                Text(
-                  'Dispositivos Vinculados',
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
-
-                // Tarjeta de Dispositivo Actual
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: ColorTokens.primary40,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: ColorTokens.secondary50.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: ColorTokens.secondary50.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.smartphone,
-                          color: ColorTokens.secondary50,
-                          size: 24,
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Este Dispositivo',
-                              style: TextStyle(
-                                color: ColorTokens.neutral100,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Actualmente sesión iniciada',
-                              style: TextStyle(
-                                color: ColorTokens.neutral80,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: ColorTokens.success50.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'Activo',
-                          style: TextStyle(
-                            color: ColorTokens.success50,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 32),
-
-                // Sección de Privacidad
-                Text(
-                  'Privacidad y Seguridad',
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
-
-                // Botón para cambiar contraseña
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.lock_outline,
-                  title: 'Cambiar Contraseña',
-                  subtitle: 'Actualiza tu contraseña regularmente',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Función en desarrollo'),
-                        backgroundColor: ColorTokens.warning50,
-                      ),
-                    );
-                  },
+                  hasValue: user.phoneNumber.isNotEmpty,
                 ),
                 SizedBox(height: 12),
 
-                // Botón para ver actividad
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.history,
-                  title: 'Historial de Actividad',
-                  subtitle: 'Ve dónde iniciaste sesión',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Función en desarrollo'),
-                        backgroundColor: ColorTokens.warning50,
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 12),
-
-                // Botón para verificación de cuenta
-                _buildSettingOptionButton(
-                  context: context,
-                  icon: Icons.verified_user,
-                  title: 'Verificar Cuenta',
-                  subtitle: 'Confirma tu identidad',
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Función en desarrollo'),
-                        backgroundColor: ColorTokens.warning50,
-                      ),
-                    );
-                  },
+                // Correo Electrónico Vinculado
+                _buildPersonalDataCard(
+                  icon: Icons.email_outlined,
+                  title: 'Correo Electrónico Vinculado',
+                  value: (user.email?.isNotEmpty ?? false)
+                      ? user.email!
+                      : 'No vinculado',
+                  hasValue: user.email?.isNotEmpty ?? false,
+                  onEdit: () => _showEditEmailDialog(user.email ?? ''),
                 ),
                 SizedBox(height: 32),
 
-                // Sección de Apariencia
+                // ========== TU ACTIVIDAD ==========
                 Text(
-                  'Apariencia',
+                  'Tu Actividad',
                   style: TextStyle(
                     color: ColorTokens.neutral100,
                     fontSize: 18,
@@ -254,74 +154,49 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
                 SizedBox(height: 16),
 
-                Consumer<ThemeNotifier>(
-                  builder: (context, themeNotifier, child) {
-                    final isDark = themeNotifier.themeMode == ThemeMode.dark;
-                    return Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: ColorTokens.primary40,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: ColorTokens.neutral60.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: ColorTokens.primary50,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              isDark ? Icons.dark_mode : Icons.light_mode,
-                              color: ColorTokens.neutral100,
-                              size: 24,
-                            ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Modo Oscuro',
-                                  style: TextStyle(
-                                    color: ColorTokens.neutral100,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  isDark ? 'Activado' : 'Desactivado',
-                                  style: TextStyle(
-                                    color: ColorTokens.neutral80,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Switch(
-                            value: isDark,
-                            onChanged: (value) {
-                              themeNotifier.setThemeMode(
-                                value ? ThemeMode.dark : ThemeMode.light,
-                              );
-                            },
-                            activeThumbColor: ColorTokens.secondary50,
-                            activeTrackColor: ColorTokens.secondary50
-                                .withValues(alpha: 0.4),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.favorite_outline,
+                  title: 'Me gusta',
+                  subtitle: 'Contenido al que le diste like',
+                  onTap: () => context.push('/activity/likes'),
                 ),
+                SizedBox(height: 12),
 
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.chat_bubble_outline,
+                  title: 'Comentarios',
+                  subtitle: 'Comentarios que has realizado',
+                  onTap: () => context.push('/activity/comments'),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.grid_on,
+                  title: 'Publicaciones',
+                  subtitle: 'Publicaciones que has subido',
+                  onTap: () => context.push('/activity/posts'),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.auto_stories_outlined,
+                  title: 'Historias',
+                  subtitle: 'Historias que has compartido',
+                  onTap: () => context.push('/activity/stories'),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.timer_outlined,
+                  title: 'Tiempo en la App',
+                  subtitle: 'Promedio diario y estadísticas de uso',
+                  onTap: () => context.push('/activity/screen-time'),
+                ),
                 SizedBox(height: 32),
 
                 // Sección de Opciones de Cuenta
@@ -367,88 +242,276 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  /// Construye una tarjeta con información de cuenta
-  Widget _buildAccountInfoCard({
+  /// Construye una tarjeta de datos personales
+  Widget _buildPersonalDataCard({
     required IconData icon,
     required String title,
     required String value,
-    required bool isLinked,
-    required BuildContext context,
+    required bool hasValue,
+    Widget? trailing,
+    VoidCallback? onEdit,
   }) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: ColorTokens.primary40,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isLinked
-              ? ColorTokens.success50.withValues(alpha: 0.3)
-              : ColorTokens.neutral60.withValues(alpha: 0.2),
-          width: 1,
+    return GestureDetector(
+      onTap: onEdit,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: ColorTokens.primary40,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: hasValue
+                ? ColorTokens.secondary50.withValues(alpha: 0.3)
+                : ColorTokens.neutral60.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isLinked
-                  ? ColorTokens.success50.withValues(alpha: 0.2)
-                  : ColorTokens.neutral60.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              color: isLinked ? ColorTokens.success50 : ColorTokens.neutral80,
-              size: 24,
-            ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: ColorTokens.neutral100,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: isLinked
-                        ? ColorTokens.neutral100
-                        : ColorTokens.neutral80,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 8),
-          if (isLinked)
+        child: Row(
+          children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: ColorTokens.success50.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
+                color: hasValue
+                    ? ColorTokens.secondary50.withValues(alpha: 0.2)
+                    : ColorTokens.neutral60.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                Icons.check_circle,
-                color: ColorTokens.success50,
-                size: 20,
+                icon,
+                color: hasValue
+                    ? ColorTokens.secondary50
+                    : ColorTokens.neutral80,
+                size: 24,
               ),
             ),
-        ],
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: ColorTokens.neutral100,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: hasValue
+                          ? ColorTokens.neutral100
+                          : ColorTokens.neutral80,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (trailing != null) ...[SizedBox(width: 8), trailing],
+            if (onEdit != null) ...[
+              SizedBox(width: 8),
+              Icon(Icons.edit_outlined, color: ColorTokens.neutral80, size: 20),
+            ],
+          ],
+        ),
       ),
     );
+  }
+
+  /// Diálogo para editar el nombre
+  void _showEditNameDialog(String currentName) {
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: ColorTokens.primary40,
+          title: Text(
+            'Editar Nombre',
+            style: TextStyle(color: ColorTokens.neutral100),
+          ),
+          content: TextField(
+            controller: controller,
+            style: TextStyle(color: ColorTokens.neutral100),
+            decoration: InputDecoration(
+              hintText: 'Tu nombre completo',
+              hintStyle: TextStyle(color: ColorTokens.neutral80),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: ColorTokens.neutral60),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: ColorTokens.secondary50),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: ColorTokens.neutral80),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                final newName = controller.text.trim();
+                if (newName.isNotEmpty) {
+                  Navigator.of(dialogContext).pop();
+                  final userProvider = context.read<UserProvider>();
+                  await userProvider.updateProfile(name: newName);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Nombre actualizado'),
+                        backgroundColor: ColorTokens.success50,
+                      ),
+                    );
+                  }
+                }
+              },
+              child: Text(
+                'Guardar',
+                style: TextStyle(color: ColorTokens.secondary50),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Diálogo para editar la fecha de nacimiento
+  void _showEditBirthDateDialog(DateTime? currentDate) async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: currentDate ?? DateTime(now.year - 18, now.month, now.day),
+      firstDate: DateTime(1900),
+      lastDate: now,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: ColorTokens.secondary50,
+              onPrimary: ColorTokens.neutral100,
+              surface: ColorTokens.primary40,
+              onSurface: ColorTokens.neutral100,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && mounted) {
+      final userProvider = context.read<UserProvider>();
+      await userProvider.updateProfile(birthDate: picked);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fecha de nacimiento actualizada'),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Diálogo para editar el correo electrónico
+  void _showEditEmailDialog(String currentEmail) {
+    final controller = TextEditingController(text: currentEmail);
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: ColorTokens.primary40,
+          title: Text(
+            'Editar Correo Electrónico',
+            style: TextStyle(color: ColorTokens.neutral100),
+          ),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.emailAddress,
+            style: TextStyle(color: ColorTokens.neutral100),
+            decoration: InputDecoration(
+              hintText: 'correo@ejemplo.com',
+              hintStyle: TextStyle(color: ColorTokens.neutral80),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: ColorTokens.neutral60),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: ColorTokens.secondary50),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: ColorTokens.neutral80),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                final newEmail = controller.text.trim();
+                if (newEmail.isNotEmpty) {
+                  Navigator.of(dialogContext).pop();
+                  final userProvider = context.read<UserProvider>();
+                  await userProvider.updateProfile(email: newEmail);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Correo electrónico actualizado'),
+                        backgroundColor: ColorTokens.success50,
+                      ),
+                    );
+                  }
+                }
+              },
+              child: Text(
+                'Guardar',
+                style: TextStyle(color: ColorTokens.secondary50),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Formatea la fecha de nacimiento
+  String _formatBirthDate(DateTime date) {
+    const months = [
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  /// Calcula la edad a partir de la fecha de nacimiento
+  int _calculateAge(DateTime birthDate) {
+    final now = DateTime.now();
+    int age = now.year - birthDate.year;
+    if (now.month < birthDate.month ||
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      age--;
+    }
+    return age;
   }
 
   /// Construye un botón de opción de configuración

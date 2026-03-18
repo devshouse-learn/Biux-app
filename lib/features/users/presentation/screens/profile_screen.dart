@@ -882,11 +882,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mi Perfil'),
-        backgroundColor: ColorTokens.primary30,
-        foregroundColor: ColorTokens.neutral100,
-      ),
       body: widget.userProvider.isLoading
           ? Center(child: CircularProgressIndicator())
           : widget.userProvider.user == null
@@ -1020,7 +1015,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                           size: 20,
                                         ),
                                         onPressed: () {
-                                          context.go('/account-settings');
+                                          context.push('/account-settings');
                                         },
                                         constraints: BoxConstraints(
                                           minWidth: 32,

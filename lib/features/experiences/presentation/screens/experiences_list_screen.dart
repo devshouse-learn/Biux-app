@@ -95,30 +95,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: ColorTokens.primary30,
-        title: GestureDetector(
-          onTap: _loadFeed,
-          child: const Text(
-            'Mi Feed',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.push('/users/search');
-            },
-            icon: const Icon(Icons.search, color: Colors.white),
-            tooltip: 'Buscar usuarios',
-          ),
-        ],
-      ),
       body: Consumer<ExperienceProvider>(
         builder: (context, provider, child) {
           return _buildBody(provider);
