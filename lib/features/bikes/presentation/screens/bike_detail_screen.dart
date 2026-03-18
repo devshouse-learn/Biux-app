@@ -797,7 +797,9 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               } else if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('❌ Error: ${bikeProvider.errorMessage}'),
+                    content: Text(
+                      '❌ ${l.t('error_generic')}: ${bikeProvider.errorMessage}',
+                    ),
                     backgroundColor: ColorTokens.error50,
                     duration: const Duration(seconds: 3),
                   ),

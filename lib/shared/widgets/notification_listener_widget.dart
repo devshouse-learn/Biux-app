@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/services/notification_service.dart';
 
 /// Widget que escucha las notificaciones push y navega según el tipo
@@ -45,13 +47,16 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
   void _showNotificationSnackbar(Map<String, dynamic> data) {
     if (!mounted) return;
 
-    final title = data['title'] ?? 'Nueva notificación';
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final title = data['title'] ?? l.t('new_notification');
     final body = data['body'] ?? '';
 
     // Verificar que existe un ScaffoldMessenger
     final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
     if (scaffoldMessenger == null) {
-      debugPrint('⚠️ No hay ScaffoldMessenger disponible para mostrar notificación');
+      debugPrint(
+        '⚠️ No hay ScaffoldMessenger disponible para mostrar notificación',
+      );
       return;
     }
 
@@ -79,7 +84,7 @@ class _BiuxNotificationListenerState extends State<BiuxNotificationListener> {
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
-          label: 'Ver',
+          label: l.t('view_action'),
           onPressed: () => _handleNotificationTap(data),
         ),
       ),

@@ -11,11 +11,7 @@ class ImageCropEditorScreen extends StatefulWidget {
   final File imageFile;
   final String? title;
 
-  const ImageCropEditorScreen({
-    super.key,
-    required this.imageFile,
-    this.title = 'Ajustar imagen',
-  });
+  const ImageCropEditorScreen({super.key, required this.imageFile, this.title});
 
   @override
   State<ImageCropEditorScreen> createState() => _ImageCropEditorScreenState();

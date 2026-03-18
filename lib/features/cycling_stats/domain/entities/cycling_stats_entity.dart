@@ -39,6 +39,25 @@ class CyclingStatsEntity {
     }
   }
 
+  /// Returns a translation key for the current level name.
+  /// UI should call l.t(stats.levelName) to display.
+  String get levelName {
+    switch (level) {
+      case 'novato':
+        return 'level_novice';
+      case 'intermedio':
+        return 'level_intermediate';
+      case 'avanzado':
+        return 'level_advanced';
+      case 'experto':
+        return 'level_expert';
+      case 'leyenda':
+        return 'level_legend';
+      default:
+        return 'level_novice';
+    }
+  }
+
   String get formattedTime {
     final h = totalMinutes ~/ 60;
     final m = totalMinutes % 60;

@@ -1,4 +1,3 @@
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -31,25 +30,25 @@ class AuthenticationRepository {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return ResponseRepo(
-          message: AppStrings.userNotFound,
+          message: 'err_user_not_found',
           status: false,
           statusCode: 500,
         );
       } else if (e.code == 'wrong-password') {
         return ResponseRepo(
-          message: AppStrings.wrongPassword,
+          message: 'err_wrong_password',
           status: false,
           statusCode: 500,
         );
       } else if (e.code == 'invalid-email') {
         return ResponseRepo(
-          message: AppStrings.invalidEmail,
+          message: 'err_invalid_email',
           status: false,
           statusCode: 500,
         );
       } else {
         return ResponseRepo(
-          message: AppStrings.msgErrorLogin,
+          message: 'err_login',
           status: false,
           statusCode: 500,
         );
@@ -63,13 +62,13 @@ class AuthenticationRepository {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         return ResponseRepo(
-          message: AppStrings.invalidEmail,
+          message: 'err_invalid_email',
           status: false,
           statusCode: 500,
         );
       } else if (e.code == 'user-not-found') {
         return ResponseRepo(
-          message: AppStrings.userNotFound,
+          message: 'err_user_not_found',
           status: false,
           statusCode: 500,
         );
@@ -114,13 +113,13 @@ class AuthenticationRepository {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         return ResponseRepo(
-          message: AppStrings.emailAlreadyUse,
+          message: 'err_email_already_use',
           statusCode: 500,
           status: false,
         );
       } else {
         return ResponseRepo(
-          message: AppStrings.errorRegisterUser,
+          message: 'err_register_user',
           status: false,
           statusCode: 500,
         );

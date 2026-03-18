@@ -1,23 +1,26 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ErrorScreen extends StatelessWidget {
   final String? message;
   final VoidCallback? onRetry;
   final IconData icon;
-  final String title;
+  final String? title;
 
   const ErrorScreen({
     Key? key,
     this.message,
     this.onRetry,
     this.icon = Icons.error_outline_rounded,
-    this.title = 'Algo salió mal',
+    this.title,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final displayTitle = title ?? l.t('error_something_wrong');
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -33,22 +36,43 @@ class ErrorScreen extends StatelessWidget {
               child: Icon(icon, size: 64, color: Colors.red[400]),
             ),
             const SizedBox(height: 24),
-            Text(title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey[800]), textAlign: TextAlign.center),
+            Text(
+              displayTitle,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[800],
+              ),
+              textAlign: TextAlign.center,
+            ),
             if (message != null) ...[
               const SizedBox(height: 12),
-              Text(message!, style: TextStyle(fontSize: 15, color: Colors.grey[500], height: 1.5), textAlign: TextAlign.center),
+              Text(
+                message!,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey[500],
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
             if (onRetry != null) ...[
               const SizedBox(height: 28),
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Reintentar'),
+                label: Text(l.t('retry')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorTokens.primary30,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ],
@@ -65,10 +89,11 @@ class NoConnectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return ErrorScreen(
       icon: Icons.wifi_off_rounded,
-      title: 'Sin conexión',
-      message: 'Verifica tu conexión a internet e intenta de nuevo.',
+      title: l.t('no_connection_title'),
+      message: l.t('no_connection_message'),
       onRetry: onRetry,
     );
   }

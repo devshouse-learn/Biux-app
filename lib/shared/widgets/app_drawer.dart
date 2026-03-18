@@ -548,7 +548,7 @@ class _AppDrawerState extends State<AppDrawer> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${l.t('error_generic')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );

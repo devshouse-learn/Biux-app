@@ -45,9 +45,7 @@ class AuthRepository {
       // Validación muy permisiva
       if (!_isValidPhoneNumber(phoneNumber)) {
         debugPrint('❌ [AuthRepo] Número inválido: $phoneNumber');
-        throw Exception(
-          'Número inválido. Debe tener al menos 8 dígitos',
-        );
+        throw Exception('Número inválido. Debe tener al menos 8 dígitos');
       }
 
       debugPrint('✅ [AuthRepo] Número válido: $phoneNumber');
@@ -76,9 +74,7 @@ class AuthRepository {
         return true;
       } else {
         debugPrint('⚠️ [AuthRepo] Status inesperado: ${response.statusCode}');
-        throw Exception(
-          'Servidor respondió con código ${response.statusCode}. Intenta nuevamente.',
-        );
+        throw Exception('err_server_status');
       }
     } on DioException catch (e) {
       debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -92,44 +88,41 @@ class AuthRepository {
       debugPrint('📝 Response Data: ${e.response?.data}');
       debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-      String errorMessage = 'Error al enviar el código OTP';
+      String errorMessage = 'err_send_otp';
 
       switch (e.type) {
         case DioExceptionType.connectionTimeout:
-          errorMessage =
-              'Tiempo de espera agotado. Verifica tu conexión a internet.';
+          errorMessage = 'err_connection_timeout';
           break;
         case DioExceptionType.sendTimeout:
-          errorMessage = 'Tiempo de envío agotado. Verifica tu conexión.';
+          errorMessage = 'err_send_timeout';
           break;
         case DioExceptionType.receiveTimeout:
-          errorMessage = 'Servidor tardó demasiado. Intenta nuevamente.';
+          errorMessage = 'err_receive_timeout';
           break;
         case DioExceptionType.badResponse:
           if (e.response?.statusCode == 400) {
-            errorMessage = 'Número de teléfono inválido.';
+            errorMessage = 'err_invalid_phone_number';
           } else if (e.response?.statusCode == 429) {
-            errorMessage = 'Demasiados intentos. Intenta en unos minutos.';
+            errorMessage = 'err_too_many_attempts';
           } else if (e.response?.statusCode == 500) {
-            errorMessage = 'Error del servidor. Por favor intenta más tarde.';
+            errorMessage = 'err_server_error';
           } else {
-            errorMessage = 'Error del servidor (${e.response?.statusCode}).';
+            errorMessage = 'err_server_error';
           }
           break;
         case DioExceptionType.unknown:
           if (e.error.toString().contains('SocketException') ||
               e.error.toString().contains('Network is unreachable')) {
-            errorMessage =
-                'Sin conexión a internet. Verifica tu WiFi o datos móviles.';
+            errorMessage = 'err_no_wifi';
           } else if (e.error.toString().contains('HandshakeException')) {
-            errorMessage =
-                'Error de seguridad SSL. Verifica la fecha/hora del dispositivo.';
+            errorMessage = 'err_ssl';
           } else {
-            errorMessage = 'Error de red: ${e.error}';
+            errorMessage = 'err_network';
           }
           break;
         default:
-          errorMessage = 'Error inesperado: ${e.type}';
+          errorMessage = 'err_unexpected';
       }
 
       debugPrint('🔴 Mensaje de error final: $errorMessage');
@@ -141,7 +134,7 @@ class AuthRepository {
       debugPrint('🔴 Tipo: ${e.runtimeType}');
       debugPrint('🔴 Detalles: $e');
       debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      throw Exception('Error inesperado: ${e.toString()}');
+      throw Exception('err_unexpected');
     }
   }
 
@@ -151,7 +144,7 @@ class AuthRepository {
       debugPrint('📝 [AuthRepo] Código: ${code.replaceAll(RegExp(r'.'), '*')}');
 
       if (code.length != 6) {
-        throw Exception('El código debe tener exactamente 6 dígitos');
+        throw Exception('err_code_6_digits');
       }
 
       debugPrint('📤 [AuthRepo] Enviando validación a: $_baseUrl/validate-otp');
@@ -177,27 +170,27 @@ class AuthRepository {
         debugPrint(
           '⚠️ [AuthRepo] Validación fallida - Status: ${response.statusCode}',
         );
-        throw Exception('Código inválido o expirado');
+        throw Exception('err_code_invalid_or_expired');
       }
     } on DioException catch (e) {
       debugPrint('❌ [AuthRepo] Error en validación:');
       debugPrint('   Tipo: ${e.type}');
       debugPrint('   Status: ${e.response?.statusCode}');
 
-      String errorMessage = 'Error al validar el código';
+      String errorMessage = 'err_validate_code';
 
       if (e.response?.statusCode == 401) {
-        errorMessage = 'Código incorrecto. Intenta nuevamente.';
+        errorMessage = 'err_wrong_code';
       } else if (e.response?.statusCode == 410) {
-        errorMessage = 'Código expirado. Solicita uno nuevo.';
+        errorMessage = 'err_code_expired';
       } else if (e.type == DioExceptionType.connectionTimeout) {
-        errorMessage = 'Tiempo de espera agotado. Verifica tu conexión.';
+        errorMessage = 'err_code_timeout';
       }
 
       throw Exception(errorMessage);
     } catch (e) {
       debugPrint('❌ [AuthRepo] Error inesperado en validación: $e');
-      throw Exception('Error al validar: ${e.toString()}');
+      throw Exception('err_validate_code');
     }
   }
 }

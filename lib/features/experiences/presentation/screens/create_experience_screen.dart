@@ -672,7 +672,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             controller: _tagsController,
             style: TextStyle(color: isDark ? Colors.white : Colors.black87),
             decoration: InputDecoration(
-              hintText: 'ej: ciclismo, montaña, aventura (separados por comas)',
+              hintText: l.t('exp_tags_hint'),
               hintStyle: TextStyle(
                 color: isDark ? Colors.grey[400] : Colors.grey[500],
               ),
@@ -912,7 +912,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         if (provider.error != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(provider.error!),
+              content: Text(l.t(provider.error!)),
               backgroundColor: Colors.red,
             ),
           );
@@ -1195,7 +1195,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Story',
+                          l.t('exp_content_story'),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -1243,7 +1243,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Post',
+                          l.t('exp_content_post'),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

@@ -57,7 +57,7 @@ class EditUsernameProvider extends ChangeNotifier {
     // Si es el mismo username actual, no verificar
     if (username == _currentUsername) {
       _usernameAvailable = true;
-      _availabilityMessage = 'Username actual';
+      _availabilityMessage = 'username_current';
       notifyListeners();
       return;
     }
@@ -65,7 +65,7 @@ class EditUsernameProvider extends ChangeNotifier {
     // Validar formato antes de verificar disponibilidad
     if (!_isValidUsernameFormat(username)) {
       _usernameAvailable = false;
-      _availabilityMessage = 'Formato inválido';
+      _availabilityMessage = 'username_invalid_format';
       notifyListeners();
       return;
     }
@@ -86,7 +86,7 @@ class EditUsernameProvider extends ChangeNotifier {
   /// Realizar verificación real en Firestore
   Future<void> _performUsernameCheck(String username) async {
     _isCheckingAvailability = true;
-    _availabilityMessage = 'Verificando disponibilidad...';
+    _availabilityMessage = 'username_checking';
     notifyListeners();
 
     try {
@@ -99,15 +99,15 @@ class EditUsernameProvider extends ChangeNotifier {
 
       if (querySnapshot.docs.isEmpty) {
         _usernameAvailable = true;
-        _availabilityMessage = '✓ Disponible';
+        _availabilityMessage = 'username_available';
       } else {
         _usernameAvailable = false;
-        _availabilityMessage = '✗ No disponible';
+        _availabilityMessage = 'username_not_available';
       }
     } catch (e) {
       debugPrint('Error verificando disponibilidad: $e');
       _usernameAvailable = null;
-      _availabilityMessage = 'Error verificando disponibilidad';
+      _availabilityMessage = 'username_check_error';
     } finally {
       _isCheckingAvailability = false;
       notifyListeners();
@@ -123,7 +123,7 @@ class EditUsernameProvider extends ChangeNotifier {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) {
-        _error = 'Usuario no autenticado';
+        _error = 'username_not_authenticated';
         return false;
       }
 
@@ -136,7 +136,7 @@ class EditUsernameProvider extends ChangeNotifier {
             .get();
 
         if (querySnapshot.docs.isNotEmpty) {
-          _error = 'El username ya no está disponible';
+          _error = 'username_already_taken';
           return false;
         }
       }
@@ -150,7 +150,7 @@ class EditUsernameProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       debugPrint('Error actualizando username: $e');
-      _error = 'Error al actualizar el nombre de usuario';
+      _error = 'username_update_error';
       return false;
     } finally {
       _isUpdating = false;

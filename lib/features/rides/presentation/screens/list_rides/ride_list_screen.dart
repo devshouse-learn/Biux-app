@@ -247,7 +247,7 @@ class _RideListScreenState extends State<RideListScreen> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
-                                      ride.difficultyDisplayName,
+                                      l.t(ride.difficultyDisplayName),
                                       style: TextStyle(
                                         color: ColorTokens.neutral100,
                                         fontSize: 12,

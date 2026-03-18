@@ -306,7 +306,7 @@ class LikesProvider extends ChangeNotifier {
       _isProcessing = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al dar like: $e';
+      _error = 'likes_error';
       _isProcessing = false;
       notifyListeners();
     }
@@ -338,7 +338,7 @@ class LikesProvider extends ChangeNotifier {
       _isProcessing = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Error al quitar like: $e';
+      _error = 'likes_unlike_error';
       _isProcessing = false;
       notifyListeners();
     }

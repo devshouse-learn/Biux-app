@@ -52,18 +52,18 @@ class RideTrackerProvider with ChangeNotifier {
     // Verificar permisos GPS
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return 'Activa el GPS para grabar tu rodada';
+      return 'ride_error_gps_disabled';
     }
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return 'Se necesita permiso de ubicación para grabar';
+        return 'ride_error_location_permission';
       }
     }
     if (permission == LocationPermission.deniedForever) {
-      return 'Permiso de ubicación denegado. Actívalo en Configuración.';
+      return 'ride_error_location_denied';
     }
 
     _points = [];
@@ -83,34 +83,35 @@ class RideTrackerProvider with ChangeNotifier {
       }
     });
 
-    _posSub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 2,
-      ),
-    ).listen(
-      (pos) {
-        if (_isPaused) return;
-        final pt = TrackPoint(
-          lat: pos.latitude,
-          lng: pos.longitude,
-          elevation: pos.altitude,
-          speed: pos.speed * 3.6,
-          timestamp: DateTime.now(),
+    _posSub =
+        Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 2,
+          ),
+        ).listen(
+          (pos) {
+            if (_isPaused) return;
+            final pt = TrackPoint(
+              lat: pos.latitude,
+              lng: pos.longitude,
+              elevation: pos.altitude,
+              speed: pos.speed * 3.6,
+              timestamp: DateTime.now(),
+            );
+            if (_points.isNotEmpty) {
+              final last = _points.last;
+              _totalKm += _calcDist(last.lat, last.lng, pt.lat, pt.lng);
+            }
+            _currentSpeed = pt.speed;
+            if (pt.speed > _maxSpeed) _maxSpeed = pt.speed;
+            _points.add(pt);
+            notifyListeners();
+          },
+          onError: (e) {
+            debugPrint('Error GPS stream: $e');
+          },
         );
-        if (_points.isNotEmpty) {
-          final last = _points.last;
-          _totalKm += _calcDist(last.lat, last.lng, pt.lat, pt.lng);
-        }
-        _currentSpeed = pt.speed;
-        if (pt.speed > _maxSpeed) _maxSpeed = pt.speed;
-        _points.add(pt);
-        notifyListeners();
-      },
-      onError: (e) {
-        debugPrint('Error GPS stream: $e');
-      },
-    );
 
     return null;
   }
@@ -164,20 +165,23 @@ class RideTrackerProvider with ChangeNotifier {
         'endTime': now.millisecondsSinceEpoch,
       });
 
-      _history.insert(0, RideTrackEntity(
-        id: trackId,
-        userId: userId,
-        points: [],
-        totalKm: savedKm,
-        avgSpeed: savedAvg,
-        maxSpeed: savedMax,
-        durationMinutes: savedDurMin,
-        durationSeconds: savedDurSec,
-        calories: savedCal,
-        pointCount: savedPoints.length,
-        startTime: savedStart ?? now,
-        endTime: now,
-      ));
+      _history.insert(
+        0,
+        RideTrackEntity(
+          id: trackId,
+          userId: userId,
+          points: [],
+          totalKm: savedKm,
+          avgSpeed: savedAvg,
+          maxSpeed: savedMax,
+          durationMinutes: savedDurMin,
+          durationSeconds: savedDurSec,
+          calories: savedCal,
+          pointCount: savedPoints.length,
+          startTime: savedStart ?? now,
+          endTime: now,
+        ),
+      );
 
       _points = [];
       _isSaving = false;
@@ -226,30 +230,43 @@ class RideTrackerProvider with ChangeNotifier {
 
         int streak = _calculateStreak();
 
-        await FirebaseFirestore.instance.collection('user_stats').doc(userId).set({
-          'totalKm': accumKm,
-          'totalRides': totalRides,
-          'maxSpeed': bestMax,
-          'streak': streak,
-          'lastRideDate': DateTime.now().millisecondsSinceEpoch,
-          'updatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance
+            .collection('user_stats')
+            .doc(userId)
+            .set({
+              'totalKm': accumKm,
+              'totalRides': totalRides,
+              'maxSpeed': bestMax,
+              'streak': streak,
+              'lastRideDate': DateTime.now().millisecondsSinceEpoch,
+              'updatedAt': FieldValue.serverTimestamp(),
+            }, SetOptions(merge: true));
 
         final avgSpeedGlobal = totalMin > 0 ? accumKm / (totalMin / 60) : 0.0;
-        await FirebaseFirestore.instance.collection('cycling_stats').doc(userId).set({
-          'userId': userId,
-          'totalKm': accumKm,
-          'totalRides': totalRides,
-          'avgSpeed': avgSpeedGlobal.isFinite ? avgSpeedGlobal : 0,
-          'maxSpeed': bestMax,
-          'totalCalories': (accumKm * 30).toInt(),
-          'totalMinutes': totalMin,
-          'streak': streak,
-          'level': _calculateLevel(accumKm),
-          'lastRideDate': Timestamp.fromDate(DateTime.now()),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance
+            .collection('cycling_stats')
+            .doc(userId)
+            .set({
+              'userId': userId,
+              'totalKm': accumKm,
+              'totalRides': totalRides,
+              'avgSpeed': avgSpeedGlobal.isFinite ? avgSpeedGlobal : 0,
+              'maxSpeed': bestMax,
+              'totalCalories': (accumKm * 30).toInt(),
+              'totalMinutes': totalMin,
+              'streak': streak,
+              'level': _calculateLevel(accumKm),
+              'lastRideDate': Timestamp.fromDate(DateTime.now()),
+            }, SetOptions(merge: true));
 
-        await _updateAchievements(userId, accumKm, totalRides, bestMax, streak, startTime);
+        await _updateAchievements(
+          userId,
+          accumKm,
+          totalRides,
+          bestMax,
+          streak,
+          startTime,
+        );
         debugPrint('[BG] Stats y logros actualizados');
       } catch (e) {
         debugPrint('[BG] Error actualizando stats: $e');
@@ -258,8 +275,12 @@ class RideTrackerProvider with ChangeNotifier {
   }
 
   Future<void> _updateAchievements(
-    String userId, double accumKm, int totalRides,
-    double bestMax, int streak, DateTime? startTime,
+    String userId,
+    double accumKm,
+    int totalRides,
+    double bestMax,
+    int streak,
+    DateTime? startTime,
   ) async {
     int groupCount = 0;
     try {
@@ -277,7 +298,9 @@ class RideTrackerProvider with ChangeNotifier {
       isEarly = startTime.hour < 6;
     }
 
-    final ref = FirebaseFirestore.instance.collection('achievements').doc(userId);
+    final ref = FirebaseFirestore.instance
+        .collection('achievements')
+        .doc(userId);
     final Map<String, dynamic> u = {};
 
     for (final t in [10.0, 50.0, 100.0, 500.0, 1000.0, 5000.0]) {
@@ -287,7 +310,12 @@ class RideTrackerProvider with ChangeNotifier {
         if (accumKm >= t) 'unlockedAt': FieldValue.serverTimestamp(),
       };
     }
-    for (final e in {1: 'rides_1', 10: 'rides_10', 50: 'rides_50', 100: 'rides_100'}.entries) {
+    for (final e in {
+      1: 'rides_1',
+      10: 'rides_10',
+      50: 'rides_50',
+      100: 'rides_100',
+    }.entries) {
       u[e.value] = {
         'currentValue': totalRides,
         if (totalRides >= e.key) 'unlocked': true,
@@ -315,8 +343,18 @@ class RideTrackerProvider with ChangeNotifier {
         if (groupCount >= e.key) 'unlockedAt': FieldValue.serverTimestamp(),
       };
     }
-    if (isNight) u['night_ride'] = {'currentValue': 1.0, 'unlocked': true, 'unlockedAt': FieldValue.serverTimestamp()};
-    if (isEarly) u['early_bird'] = {'currentValue': 1.0, 'unlocked': true, 'unlockedAt': FieldValue.serverTimestamp()};
+    if (isNight)
+      u['night_ride'] = {
+        'currentValue': 1.0,
+        'unlocked': true,
+        'unlockedAt': FieldValue.serverTimestamp(),
+      };
+    if (isEarly)
+      u['early_bird'] = {
+        'currentValue': 1.0,
+        'unlocked': true,
+        'unlockedAt': FieldValue.serverTimestamp(),
+      };
 
     await ref.set(u, SetOptions(merge: true));
   }
@@ -331,12 +369,23 @@ class RideTrackerProvider with ChangeNotifier {
 
   int _calculateStreak() {
     if (_history.isEmpty) return 1;
-    final dates = _history
-        .map((r) => DateTime(r.startTime.year, r.startTime.month, r.startTime.day))
-        .toSet()
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
-    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    final dates =
+        _history
+            .map(
+              (r) => DateTime(
+                r.startTime.year,
+                r.startTime.month,
+                r.startTime.day,
+              ),
+            )
+            .toSet()
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
     if (!dates.contains(today)) dates.insert(0, today);
     int streak = 1;
     for (int i = 0; i < dates.length - 1; i++) {
@@ -381,20 +430,24 @@ class RideTrackerProvider with ChangeNotifier {
   }
 
   List<RideTrackEntity> _mapHistory(List<Map<String, dynamic>> data) {
-    return data.map((m) => RideTrackEntity(
-      id: m['id'] ?? '',
-      userId: m['userId'] ?? '',
-      points: [],
-      totalKm: (m['totalKm'] as num?)?.toDouble() ?? 0,
-      avgSpeed: (m['avgSpeed'] as num?)?.toDouble() ?? 0,
-      maxSpeed: (m['maxSpeed'] as num?)?.toDouble() ?? 0,
-      durationMinutes: (m['durationMinutes'] as num?)?.toInt() ?? 0,
-      durationSeconds: (m['durationSeconds'] as num?)?.toInt() ?? 0,
-      calories: (m['calories'] as num?)?.toInt() ?? 0,
-      pointCount: (m['pointCount'] as num?)?.toInt() ?? 0,
-      startTime: DateTime.fromMillisecondsSinceEpoch(m['startTime'] ?? 0),
-      endTime: DateTime.fromMillisecondsSinceEpoch(m['endTime'] ?? 0),
-    )).toList();
+    return data
+        .map(
+          (m) => RideTrackEntity(
+            id: m['id'] ?? '',
+            userId: m['userId'] ?? '',
+            points: [],
+            totalKm: (m['totalKm'] as num?)?.toDouble() ?? 0,
+            avgSpeed: (m['avgSpeed'] as num?)?.toDouble() ?? 0,
+            maxSpeed: (m['maxSpeed'] as num?)?.toDouble() ?? 0,
+            durationMinutes: (m['durationMinutes'] as num?)?.toInt() ?? 0,
+            durationSeconds: (m['durationSeconds'] as num?)?.toInt() ?? 0,
+            calories: (m['calories'] as num?)?.toInt() ?? 0,
+            pointCount: (m['pointCount'] as num?)?.toInt() ?? 0,
+            startTime: DateTime.fromMillisecondsSinceEpoch(m['startTime'] ?? 0),
+            endTime: DateTime.fromMillisecondsSinceEpoch(m['endTime'] ?? 0),
+          ),
+        )
+        .toList();
   }
 
   Future<void> deleteRide(String trackId, String userId) async {
@@ -418,7 +471,8 @@ class RideTrackerProvider with ChangeNotifier {
     const r = 6371.0;
     final dLat = _rad(lat2 - lat1);
     final dLon = _rad(lon2 - lon1);
-    final a = sin(dLat / 2) * sin(dLat / 2) +
+    final a =
+        sin(dLat / 2) * sin(dLat / 2) +
         cos(_rad(lat1)) * cos(_rad(lat2)) * sin(dLon / 2) * sin(dLon / 2);
     return r * 2 * atan2(sqrt(a), sqrt(1 - a));
   }

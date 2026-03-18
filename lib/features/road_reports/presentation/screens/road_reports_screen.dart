@@ -99,7 +99,10 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${l.t('error_generic')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -550,7 +553,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                             if (mounted)
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error: $e'),
+                                  content: Text('${l.t('error_generic')}: $e'),
                                   backgroundColor: Colors.red,
                                 ),
                               );

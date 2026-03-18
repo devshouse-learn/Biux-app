@@ -146,7 +146,10 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
           Text(
             widget.showProgress
                 ? '${_uploadProgress.isFinite ? (_uploadProgress * 100).round() : 0}%'
-                : 'Subiendo...',
+                : Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('uploading_label'),
             style: TextStyle(
               color: Colors.white,
               fontSize: 12,
@@ -326,12 +329,24 @@ class _OptimizedImagePickerState extends State<OptimizedImagePicker> {
 
       if (uploadedUrl != null) {
         widget.onImageSelected(uploadedUrl);
-        _showSuccess('Imagen subida con éxito');
+        _showSuccess(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('image_uploaded_success'),
+        );
       } else {
-        _showError('Error subiendo imagen');
+        _showError(
+          Provider.of<LocaleNotifier>(
+            context,
+            listen: false,
+          ).t('error_uploading_image'),
+        );
       }
     } catch (e) {
-      _showError('Error en la carga: $e');
+      _showError(
+        '${Provider.of<LocaleNotifier>(context, listen: false).t('error_upload_generic')}: $e',
+      );
     } finally {
       setState(() {
         _isUploading = false;
@@ -471,7 +486,9 @@ class OptimizedNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Validar que la URL no esté vacía
     if (imageUrl.isEmpty) {
-      debugPrint('OptimizedNetworkImage - URL vacía, mostrando widget de error');
+      debugPrint(
+        'OptimizedNetworkImage - URL vacía, mostrando widget de error',
+      );
       return errorWidget ??
           Container(
             width: width,
@@ -524,7 +541,9 @@ class OptimizedNetworkImage extends StatelessWidget {
               );
         },
         errorWidget: (context, url, error) {
-          debugPrint('OptimizedNetworkImage - Error cargando: $url, Error: $error');
+          debugPrint(
+            'OptimizedNetworkImage - Error cargando: $url, Error: $error',
+          );
           return errorWidget ??
               Container(
                 width: width,

@@ -43,6 +43,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
     with SingleTickerProviderStateMixin {
   late AnimationController _progressController;
   late List<ExperienceMediaEntity> _mediaItems;
+  // ignore: unused_field
+  // ignore: unused_field
   late List<({String experienceId, int mediaIndex})> _mediaOrigins;
 
   int currentMediaIndex = 0;

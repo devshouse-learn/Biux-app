@@ -180,6 +180,7 @@ class PublicBikeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -192,9 +193,9 @@ class PublicBikeCard extends StatelessWidget {
               children: [
                 Icon(Icons.verified, color: ColorTokens.primary30, size: 24),
                 const SizedBox(width: 8),
-                const Text(
-                  'Registrada en Biux',
-                  style: TextStyle(
+                Text(
+                  l.t('bike_registered_in_biux'),
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: ColorTokens.primary30,

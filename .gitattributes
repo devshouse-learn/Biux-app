@@ -1,0 +1,10 @@
+# PRODUCTO IMÁGENES - NUNCA ELIMINAR O MODIFICAR
+img/shop/products/jersey_pro.jpg -merge -diff
+img/shop/products/culote_gel.jpg -merge -diff
+img/shop/products/guantes_gel.jpg -merge -diff
+img/shop/products/casco_aero.jpg -merge -diff
+img/shop/products/gafas_uv400.jpg -merge -diff
+img/shop/products/zapatillas_road.jpg -merge -diff
+
+# Mock products - PERMANENTE
+lib/features/shop/data/datasources/mock_products.dart -merge -diff

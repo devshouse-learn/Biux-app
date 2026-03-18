@@ -204,6 +204,7 @@ class _CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -249,7 +250,7 @@ class _CommentTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatDate(comment.createdAt),
+                      _formatDate(comment.createdAt, l),
                       style: TextStyle(fontSize: 11, color: Colors.grey),
                     ),
                   ],
@@ -280,25 +281,27 @@ class _CommentTile extends StatelessWidget {
     );
   }
 
-  String _formatDate(String dateString) {
+  String _formatDate(String dateString, LocaleNotifier l) {
     try {
       final date = DateTime.parse(dateString);
       final now = DateTime.now();
       final difference = now.difference(date);
 
       if (difference.inSeconds < 60) {
-        return 'Hace unos segundos';
+        return l.t('time_seconds_ago');
       } else if (difference.inMinutes < 60) {
-        return 'Hace ${difference.inMinutes} min';
+        return l
+            .t('time_minutes_ago')
+            .replaceAll('{n}', '${difference.inMinutes}');
       } else if (difference.inHours < 24) {
-        return 'Hace ${difference.inHours} h';
+        return l.t('time_hours_ago').replaceAll('{n}', '${difference.inHours}');
       } else if (difference.inDays < 7) {
-        return 'Hace ${difference.inDays} días';
+        return l.t('time_days_ago').replaceAll('{n}', '${difference.inDays}');
       } else {
         return DateFormat('dd/MM/yyyy').format(date);
       }
     } catch (e) {
-      return 'Fecha desconocida';
+      return l.t('unknown_date');
     }
   }
 }

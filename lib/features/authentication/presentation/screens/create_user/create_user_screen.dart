@@ -5,6 +5,7 @@ import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:biux/data/models/analitics.dart'; // IMPLEMENTADO (STUB): Migrate analytics
 import 'package:biux/features/cities/data/models/city.dart';
@@ -47,6 +48,7 @@ class CreateUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.watch<CreateUserBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.primary30,
       body: ListView(
@@ -69,7 +71,7 @@ class CreateUserScreen extends StatelessWidget {
                     Container(
                       margin: const EdgeInsets.only(top: 20, left: 15),
                       child: Text(
-                        AppStrings.welcomePart1,
+                        l.t('welcome_part_1'),
                         textAlign: TextAlign.center,
                         style: Styles.wrapDrawerWhite,
                       ),
@@ -77,7 +79,7 @@ class CreateUserScreen extends StatelessWidget {
                     Container(
                       margin: const EdgeInsets.only(top: 20, left: 5),
                       child: Text(
-                        AppStrings.welcomePart2,
+                        'BIUX',
                         textAlign: TextAlign.center,
                         style: Styles.stackWhite,
                       ),
@@ -87,7 +89,7 @@ class CreateUserScreen extends StatelessWidget {
                 Container(
                   margin: const EdgeInsets.only(top: 45, left: 15),
                   child: Text(
-                    AppStrings.signUpToRoll,
+                    l.t('sign_up_to_roll'),
                     textAlign: TextAlign.center,
                     style: Styles.containerDescription,
                   ),
@@ -114,7 +116,7 @@ class CreateUserScreen extends StatelessWidget {
                                     obscureText: false,
                                     focusNode: FocusNode(),
                                     nameController: nameController,
-                                    text: AppStrings.nameText,
+                                    text: l.t('full_name'),
                                     icon: Icon(
                                       Icons.person_outline,
                                       color: ColorTokens.neutral60,
@@ -135,7 +137,7 @@ class CreateUserScreen extends StatelessWidget {
                                         : ColorTokens.neutral0,
                                     focusNode: FocusNode(),
                                     nameController: userNameController,
-                                    text: AppStrings.nameUserText,
+                                    text: l.t('username'),
                                     icon: Icon(
                                       Icons.pedal_bike_outlined,
                                       color: ColorTokens.neutral60,
@@ -157,7 +159,7 @@ class CreateUserScreen extends StatelessWidget {
                                             AppStrings.validatedText
                                         ? ColorTokens.error50
                                         : ColorTokens.neutral0,
-                                    text: AppStrings.correoText,
+                                    text: l.t('email_label'),
                                     icon: Icon(
                                       Icons.email,
                                       color: ColorTokens.neutral60,
@@ -185,7 +187,7 @@ class CreateUserScreen extends StatelessWidget {
                                     keyboardType: TextInputType.number,
                                     focusNode: FocusNode(),
                                     nameController: cellphoneController,
-                                    text: AppStrings.phoneText,
+                                    text: l.t('phone_label'),
                                     icon: Icon(
                                       Icons.phone_outlined,
                                       color: ColorTokens.neutral60,
@@ -264,7 +266,7 @@ class CreateUserScreen extends StatelessWidget {
                                   TexFieldWidget(
                                     focusNode: FocusNode(),
                                     nameController: passwordController,
-                                    text: AppStrings.passwordText,
+                                    text: l.t('password_label'),
                                     icon: Icon(
                                       Icons.lock_outline,
                                       color: ColorTokens.neutral60,
@@ -289,7 +291,7 @@ class CreateUserScreen extends StatelessWidget {
                                   TexFieldWidget(
                                     focusNode: FocusNode(),
                                     nameController: confirmPasswordController,
-                                    text: AppStrings.repeatPassword,
+                                    text: l.t('repeat_password'),
                                     icon: Icon(
                                       Icons.lock_outline,
                                       color: ColorTokens.neutral60,
@@ -312,8 +314,7 @@ class CreateUserScreen extends StatelessWidget {
                                     ),
                                     child: CheckboxListTile(
                                       title: Text(
-                                        AppStrings.termsConditions
-                                            .toUpperCase(),
+                                        l.t('terms_accept').toUpperCase(),
                                         style: Styles.rowGestureDetector
                                             .copyWith(
                                               color: ColorTokens.neutral0,
@@ -401,8 +402,8 @@ class CreateUserScreen extends StatelessWidget {
                               BiuxUser(
                                 userName: userNameController.text,
                                 modality: [
-                                  AppStrings.urbanoText.toLowerCase(),
-                                  AppStrings.rutaText.toLowerCase(),
+                                  l.t('urban').toLowerCase(),
+                                  l.t('route').toLowerCase(),
                                 ],
                                 premium: false,
                                 cityId: citySeleted,
@@ -418,22 +419,21 @@ class CreateUserScreen extends StatelessWidget {
                             if (!_formKey.currentState!.validate()) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
-                                  content: AppStrings.validationCreateRoadText,
+                                  content: l.t('must_complete_all_fields'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             } else if (bloc.image.path == '') {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
-                                  content: AppStrings.textErrorImageProfile,
+                                  content: l.t('profile_image_not_selected'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
-                                  content:
-                                      AppStrings.errorConfirmTermsConditions,
+                                  content: l.t('accept_terms_to_continue'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
@@ -542,6 +542,7 @@ class CreateUserScreen extends StatelessWidget {
     CreateUserBloc bloc,
     BuildContext context,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final userRepeted = await bloc.getValidationUserName(
         userNameController.text,
@@ -553,7 +554,7 @@ class CreateUserScreen extends StatelessWidget {
           bloc.replacevalidateColor2(AppStrings.novalidoText2);
           if (response.statusCode == 200) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBarUtils.customSnackBar(content: AppStrings.biuxUserText),
+              SnackBarUtils.customSnackBar(content: l.t('now_biux_user')),
             );
             String id = response.message;
             // Analitycs.sendSignUp(id); // IMPLEMENTADO (STUB): Migrate analytics
@@ -568,9 +569,9 @@ class CreateUserScreen extends StatelessWidget {
             bloc.replacevalidateColor2(AppStrings.validatedText);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBarUtils.customSnackBar(
-                content: AppStrings.messageRegisteredGmail(
-                  message: response.message,
-                ),
+                content: l
+                    .t('email_already_registered')
+                    .replaceAll('{email}', response.message),
                 backgroundColor: ColorTokens.error50,
               ),
             );
@@ -579,9 +580,9 @@ class CreateUserScreen extends StatelessWidget {
           bloc.changeLoading(false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBarUtils.customSnackBar(
-              content: AppStrings.messageRegisteredGmail(
-                message: emailController.text,
-              ),
+              content: l
+                  .t('email_already_registered')
+                  .replaceAll('{email}', emailController.text),
               backgroundColor: ColorTokens.error50,
             ),
           );
@@ -591,9 +592,9 @@ class CreateUserScreen extends StatelessWidget {
         bloc.replacevalidateColor1(AppStrings.validatedText);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBarUtils.customSnackBar(
-            content: AppStrings.messageRegisteredUser(
-              message: userNameController.text,
-            ),
+            content: l
+                .t('username_already_registered')
+                .replaceAll('{username}', userNameController.text),
             backgroundColor: ColorTokens.error50,
           ),
         );

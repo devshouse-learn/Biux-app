@@ -52,7 +52,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
       if (mounted) {
         setState(() {
           _hasError = true;
-          _errorMessage = 'Error al cargar el video: $e';
+          _errorMessage = e.toString();
         });
       }
     }

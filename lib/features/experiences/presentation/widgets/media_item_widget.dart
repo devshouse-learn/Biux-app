@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 
 /// Widget para mostrar un item multimedia en la creación de experiencias
@@ -85,11 +87,11 @@ class MediaItemWidget extends StatelessWidget {
                 color: Colors.black54,
                 borderRadius: BorderRadius.circular(7),
               ),
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 24,
                       height: 24,
                       child: CircularProgressIndicator(
@@ -97,10 +99,13 @@ class MediaItemWidget extends StatelessWidget {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'Procesando...',
-                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      Provider.of<LocaleNotifier>(
+                        context,
+                        listen: false,
+                      ).t('processing_label'),
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ],
                 ),
