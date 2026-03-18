@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/data/datasources/mock_products.dart';
-import "package:flutter/foundation.dart";
 
 /// Datasource para productos en Firebase Firestore
 class ProductRemoteDataSource {
