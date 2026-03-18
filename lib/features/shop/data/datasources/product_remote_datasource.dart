@@ -13,36 +13,9 @@ class ProductRemoteDataSource {
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Obtener todos los productos activos
+  /// SIEMPRE retorna mock con imagenes permanentes de GitHub raw:
+  /// https://raw.githubusercontent.com/devshouse-learn/Biux-app/features/taliana/img/shop/products/
   Future<List<ProductModel>> getProducts() async {
-    // OPTIMIZACIÓN: Cargar productos mock inmediatamente sin esperar Firestore
-    // Esto evita demoras en la carga inicial
-    try {
-      // Intentar cargar desde Firestore con timeout de 2 segundos
-      final snapshot = await _firestore
-          .collection(_collection)
-          .where('isActive', isEqualTo: true)
-          .orderBy('createdAt', descending: true)
-          .get()
-          .timeout(
-            const Duration(seconds: 2),
-            onTimeout: () {
-              // Si Firestore tarda mucho, retornar snapshot vacío
-              throw TimeoutException('Firestore timeout');
-            },
-          );
-
-      // Si hay productos en Firestore, usarlos
-      if (snapshot.docs.isNotEmpty) {
-        return snapshot.docs
-            .map((doc) => ProductModel.fromFirestore(doc))
-            .toList();
-      }
-    } catch (e) {
-      // Cualquier error (timeout, red, etc.) → usar productos mock
-      debugPrint('⚠️ Error cargando desde Firestore, usando productos mock: $e');
-    }
-
-    // Siempre retornar productos mock como fallback rápido
     final mockProducts = MockProducts.getProducts();
     return mockProducts
         .map((entity) => ProductModel.fromEntity(entity))
