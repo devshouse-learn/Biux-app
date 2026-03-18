@@ -2,10 +2,15 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 
 /// Productos de prueba para la tienda Biux
+/// Las imágenes están alojadas permanentemente en GitHub raw
 class MockProducts {
+  /// Base URL permanente de GitHub raw para imágenes de productos
+  static const String _imageBase =
+      'https://raw.githubusercontent.com/devshouse-learn/Biux-app/features/taliana/img/shop/products';
+
   static List<ProductEntity> getProducts() {
     return [
-      // 1. JERSEY - Foto fija: ciclista con maillot
+      // 1. JERSEY DE CICLISMO
       ProductEntity(
         id: 'prod_001',
         name: 'Jersey Ciclismo Pro',
@@ -16,17 +21,14 @@ class MockProducts {
         stock: 25,
         category: ProductCategories.jerseys,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: [
-          // Foto fija Unsplash: ciclista con jersey colorido
-          'https://images.unsplash.com/photo-1565687981296-535f09db714e?w=600&h=600&fit=crop',
-        ],
+        images: ['$_imageBase/jersey_pro.jpg'],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
         createdAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
 
-      // 2. CULOTE - Foto fija: ciclista pedaleando (se ve culote)
+      // 2. CULOTE CON BADANA GEL
       ProductEntity(
         id: 'prod_002',
         name: 'Culote con Badana Gel',
@@ -38,17 +40,14 @@ class MockProducts {
         stock: 15,
         category: ProductCategories.shorts,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: [
-          // Foto fija Unsplash: ciclista en bici de ruta
-          'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&h=600&fit=crop',
-        ],
+        images: ['$_imageBase/culote_gel.jpg'],
         isActive: true,
         sellerId: 'mock_seller_001',
         sellerName: 'BikeShop Pro',
         createdAt: DateTime.now().subtract(const Duration(days: 3)),
       ),
 
-      // 3. GUANTES - Foto fija: manos en manillar con guantes
+      // 3. GUANTES CICLISMO GEL
       ProductEntity(
         id: 'prod_003',
         name: 'Guantes Ciclismo Gel',
@@ -59,17 +58,14 @@ class MockProducts {
         stock: 50,
         category: ProductCategories.gloves,
         sizes: ['S', 'M', 'L', 'XL'],
-        images: [
-          // Foto fija Unsplash: primer plano manos en manillar
-          'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop',
-        ],
+        images: ['$_imageBase/guantes_gel.jpg'],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
         createdAt: DateTime.now().subtract(const Duration(days: 7)),
       ),
 
-      // 4. CASCO - Foto fija: casco de ciclismo
+      // 4. CASCO AERODINAMICO
       ProductEntity(
         id: 'prod_004',
         name: 'Casco Aerodinamico',
@@ -80,17 +76,14 @@ class MockProducts {
         stock: 10,
         category: ProductCategories.helmets,
         sizes: ['S', 'M', 'L'],
-        images: [
-          // Foto fija Unsplash: casco de ciclismo profesional
-          'https://images.unsplash.com/photo-1557803175-2b5fb1ae8f6e?w=600&h=600&fit=crop',
-        ],
+        images: ['$_imageBase/casco_aero.jpg'],
         isActive: true,
         sellerId: 'mock_seller_002',
         sellerName: 'CicloTienda',
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
       ),
 
-      // 5. GAFAS - Foto fija: gafas deportivas
+      // 5. GAFAS DEPORTIVAS UV400
       ProductEntity(
         id: 'prod_005',
         name: 'Gafas Deportivas UV400',
@@ -101,17 +94,14 @@ class MockProducts {
         stock: 30,
         category: ProductCategories.glasses,
         sizes: ['Unica'],
-        images: [
-          // Foto fija Unsplash: gafas de sol deportivas
-          'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=600&fit=crop',
-        ],
+        images: ['$_imageBase/gafas_uv400.jpg'],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       ),
 
-      // 6. ZAPATILLAS - Foto fija: zapatillas ciclismo
+      // 6. ZAPATILLAS CICLISMO ROAD
       ProductEntity(
         id: 'prod_006',
         name: 'Zapatillas Ciclismo Road',
@@ -122,10 +112,7 @@ class MockProducts {
         stock: 8,
         category: ProductCategories.shoes,
         sizes: ['38', '39', '40', '41', '42', '43', '44'],
-        images: [
-          // Foto fija Unsplash: zapatillas deportivas
-          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop',
-        ],
+        images: ['$_imageBase/zapatillas_road.jpg'],
         isActive: true,
         sellerId: 'mock_seller_003',
         sellerName: 'VeloStore',
