@@ -106,6 +106,34 @@ class UserProvider extends ChangeNotifier {
       _user = userData;
 
       if (_user != null) {
+        // Si el phoneNumber está vacío o no parece un teléfono válido,
+        // intentar recuperarlo de FirebaseAuth o del propio UID
+        final storedPhone = _user!.phoneNumber;
+        final isPhoneInvalid =
+            storedPhone.isEmpty ||
+            (!storedPhone.startsWith('+') && storedPhone.length > 15);
+        if (isPhoneInvalid) {
+          String recoveredPhone = '';
+
+          // Intento 1: FirebaseAuth (funciona con phone auth nativo)
+          final authPhone =
+              FirebaseAuth.instance.currentUser?.phoneNumber ?? '';
+          if (authPhone.isNotEmpty) {
+            recoveredPhone = authPhone;
+          }
+
+          // Intento 2: Extraer del UID (formato phone_57XXXXXXXXXX)
+          if (recoveredPhone.isEmpty && uid.startsWith('phone_')) {
+            recoveredPhone = '+${uid.substring(6)}';
+          }
+
+          if (recoveredPhone.isNotEmpty) {
+            _user = _user!.copyWith(phoneNumber: recoveredPhone);
+            // Persistir en Firestore para futuras lecturas
+            _userService.updatePhoneNumber(uid, recoveredPhone);
+          }
+        }
+
         debugPrint('👤 Usuario cargado: ${_user!.name ?? "Sin nombre"}');
         debugPrint('🛡️ Es admin: ${_user!.isAdmin}');
         debugPrint('🛒 Puede vender: ${_user!.canSellProducts}');

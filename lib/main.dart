@@ -63,7 +63,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/social/presentation/providers/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -82,6 +81,7 @@ import 'package:biux/features/social/presentation/providers/follow_provider.dart
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/shared/services/notification_service.dart';
+import 'package:biux/shared/services/screen_time_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
 import 'package:biux/shared/widgets/offline_banner.dart';
 
@@ -138,6 +138,9 @@ void main() async {
 
   // Inicializar servicio de notificaciones
   await NotificationService().initialize();
+
+  // Inicializar tracking de tiempo de uso
+  await ScreenTimeService.instance.initialize();
 
   runApp(
     MultiProvider(

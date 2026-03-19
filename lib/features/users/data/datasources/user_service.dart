@@ -57,6 +57,21 @@ class UserService {
     }
   }
 
+  /// Actualizar el número de teléfono del usuario en Firestore
+  Future<void> updatePhoneNumber(String uid, String phoneNumber) async {
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'phoneNumber': phoneNumber,
+      });
+    } catch (e) {
+      AppLogger.warning(
+        'Error actualizando phoneNumber',
+        tag: 'UserService',
+        error: e,
+      );
+    }
+  }
+
   // Escuchar cambios en tiempo real del usuario
   void listenToUser(String uid, Function(UserModel?) onDataChanged) {
     try {

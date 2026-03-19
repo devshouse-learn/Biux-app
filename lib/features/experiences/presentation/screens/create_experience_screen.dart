@@ -7,6 +7,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_crea
 import 'package:biux/features/experiences/presentation/widgets/media_item_widget.dart';
 import 'package:biux/features/experiences/presentation/widgets/media_selector_widget.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/screens/image_crop_editor_screen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -842,6 +843,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     if (_isEditMode) {
       // Modo edición: actualizar experiencia existente
@@ -1135,6 +1137,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
   /// Construye el selector de tipo de contenido (Story vs Post)
   Widget _buildContentTypeSelector() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

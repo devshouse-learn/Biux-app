@@ -2,12 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/comment_entity.dart';
+import '../../domain/entities/notification_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 import '../../domain/repositories/notifications_repository.dart';
 
 /// Provider para gestionar comentarios
 class CommentsProvider extends ChangeNotifier {
   final CommentsRepository _repository;
+  final NotificationsRepository _notificationsRepository;
   final String userId;
 
   // Variables para caché de datos del usuario
@@ -19,7 +21,8 @@ class CommentsProvider extends ChangeNotifier {
     required CommentsRepository repository,
     required NotificationsRepository notificationsRepository,
     required this.userId,
-  }) : _repository = repository;
+  }) : _repository = repository,
+       _notificationsRepository = notificationsRepository;
 
   /// Obtiene los datos del usuario desde Firestore (se ejecuta una sola vez)
   Future<void> _loadUserData() async {
@@ -231,9 +234,46 @@ class CommentsProvider extends ChangeNotifier {
 
       debugPrint('Comentario creado: $commentId');
 
-      // ⚠️ Las notificaciones son creadas automáticamente por Cloud Functions
-      // Ver: biux-cloud/functions/comment-notifications.js
-      // Triggers: onCommentPostCreated, onCommentRideCreated
+      // Crear notificación para el dueño del contenido
+      if (targetOwnerId != userIdForComment) {
+        final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
+            ? _cachedUserName!
+            : userIdForComment.split('_').last;
+
+        // Determinar tipo de notificación
+        final notifType = parentCommentId != null
+            ? NotificationType.replyComment
+            : (type == CommentableType.post
+                  ? NotificationType.commentPost
+                  : NotificationType.commentRide);
+
+        // Determinar a quién notificar
+        final notifyUserId =
+            parentCommentId != null && parentCommentOwnerId != null
+            ? parentCommentOwnerId
+            : targetOwnerId;
+
+        if (notifyUserId != userIdForComment) {
+          await _notificationsRepository.createNotification(
+            userId: notifyUserId,
+            type: notifType,
+            fromUserId: userIdForComment,
+            fromUserName: safeUserName,
+            fromUserPhoto: _cachedUserPhoto,
+            targetType: type == CommentableType.post
+                ? NotificationTargetType.post
+                : NotificationTargetType.ride,
+            targetId: targetId,
+            targetPreview: text.trim().length > 80
+                ? '${text.trim().substring(0, 80)}...'
+                : text.trim(),
+            metadata: {
+              'postOwnerId': targetOwnerId,
+              if (parentCommentId != null) 'parentCommentId': parentCommentId,
+            },
+          );
+        }
+      }
 
       // Detectar menciones y notificar
       await _notifyMentions(text, targetId, type);

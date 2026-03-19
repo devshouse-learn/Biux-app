@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Feature imports (providers)
 import '../../../features/groups/presentation/providers/group_provider.dart';
@@ -84,6 +85,9 @@ import '../../../features/store/domain/entities/product_entity.dart';
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
+import '../../../features/settings/presentation/screens/privacy_details_screen.dart';
+import '../../../features/settings/presentation/screens/appearance_details_screen.dart';
+import '../../../features/settings/presentation/screens/information_details_screen.dart';
 
 // Help imports
 import '../../../features/help/presentation/screens/help_screen.dart';
@@ -514,9 +518,12 @@ final GoRouter _router = GoRouter(
             GoRoute(
               path: 'post/:postId',
               name: 'postDetail',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 final postId = state.pathParameters['postId']!;
-                return PostDetailScreen(postId: postId);
+                return MaterialPage(
+                  key: ValueKey('postDetail_$postId'),
+                  child: PostDetailScreen(postId: postId),
+                );
               },
             ),
             // Ver historia específica
@@ -662,18 +669,6 @@ final GoRouter _router = GoRouter(
           path: '/notifications',
           name: 'notifications',
           builder: (context, state) => const NotificationsScreen(),
-        ),
-
-        // Comentarios de posts
-        GoRoute(
-          path: '/posts/:postId/comments',
-          name: 'postComments',
-          builder: (context, state) {
-            final postId = state.pathParameters['postId']!;
-            final ownerId = state.uri.queryParameters['ownerId']!;
-
-            return PostCommentsScreen(postId: postId, postOwnerId: ownerId);
-          },
         ),
 
         // Comentarios de rodadas
@@ -997,6 +992,23 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const AccountSettingsScreen(),
     ),
 
+    // Settings sub-screens
+    GoRoute(
+      path: '/settings/privacy',
+      name: 'settingsPrivacy',
+      builder: (context, state) => const PrivacyDetailsScreen(),
+    ),
+    GoRoute(
+      path: '/settings/appearance',
+      name: 'settingsAppearance',
+      builder: (context, state) => const AppearanceScreenDetails(),
+    ),
+    GoRoute(
+      path: '/settings/information',
+      name: 'settingsInformation',
+      builder: (context, state) => const InformationDetailsScreen(),
+    ),
+
     // Pantallas de Tu Actividad
     GoRoute(
       path: '/activity/likes',
@@ -1019,13 +1031,27 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const ActivityStoriesScreen(),
     ),
 
+    // Comentarios de posts (fuera del ShellRoute para funcionar desde post-detail standalone)
+    GoRoute(
+      path: '/posts/:postId/comments',
+      name: 'postComments',
+      builder: (context, state) {
+        final postId = state.pathParameters['postId']!;
+        final ownerId = state.uri.queryParameters['ownerId'] ?? '';
+        return PostCommentsScreen(postId: postId, postOwnerId: ownerId);
+      },
+    ),
+
     // Ver detalle de post (fuera del ShellRoute para evitar conflicto de navigator)
     GoRoute(
       path: '/post-detail/:postId',
       name: 'postDetailStandalone',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final postId = state.pathParameters['postId']!;
-        return PostDetailScreen(postId: postId);
+        return MaterialPage(
+          key: ValueKey('postDetailStandalone_$postId'),
+          child: PostDetailScreen(postId: postId),
+        );
       },
     ),
 
@@ -1048,15 +1074,6 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         final productId = state.pathParameters['id']!;
         return ProductDetailScreen(productId: productId);
-      },
-    ),
-
-    GoRoute(
-      path: AppRoutes.publicBikeInfo,
-      name: '${AppRoutes.publicBikeInfoName}External',
-      builder: (context, state) {
-        final qrCode = state.pathParameters['qrCode']!;
-        return PublicBikeInfoScreen(qrCode: qrCode);
       },
     ),
   ],

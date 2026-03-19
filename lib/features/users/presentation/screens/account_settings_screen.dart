@@ -7,6 +7,7 @@ import 'package:biux/features/settings/presentation/widgets/settings_shared_widg
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({Key? key}) : super(key: key);
@@ -129,6 +130,44 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
                 SizedBox(height: 32),
 
+                // ========== SEGURIDAD Y VERIFICACIÓN ==========
+                Text(
+                  'Seguridad y Verificación',
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.verified_user_outlined,
+                  title: 'Verificar Cuenta',
+                  subtitle: 'Estado de verificación por teléfono y email',
+                  onTap: () => _showVerifyAccountDialog(),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.lock_outline,
+                  title: 'Cambiar Contraseña',
+                  subtitle: 'Actualiza tu contraseña de acceso',
+                  onTap: () => _showChangePasswordDialog(),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.history,
+                  title: 'Historial de Actividad',
+                  subtitle: 'Sesiones y proveedores de autenticación',
+                  onTap: () => _showActivityHistoryDialog(),
+                ),
+                SizedBox(height: 32),
+
                 // ========== TU ACTIVIDAD ==========
                 Text(
                   'Tu Actividad',
@@ -182,6 +221,53 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   title: 'Tiempo en la App',
                   subtitle: 'Promedio diario y estadísticas de uso',
                   onTap: () => context.push('/activity/screen-time'),
+                ),
+                SizedBox(height: 32),
+
+                // ========== CONFIGURACIÓN ==========
+                Text(
+                  'Configuración',
+                  style: TextStyle(
+                    color: ColorTokens.neutral100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.shield_outlined,
+                  title: 'Privacidad',
+                  subtitle: 'Visibilidad del perfil y permisos',
+                  onTap: () => context.push('/settings/privacy'),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.notifications_outlined,
+                  title: 'Notificaciones',
+                  subtitle: 'Configura tus alertas y notificaciones',
+                  onTap: () => context.push(AppRoutes.notificationSettings),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.palette_outlined,
+                  title: 'Apariencia',
+                  subtitle: 'Tema e idioma de la aplicación',
+                  onTap: () => context.push('/settings/appearance'),
+                ),
+                SizedBox(height: 12),
+
+                _buildSettingOptionButton(
+                  context: context,
+                  icon: Icons.info_outline,
+                  title: 'Información',
+                  subtitle: 'Versión, términos y soporte técnico',
+                  onTap: () => context.push('/settings/information'),
                 ),
                 SizedBox(height: 32),
 
@@ -651,6 +737,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   // ===== CAMBIAR CONTRASEÑA =====
+  // ignore: unused_element
   void _showChangePasswordDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -774,6 +861,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   // ===== HISTORIAL DE ACTIVIDAD =====
+  // ignore: unused_element
   void _showActivityHistoryDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -982,6 +1070,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   // ===== VERIFICAR CUENTA =====
+  // ignore: unused_element
   bool _isAccountVerified() {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) return false;
@@ -994,6 +1083,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     return firebaseUser.emailVerified;
   }
 
+  // ignore: unused_element
   void _showVerifyAccountDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -1059,7 +1149,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               _buildVerificationRow(
                 icon: Icons.phone_android,
                 label: l.t('verified_by_phone'),
-                value: firebaseUser!.phoneNumber!,
+                value: firebaseUser.phoneNumber!,
                 isVerified: true,
                 isDark: isDark,
               ),
@@ -1070,7 +1160,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               _buildVerificationRow(
                 icon: Icons.email_outlined,
                 label: l.t('email_auth'),
-                value: firebaseUser!.email!,
+                value: firebaseUser.email!,
                 isVerified: isEmailVerified,
                 isDark: isDark,
               ),
@@ -1084,7 +1174,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () async {
                     try {
-                      await firebaseUser!.sendEmailVerification();
+                      await firebaseUser.sendEmailVerification();
                       Navigator.of(sheetContext).pop();
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(

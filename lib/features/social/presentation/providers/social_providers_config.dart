@@ -59,10 +59,10 @@ class SocialProvidersConfig {
           }
 
           final likesRepository = LikesRepositoryImpl();
-          // final notificationsRepository = NotificationsRepositoryImpl(); // ✅ Not needed
+          final notificationsRepository = NotificationsRepositoryImpl();
           return LikesProvider(
             repository: likesRepository,
-            // notificationsRepository: notificationsRepository, // ✅ Not needed
+            notificationsRepository: notificationsRepository,
             userId: currentUser.uid,
           );
         },

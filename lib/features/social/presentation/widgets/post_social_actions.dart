@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../providers/comments_provider.dart';
 import '../widgets/like_button.dart';
+import '../widgets/bookmark_button.dart';
+import '../widgets/report_content_dialog.dart';
 import '../../domain/repositories/likes_repository.dart';
 import '../../domain/repositories/comments_repository.dart';
 
@@ -48,8 +50,20 @@ class PostSocialActions extends StatelessWidget {
 
           const Spacer(),
 
+          // Botón de guardar/bookmark
+          BookmarkButton(
+            postId: postId,
+            size: 24,
+            inactiveColor: theme.iconTheme.color ?? Colors.grey,
+          ),
+
+          const SizedBox(width: 12),
+
           // Botón de compartir
           _ShareButton(postId: postId, postPreview: postPreview),
+
+          // Botón de más opciones (reportar)
+          _MoreOptionsButton(postId: postId, postOwnerId: postOwnerId),
         ],
       ),
     );
@@ -261,5 +275,29 @@ class _ShareButton extends StatelessWidget {
         ).showSnackBar(SnackBar(content: Text('${l.t('share_error')}: $e')));
       }
     }
+  }
+}
+
+class _MoreOptionsButton extends StatelessWidget {
+  final String postId;
+  final String postOwnerId;
+
+  const _MoreOptionsButton({required this.postId, required this.postOwnerId});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.more_vert, size: 20),
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints(minWidth: 32, minHeight: 32),
+      onPressed: () {
+        ReportContentDialog.show(
+          context: context,
+          contentId: postId,
+          contentOwnerId: postOwnerId,
+          contentType: 'post',
+        );
+      },
+    );
   }
 }

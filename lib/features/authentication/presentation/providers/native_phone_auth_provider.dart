@@ -197,6 +197,7 @@ class NativePhoneAuthProvider extends ChangeNotifier {
       await _firestore.collection('users').doc(user.uid).set({
         'uid': user.uid,
         'phone': phoneNumber,
+        'phoneNumber': phoneNumber,
         'isAdmin': true,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
@@ -220,6 +221,16 @@ class NativePhoneAuthProvider extends ChangeNotifier {
     final userDoc = await _firestore.collection('users').doc(user?.uid).get();
 
     _needsProfileSetup = !userDoc.exists || userDoc.data()?['name'] == null;
+
+    // Guardar el phoneNumber si no está en el documento
+    if (user != null && _phoneNumber != null && _phoneNumber!.isNotEmpty) {
+      final existingPhone = userDoc.data()?['phoneNumber'] ?? '';
+      if (existingPhone.toString().isEmpty) {
+        await _firestore.collection('users').doc(user.uid).set({
+          'phoneNumber': _phoneNumber,
+        }, SetOptions(merge: true));
+      }
+    }
 
     try {
       await NotificationService().initialize();
