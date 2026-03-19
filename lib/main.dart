@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Features imports
 import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
@@ -63,6 +63,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/social/presentation/providers/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
+import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // New feature providers
 import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats_provider.dart';
@@ -147,6 +151,21 @@ void main() async {
         ),
         ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider<LocaleNotifier>(create: (_) => LocaleNotifier()),
+        ChangeNotifierProxyProvider<
+          app_auth.AuthProvider,
+          NotificationsProvider?
+        >(
+          create: (_) => null,
+          update: (context, authProvider, previous) {
+            final currentUser = FirebaseAuth.instance.currentUser;
+            if (currentUser == null) return null;
+            if (previous != null) return previous;
+            return NotificationsProvider(
+              repository: NotificationsRepositoryImpl(),
+              userId: currentUser.uid,
+            );
+          },
+        ),
         ChangeNotifierProvider(
           create: (_) =>
               MeetingPointProvider(repository: MeetingPointRepository()),

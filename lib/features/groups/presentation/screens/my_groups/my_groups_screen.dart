@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
@@ -32,10 +31,9 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.t('my_groups')),
+        title: Text('Mis Grupos'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
         bottom: TabBar(
@@ -44,8 +42,8 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
           unselectedLabelColor: ColorTokens.neutral100.withValues(alpha: 0.7),
           indicatorColor: ColorTokens.neutral100,
           tabs: [
-            Tab(text: l.t('member')),
-            Tab(text: l.t('administered')),
+            Tab(text: 'Miembro'),
+            Tab(text: 'Administrados'),
           ],
         ),
       ),
@@ -64,13 +62,12 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
         onPressed: () => context.go('/groups/create'),
         backgroundColor: ColorTokens.primary30,
         child: Icon(Icons.add, color: ColorTokens.neutral100),
-        tooltip: l.t('create_new_group'),
+        tooltip: 'Crear nuevo grupo',
       ),
     );
   }
 
   Widget _buildMemberGroupsTab(GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
     if (provider.isLoading) {
       return Center(child: CircularProgressIndicator());
     }
@@ -101,7 +98,6 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   }
 
   Widget _buildAdminGroupsTab(GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
     if (provider.isLoading) {
       return Center(child: CircularProgressIndicator());
     }
@@ -109,9 +105,9 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
     if (provider.adminGroups.isEmpty) {
       return _buildEmptyState(
         icon: Icons.admin_panel_settings_outlined,
-        title: l.t('not_admin_any_group'),
-        subtitle: l.t('create_group_become_admin'),
-        actionText: l.t('create_group'),
+        title: 'No administras ningún grupo',
+        subtitle: 'Crea tu primer grupo y conviértete en administrador',
+        actionText: 'Crear Grupo',
         onAction: () => context.go('/groups/create'),
       );
     }
@@ -232,7 +228,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                             ),
                           ),
                           Text(
-                            '${group.memberCount} ${Provider.of<LocaleNotifier>(context).t('members')}',
+                            '${group.memberCount} miembros',
                             style: TextStyle(
                               color: ColorTokens.neutral60,
                               fontSize: 12,
@@ -244,7 +240,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                     if (group.isAdmin(provider.currentUserId ?? ''))
                       Chip(
                         label: Text(
-                          Provider.of<LocaleNotifier>(context).t('admin'),
+                          'Admin',
                           style: TextStyle(
                             fontSize: 10,
                             color: Colors.white,
@@ -269,15 +265,13 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                   children: [
                     TextButton(
                       onPressed: () => context.go('/groups/${group.id}'),
-                      child: Text(
-                        Provider.of<LocaleNotifier>(context).t('view_details'),
-                      ),
+                      child: Text('Ver Detalles'),
                     ),
                     if (!group.isAdmin(provider.currentUserId ?? ''))
                       TextButton(
                         onPressed: () => _showLeaveGroupDialog(group, provider),
                         child: Text(
-                          Provider.of<LocaleNotifier>(context).t('leave'),
+                          'Salir',
                           style: TextStyle(color: ColorTokens.error50),
                         ),
                       ),
@@ -292,7 +286,6 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   }
 
   Widget _buildAdminGroupCard(GroupModel group, GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Card(
       margin: EdgeInsets.only(bottom: 16),
       elevation: 4,
@@ -320,7 +313,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                 Icon(Icons.admin_panel_settings, color: Colors.white, size: 16),
                 SizedBox(width: 4),
                 Text(
-                  l.t('administrator_label'),
+                  'ADMINISTRADOR',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -380,7 +373,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                             ),
                           ),
                           Text(
-                            '${group.memberCount} ${l.t('members')}',
+                            '${group.memberCount} miembros',
                             style: TextStyle(
                               color: ColorTokens.neutral60,
                               fontSize: 12,
@@ -434,7 +427,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                         ),
                         SizedBox(width: 8),
                         Text(
-                          '${group.pendingRequestCount} ${l.t('pending_requests_label')}',
+                          '${group.pendingRequestCount} solicitudes pendientes',
                           style: TextStyle(
                             color: ColorTokens.warning50,
                             fontSize: 12,
@@ -455,7 +448,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                           backgroundColor: ColorTokens.primary30,
                           foregroundColor: ColorTokens.neutral100,
                         ),
-                        child: Text(l.t('manage')),
+                        child: Text('Gestionar'),
                       ),
                     ),
                   ],
@@ -469,16 +462,17 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   }
 
   void _showLeaveGroupDialog(GroupModel group, GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l.t('leave_group')),
-        content: Text('${l.t('leave_group_confirm_name')} "${group.name}"?'),
+        title: Text('Salir del grupo'),
+        content: Text(
+          '¿Estás seguro de que quieres salir del grupo "${group.name}"?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l.t('cancel')),
+            child: Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -487,14 +481,14 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(l.t('left_group')),
+                    content: Text('Has salido del grupo'),
                     backgroundColor: ColorTokens.success40,
                   ),
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(provider.error ?? l.t('error_leaving_group')),
+                    content: Text(provider.error ?? 'Error al salir del grupo'),
                     backgroundColor: ColorTokens.error50,
                   ),
                 );
@@ -503,7 +497,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
             ),
-            child: Text(l.t('leave')),
+            child: Text('Salir'),
           ),
         ],
       ),

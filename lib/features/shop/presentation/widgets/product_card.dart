@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;

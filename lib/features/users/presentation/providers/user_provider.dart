@@ -152,6 +152,7 @@ class UserProvider extends ChangeNotifier {
     String? username,
     String? photoUrl,
     String? coverPhotoUrl,
+    DateTime? birthDate,
   }) async {
     debugPrint('🔍 ====== USER PROVIDER: updateProfile ======');
     debugPrint('📝 Nombre recibido: "$name"');
@@ -189,7 +190,9 @@ class UserProvider extends ChangeNotifier {
     // Una foto es actualización si: no es null (nuevo valor) O si es cadena vacía (eliminación)
     bool hasPhotoUpdate = photoUrl != null || coverPhotoUrl != null;
 
-    if (!hasTextUpdate && !hasPhotoUpdate) {
+    bool hasBirthDateUpdate = birthDate != null;
+
+    if (!hasTextUpdate && !hasPhotoUpdate && !hasBirthDateUpdate) {
       debugPrint('❌ ERROR: Todos los campos vacíos');
       _error = 'user_error_empty_fields';
       notifyListeners();
@@ -213,6 +216,7 @@ class UserProvider extends ChangeNotifier {
         username: username,
         photoUrl: photoUrl,
         coverPhotoUrl: coverPhotoUrl,
+        birthDate: birthDate,
       );
 
       debugPrint('📊 Respuesta del servicio: $success');

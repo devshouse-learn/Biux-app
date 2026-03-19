@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
@@ -8,6 +7,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_crea
 import 'package:biux/features/experiences/presentation/widgets/media_item_widget.dart';
 import 'package:biux/features/experiences/presentation/widgets/media_selector_widget.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/screens/image_crop_editor_screen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -100,7 +100,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Consumer<ExperienceCreatorProvider>(
       builder: (context, provider, child) {
         return PopScope(
@@ -114,14 +113,14 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             appBar: AppBar(
               title: Text(
                 _isEditMode
-                    ? l.t('exp_create_edit_publication')
+                    ? 'Editar Publicación'
                     : widget.isStoryMode
-                    ? l.t('exp_create_new_story')
+                    ? 'Nueva Historia'
                     : widget.isPostMode
-                    ? l.t('exp_create_new_publication')
+                    ? 'Nueva Publicación'
                     : widget.experienceType == ExperienceType.ride
-                    ? l.t('exp_create_new_ride_experience')
-                    : l.t('exp_create_new_experience'),
+                    ? 'Nueva Experiencia de Rodada'
+                    : 'Nueva Experiencia',
                 style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: ColorTokens.primary30,
@@ -143,8 +142,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         SizedBox(width: 8),
                         Text(
                           widget.isPostMode
-                              ? l.t('exp_create_discard_publication')
-                              : l.t('exp_create_discard_story'),
+                              ? 'Descartar Publicación'
+                              : 'Descartar Historia',
                           style: TextStyle(color: Colors.red),
                         ),
                       ],
@@ -171,9 +170,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ? _publishExperience
                         : null,
                     child: Text(
-                      _isEditMode
-                          ? l.t('exp_create_save_publish_changes')
-                          : l.t('exp_create_publish'),
+                      _isEditMode ? 'Guardar y publicar cambios' : 'Publicar',
                       style: TextStyle(
                         color: _canPublish(provider)
                             ? Colors.white
@@ -339,8 +336,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                       Expanded(
                         child: Text(
                           _contentType == 'story'
-                              ? l.t('exp_create_story_media_hint')
-                              : l.t('exp_create_post_media_hint'),
+                              ? 'Historia requiere imagen o video (máximo 30 segundos)'
+                              : 'Agrega fotos o videos a tu publicación',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
@@ -485,8 +482,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                 Expanded(
                   child: Text(
                     _contentType == 'story'
-                        ? l.t('exp_create_story_text_help')
-                        : l.t('exp_create_post_text_help'),
+                        ? 'Historia: Texto corto (máximo 100 caracteres)'
+                        : 'Publicación: Escribe lo que quieras compartir',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -652,7 +649,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                l.t('exp_create_info'),
+                'Información',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -665,26 +662,26 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
           // Información según el tipo de contenido
           if (widget.textOnly) ...[
             _buildInfoItem(
-              l.t('exp_create_info_text_only_title'),
-              l.t('exp_create_info_text_only_desc'),
+              '📝 Post de solo texto',
+              'No se requiere ni permite multimedia. Solo escribe tu publicación.',
             ),
           ] else if (_contentType == 'story') ...[
             _buildInfoItem(
-              l.t('exp_create_info_ephemeral_title'),
-              l.t('exp_create_info_ephemeral_desc'),
+              '⏱️ Historia efímera',
+              'Tu historia desaparecerá en 24 horas.',
             ),
             _buildInfoItem(
-              l.t('exp_create_info_media_required_title'),
-              l.t('exp_create_info_media_required_desc'),
+              '📸 Multimedia requerida',
+              'Las historias requieren al menos una imagen o video (<30s).',
             ),
           ] else if (widget.experienceType == ExperienceType.ride) ...[
             _buildInfoItem(
-              l.t('exp_create_info_video_title'),
-              l.t('exp_create_info_video_desc'),
+              '📹 Videos de hasta 30 segundos',
+              'Los videos se comprimirán automáticamente para optimizar la calidad y el tamaño.',
             ),
             _buildInfoItem(
-              l.t('exp_create_info_max_items_title'),
-              l.t('exp_create_info_max_items_desc'),
+              '📱 Máximo 5 elementos',
+              'Puedes agregar hasta 5 imágenes o videos en total.',
             ),
           ] else ...[
             _buildInfoItem(
@@ -692,8 +689,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               l.t('exp_create_info_media_optional_desc'),
             ),
             _buildInfoItem(
-              l.t('exp_create_info_max_items_title'),
-              l.t('exp_create_info_max_items_desc'),
+              '� Máximo 5 elementos',
+              'Puedes agregar hasta 5 imágenes o videos en total.',
             ),
           ],
         ],
@@ -799,8 +796,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         provider.reset();
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.t('exp_create_publication_updated')),
+          const SnackBar(
+            content: Text('¡Publicación actualizada exitosamente!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -808,9 +805,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                experienceProvider.error ?? l.t('exp_create_error_updating'),
-              ),
+              content: Text(experienceProvider.error ?? 'Error al actualizar'),
               backgroundColor: Colors.red,
             ),
           );
@@ -824,8 +819,8 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
       if (success && mounted) {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.t('exp_create_experience_published')),
+          const SnackBar(
+            content: Text('¡Experiencia publicada exitosamente!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -844,13 +839,12 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
   }
 
   void _showDeleteDialog(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final title = widget.isPostMode
-        ? l.t('exp_create_discard_publication')
-        : l.t('exp_create_discard_story');
+        ? 'Descartar Publicación'
+        : 'Descartar Historia';
     final content = widget.isPostMode
-        ? l.t('exp_create_discard_publication_confirm')
-        : l.t('exp_create_discard_story_confirm');
+        ? '¿Estás seguro de que deseas descartar esta publicación? Se perderán todos los cambios.'
+        : '¿Estás seguro de que deseas descartar esta historia? Se perderán todos los cambios.';
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -859,7 +853,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l.t('exp_create_cancel')),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
@@ -882,7 +876,6 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     ExperienceCreatorProvider provider, {
     required bool isCamera,
   }) async {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       // Usar el método del provider para obtener la imagen
       if (isCamera) {
@@ -906,7 +899,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               MaterialPageRoute(
                 builder: (_) => ImageCropEditorScreen(
                   imageFile: file,
-                  title: l.t('exp_create_crop_photo_title'),
+                  title: 'Ajustar foto - Formato cuadrado',
                 ),
               ),
             );
@@ -937,7 +930,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
               MaterialPageRoute(
                 builder: (_) => ImageCropEditorScreen(
                   imageFile: file,
-                  title: l.t('exp_create_crop_image_title'),
+                  title: 'Ajustar imagen - Formato cuadrado',
                 ),
               ),
             );
@@ -952,10 +945,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l.t('exp_create_error')}: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -981,7 +971,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            l.t('exp_create_what_to_create'),
+            '¿Qué quieres crear?',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,

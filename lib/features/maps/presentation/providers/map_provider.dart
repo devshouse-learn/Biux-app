@@ -274,7 +274,9 @@ class MapProvider extends ChangeNotifier {
           _fitRouteInViewFromPoints(directionResult.points);
         }
       } else {
-        debugPrint('⚠️ No se pudo obtener la ruta desde la API, usando línea recta');
+        debugPrint(
+          '⚠️ No se pudo obtener la ruta desde la API, usando línea recta',
+        );
 
         // Si falla la API, crear una línea recta punteada
         final simplePolylines = {

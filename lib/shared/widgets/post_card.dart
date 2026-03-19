@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Datos de usuario genéricos para el PostCard
 class PostCardUser {
@@ -140,6 +140,7 @@ class _PostCardHeader extends StatelessWidget {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       child: Row(

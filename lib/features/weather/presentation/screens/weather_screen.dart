@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -21,12 +21,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text('Clima para Ciclismo'),
+        title: Text(l.t('weather_for_cycling')),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -36,18 +37,30 @@ class _WeatherScreenState extends State<WeatherScreen> {
       ),
       body: Consumer<WeatherProvider>(
         builder: (ctx, wp, _) {
-          if (wp.loading) return const Center(child: CircularProgressIndicator());
+          if (wp.loading)
+            return const Center(child: CircularProgressIndicator());
           if (wp.error != null) {
-            return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
-              const SizedBox(height: 16),
-              Text(wp.error!, style: TextStyle(color: Colors.grey[600])),
-              const SizedBox(height: 16),
-              ElevatedButton(onPressed: () => wp.loadWeather(), child: const Text('Reintentar')),
-            ]));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    l.t(wp.error!),
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => wp.loadWeather(),
+                    child: Text(l.t('retry')),
+                  ),
+                ],
+              ),
+            );
           }
           if (wp.weatherData == null) {
-            return const Center(child: Text('Cargando clima...'));
+            return Center(child: Text(l.t('loading_weather')));
           }
 
           return SingleChildScrollView(
@@ -65,21 +78,55 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           : [const Color(0xFF616161), const Color(0xFF9E9E9E)],
                     ),
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [BoxShadow(color: Colors.blue.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 8))],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withValues(alpha: 0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
                   child: Column(
                     children: [
-                      Text(wp.weatherEmoji, style: const TextStyle(fontSize: 72)),
+                      Text(
+                        wp.weatherEmoji,
+                        style: const TextStyle(fontSize: 72),
+                      ),
                       const SizedBox(height: 8),
-                      Text(wp.temperature, style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: Colors.white)),
-                      Text(wp.description, style: const TextStyle(fontSize: 18, color: Colors.white70)),
+                      Text(
+                        wp.temperature,
+                        style: const TextStyle(
+                          fontSize: 56,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        l.t(wp.description),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white70,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _weatherDetail('💨', 'Viento', '${wp.windSpeed.toStringAsFixed(1)} km/h'),
-                          _weatherDetail('💧', 'Humedad', '${wp.humidity}%'),
-                          _weatherDetail('🌡️', 'Sensación', '${wp.feelsLike.round()}°C'),
+                          _weatherDetail(
+                            '💨',
+                            l.t('wind'),
+                            '${wp.windSpeed.toStringAsFixed(1)} km/h',
+                          ),
+                          _weatherDetail(
+                            '💧',
+                            l.t('humidity'),
+                            '${wp.humidity}%',
+                          ),
+                          _weatherDetail(
+                            '🌡️',
+                            l.t('feels_like'),
+                            '${wp.feelsLike.round()}°C',
+                          ),
                         ],
                       ),
                     ],
@@ -91,9 +138,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: wp.isSafeToRide ? Colors.green.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
+                    color: wp.isSafeToRide
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: wp.isSafeToRide ? Colors.green.withValues(alpha: 0.3) : Colors.orange.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: wp.isSafeToRide
+                          ? Colors.green.withValues(alpha: 0.3)
+                          : Colors.orange.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Column(
                     children: [
@@ -104,15 +157,23 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        wp.isSafeToRide ? 'Buen clima para rodar' : 'Precaución al rodar',
+                        wp.isSafeToRide
+                            ? l.t('good_weather_to_ride')
+                            : l.t('caution_riding'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: wp.isSafeToRide ? Colors.green[800] : Colors.orange[800],
+                          color: wp.isSafeToRide
+                              ? Colors.green[800]
+                              : Colors.orange[800],
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(wp.rideAdvice, style: TextStyle(color: Colors.grey[600], fontSize: 14), textAlign: TextAlign.center),
+                      Text(
+                        l.t(wp.rideAdvice),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                 ),
@@ -121,17 +182,32 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8)]),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('🚴 Consejos según el clima', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(
+                        l.t('weather_tips_title'),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 12),
-                      _tipItem('Lleva siempre agua suficiente'),
-                      _tipItem('Usa protector solar en días soleados'),
-                      _tipItem('Con lluvia, frena con anticipación'),
-                      _tipItem('Usa luces si hay poca visibilidad'),
-                      _tipItem('Viste capas en clima frío'),
+                      _tipItem(l.t('tip_carry_water')),
+                      _tipItem(l.t('tip_sunscreen')),
+                      _tipItem(l.t('tip_rain_braking')),
+                      _tipItem(l.t('tip_use_lights')),
+                      _tipItem(l.t('tip_dress_layers')),
                     ],
                   ),
                 ),
@@ -148,8 +224,18 @@ class _WeatherScreenState extends State<WeatherScreen> {
       children: [
         Text(emoji, style: const TextStyle(fontSize: 24)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-        Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white60, fontSize: 12),
+        ),
       ],
     );
   }

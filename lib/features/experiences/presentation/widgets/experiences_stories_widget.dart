@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/entities/user_story_group_entity.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
@@ -8,7 +9,6 @@ import 'package:biux/features/experiences/presentation/providers/story_groups_pr
 import 'package:biux/features/experiences/presentation/providers/experience_creator_classic_provider.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/experiences/presentation/screens/story_viewer_screen.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Widget para mostrar stories agrupadas por usuario (tipo Instagram)
 /// Se muestra en la parte superior con scroll horizontal de círculos
@@ -21,17 +21,14 @@ class ExperiencesStoriesWidget extends StatefulWidget {
 }
 
 class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
-  ExperienceProvider? _experienceProvider;
-
   @override
   void initState() {
     super.initState();
     // Escuchar cambios del ExperienceProvider para re-agrupar stories
     // cuando el feed se cargue o actualice
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _experienceProvider = context.read<ExperienceProvider>();
-      _experienceProvider!.addListener(_onExperiencesChanged);
+      final experienceProvider = context.read<ExperienceProvider>();
+      experienceProvider.addListener(_onExperiencesChanged);
       // Intentar agrupar si ya hay datos
       _loadAndGroupStories();
     });
@@ -39,20 +36,20 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 
   @override
   void dispose() {
-    // Remover listener de forma segura usando la referencia guardada
-    _experienceProvider?.removeListener(_onExperiencesChanged);
-    _experienceProvider = null;
+    // Remover listener de forma segura
+    try {
+      final experienceProvider = context.read<ExperienceProvider>();
+      experienceProvider.removeListener(_onExperiencesChanged);
+    } catch (_) {}
     super.dispose();
   }
 
   void _onExperiencesChanged() {
-    // Solo re-agrupar si el widget sigue montado
-    if (!mounted) return;
+    // Re-agrupar stories cuando el feed cambie
     _loadAndGroupStories();
   }
 
   Future<void> _loadAndGroupStories() async {
-    if (!mounted) return;
     final storyGroupsProvider = context.read<StoryGroupsProvider>();
     final experienceProvider = context.read<ExperienceProvider>();
 

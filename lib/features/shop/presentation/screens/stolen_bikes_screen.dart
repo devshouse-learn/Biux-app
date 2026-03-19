@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/features/shop/data/datasources/stolen_bike_verification_service.dart';
+import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -97,32 +96,6 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     'Otra',
   ];
   final _sorts = ['Reciente', 'Ciudad', 'Marca'];
-
-  String _bikeTypeDisplay(String type, LocaleNotifier l) {
-    const map = {
-      'Ruta': 'bike_type_road',
-      'MTB': 'bike_type_mtb',
-      'Urbana': 'bike_type_urban',
-      'Electrica': 'bike_type_electric',
-      'Infantil': 'bike_type_kids',
-      'Otra': 'bike_type_other',
-    };
-    return l.t(map[type] ?? type);
-  }
-
-  String _sortDisplay(String sort, LocaleNotifier l) {
-    const map = {
-      'Reciente': 'sort_recent',
-      'Ciudad': 'sort_city',
-      'Marca': 'sort_brand',
-    };
-    return l.t(map[sort] ?? sort);
-  }
-
-  String _filterAllDisplay(String val, LocaleNotifier l) {
-    if (val == 'Todas') return l.t('filter_all');
-    return val;
-  }
 
   @override
   void initState() {
@@ -244,8 +217,6 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     required List<String> items,
     String? current,
     bool addTodas = false,
-    required LocaleNotifier l,
-    String Function(String)? displayMapper,
   }) async {
     final allItems = addTodas ? ['Todas', ...items] : items;
     String filter = '';
@@ -305,7 +276,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   child: TextField(
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: l.t('search_hint'),
+                      hintText: 'Buscar...',
                       prefixIcon: const Icon(Icons.search, size: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -338,7 +309,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '${filtered.length} ${l.t('results_count')}',
+                      '${filtered.length} resultado${filtered.length != 1 ? "s" : ""}',
                       style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                     ),
                   ),
@@ -358,7 +329,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                l.t('no_results'),
+                                'Sin resultados',
                                 style: TextStyle(color: Colors.grey[500]),
                               ),
                             ],
@@ -388,7 +359,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                                     : Colors.grey[400],
                               ),
                               title: Text(
-                                displayMapper?.call(item) ?? item,
+                                item,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: isSelected
@@ -426,9 +397,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     List<String> items,
     bool addTodas,
     ValueChanged<String> onChanged,
-    LocaleNotifier l, {
-    String Function(String)? displayMapper,
-  }) {
+  ) {
     final isAll = value == 'Todas';
     return Expanded(
       child: GestureDetector(
@@ -438,8 +407,6 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             items: items,
             current: value,
             addTodas: addTodas,
-            l: l,
-            displayMapper: displayMapper,
           );
           if (result != null) onChanged(result);
         },
@@ -466,7 +433,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  displayMapper?.call(value) ?? value,
+                  value,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isAll ? FontWeight.w400 : FontWeight.w600,
@@ -485,11 +452,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
-        title: Text(l.t('stolen_bikes_title')),
+        title: const Text('Bicicletas Robadas'),
         backgroundColor: ColorTokens.error50,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -507,30 +473,21 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             fontWeight: FontWeight.w700,
             fontSize: 13,
           ),
-          tabs: [
-            Tab(
-              icon: const Icon(Icons.list_alt, size: 20),
-              text: l.t('list_tab'),
-            ),
-            Tab(
-              icon: const Icon(Icons.search, size: 20),
-              text: l.t('verify_tab'),
-            ),
-            Tab(
-              icon: const Icon(Icons.report, size: 20),
-              text: l.t('report_tab'),
-            ),
+          tabs: const [
+            Tab(icon: Icon(Icons.list_alt, size: 20), text: 'Listado'),
+            Tab(icon: Icon(Icons.search, size: 20), text: 'Verificar'),
+            Tab(icon: Icon(Icons.report, size: 20), text: 'Reportar'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [_buildListTab(l), _buildVerifyTab(l), _buildReportTab(l)],
+        children: [_buildListTab(), _buildVerifyTab(), _buildReportTab()],
       ),
     );
   }
 
-  Widget _buildListTab(LocaleNotifier l) {
+  Widget _buildListTab() {
     return Column(
       children: [
         Container(
@@ -538,23 +495,15 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           color: ColorTokens.error50,
           child: Row(
             children: [
-              _statBox(
-                Icons.warning,
-                '${_stolenBikes.length}',
-                l.t('reported_stat'),
-              ),
+              _statBox(Icons.warning, '${_stolenBikes.length}', 'Reportadas'),
               const SizedBox(width: 10),
               _statBox(
                 Icons.location_city,
                 _countCities().toString(),
-                l.t('cities_stat'),
+                'Ciudades',
               ),
               const SizedBox(width: 10),
-              _statBox(
-                Icons.today,
-                _countThisMonth().toString(),
-                l.t('this_month_stat'),
-              ),
+              _statBox(Icons.today, _countThisMonth().toString(), 'Este mes'),
             ],
           ),
         ),
@@ -565,7 +514,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             children: [
               TextField(
                 decoration: InputDecoration(
-                  hintText: l.t('search_brand_model'),
+                  hintText: 'Buscar marca, modelo, color o serial...',
                   prefixIcon: Icon(Icons.search, color: ColorTokens.primary50),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -596,35 +545,28 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               Row(
                 children: [
                   _searchableChip(
-                    l.t('city_label'),
+                    'Ciudad',
                     _selectedCity,
                     Icons.location_city,
                     _allCities,
                     true,
                     (v) => setState(() => _selectedCity = v),
-                    l,
-                    displayMapper: (v) => _filterAllDisplay(v, l),
                   ),
                   const SizedBox(width: 8),
                   _searchableChip(
-                    l.t('type_label'),
+                    'Tipo',
                     _selectedType,
                     Icons.pedal_bike,
                     _bikeTypes,
                     true,
                     (v) => setState(() => _selectedType = v),
-                    l,
-                    displayMapper: (v) => v == 'Todas'
-                        ? l.t('filter_all')
-                        : _bikeTypeDisplay(v, l),
                   ),
                   const SizedBox(width: 8),
                   _smallDropdown(
-                    l.t('order_label'),
+                    'Orden',
                     _sortBy,
                     _sorts,
                     (v) => setState(() => _sortBy = v!),
-                    displayMapper: (v) => _sortDisplay(v, l),
                   ),
                 ],
               ),
@@ -640,7 +582,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       CircularProgressIndicator(color: ColorTokens.error50),
                       const SizedBox(height: 12),
                       Text(
-                        l.t('loading'),
+                        'Cargando...',
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                     ],
@@ -654,7 +596,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       Icon(Icons.search_off, size: 56, color: Colors.grey[400]),
                       const SizedBox(height: 12),
                       Text(
-                        l.t('no_results_found'),
+                        'No se encontraron resultados',
                         style: TextStyle(color: Colors.grey[600], fontSize: 15),
                       ),
                     ],
@@ -666,7 +608,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   child: ListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: _filtered.length,
-                    itemBuilder: (c, i) => _bikeCard(_filtered[i], l),
+                    itemBuilder: (c, i) => _bikeCard(_filtered[i]),
                   ),
                 ),
         ),
@@ -674,7 +616,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     );
   }
 
-  Widget _buildVerifyTab(LocaleNotifier l) {
+  Widget _buildVerifyTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -691,26 +633,26 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               ),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Row(
+            child: const Row(
               children: [
-                const Icon(Icons.shield, color: Colors.white, size: 36),
-                const SizedBox(width: 12),
+                Icon(Icons.shield, color: Colors.white, size: 36),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l.t('bike_verifier'),
-                        style: const TextStyle(
+                        'Verificador de Bicicletas',
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
-                        l.t('bike_verifier_desc'),
-                        style: const TextStyle(
+                        'Ingresa el numero de serie para saber si esta reportada como robada.',
+                        style: TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
                           height: 1.3,
@@ -723,16 +665,16 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             ),
           ),
           const SizedBox(height: 24),
-          Text(
-            l.t('frame_serial_number'),
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          const Text(
+            'Numero de serie del cuadro',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _serialController,
             textCapitalization: TextCapitalization.characters,
             decoration: InputDecoration(
-              hintText: l.t('frame_serial_hint'),
+              hintText: 'Ej: WTU123H456789',
               prefixIcon: const Icon(Icons.fingerprint),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.clear, size: 18),
@@ -773,7 +715,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     )
                   : const Icon(Icons.verified_user),
               label: Text(
-                _isVerifying ? l.t('verifying') : l.t('verify_bike_btn'),
+                _isVerifying ? 'Verificando...' : 'Verificar Bicicleta',
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorTokens.primary30,
@@ -789,7 +731,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             ),
           ),
           const SizedBox(height: 20),
-          if (_verificationResult != null) _buildVerificationResult(l),
+          if (_verificationResult != null) _buildVerificationResult(),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(14),
@@ -806,7 +748,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     Icon(Icons.lightbulb, color: Colors.amber[700], size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      l.t('where_find_serial'),
+                      'Donde encontrar el serial',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
@@ -816,10 +758,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   ],
                 ),
                 const SizedBox(height: 8),
-                _tip(l.t('serial_tip_bottom_bracket')),
-                _tip(l.t('serial_tip_seat_tube')),
-                _tip(l.t('serial_tip_chainstay')),
-                _tip(l.t('serial_tip_head_tube')),
+                _tip('Parte inferior del cuadro (bottom bracket)'),
+                _tip('Tubo del asiento'),
+                _tip('Vaina inferior cerca del pedal'),
+                _tip('Parte trasera del tubo de direccion'),
               ],
             ),
           ),
@@ -828,7 +770,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     );
   }
 
-  Widget _buildVerificationResult(LocaleNotifier l) {
+  Widget _buildVerificationResult() {
     final r = _verificationResult!;
     final stolen = r.isStolen;
     final c = stolen ? ColorTokens.error50 : Colors.green;
@@ -886,10 +828,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 children: [
                   Icon(Icons.phone, color: ColorTokens.error50, size: 18),
                   const SizedBox(width: 8),
-                  Expanded(
+                  const Expanded(
                     child: Text(
-                      l.t('contact_authorities'),
-                      style: const TextStyle(
+                      'Contacta a las autoridades si la encuentras',
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -904,7 +846,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     );
   }
 
-  Widget _buildReportTab(LocaleNotifier l) {
+  Widget _buildReportTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Form(
@@ -929,25 +871,25 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     size: 22,
                   ),
                   const SizedBox(width: 10),
-                  Expanded(
+                  const Expanded(
                     child: Text(
-                      l.t('report_stolen_info'),
-                      style: const TextStyle(fontSize: 12, height: 1.4),
+                      'Reporta tu bicicleta robada para alertar a la comunidad y evitar su reventa.',
+                      style: TextStyle(fontSize: 12, height: 1.4),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            _sectionHeader(Icons.pedal_bike, l.t('bike_data_section')),
+            _sectionHeader(Icons.pedal_bike, 'Datos de la Bicicleta'),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: _field(
                     _brandCtrl,
-                    '${l.t("brand_label")} *',
-                    l.t('brand_hint_example'),
+                    'Marca *',
+                    'Ej: Specialized',
                     Icons.branding_watermark,
                     true,
                   ),
@@ -956,8 +898,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 Expanded(
                   child: _field(
                     _modelCtrl,
-                    '${l.t("model_label")} *',
-                    l.t('model_hint_example'),
+                    'Modelo *',
+                    'Ej: Allez Sprint',
                     Icons.info_outline,
                     true,
                   ),
@@ -970,8 +912,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 Expanded(
                   child: _field(
                     _colorCtrl,
-                    '${l.t("color_label")} *',
-                    l.t('color_hint_example'),
+                    'Color *',
+                    'Ej: Negro/Rojo',
                     Icons.palette,
                     true,
                   ),
@@ -979,16 +921,14 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: _searchableTapField(
-                    '${l.t("type_label")} *',
-                    _bikeTypeDisplay(_bikeType, l),
+                    'Tipo *',
+                    _bikeType,
                     Icons.pedal_bike,
                     () async {
                       final r = await _showSearchableSelector(
-                        title: l.t('bike_type'),
+                        title: 'Tipo de Bicicleta',
                         items: _bikeTypes,
                         current: _bikeType,
-                        l: l,
-                        displayMapper: (v) => _bikeTypeDisplay(v, l),
                       );
                       if (r != null) setState(() => _bikeType = r);
                     },
@@ -999,29 +939,28 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 10),
             _field(
               _serialCtrl,
-              '${l.t("serial_number_label")} *',
-              l.t('frame_number_hint'),
+              'Numero de Serie *',
+              'Numero del cuadro',
               Icons.fingerprint,
               true,
             ),
             const SizedBox(height: 10),
             _searchableTapField(
-              '${l.t("city_label")} *',
+              'Ciudad *',
               _formCity.isEmpty ? '' : _formCity,
               Icons.location_city,
               () async {
                 final r = await _showSearchableSelector(
-                  title: l.t('select_city'),
+                  title: 'Seleccionar Ciudad',
                   items: _allCities,
                   current: _formCity,
-                  l: l,
                 );
                 if (r != null) setState(() => _formCity = r);
               },
               isEmpty: _formCity.isEmpty,
             ),
             const SizedBox(height: 20),
-            _sectionHeader(Icons.report_problem, l.t('theft_details')),
+            _sectionHeader(Icons.report_problem, 'Detalles del Robo'),
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () async {
@@ -1030,7 +969,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   initialDate: DateTime.now(),
                   firstDate: DateTime(2020),
                   lastDate: DateTime.now(),
-                  helpText: l.t('theft_date'),
+                  helpText: 'Fecha del robo',
                 );
                 if (picked != null) setState(() => _theftDate = picked);
               },
@@ -1055,7 +994,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     Text(
                       _theftDate != null
                           ? '${_theftDate!.day}/${_theftDate!.month}/${_theftDate!.year}'
-                          : '${l.t("theft_date")} *',
+                          : 'Fecha del robo *',
                       style: TextStyle(
                         color: _theftDate != null
                             ? Colors.black87
@@ -1072,16 +1011,16 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 10),
             _field(
               _locationCtrl,
-              '${l.t("theft_location")} *',
-              l.t('address_or_reference'),
+              'Lugar del robo *',
+              'Direccion o referencia',
               Icons.place,
               true,
             ),
             const SizedBox(height: 10),
             _field(
               _descCtrl,
-              '${l.t("description_label")} *',
-              l.t('description_hint'),
+              'Descripcion *',
+              'Como sucedio el robo...',
               Icons.description,
               true,
               maxLines: 3,
@@ -1089,8 +1028,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 10),
             _field(
               _policeCtrl,
-              l.t('police_report_number'),
-              l.t('optional_label'),
+              'Numero de denuncia policial',
+              'Opcional',
               Icons.policy,
               false,
             ),
@@ -1101,7 +1040,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               child: ElevatedButton.icon(
                 onPressed: _submitReport,
                 icon: const Icon(Icons.send),
-                label: Text(l.t('send_report')),
+                label: const Text('Enviar Reporte'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorTokens.error50,
                   foregroundColor: Colors.white,
@@ -1118,7 +1057,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             const SizedBox(height: 16),
             Center(
               child: Text(
-                l.t('confirm_info_truthful'),
+                'Al enviar confirmas que la informacion es veridica',
                 style: TextStyle(fontSize: 11, color: Colors.grey[500]),
               ),
             ),
@@ -1129,11 +1068,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   }
 
   void _submitReport() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate() || _formCity.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('fill_required_fields_form')),
+        const SnackBar(
+          content: Text('Completa todos los campos obligatorios'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1141,8 +1079,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     }
     if (_theftDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('select_theft_date')),
+        const SnackBar(
+          content: Text('Selecciona la fecha del robo'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1153,8 +1091,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       builder: (c) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
-        title: Text(l.t('report_sent')),
-        content: Text(l.t('report_sent_msg')),
+        title: const Text('Reporte Enviado'),
+        content: const Text(
+          'Tu reporte ha sido registrado. La comunidad sera alertada.',
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -1162,7 +1102,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               _clearForm();
               _tabController.animateTo(0);
             },
-            child: Text(l.t('accept')),
+            child: const Text('Aceptar'),
           ),
         ],
       ),
@@ -1224,9 +1164,8 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     String hint,
     String value,
     List<String> items,
-    ValueChanged<String?> onChanged, {
-    String Function(String)? displayMapper,
-  }) {
+    ValueChanged<String?> onChanged,
+  ) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -1242,12 +1181,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             isDense: true,
             style: const TextStyle(fontSize: 12, color: Color(0xFF16242D)),
             items: items
-                .map(
-                  (e) => DropdownMenuItem(
-                    value: e,
-                    child: Text(displayMapper?.call(e) ?? e),
-                  ),
-                )
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                 .toList(),
             onChanged: onChanged,
           ),
@@ -1268,12 +1202,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       controller: ctrl,
       maxLines: maxLines,
       validator: req
-          ? (v) => (v == null || v.trim().isEmpty)
-                ? Provider.of<LocaleNotifier>(
-                    context,
-                    listen: false,
-                  ).t('required_field')
-                : null
+          ? (v) => (v == null || v.trim().isEmpty) ? 'Obligatorio' : null
           : null,
       decoration: InputDecoration(
         labelText: label,
@@ -1383,7 +1312,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
     );
   }
 
-  Widget _bikeCard(StolenBikeInfo info, LocaleNotifier l) {
+  Widget _bikeCard(StolenBikeInfo info) {
     final bike = info.bike;
     final theft = info.theftReport;
     return Card(
@@ -1410,10 +1339,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               children: [
                 const Icon(Icons.warning, color: Colors.white, size: 16),
                 const SizedBox(width: 6),
-                Expanded(
+                const Expanded(
                   child: Text(
-                    l.t('stolen_label'),
-                    style: const TextStyle(
+                    'ROBADA',
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 11,
@@ -1531,7 +1460,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   Icon(Icons.policy, size: 14, color: Colors.grey[500]),
                   const SizedBox(width: 4),
                   Text(
-                    '${l.t("complaint_label")}: ${theft.policeReportNumber}',
+                    'Denuncia: ${theft.policeReportNumber}',
                     style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                   ),
                 ],
@@ -1551,7 +1480,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       Icon(Icons.block, size: 12, color: ColorTokens.error50),
                       const SizedBox(width: 4),
                       Text(
-                        l.t('do_not_buy'),
+                        'No comprar',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,

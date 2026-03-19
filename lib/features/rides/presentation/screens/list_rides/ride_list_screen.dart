@@ -45,11 +45,6 @@ class _RideListScreenState extends State<RideListScreen> {
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.t('rides')),
-        backgroundColor: ColorTokens.primary30,
-        foregroundColor: ColorTokens.neutral100,
-      ),
       body: Consumer<RideProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {

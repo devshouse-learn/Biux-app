@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/design_system.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import '../../core/config/router/app_routes.dart';
 import '../../features/users/presentation/providers/user_provider.dart';
 
@@ -51,7 +50,6 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Drawer(
       backgroundColor: Colors.white,
       child: Column(
@@ -140,7 +138,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               Navigator.pop(context);
                               context.push('/profile');
                             },
-                            child: Padding(
+                            child: const Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 8,
@@ -171,7 +169,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                     const SizedBox(height: 14),
                     Text(
-                      user?.name ?? l.t('cyclist'),
+                      user?.name ?? 'Ciclista',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -479,7 +477,6 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   void _logoutDialog(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -518,7 +515,6 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   Future<void> _doLogout(BuildContext context) async {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       showDialog(
         context: context,
@@ -535,7 +531,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                Text(l.t('logging_out')),
+                const Text('Cerrando sesion...'),
               ],
             ),
           ),
@@ -552,7 +548,7 @@ class _AppDrawerState extends State<AppDrawer> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${l.t('error_generic')}: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );

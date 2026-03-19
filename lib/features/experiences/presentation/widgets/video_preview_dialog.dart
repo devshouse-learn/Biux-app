@@ -68,7 +68,6 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -100,7 +99,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      widget.title ?? l.t('video_preview'),
+                      widget.title ?? 'Vista previa del video',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -161,8 +160,8 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
                         backgroundColor: ColorTokens.primary50,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: Text(
-                        l.t('use_video'),
+                      child: const Text(
+                        'Usar video',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,

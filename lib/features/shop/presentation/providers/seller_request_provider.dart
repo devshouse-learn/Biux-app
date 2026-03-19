@@ -33,7 +33,9 @@ class SellerRequestProvider with ChangeNotifier {
     _service.getPendingRequests().listen(
       (requests) {
         _pendingRequests = requests;
-        debugPrint('📋 Solicitudes pendientes actualizadas: ${requests.length}');
+        debugPrint(
+          '📋 Solicitudes pendientes actualizadas: ${requests.length}',
+        );
         notifyListeners();
       },
       onError: (error) {

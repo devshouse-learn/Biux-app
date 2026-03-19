@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/features/shop/data/datasources/bike_qr_service.dart';
+import 'package:biux/features/shop/data/datasources/bike_qr_datasource.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
@@ -51,16 +51,15 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorTokens.success40,
         foregroundColor: ColorTokens.neutral100,
-        title: Text(l.t('qr_verification_code')),
+        title: const Text('Código QR de Verificación'),
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            tooltip: l.t('share_qr'),
+            tooltip: 'Compartir QR',
             onPressed: _shareQR,
           ),
         ],
@@ -84,7 +83,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                   Icon(Icons.verified, color: ColorTokens.success40, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    l.t('verified_bike'),
+                    'BICICLETA VERIFICADA',
                     style: TextStyle(
                       color: ColorTokens.success30,
                       fontWeight: FontWeight.bold,
@@ -108,7 +107,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l.t('bike_info'),
+                      'Información de la Bicicleta',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -118,38 +117,38 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                     const Divider(height: 16),
                     _buildInfoRow(
                       Icons.badge,
-                      l.t('serial_number'),
+                      'Número de Serie',
                       widget.frameSerial,
                     ),
                     if (widget.bikeBrand != null)
                       _buildInfoRow(
                         Icons.branding_watermark,
-                        l.t('brand'),
+                        'Marca',
                         widget.bikeBrand!,
                       ),
                     if (widget.bikeModel != null)
                       _buildInfoRow(
                         Icons.directions_bike,
-                        l.t('model'),
+                        'Modelo',
                         widget.bikeModel!,
                       ),
                     if (widget.bikeColor != null)
                       _buildInfoRow(
                         Icons.color_lens,
-                        l.t('color'),
+                        'Color',
                         widget.bikeColor!,
                       ),
                     const Divider(height: 16),
                     _buildInfoRow(
                       Icons.calendar_today,
-                      l.t('verification_date'),
+                      'Fecha de Verificación',
                       DateFormat(
                         'dd/MM/yyyy HH:mm',
                       ).format(widget.verificationDate),
                     ),
                     _buildInfoRow(
                       Icons.shield_outlined,
-                      l.t('verification_id'),
+                      'ID de Verificación',
                       widget.verifierUid.substring(0, 12) + '...',
                     ),
                   ],
@@ -160,7 +159,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
 
             // Código QR
             Text(
-              l.t('scan_qr_to_verify'),
+              'Escanea este código QR para verificar',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -202,7 +201,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                       Icon(Icons.info_outline, color: ColorTokens.primary40),
                       const SizedBox(width: 8),
                       Text(
-                        l.t('how_to_use_qr'),
+                        '¿Cómo usar este QR?',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: ColorTokens.primary30,
@@ -211,10 +210,22 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _buildInstructionItem('1', l.t('qr_instruction_1')),
-                  _buildInstructionItem('2', l.t('qr_instruction_2')),
-                  _buildInstructionItem('3', l.t('qr_instruction_3')),
-                  _buildInstructionItem('4', l.t('qr_instruction_4')),
+                  _buildInstructionItem(
+                    '1',
+                    'Pega este código QR en tu bicicleta (en el cuadro o el manubrio)',
+                  ),
+                  _buildInstructionItem(
+                    '2',
+                    'Cualquiera puede escanear el QR con la app Biux',
+                  ),
+                  _buildInstructionItem(
+                    '3',
+                    'El comprador puede verificar que NO es una bici robada',
+                  ),
+                  _buildInstructionItem(
+                    '4',
+                    'Aumenta la confianza y reduce el riesgo de fraude',
+                  ),
                 ],
               ),
             ),
@@ -226,7 +237,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.download),
-                    label: Text(l.t('download_qr')),
+                    label: const Text('Descargar QR'),
                     onPressed: _downloadQR,
                   ),
                 ),
@@ -234,7 +245,7 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.share),
-                    label: Text(l.t('share')),
+                    label: const Text('Compartir'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.primary40,
                       foregroundColor: ColorTokens.neutral100,
@@ -325,13 +336,13 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
             backgroundColor: ColorTokens.primary40,
           ),
         );
+        );
       }
     } catch (e) {
       if (mounted) {
-        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l.t('error_downloading')}: $e'),
+            content: Text('Error al descargar: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );
@@ -341,28 +352,26 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
 
   Future<void> _shareQR() async {
     try {
-      final l = Provider.of<LocaleNotifier>(context, listen: false);
       final shareText =
           '''
-${l.t('share_verified_bike_title')} 
+🚴 Bicicleta Verificada en Biux 
 
-${l.t('share_verified_not_stolen')}
+✅ Esta bicicleta ha sido verificada como NO ROBADA
 
-${l.t('share_info_label')}
-• ${l.t('serial_number')}: ${widget.frameSerial}
-${widget.bikeBrand != null ? '• ${l.t('brand')}: ${widget.bikeBrand}\n' : ''}${widget.bikeModel != null ? '• ${l.t('model')}: ${widget.bikeModel}\n' : ''}
-${l.t('share_scan_qr_confirm')}
+📋 Información:
+• Número de Serie: ${widget.frameSerial}
+${widget.bikeBrand != null ? '• Marca: ${widget.bikeBrand}\n' : ''}${widget.bikeModel != null ? '• Modelo: ${widget.bikeModel}\n' : ''}
+🔍 Escaneá el código QR en la app Biux para confirmar
 
-${l.t('share_verified_on')}: ${DateFormat('dd/MM/yyyy').format(widget.verificationDate)}
+Verificada el: ${DateFormat('dd/MM/yyyy').format(widget.verificationDate)}
 ''';
 
       await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
       if (mounted) {
-        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l.t('error_sharing')}: $e'),
+            content: Text('Error al compartir: $e'),
             backgroundColor: ColorTokens.error50,
           ),
         );

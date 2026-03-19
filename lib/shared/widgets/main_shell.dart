@@ -5,6 +5,7 @@ import 'package:biux/core/config/styles.dart';
 import 'package:biux/core/utils/responsive_helper.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -22,19 +23,34 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0; // Por defecto en Inicio (índice 0)
+  bool _isFullScreenRoute = false; // Rutas que ocultan AppBar y BottomNav
+
+  /// Rutas que tienen su propio AppBar y no necesitan el shell
+  static const List<String> _fullScreenRoutes = [
+    '/account-settings',
+    '/settings/',
+    '/help',
+    '/edit-username',
+    '/edit-user',
+  ];
 
   /// Retorna el título dinámico según el tab seleccionado
-  String _titleForIndex(int index, LocaleNotifier l) {
+  String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
     switch (index) {
       case 0:
-        return l.t('my_feed');
+        return 'FEED';
       case 1:
-        return l.t('rides');
+        return 'RODADAS';
       case 2:
-        return l.t('nav_my_bikes');
+        return 'MIS BICIS';
       case 3:
-        return l.t('shop');
+        return l.t('shop').toUpperCase();
       case 4:
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final username = userProvider.user?.username;
+        if (username != null && username.isNotEmpty) return '@$username';
+        final userName = userProvider.user?.name;
+        if (userName != null && userName.isNotEmpty) return userName;
         return l.t('nav_profile');
       default:
         return AppStrings.APP_NAME.toUpperCase();
@@ -43,9 +59,14 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    // Consumer garantiza rebuild cuando cambia el idioma
-    return Consumer<LocaleNotifier>(
-      builder: (context, l, _) {
+    // Consumer2 garantiza rebuild cuando cambia el idioma o datos de usuario
+    return Consumer2<LocaleNotifier, UserProvider>(
+      builder: (context, l, userProvider, _) {
+        // Si es una ruta de pantalla completa, mostrar solo el child sin shell
+        if (_isFullScreenRoute) {
+          return widget.child;
+        }
+
         // Key por idioma fuerza reconstrucción completa del Scaffold
         return Scaffold(
           key: ValueKey('shell_${l.langCode}'),
@@ -53,7 +74,7 @@ class _MainShellState extends State<MainShell> {
             backgroundColor: ColorTokens.primary30,
             foregroundColor: ColorTokens.neutral100,
             title: Text(
-              _titleForIndex(_selectedIndex, l),
+              _titleForIndex(_selectedIndex, l, context),
               style: Styles.mainMenuTextBiux,
             ),
             actions: [
@@ -93,30 +114,28 @@ class _MainShellState extends State<MainShell> {
             backgroundColor: ColorTokens.primary40,
             selectedItemColor: ColorTokens.neutral100,
             unselectedItemColor: ColorTokens.neutral100.withValues(alpha: 0.6),
-            showSelectedLabels: true,
-            showUnselectedLabels: true,
-            selectedFontSize: 12,
-            unselectedFontSize: 10,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
             items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home, size: 24),
-                label: l.t('nav_home'),
+                icon: Icon(Icons.home, size: 28),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.directions_bike, size: 24),
-                label: l.t('nav_routes'),
+                icon: Icon(Icons.directions_bike, size: 28),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.pedal_bike, size: 24),
-                label: l.t('nav_my_bikes'),
+                icon: Icon(Icons.pedal_bike, size: 28),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag, size: 24),
-                label: l.t('nav_store'),
+                icon: Icon(Icons.shopping_bag, size: 28),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person, size: 24),
-                label: l.t('nav_profile'),
+                icon: Icon(Icons.person, size: 28),
+                label: '',
               ),
             ],
           ),
@@ -166,6 +185,16 @@ class _MainShellState extends State<MainShell> {
 
   void _updateSelectedIndex() {
     final location = GoRouterState.of(context).matchedLocation;
+
+    // Detectar si es una ruta de pantalla completa (sin shell)
+    final isFullScreen = _fullScreenRoutes.any(
+      (route) => location.startsWith(route),
+    );
+    if (isFullScreen != _isFullScreenRoute) {
+      setState(() {
+        _isFullScreenRoute = isFullScreen;
+      });
+    }
 
     if (location.startsWith('/stories')) {
       setState(() {
