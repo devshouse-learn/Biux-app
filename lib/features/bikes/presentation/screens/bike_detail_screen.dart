@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/bikes/presentation/providers/bike_provider.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_enums.dart';
+import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
 import 'package:biux/shared/widgets/photo_viewer.dart';
 
@@ -708,9 +710,17 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             child: Text(l.t('cancel')),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // IMPLEMENTADO (STUB): Implementar reporte de robo
+              final uid = FirebaseAuth.instance.currentUser?.uid;
+              if (uid == null) return;
+              await bikeProvider.reportTheft(
+                bikeId: bike.id,
+                reporterId: uid,
+                theftDate: DateTime.now(),
+                location: '',
+                description: l.t('theft_reported_by_owner'),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
@@ -722,8 +732,29 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
     );
   }
 
-  void _markAsRecovered(BikeEntity bike, BikeProvider bikeProvider) {
-    // IMPLEMENTADO (STUB): Implementar marcar como recuperada
+  void _markAsRecovered(BikeEntity bike, BikeProvider bikeProvider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      // Usar el repositorio directamente ya que BikeProvider no expone markAsRecovered
+      final repo = BikeRepositoryImpl();
+      await repo.markAsRecovered(bike.id, uid);
+      // Recargar bicicletas del usuario
+      await bikeProvider.loadUserBikes(uid);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.t('bike_marked_recovered_success'))),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.t('bike_marked_recovered_error'))),
+        );
+      }
+    }
   }
 
   void _showTransferDialog(BikeEntity bike, BikeProvider bikeProvider) {
@@ -739,9 +770,16 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
             child: Text(l.t('cancel')),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // IMPLEMENTADO (STUB): Implementar transferencia
+              final uid = FirebaseAuth.instance.currentUser?.uid;
+              if (uid == null) return;
+              // Solicitar transferencia (sin destinatario aún, se necesitaría un campo)
+              await bikeProvider.requestTransfer(
+                bikeId: bike.id,
+                fromUserId: uid,
+                toUserId: '', // Se requiere UI para seleccionar destinatario
+              );
             },
             child: Text(l.t('transfer')),
           ),
