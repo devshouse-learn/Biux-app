@@ -321,7 +321,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               final orderId = await shopProvider.buyNow(
                 userId: currentUser.uid,
-                userName: currentUser.username ?? currentUser.name ?? 'Usuario',
+                userName:
+                    currentUser.username ??
+                    currentUser.name ??
+                    l.t('default_user'),
                 product: _product!,
                 quantity: _quantity,
                 selectedSize: _selectedSize,
@@ -332,6 +335,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     : notesController.text,
               );
 
+              if (!mounted) return;
               if (orderId != null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -383,6 +387,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 userId,
               );
 
+              if (!mounted) return;
               if (success) {
                 setState(() {
                   _product = _product!.copyWith(isSold: true, stock: 0);
@@ -431,6 +436,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               final shopProvider = context.read<ShopProvider>();
               final success = await shopProvider.deleteProduct(_product!.id);
 
+              if (!mounted) return;
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -526,20 +532,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
             actions: [
-
               // Boton de favorito
               Consumer2<UserProvider, ShopProvider>(
                 builder: (context, userProvider, shopProvider, _) {
                   final currentUser = userProvider.user;
-                  if (currentUser == null || _product == null) return const SizedBox.shrink();
+                  if (currentUser == null || _product == null)
+                    return const SizedBox.shrink();
                   final uid = currentUser.uid;
                   final updatedProduct = shopProvider.products
                       .where((p) => p.id == _product!.id)
                       .firstOrNull;
-                  final isLiked = updatedProduct?.isLikedBy(uid) ?? _product!.isLikedBy(uid);
+                  final isLiked =
+                      updatedProduct?.isLikedBy(uid) ??
+                      _product!.isLikedBy(uid);
                   return IconButton(
                     onPressed: () {
-                      debugPrint('LIKE_DETAIL>>> TAP on ${_product!.id} by $uid isLiked=$isLiked');
+                      debugPrint(
+                        'LIKE_DETAIL>>> TAP on ${_product!.id} by $uid isLiked=$isLiked',
+                      );
                       shopProvider.toggleProductLike(_product!.id, uid);
                     },
                     icon: Icon(
