@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/features/shop/data/datasources/alert_pdf_export_datasource.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});
@@ -1839,6 +1841,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     );
 
     try {
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       final snapshot = await _getAlertsQuery().get();
       final alerts = snapshot.docs;
 

@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
+import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 
 /// Pantalla de perfil p├║blico de usuario
 /// Muestra informaci├│n b├ísica, posts y bot├│n de seguir/dejar de seguir
@@ -28,6 +29,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
   LocaleNotifier get l => Provider.of<LocaleNotifier>(context, listen: false);
   bool isFollowing = false;
   bool isCurrentUser = false;
+  Future? _experiencesFuture;
+  final Set<String> _failedImageIds = {};
+  int _postCount = 0;
 
   @override
   void initState() {
@@ -234,7 +238,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                             ],
                           ),
                           GestureDetector(
-                            onTap: () => _showFollowersModal(context, provider),
+                            onTap: () => _showFollowersModal(
+                              context,
+                              provider.currentUser!,
+                            ),
                             child: Column(
                               children: [
                                 Text(
@@ -258,7 +265,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => _showFollowingModal(context, provider),
+                            onTap: () => _showFollowingModal(
+                              context,
+                              provider.currentUser!,
+                            ),
                             child: Column(
                               children: [
                                 Text(
@@ -462,7 +472,6 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     final isFollowing = provider.isFollowing;
     final hasPendingRequest = provider.hasPendingFollowRequest;
 
-
     String buttonLabel;
     if (isFollowing) {
       buttonLabel = l.t('following');
@@ -575,6 +584,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildPublicationsSection(BiuxUser user) {
     return FutureBuilder(
       future: _experiencesFuture,

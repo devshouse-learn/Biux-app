@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/design_system.dart';
 import '../../core/config/router/app_routes.dart';
@@ -515,6 +516,7 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   Future<void> _doLogout(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       showDialog(
         context: context,

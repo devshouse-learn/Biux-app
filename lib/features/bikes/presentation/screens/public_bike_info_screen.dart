@@ -218,6 +218,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   Widget _buildStatusCard(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     Color statusColor;
     IconData statusIcon;
     String statusDescription;
@@ -226,22 +227,22 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
       case BikeStatus.active:
         statusColor = Colors.green;
         statusIcon = Icons.check_circle;
-        statusDescription = 'Esta bicicleta está registrada en Biux';
+        statusDescription = l.t('bike_registered_in_biux');
         break;
       case BikeStatus.stolen:
         statusColor = Colors.red;
         statusIcon = Icons.warning;
-        statusDescription = '¡Esta bicicleta fue reportada como robada!';
+        statusDescription = l.t('bike_reported_stolen_alert');
         break;
       case BikeStatus.recovered:
         statusColor = Colors.orange;
         statusIcon = Icons.restore;
-        statusDescription = 'Esta bicicleta fue recuperada después de un robo';
+        statusDescription = l.t('bike_recovered_after_theft');
         break;
       case BikeStatus.verified:
         statusColor = Colors.blue;
         statusIcon = Icons.verified;
-        statusDescription = 'Bicicleta verificada por tienda aliada';
+        statusDescription = l.t('bike_verified_by_store');
         break;
     }
 
@@ -262,7 +263,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  bike.status.displayName,
+                  l.t(bike.status.displayName),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -282,6 +283,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   }
 
   Widget _buildPublicInfo(BikeEntity bike) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
@@ -299,22 +301,22 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Información de la Bicicleta',
-            style: TextStyle(
+          Text(
+            l.t('bike_info'),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: ColorTokens.primary30,
             ),
           ),
           const SizedBox(height: 16),
-          _buildInfoRow('Marca', bike.brand),
-          _buildInfoRow('Modelo', bike.model),
-          _buildInfoRow('Año', bike.year.toString()),
-          _buildInfoRow('Color', bike.color),
-          _buildInfoRow('Talla', bike.size),
-          _buildInfoRow('Tipo', bike.type.displayName),
-          _buildInfoRow('Ciudad', bike.city),
+          _buildInfoRow(l.t('brand_label'), bike.brand),
+          _buildInfoRow(l.t('model_label'), bike.model),
+          _buildInfoRow(l.t('year_label'), bike.year.toString()),
+          _buildInfoRow(l.t('color_label'), bike.color),
+          _buildInfoRow(l.t('size_label'), bike.size),
+          _buildInfoRow(l.t('type_label'), l.t(bike.type.displayName)),
+          _buildInfoRow(l.t('city_label'), bike.city),
           const Divider(height: 24),
           Row(
             children: [
@@ -322,7 +324,7 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Esta información es pública para verificar la identidad de la bicicleta.',
+                  l.t('public_info_note'),
                   style: TextStyle(
                     fontSize: 12,
                     color: ColorTokens.neutral70,

@@ -140,7 +140,6 @@ class _PostCardHeader extends StatelessWidget {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       child: Row(

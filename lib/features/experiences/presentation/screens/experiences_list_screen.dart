@@ -156,6 +156,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   Widget _buildErrorState(String error, ExperienceProvider provider) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Center(
       child: Column(
@@ -168,7 +169,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'Error al cargar experiencias',
+            l.t('experiences_error_loading'),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -192,7 +193,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
                 provider.loadPersonalizedFeed(userId);
               }
             },
-            child: const Text('Reintentar'),
+            child: Text(l.t('retry')),
           ),
         ],
       ),
@@ -202,6 +203,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   /// Estado vacío cuando no hay posts pero sí hay stories
   Widget _buildEmptyStateInLayout() {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -218,7 +220,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                '¡Comparte tu primera publicación!',
+                l.t('experiences_share_first_post'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -227,7 +229,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Las stories van arriba en círculos.\nAquí van las publicaciones con más contenido.',
+                l.t('empty_no_posts_desc'),
                 style: TextStyle(
                   fontSize: 14,
                   color: theme.textTheme.bodySmall?.color?.withValues(
@@ -563,18 +565,19 @@ class _ExperienceCard extends StatelessWidget {
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return 'Hace ${difference.inDays}d';
+      return '${difference.inDays}d';
     } else if (difference.inHours > 0) {
-      return 'Hace ${difference.inHours}h';
+      return '${difference.inHours}h';
     } else if (difference.inMinutes > 0) {
-      return 'Hace ${difference.inMinutes}m';
+      return '${difference.inMinutes}m';
     } else {
-      return 'Ahora';
+      return '~';
     }
   }
 
   void _showPostMenu(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     final isOwner = currentUserId == experience.user.id;
 
@@ -592,9 +595,9 @@ class _ExperienceCard extends StatelessWidget {
             if (isOwner) ...[
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text(
-                  'Eliminar publicación',
-                  style: TextStyle(color: Colors.red),
+                title: Text(
+                  l.t('delete_post'),
+                  style: const TextStyle(color: Colors.red),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -604,7 +607,7 @@ class _ExperienceCard extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.edit, color: theme.iconTheme.color),
                 title: Text(
-                  'Editar publicación',
+                  l.t('edit_post'),
                   style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 ),
                 onTap: () {
@@ -619,23 +622,21 @@ class _ExperienceCard extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.flag, color: theme.iconTheme.color),
                 title: Text(
-                  'Reportar publicación',
+                  l.t('report_post'),
                   style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Función de reportar próximamente'),
-                    ),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(l.t('report_post'))));
                 },
               ),
             ],
             ListTile(
               leading: Icon(Icons.share, color: theme.iconTheme.color),
               title: Text(
-                'Compartir',
+                l.t('share'),
                 style: TextStyle(color: theme.textTheme.bodyLarge?.color),
               ),
               onTap: () {
@@ -651,30 +652,31 @@ class _ExperienceCard extends StatelessWidget {
 
   void _confirmDelete(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: theme.dialogTheme.backgroundColor,
         title: Text(
-          'Eliminar publicación',
+          l.t('delete_post_confirm'),
           style: TextStyle(color: theme.textTheme.titleLarge?.color),
         ),
         content: Text(
-          '¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.',
+          l.t('delete_post_content'),
           style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(l.t('cancel')),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _deletePost(context);
             },
-            child: const Text('Eliminar'),
+            child: Text(l.t('delete')),
           ),
         ],
       ),
@@ -682,18 +684,18 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _deletePost(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final provider = context.read<ExperienceProvider>();
       await provider.deleteExperience(experience.id);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Publicación eliminada correctamente')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.t('post_deleted_success'))));
       }
     } catch (e) {
       if (context.mounted) {
-        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));
@@ -702,6 +704,7 @@ class _ExperienceCard extends StatelessWidget {
   }
 
   void _sharePost(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       // En lugar de compartir un link, abrir la app directamente con deep link
       final deepLink = 'biux://posts/${experience.id}';
@@ -710,16 +713,16 @@ class _ExperienceCard extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       ).catchError((e) {
         // Fallback: si el deep link falla, mostrar mensaje
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('La app debe estar instalada para compartir')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
         return false;
       });
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));
       }
     }
   }
@@ -811,6 +814,7 @@ class _AdvertisementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -855,7 +859,7 @@ class _AdvertisementCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'Anuncio publicitario',
+                    l.t('ad_label'),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -976,6 +980,7 @@ class _AdvertisementCard extends StatelessWidget {
   /// Muestra un modal expandido con los detalles del anuncio
   void _showAdvertisementModal(BuildContext context) {
     final theme = Theme.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     showModalBottomSheet(
       context: context,
@@ -1133,9 +1138,9 @@ class _AdvertisementCard extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                'Cerrar',
-                                style: TextStyle(
+                              child: Text(
+                                l.t('close'),
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -1159,6 +1164,7 @@ class _AdvertisementCard extends StatelessWidget {
 
   /// Maneja la acción del botón CTA del anuncio
   void _handleAdvertisementAction(BuildContext context) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       if (advertisement.callToActionUrl != null &&
           advertisement.callToActionUrl!.isNotEmpty) {
@@ -1167,18 +1173,16 @@ class _AdvertisementCard extends StatelessWidget {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         } else {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('No se pudo abrir el enlace del anuncio'),
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
           }
         }
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('Enlace no disponible')));
+          ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
         }
       }
     } catch (e) {

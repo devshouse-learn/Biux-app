@@ -22,6 +22,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
 
   List<_LikedItem> _likedItems = [];
   bool _isLoading = true;
+  // ignore: unused_field
   String? _errorMsg;
 
   @override

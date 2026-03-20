@@ -9,6 +9,7 @@ import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.da
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/mark_as_recovered_usecase.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/shared/services/optimized_storage_service.dart';
 
@@ -23,6 +24,7 @@ class BikeProvider extends ChangeNotifier {
   final TransferBikeOwnershipUseCase _transferBikeOwnershipUseCase;
   final GetPublicBikeInfoUseCase _getPublicBikeInfoUseCase;
   final DeleteBikeUseCase _deleteBikeUseCase;
+  final MarkAsRecoveredUseCase _markAsRecoveredUseCase;
 
   BikeProvider({
     required RegisterBikeUseCase registerBikeUseCase,
@@ -31,12 +33,14 @@ class BikeProvider extends ChangeNotifier {
     required TransferBikeOwnershipUseCase transferBikeOwnershipUseCase,
     required GetPublicBikeInfoUseCase getPublicBikeInfoUseCase,
     required DeleteBikeUseCase deleteBikeUseCase,
+    required MarkAsRecoveredUseCase markAsRecoveredUseCase,
   }) : _registerBikeUseCase = registerBikeUseCase,
        _getUserBikesUseCase = getUserBikesUseCase,
        _reportBikeTheftUseCase = reportBikeTheftUseCase,
        _transferBikeOwnershipUseCase = transferBikeOwnershipUseCase,
        _getPublicBikeInfoUseCase = getPublicBikeInfoUseCase,
-       _deleteBikeUseCase = deleteBikeUseCase;
+       _deleteBikeUseCase = deleteBikeUseCase,
+       _markAsRecoveredUseCase = markAsRecoveredUseCase;
 
   // ========== Estado general ==========
   BikeProviderState _state = BikeProviderState.initial;
@@ -409,6 +413,38 @@ class BikeProvider extends ChangeNotifier {
   }
 
   // ========== Gestión de transferencias ==========
+
+  /// Marca una bicicleta robada como recuperada
+  Future<bool> markAsRecovered({
+    required String bikeId,
+    required String userId,
+  }) async {
+    try {
+      _setState(BikeProviderState.loading);
+
+      final updatedBike = await _markAsRecoveredUseCase(
+        bikeId: bikeId,
+        userId: userId,
+      );
+
+      // Actualizar en la lista de bicicletas
+      final index = _userBikes.indexWhere((bike) => bike.id == bikeId);
+      if (index != -1) {
+        _userBikes[index] = updatedBike;
+      }
+
+      // Actualizar bicicleta actual si corresponde
+      if (_currentBike?.id == bikeId) {
+        _currentBike = updatedBike;
+      }
+
+      _setState(BikeProviderState.loaded);
+      return true;
+    } catch (e) {
+      _setState(BikeProviderState.error, error: e.toString());
+      return false;
+    }
+  }
 
   /// Solicita transferencia de propiedad
   Future<bool> requestTransfer({

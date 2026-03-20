@@ -336,7 +336,6 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
             backgroundColor: ColorTokens.primary40,
           ),
         );
-        );
       }
     } catch (e) {
       if (mounted) {

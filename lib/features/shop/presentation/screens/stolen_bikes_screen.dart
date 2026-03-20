@@ -4,6 +4,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
 class StolenBikesScreen extends StatefulWidget {
   const StolenBikesScreen({Key? key}) : super(key: key);

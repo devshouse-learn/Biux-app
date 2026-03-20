@@ -4,7 +4,7 @@ import 'package:video_player/video_player.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_provider.dart';
-// import 'package:biux/shared/services/video_experience_service.dart'; // IMPLEMENTADO (STUB): Implementar
+import 'package:biux/features/experiences/data/datasources/video_experience_datasource.dart';
 
 /// Estado para la creación de experiencias
 class ExperienceCreatorState {
@@ -182,7 +182,7 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
   // final ExperienceRepository _repository; // PENDIENTE: Usar si se necesita acceso directo al repository
   final ExperienceNotifier _experienceNotifier;
   final ImagePicker _imagePicker = ImagePicker();
-  // final VideoExperienceService _videoService = VideoExperienceService(); // PENDIENTE: Implementar
+  final VideoExperienceService _videoService = VideoExperienceService();
 
   ExperienceCreatorNotifier(
     ExperienceRepository repository,
@@ -305,19 +305,19 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
 
       state = state.copyWith(mediaItems: [...state.mediaItems, processingItem]);
 
-      // Validar y subir video
-      // final uploadResult = await _videoService.uploadVideo(
-      //   videoFile: XFile(videoPath),
-      //   userId: 'temp_user', // PENDIENTE: Obtener del auth
-      //   experienceId: 'temp_exp', // PENDIENTE: Generar ID temporal
-      // );
+      final xFile = XFile(videoPath);
 
-      // PENDIENTE: Implementar lógica de video correcta
-      // Por ahora, procesamos el video de forma básica
+      // Validar duración del video
+      await _videoService.validateVideoDuration(xFile);
+
+      // Obtener información real del video
+      final videoInfo = await _videoService.getVideoInfo(xFile);
+
       final basicVideoItem = MediaItem(
         filePath: videoPath,
         mediaType: MediaType.video,
-        duration: 30, // Duración por defecto
+        duration: videoInfo?.durationSeconds ?? 30,
+        aspectRatio: videoInfo?.aspectRatio,
         isProcessing: false,
       );
 

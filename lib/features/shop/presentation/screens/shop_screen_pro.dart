@@ -10,6 +10,7 @@ import 'package:biux/features/shop/domain/entities/product_entity.dart';
 import 'package:biux/features/shop/domain/entities/category_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_menu_drawer_widget.dart';
 import 'package:biux/features/shop/presentation/screens/shop_admin_sheets.dart';
 import 'package:biux/features/shop/presentation/widgets/shop_admin_dashboard_widget_v2.dart';
@@ -4276,6 +4277,7 @@ void _showManageSellersSheet(BuildContext context) {
 /// Bottom sheet para reportes
 // ignore: unused_element
 void _showReportsSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4693,6 +4695,7 @@ void _showRequestsSheet(BuildContext context) {
 /// Bottom sheet para estadísticas
 // ignore: unused_element
 void _showStatsSheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -4943,6 +4946,7 @@ void _showStatsSheet(BuildContext context) {
 /// Bottom sheet para centro de seguridad
 // ignore: unused_element
 void _showSecuritySheet(BuildContext context) {
+  final l = Provider.of<LocaleNotifier>(context, listen: false);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,

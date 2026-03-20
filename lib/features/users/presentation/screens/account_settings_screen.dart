@@ -4,6 +4,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -142,28 +143,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
               const SizedBox(height: 24),
 
-              // --- Apariencia ---
+              // --- Apariencia (redirige a la pantalla completa de apariencia) ---
               SettingsWidgets.buildSectionTitle(l.t('appearance'), isDark),
               const SizedBox(height: 12),
-              Consumer<ThemeNotifier>(
-                builder: (context, themeNotifier, child) {
-                  final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
-                  return SettingsWidgets.buildToggleCard(
-                    context: context,
-                    icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                    title: l.t('dark_mode'),
-                    subtitle: isDarkMode
-                        ? l.t('activated')
-                        : l.t('deactivated'),
-                    isDark: isDark,
-                    value: isDarkMode,
-                    onChanged: (value) {
-                      themeNotifier.setThemeMode(
-                        value ? ThemeMode.dark : ThemeMode.light,
-                      );
-                    },
-                  );
-                },
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: isDark ? Icons.dark_mode : Icons.light_mode,
+                title: l.t('appearance'),
+                subtitle: l.t('appearance_subtitle'),
+                isDark: isDark,
+                onTap: () => context.push(AppRoutes.notificationSettings),
               ),
 
               const SizedBox(height: 24),
@@ -279,6 +268,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   // ===== CAMBIAR CONTRASEÑA =====
+  // ignore: unused_element
   void _showChangePasswordDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -402,6 +392,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   // ===== HISTORIAL DE ACTIVIDAD =====
+  // ignore: unused_element
   void _showActivityHistoryDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -610,6 +601,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   // ===== VERIFICAR CUENTA =====
+  // ignore: unused_element
   bool _isAccountVerified() {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) return false;
@@ -622,6 +614,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     return firebaseUser.emailVerified;
   }
 
+  // ignore: unused_element
   void _showVerifyAccountDialog() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -687,7 +680,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               _buildVerificationRow(
                 icon: Icons.phone_android,
                 label: l.t('verified_by_phone'),
-                value: firebaseUser!.phoneNumber!,
+                value: firebaseUser.phoneNumber!,
                 isVerified: true,
                 isDark: isDark,
               ),
@@ -698,7 +691,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               _buildVerificationRow(
                 icon: Icons.email_outlined,
                 label: l.t('email_auth'),
-                value: firebaseUser!.email!,
+                value: firebaseUser.email!,
                 isVerified: isEmailVerified,
                 isDark: isDark,
               ),
@@ -712,7 +705,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () async {
                     try {
-                      await firebaseUser!.sendEmailVerification();
+                      await firebaseUser.sendEmailVerification();
                       Navigator.of(sheetContext).pop();
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(

@@ -271,7 +271,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  bike.status.displayName,
+                  l.t(bike.status.displayName),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -323,7 +323,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
           _buildInfoRow(l.t('year_label'), bike.year.toString()),
           _buildInfoRow(l.t('color_label'), bike.color),
           _buildInfoRow(l.t('size_label'), bike.size),
-          _buildInfoRow(l.t('type_label'), bike.type.displayName),
+          _buildInfoRow(l.t('type_label'), l.t(bike.type.displayName)),
           _buildInfoRow(l.t('serial_number_label'), bike.frameSerial),
           _buildInfoRow(l.t('city_label'), bike.city),
           if (bike.neighborhood != null)
@@ -697,20 +697,81 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
 
   void _showTheftReportDialog(BikeEntity bike, BikeProvider bikeProvider) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final descriptionController = TextEditingController();
+    final locationController = TextEditingController();
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(l.t('report_theft')),
-        content: Text(l.t('report_theft_confirm')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l.t('report_theft_confirm')),
+            const SizedBox(height: 12),
+            TextField(
+              controller: locationController,
+              decoration: InputDecoration(
+                labelText: l.t('location'),
+                hintText: l.t('theft_location_hint'),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: descriptionController,
+              decoration: InputDecoration(
+                labelText: l.t('description'),
+                hintText: l.t('theft_description_hint'),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(l.t('cancel')),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // IMPLEMENTADO (STUB): Implementar reporte de robo
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+
+              final location = locationController.text.trim();
+              final description = descriptionController.text.trim();
+
+              if (location.isEmpty || description.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l.t('fill_required_fields')),
+                    backgroundColor: ColorTokens.error50,
+                  ),
+                );
+                return;
+              }
+
+              final success = await bikeProvider.reportTheft(
+                bikeId: bike.id,
+                reporterId: bike.ownerId,
+                theftDate: DateTime.now(),
+                location: location,
+                description: description,
+              );
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success
+                          ? '✅ ${l.t('theft_reported_success')}'
+                          : '❌ ${l.t('error_generic')}: ${bikeProvider.errorMessage}',
+                    ),
+                    backgroundColor: success
+                        ? ColorTokens.success40
+                        : ColorTokens.error50,
+                  ),
+                );
+                if (success) setState(() {});
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.error50,
@@ -722,26 +783,126 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
     );
   }
 
-  void _markAsRecovered(BikeEntity bike, BikeProvider bikeProvider) {
-    // IMPLEMENTADO (STUB): Implementar marcar como recuperada
+  void _markAsRecovered(BikeEntity bike, BikeProvider bikeProvider) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l.t('mark_recovered')),
+        content: Text(l.t('mark_recovered_confirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l.t('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.success40,
+            ),
+            child: Text(l.t('confirm')),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final success = await bikeProvider.markAsRecovered(
+      bikeId: bike.id,
+      userId: bike.ownerId,
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? '✅ ${l.t('bike_recovered_success')}'
+                : '❌ ${l.t('error_generic')}: ${bikeProvider.errorMessage}',
+          ),
+          backgroundColor: success
+              ? ColorTokens.success40
+              : ColorTokens.error50,
+        ),
+      );
+      if (success) setState(() {});
+    }
   }
 
   void _showTransferDialog(BikeEntity bike, BikeProvider bikeProvider) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final userIdController = TextEditingController();
+    final messageController = TextEditingController();
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(l.t('transfer_ownership')),
-        content: Text(l.t('transfer_confirm')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l.t('transfer_confirm')),
+            const SizedBox(height: 12),
+            TextField(
+              controller: userIdController,
+              decoration: InputDecoration(
+                labelText: l.t('new_owner_id'),
+                hintText: l.t('enter_user_id'),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: messageController,
+              decoration: InputDecoration(labelText: l.t('message_optional')),
+              maxLines: 2,
+            ),
+          ],
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(l.t('cancel')),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // IMPLEMENTADO (STUB): Implementar transferencia
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+
+              final toUserId = userIdController.text.trim();
+              if (toUserId.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l.t('fill_required_fields')),
+                    backgroundColor: ColorTokens.error50,
+                  ),
+                );
+                return;
+              }
+
+              final success = await bikeProvider.requestTransfer(
+                bikeId: bike.id,
+                fromUserId: bike.ownerId,
+                toUserId: toUserId,
+                message: messageController.text.trim().isNotEmpty
+                    ? messageController.text.trim()
+                    : null,
+              );
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success
+                          ? '✅ ${l.t('transfer_requested_success')}'
+                          : '❌ ${l.t('error_generic')}: ${bikeProvider.errorMessage}',
+                    ),
+                    backgroundColor: success
+                        ? ColorTokens.success40
+                        : ColorTokens.error50,
+                  ),
+                );
+              }
             },
             child: Text(l.t('transfer')),
           ),

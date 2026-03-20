@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/shop/data/models/product_model.dart';
 import 'package:biux/features/shop/data/datasources/mock_products.dart';
-import "package:flutter/foundation.dart";
 
 /// Datasource para productos en Firebase Firestore
 class ProductRemoteDataSource {
@@ -125,7 +124,6 @@ class ProductRemoteDataSource {
       throw Exception('Error al actualizar stock: $e');
     }
   }
-
 
   /// Toggle like de un producto usando operaciones atomicas de Firestore
   Future<void> toggleProductLike(String productId, String userId) async {

@@ -293,6 +293,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   }
 
   Widget _buildStatusChip(BikeStatus status) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     Color backgroundColor;
     Color textColor;
     IconData icon;
@@ -332,7 +333,7 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
           Icon(icon, size: 14, color: textColor),
           const SizedBox(width: 4),
           Text(
-            status.displayName,
+            l.t(status.displayName),
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,

@@ -541,6 +541,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   /// Confirma eliminación de una foto individual
+  // ignore: unused_element
   void _confirmDeleteMedia(BuildContext context) {
     final theme = Theme.of(context);
     final l = Provider.of<LocaleNotifier>(context, listen: false);
@@ -728,7 +729,6 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   /// Comparte la historia
   void _shareStory(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final user = widget.experience.user;
     final description = widget.experience.description;
     final mediaUrl = widget.experience.media.isNotEmpty

@@ -356,9 +356,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     BuildContext context,
     ExperienceEntity experience,
   ) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final database = FirebaseDatabase.instance;
-      final l = Provider.of<LocaleNotifier>(context, listen: false);
 
       // Intentar primero marcar como eliminado (actualización)
       try {

@@ -66,7 +66,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
             if (commentsSnap.exists && commentsSnap.value != null) {
               final commentsData = commentsSnap.value;
               if (commentsData is! Map) continue;
-              final commentsMap = commentsData as Map<dynamic, dynamic>;
+              final commentsMap = commentsData;
               final expData = doc.data();
 
               for (final commentEntry in commentsMap.entries) {
