@@ -913,24 +913,26 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
 
   void _showDeleteConfirmation(BikeEntity bike) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final bikeProvider = context.read<BikeProvider>();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(l.t('delete_bike')),
         content: Text(
           '${l.t('delete_bike_confirm')} ${l.t('delete_action_irreversible')}',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(l.t('cancel')),
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
 
               // Mostrar indicador de carga
-              ScaffoldMessenger.of(context).showSnackBar(
+              scaffoldMessenger.showSnackBar(
                 SnackBar(
                   content: Text(l.t('deleting_bike')),
                   duration: const Duration(seconds: 2),
@@ -938,11 +940,10 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               );
 
               // Ejecutar eliminación
-              final bikeProvider = context.read<BikeProvider>();
               final success = await bikeProvider.deleteBike(bike.id);
 
               if (success && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: Text('✅ ${l.t('bike_deleted_success')}'),
                     backgroundColor: ColorTokens.success40,
@@ -956,7 +957,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
                   }
                 });
               } else if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(
                     content: Text(
                       '❌ ${l.t('error_generic')}: ${bikeProvider.errorMessage}',
