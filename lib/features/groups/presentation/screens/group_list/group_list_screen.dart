@@ -364,7 +364,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '👑 ${admin['fullName'] ?? l.t('ride_leader')}',
+                                      '👑 ${(admin['fullName'] as String).isNotEmpty ? admin['fullName'] : l.t('ride_leader')}',
                                       style: TextStyle(
                                         color: ColorTokens.neutral100,
                                         fontSize: 12,
@@ -374,7 +374,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      '@${admin['userName'] ?? l.t('user')}',
+                                      '@${(admin['userName'] as String).isNotEmpty ? admin['userName'] : l.t('user')}',
                                       style: TextStyle(
                                         color: ColorTokens.neutral60,
                                         fontSize: 11,
