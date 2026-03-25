@@ -1,3 +1,4 @@
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'dart:core';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -150,7 +151,10 @@ void main() async {
         ),
         ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(create: (_) => LocaleNotifier()),
+<<<<<<< Updated upstream
         ChangeNotifierProxyProvider<app_auth.AuthProvider, NotificationsProvider?>(create: (_) => null, update: (context, authProvider, previous) { final currentUser = FirebaseAuth.instance.currentUser; if (currentUser == null) return null; if (previous != null) return previous; return NotificationsProvider(repository: NotificationsRepositoryImpl(), userId: currentUser.uid); },),
+=======
+>>>>>>> Stashed changes
         ChangeNotifierProvider(
           create: (_) =>
               MeetingPointProvider(repository: MeetingPointRepository()),
