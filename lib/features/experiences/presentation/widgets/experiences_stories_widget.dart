@@ -44,11 +44,13 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
   }
 
   void _onExperiencesChanged() {
+    if (!mounted) return;
     // Re-agrupar stories cuando el feed cambie
     _loadAndGroupStories();
   }
 
   Future<void> _loadAndGroupStories() async {
+    if (!mounted) return;
     final storyGroupsProvider = context.read<StoryGroupsProvider>();
     final experienceProvider = context.read<ExperienceProvider>();
 

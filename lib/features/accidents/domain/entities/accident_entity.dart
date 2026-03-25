@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AccidentEntity {
   final String id;
@@ -32,20 +33,31 @@ class AccidentEntity {
     'description': description,
     'severity': severity,
     'imageUrls': imageUrls,
-    'createdAt': createdAt.toIso8601String(),
+    'createdAt': createdAt,
     'resolved': resolved,
   };
 
-  factory AccidentEntity.fromMap(String id, Map<String, dynamic> map) => AccidentEntity(
-    id: id,
-    userId: map['userId'] ?? '',
-    userName: map['userName'] ?? '',
-    latitude: (map['latitude'] as num?)?.toDouble() ?? 0,
-    longitude: (map['longitude'] as num?)?.toDouble() ?? 0,
-    description: map['description'] ?? '',
-    severity: map['severity'] ?? 'minor',
-    imageUrls: List<String>.from(map['imageUrls'] ?? []),
-    createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
-    resolved: map['resolved'] ?? false,
-  );
+  factory AccidentEntity.fromMap(String id, Map<String, dynamic> map) {
+    DateTime parsedDate;
+    final raw = map['createdAt'];
+    if (raw is Timestamp) {
+      parsedDate = raw.toDate();
+    } else if (raw is String) {
+      parsedDate = DateTime.tryParse(raw) ?? DateTime.now();
+    } else {
+      parsedDate = DateTime.now();
+    }
+    return AccidentEntity(
+      id: id,
+      userId: map['userId'] ?? '',
+      userName: map['userName'] ?? '',
+      latitude: (map['latitude'] as num?)?.toDouble() ?? 0,
+      longitude: (map['longitude'] as num?)?.toDouble() ?? 0,
+      description: map['description'] ?? '',
+      severity: map['severity'] ?? 'minor',
+      imageUrls: List<String>.from(map['imageUrls'] ?? []),
+      createdAt: parsedDate,
+      resolved: map['resolved'] ?? false,
+    );
+  }
 }

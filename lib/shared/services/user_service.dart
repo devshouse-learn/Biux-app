@@ -1,92 +1,157 @@
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 
 /// Servicio para operaciones de usuario (perfil, follow, etc.).
-/// STUB — pendiente de implementación real.
 class UserService {
-  UserService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Obtiene datos de un usuario por UID.
-  Future<UserModel?> getUserData(String uid) async {
-    debugPrint('⚠️ UserService.getUserData() — STUB: sin implementar');
-    return null;
+  /// Obtiene los datos del usuario actual desde Firestore.
+  Future<UserModel?> getUserData() async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) return null;
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (!doc.exists || doc.data() == null) return null;
+      return UserModel.fromMap({'id': doc.id, ...doc.data()!});
+    } catch (e) {
+      debugPrint('⚠️ UserService.getUserData() error: $e');
+      return null;
+    }
   }
 
   /// Escucha cambios en tiempo real de un usuario.
+  /// Implementa el listener de Firestore con snapshots() para
+  /// sincronización automática cada vez que el documento cambia en el servidor.
   void listenToUser(String uid, void Function(UserModel?) callback) {
-    debugPrint('⚠️ UserService.listenToUser() — STUB: sin implementar');
-    // TODO: Implementar listener de Firestore
+    _firestore
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            if (snapshot.exists && snapshot.data() != null) {
+              try {
+                callback(
+                  UserModel.fromMap({'id': snapshot.id, ...snapshot.data()!}),
+                );
+              } catch (e) {
+                debugPrint('⚠️ UserService.listenToUser() parse error: $e');
+                callback(null);
+              }
+            } else {
+              callback(null);
+            }
+          },
+          onError: (error) {
+            debugPrint('⚠️ UserService.listenToUser() stream error: $error');
+            callback(null);
+          },
+        );
   }
 
   /// Actualiza el perfil de un usuario.
-  Future<bool> updateUserProfile({
+  Future<void> updateUserProfile({
     required String uid,
-    String? name,
-    String? email,
-    String? description,
-    String? username,
+    String? displayName,
     String? photoUrl,
+    String? description,
     String? coverPhotoUrl,
   }) async {
-    debugPrint('⚠️ UserService.updateUserProfile() — STUB: sin implementar');
-    return false;
+    try {
+      final Map<String, dynamic> updates = {};
+      if (displayName != null) updates['fullName'] = displayName;
+      if (photoUrl != null) updates['photo'] = photoUrl;
+      if (description != null) updates['description'] = description;
+      if (coverPhotoUrl != null) updates['coverPhoto'] = coverPhotoUrl;
+      if (updates.isEmpty) return;
+      await _firestore.collection('users').doc(uid).update(updates);
+    } catch (e) {
+      debugPrint('⚠️ UserService.updateUserProfile() error: $e');
+      rethrow;
+    }
   }
 
-  /// Sube una imagen de perfil y retorna la URL.
-  Future<String?> uploadProfileImage(String uid) async {
-    debugPrint('⚠️ UserService.uploadProfileImage() — STUB: sin implementar');
-    return null;
-  }
-
-  /// Solicita la eliminación de la cuenta.
-  Future<bool> requestAccountDeletion(String uid) async {
-    debugPrint(
-      '⚠️ UserService.requestAccountDeletion() — STUB: sin implementar',
-    );
-    return false;
-  }
-
-  /// Cierra la sesión del usuario.
-  Future<void> signOut() async {
-    debugPrint('⚠️ UserService.signOut() — STUB: sin implementar');
-  }
-
-  /// Crea un usuario en Firestore si no existe.
-  Future<void> createUserIfNotExists(String uid, String phoneNumber) async {
-    debugPrint(
-      '⚠️ UserService.createUserIfNotExists() — STUB: sin implementar',
-    );
-  }
-
-  /// Actualiza permiso de vendedor para un usuario.
-  Future<bool> updateSellerPermission(String userId, bool canSell) async {
-    debugPrint(
-      '⚠️ UserService.updateSellerPermission() — STUB: sin implementar',
-    );
-    return false;
-  }
-
-  /// Obtiene todos los usuarios.
-  Future<List<UserModel>> getAllUsers() async {
-    debugPrint('⚠️ UserService.getAllUsers() — STUB: sin implementar');
-    return [];
-  }
-
-  /// Sigue a un usuario.
-  Future<bool> followUser({
-    required String currentUserId,
-    required String userIdToFollow,
+  /// Sube una imagen de perfil (URL ya procesada) y la guarda en Firestore.
+  Future<void> uploadProfileImage({
+    required String uid,
+    required String photoUrl,
   }) async {
-    debugPrint('⚠️ UserService.followUser() — STUB: sin implementar');
-    return false;
+    try {
+      await _firestore.collection('users').doc(uid).update({'photo': photoUrl});
+    } catch (e) {
+      debugPrint('⚠️ UserService.uploadProfileImage() error: $e');
+      rethrow;
+    }
+  }
+
+  /// Cierra la sesión del usuario actual.
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      debugPrint('⚠️ UserService.signOut() error: $e');
+      rethrow;
+    }
+  }
+
+  /// Obtiene todos los usuarios (paginado).
+  Future<List<UserModel>> getAllUsers({int limit = 50}) async {
+    try {
+      final query = await _firestore.collection('users').limit(limit).get();
+      return query.docs
+          .map((doc) => UserModel.fromMap({'id': doc.id, ...doc.data()}))
+          .toList();
+    } catch (e) {
+      debugPrint('⚠️ UserService.getAllUsers() error: $e');
+      return [];
+    }
+  }
+
+  /// Sigue a un usuario: actualiza arrays followers/following en ambos usuarios
+  /// y los contadores usando una escritura batch atómica.
+  Future<void> followUser({
+    required String currentUid,
+    required String targetUid,
+  }) async {
+    try {
+      final batch = _firestore.batch();
+      batch.update(_firestore.collection('users').doc(currentUid), {
+        'following': FieldValue.arrayUnion([targetUid]),
+        'followingCount': FieldValue.increment(1),
+      });
+      batch.update(_firestore.collection('users').doc(targetUid), {
+        'followers': FieldValue.arrayUnion([currentUid]),
+        'followersCount': FieldValue.increment(1),
+      });
+      await batch.commit();
+    } catch (e) {
+      debugPrint('⚠️ UserService.followUser() error: $e');
+      rethrow;
+    }
   }
 
   /// Deja de seguir a un usuario.
-  Future<bool> unfollowUser({
-    required String currentUserId,
-    required String userIdToUnfollow,
+  Future<void> unfollowUser({
+    required String currentUid,
+    required String targetUid,
   }) async {
-    debugPrint('⚠️ UserService.unfollowUser() — STUB: sin implementar');
-    return false;
+    try {
+      final batch = _firestore.batch();
+      batch.update(_firestore.collection('users').doc(currentUid), {
+        'following': FieldValue.arrayRemove([targetUid]),
+        'followingCount': FieldValue.increment(-1),
+      });
+      batch.update(_firestore.collection('users').doc(targetUid), {
+        'followers': FieldValue.arrayRemove([currentUid]),
+        'followersCount': FieldValue.increment(-1),
+      });
+      await batch.commit();
+    } catch (e) {
+      debugPrint('⚠️ UserService.unfollowUser() error: $e');
+      rethrow;
+    }
   }
 }

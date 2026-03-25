@@ -278,13 +278,14 @@ class _BotonSend extends StatelessWidget {
             child: Text(AppStrings.update, style: Styles.daysRoadListDateTime),
             onPressed: () async {
               if (form.currentState!.validate()) {
+                final messenger = ScaffoldMessenger.of(context);
                 try {
                   debugPrint('📝 Iniciando actualización de perfil...');
                   await bloc.uploadUpdate(context);
                   debugPrint('✅ Perfil actualizado, cerrando pantalla...');
 
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: AppStrings.userUpdate,
                         backgroundColor: ColorTokens.secondary50,
@@ -299,7 +300,7 @@ class _BotonSend extends StatelessWidget {
                 } catch (e) {
                   debugPrint('❌ Excepción capturada: $e');
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: 'Error al actualizar perfil: ${e.toString()}',
                         backgroundColor: ColorTokens.error50,

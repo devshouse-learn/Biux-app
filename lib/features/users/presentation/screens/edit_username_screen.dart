@@ -302,6 +302,8 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
   }
 
   Future<void> _saveUsername(EditUsernameProvider provider) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
@@ -315,15 +317,15 @@ class _EditUsernameScreenState extends State<EditUsernameScreen> {
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         await userProvider.loadUserData();
 
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text(l.t('username_updated_success')),
             backgroundColor: ColorTokens.success50,
           ),
         );
-        Navigator.of(context).pop();
+        navigator.pop();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text(provider.error ?? l.t('error_updating_username')),
             backgroundColor: ColorTokens.error50,
