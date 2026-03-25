@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 
 /// Servicio para operaciones de usuario (perfil, follow, etc.).
-/// STUB — pendiente de implementación real.
 class UserService {
+  final _firestore = FirebaseFirestore.instance;
+
   UserService();
 
   /// Obtiene datos de un usuario por UID.
@@ -14,8 +16,30 @@ class UserService {
 
   /// Escucha cambios en tiempo real de un usuario.
   void listenToUser(String uid, void Function(UserModel?) callback) {
-    debugPrint('⚠️ UserService.listenToUser() — STUB: sin implementar');
-    // TODO: Implementar listener de Firestore
+    _firestore
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .listen(
+          (snapshot) {
+            if (snapshot.exists && snapshot.data() != null) {
+              try {
+                callback(
+                  UserModel.fromMap({'id': snapshot.id, ...snapshot.data()!}),
+                );
+              } catch (e) {
+                debugPrint('⚠️ UserService.listenToUser() parse error: $e');
+                callback(null);
+              }
+            } else {
+              callback(null);
+            }
+          },
+          onError: (error) {
+            debugPrint('⚠️ UserService.listenToUser() stream error: $error');
+            callback(null);
+          },
+        );
   }
 
   /// Actualiza el perfil de un usuario.

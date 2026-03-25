@@ -630,13 +630,41 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         return;
       }
 
-      // TODO: Implementar eliminación de media individual cuando el backend lo soporte
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(l.t('media_deleted_success')),
-          duration: const Duration(seconds: 2),
-        ),
+      // Eliminar el media individual en el índice actual
+      final mediaIndex = currentMediaIndex;
+      final ok = await provider.removeMediaFromExperience(
+        widget.experience.id,
+        mediaIndex,
       );
+
+      if (context.mounted) {
+        if (ok) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(l.t('media_deleted_success')),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          // Ajustar índice si eliminamos el último elemento
+          if (mounted) {
+            setState(() {
+              _mediaItems.removeAt(mediaIndex);
+              if (currentMediaIndex >= _mediaItems.length &&
+                  currentMediaIndex > 0) {
+                currentMediaIndex = _mediaItems.length - 1;
+              }
+            });
+            _startCurrentMedia();
+          }
+        } else {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(l.t('error_generic')),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     } catch (e) {
       if (context.mounted) {
         messenger.showSnackBar(
