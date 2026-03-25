@@ -105,18 +105,17 @@ class DirectionsResult {
 }
 
 /// Servicio para obtener direcciones/rutas usando Google Directions API.
-/// STUB — pendiente de implementación real.
 class DirectionsService {
   /// Obtiene direcciones con detalles entre dos puntos.
-  static Future<DirectionsResult?> getDirectionsWithDetails({
+  static Future<DirectionsResult?> getDirections({
     required LatLng origin,
     required LatLng destination,
     required String travelMode,
   }) async {
-    debugPrint(
-      '⚠️ DirectionsService.getDirectionsWithDetails() — STUB: sin implementar',
+    return getDirectionsWithDetails(
+      origin: origin,
+      destination: destination,
+      travelMode: travelMode,
     );
-    // TODO: Implementar llamada real a Google Directions API
-    return null;
   }
 }
