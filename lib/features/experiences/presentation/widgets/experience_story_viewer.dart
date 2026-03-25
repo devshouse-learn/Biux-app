@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
@@ -632,50 +630,40 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         return;
       }
 
-      // Eliminar media individual: quitar del array en Firestore
-      // y eliminar el archivo de Firebase Storage.
-      try {
-        final origin = _mediaOrigins[currentMediaIndex];
-        final experienceId = origin.experienceId;
-        final media = _mediaItems[currentMediaIndex];
-        final mediaUrl = media.url;
+      // Eliminar el media individual en el índice actual
+      final mediaIndex = currentMediaIndex;
+      final ok = await provider.removeMediaFromExperience(
+        widget.experience.id,
+        mediaIndex,
+      );
 
-        // 1. Eliminar de Firestore usando arrayRemove
-        await FirebaseFirestore.instance
-            .collection('experiences')
-            .doc(experienceId)
-            .update({
-              'media': FieldValue.arrayRemove([
-                {'id': media.id, 'url': mediaUrl},
-              ]),
+      if (context.mounted) {
+        if (ok) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(l.t('media_deleted_success')),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          // Ajustar índice si eliminamos el último elemento
+          if (mounted) {
+            setState(() {
+              _mediaItems.removeAt(mediaIndex);
+              if (currentMediaIndex >= _mediaItems.length &&
+                  currentMediaIndex > 0) {
+                currentMediaIndex = _mediaItems.length - 1;
+              }
             });
-
-        // 2. Intentar eliminar de Firebase Storage (puede fallar si ya no existe)
-        try {
-          await FirebaseStorage.instance.refFromURL(mediaUrl).delete();
-        } catch (_) {
-          // Ignorar si el archivo ya no existe en Storage
+            _startCurrentMedia();
+          }
+        } else {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(l.t('error_generic')),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
-
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(l.t('media_deleted_success')),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-
-        // Navegar atrás si era el único medio
-        if (_mediaItems.length <= 1 && context.mounted) {
-          Navigator.of(context).pop();
-        }
-      } catch (e) {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(l.t('error_deleting_media')),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
       }
     } catch (e) {
       if (context.mounted) {
