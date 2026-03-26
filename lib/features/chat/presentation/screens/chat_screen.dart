@@ -29,8 +29,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final chatProvider = context.read<ChatProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark ? ColorTokens.neutral10 : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Chat'),
         backgroundColor: ColorTokens.primary30,
@@ -46,7 +48,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   return const Center(child: CircularProgressIndicator());
                 final docs = snapshot.data!.docs;
                 if (docs.isEmpty) {
-                  return const Center(child: Text('Envia el primer mensaje!'));
+                  return Center(
+                    child: Text(
+                      'Envia el primer mensaje!',
+                      style: TextStyle(
+                        color: isDark
+                            ? ColorTokens.neutral70
+                            : Colors.grey[600],
+                      ),
+                    ),
+                  );
                 }
                 return ListView.builder(
                   controller: _scrollController,
@@ -74,7 +85,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           maxWidth: MediaQuery.of(context).size.width * 0.75,
                         ),
                         decoration: BoxDecoration(
-                          color: isMe ? ColorTokens.primary30 : Colors.white,
+                          color: isMe
+                              ? ColorTokens.primary30
+                              : (isDark ? ColorTokens.neutral20 : Colors.white),
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(16),
                             topRight: const Radius.circular(16),
@@ -98,26 +111,34 @@ class _ChatScreenState extends State<ChatScreen> {
                                 senderName,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey[600],
+                                  color: isDark
+                                      ? ColorTokens.neutral60
+                                      : Colors.grey[600],
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             Text(
                               content,
                               style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black87,
+                                color: isMe
+                                    ? Colors.white
+                                    : (isDark
+                                          ? ColorTokens.neutral100
+                                          : Colors.black87),
                                 fontSize: 15,
                               ),
                             ),
                             if (time != null) ...[
                               const SizedBox(height: 4),
                               Text(
-                                '\${time.toDate().hour.toString().padLeft(2, "0")}:\${time.toDate().minute.toString().padLeft(2, "0")}',
+                                '${time.toDate().hour.toString().padLeft(2, "0")}:${time.toDate().minute.toString().padLeft(2, "0")}',
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: isMe
                                       ? Colors.white60
-                                      : Colors.grey[500],
+                                      : (isDark
+                                            ? ColorTokens.neutral50
+                                            : Colors.grey[500]),
                                 ),
                               ),
                             ],
@@ -138,7 +159,7 @@ class _ChatScreenState extends State<ChatScreen> {
               bottom: MediaQuery.of(context).padding.bottom + 8,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? ColorTokens.neutral10 : Colors.white,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -152,14 +173,26 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _msgController,
+                    style: TextStyle(
+                      color: isDark
+                          ? ColorTokens.neutral100
+                          : ColorTokens.neutral10,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Escribe un mensaje...',
+                      hintStyle: TextStyle(
+                        color: isDark
+                            ? ColorTokens.neutral60
+                            : Colors.grey[500],
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).colorScheme.surface,
+                      fillColor: isDark
+                          ? ColorTokens.neutral20
+                          : Colors.grey[100],
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 10,

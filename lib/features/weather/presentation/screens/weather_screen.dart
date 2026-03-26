@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -21,12 +20,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      backgroundColor: isDark ? ColorTokens.neutral10 : const Color(0xFFF0F4F8),
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: Text(l.t('weather_for_cycling')),
+        title: const Text('Clima para ciclistas'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -36,42 +36,109 @@ class _WeatherScreenState extends State<WeatherScreen> {
       ),
       body: Consumer<WeatherProvider>(
         builder: (ctx, wp, _) {
-          if (wp.loading)
-            return const Center(child: CircularProgressIndicator());
-          if (wp.error != null) {
+          if (wp.loading) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
+                  const CircularProgressIndicator(),
                   const SizedBox(height: 16),
                   Text(
-                    l.t(wp.error!),
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => wp.loadWeather(),
-                    child: Text(l.t('retry')),
+                    'Obteniendo tu ubicación y clima...',
+                    style: TextStyle(
+                      color: isDark ? ColorTokens.neutral70 : Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
             );
           }
+          if (wp.error != null) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.location_off,
+                      size: 64,
+                      color: isDark ? ColorTokens.neutral60 : Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      wp.error!,
+                      style: TextStyle(
+                        color: isDark
+                            ? ColorTokens.neutral80
+                            : Colors.grey[700],
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () => wp.loadWeather(),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reintentar'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.primary30,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
           if (wp.weatherData == null) {
-            return Center(child: Text(l.t('loading_weather')));
+            return const Center(child: Text('Cargando clima...'));
           }
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // Main weather card
+                // === UBICACIÓN ===
+                if (wp.cityName.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 18,
+                          color: isDark
+                              ? ColorTokens.neutral70
+                              : Colors.grey[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            wp.cityName,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? ColorTokens.neutral80
+                                  : Colors.grey[700],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // === TARJETA PRINCIPAL DE CLIMA ===
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                       colors: wp.isSafeToRide
                           ? [const Color(0xFF1565C0), const Color(0xFF42A5F5)]
                           : [const Color(0xFF616161), const Color(0xFF9E9E9E)],
@@ -79,7 +146,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withValues(alpha: 0.3),
+                        color: (wp.isSafeToRide ? Colors.blue : Colors.grey)
+                            .withValues(alpha: 0.3),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -91,7 +159,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         wp.weatherEmoji,
                         style: const TextStyle(fontSize: 72),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Text(
                         wp.temperature,
                         style: const TextStyle(
@@ -101,29 +169,26 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         ),
                       ),
                       Text(
-                        l.t(wp.description),
+                        wp.description,
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.white70,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
+                      // Fila de detalles principales
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           _weatherDetail(
                             '💨',
-                            l.t('wind'),
+                            'Viento',
                             '${wp.windSpeed.toStringAsFixed(1)} km/h',
                           ),
-                          _weatherDetail(
-                            '💧',
-                            l.t('humidity'),
-                            '${wp.humidity}%',
-                          ),
+                          _weatherDetail('💧', 'Humedad', '${wp.humidity}%'),
                           _weatherDetail(
                             '🌡️',
-                            l.t('feels_like'),
+                            'Sensación',
                             '${wp.feelsLike.round()}°C',
                           ),
                         ],
@@ -131,15 +196,157 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                // Ride advice
+                const SizedBox(height: 16),
+
+                // === DETALLES ADICIONALES ===
+                Row(
+                  children: [
+                    Expanded(
+                      child: _infoCard(
+                        isDark: isDark,
+                        icon: Icons.wb_sunny_outlined,
+                        iconColor: _uvColor(wp.uvIndex),
+                        title: 'Índice UV',
+                        value: wp.uvIndex.toStringAsFixed(1),
+                        subtitle: wp.uvAdvice,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _infoCard(
+                        isDark: isDark,
+                        icon: Icons.water_drop_outlined,
+                        iconColor: Colors.blue,
+                        title: 'Precipitación',
+                        value: '${wp.precipitationProbability}%',
+                        subtitle: '${wp.precipitation} mm',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _infoCard(
+                        isDark: isDark,
+                        icon: Icons.visibility_outlined,
+                        iconColor: Colors.teal,
+                        title: 'Visibilidad',
+                        value: '${wp.visibility.toStringAsFixed(1)} km',
+                        subtitle: wp.visibility >= 10
+                            ? 'Excelente'
+                            : wp.visibility >= 5
+                            ? 'Buena'
+                            : 'Reducida',
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _infoCard(
+                        isDark: isDark,
+                        icon: Icons.speed_outlined,
+                        iconColor: Colors.deepPurple,
+                        title: 'Presión',
+                        value: '${wp.pressure.round()} hPa',
+                        subtitle: wp.pressure >= 1013 ? 'Alta' : 'Baja',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // === PRONÓSTICO HORARIO ===
+                if (wp.hourlyForecast.isNotEmpty) ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Próximas horas',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? ColorTokens.neutral90
+                            : ColorTokens.neutral10,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 110,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: wp.hourlyForecast.length,
+                      itemBuilder: (ctx, i) {
+                        final h = wp.hourlyForecast[i];
+                        return Container(
+                          width: 72,
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? ColorTokens.neutral20
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                h['hour'] as String,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? ColorTokens.neutral70
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                              Text(
+                                h['emoji'] as String,
+                                style: const TextStyle(fontSize: 24),
+                              ),
+                              Text(
+                                h['temp'] as String,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? ColorTokens.neutral100
+                                      : ColorTokens.neutral10,
+                                ),
+                              ),
+                              if ((h['precProb'] as num) > 0)
+                                Text(
+                                  '💧${h['precProb']}%',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.blue[400],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
+                // === CONSEJO DE RODADA ===
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: wp.isSafeToRide
-                        ? Colors.green.withValues(alpha: 0.1)
-                        : Colors.orange.withValues(alpha: 0.1),
+                        ? Colors.green.withValues(alpha: isDark ? 0.2 : 0.1)
+                        : Colors.orange.withValues(alpha: isDark ? 0.2 : 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: wp.isSafeToRide
@@ -147,42 +354,56 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           : Colors.orange.withValues(alpha: 0.3),
                     ),
                   ),
-                  child: Column(
+                  child: Row(
                     children: [
                       Icon(
-                        wp.isSafeToRide ? Icons.check_circle : Icons.warning,
+                        wp.isSafeToRide
+                            ? Icons.directions_bike
+                            : Icons.warning_amber_rounded,
                         color: wp.isSafeToRide ? Colors.green : Colors.orange,
                         size: 36,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        wp.isSafeToRide
-                            ? l.t('good_weather_to_ride')
-                            : l.t('caution_riding'),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: wp.isSafeToRide
-                              ? Colors.green[800]
-                              : Colors.orange[800],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              wp.isSafeToRide
+                                  ? '¡Buen clima para rodar!'
+                                  : 'Precaución al pedalear',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: wp.isSafeToRide
+                                    ? Colors.green[800]
+                                    : Colors.orange[800],
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              wp.rideAdvice,
+                              style: TextStyle(
+                                color: isDark
+                                    ? ColorTokens.neutral70
+                                    : Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l.t(wp.rideAdvice),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                // Tips card
+                const SizedBox(height: 16),
+
+                // === TIPS DE CICLISMO ===
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: isDark ? ColorTokens.neutral20 : Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -195,25 +416,114 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l.t('weather_tips_title'),
-                        style: const TextStyle(
+                        'Tips para tu rodada',
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? ColorTokens.neutral100
+                              : ColorTokens.neutral10,
                         ),
                       ),
                       const SizedBox(height: 12),
-                      _tipItem(l.t('tip_carry_water')),
-                      _tipItem(l.t('tip_sunscreen')),
-                      _tipItem(l.t('tip_rain_braking')),
-                      _tipItem(l.t('tip_use_lights')),
-                      _tipItem(l.t('tip_dress_layers')),
+                      ..._getContextualTips(
+                        wp,
+                      ).map((tip) => _tipItem(tip, isDark)),
                     ],
                   ),
                 ),
+                const SizedBox(height: 24),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  List<String> _getContextualTips(WeatherProvider wp) {
+    final tips = <String>[];
+    final main = wp.weatherData?['weather']?[0]?['main'] ?? '';
+
+    if (wp.feelsLike > 28) tips.add('Lleva suficiente agua, hace calor');
+    if (wp.uvIndex > 3) tips.add('Usa protector solar y gafas');
+    if (main == 'Rain' || main == 'Drizzle') {
+      tips.add('Frena con anticipación en mojado');
+      tips.add('Usa luces y ropa reflectiva');
+    }
+    if (wp.windSpeed > 20) tips.add('Anticipa ráfagas en zonas abiertas');
+    if (wp.visibility < 5) tips.add('Usa luces delanteras y traseras');
+    if (wp.feelsLike < 15) tips.add('Vístete por capas para el frío');
+    if (wp.humidity > 80) tips.add('La humedad alta causa fatiga, hidrátate');
+
+    // Tips generales si hay pocos contextual
+    if (tips.length < 3) {
+      tips.add('Revisa frenos y llantas antes de salir');
+      tips.add('Lleva herramienta básica y parches');
+    }
+    return tips;
+  }
+
+  Color _uvColor(double uv) {
+    if (uv <= 2) return Colors.green;
+    if (uv <= 5) return Colors.yellow[700]!;
+    if (uv <= 7) return Colors.orange;
+    if (uv <= 10) return Colors.red;
+    return Colors.purple;
+  }
+
+  Widget _infoCard({
+    required bool isDark,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String value,
+    required String subtitle,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? ColorTokens.neutral20 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18, color: iconColor),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? ColorTokens.neutral60 : Colors.grey[500],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isDark ? ColorTokens.neutral100 : ColorTokens.neutral10,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? ColorTokens.neutral60 : Colors.grey[500],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -239,14 +549,23 @@ class _WeatherScreenState extends State<WeatherScreen> {
     );
   }
 
-  Widget _tipItem(String text) {
+  Widget _tipItem(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? ColorTokens.neutral80 : ColorTokens.neutral10,
+              ),
+            ),
+          ),
         ],
       ),
     );
