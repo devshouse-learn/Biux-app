@@ -716,7 +716,8 @@ class RideProvider extends ChangeNotifier {
 
       // Actualizar la rodada seleccionada si es la misma
       if (_selectedRide?.id == rideId) {
-        _selectedRide = _selectedRide!.copyWith(status: RideStatus.cancelled);
+        if (_selectedRide == null) return false;
+    _selectedRide = _selectedRide!.copyWith(status: RideStatus.cancelled);
       }
 
       await loadAllRides();

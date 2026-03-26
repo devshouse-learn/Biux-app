@@ -27,6 +27,7 @@ class CyclingStatsProvider with ChangeNotifier {
     if (diff.inMinutes < 1) return 'stats_seconds_ago';
     if (diff.inMinutes < 60) return 'stats_minutes_ago';
     if (diff.inHours < 24) return 'stats_hours_ago';
+    if (_lastUpdated == null) return 'Sin datos';
     return '${_lastUpdated!.day}/${_lastUpdated!.month}/${_lastUpdated!.year}';
   }
 

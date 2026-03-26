@@ -411,7 +411,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         }).toSet();
 
         final initialPos = _myPosition != null
-            ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
+            ? LatLng(_myPosition?.latitude ?? 0.0, _myPosition?.longitude ?? 0.0)
             : accidents.isNotEmpty
             ? LatLng(accidents.first.latitude, accidents.first.longitude)
             : const LatLng(19.4326, -99.1332);

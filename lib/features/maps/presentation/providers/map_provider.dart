@@ -164,6 +164,7 @@ class MapProvider extends ChangeNotifier {
     _state = _state.copyWith(isLoading: true);
     notifyListeners();
 
+    if (_locationProvider == null) return;
     Position? position = await _locationProvider!.getCurrentLocation();
 
     if (position != null) {
@@ -183,6 +184,7 @@ class MapProvider extends ChangeNotifier {
   Future<void> _tryGetUserLocation() async {
     if (_locationProvider == null) return;
 
+    if (_locationProvider == null) return;
     Position? position = await _locationProvider!.getLocationForMap();
 
     if (position != null) {
