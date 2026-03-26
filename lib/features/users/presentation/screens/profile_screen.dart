@@ -1,4 +1,5 @@
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
