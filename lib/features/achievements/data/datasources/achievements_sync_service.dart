@@ -74,7 +74,9 @@ class AchievementsSyncService {
           .where('members', arrayContains: userId)
           .get();
       groupCount = groupSnap.docs.length;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
 
     // 4. Detectar logros especiales (rodada nocturna/madrugadora)
     bool hasNightRide = false;

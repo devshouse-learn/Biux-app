@@ -42,7 +42,9 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         ),
       );
       if (mounted) setState(() => _myPosition = pos);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
   }
 
   String _distanceText(double lat, double lng) {

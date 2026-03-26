@@ -204,10 +204,14 @@ class UserProfileProvider extends ChangeNotifier {
               try {
                 _currentProfile = BiuxUser.fromJsonMap({...data, 'id': userId});
                 notifyListeners();
-              } catch (e) {}
+              } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
             }
           }, onError: (error) {});
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
   }
 
   /// Actualización rápida del perfil sin cargar contenido (para después de follow/unfollow)
@@ -218,6 +222,7 @@ class UserProfileProvider extends ChangeNotifier {
         _currentProfile = profile;
       }
     } catch (e) {
+      debugPrint('Error: ' + e.toString());
     } finally {
       notifyListeners();
     }

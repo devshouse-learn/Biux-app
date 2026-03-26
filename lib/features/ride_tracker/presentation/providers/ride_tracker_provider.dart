@@ -289,7 +289,9 @@ class RideTrackerProvider with ChangeNotifier {
           .where('members', arrayContains: userId)
           .get();
       groupCount = gs.docs.length;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
 
     bool isNight = false;
     bool isEarly = false;
