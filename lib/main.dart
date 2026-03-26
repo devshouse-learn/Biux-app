@@ -63,7 +63,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/social/presentation/providers/social_providers_config.dart';
 import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
 import 'package:biux/features/settings/data/repositories/notification_settings_repository_impl.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'package:biux/features/social/data/repositories/notifications_repository_impl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
