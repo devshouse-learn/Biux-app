@@ -199,7 +199,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
               DetailsHeader(mapProvider: mapProvider),
               SizedBox(height: 8),
               Text(
-                mapProvider.selectedPoint!.description,
+                mapProvider.selectedPoint?.description ?? '',
                 style: TextStyle(color: ColorTokens.neutral60),
               ),
               SizedBox(height: 16),
@@ -225,14 +225,14 @@ class MeetingPointDetailsCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (mapProvider.selectedPoint!.routes.isNotEmpty) ...[
+              if (mapProvider.selectedPoint?.routes.isNotEmpty ?? false) ...[
                 SizedBox(height: 16),
                 Text(
                   l.t('available_routes'),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
-                RoutesList(routes: mapProvider.selectedPoint!.routes),
+                RoutesList(routes: mapProvider.selectedPoint?.routes ?? []),
               ],
             ],
           ),
@@ -254,7 +254,7 @@ class DetailsHeader extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            mapProvider.selectedPoint!.name,
+            mapProvider.selectedPoint?.name ?? '',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

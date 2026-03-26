@@ -695,7 +695,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ),
                             if (a.unlockedAt != null)
                               Text(
-                                'Obtenido el ${a.unlockedAt!.day}/${a.unlockedAt!.month}/${a.unlockedAt!.year}',
+                                'Obtenido el ${a.unlockedAt?.day ?? 0}/${a.unlockedAt?.month ?? 0}/${a.unlockedAt?.year ?? 0}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
