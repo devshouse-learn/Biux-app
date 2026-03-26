@@ -93,8 +93,7 @@ class AuthProvider extends ChangeNotifier {
       }
 
       if (_sendAttempts >= _maxSendAttempts) {
-        _errorMessage =
-            '$_errorMessage\n\n⚠️ Se alcanzó el máximo de intentos. Por favor intenta en unos minutos.';
+        _errorMessage = 'err_max_attempts';
       }
     }
     notifyListeners();
@@ -104,7 +103,7 @@ class AuthProvider extends ChangeNotifier {
     if (_phoneNumber == null) {
       debugPrint('❌ [AuthProvider] No hay número de teléfono registrado');
       _state = AuthState.error;
-      _errorMessage = 'Error: No se encontró número de teléfono';
+      _errorMessage = 'err_no_phone_found';
       notifyListeners();
       return;
     }
@@ -130,7 +129,9 @@ class AuthProvider extends ChangeNotifier {
       );
 
       debugPrint('✅ [AuthProvider] Código validado correctamente');
-      debugPrint('🔑 Token recibido: ${authResponse.token.substring(0, 20)}...');
+      debugPrint(
+        '🔑 Token recibido: ${authResponse.token.substring(0, 20)}...',
+      );
 
       // Autenticar con Firebase
       debugPrint('🔐 Autenticando con Firebase...');
@@ -197,8 +198,8 @@ class AuthProvider extends ChangeNotifier {
       debugPrint('✅ Sesión de invitado iniciada correctamente');
     } catch (e) {
       _state = AuthState.error;
-      _errorMessage = 'Error al iniciar como invitado: $e';
-      debugPrint('❌ Error en sesión de invitado: $_errorMessage');
+      _errorMessage = 'err_guest_login';
+      debugPrint('❌ Error en sesión de invitado: $e');
     }
     notifyListeners();
   }
@@ -212,7 +213,9 @@ class AuthProvider extends ChangeNotifier {
         debugPrint('   Usuario: ${currentUser.uid}');
         // Eliminar tokens cached
         await currentUser.delete().catchError((e) {
-          debugPrint('⚠️ No se pudo eliminar usuario (normal si es externo): $e');
+          debugPrint(
+            '⚠️ No se pudo eliminar usuario (normal si es externo): $e',
+          );
         });
       }
       await _auth.signOut();
@@ -222,7 +225,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('❌ Error al cerrar sesión: $e');
-      _errorMessage = 'Error al cerrar sesión';
+      _errorMessage = 'err_sign_out';
       notifyListeners();
     }
   }

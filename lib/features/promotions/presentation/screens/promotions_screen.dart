@@ -35,7 +35,6 @@ class _PromotionsScreenState extends State<PromotionsScreen>
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
           l.t('promotions_businesses_and_events'),
@@ -182,7 +181,6 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final types = _getTypes(l);
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
           l.t('promotions_verify_business'),

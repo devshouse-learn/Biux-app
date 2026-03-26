@@ -143,13 +143,13 @@ class RideModel {
   String get difficultyDisplayName {
     switch (difficulty) {
       case DifficultyLevel.easy:
-        return 'Fácil';
+        return 'difficulty_easy';
       case DifficultyLevel.medium:
-        return 'Medio';
+        return 'difficulty_medium';
       case DifficultyLevel.hard:
-        return 'Difícil';
+        return 'difficulty_hard';
       case DifficultyLevel.expert:
-        return 'Experto';
+        return 'difficulty_expert';
     }
   }
 

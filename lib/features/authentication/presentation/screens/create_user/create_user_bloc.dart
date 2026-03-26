@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
@@ -21,7 +20,7 @@ class CreateUserBloc extends ChangeNotifier {
   bool loading = false;
   String validateColor1 = '';
   String validateColor2 = '';
-  String dropdownValueCity = AppStrings.selectedCityText;
+  String dropdownValueCity = 'select_city';
   File image = File('');
 
   CreateUserBloc() {

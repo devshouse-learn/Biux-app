@@ -66,7 +66,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
@@ -1061,7 +1060,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('${l.t('error_generic')}: $e'),
           backgroundColor: ColorTokens.error50,
         ),
       );

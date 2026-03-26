@@ -1,12 +1,12 @@
-import 'package:provider/provider.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/widgets/video_player_widget.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/features/social/presentation/providers/likes_provider.dart';
@@ -630,41 +630,30 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
         return;
       }
 
-      // Eliminar el media individual en el índice actual
-      final mediaIndex = currentMediaIndex;
-      final ok = await provider.removeMediaFromExperience(
+      final wasEntirelyDeleted = await provider.removeMediaFromExperience(
         widget.experience.id,
-        mediaIndex,
+        currentMediaIndex,
       );
 
-      if (context.mounted) {
-        if (ok) {
-          messenger.showSnackBar(
-            SnackBar(
-              content: Text(l.t('media_deleted_success')),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-          // Ajustar índice si eliminamos el último elemento
-          if (mounted) {
-            setState(() {
-              _mediaItems.removeAt(mediaIndex);
-              if (currentMediaIndex >= _mediaItems.length &&
-                  currentMediaIndex > 0) {
-                currentMediaIndex = _mediaItems.length - 1;
-              }
-            });
-            _startCurrentMedia();
-          }
-        } else {
-          messenger.showSnackBar(
-            SnackBar(
-              content: Text(l.t('error_generic')),
-              backgroundColor: Colors.red,
-            ),
-          );
+      if (wasEntirelyDeleted) {
+        if (context.mounted) Navigator.of(context).pop();
+      } else {
+        if (currentMediaIndex >= widget.experience.media.length - 1) {
+          setState(() {
+            currentMediaIndex = (widget.experience.media.length - 2).clamp(
+              0,
+              widget.experience.media.length - 1,
+            );
+          });
         }
       }
+
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l.t('media_deleted_success')),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } catch (e) {
       if (context.mounted) {
         messenger.showSnackBar(

@@ -177,7 +177,9 @@ class NotificationService {
           .collection('notifications')
           .add({
             'title':
-                notification?.title ?? data['title'] ?? 'Nueva notificación',
+                notification?.title ??
+                data['title'] ??
+                'notif_new_notification',
             'body': notification?.body ?? data['body'] ?? '',
             'type': data['type'] ?? 'general',
             'relatedId': data['relatedId'],
@@ -477,9 +479,9 @@ class NotificationService {
           .doc(bikeOwnerId)
           .collection('notifications')
           .add({
-            'title': '🚨 ALERTA: Intento de venta de tu bicicleta robada',
+            'title': 'notif_stolen_bike_alert_title',
             'body':
-                'Alguien intentó vender tu $bikeBrand $bikeModel (Serie: $bikeFrameSerial)',
+                'notif_stolen_bike_alert_body:$bikeBrand $bikeModel:$bikeFrameSerial',
             'type': 'theft_alert',
             'relatedId': bikeFrameSerial,
             'senderId': sellerUid,
@@ -546,10 +548,9 @@ class NotificationService {
             .doc(adminDoc.id)
             .collection('notifications')
             .add({
-              'title':
-                  '⚠️ Alerta de Seguridad: Intento de venta de bici robada',
+              'title': 'notif_admin_theft_alert_title',
               'body':
-                  '$sellerName intentó vender $bikeBrand $bikeModel (Serie: $bikeFrameSerial)',
+                  'notif_admin_theft_alert_body:$sellerName:$bikeBrand $bikeModel:$bikeFrameSerial',
               'type': 'admin_theft_alert',
               'relatedId': bikeFrameSerial,
               'senderId': sellerUid,

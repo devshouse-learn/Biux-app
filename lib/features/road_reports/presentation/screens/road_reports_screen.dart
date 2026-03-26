@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 
@@ -83,6 +84,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
   }
 
   Future<void> _onConfirm(RoadReportsProvider provider, String reportId) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final success = await provider.confirmReport(reportId, _currentUid);
       if (mounted) {
@@ -99,7 +101,10 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${l.t('error_generic')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -161,7 +166,6 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         title: const Text('Reportes de Vía'),
         backgroundColor: ColorTokens.primary30,
@@ -370,6 +374,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
   }
 
   void _showCreate(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     String type = 'pothole';
     final descCtrl = TextEditingController();
     bool isSending = false;
@@ -550,7 +555,7 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
                             if (mounted)
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error: $e'),
+                                  content: Text('${l.t('error_generic')}: $e'),
                                   backgroundColor: Colors.red,
                                 ),
                               );

@@ -501,7 +501,9 @@ class _ManageProductsSheetState extends State<_ManageProductsSheet> {
                         } catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: $e')),
+                              SnackBar(
+                                content: Text('${l.t('error_generic')}: $e'),
+                              ),
                             );
                           }
                         } finally {

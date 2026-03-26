@@ -78,15 +78,18 @@ class SettingsWidgets {
   }
 
   // ─── ICON CONTAINER ─────────────────────────────────────────────
-  static Widget _buildIconContainer(IconData icon, {Color? color}) {
-    final iconColor = color ?? ColorTokens.primary30;
+  static Widget _buildIconContainer(IconData icon, {bool isDark = false}) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: iconColor.withValues(alpha: 0.15),
+        color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(_iconContainerRadius),
       ),
-      child: Icon(icon, color: iconColor, size: _iconSize),
+      child: Icon(
+        icon,
+        color: isDark ? Colors.white : Colors.black87,
+        size: _iconSize,
+      ),
     );
   }
 
@@ -100,7 +103,6 @@ class SettingsWidgets {
     required String subtitle,
     required bool isDark,
     required VoidCallback onTap,
-    Color? iconColor,
   }) {
     return Material(
       color: Colors.transparent,
@@ -112,7 +114,7 @@ class SettingsWidgets {
           decoration: _cardDecoration(isDark),
           child: Row(
             children: [
-              _buildIconContainer(icon, color: iconColor),
+              _buildIconContainer(icon, isDark: isDark),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -160,7 +162,6 @@ class SettingsWidgets {
     required bool isDark,
     required bool value,
     required Function(bool) onChanged,
-    Color? iconColor,
     bool enabled = true,
   }) {
     return Opacity(
@@ -170,7 +171,7 @@ class SettingsWidgets {
         decoration: _cardDecoration(isDark),
         child: Row(
           children: [
-            _buildIconContainer(icon, color: iconColor),
+            _buildIconContainer(icon, isDark: isDark),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -233,7 +234,7 @@ class SettingsWidgets {
           decoration: _cardDecoration(isDark),
           child: Row(
             children: [
-              _buildIconContainer(icon),
+              _buildIconContainer(icon, isDark: isDark),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

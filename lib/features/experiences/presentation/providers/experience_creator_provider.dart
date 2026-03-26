@@ -359,18 +359,23 @@ class ExperienceCreatorNotifier extends StateNotifier<ExperienceCreatorState> {
     // Solo validar multimedia si NO es post de solo texto
     if (!state.isTextOnly && state.mediaItems.isEmpty) {
       state = state.copyWith(
-        error: 'Debes agregar al menos una imagen o video',
+        error:
+            'error_add_media_required', // Translation key – UI should call l.t(error) to display
       );
       return false;
     }
 
     if (state.description.trim().isEmpty) {
-      state = state.copyWith(error: 'Debes agregar una descripción');
+      state = state.copyWith(
+        error: 'error_description_required',
+      ); // Translation key – UI should call l.t(error) to display
       return false;
     }
 
     if (state.experienceType == null) {
-      state = state.copyWith(error: 'Debes seleccionar un tipo de experiencia');
+      state = state.copyWith(
+        error: 'error_select_experience_type',
+      ); // Translation key – UI should call l.t(error) to display
       return false;
     }
 

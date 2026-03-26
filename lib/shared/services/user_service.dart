@@ -1,48 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
+import 'package:biux/features/users/data/datasources/user_service.dart' as real;
 
-/// Servicio para operaciones de usuario (perfil, follow, etc.).
+/// Proxy que delega al UserService real en features/users.
+/// Mantiene la misma API para compatibilidad con código que importe esta ruta.
 class UserService {
-  final _firestore = FirebaseFirestore.instance;
+  final real.UserService _delegate = real.UserService();
 
   UserService();
 
-  /// Obtiene datos de un usuario por UID.
   Future<UserModel?> getUserData(String uid) async {
-    debugPrint('⚠️ UserService.getUserData() — STUB: sin implementar');
-    return null;
+    return _delegate.getUserData(uid);
   }
 
-  /// Escucha cambios en tiempo real de un usuario.
   void listenToUser(String uid, void Function(UserModel?) callback) {
-    _firestore
-        .collection('users')
-        .doc(uid)
-        .snapshots()
-        .listen(
-          (snapshot) {
-            if (snapshot.exists && snapshot.data() != null) {
-              try {
-                callback(
-                  UserModel.fromMap({'id': snapshot.id, ...snapshot.data()!}),
-                );
-              } catch (e) {
-                debugPrint('⚠️ UserService.listenToUser() parse error: $e');
-                callback(null);
-              }
-            } else {
-              callback(null);
-            }
-          },
-          onError: (error) {
-            debugPrint('⚠️ UserService.listenToUser() stream error: $error');
-            callback(null);
-          },
-        );
+    _delegate.listenToUser(uid, callback);
   }
 
-  /// Actualiza el perfil de un usuario.
   Future<bool> updateUserProfile({
     required String uid,
     String? name,
@@ -52,65 +25,58 @@ class UserService {
     String? photoUrl,
     String? coverPhotoUrl,
   }) async {
-    debugPrint('⚠️ UserService.updateUserProfile() — STUB: sin implementar');
-    return false;
+    return _delegate.updateUserProfile(
+      uid: uid,
+      name: name,
+      email: email,
+      description: description,
+      username: username,
+      photoUrl: photoUrl,
+      coverPhotoUrl: coverPhotoUrl,
+    );
   }
 
-  /// Sube una imagen de perfil y retorna la URL.
   Future<String?> uploadProfileImage(String uid) async {
-    debugPrint('⚠️ UserService.uploadProfileImage() — STUB: sin implementar');
-    return null;
+    return _delegate.uploadProfileImage(uid);
   }
 
-  /// Solicita la eliminación de la cuenta.
   Future<bool> requestAccountDeletion(String uid) async {
-    debugPrint(
-      '⚠️ UserService.requestAccountDeletion() — STUB: sin implementar',
-    );
-    return false;
+    return _delegate.requestAccountDeletion(uid);
   }
 
-  /// Cierra la sesión del usuario.
   Future<void> signOut() async {
-    debugPrint('⚠️ UserService.signOut() — STUB: sin implementar');
+    return _delegate.signOut();
   }
 
-  /// Crea un usuario en Firestore si no existe.
   Future<void> createUserIfNotExists(String uid, String phoneNumber) async {
-    debugPrint(
-      '⚠️ UserService.createUserIfNotExists() — STUB: sin implementar',
-    );
+    await _delegate.createUserIfNotExists(uid, phoneNumber);
   }
 
-  /// Actualiza permiso de vendedor para un usuario.
   Future<bool> updateSellerPermission(String userId, bool canSell) async {
-    debugPrint(
-      '⚠️ UserService.updateSellerPermission() — STUB: sin implementar',
-    );
-    return false;
+    return _delegate.updateSellerPermission(userId, canSell);
   }
 
-  /// Obtiene todos los usuarios.
   Future<List<UserModel>> getAllUsers() async {
-    debugPrint('⚠️ UserService.getAllUsers() — STUB: sin implementar');
-    return [];
+    return _delegate.getAllUsers();
   }
 
-  /// Sigue a un usuario.
   Future<bool> followUser({
     required String currentUserId,
     required String userIdToFollow,
   }) async {
-    debugPrint('⚠️ UserService.followUser() — STUB: sin implementar');
-    return false;
+    return _delegate.followUser(
+      currentUserId: currentUserId,
+      userIdToFollow: userIdToFollow,
+    );
   }
 
-  /// Deja de seguir a un usuario.
   Future<bool> unfollowUser({
     required String currentUserId,
     required String userIdToUnfollow,
   }) async {
-    debugPrint('⚠️ UserService.unfollowUser() — STUB: sin implementar');
-    return false;
+    return _delegate.unfollowUser(
+      currentUserId: currentUserId,
+      userIdToUnfollow: userIdToUnfollow,
+    );
   }
 }

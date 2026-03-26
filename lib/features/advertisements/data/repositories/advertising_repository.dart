@@ -1,42 +1,116 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:http/http.dart' as http;
-// import 'dart:convert'; // IMPLEMENTADO (STUB): Implement when needed
 
 class AdvertisingRepository {
-  final URL_BASE =
-      "https://biux-prod.ibacrea.com/api/v1/publicidades?randomValues=true&dinero.gt=0.0";
+  static const String _urlBase =
+      'https://biux-prod.ibacrea.com/api/v1/publicidades';
+
+  /// Obtiene una publicidad aleatoria con dinero disponible.
   Future<Advertising> getAdvertising() async {
-    // var url = '$URL_BASE'; // IMPLEMENTADO (STUB): Implement API endpoint
-    // '$URL_BASE?fechaHora.gt=$formattedDate%2000:00,format=dd-MM-yyyy%20HH:mm&sort=fechaHora.asc&limit=$limit&offset=$offset';
-    // var response = await http.get(Uri.parse(url)); // IMPLEMENTADO (STUB): Implement API call
-    // var responseData = json.decode(response.body);
-    // List roadsJson = responseData["data"];
-    // List<Advertising> roads = roadsJson
-    //     .map((roadsJson) => Advertising.fromJsonMap(roadsJson))
-    //     .toList();
-    return [].first;
+    final url = '$_urlBase?randomValues=true&dinero.gt=0.0';
+    try {
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final List dataList = responseData['data'] ?? [];
+        if (dataList.isEmpty) {
+          throw Exception('No hay publicidades disponibles');
+        }
+        final adJson = dataList.first;
+        final docId = adJson['_id'] ?? adJson['docId'] ?? '';
+        return Advertising.fromJsonMap(docId: docId, json: adJson);
+      } else {
+        throw Exception('Error al obtener publicidad: ${response.statusCode}');
+      }
+    } catch (e) {
+      AppLogger.error(
+        'Error obteniendo publicidad',
+        tag: 'AdvertisingRepo',
+        error: e,
+      );
+      rethrow;
+    }
   }
 
+  /// Obtiene una lista de publicidades.
+  Future<List<Advertising>> getAdvertisements({
+    int limit = 10,
+    int offset = 0,
+  }) async {
+    final url = '$_urlBase?limit=$limit&offset=$offset';
+    try {
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final List dataList = responseData['data'] ?? [];
+        return dataList.map((adJson) {
+          final docId = adJson['_id'] ?? adJson['docId'] ?? '';
+          return Advertising.fromJsonMap(docId: docId, json: adJson);
+        }).toList();
+      } else {
+        AppLogger.warning(
+          'Error obteniendo publicidades: ${response.statusCode}',
+          tag: 'AdvertisingRepo',
+        );
+        return [];
+      }
+    } catch (e) {
+      AppLogger.error(
+        'Error obteniendo publicidades',
+        tag: 'AdvertisingRepo',
+        error: e,
+      );
+      return [];
+    }
+  }
+
+  /// Actualiza los datos de una publicidad.
   Future<Advertising> updateSites(Advertising advertising) async {
-    var headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
-      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
-    };
-    var body = {
-      //jsonEncode(advertising.toJson());
-    };
-    var url =
-        'https://biux-prod.ibacrea.com/api/v1/publicidades/${advertising.docId}';
-    final http.Response response = await http.patch(
-      Uri.parse(url),
-      headers: headers,
-      body: body,
-    );
-    if (response.statusCode == 200) {
-      return Advertising.fromJsonMap(docId: '1', json: {});
-    } else {
-      throw Exception('Fallo en actualizar grupo');
+    final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+    final body = json.encode({
+      'description': advertising.description,
+      'title': advertising.title,
+      'url': advertising.url,
+      'textButton': advertising.textButton,
+      'photoAd': advertising.photoAd,
+      'costOpen': advertising.costOpen,
+      'costWatch': advertising.costWatch,
+      'money': advertising.money,
+    });
+    final url = '$_urlBase/${advertising.docId}';
+    try {
+      final response = await http
+          .patch(Uri.parse(url), headers: headers, body: body)
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final data = responseData['data'] ?? responseData;
+        return Advertising.fromJsonMap(
+          docId: advertising.docId,
+          json: data is Map<String, dynamic> ? data : {},
+        );
+      } else {
+        throw Exception(
+          'Fallo al actualizar publicidad: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        'Error actualizando publicidad',
+        tag: 'AdvertisingRepo',
+        error: e,
+      );
+      rethrow;
     }
   }
 }

@@ -126,7 +126,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   /// Agregar imagen desde galería
   Future<void> addImageFromGallery() async {
     if (_mediaItems.length >= 10) {
-      _error = 'Máximo 10 archivos permitidos';
+      _error = 'exp_max_files_allowed';
       notifyListeners();
       return;
     }
@@ -143,7 +143,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         // Verificar que el archivo existe
         final file = File(image.path);
         if (!file.existsSync()) {
-          _error = 'El archivo seleccionado no está disponible';
+          _error = 'exp_file_not_available';
           notifyListeners();
           return;
         }
@@ -158,7 +158,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      _error = 'Error seleccionando imagen: $e';
+      _error = 'exp_error_selecting_image';
       notifyListeners();
     }
   }
@@ -168,7 +168,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
     try {
       final remaining = 10 - _mediaItems.length;
       if (remaining <= 0) {
-        _error = 'Ya tienes el máximo de 10 imágenes';
+        _error = 'exp_max_images_reached';
         notifyListeners();
         return;
       }
@@ -202,7 +202,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      _error = 'Error seleccionando imágenes: $e';
+      _error = 'exp_error_selecting_images';
       notifyListeners();
     }
   }
@@ -210,7 +210,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   /// Tomar foto
   Future<void> takePhoto() async {
     if (_mediaItems.length >= 10) {
-      _error = 'Máximo 10 archivos permitidos';
+      _error = 'exp_max_files_allowed';
       notifyListeners();
       return;
     }
@@ -227,7 +227,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         // Verificar que el archivo existe
         final file = File(image.path);
         if (!file.existsSync()) {
-          _error = 'La foto tomada no está disponible';
+          _error = 'exp_photo_not_available';
           notifyListeners();
           return;
         }
@@ -242,7 +242,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      _error = 'Error tomando foto: $e';
+      _error = 'exp_error_taking_photo';
       notifyListeners();
     }
   }
@@ -250,13 +250,13 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   /// Agregar imagen que ya ha sido recortada
   void addCroppedImage(File croppedImageFile) {
     if (_mediaItems.length >= 10) {
-      _error = 'Máximo 10 archivos permitidos';
+      _error = 'exp_max_files_allowed';
       notifyListeners();
       return;
     }
     try {
       if (!croppedImageFile.existsSync()) {
-        _error = 'El archivo recortado no está disponible';
+        _error = 'exp_cropped_not_available';
         notifyListeners();
         return;
       }
@@ -271,7 +271,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
     } catch (e) {
-      _error = 'Error agregando imagen recortada: $e';
+      _error = 'exp_error_adding_cropped';
       notifyListeners();
     }
   }
@@ -279,7 +279,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   /// Agregar video desde galería
   Future<void> addVideoFromGallery() async {
     if (_mediaItems.length >= 10) {
-      _error = 'Máximo 10 archivos permitidos';
+      _error = 'exp_max_files_allowed';
       notifyListeners();
       return;
     }
@@ -293,7 +293,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         // Verificar que el archivo existe
         final file = File(video.path);
         if (!file.existsSync()) {
-          _error = 'El video seleccionado no está disponible';
+          _error = 'exp_video_not_available';
           notifyListeners();
           return;
         }
@@ -307,8 +307,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
         // Validar duración máxima de 30 segundos
         if (duration > 30) {
-          _error =
-              'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
+          _error = 'exp_video_too_long';
           notifyListeners();
           return;
         }
@@ -326,7 +325,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      _error = 'Error seleccionando video: $e';
+      _error = 'exp_error_selecting_video';
       notifyListeners();
     }
   }
@@ -334,7 +333,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   /// Grabar video
   Future<void> recordVideo() async {
     if (_mediaItems.length >= 10) {
-      _error = 'Máximo 10 archivos permitidos';
+      _error = 'exp_max_files_allowed';
       notifyListeners();
       return;
     }
@@ -348,7 +347,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         // Verificar que el archivo existe
         final file = File(video.path);
         if (!file.existsSync()) {
-          _error = 'El video grabado no está disponible';
+          _error = 'exp_recorded_not_available';
           notifyListeners();
           return;
         }
@@ -361,8 +360,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
         // Validar duración máxima de 30 segundos
         if (duration > 30) {
-          _error =
-              'El video debe durar máximo 30 segundos. Duración actual: ${duration}s';
+          _error = 'exp_video_too_long';
           notifyListeners();
           return;
         }
@@ -380,7 +378,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      _error = 'Error grabando video: $e';
+      _error = 'exp_error_recording_video';
       notifyListeners();
     }
   }
@@ -411,21 +409,21 @@ class ExperienceCreatorProvider extends ChangeNotifier {
   Future<bool> createExperience() async {
     // Validar límite máximo de archivos
     if (_mediaItems.length > 10) {
-      _error = 'Máximo 10 archivos permitidos';
+      _error = 'exp_max_files_allowed';
       notifyListeners();
       return false;
     }
 
     // Validar multimedia solo si NO es post de solo texto
     if (!_isTextOnly && _mediaItems.isEmpty) {
-      _error = 'Debes agregar al menos una imagen o video';
+      _error = 'exp_media_required';
       notifyListeners();
       return false;
     }
 
     // Validar descripción solo para posts de solo texto
     if (_isTextOnly && _description.trim().isEmpty) {
-      _error = 'La descripción es requerida para este post';
+      _error = 'exp_description_required';
       notifyListeners();
       return false;
     }
@@ -481,7 +479,7 @@ class ExperienceCreatorProvider extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      _error = 'Error creando experiencia: $e';
+      _error = 'exp_error_creating';
       _isUploading = false;
       notifyListeners();
       return false;

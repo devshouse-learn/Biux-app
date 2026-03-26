@@ -7,6 +7,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_crea
 import 'package:biux/features/experiences/presentation/widgets/media_item_widget.dart';
 import 'package:biux/features/experiences/presentation/widgets/media_selector_widget.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/presentation/screens/image_crop_editor_screen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -672,7 +673,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
             controller: _tagsController,
             style: TextStyle(color: isDark ? Colors.white : Colors.black87),
             decoration: InputDecoration(
-              hintText: 'ej: ciclismo, montaña, aventura (separados por comas)',
+              hintText: l.t('exp_tags_hint'),
               hintStyle: TextStyle(
                 color: isDark ? Colors.grey[400] : Colors.grey[500],
               ),
@@ -842,6 +843,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
 
     if (_isEditMode) {
       // Modo edición: actualizar experiencia existente
@@ -912,7 +914,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
         if (provider.error != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(provider.error!),
+              content: Text(l.t(provider.error!)),
               backgroundColor: Colors.red,
             ),
           );
@@ -1135,6 +1137,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
 
   /// Construye el selector de tipo de contenido (Story vs Post)
   Widget _buildContentTypeSelector() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1195,7 +1198,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Story',
+                          l.t('exp_content_story'),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -1243,7 +1246,7 @@ class _CreateExperienceScreenState extends State<CreateExperienceScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Post',
+                          l.t('exp_content_post'),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

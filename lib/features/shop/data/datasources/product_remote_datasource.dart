@@ -125,7 +125,6 @@ class ProductRemoteDataSource {
     }
   }
 
-
   /// Toggle like de un producto usando operaciones atomicas de Firestore
   Future<void> toggleProductLike(String productId, String userId) async {
     try {

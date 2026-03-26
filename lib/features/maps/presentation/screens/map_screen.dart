@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 import 'package:biux/features/roads/data/models/route.dart';
 
@@ -172,6 +173,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Material(
       color: ColorTokens.transparent,
       child: InkWell(
@@ -208,7 +210,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
                   onPressed: _openGoogleMaps,
                   icon: Icon(Icons.navigation, color: ColorTokens.neutral100),
                   label: Text(
-                    'Ir al punto de encuentro',
+                    l.t('go_to_meeting_point'),
                     style: TextStyle(
                       color: ColorTokens.neutral100,
                       fontWeight: FontWeight.bold,
@@ -226,7 +228,7 @@ class MeetingPointDetailsCard extends StatelessWidget {
               if (mapProvider.selectedPoint!.routes.isNotEmpty) ...[
                 SizedBox(height: 16),
                 Text(
-                  'Rutas disponibles:',
+                  l.t('available_routes'),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
@@ -292,6 +294,7 @@ class RouteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     final mapProvider = Provider.of<MapProvider>(context);
     final isSelected = mapProvider.selectedRoute?.id == route.id;
 
@@ -346,7 +349,7 @@ class RouteCard extends StatelessWidget {
                   RouteLevelBadge(level: route.level),
                   if (!isSelected)
                     Text(
-                      'Toca para ver ruta',
+                      l.t('tap_to_see_route'),
                       style: TextStyle(
                         fontSize: 10,
                         color: ColorTokens.neutral60,
@@ -355,7 +358,7 @@ class RouteCard extends StatelessWidget {
                     ),
                   if (isSelected)
                     Text(
-                      'Ruta mostrada',
+                      l.t('route_shown'),
                       style: TextStyle(
                         fontSize: 10,
                         color: ColorTokens.secondary50,

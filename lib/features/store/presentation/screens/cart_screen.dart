@@ -1196,7 +1196,7 @@ class _CartScreenState extends State<CartScreen> {
                 decoration: InputDecoration(
                   hintText: 'Ingresa tu código',
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Colors.grey[300]!),

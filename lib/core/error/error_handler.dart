@@ -33,7 +33,7 @@ class ErrorHandler {
     // Red / Socket
     if (error is SocketException) {
       return NetworkException(
-        message: 'Sin conexión a internet. Verifica tu red.',
+        message: 'err_no_connection',
         originalError: error,
         stackTrace: stack,
       );
@@ -42,7 +42,7 @@ class ErrorHandler {
     // Timeout
     if (error is TimeoutException) {
       return NetworkException(
-        message: 'La operación tardó demasiado. Intenta de nuevo.',
+        message: 'err_timeout',
         code: 'TIMEOUT',
         originalError: error,
         stackTrace: stack,
@@ -52,7 +52,7 @@ class ErrorHandler {
     // FormatException
     if (error is FormatException) {
       return ValidationException(
-        message: 'Datos con formato inválido.',
+        message: 'err_invalid_format',
         originalError: error,
         stackTrace: stack,
       );
@@ -63,7 +63,7 @@ class ErrorHandler {
 
     if (msg.contains('network') || msg.contains('connection')) {
       return NetworkException(
-        message: 'Error de conexión. Verifica tu red.',
+        message: 'err_connection',
         originalError: error,
         stackTrace: stack,
       );
@@ -71,14 +71,14 @@ class ErrorHandler {
 
     if (msg.contains('permission') || msg.contains('PERMISSION_DENIED')) {
       return PermissionException(
-        message: 'No tienes permisos para esta acción.',
+        message: 'err_no_permission',
         originalError: error,
         stackTrace: stack,
       );
     }
 
     return AppException(
-      message: 'Ocurrió un error inesperado. Intenta de nuevo.',
+      message: 'err_unexpected',
       code: 'UNKNOWN',
       originalError: error,
       stackTrace: stack,
@@ -92,28 +92,28 @@ class ErrorHandler {
     final String message;
     switch (error.code) {
       case 'invalid-phone-number':
-        message = 'Número de teléfono inválido. Verifica el formato.';
+        message = 'err_invalid_phone';
         break;
       case 'too-many-requests':
-        message = 'Demasiados intentos. Espera unos minutos.';
+        message = 'err_too_many_requests';
         break;
       case 'session-expired':
-        message = 'La sesión expiró. Solicita un nuevo código.';
+        message = 'err_session_expired';
         break;
       case 'invalid-verification-code':
-        message = 'Código de verificación inválido.';
+        message = 'err_invalid_verification_code';
         break;
       case 'user-disabled':
-        message = 'Tu cuenta ha sido deshabilitada.';
+        message = 'err_user_disabled';
         break;
       case 'credential-already-in-use':
-        message = 'Este número ya está asociado a otra cuenta.';
+        message = 'err_credential_in_use';
         break;
       case 'network-request-failed':
-        message = 'Sin conexión a internet.';
+        message = 'err_no_internet';
         break;
       default:
-        message = error.message ?? 'Error de autenticación.';
+        message = error.message ?? 'err_auth_generic';
     }
     return AuthException(
       message: message,
@@ -130,38 +130,38 @@ class ErrorHandler {
     switch (error.code) {
       case 'permission-denied':
         return PermissionException(
-          message: 'No tienes permisos para esta acción.',
+          message: 'err_no_permission',
           originalError: error,
           stackTrace: stack,
         );
       case 'not-found':
         return NotFoundException(
-          message: 'El recurso solicitado no existe.',
+          message: 'err_resource_not_found',
           originalError: error,
           stackTrace: stack,
         );
       case 'unavailable':
         return NetworkException(
-          message: 'Servicio no disponible. Intenta más tarde.',
+          message: 'err_service_unavailable',
           originalError: error,
           stackTrace: stack,
         );
       case 'cancelled':
         return AppException(
-          message: 'Operación cancelada.',
+          message: 'err_operation_cancelled',
           code: 'CANCELLED',
           originalError: error,
           stackTrace: stack,
         );
       case 'resource-exhausted':
         return RateLimitException(
-          message: 'Límite de solicitudes alcanzado. Espera un momento.',
+          message: 'err_rate_limit',
           originalError: error,
           stackTrace: stack,
         );
       default:
         return ServerException(
-          message: error.message ?? 'Error del servidor.',
+          message: error.message ?? 'err_server',
           originalError: error,
           stackTrace: stack,
         );

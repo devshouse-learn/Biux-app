@@ -11,6 +11,7 @@ import 'package:biux/features/shop/data/datasources/media_upload_datasource.dart
 // import 'package:biux/features/shop/presentation/widgets/product_form_modal.dart'; // import gestionado: se usa dinámicamente desde helpers
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 
@@ -856,6 +857,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _verifyBikeNotStolen() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // Validar que se haya ingresado el número de serie
     if (_bikeFrameSerialController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -912,7 +914,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
         sellerName:
             currentUser?.name ??
             currentFirebaseUser?.phoneNumber ??
-            'Vendedor desconocido',
+            l.t('seller_unknown'),
       );
 
       setState(() {
@@ -1057,13 +1059,12 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _saveProduct() async {
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
     // Validación obligatoria de imágenes
     if (_imageUrls.isEmpty) {
-      messenger.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
@@ -1159,7 +1160,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
       sizes: _selectedSizes,
       stock: int.parse(_stockController.text),
       sellerId: currentUser.uid,
-      sellerName: currentUser.username ?? currentUser.name ?? 'Vendedor',
+      sellerName:
+          currentUser.username ?? currentUser.name ?? l.t('seller_default'),
       sellerCity: _cityController.text.isEmpty ? null : _cityController.text,
       createdAt: widget.product?.createdAt ?? DateTime.now(),
       isActive: true,
@@ -1205,8 +1207,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
     }
 
     if (success) {
-      navigator.pop();
-      messenger.showSnackBar(
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             widget.product == null
@@ -1217,7 +1219,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
         ),
       );
     } else {
-      messenger.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(shopProvider.errorMessage ?? 'Error al guardar'),
           backgroundColor: Colors.red,

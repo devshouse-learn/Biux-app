@@ -11,6 +11,7 @@ import 'package:biux/features/experiences/presentation/widgets/experiences_stori
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
@@ -24,6 +25,7 @@ class ExperiencesListScreen extends StatefulWidget {
 class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     with WidgetsBindingObserver {
   Timer? _autoRefreshTimer;
+  late final ExperienceProvider _experienceProvider;
 
   /// Obtiene el ID del usuario actual autenticado
   String? get _currentUserId {
@@ -44,10 +46,16 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _experienceProvider = context.read<ExperienceProvider>();
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _autoRefreshTimer?.cancel();
-    context.read<ExperienceProvider>().stopFeedListener();
+    _experienceProvider.stopFeedListener();
     super.dispose();
   }
 
@@ -60,7 +68,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     } else if (state == AppLifecycleState.paused) {
       // App va a segundo plano - pausar listener
       _autoRefreshTimer?.cancel();
-      context.read<ExperienceProvider>().stopFeedListener();
+      _experienceProvider.stopFeedListener();
     }
   }
 
@@ -97,30 +105,6 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: ColorTokens.primary30,
-        title: GestureDetector(
-          onTap: _loadFeed,
-          child: const Text(
-            'Mi Feed',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.push('/users/search');
-            },
-            icon: const Icon(Icons.search, color: Colors.white),
-            tooltip: 'Buscar usuarios',
-          ),
-        ],
-      ),
       body: Consumer<ExperienceProvider>(
         builder: (context, provider, child) {
           return _buildBody(provider);
@@ -596,9 +580,10 @@ class _ExperienceCard extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));
       }
     }
   }
@@ -1085,9 +1070,10 @@ class _AdvertisementCard extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));
       }
     }
   }

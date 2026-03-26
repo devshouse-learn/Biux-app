@@ -1,7 +1,6 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/core/config/images.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
@@ -527,10 +526,7 @@ class _CarouselImagesSelected extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          AppStrings.galleryCreateStory,
-                          style: Styles.titleGallery,
-                        ),
+                        Text(l.t('gallery_label'), style: Styles.titleGallery),
                         if (bloc.imgList.length < 3)
                           CircleAvatar(
                             backgroundColor: ColorTokens.primary30,
@@ -571,7 +567,7 @@ void showDialogCreateStory({
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: ColorTokens.neutral100,
+            backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
             contentPadding: const EdgeInsets.symmetric(
               vertical: 20,
               horizontal: 16,
@@ -616,7 +612,7 @@ void showDialogCreateStory({
 
                     // Campo de descripción
                     TextFormFieldBiuxWidget(
-                      text: AppStrings.descriptionStory,
+                      text: l.t('tell_your_story_hint'),
                       controller: _descriptionController,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       maxLine: 6,

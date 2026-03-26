@@ -7,6 +7,7 @@ import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Features imports
 import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
@@ -81,6 +82,7 @@ import 'package:biux/features/social/presentation/providers/follow_provider.dart
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/shared/services/notification_service.dart';
+import 'package:biux/shared/services/screen_time_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
 import 'package:biux/shared/widgets/offline_banner.dart';
 
@@ -138,6 +140,9 @@ void main() async {
   // Inicializar servicio de notificaciones
   await NotificationService().initialize();
 
+  // Inicializar tracking de tiempo de uso
+  await ScreenTimeService.instance.initialize();
+
   runApp(
     MultiProvider(
       providers: [
@@ -149,8 +154,22 @@ void main() async {
           ),
         ),
         ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
-        ChangeNotifierProvider(create: (_) => LocaleNotifier()),
-        ChangeNotifierProxyProvider<app_auth.AuthProvider, NotificationsProvider?>(create: (_) => null, update: (context, authProvider, previous) { final currentUser = FirebaseAuth.instance.currentUser; if (currentUser == null) return null; if (previous != null) return previous; return NotificationsProvider(repository: NotificationsRepositoryImpl(), userId: currentUser.uid); },),
+        ChangeNotifierProvider<LocaleNotifier>(create: (_) => LocaleNotifier()),
+        ChangeNotifierProxyProvider<
+          app_auth.AuthProvider,
+          NotificationsProvider?
+        >(
+          create: (_) => null,
+          update: (context, authProvider, previous) {
+            final currentUser = FirebaseAuth.instance.currentUser;
+            if (currentUser == null) return null;
+            if (previous != null) return previous;
+            return NotificationsProvider(
+              repository: NotificationsRepositoryImpl(),
+              userId: currentUser.uid,
+            );
+          },
+        ),
         ChangeNotifierProvider(
           create: (_) =>
               MeetingPointProvider(repository: MeetingPointRepository()),
@@ -291,16 +310,18 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final localeNotifier = Provider.of<LocaleNotifier>(context);
 
     return BiuxNotificationListener(
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
+        locale: localeNotifier.locale,
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale(AppStrings.en, AppStrings.us)],
+        supportedLocales: LocaleNotifier.supportedLocales,
         title: AppStrings.APP_NAME,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

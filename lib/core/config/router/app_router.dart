@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Feature imports (providers)
 import '../../../features/groups/presentation/providers/group_provider.dart';
@@ -44,6 +45,11 @@ import '../../../features/users/presentation/screens/user_screen/user_screen.dar
 import '../../../features/users/presentation/screens/user_search_screen.dart';
 import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
 import '../../../features/users/presentation/screens/account_settings_screen.dart';
+import '../../../features/users/presentation/screens/activity_likes_screen.dart';
+import '../../../features/users/presentation/screens/activity_comments_screen.dart';
+import '../../../features/users/presentation/screens/activity_posts_screen.dart';
+import '../../../features/users/presentation/screens/activity_stories_screen.dart';
+import '../../../features/users/presentation/screens/activity_screen_time_screen.dart';
 
 // Bikes imports
 import '../../../features/bikes/presentation/screens/my_bikes_screen.dart';
@@ -79,6 +85,9 @@ import '../../../features/store/domain/entities/product_entity.dart';
 
 // Settings imports
 import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
+import '../../../features/settings/presentation/screens/privacy_details_screen.dart';
+import '../../../features/settings/presentation/screens/appearance_details_screen.dart';
+import '../../../features/settings/presentation/screens/information_details_screen.dart';
 
 // Help imports
 import '../../../features/help/presentation/screens/help_screen.dart';
@@ -325,7 +334,6 @@ final GoRouter _router = GoRouter(
   refreshListenable: _authNotifier,
   routes: [
     // Ruta de splash
-
     GoRoute(
       path: AppRoutes.splash,
       name: AppRoutes.splashName,
@@ -428,13 +436,6 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Configuración de Cuenta
-        GoRoute(
-          path: AppRoutes.accountSettings,
-          name: AppRoutes.accountSettingsName,
-          builder: (context, state) => const AccountSettingsScreen(),
-        ),
-
         // Grupos
         GoRoute(
           path: AppRoutes.groupList,
@@ -517,9 +518,12 @@ final GoRouter _router = GoRouter(
             GoRoute(
               path: 'post/:postId',
               name: 'postDetail',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 final postId = state.pathParameters['postId']!;
-                return PostDetailScreen(postId: postId);
+                return MaterialPage(
+                  key: ValueKey('postDetail_$postId'),
+                  child: PostDetailScreen(postId: postId),
+                );
               },
             ),
             // Ver historia específica
@@ -538,12 +542,13 @@ final GoRouter _router = GoRouter(
           path: '/edit-post/:postId',
           name: 'editPost',
           builder: (context, state) {
+            final l = Provider.of<LocaleNotifier>(context, listen: false);
             // ignore: unused_local_variable
             final postId = state.pathParameters['postId']!;
             final experience = state.extra as ExperienceEntity?;
             if (experience == null) {
-              return const Scaffold(
-                body: Center(child: Text('Error: Publicación no encontrada')),
+              return Scaffold(
+                body: Center(child: Text(l.t('error_post_not_found'))),
               );
             }
             return EditExperienceScreen(experience: experience);
@@ -664,18 +669,6 @@ final GoRouter _router = GoRouter(
           path: '/notifications',
           name: 'notifications',
           builder: (context, state) => const NotificationsScreen(),
-        ),
-
-        // Comentarios de posts
-        GoRoute(
-          path: '/posts/:postId/comments',
-          name: 'postComments',
-          builder: (context, state) {
-            final postId = state.pathParameters['postId']!;
-            final ownerId = state.uri.queryParameters['ownerId']!;
-
-            return PostCommentsScreen(postId: postId, postOwnerId: ownerId);
-          },
         ),
 
         // Comentarios de rodadas
@@ -854,19 +847,19 @@ final GoRouter _router = GoRouter(
           path: '/store/seller-dashboard',
           name: 'sellerDashboard',
           builder: (context, state) {
+            final l = Provider.of<LocaleNotifier>(context, listen: false);
             final userProvider = context.read<UserProvider>();
             final currentUser = userProvider.user;
 
             if (currentUser == null) {
-              return const Scaffold(
-                body: Center(child: Text('Usuario no encontrado')),
+              return Scaffold(
+                body: Center(child: Text(l.t('error_user_not_found'))),
               );
             }
 
             return SellerDashboardScreen(currentUser: currentUser.toEntity());
           },
         ),
-
 
         // ===== NEW FEATURES =====
 
@@ -920,14 +913,12 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const AchievementsScreen(),
         ),
 
-
         // Onboarding
         GoRoute(
           path: '/onboarding',
           name: 'onboarding',
           builder: (context, state) => const OnboardingScreen(),
         ),
-
 
         // Búsqueda global
         GoRoute(
@@ -936,18 +927,20 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const GlobalSearchScreen(),
         ),
 
-
         // Seguidores/Siguiendo
         GoRoute(
           path: '/users/:userId/followers',
           name: 'followers',
           builder: (context, state) {
             final userId = state.pathParameters['userId']!;
-            final showFollowers = state.uri.queryParameters['tab'] != 'following';
-            return FollowersScreen(userId: userId, showFollowers: showFollowers);
+            final showFollowers =
+                state.uri.queryParameters['tab'] != 'following';
+            return FollowersScreen(
+              userId: userId,
+              showFollowers: showFollowers,
+            );
           },
         ),
-
 
         // Clima
         GoRoute(
@@ -955,7 +948,6 @@ final GoRouter _router = GoRouter(
           name: 'weather',
           builder: (context, state) => const WeatherScreen(),
         ),
-
 
         // Reportar Accidente
         GoRoute(
@@ -975,12 +967,13 @@ final GoRouter _router = GoRouter(
           path: '/store/admin-dashboard',
           name: 'storeAdminDashboard',
           builder: (context, state) {
+            final l = Provider.of<LocaleNotifier>(context, listen: false);
             final userProvider = context.read<UserProvider>();
             final currentUser = userProvider.user;
 
             if (currentUser == null) {
-              return const Scaffold(
-                body: Center(child: Text('Usuario no encontrado')),
+              return Scaffold(
+                body: Center(child: Text(l.t('error_user_not_found'))),
               );
             }
 
@@ -991,6 +984,82 @@ final GoRouter _router = GoRouter(
     ),
 
     // Rutas fuera del shell principal
+
+    // Configuración de Cuenta (fuera del ShellRoute para ocultar bottom nav)
+    GoRoute(
+      path: AppRoutes.accountSettings,
+      name: AppRoutes.accountSettingsName,
+      builder: (context, state) => const AccountSettingsScreen(),
+    ),
+
+    // Settings sub-screens
+    GoRoute(
+      path: '/settings/privacy',
+      name: 'settingsPrivacy',
+      builder: (context, state) => const PrivacyDetailsScreen(),
+    ),
+    GoRoute(
+      path: '/settings/appearance',
+      name: 'settingsAppearance',
+      builder: (context, state) => const AppearanceScreenDetails(),
+    ),
+    GoRoute(
+      path: '/settings/information',
+      name: 'settingsInformation',
+      builder: (context, state) => const InformationDetailsScreen(),
+    ),
+
+    // Pantallas de Tu Actividad
+    GoRoute(
+      path: '/activity/likes',
+      name: 'activityLikes',
+      builder: (context, state) => const ActivityLikesScreen(),
+    ),
+    GoRoute(
+      path: '/activity/comments',
+      name: 'activityComments',
+      builder: (context, state) => const ActivityCommentsScreen(),
+    ),
+    GoRoute(
+      path: '/activity/posts',
+      name: 'activityPosts',
+      builder: (context, state) => const ActivityPostsScreen(),
+    ),
+    GoRoute(
+      path: '/activity/stories',
+      name: 'activityStories',
+      builder: (context, state) => const ActivityStoriesScreen(),
+    ),
+
+    // Comentarios de posts (fuera del ShellRoute para funcionar desde post-detail standalone)
+    GoRoute(
+      path: '/posts/:postId/comments',
+      name: 'postComments',
+      builder: (context, state) {
+        final postId = state.pathParameters['postId']!;
+        final ownerId = state.uri.queryParameters['ownerId'] ?? '';
+        return PostCommentsScreen(postId: postId, postOwnerId: ownerId);
+      },
+    ),
+
+    // Ver detalle de post (fuera del ShellRoute para evitar conflicto de navigator)
+    GoRoute(
+      path: '/post-detail/:postId',
+      name: 'postDetailStandalone',
+      pageBuilder: (context, state) {
+        final postId = state.pathParameters['postId']!;
+        return MaterialPage(
+          key: ValueKey('postDetailStandalone_$postId'),
+          child: PostDetailScreen(postId: postId),
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '/activity/screen-time',
+      name: 'activityScreenTime',
+      builder: (context, state) => const ActivityScreenTimeScreen(),
+    ),
 
     // Detalle de producto (fuera del shell para pantalla completa sin bottom nav)
     // Ruta para agregar producto (debe ir ANTES de /shop/:id)
@@ -1007,15 +1076,6 @@ final GoRouter _router = GoRouter(
         return ProductDetailScreen(productId: productId);
       },
     ),
-
-    GoRoute(
-      path: AppRoutes.publicBikeInfo,
-      name: '${AppRoutes.publicBikeInfoName}External',
-      builder: (context, state) {
-        final qrCode = state.pathParameters['qrCode']!;
-        return PublicBikeInfoScreen(qrCode: qrCode);
-      },
-    ),
   ],
   errorBuilder: (context, state) => Scaffold(
     body: Center(
@@ -1024,11 +1084,18 @@ final GoRouter _router = GoRouter(
         children: [
           const Icon(Icons.error, size: 64, color: ColorTokens.error50),
           const SizedBox(height: 16),
-          Text('Error: ${state.error}'),
+          Text(
+            '${Provider.of<LocaleNotifier>(context, listen: false).t('error_generic')}: ${state.error}',
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.go(AppRoutes.splash),
-            child: const Text('Ir al inicio'),
+            child: Text(
+              Provider.of<LocaleNotifier>(
+                context,
+                listen: false,
+              ).t('go_to_home'),
+            ),
           ),
         ],
       ),
@@ -1089,11 +1156,12 @@ extension AppRouterExtension on BuildContext {
   void goToAchievements() => go(AppRoutes.achievements);
   void goToEducation() => go(AppRoutes.education);
 
-
   // Nuevas navegaciones
   void goToSearch() => push('/search');
   void goToWeather() => push('/weather');
-  void goToFollowers(String userId, {bool showFollowers = true}) => push('/users/$userId/followers?tab=${showFollowers ? "followers" : "following"}');
+  void goToFollowers(String userId, {bool showFollowers = true}) => push(
+    '/users/$userId/followers?tab=${showFollowers ? "followers" : "following"}',
+  );
   void goToOnboarding() => go('/onboarding');
   void goToAccidentReport() => push('/accidents/report');
 

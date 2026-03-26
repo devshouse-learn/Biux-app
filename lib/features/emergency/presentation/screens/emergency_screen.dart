@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/emergency/presentation/providers/emergency_provider.dart';
 import 'package:biux/features/emergency/domain/entities/emergency_contact_entity.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
@@ -33,7 +34,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         title: const Text('Emergencia SOS'),
         backgroundColor: Colors.red[700],
@@ -155,6 +155,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   }
 
   Future<void> _triggerSOS(BuildContext context, EmergencyProvider p) async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
       final pos = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -181,7 +182,10 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${l.t('error_generic')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -655,7 +659,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             }
           });
           return Dialog(
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),

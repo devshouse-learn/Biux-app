@@ -10,7 +10,7 @@ class AuthorizeSellerUseCase {
 
   Future<void> call(String userId) async {
     if (userId.isEmpty) {
-      throw Exception('ID de usuario inválido');
+      throw Exception('error_invalid_user_id');
     }
 
     // Actualizar rol a vendedor y marcar como autorizado
@@ -28,14 +28,14 @@ class RevokeSellerUseCase {
 
   Future<void> call(String userId) async {
     if (userId.isEmpty) {
-      throw Exception('ID de usuario inválido');
+      throw Exception('error_invalid_user_id');
     }
 
     // Obtener el usuario actual para validar que no sea admin
     final user = await repository.getUserById(userId);
 
     if (user.role == UserRole.admin) {
-      throw Exception('No se puede revocar permisos a un administrador');
+      throw Exception('error_cannot_revoke_admin');
     }
 
     // Regresar a usuario normal

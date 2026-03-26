@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/widgets/experience_story_viewer.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
@@ -138,12 +140,13 @@ class _ExperiencesDemoScreenState extends State<ExperiencesDemoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        title: const Text(
-          'Experiencias Demo',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l.t('exp_demo_title'),
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.grey[900],
         elevation: 0,
@@ -157,9 +160,9 @@ class _ExperiencesDemoScreenState extends State<ExperiencesDemoScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Experiencias Recientes',
-                  style: TextStyle(
+                Text(
+                  l.t('exp_demo_recent'),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

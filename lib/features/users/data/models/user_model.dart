@@ -17,6 +17,7 @@ class UserModel {
   final String? description; // Nuevo: Descripción/Bio del usuario
   final Map<String, dynamic>? followers; // Nuevo: Mapa de seguidores
   final Map<String, dynamic>? following; // Nuevo: Mapa de seguidos
+  final DateTime? birthDate; // Fecha de nacimiento
 
   UserModel({
     required this.uid,
@@ -35,6 +36,7 @@ class UserModel {
     this.description,
     this.followers,
     this.following,
+    this.birthDate,
   });
 
   // Getter para rol enum
@@ -96,6 +98,7 @@ class UserModel {
       'description': description,
       'followers': followers,
       'following': following,
+      'birthDate': birthDate?.toIso8601String(),
     };
   }
 
@@ -106,7 +109,7 @@ class UserModel {
       email: map['email'],
       photoUrl: map['photoUrl'],
       coverPhotoUrl: map['coverPhotoUrl'],
-      phoneNumber: map['phoneNumber'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? map['phone'] ?? '',
       username: map['username'],
       isDeleting: map['isDeleting'] ?? false,
       deletionRequestDate: map['deletionRequestDate'] != null
@@ -119,6 +122,9 @@ class UserModel {
       description: map['description'],
       followers: map['followers'],
       following: map['following'],
+      birthDate: map['birthDate'] != null
+          ? DateTime.tryParse(map['birthDate'])
+          : null,
     );
   }
 
@@ -139,6 +145,7 @@ class UserModel {
     String? description,
     Map<String, dynamic>? followers,
     Map<String, dynamic>? following,
+    DateTime? birthDate,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -157,6 +164,7 @@ class UserModel {
       description: description ?? this.description,
       followers: followers ?? this.followers,
       following: following ?? this.following,
+      birthDate: birthDate ?? this.birthDate,
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_detail_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
@@ -55,12 +57,15 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     return '${(meters / 1000).toStringAsFixed(1)} km';
   }
 
-  String _timeAgo(DateTime date) {
+  String _timeAgo(DateTime date, LocaleNotifier l) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return 'Ahora';
-    if (diff.inMinutes < 60) return 'Hace ${diff.inMinutes} min';
-    if (diff.inHours < 24) return 'Hace ${diff.inHours} h';
-    if (diff.inDays < 7) return 'Hace ${diff.inDays} días';
+    if (diff.inMinutes < 1) return l.t('time_ago_now');
+    if (diff.inMinutes < 60)
+      return l.t('time_ago_minutes').replaceAll('{n}', '${diff.inMinutes}');
+    if (diff.inHours < 24)
+      return l.t('time_ago_hours').replaceAll('{n}', '${diff.inHours}');
+    if (diff.inDays < 7)
+      return l.t('time_ago_days').replaceAll('{n}', '${diff.inDays}');
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
@@ -75,14 +80,14 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     }
   }
 
-  String _severityLabel(String severity) {
+  String _severityLabel(String severity, LocaleNotifier l) {
     switch (severity) {
       case 'severe':
-        return 'Grave';
+        return l.t('severity_severe');
       case 'moderate':
-        return 'Moderado';
+        return l.t('severity_moderate');
       default:
-        return 'Leve';
+        return l.t('severity_minor');
     }
   }
 
@@ -99,25 +104,26 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
-        title: const Text('Accidentes Reportados'),
+        title: Text(l.t('reported_accidents_title')),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(icon: Icon(Icons.list), text: 'Lista'),
-            Tab(icon: Icon(Icons.map), text: 'Mapa'),
+          tabs: [
+            Tab(icon: const Icon(Icons.list), text: l.t('list_tab')),
+            Tab(icon: const Icon(Icons.map), text: l.t('map_tab')),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [_buildListView(), _buildMapView()],
+        children: [_buildListView(l), _buildMapView(l)],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(
@@ -127,16 +133,17 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text('Reportar'),
+        label: Text(l.t('report_button')),
       ),
     );
   }
 
   // ── Lista de accidentes con pull-to-refresh ─────────
-  Widget _buildListView() {
+  Widget _buildListView(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
+          .where('resolved', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .limit(50)
           .snapshots(),
@@ -153,13 +160,13 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 8),
                 Text(
-                  'Error: ${snapshot.error}',
+                  '${l.t('error_generic')}: ${snapshot.error}',
                   style: const TextStyle(color: Colors.red),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => setState(() {}),
-                  child: const Text('Reintentar'),
+                  child: Text(l.t('retry')),
                 ),
               ],
             ),
@@ -167,17 +174,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         }
 
         final docs = snapshot.data?.docs ?? [];
-        final accidents = docs
-            .map(
-              (d) => AccidentEntity.fromMap(
-                d.id,
-                d.data() as Map<String, dynamic>,
-              ),
-            )
-            .where((a) => !a.resolved)
-            .toList();
 
-        if (accidents.isEmpty) {
+        if (docs.isEmpty) {
           return RefreshIndicator(
             onRefresh: () async => setState(() {}),
             child: ListView(
@@ -192,16 +190,16 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                       color: Colors.green[300],
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      '¡Sin accidentes reportados!',
-                      style: TextStyle(
+                    Text(
+                      l.t('no_accidents_reported'),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'No hay accidentes activos en tu zona',
+                      l.t('no_active_accidents_zone'),
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                   ],
@@ -210,6 +208,11 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
             ),
           );
         }
+
+        final accidents = docs.map((d) {
+          final data = d.data() as Map<String, dynamic>;
+          return AccidentEntity.fromMap(d.id, data);
+        }).toList();
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -222,7 +225,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
             itemCount: accidents.length,
             itemBuilder: (context, index) {
               final a = accidents[index];
-              return _accidentCard(a);
+              return _accidentCard(a, l);
             },
           ),
         );
@@ -230,7 +233,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     );
   }
 
-  Widget _accidentCard(AccidentEntity a) {
+  Widget _accidentCard(AccidentEntity a, LocaleNotifier l) {
     final color = _severityColor(a.severity);
     final dist = _distanceText(a.latitude, a.longitude);
 
@@ -276,7 +279,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            _severityLabel(a.severity),
+                            _severityLabel(a.severity, l),
                             style: TextStyle(
                               color: color,
                               fontSize: 11,
@@ -286,7 +289,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                         ),
                         const Spacer(),
                         Text(
-                          _timeAgo(a.createdAt),
+                          _timeAgo(a.createdAt, l),
                           style: TextStyle(
                             color: Colors.grey[500],
                             fontSize: 11,
@@ -311,7 +314,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          a.userName.isNotEmpty ? a.userName : 'Anónimo',
+                          a.userName.isNotEmpty ? a.userName : l.t('anonymous'),
                           style: TextStyle(
                             color: Colors.grey[500],
                             fontSize: 12,
@@ -359,10 +362,11 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
   }
 
   // ── Mapa de accidentes ──────────────────────────────
-  Widget _buildMapView() {
+  Widget _buildMapView(LocaleNotifier l) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
+          .where('resolved', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .limit(50)
           .snapshots(),
@@ -372,15 +376,10 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         }
 
         final docs = snapshot.data?.docs ?? [];
-        final accidents = docs
-            .map(
-              (d) => AccidentEntity.fromMap(
-                d.id,
-                d.data() as Map<String, dynamic>,
-              ),
-            )
-            .where((a) => !a.resolved)
-            .toList();
+        final accidents = docs.map((d) {
+          final data = d.data() as Map<String, dynamic>;
+          return AccidentEntity.fromMap(d.id, data);
+        }).toList();
 
         final markers = accidents.map((a) {
           return Marker(
@@ -394,7 +393,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                   : BitmapDescriptor.hueYellow,
             ),
             infoWindow: InfoWindow(
-              title: '${_severityLabel(a.severity)} - ${_timeAgo(a.createdAt)}',
+              title:
+                  '${_severityLabel(a.severity, l)} - ${_timeAgo(a.createdAt, l)}',
               snippet: a.description.length > 50
                   ? '${a.description.substring(0, 50)}...'
                   : a.description,

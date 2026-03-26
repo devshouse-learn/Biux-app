@@ -1,8 +1,8 @@
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/images.dart';
 import 'package:biux/core/config/router/app_routes.dart';
-import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/cities/data/models/city.dart';
 import 'package:biux/features/roads/data/models/road.dart';
 import 'package:biux/core/utils/datetime_utils.dart';
@@ -30,12 +30,12 @@ class RoadCreateScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final sizeScreen = MediaQuery.of(context).size;
     final bloc = context.watch<RoadCreateBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         centerTitle: true,
-        title: Text(AppStrings.createRoadText, style: Styles.mainMenuTextBiux),
+        title: Text(l.t('create_ride'), style: Styles.mainMenuTextBiux),
       ),
       body: Stack(
         alignment: Alignment.center,
@@ -62,7 +62,7 @@ class RoadCreateScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                   TextFormFieldBiuxWidget(
                     controller: controllerRouteName,
-                    text: AppStrings.routeNameText,
+                    text: l.t('route_name'),
                     radiusCircular: 15,
                     fontSize: 15,
                     validator: (value) {
@@ -78,7 +78,7 @@ class RoadCreateScreen extends StatelessWidget {
                   ),
                   TextFormFieldBiuxWidget(
                     controller: controllerMeetingPoint,
-                    text: AppStrings.meetingPointText,
+                    text: l.t('meeting_point'),
                     radiusCircular: 15,
                     fontSize: 15,
                     validator: (value) {
@@ -94,7 +94,7 @@ class RoadCreateScreen extends StatelessWidget {
                   ),
                   TextFormFieldBiuxWidget(
                     controller: controllerGeolocationPoint,
-                    text: AppStrings.geolocationPointText,
+                    text: l.t('geolocation_point'),
                     readOnly: true,
                     radiusCircular: 15,
                     fontSize: 15,
@@ -167,7 +167,7 @@ class RoadCreateScreen extends StatelessWidget {
                   ),
                   TextFormFieldBiuxWidget(
                     controller: controllerDistance,
-                    text: AppStrings.distanceText,
+                    text: l.t('distance_label'),
                     keyboardType: TextInputType.number,
                     radiusCircular: 15,
                     fontSize: 15,
@@ -184,7 +184,7 @@ class RoadCreateScreen extends StatelessWidget {
                   ),
                   TextFormFieldBiuxWidget(
                     controller: controllerDateTime,
-                    text: AppStrings.dateTimeText,
+                    text: l.t('date_time_label'),
                     radiusCircular: 15,
                     fontSize: 15,
                     readOnly: true,
@@ -217,7 +217,7 @@ class RoadCreateScreen extends StatelessWidget {
                   ),
                   TextFormFieldBiuxWidget(
                     controller: controllerDescriptionRecomendations,
-                    text: AppStrings.descriptionRecomendationsText,
+                    text: l.t('description_recommendations'),
                     radiusCircular: 15,
                     fontSize: 15,
                     maxLine: 4,
@@ -240,7 +240,7 @@ class RoadCreateScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(AppStrings.levelText, style: Styles.sizedBox),
+                        Text(l.t('level_label'), style: Styles.sizedBox),
                         const SizedBox(height: 10),
                         SmoothStarRating(
                           allowHalfRating: false,
@@ -273,7 +273,7 @@ class RoadCreateScreen extends StatelessWidget {
                   if (_formKey.currentState!.validate() &&
                       bloc.rating != 0.0 &&
                       RegExp(
-                        AppStrings.validatorNumber,
+                        l.t('validator_number'),
                       ).hasMatch(controllerDistance.text)) {
                     distance = double.parse(controllerDistance.text);
                     final road = Road(
@@ -291,8 +291,8 @@ class RoadCreateScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: result
-                            ? AppStrings.succesCreateRoadText
-                            : AppStrings.errorCreateRoadText,
+                            ? l.t('ride_created_success')
+                            : l.t('error_create_ride'),
                         backgroundColor: result
                             ? ColorTokens.secondary50
                             : ColorTokens.error50,
@@ -305,21 +305,18 @@ class RoadCreateScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: !_formKey.currentState!.validate()
-                            ? AppStrings.validationCreateRoadText
+                            ? l.t('must_complete_all_fields')
                             : !RegExp(
-                                AppStrings.validatorNumber,
+                                l.t('validator_number'),
                               ).hasMatch(controllerDistance.text)
-                            ? AppStrings.advertDistance
+                            ? l.t('distance_numbers_only')
                             : '',
                         backgroundColor: ColorTokens.error50,
                       ),
                     );
                   }
                 },
-                child: Text(
-                  AppStrings.postText,
-                  style: Styles.containerNameUser,
-                ),
+                child: Text(l.t('publish'), style: Styles.containerNameUser),
               ),
             ),
           ),

@@ -24,7 +24,7 @@ class SellerRequestModel extends SellerRequestEntity {
     return SellerRequestModel(
       id: doc.id,
       userId: data['userId'] ?? '',
-      userName: data['userName'] ?? 'Sin nombre',
+      userName: data['userName'] ?? 'no_name',
       userPhoto: data['userPhoto'] ?? '',
       userEmail: data['userEmail'] ?? '',
       message: data['message'] ?? '',
@@ -41,7 +41,7 @@ class SellerRequestModel extends SellerRequestEntity {
     return SellerRequestModel(
       id: id,
       userId: map['userId'] ?? '',
-      userName: map['userName'] ?? 'Sin nombre',
+      userName: map['userName'] ?? 'no_name',
       userPhoto: map['userPhoto'] ?? '',
       userEmail: map['userEmail'] ?? '',
       message: map['message'] ?? '',
