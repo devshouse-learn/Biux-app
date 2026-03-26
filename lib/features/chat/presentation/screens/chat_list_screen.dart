@@ -156,6 +156,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   );
                 }
                 if (!snapshot.hasData) return const SizedBox.shrink();
+        if (!snapshot.hasData) return const SizedBox.shrink();
         final docs = snapshot.data!.docs;
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(

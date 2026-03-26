@@ -75,7 +75,7 @@ class _MapScreenState extends State<MapScreen> {
                       await mapProvider.requestUserLocation();
 
                       if (locationProvider.error != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(locationProvider.error!),
                             backgroundColor: ColorTokens.error50,

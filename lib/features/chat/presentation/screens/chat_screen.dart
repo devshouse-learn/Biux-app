@@ -45,6 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (!snapshot.hasData)
                   return const Center(child: CircularProgressIndicator());
                 if (!snapshot.hasData) return const SizedBox.shrink();
+        if (!snapshot.hasData) return const SizedBox.shrink();
         final docs = snapshot.data!.docs;
                 if (docs.isEmpty) {
                   return const Center(child: Text('Envia el primer mensaje!'));

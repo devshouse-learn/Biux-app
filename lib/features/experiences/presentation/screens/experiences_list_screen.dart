@@ -511,7 +511,7 @@ class _ExperienceCard extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Función de reportar próximamente'),
                     ),
@@ -574,7 +574,7 @@ class _ExperienceCard extends StatelessWidget {
       await provider.deleteExperience(experience.id);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Publicación eliminada correctamente')),
         );
       }
@@ -597,7 +597,7 @@ class _ExperienceCard extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       ).catchError((e) {
         // Fallback: si el deep link falla, mostrar mensaje
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('La app debe estar instalada para compartir')),
         );
         return false;
@@ -1054,7 +1054,7 @@ class _AdvertisementCard extends StatelessWidget {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         } else {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('No se pudo abrir el enlace del anuncio'),
               ),
