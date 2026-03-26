@@ -105,7 +105,9 @@ class CreateUserScreen extends StatelessWidget {
                             height: 600,
                             margin: const EdgeInsets.symmetric(horizontal: 10),
                             child: Card(
-                              color: ColorTokens.neutral100,
+                              color:
+                                  Theme.of(context).cardTheme.color ??
+                                  Theme.of(context).colorScheme.surface,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16.0),
                               ),

@@ -59,7 +59,6 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
         }
 
         return Scaffold(
-          backgroundColor: Colors.white,
           body: CustomScrollView(
             slivers: [
               _buildAppBar(currentBike),
@@ -548,7 +547,7 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
               width: 150,
               height: 150,
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: ColorTokens.neutral90),
               ),

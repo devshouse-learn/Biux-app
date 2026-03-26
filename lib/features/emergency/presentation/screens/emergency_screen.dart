@@ -34,7 +34,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         title: const Text('Emergencia SOS'),
         backgroundColor: Colors.red[700],
@@ -656,7 +655,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
             }
           });
           return Dialog(
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),

@@ -175,7 +175,7 @@ class _StoryEditorScreenState extends State<StoryEditorScreen> {
 
             // Controles de edición
             Container(
-              color: ColorTokens.neutral100,
+              color: Theme.of(context).scaffoldBackgroundColor,
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

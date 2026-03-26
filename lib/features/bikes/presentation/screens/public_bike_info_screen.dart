@@ -55,7 +55,6 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -498,7 +497,9 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Avistamiento reportado! Gracias por ayudar a la comunidad.'),
+            content: Text(
+              '¡Avistamiento reportado! Gracias por ayudar a la comunidad.',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -506,7 +507,10 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al reportar: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al reportar: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }

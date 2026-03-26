@@ -96,7 +96,6 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen>
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,

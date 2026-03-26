@@ -567,7 +567,7 @@ void showDialogCreateStory({
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: ColorTokens.neutral100,
+            backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
             contentPadding: const EdgeInsets.symmetric(
               vertical: 20,
               horizontal: 16,

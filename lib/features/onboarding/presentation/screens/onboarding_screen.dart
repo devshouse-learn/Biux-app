@@ -77,7 +77,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final l = Provider.of<LocaleNotifier>(context);
     final pages = _buildPages(l);
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [

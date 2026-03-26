@@ -75,7 +75,6 @@ class _ShopScreenProState extends State<ShopScreenPro>
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const ShopMenuDrawer(),
-      backgroundColor: ColorTokens.neutral99, // Fondo claro y limpio
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [

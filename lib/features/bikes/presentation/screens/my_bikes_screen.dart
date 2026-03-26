@@ -56,7 +56,6 @@ class _MyBikesScreenState extends State<MyBikesScreen> {
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Consumer<BikeProvider>(
         builder: (context, bikeProvider, child) {
           if (bikeProvider.isLoading) {

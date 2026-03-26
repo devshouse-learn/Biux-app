@@ -61,7 +61,6 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         title: Text(
           l.t('create_group'),

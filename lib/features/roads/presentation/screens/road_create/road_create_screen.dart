@@ -32,7 +32,6 @@ class RoadCreateScreen extends StatelessWidget {
     final bloc = context.watch<RoadCreateBloc>();
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         centerTitle: true,

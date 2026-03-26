@@ -58,7 +58,7 @@ class _TexFieldWidgetState extends State<TexFieldWidget> {
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               errorStyle: TextStyle(fontSize: 1, height: 0),
-              fillColor: ColorTokens.neutral100,
+              fillColor: Theme.of(context).colorScheme.surface,
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: ColorTokens.neutral60, width: 1),
                 borderRadius: BorderRadius.circular(15),

@@ -406,7 +406,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     horizontal: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -1076,7 +1076,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Column(
@@ -1264,7 +1264,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
