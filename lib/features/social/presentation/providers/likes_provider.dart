@@ -207,7 +207,6 @@ class LikesProvider extends ChangeNotifier {
     required String commentId,
     String? contextTargetId,
     CommentableType? contextType,
-    ww,
   }) {
     // Construir targetId compuesto si se proporciona contexto
     String finalTargetId = commentId;
