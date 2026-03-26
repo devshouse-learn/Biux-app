@@ -178,6 +178,21 @@ class RideProvider extends ChangeNotifier {
       _setError('Usuario no autenticado');
       return false;
     }
+    // Validar que la fecha no sea en el pasado
+    if (dateTime.isBefore(DateTime.now())) {
+      _setError('La fecha de la rodada no puede ser en el pasado');
+      return false;
+    }
+    // Validar kilómetros
+    if (kilometers <= 0) {
+      _setError('Los kilómetros deben ser mayor a 0');
+      return false;
+    }
+    // Validar nombre mínimo
+    if (name.trim().length < 3) {
+      _setError('El nombre debe tener al menos 3 caracteres');
+      return false;
+    }
 
     try {
       _setLoading(true);
