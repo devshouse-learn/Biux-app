@@ -7,7 +7,6 @@ import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Features imports
 import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
