@@ -5,7 +5,6 @@ import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
 import 'package:biux/core/utils/share_utils.dart';
 import 'package:biux/features/stories/presentation/screens/story_view/story_view_bloc.dart';
-import 'package:biux/features/stories/presentation/screens/story_view/story_comments_bottom_sheet.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -173,7 +172,7 @@ class _StoryWidget extends StatelessWidget {
                 ),
               )
             : null,
-        actionsWidget: _StoryActionsBar(story: story),
+        galleryOverlays: [_StoryLikeOverlay(story: story)],
       ),
     );
   }
@@ -212,132 +211,59 @@ class _StoryWidget extends StatelessWidget {
   }
 }
 
-/// Barra de acciones estilo Instagram (likes, comentarios y opciones)
-class _StoryActionsBar extends StatelessWidget {
+/// Overlay de like posicionado en la esquina inferior derecha de la imagen.
+/// El contador de likes solo es visible para el dueño de la historia.
+class _StoryLikeOverlay extends StatelessWidget {
   final Story story;
 
-  const _StoryActionsBar({Key? key, required this.story}) : super(key: key);
+  const _StoryLikeOverlay({Key? key, required this.story}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final idUser = AuthenticationRepository().getUserId;
-    bool userLiked = story.listReactions.any(
+    final isOwner = story.user.id == idUser;
+    final userLiked = story.listReactions.any(
       (reaction) => reaction.id == idUser,
     );
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        border: Border(
-          top: BorderSide(
-            color: Colors.white.withValues(alpha: 0.1),
-            width: 0.5,
+    return Positioned(
+      bottom: 12,
+      right: 12,
+      child: GestureDetector(
+        onTap: () {
+          context.read<StoryViewBloc>().updateStoryLike(
+            idUser: idUser,
+            story: story,
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(20),
           ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // Botón Like
-          GestureDetector(
-            onTap: () {
-              context.read<StoryViewBloc>().updateStoryLike(
-                idUser: idUser,
-                story: story,
-              );
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  userLiked ? Icons.favorite : Icons.favorite_border,
-                  color: userLiked ? Colors.red : Colors.white70,
-                  size: 26,
-                ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                userLiked ? Icons.favorite : Icons.favorite_border,
+                color: userLiked ? Colors.red : Colors.white,
+                size: 28,
+              ),
+              if (isOwner) ...[
                 const SizedBox(width: 6),
                 Text(
                   story.listReactions.length.toString(),
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
               ],
-            ),
+            ],
           ),
-          // Botón Comentarios
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                builder: (context) => StoryCommentsBottomSheet(story: story),
-              );
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.comment_outlined,
-                  color: Colors.white70,
-                  size: 26,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  story.listComments.length.toString(),
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Botón Compartir
-          Builder(
-            builder: (context) {
-              final l = Provider.of<LocaleNotifier>(context, listen: false);
-              return GestureDetector(
-                onTap: () {
-                  ShareUtils().shareFile(
-                    filePath: story.fileUrl1,
-                    text: '${story.user.userName}${l.t('text_share_story')}',
-                    title: l.t('title_share_story'),
-                  );
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.share_outlined,
-                      color: Colors.white70,
-                      size: 26,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      l.t('share'),
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

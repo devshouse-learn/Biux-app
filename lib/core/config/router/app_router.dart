@@ -386,11 +386,6 @@ final GoRouter _router = GoRouter(
           name: AppRoutes.mapName,
           builder: (context, state) => MapScreen(),
         ),
-        GoRoute(
-          path: '/accidents',
-          builder: (context, state) => const AccidentsListScreen(),
-        ),
-
         // Perfil
         GoRoute(
           path: AppRoutes.profile,
@@ -417,23 +412,6 @@ final GoRouter _router = GoRouter(
           path: '/user',
           name: 'userScreen',
           builder: (context, state) => UserScreen(),
-        ),
-
-        // Buscar usuarios
-        GoRoute(
-          path: AppRoutes.userSearch,
-          name: AppRoutes.userSearchName,
-          builder: (context, state) => UserSearchScreen(),
-        ),
-
-        // Perfil de usuario específico
-        GoRoute(
-          path: AppRoutes.userProfile,
-          name: AppRoutes.userProfileName,
-          builder: (context, state) {
-            final userId = state.pathParameters['userId']!;
-            return PublicUserProfileScreen(userId: userId);
-          },
         ),
 
         // Grupos
@@ -648,28 +626,7 @@ final GoRouter _router = GoRouter(
 
         // ===== SETTINGS =====
 
-        // Configuración de notificaciones
-        GoRoute(
-          path: AppRoutes.notificationSettings,
-          name: AppRoutes.notificationSettingsName,
-          builder: (context, state) => const NotificationSettingsScreen(),
-        ),
-
-        // Ayuda y soporte
-        GoRoute(
-          path: AppRoutes.help,
-          name: AppRoutes.helpName,
-          builder: (context, state) => const HelpScreen(),
-        ),
-
         // ===== SOCIAL FEATURES =====
-
-        // Notificaciones
-        GoRoute(
-          path: '/notifications',
-          name: 'notifications',
-          builder: (context, state) => const NotificationsScreen(),
-        ),
 
         // Comentarios de rodadas
         GoRoute(
@@ -731,13 +688,6 @@ final GoRouter _router = GoRouter(
           builder: (context, state) => const MyOrdersScreen(),
         ),
 
-        // Promociones (anuncios y eventos enviados por usuarios)
-        GoRoute(
-          path: '/promotions',
-          name: 'promotions',
-          builder: (context, state) => const PromotionsScreen(),
-        ),
-
         // Panel de administración (solo admins)
         GoRoute(
           path: '/shop/admin',
@@ -770,13 +720,6 @@ final GoRouter _router = GoRouter(
           path: '/shop/delete-all-products',
           name: 'deleteAllProducts',
           builder: (context, state) => const DeleteAllProductsScreen(),
-        ),
-
-        // Base de datos pública de bicicletas robadas - DEBE IR ANTES DE /shop/:id
-        GoRoute(
-          path: '/shop/stolen-bikes',
-          name: 'stolenBikes',
-          builder: (context, state) => const StolenBikesScreen(),
         ),
 
         // Dashboard de alertas para administradores - DEBE IR ANTES DE /shop/:id
@@ -861,70 +804,11 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // ===== NEW FEATURES =====
-
-        // Chat
-        GoRoute(
-          path: AppRoutes.chatList,
-          name: AppRoutes.chatListName,
-          builder: (context, state) => const ChatListScreen(),
-        ),
-        GoRoute(
-          path: '/chat/:chatId',
-          name: AppRoutes.chatDetailName,
-          builder: (context, state) {
-            final chatId = state.pathParameters['chatId']!;
-            return ChatScreen(chatId: chatId);
-          },
-        ),
-
-        // Road Reports
-        GoRoute(
-          path: AppRoutes.roadReports,
-          name: AppRoutes.roadReportsName,
-          builder: (context, state) => const RoadReportsScreen(),
-        ),
-
-        // Ride Tracker
-        GoRoute(
-          path: AppRoutes.rideTracker,
-          name: AppRoutes.rideTrackerName,
-          builder: (context, state) => const RideTrackerScreen(),
-        ),
-
-        // Cycling Stats
-        GoRoute(
-          path: AppRoutes.cyclingStats,
-          name: AppRoutes.cyclingStatsName,
-          builder: (context, state) => const CyclingStatsScreen(),
-        ),
-
-        // Emergency
-        GoRoute(
-          path: AppRoutes.emergency,
-          name: AppRoutes.emergencyName,
-          builder: (context, state) => const EmergencyScreen(),
-        ),
-
-        // Achievements
-        GoRoute(
-          path: AppRoutes.achievements,
-          name: AppRoutes.achievementsName,
-          builder: (context, state) => const AchievementsScreen(),
-        ),
-
         // Onboarding
         GoRoute(
           path: '/onboarding',
           name: 'onboarding',
           builder: (context, state) => const OnboardingScreen(),
-        ),
-
-        // Búsqueda global
-        GoRoute(
-          path: '/search',
-          name: 'globalSearch',
-          builder: (context, state) => const GlobalSearchScreen(),
         ),
 
         // Seguidores/Siguiendo
@@ -942,26 +826,6 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Clima
-        GoRoute(
-          path: '/weather',
-          name: 'weather',
-          builder: (context, state) => const WeatherScreen(),
-        ),
-
-        // Reportar Accidente
-        GoRoute(
-          path: '/accidents/report',
-          name: 'accidentReport',
-          builder: (context, state) => const AccidentReportScreen(),
-        ),
-
-        // Education
-        GoRoute(
-          path: AppRoutes.education,
-          name: AppRoutes.educationName,
-          builder: (context, state) => const EducationScreen(),
-        ),
         // Panel de administración
         GoRoute(
           path: '/store/admin-dashboard',
@@ -984,6 +848,142 @@ final GoRouter _router = GoRouter(
     ),
 
     // Rutas fuera del shell principal
+
+    // Notificaciones
+    GoRoute(
+      path: '/notifications',
+      name: 'notifications',
+      builder: (context, state) => const NotificationsScreen(),
+    ),
+
+    // Buscar usuarios
+    GoRoute(
+      path: AppRoutes.userSearch,
+      name: AppRoutes.userSearchName,
+      builder: (context, state) => UserSearchScreen(),
+    ),
+
+    // Perfil de usuario específico
+    GoRoute(
+      path: AppRoutes.userProfile,
+      name: AppRoutes.userProfileName,
+      builder: (context, state) {
+        final userId = state.pathParameters['userId']!;
+        return PublicUserProfileScreen(userId: userId);
+      },
+    ),
+
+    // Búsqueda global
+    GoRoute(
+      path: '/search',
+      name: 'globalSearch',
+      builder: (context, state) => const GlobalSearchScreen(),
+    ),
+
+    // Chat (fuera del ShellRoute para ocultar bottom nav)
+    GoRoute(
+      path: AppRoutes.chatList,
+      name: AppRoutes.chatListName,
+      builder: (context, state) => const ChatListScreen(),
+    ),
+    GoRoute(
+      path: '/chat/:chatId',
+      name: AppRoutes.chatDetailName,
+      builder: (context, state) {
+        final chatId = state.pathParameters['chatId']!;
+        return ChatScreen(chatId: chatId);
+      },
+    ),
+
+    // Road Reports
+    GoRoute(
+      path: AppRoutes.roadReports,
+      name: AppRoutes.roadReportsName,
+      builder: (context, state) => const RoadReportsScreen(),
+    ),
+
+    // Ride Tracker (Grabar rodadas)
+    GoRoute(
+      path: AppRoutes.rideTracker,
+      name: AppRoutes.rideTrackerName,
+      builder: (context, state) => const RideTrackerScreen(),
+    ),
+
+    // Cycling Stats (Mis estadísticas)
+    GoRoute(
+      path: AppRoutes.cyclingStats,
+      name: AppRoutes.cyclingStatsName,
+      builder: (context, state) => const CyclingStatsScreen(),
+    ),
+
+    // Emergency SOS
+    GoRoute(
+      path: AppRoutes.emergency,
+      name: AppRoutes.emergencyName,
+      builder: (context, state) => const EmergencyScreen(),
+    ),
+
+    // Achievements (Logros)
+    GoRoute(
+      path: AppRoutes.achievements,
+      name: AppRoutes.achievementsName,
+      builder: (context, state) => const AchievementsScreen(),
+    ),
+
+    // Promotions (Negocios y eventos)
+    GoRoute(
+      path: '/promotions',
+      name: 'promotions',
+      builder: (context, state) => const PromotionsScreen(),
+    ),
+
+    // Bicicletas robadas
+    GoRoute(
+      path: '/shop/stolen-bikes',
+      name: 'stolenBikes',
+      builder: (context, state) => const StolenBikesScreen(),
+    ),
+
+    // Education (Educación vial)
+    GoRoute(
+      path: AppRoutes.education,
+      name: AppRoutes.educationName,
+      builder: (context, state) => const EducationScreen(),
+    ),
+
+    // Clima
+    GoRoute(
+      path: '/weather',
+      name: 'weather',
+      builder: (context, state) => const WeatherScreen(),
+    ),
+
+    // Reportar Accidente
+    GoRoute(
+      path: '/accidents/report',
+      name: 'accidentReport',
+      builder: (context, state) => const AccidentReportScreen(),
+    ),
+
+    // Lista de accidentes
+    GoRoute(
+      path: '/accidents',
+      builder: (context, state) => const AccidentsListScreen(),
+    ),
+
+    // Configuración de notificaciones
+    GoRoute(
+      path: AppRoutes.notificationSettings,
+      name: AppRoutes.notificationSettingsName,
+      builder: (context, state) => const NotificationSettingsScreen(),
+    ),
+
+    // Ayuda y soporte (Centro de ayuda)
+    GoRoute(
+      path: AppRoutes.help,
+      name: AppRoutes.helpName,
+      builder: (context, state) => const HelpScreen(),
+    ),
 
     // Configuración de Cuenta (fuera del ShellRoute para ocultar bottom nav)
     GoRoute(
@@ -1140,21 +1140,21 @@ extension AppRouterExtension on BuildContext {
   void goToPublicBikeInfo(String qrCode) => go('/bikes/public/$qrCode');
 
   // Navegación social
-  void goToNotifications() => go('/notifications');
+  void goToNotifications() => push('/notifications');
   void goToPostComments(String postId, String ownerId) =>
       go('/posts/$postId/comments?ownerId=$ownerId');
   void goToRideComments(String rideId, String ownerId) =>
       go('/rides/$rideId/comments?ownerId=$ownerId');
 
   // Navegacion nuevas funcionalidades
-  void goToChat() => go(AppRoutes.chatList);
-  void goToChatDetail(String chatId) => go('/chat/$chatId');
-  void goToRoadReports() => go(AppRoutes.roadReports);
-  void goToRideTracker() => go(AppRoutes.rideTracker);
-  void goToCyclingStats() => go(AppRoutes.cyclingStats);
-  void goToEmergency() => go(AppRoutes.emergency);
-  void goToAchievements() => go(AppRoutes.achievements);
-  void goToEducation() => go(AppRoutes.education);
+  void goToChat() => push(AppRoutes.chatList);
+  void goToChatDetail(String chatId) => push('/chat/$chatId');
+  void goToRoadReports() => push(AppRoutes.roadReports);
+  void goToRideTracker() => push(AppRoutes.rideTracker);
+  void goToCyclingStats() => push(AppRoutes.cyclingStats);
+  void goToEmergency() => push(AppRoutes.emergency);
+  void goToAchievements() => push(AppRoutes.achievements);
+  void goToEducation() => push(AppRoutes.education);
 
   // Nuevas navegaciones
   void goToSearch() => push('/search');

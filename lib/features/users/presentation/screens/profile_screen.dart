@@ -1,4 +1,3 @@
-import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
@@ -394,6 +393,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   // Función temporal para actualizar ciudades con departamentos
+
 
   void _showFollowersModal(BuildContext context) {
     final followers = widget.userProvider.user?.followers ?? {};
@@ -1716,47 +1716,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               },
                             );
                           },
-                        ),
-
-                        SizedBox(height: 32),
-
-                        // Botón Cerrar Sesión
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: _showLogoutDialog,
-                            icon: Icon(Icons.logout),
-                            label: Text('Cerrar Sesión'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.neutral30
-                                  : ColorTokens.neutral90,
-                              foregroundColor: ColorTokens.neutral100,
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 16),
-
-                        // Botón Eliminar Cuenta
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: _showDeleteAccountDialog,
-                            icon: Icon(Icons.delete_forever),
-                            label: Text('Eliminar Cuenta'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: ColorTokens.error50,
-                              side: BorderSide(
-                                color: ColorTokens.error50,
-                                width: 1.5,
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
                         ),
 
                         SizedBox(height: 24),
