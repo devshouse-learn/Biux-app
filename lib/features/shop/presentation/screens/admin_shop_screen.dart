@@ -1057,11 +1057,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _saveProduct() async {
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     if (!_formKey.currentState!.validate()) return;
 
     // Validación obligatoria de imágenes
     if (_imageUrls.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Row(
             children: [
@@ -1203,8 +1205,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
     }
 
     if (success) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
+      navigator.pop();
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             widget.product == null
@@ -1215,7 +1217,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(shopProvider.errorMessage ?? 'Error al guardar'),
           backgroundColor: Colors.red,

@@ -35,7 +35,9 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
   Future<void> _getMyLocation() async {
     try {
       final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
       );
       if (mounted) setState(() => _myPosition = pos);
     } catch (_) {}
@@ -44,7 +46,10 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
   String _distanceText(double lat, double lng) {
     if (_myPosition == null) return '';
     final meters = Geolocator.distanceBetween(
-      _myPosition!.latitude, _myPosition!.longitude, lat, lng,
+      _myPosition!.latitude,
+      _myPosition!.longitude,
+      lat,
+      lng,
     );
     if (meters < 1000) return '${meters.toInt()} m';
     return '${(meters / 1000).toStringAsFixed(1)} km';
@@ -112,10 +117,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildListView(),
-          _buildMapView(),
-        ],
+        children: [_buildListView(), _buildMapView()],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(
@@ -135,7 +137,6 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
-          .where('resolved', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .limit(50)
           .snapshots(),
@@ -151,8 +152,10 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 8),
-                Text('Error: ${snapshot.error}',
-                    style: const TextStyle(color: Colors.red)),
+                Text(
+                  'Error: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.red),
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => setState(() {}),
@@ -164,8 +167,17 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         }
 
         final docs = snapshot.data?.docs ?? [];
+        final accidents = docs
+            .map(
+              (d) => AccidentEntity.fromMap(
+                d.id,
+                d.data() as Map<String, dynamic>,
+              ),
+            )
+            .where((a) => !a.resolved)
+            .toList();
 
-        if (docs.isEmpty) {
+        if (accidents.isEmpty) {
           return RefreshIndicator(
             onRefresh: () async => setState(() {}),
             child: ListView(
@@ -174,11 +186,18 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                 SizedBox(height: MediaQuery.of(context).size.height * 0.25),
                 Column(
                   children: [
-                    Icon(Icons.check_circle_outline, size: 64, color: Colors.green[300]),
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 64,
+                      color: Colors.green[300],
+                    ),
                     const SizedBox(height: 16),
                     const Text(
                       '¡Sin accidentes reportados!',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -191,11 +210,6 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
             ),
           );
         }
-
-        final accidents = docs.map((d) {
-          final data = d.data() as Map<String, dynamic>;
-          return AccidentEntity.fromMap(d.id, data);
-        }).toList();
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -253,7 +267,10 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(8),
@@ -270,7 +287,10 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                         const Spacer(),
                         Text(
                           _timeAgo(a.createdAt),
-                          style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
@@ -284,25 +304,46 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.person_outline, size: 14, color: Colors.grey[500]),
+                        Icon(
+                          Icons.person_outline,
+                          size: 14,
+                          color: Colors.grey[500],
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           a.userName.isNotEmpty ? a.userName : 'Anónimo',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 12,
+                          ),
                         ),
                         if (dist.isNotEmpty) ...[
                           const SizedBox(width: 12),
-                          Icon(Icons.near_me, size: 14, color: Colors.grey[500]),
+                          Icon(
+                            Icons.near_me,
+                            size: 14,
+                            color: Colors.grey[500],
+                          ),
                           const SizedBox(width: 4),
-                          Text(dist,
-                              style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                          Text(
+                            dist,
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                         if (a.imageUrls.isNotEmpty) ...[
                           const SizedBox(width: 12),
                           Icon(Icons.photo, size: 14, color: Colors.grey[500]),
                           const SizedBox(width: 4),
-                          Text('${a.imageUrls.length}',
-                              style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                          Text(
+                            '${a.imageUrls.length}',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ],
                     ),
@@ -322,7 +363,6 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('accidents')
-          .where('resolved', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .limit(50)
           .snapshots(),
@@ -332,10 +372,15 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         }
 
         final docs = snapshot.data?.docs ?? [];
-        final accidents = docs.map((d) {
-          final data = d.data() as Map<String, dynamic>;
-          return AccidentEntity.fromMap(d.id, data);
-        }).toList();
+        final accidents = docs
+            .map(
+              (d) => AccidentEntity.fromMap(
+                d.id,
+                d.data() as Map<String, dynamic>,
+              ),
+            )
+            .where((a) => !a.resolved)
+            .toList();
 
         final markers = accidents.map((a) {
           return Marker(
@@ -345,8 +390,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
               a.severity == 'severe'
                   ? BitmapDescriptor.hueRed
                   : a.severity == 'moderate'
-                      ? BitmapDescriptor.hueOrange
-                      : BitmapDescriptor.hueYellow,
+                  ? BitmapDescriptor.hueOrange
+                  : BitmapDescriptor.hueYellow,
             ),
             infoWindow: InfoWindow(
               title: '${_severityLabel(a.severity)} - ${_timeAgo(a.createdAt)}',
@@ -355,7 +400,9 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                   : a.description,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => AccidentDetailScreen(accident: a)),
+                MaterialPageRoute(
+                  builder: (_) => AccidentDetailScreen(accident: a),
+                ),
               ),
             ),
           );
@@ -364,8 +411,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         final initialPos = _myPosition != null
             ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
             : accidents.isNotEmpty
-                ? LatLng(accidents.first.latitude, accidents.first.longitude)
-                : const LatLng(19.4326, -99.1332);
+            ? LatLng(accidents.first.latitude, accidents.first.longitude)
+            : const LatLng(19.4326, -99.1332);
 
         return GoogleMap(
           initialCameraPosition: CameraPosition(target: initialPos, zoom: 13),

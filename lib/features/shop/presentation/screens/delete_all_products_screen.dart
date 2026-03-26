@@ -50,6 +50,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
   }
 
   Future<void> _deleteAllProducts() async {
+    final messenger = ScaffoldMessenger.of(context);
     // Confirmación
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final confirmed = await showDialog<bool>(
@@ -122,7 +123,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
 
       // Mostrar mensaje de éxito
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('✅ $_deletedProducts ${l.t('products_eliminated')}'),
             backgroundColor: Colors.green,
@@ -137,7 +138,7 @@ class _DeleteAllProductsScreenState extends State<DeleteAllProductsScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text('${l.t('error')}: $e'),
             backgroundColor: Colors.red,
