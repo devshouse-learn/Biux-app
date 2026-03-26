@@ -100,7 +100,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                if (!snapshot.hasData || (snapshot.data?.docs.isEmpty ?? true)) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -155,7 +155,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   );
                 }
-                final docs = snapshot.data!.docs;
+                if (!snapshot.hasData) return const SizedBox.shrink();
+        final docs = snapshot.data!.docs;
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,

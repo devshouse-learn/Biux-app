@@ -50,8 +50,8 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
   String _distanceText(double lat, double lng) {
     if (_myPosition == null) return '';
     final meters = Geolocator.distanceBetween(
-      _myPosition!.latitude,
-      _myPosition!.longitude,
+      _myPosition?.latitude ?? 0.0,
+      _myPosition?.longitude ?? 0.0,
       lat,
       lng,
     );
