@@ -6,8 +6,7 @@ import 'package:biux/core/config/styles.dart';
 import 'package:biux/features/groups/presentation/screens/group_list/group_list_screen.dart';
 import 'package:biux/features/maps/presentation/screens/map_screen.dart';
 import 'package:biux/features/rides/presentation/screens/list_rides/ride_list_screen.dart';
-import 'package:biux/features/stories/presentation/screens/story_view/story_view_bloc.dart';
-import 'package:biux/features/stories/presentation/screens/story_view/story_view_screen.dart';
+import 'package:biux/features/experiences/presentation/screens/experiences_list_screen.dart';
 import 'package:biux/shared/widgets/app_drawer.dart';
 import 'package:biux/shared/providers/main_menu_bloc.dart';
 
@@ -20,7 +19,7 @@ class MainMenu extends StatelessWidget {
   MainMenu({Key? key}) : super(key: key);
 
   final List<Widget> children = [
-    StoryViewScreen(),
+    ExperiencesListScreen(),
     RideListScreen(),
     GroupListScreen(),
     MapScreen(),
@@ -114,14 +113,8 @@ class _ActionButton extends StatelessWidget {
             margin: EdgeInsets.only(right: 30),
             child: GestureDetector(
               onTap: () async {
-                final bloc = context.read<StoryViewBloc>();
-                final result = await Navigator.pushNamed(
-                  context,
-                  AppRoutes.storyCreateName,
-                );
-                if (result as bool) {
-                  bloc.getIntitalStories();
-                }
+                // Legacy: redirige a crear experiencia
+                Navigator.pushNamed(context, AppRoutes.storyCreateName);
               },
               child: Image.asset(Images.kImageAdd),
             ),

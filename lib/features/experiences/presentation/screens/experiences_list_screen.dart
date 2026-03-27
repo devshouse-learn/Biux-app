@@ -11,6 +11,7 @@ import 'package:biux/features/experiences/presentation/widgets/experiences_stori
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
+import 'package:biux/features/social/presentation/providers/likes_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
@@ -110,6 +111,27 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
         builder: (context, provider, child) {
           return _buildBody(provider);
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (context) => const CreateExperienceScreen(
+                    experienceType: ExperienceType.general,
+                    isPostMode: true,
+                    textOnly: false,
+                  ),
+                ),
+              )
+              .then((result) {
+                if (result == true) {
+                  _loadFeed();
+                }
+              });
+        },
+        backgroundColor: ColorTokens.primary30,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -535,13 +557,29 @@ class _ExperienceCard extends StatelessWidget {
             }
           }
         },
-        onImageTap: (_) {
-          context.push('/social/post/${experience.id}');
+        // Sin onImageTap: zoom directo en la galería estilo Instagram
+        onDoubleTap: () {
+          // Doble-tap = like (estilo Instagram)
+          final likesProvider = context.read<LikesProvider>();
+          likesProvider.likePost(
+            postId: experience.id,
+            postOwnerId: experience.user.id,
+            postPreview: experience.description.length > 50
+                ? experience.description.substring(0, 50)
+                : experience.description,
+          );
         },
         headerTrailing: [
           GestureDetector(
             onTap: () => _showPostMenu(context),
-            child: const Icon(Icons.more_vert, color: Colors.white70, size: 20),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Icon(
+                Icons.more_vert,
+                color: Theme.of(context).iconTheme.color ?? Colors.grey,
+                size: 22,
+              ),
+            ),
           ),
         ],
         actionsWidget: PostSocialActions(

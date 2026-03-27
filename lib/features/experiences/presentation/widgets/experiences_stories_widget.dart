@@ -45,16 +45,19 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
   }
 
   void _onExperiencesChanged() {
+    if (!mounted) return;
     // Re-agrupar stories cuando el feed cambie
     _loadAndGroupStories();
   }
 
   Future<void> _loadAndGroupStories() async {
+    if (!mounted) return;
     final storyGroupsProvider = context.read<StoryGroupsProvider>();
     final experienceProvider = context.read<ExperienceProvider>();
 
-    // Obtener experiencias del feed personalizado
-    final allExperiences = experienceProvider.experiences;
+    // Usar TODAS las experiencias válidas (no solo las paginadas del feed)
+    // para que stories de otros dispositivos o de posiciones 16+ no se pierdan.
+    final allExperiences = experienceProvider.allExperiences;
 
     // No agrupar si no hay datos aún (evitar resetear)
     if (allExperiences.isEmpty) return;

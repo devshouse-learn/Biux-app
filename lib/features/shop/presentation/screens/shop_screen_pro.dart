@@ -1202,6 +1202,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   /// AppBar profesional con búsqueda integrada (antiguo)
   // ignore: unused_element
   Widget _buildSliverAppBar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return SliverAppBar(
       expandedHeight: 120,
       pinned: true,
@@ -2280,13 +2281,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
     return Consumer<ShopProvider>(
       builder: (context, shopProvider, child) {
         if (shopProvider.isLoadingProducts) {
-          return const SliverFillRemaining(
+          return SliverFillRemaining(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
                   Text(l.t('loading_products')),
                 ],
               ),

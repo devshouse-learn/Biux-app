@@ -38,6 +38,9 @@ class PostCard extends StatelessWidget {
   /// Callback al mantener presionada una imagen (recibe index)
   final void Function(int index)? onImageLongPress;
 
+  /// Callback de doble-tap (para dar like)
+  final VoidCallback? onDoubleTap;
+
   /// Widget de acciones (like, comentar, compartir) debajo de la galería
   final Widget? actionsWidget;
 
@@ -66,6 +69,7 @@ class PostCard extends StatelessWidget {
     this.onUserTap,
     this.onImageTap,
     this.onImageLongPress,
+    this.onDoubleTap,
     this.actionsWidget,
     this.galleryOverlays,
     this.headerTrailing,
@@ -99,6 +103,7 @@ class PostCard extends StatelessWidget {
                   imageUrls: imageUrls,
                   onImageTap: onImageTap,
                   onImageLongPress: onImageLongPress,
+                  onDoubleTap: onDoubleTap,
                   overlays: galleryOverlays,
                 ),
                 // Descripción y tags
@@ -143,6 +148,7 @@ class _PostCardHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: onUserTap,
@@ -239,17 +245,21 @@ class _PostCardHeader extends StatelessWidget {
   }
 }
 
-/// Galería de imágenes cuadrada (1:1) con PageView, flechas e indicador
+/// Galería de imágenes cuadrada (1:1) con PageView, flechas e indicador.
+/// Doble-tap = like con corazón animado.
+/// Zoom con pellizco que vuelve al soltar.
 class _PostCardGallery extends StatefulWidget {
   final List<String> imageUrls;
   final void Function(int index)? onImageTap;
   final void Function(int index)? onImageLongPress;
+  final VoidCallback? onDoubleTap;
   final List<Widget>? overlays;
 
   const _PostCardGallery({
     required this.imageUrls,
     this.onImageTap,
     this.onImageLongPress,
+    this.onDoubleTap,
     this.overlays,
   });
 
@@ -257,11 +267,22 @@ class _PostCardGallery extends StatefulWidget {
   State<_PostCardGallery> createState() => _PostCardGalleryState();
 }
 
-class _PostCardGalleryState extends State<_PostCardGallery> {
+class _PostCardGalleryState extends State<_PostCardGallery>
+    with SingleTickerProviderStateMixin {
   late PageController _pageController;
   int _currentIndex = 0;
   bool _showArrows = false;
   Timer? _arrowTimer;
+
+  // Zoom
+  final TransformationController _transformController =
+      TransformationController();
+
+  // Animación de corazón al doble-tap
+  late AnimationController _heartAnimController;
+  late Animation<double> _heartScaleAnim;
+  late Animation<double> _heartOpacityAnim;
+  bool _showHeart = false;
 
   void _onPageSwipe() {
     if (!_showArrows) {
@@ -277,13 +298,52 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
   void initState() {
     super.initState();
     _pageController = PageController();
+
+    // Animación del corazón
+    _heartAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _heartScaleAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.2), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 1.2, end: 1.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 20),
+    ]).animate(_heartAnimController);
+    _heartOpacityAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 30),
+    ]).animate(_heartAnimController);
+
+    _heartAnimController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (mounted) setState(() => _showHeart = false);
+      }
+    });
   }
 
   @override
   void dispose() {
     _arrowTimer?.cancel();
     _pageController.dispose();
+    _transformController.dispose();
+    _heartAnimController.dispose();
     super.dispose();
+  }
+
+  void _onDoubleTap() {
+    // Mostrar corazón animado
+    setState(() => _showHeart = true);
+    _heartAnimController.forward(from: 0.0);
+
+    // Ejecutar callback de like
+    widget.onDoubleTap?.call();
+  }
+
+  void _resetZoom() {
+    // Volver al estado original con animación suave
+    _transformController.value = Matrix4.identity();
   }
 
   @override
@@ -350,31 +410,44 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
                   }
 
                   return GestureDetector(
-                    onTap: widget.onImageTap != null
-                        ? () => widget.onImageTap!(index)
-                        : null,
+                    onDoubleTap: _onDoubleTap,
                     onLongPress: widget.onImageLongPress != null
                         ? () => widget.onImageLongPress!(index)
                         : null,
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      cacheManager: OptimizedCacheManager.instance,
-                      placeholder: (context, url) => Container(
-                        color: Colors.grey[900],
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white30,
+                    child: Listener(
+                      onPointerUp: (_) {
+                        // Cuando suelta todos los dedos, volver al tamaño original
+                        Future.delayed(const Duration(milliseconds: 100), () {
+                          if (mounted) _resetZoom();
+                        });
+                      },
+                      child: InteractiveViewer(
+                        transformationController: _transformController,
+                        clipBehavior: Clip.hardEdge,
+                        panEnabled: false,
+                        minScale: 1.0,
+                        maxScale: 3.0,
+                        child: CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          cacheManager: OptimizedCacheManager.instance,
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey[900],
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white30,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey[900],
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: Colors.grey[600],
-                          size: 48,
+                          errorWidget: (context, url, error) => Container(
+                            color: Colors.grey[900],
+                            child: Icon(
+                              Icons.image_not_supported,
+                              color: Colors.grey[600],
+                              size: 48,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -483,6 +556,31 @@ class _PostCardGalleryState extends State<_PostCardGallery> {
                 ),
               // Overlays personalizados
               if (widget.overlays != null) ...widget.overlays!,
+              // Corazón animado al doble-tap
+              if (_showHeart)
+                Positioned.fill(
+                  child: Center(
+                    child: AnimatedBuilder(
+                      animation: _heartAnimController,
+                      builder: (context, child) {
+                        return Opacity(
+                          opacity: _heartOpacityAnim.value,
+                          child: Transform.scale(
+                            scale: _heartScaleAnim.value,
+                            child: const Icon(
+                              Icons.favorite,
+                              color: Colors.white,
+                              size: 100,
+                              shadows: [
+                                Shadow(blurRadius: 20, color: Colors.black54),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

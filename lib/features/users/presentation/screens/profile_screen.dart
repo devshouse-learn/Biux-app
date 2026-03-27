@@ -16,6 +16,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
+import 'package:biux/shared/widgets/fullscreen_image_viewer.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -102,6 +103,15 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     setState(() {
       _experiencesFuture = _loadExperiences();
     });
+  }
+
+  /// Muestra las imágenes en pantalla completa con PageView
+  void _showFullScreenImage(
+    BuildContext context,
+    List<String> imageUrls,
+    int initialIndex,
+  ) {
+    FullScreenImageViewer.show(context, imageUrls, initialIndex);
   }
 
   void _showExperienceMenu(BuildContext context, dynamic experience) {
@@ -1477,9 +1487,18 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 final experience = experiences[index];
                                 return GestureDetector(
                                   onTap: () {
-                                    context.push(
-                                      '/stories/post/${experience.id}',
-                                    );
+                                    // Abrir foto en pantalla completa
+                                    final allUrls = experience.media
+                                        .map((m) => m.url)
+                                        .where(
+                                          (u) =>
+                                              u.isNotEmpty &&
+                                              u.startsWith('http'),
+                                        )
+                                        .toList();
+                                    if (allUrls.isNotEmpty) {
+                                      _showFullScreenImage(context, allUrls, 0);
+                                    }
                                   },
                                   onLongPress: () {
                                     _showExperienceMenu(context, experience);
@@ -1615,6 +1634,73 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                   color: ColorTokens.neutral60,
                                                 ),
                                               ),
+                                        // Botón de 3 puntos (menú)
+                                        Positioned(
+                                          top: 4,
+                                          right: 4,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              _showExperienceMenu(
+                                                context,
+                                                experience,
+                                              );
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.6,
+                                                ),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.more_vert,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // Indicador de múltiples imágenes
+                                        if (experience.media.length > 1)
+                                          Positioned(
+                                            bottom: 4,
+                                            right: 4,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.6,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.photo_library,
+                                                    color: Colors.white,
+                                                    size: 12,
+                                                  ),
+                                                  const SizedBox(width: 2),
+                                                  Text(
+                                                    '${experience.media.length}',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ),

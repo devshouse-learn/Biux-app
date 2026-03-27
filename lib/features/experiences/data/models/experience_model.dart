@@ -121,8 +121,8 @@ class ExperienceModel {
   }
 
   /// Parsea el formato desde JSON con compatibilidad hacia atrás.
-  /// Documentos legacy sin campo 'format' usan la heurística original:
-  /// media + descripción corta + no ride → story; todo lo demás → post.
+  /// Solo documentos con campo 'format' explícito se clasifican como story.
+  /// Documentos legacy sin el campo siempre se tratan como post.
   static ExperienceFormat _parseFormat(Map<String, dynamic> json) {
     final formatStr = json['format'] as String?;
     if (formatStr != null) {
@@ -131,15 +131,7 @@ class ExperienceModel {
         orElse: () => ExperienceFormat.post,
       );
     }
-    // Backwards compatibility: documentos sin el campo 'format'
-    final description = json['description'] as String? ?? '';
-    final media = json['media'] as List? ?? [];
-    final typeStr = json['type'] as String? ?? 'general';
-    if (media.isNotEmpty &&
-        description.trim().length <= 20 &&
-        typeStr != 'ride') {
-      return ExperienceFormat.story;
-    }
+    // Documentos legacy sin campo 'format' → siempre post
     return ExperienceFormat.post;
   }
 }
