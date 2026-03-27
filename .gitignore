@@ -437,3 +437,4 @@ deploy-*.log
 .DS_Store
 .vscode/settings.json
 .idea/workspace.xml
+analisis.txt
