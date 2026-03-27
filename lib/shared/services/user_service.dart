@@ -24,6 +24,7 @@ class UserService {
     String? username,
     String? photoUrl,
     String? coverPhotoUrl,
+    DateTime? birthDate,
   }) async {
     return _delegate.updateUserProfile(
       uid: uid,

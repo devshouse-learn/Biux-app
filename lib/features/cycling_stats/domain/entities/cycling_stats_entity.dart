@@ -1,4 +1,3 @@
-
 class CyclingStatsEntity {
   final String userId;
   final double totalKm;
@@ -30,12 +29,18 @@ class CyclingStatsEntity {
 
   String get levelEmoji {
     switch (level) {
-      case 'novato': return '🌱';
-      case 'intermedio': return '⚡';
-      case 'avanzado': return '🔥';
-      case 'experto': return '💎';
-      case 'leyenda': return '👑';
-      default: return '🌱';
+      case 'novato':
+        return '🌱';
+      case 'intermedio':
+        return '⚡';
+      case 'avanzado':
+        return '🔥';
+      case 'experto':
+        return '💎';
+      case 'leyenda':
+        return '👑';
+      default:
+        return '🌱';
     }
   }
 
@@ -74,31 +79,46 @@ class CyclingStatsEntity {
 
   double get progressToNextLevel {
     switch (level) {
-      case 'novato': return (totalKm / 200).clamp(0, 1);
-      case 'intermedio': return ((totalKm - 200) / 800).clamp(0, 1);
-      case 'avanzado': return ((totalKm - 1000) / 4000).clamp(0, 1);
-      case 'experto': return ((totalKm - 5000) / 5000).clamp(0, 1);
-      default: return 1.0;
+      case 'novato':
+        return (totalKm / 200).clamp(0, 1);
+      case 'intermedio':
+        return ((totalKm - 200) / 800).clamp(0, 1);
+      case 'avanzado':
+        return ((totalKm - 1000) / 4000).clamp(0, 1);
+      case 'experto':
+        return ((totalKm - 5000) / 5000).clamp(0, 1);
+      default:
+        return 1.0;
     }
   }
 
   String get nextLevelName {
     switch (level) {
-      case 'novato': return 'Intermedio';
-      case 'intermedio': return 'Avanzado';
-      case 'avanzado': return 'Experto';
-      case 'experto': return 'Leyenda';
-      default: return 'Max';
+      case 'novato':
+        return 'Intermedio';
+      case 'intermedio':
+        return 'Avanzado';
+      case 'avanzado':
+        return 'Experto';
+      case 'experto':
+        return 'Leyenda';
+      default:
+        return 'Max';
     }
   }
 
   double get kmToNextLevel {
     switch (level) {
-      case 'novato': return 200 - totalKm;
-      case 'intermedio': return 1000 - totalKm;
-      case 'avanzado': return 5000 - totalKm;
-      case 'experto': return 10000 - totalKm;
-      default: return 0;
+      case 'novato':
+        return 200 - totalKm;
+      case 'intermedio':
+        return 1000 - totalKm;
+      case 'avanzado':
+        return 5000 - totalKm;
+      case 'experto':
+        return 10000 - totalKm;
+      default:
+        return 0;
     }
   }
 

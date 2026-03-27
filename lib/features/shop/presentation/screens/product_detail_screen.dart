@@ -321,7 +321,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               final orderId = await shopProvider.buyNow(
                 userId: currentUser.uid,
-                userName: currentUser.username ?? currentUser.name ?? 'Usuario',
+                userName:
+                    currentUser.username ??
+                    currentUser.name ??
+                    l.t('default_user'),
                 product: _product!,
                 quantity: _quantity,
                 selectedSize: _selectedSize,
@@ -332,6 +335,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     : notesController.text,
               );
 
+              if (!mounted) return;
               if (orderId != null) {
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -383,6 +387,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 userId,
               );
 
+              if (!mounted) return;
               if (success) {
                 setState(() {
                   _product = _product!.copyWith(isSold: true, stock: 0);
@@ -431,6 +436,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               final shopProvider = context.read<ShopProvider>();
               final success = await shopProvider.deleteProduct(_product!.id);
 
+              if (!mounted) return;
               if (success) {
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

@@ -6,7 +6,9 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 /// Pantalla estilo Instagram para ver publicaciones con galería
 /// Permite: ver imágenes en grande, darle like, y comentar
@@ -349,19 +351,56 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  /// Elimina el post de Firebase usando el provider (Firestore)
+  /// Elimina el post de Firebase
   Future<void> _deletePostFromFirebase(
     BuildContext context,
     ExperienceEntity experience,
   ) async {
-    final provider = context.read<ExperienceProvider>();
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    try {
+      final database = FirebaseDatabase.instance;
 
-    // Navegar de vuelta inmediatamente para UX instantánea
-    if (context.mounted) {
-      Navigator.pop(context);
+      // Intentar primero marcar como eliminado (actualización)
+      try {
+        await database.ref('experiences/${experience.id}').update({
+          'isDeleted': true,
+          'deletedAt': DateTime.now().millisecondsSinceEpoch,
+        });
+      } catch (updateError) {
+        // Si falla la actualización, intentar eliminación directa
+        if (updateError.toString().contains('Permission denied')) {
+          await database.ref('experiences/${experience.id}').remove();
+        } else {
+          rethrow;
+        }
+      }
+
+      // Mostrar éxito
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('post_deleted_success')),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Navegar de vuelta después de 1 segundo
+        await Future.delayed(const Duration(seconds: 1));
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l.t('post_delete_error')}: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
-
-    // Eliminar en segundo plano
-    provider.deleteExperience(experience.id);
   }
 }

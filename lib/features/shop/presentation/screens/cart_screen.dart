@@ -15,6 +15,9 @@ class CartScreen extends StatelessWidget {
 
   void _showCheckoutDialog(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final shopProvider = context.read<ShopProvider>();
+    final userProvider = context.read<UserProvider>();
     final TextEditingController addressController = TextEditingController();
     final TextEditingController phoneController = TextEditingController();
     final TextEditingController notesController = TextEditingController();
@@ -23,7 +26,7 @@ class CartScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
+        builder: (builderCtx, setDialogState) => AlertDialog(
           title: Text(l.t('checkout')),
           content: SingleChildScrollView(
             child: Column(
@@ -33,7 +36,7 @@ class CartScreen extends StatelessWidget {
                 CompactPaymentMethodSelector(
                   selectedMethod: selectedPaymentMethod,
                   onChanged: (method) {
-                    setState(() {
+                    setDialogState(() {
                       selectedPaymentMethod = method;
                     });
                   },
@@ -81,7 +84,7 @@ class CartScreen extends StatelessWidget {
                 if (selectedPaymentMethod == null ||
                     addressController.text.isEmpty ||
                     phoneController.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text(l.t('fill_required_fields')),
                       backgroundColor: Colors.orange,
@@ -92,12 +95,9 @@ class CartScreen extends StatelessWidget {
 
                 Navigator.of(dialogContext).pop();
 
-                final shopProvider = context.read<ShopProvider>();
-                final userProvider = context.read<UserProvider>();
-
                 final currentUser = userProvider.user;
                 if (currentUser == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text(l.t('user_not_found')),
                       backgroundColor: Colors.red,
@@ -121,7 +121,7 @@ class CartScreen extends StatelessWidget {
 
                 if (orderId != null) {
                   // Éxito
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text(
                         '${l.t('order_success')}\n${l.t('payment_method_label')}: ${l.t(selectedPaymentMethod!.labelKey)}',
@@ -130,10 +130,10 @@ class CartScreen extends StatelessWidget {
                       duration: const Duration(seconds: 4),
                     ),
                   );
-                  context.go('/shop');
+                  if (context.mounted) context.go('/shop');
                 } else {
                   // Error
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text(
                         shopProvider.errorMessage ?? l.t('order_error'),

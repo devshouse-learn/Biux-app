@@ -298,7 +298,9 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       )
                     : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
-                  member['userName'],
+                  (member['userName'] as String).isNotEmpty
+                      ? member['userName']
+                      : l.t('group_user_no_name'),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text(l.t('group_member')),
@@ -521,7 +523,9 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       )
                     : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
-                  request['userName'],
+                  (request['userName'] as String).isNotEmpty
+                      ? request['userName']
+                      : l.t('group_user_no_name'),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text(l.t('pending_request')),

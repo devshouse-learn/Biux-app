@@ -113,61 +113,78 @@ class BikeCard extends StatelessWidget {
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: chipColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: chipColor.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(chipIcon, size: 14, color: chipColor),
-          const SizedBox(width: 4),
-          Text(
-            bike.status.displayName,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: chipColor,
-            ),
+    return Builder(
+      builder: (context) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: chipColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: chipColor.withValues(alpha: 0.3)),
           ),
-        ],
-      ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(chipIcon, size: 14, color: chipColor),
+              const SizedBox(width: 4),
+              Text(
+                l.t(bike.status.displayName),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: chipColor,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildDetails() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return Builder(
+      builder: (context) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.location_on, size: 14, color: ColorTokens.neutral70),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                bike.city,
-                style: TextStyle(fontSize: 12, color: ColorTokens.neutral70),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+            Row(
+              children: [
+                Icon(Icons.location_on, size: 14, color: ColorTokens.neutral70),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    bike.city,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: ColorTokens.neutral70,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(
+                  Icons.directions_bike,
+                  size: 14,
+                  color: ColorTokens.neutral70,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  l.t(bike.type.displayName),
+                  style: TextStyle(fontSize: 12, color: ColorTokens.neutral70),
+                ),
+              ],
             ),
           ],
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Icon(Icons.directions_bike, size: 14, color: ColorTokens.neutral70),
-            const SizedBox(width: 4),
-            Text(
-              bike.type.displayName,
-              style: TextStyle(fontSize: 12, color: ColorTokens.neutral70),
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

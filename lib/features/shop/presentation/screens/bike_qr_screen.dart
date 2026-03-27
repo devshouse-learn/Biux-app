@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/shop/data/datasources/bike_qr_datasource.dart';
 import 'package:share_plus/share_plus.dart';
@@ -328,19 +326,14 @@ class _BikeQRScreenState extends State<BikeQRScreen> {
       final qrImage = await BikeQRService.generateQRImage(qrData: _qrData);
 
       if (qrImage != null && mounted) {
-        final dir = await getApplicationDocumentsDirectory();
-        final file = File(
-          '${dir.path}/qr_bici_${DateTime.now().millisecondsSinceEpoch}.png',
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
+        // PENDIENTE: Implementar guardado en galería usando image_gallery_saver
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('qr_download_coming_soon')),
+            backgroundColor: ColorTokens.primary40,
+          ),
         );
-        await file.writeAsBytes(qrImage);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('QR guardado en: ${file.path}'),
-              backgroundColor: ColorTokens.primary40,
-            ),
-          );
-        }
       }
     } catch (e) {
       if (mounted) {

@@ -36,7 +36,6 @@ import '../../../features/roads/presentation/screens/road_create/map_road/map_ro
 import '../../../features/roads/presentation/screens/road_create/road_create_screen.dart';
 import '../../../features/roads/presentation/screens/roads_list/roads_list_screen.dart';
 
-import '../../../features/stories/presentation/screens/story_view/story_view_screen.dart';
 import '../../../features/social/presentation/screens/post_detail_screen.dart';
 import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
 import '../../../features/users/presentation/screens/edit_username_screen.dart';
@@ -504,12 +503,13 @@ final GoRouter _router = GoRouter(
                 );
               },
             ),
-            // Ver historia específica
+            // Ver historia específica — redirigir a detalle de post
             GoRoute(
               path: ':storyId',
               name: AppRoutes.viewStoryName,
               builder: (context, state) {
-                return StoryViewScreen();
+                final storyId = state.pathParameters['storyId']!;
+                return PostDetailScreen(postId: storyId);
               },
             ),
           ],
