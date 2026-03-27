@@ -209,6 +209,16 @@ class _AppDrawerState extends State<AppDrawer> {
                   },
                 ),
                 _item(
+                  Icons.directions_bike_rounded,
+                  Colors.green,
+                  'Mis Rodadas',
+                  'Historial de tus rides grabados',
+                  () {
+                    Navigator.pop(context);
+                    context.push(AppRoutes.rideTracker, extra: true);
+                  },
+                ),
+                _item(
                   Icons.bar_chart_rounded,
                   Colors.blue,
                   'Mis Estadisticas',
@@ -385,7 +395,13 @@ class _AppDrawerState extends State<AppDrawer> {
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey.shade200)),
+              border: Border(
+                top: BorderSide(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white12
+                      : Colors.grey.shade200,
+                ),
+              ),
             ),
             child: Column(
               children: [
@@ -419,7 +435,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 const SizedBox(height: 8),
                 Text(
                   'BiUX v1.0.0',
-                  style: TextStyle(color: ColorTokens.neutral60, fontSize: 11),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white38
+                        : ColorTokens.neutral60,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -429,18 +450,21 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
-  Widget _sec(String t) => Padding(
-    padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-    child: Text(
-      t,
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: ColorTokens.neutral50,
-        letterSpacing: 1.2,
+  Widget _sec(String t) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+      child: Text(
+        t,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: isDark ? Colors.white70 : ColorTokens.neutral50,
+          letterSpacing: 1.2,
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   Widget _item(
     IconData icon,
@@ -449,30 +473,38 @@ class _AppDrawerState extends State<AppDrawer> {
     String sub,
     VoidCallback onTap,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
+          color: color.withValues(alpha: isDark ? 0.2 : 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: color, size: 20),
+        child: Icon(icon, color: isDark ? Colors.white : color, size: 20),
       ),
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF16242D),
+          color: isDark ? Colors.white : const Color(0xFF16242D),
         ),
       ),
       subtitle: Text(
         sub,
-        style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+        style: TextStyle(
+          fontSize: 11,
+          color: isDark ? Colors.white54 : Colors.grey[500],
+        ),
       ),
-      trailing: Icon(Icons.chevron_right, size: 18, color: Colors.grey[400]),
+      trailing: Icon(
+        Icons.chevron_right,
+        size: 18,
+        color: isDark ? Colors.white38 : Colors.grey[400],
+      ),
       onTap: onTap,
     );
   }

@@ -277,9 +277,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   TabBar(
                     controller: _tabCtrl,
                     isScrollable: true,
-                    labelColor: Colors.amber[800],
-                    unselectedLabelColor: Colors.grey[600],
-                    indicatorColor: Colors.amber[800],
+                    labelColor: Colors.amber[700],
+                    unselectedLabelColor:
+                        Theme.of(context).brightness == Brightness.dark
+                        ? ColorTokens.neutral90
+                        : Colors.grey[600],
+                    indicatorColor: Colors.amber[700],
                     indicatorWeight: 3,
                     tabAlignment: TabAlignment.start,
                     tabs: _categories
@@ -297,7 +300,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     children: [
                       Text(
                         '${filtered.length} logros',
-                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? ColorTokens.neutral90
+                              : Colors.grey[600],
+                        ),
                       ),
                       const Spacer(),
                       Text(
@@ -329,7 +337,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             const SizedBox(height: 12),
                             Text(
                               'No hay logros en esta categoría',
-                              style: TextStyle(color: Colors.grey[500]),
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? ColorTokens.neutral90
+                                    : Colors.grey[500],
+                              ),
                             ),
                           ],
                         ),
@@ -399,6 +413,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     AchievementEntity a,
     AchievementsProvider provider,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isUnlocked = a.isUnlocked;
     return GestureDetector(
       onTap: () => _showAchievementDetail(a),
@@ -407,18 +422,18 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isUnlocked
-              ? Colors.amber.withValues(alpha: 0.08)
-              : Colors.white,
+              ? Colors.amber.withValues(alpha: isDark ? 0.15 : 0.08)
+              : (isDark ? ColorTokens.primary20 : Colors.white),
           borderRadius: BorderRadius.circular(14),
           border: isUnlocked
               ? Border.all(
-                  color: Colors.amber.withValues(alpha: 0.4),
+                  color: Colors.amber.withValues(alpha: isDark ? 0.5 : 0.4),
                   width: 1.5,
                 )
-              : null,
+              : (isDark ? Border.all(color: ColorTokens.primary40) : null),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.12 : 0.04),
               blurRadius: 6,
             ),
           ],
@@ -463,8 +478,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                             color: isUnlocked
-                                ? Colors.black87
-                                : Colors.grey[600],
+                                ? (isDark ? Colors.amber[300] : Colors.black87)
+                                : (isDark ? Colors.white : Colors.grey[600]),
                           ),
                         ),
                       ),
@@ -503,7 +518,10 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   const SizedBox(height: 2),
                   Text(
                     a.description,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? ColorTokens.neutral90 : Colors.grey[500],
+                    ),
                   ),
                   const SizedBox(height: 8),
                   // Barra de progreso
@@ -534,7 +552,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                           fontWeight: FontWeight.w600,
                           color: isUnlocked
                               ? Colors.amber[800]
-                              : Colors.grey[600],
+                              : (isDark
+                                    ? ColorTokens.neutral90
+                                    : Colors.grey[600]),
                         ),
                       ),
                     ],
@@ -543,7 +563,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20),
+            Icon(
+              Icons.chevron_right,
+              color: isDark ? Colors.white54 : Colors.grey[400],
+              size: 20,
+            ),
           ],
         ),
       ),

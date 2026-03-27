@@ -17,6 +17,15 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final _msgController = TextEditingController();
   final _scrollController = ScrollController();
+  late final Stream<QuerySnapshot> _messagesStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _messagesStream = context.read<ChatProvider>().getMessagesStream(
+      widget.chatId,
+    );
+  }
 
   @override
   void dispose() {
@@ -28,7 +37,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final chatProvider = context.read<ChatProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -42,7 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: chatProvider.getMessagesStream(widget.chatId),
+              stream: _messagesStream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData)
                   return const Center(child: CircularProgressIndicator());

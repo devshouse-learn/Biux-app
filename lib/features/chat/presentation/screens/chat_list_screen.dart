@@ -116,7 +116,7 @@ class _ChatListScreenState extends State<ChatListScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? ColorTokens.neutral10 : Colors.grey[50],
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Mensajes'),
         backgroundColor: ColorTokens.primary30,
@@ -159,28 +159,28 @@ class _ChatListScreenState extends State<ChatListScreen>
         // Barra de busqueda
         Container(
           padding: const EdgeInsets.all(12),
-          color: isDark ? ColorTokens.neutral10 : Colors.white,
+          color: isDark ? ColorTokens.primary10 : Colors.white,
           child: TextField(
             controller: _searchCtrl,
             style: TextStyle(
-              color: isDark ? ColorTokens.neutral100 : ColorTokens.neutral10,
+              color: isDark ? Colors.white : ColorTokens.neutral10,
             ),
             decoration: InputDecoration(
               hintText: 'Buscar conversación...',
               hintStyle: TextStyle(
-                color: isDark ? ColorTokens.neutral60 : Colors.grey[500],
+                color: isDark ? Colors.white54 : Colors.grey[500],
               ),
               prefixIcon: Icon(
                 Icons.search,
                 size: 20,
-                color: isDark ? ColorTokens.neutral60 : Colors.grey[500],
+                color: isDark ? Colors.white54 : Colors.grey[500],
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(24),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: isDark ? ColorTokens.neutral20 : Colors.grey[100],
+              fillColor: isDark ? ColorTokens.primary20 : Colors.grey[100],
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 10,
@@ -219,9 +219,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                       Text(
                         'No tienes conversaciones',
                         style: TextStyle(
-                          color: isDark
-                              ? ColorTokens.neutral90
-                              : Colors.grey[700],
+                          color: isDark ? Colors.white : Colors.grey[700],
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
@@ -230,9 +228,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                       Text(
                         'Inicia un chat con otro ciclista',
                         style: TextStyle(
-                          color: isDark
-                              ? ColorTokens.neutral60
-                              : Colors.grey[400],
+                          color: isDark ? Colors.white54 : Colors.grey[400],
                           fontSize: 14,
                         ),
                       ),
@@ -293,7 +289,7 @@ class _ChatListScreenState extends State<ChatListScreen>
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 4),
-                        color: isDark ? ColorTokens.neutral10 : Colors.white,
+                        color: isDark ? ColorTokens.primary20 : Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -342,7 +338,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 15,
                                                 color: isDark
-                                                    ? ColorTokens.neutral100
+                                                    ? Colors.white
                                                     : ColorTokens.neutral10,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -357,7 +353,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                               style: TextStyle(
                                                 fontSize: 11,
                                                 color: isDark
-                                                    ? ColorTokens.neutral60
+                                                    ? Colors.white54
                                                     : Colors.grey[500],
                                               ),
                                             ),
@@ -374,10 +370,10 @@ class _ChatListScreenState extends State<ChatListScreen>
                                           fontSize: 13,
                                           color: lastMsg.isEmpty
                                               ? (isDark
-                                                    ? ColorTokens.neutral50
+                                                    ? Colors.white38
                                                     : Colors.grey[400])
                                               : (isDark
-                                                    ? ColorTokens.neutral70
+                                                    ? Colors.white70
                                                     : Colors.grey[600]),
                                         ),
                                       ),
@@ -428,7 +424,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             Text(
               'Aún no tienes amigos',
               style: TextStyle(
-                color: isDark ? ColorTokens.neutral90 : Colors.grey[700],
+                color: isDark ? Colors.white : Colors.grey[700],
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -440,7 +436,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                 'Sigue a otros ciclistas y cuando te sigan de vuelta aparecerán aquí',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: isDark ? ColorTokens.neutral60 : Colors.grey[400],
+                  color: isDark ? Colors.white54 : Colors.grey[400],
                   fontSize: 14,
                 ),
               ),
@@ -462,7 +458,7 @@ class _ChatListScreenState extends State<ChatListScreen>
 
         return Card(
           margin: const EdgeInsets.only(bottom: 4),
-          color: isDark ? ColorTokens.neutral10 : Colors.white,
+          color: isDark ? ColorTokens.primary20 : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -509,7 +505,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
                             color: isDark
-                                ? ColorTokens.neutral100
+                                ? Colors.white
                                 : ColorTokens.neutral10,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -520,9 +516,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             '@$username',
                             style: TextStyle(
                               fontSize: 13,
-                              color: isDark
-                                  ? ColorTokens.neutral60
-                                  : Colors.grey[500],
+                              color: isDark ? Colors.white54 : Colors.grey[500],
                             ),
                           ),
                         ],
@@ -555,6 +549,7 @@ class _ChatListScreenState extends State<ChatListScreen>
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setBS) {
+          final mIsDark = Theme.of(ctx).brightness == Brightness.dark;
           final filtered = filterQuery.isEmpty
               ? _followingUsers
               : _followingUsers
@@ -592,7 +587,10 @@ class _ChatListScreenState extends State<ChatListScreen>
                   const SizedBox(height: 4),
                   Text(
                     'Elige un ciclista que sigues',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    style: TextStyle(
+                      color: mIsDark ? Colors.white54 : Colors.grey[500],
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -618,15 +616,19 @@ class _ChatListScreenState extends State<ChatListScreen>
                                 Icon(
                                   Icons.person_search,
                                   size: 48,
-                                  color: Colors.grey[300],
+                                  color: mIsDark
+                                      ? Colors.white24
+                                      : Colors.grey[300],
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   _followingUsers.isEmpty
-                                      ? 'A\u00fan no sigues a nadie'
+                                      ? 'Aún no sigues a nadie'
                                       : 'Sin resultados',
                                   style: TextStyle(
-                                    color: Colors.grey[400],
+                                    color: mIsDark
+                                        ? Colors.white54
+                                        : Colors.grey[400],
                                     fontSize: 13,
                                   ),
                                 ),
