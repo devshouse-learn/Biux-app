@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/achievements/presentation/providers/achievements_provider.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:share_plus/share_plus.dart';
@@ -52,6 +53,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       body: Consumer<AchievementsProvider>(
         builder: (context, provider, _) {
@@ -413,6 +415,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     AchievementEntity a,
     AchievementsProvider provider,
   ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isUnlocked = a.isUnlocked;
     return GestureDetector(
@@ -473,7 +476,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     children: [
                       Expanded(
                         child: Text(
-                          a.title,
+                          l.t(a.title),
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
@@ -517,7 +520,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    a.description,
+                    l.t(a.description),
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? ColorTokens.neutral90 : Colors.grey[500],
@@ -575,6 +578,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   }
 
   void _showAchievementDetail(AchievementEntity a) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -619,7 +623,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               const SizedBox(height: 16),
               // Titulo
               Text(
-                a.title,
+                l.t(a.title),
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -627,7 +631,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               ),
               const SizedBox(height: 6),
               Text(
-                a.description,
+                l.t(a.description),
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
@@ -740,7 +744,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       SharePlus.instance.share(
                         ShareParams(
                           text:
-                              'Desbloqueé el logro "${a.title}" (${a.icon}) en Biux - App para Ciclistas.',
+                              'Desbloqueé el logro "${l.t(a.title)}" (${a.icon}) en Biux - App para Ciclistas.',
                         ),
                       );
                     },
@@ -849,10 +853,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   }
 
   void _shareAchievements(AchievementsProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final unlocked = provider.unlockedCount;
     final total = provider.achievements.length;
     final names = provider.unlockedAchievements
-        .map((a) => '${a.icon} ${a.title}')
+        .map((a) => '${a.icon} ${l.t(a.title)}')
         .join('\n');
     final text =
         'Mis logros en Biux: $unlocked/$total desbloqueados\n\n$names\n\n¡Descarga Biux y empieza a pedalear!';

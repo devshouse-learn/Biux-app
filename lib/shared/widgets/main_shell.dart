@@ -36,25 +36,7 @@ class _MainShellState extends State<MainShell> {
 
   /// Retorna el título dinámico según el tab seleccionado
   String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
-    switch (index) {
-      case 0:
-        return 'FEED';
-      case 1:
-        return 'RODADAS';
-      case 2:
-        return 'MIS BICIS';
-      case 3:
-        return l.t('shop').toUpperCase();
-      case 4:
-        final userProvider = Provider.of<UserProvider>(context, listen: false);
-        final username = userProvider.user?.username;
-        if (username != null && username.isNotEmpty) return '@$username';
-        final userName = userProvider.user?.name;
-        if (userName != null && userName.isNotEmpty) return userName;
-        return l.t('nav_profile');
-      default:
-        return AppStrings.APP_NAME.toUpperCase();
-    }
+    return 'BIUX';
   }
 
   @override
@@ -122,7 +104,7 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.directions_bike, size: 28),
+                icon: Icon(Icons.diversity_3, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(

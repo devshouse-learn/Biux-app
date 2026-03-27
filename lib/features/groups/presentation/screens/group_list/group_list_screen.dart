@@ -202,13 +202,13 @@ class _GroupListScreenState extends State<GroupListScreen> {
                                   imageType: 'avatar',
                                   fit: BoxFit.cover,
                                   errorWidget: const Icon(
-                                    Icons.group,
+                                    Icons.groups,
                                     color: ColorTokens.neutral60,
                                   ),
                                 ),
                               )
                             : const Icon(
-                                Icons.group,
+                                Icons.groups,
                                 color: ColorTokens.neutral60,
                               ),
                       ),
@@ -572,23 +572,25 @@ class _GroupListScreenState extends State<GroupListScreen> {
     final result = await provider.requestJoinGroup(groupId);
 
     if (result['success'] == true) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('request_sent')),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('request_sent')),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     } else {
       // Verificar si requiere completar el perfil
       if (result['requiresProfile'] == true) {
         _showProfileRequiredDialog(result['error'] ?? l.t('to_join_you_need'));
       } else {
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result['error'] ?? l.t('error_sending_request')),
-            backgroundColor: ColorTokens.error50,
-          ),
-        );
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['error'] ?? l.t('error_sending_request')),
+              backgroundColor: ColorTokens.error50,
+            ),
+          );
       }
     }
   }
@@ -646,19 +648,21 @@ class _GroupListScreenState extends State<GroupListScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('request_cancelled')),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('request_cancelled')),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     } else {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(provider.error ?? l.t('error_cancelling_request')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(provider.error ?? l.t('error_cancelling_request')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
     }
   }
 }

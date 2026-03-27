@@ -830,7 +830,6 @@ class _BikeDetailScreenState extends State<BikeDetailScreen> {
       );
       if (success) setState(() {});
     }
-    }
   }
 
   void _showTransferDialog(BikeEntity bike, BikeProvider bikeProvider) {

@@ -18,6 +18,8 @@ import 'package:share_plus/share_plus.dart';
 /// Soporta reproducción automática de videos e imágenes con duración
 class ExperienceStoryViewer extends StatefulWidget {
   final ExperienceEntity experience;
+  final List<ExperienceEntity>? allStories;
+  final int storyIndex;
   final VoidCallback? onTap;
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
@@ -26,6 +28,8 @@ class ExperienceStoryViewer extends StatefulWidget {
   const ExperienceStoryViewer({
     super.key,
     required this.experience,
+    this.allStories,
+    this.storyIndex = 0,
     this.onTap,
     this.onNext,
     this.onPrevious,
@@ -345,12 +349,25 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   }
 
   Widget _buildProgressBar() {
+    final stories = widget.allStories ?? [widget.experience];
+    final totalSegments = stories.fold<int>(
+      0,
+      (sum, s) => sum + s.media.length,
+    );
+
+    // Calcular el offset del segmento actual
+    int segmentOffset = 0;
+    for (int i = 0; i < widget.storyIndex && i < stories.length; i++) {
+      segmentOffset += stories[i].media.length;
+    }
+
     return Row(
-      children: List.generate(
-        widget.experience.media.length,
-        (index) => Expanded(
+      children: List.generate(totalSegments, (index) {
+        final currentGlobalIndex = segmentOffset + currentMediaIndex;
+
+        return Expanded(
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: index == 0 ? 0 : 1),
+            margin: const EdgeInsets.symmetric(horizontal: 1),
             height: 3,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(1.5),
@@ -360,9 +377,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               animation: _progressController,
               builder: (context, child) {
                 double progress = 0.0;
-                if (index < currentMediaIndex) {
+                if (index < currentGlobalIndex) {
                   progress = 1.0;
-                } else if (index == currentMediaIndex) {
+                } else if (index == currentGlobalIndex) {
                   progress = _progressController.value;
                 }
 
@@ -379,8 +396,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               },
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 

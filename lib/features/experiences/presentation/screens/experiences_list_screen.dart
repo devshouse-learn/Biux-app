@@ -15,6 +15,7 @@ import 'package:biux/features/social/presentation/providers/likes_provider.dart'
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
+import 'package:biux/features/social/presentation/widgets/report_content_dialog.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -27,7 +28,9 @@ class ExperiencesListScreen extends StatefulWidget {
 class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     with WidgetsBindingObserver {
   Timer? _autoRefreshTimer;
+  Timer? _fabTimer;
   late final ExperienceProvider _experienceProvider;
+  bool _showFab = true;
 
   /// Obtiene el ID del usuario actual autenticado
   String? get _currentUserId {
@@ -57,6 +60,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _autoRefreshTimer?.cancel();
+    _fabTimer?.cancel();
     _experienceProvider.stopFeedListener();
     super.dispose();
   }
@@ -107,31 +111,51 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: Consumer<ExperienceProvider>(
-        builder: (context, provider, child) {
-          return _buildBody(provider);
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (scrollInfo) {
+          if (scrollInfo is ScrollUpdateNotification) {
+            if (_showFab) setState(() => _showFab = false);
+            _fabTimer?.cancel();
+            _fabTimer = Timer(const Duration(milliseconds: 800), () {
+              if (mounted) setState(() => _showFab = true);
+            });
+          }
+          if (scrollInfo is ScrollEndNotification) {
+            _fabTimer?.cancel();
+            if (!_showFab && mounted) setState(() => _showFab = true);
+          }
+          return false;
         },
+        child: Consumer<ExperienceProvider>(
+          builder: (context, provider, child) {
+            return _buildBody(provider);
+          },
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context)
-              .push(
-                MaterialPageRoute(
-                  builder: (context) => const CreateExperienceScreen(
-                    experienceType: ExperienceType.general,
-                    isPostMode: true,
-                    textOnly: false,
+      floatingActionButton: AnimatedScale(
+        scale: _showFab ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (context) => const CreateExperienceScreen(
+                      experienceType: ExperienceType.general,
+                      isPostMode: true,
+                      textOnly: false,
+                    ),
                   ),
-                ),
-              )
-              .then((result) {
-                if (result == true) {
-                  _loadFeed();
-                }
-              });
-        },
-        backgroundColor: ColorTokens.primary30,
-        child: const Icon(Icons.add, color: Colors.white),
+                )
+                .then((result) {
+                  if (result == true) {
+                    _loadFeed();
+                  }
+                });
+          },
+          backgroundColor: ColorTokens.primary30,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
       ),
     );
   }
@@ -656,7 +680,8 @@ class _ExperienceCard extends StatelessWidget {
                   );
                 },
               ),
-            ] else ...[
+            ],
+            if (!isOwner)
               ListTile(
                 leading: Icon(Icons.flag, color: theme.iconTheme.color),
                 title: Text(
@@ -665,14 +690,14 @@ class _ExperienceCard extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(l.t('report_post'))));
-                  }
+                  ReportContentDialog.show(
+                    context: context,
+                    contentId: experience.id,
+                    contentOwnerId: experience.user.id,
+                    contentType: 'post',
+                  );
                 },
               ),
-            ],
             ListTile(
               leading: Icon(Icons.share, color: theme.iconTheme.color),
               title: Text(
