@@ -122,7 +122,7 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.directions_bike, size: 28),
+                icon: Icon(Icons.group, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
