@@ -1225,6 +1225,7 @@ class _AdvertisementCard extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final l = Provider.of<LocaleNotifier>(context, listen: false);
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${l.t('error_generic')}: $e')));

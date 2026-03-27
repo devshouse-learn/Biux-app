@@ -34,6 +34,9 @@ class RideTrackerProvider with ChangeNotifier {
   int get durationSec => _durationSec;
   int get calories => (_totalKm * 30).toInt();
 
+  /// Verdadero solo cuando la velocidad GPS indica movimiento en bicicleta (≥ 3 km/h).
+  bool get isMoving => _currentSpeed >= 3.0;
+
   double get avgSpeed {
     if (_durationSec < 1 || _totalKm <= 0) return 0;
     final v = _totalKm / (_durationSec / 3600);
@@ -86,25 +89,51 @@ class RideTrackerProvider with ChangeNotifier {
     _posSub =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 2,
+            // best: usa GPS + wifi + red para máxima exactitud
+            accuracy: LocationAccuracy.best,
+            // Solo emite si el dispositivo se movió ≥ 10 m reales
+            // evita el ruido de posición estando quieto
+            distanceFilter: 10,
           ),
         ).listen(
           (pos) {
             if (_isPaused) return;
+
+            // FILTRO 1: Precisión GPS insuficiente (pérdida de señal, inicio de adquisición)
+            // Si el margen de error es > 20 m, el punto no es confiable
+            if (pos.accuracy > 20.0) return;
+
+            // pos.speed viene en m/s del chipset GPS (método Doppler, muy exacto)
+            final speedKmh = pos.speed * 3.6;
+
             final pt = TrackPoint(
               lat: pos.latitude,
               lng: pos.longitude,
               elevation: pos.altitude,
-              speed: pos.speed * 3.6,
+              speed: speedKmh,
               timestamp: DateTime.now(),
             );
+
             if (_points.isNotEmpty) {
-              final last = _points.last;
-              _totalKm += _calcDist(last.lat, last.lng, pt.lat, pt.lng);
+              // FILTRO 2: Velocidad mínima para contar distancia.
+              // < 3 km/h significa que el ciclista está detenido o es ruido GPS.
+              // pos.speed ≈ 0 cuando el dispositivo está quieto (aunque GPS fluctúe).
+              if (pos.speed >= 0.84) {
+                // 0.84 m/s ≈ 3 km/h
+                final last = _points.last;
+                final segKm = _calcDist(last.lat, last.lng, pt.lat, pt.lng);
+
+                // FILTRO 3: Segmento mínimo de 8 m — ignora jitter residual
+                // FILTRO 4: Segmento máximo de 300 m — evita saltos por pérdida de señal
+                if (segKm >= 0.008 && segKm <= 0.3) {
+                  _totalKm += segKm;
+                }
+              }
             }
-            _currentSpeed = pt.speed;
-            if (pt.speed > _maxSpeed) _maxSpeed = pt.speed;
+
+            // Mostrar 0 en pantalla cuando el ciclista está detenido
+            _currentSpeed = pos.speed >= 0.5 ? speedKmh : 0.0;
+            if (_currentSpeed > _maxSpeed) _maxSpeed = _currentSpeed;
             _points.add(pt);
             notifyListeners();
           },
@@ -126,7 +155,7 @@ class RideTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> stopAndSave(String userId) async {
+  Future<bool> stopAndSave(String userId, String name) async {
     _isSaving = true;
     _isTracking = false;
     _posSub?.cancel();
@@ -154,6 +183,7 @@ class RideTrackerProvider with ChangeNotifier {
 
     try {
       final trackId = await _ds.saveTrackFast(userId, {
+        'name': name,
         'totalKm': savedKm,
         'avgSpeed': savedAvg,
         'maxSpeed': savedMax,
@@ -170,6 +200,7 @@ class RideTrackerProvider with ChangeNotifier {
         RideTrackEntity(
           id: trackId,
           userId: userId,
+          name: name,
           points: [],
           totalKm: savedKm,
           avgSpeed: savedAvg,
@@ -184,6 +215,10 @@ class RideTrackerProvider with ChangeNotifier {
       );
 
       _points = [];
+      _totalKm = 0;
+      _currentSpeed = 0;
+      _maxSpeed = 0;
+      _durationSec = 0;
       _isSaving = false;
       notifyListeners();
 
@@ -400,11 +435,17 @@ class RideTrackerProvider with ChangeNotifier {
 
   void cancelTracking() {
     _isTracking = false;
+    _isPaused = false;
     _posSub?.cancel();
     _posSub = null;
     _timer?.cancel();
     _timer = null;
     _points = [];
+    _totalKm = 0;
+    _currentSpeed = 0;
+    _maxSpeed = 0;
+    _durationSec = 0;
+    _startTime = null;
     notifyListeners();
   }
 
@@ -435,6 +476,7 @@ class RideTrackerProvider with ChangeNotifier {
           (m) => RideTrackEntity(
             id: m['id'] ?? '',
             userId: m['userId'] ?? '',
+            name: m['name'] ?? '',
             points: [],
             totalKm: (m['totalKm'] as num?)?.toDouble() ?? 0,
             avgSpeed: (m['avgSpeed'] as num?)?.toDouble() ?? 0,
@@ -457,6 +499,19 @@ class RideTrackerProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('Error deleting ride: $e');
+    }
+  }
+
+  Future<void> renameRide(String trackId, String newName) async {
+    try {
+      await _ds.updateRideName(trackId, newName);
+      final idx = _history.indexWhere((r) => r.id == trackId);
+      if (idx != -1) {
+        _history[idx] = _history[idx].copyWith(name: newName);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error renaming ride: $e');
     }
   }
 

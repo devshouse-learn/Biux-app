@@ -1,11 +1,10 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CyclingStatsDatasource {
   final FirebaseFirestore _firestore;
 
   CyclingStatsDatasource({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   Future<Map<String, dynamic>?> getStats(String userId) async {
     final doc = await _firestore.collection('cycling_stats').doc(userId).get();
@@ -13,10 +12,14 @@ class CyclingStatsDatasource {
   }
 
   Future<void> saveStats(String userId, Map<String, dynamic> data) async {
-    await _firestore.collection('cycling_stats').doc(userId).set(data, SetOptions(merge: true));
+    await _firestore
+        .collection('cycling_stats')
+        .doc(userId)
+        .set(data, SetOptions(merge: true));
   }
 
-  Future<void> addRideStats(String userId, {
+  Future<void> addRideStats(
+    String userId, {
     required double km,
     required double avgSpeed,
     required double maxSpeed,
@@ -46,7 +49,8 @@ class CyclingStatsDatasource {
       final newMax = maxSpeed > currentMax ? maxSpeed : currentMax;
       final calories = (km * 30).toInt(); // ~30 cal/km estimado
 
-      monthlyKm[monthKey] = ((monthlyKm[monthKey] as num?)?.toDouble() ?? 0) + km;
+      monthlyKm[monthKey] =
+          ((monthlyKm[monthKey] as num?)?.toDouble() ?? 0) + km;
 
       // Calcular racha
       final lastRide = data['lastRideDate'] != null
@@ -66,10 +70,20 @@ class CyclingStatsDatasource {
 
       // Nivel
       String level = 'novato';
-      if (newTotalKm >= 10000) level = 'leyenda';
-      else if (newTotalKm >= 5000) level = 'experto';
-      else if (newTotalKm >= 1000) level = 'avanzado';
-      else if (newTotalKm >= 200) level = 'intermedio';
+      if (newTotalKm >= 10000)
+        level = 'leyenda';
+      else if (newTotalKm >= 5000)
+        level = 'maestro';
+      else if (newTotalKm >= 2500)
+        level = 'elite';
+      else if (newTotalKm >= 1000)
+        level = 'experto';
+      else if (newTotalKm >= 500)
+        level = 'avanzado';
+      else if (newTotalKm >= 150)
+        level = 'intermedio';
+      else if (newTotalKm >= 50)
+        level = 'aprendiz';
 
       tx.set(ref, {
         'userId': userId,
@@ -94,6 +108,32 @@ class CyclingStatsDatasource {
         .orderBy('totalKm', descending: true)
         .limit(limit)
         .get();
-    return snapshot.docs.map((d) => {'id': d.id, ...d.data()}).toList();
+    final stats = snapshot.docs.map((d) => {'id': d.id, ...d.data()}).toList();
+
+    // Obtener nombres reales de la colección 'usuarios'
+    final userIds = stats.map((s) => s['id'] as String).toList();
+    if (userIds.isEmpty) return stats;
+
+    // Firestore limita whereIn a 30 elementos
+    final Map<String, String> names = {};
+    for (var i = 0; i < userIds.length; i += 30) {
+      final batch = userIds.sublist(
+        i,
+        i + 30 > userIds.length ? userIds.length : i + 30,
+      );
+      final usersSnap = await _firestore
+          .collection('users')
+          .where(FieldPath.documentId, whereIn: batch)
+          .get();
+      for (final doc in usersSnap.docs) {
+        final data = doc.data();
+        names[doc.id] = (data['fullName'] ?? data['name'] ?? '') as String;
+      }
+    }
+
+    for (final entry in stats) {
+      entry['userName'] = names[entry['id']] ?? '';
+    }
+    return stats;
   }
 }

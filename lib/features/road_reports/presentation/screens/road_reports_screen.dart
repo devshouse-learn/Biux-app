@@ -166,7 +166,6 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         title: const Text('Reportes de Vía'),
         backgroundColor: ColorTokens.primary30,

@@ -3,14 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/entities/like_entity.dart';
 import '../../domain/repositories/likes_repository.dart';
-// import '../../domain/repositories/notifications_repository.dart'; // ✅ Not needed - Cloud Functions handle notifications
-// import '../../domain/entities/notification_entity.dart'; // ✅ Not needed - Cloud Functions handle notifications
+import '../../domain/repositories/notifications_repository.dart';
+import '../../domain/entities/notification_entity.dart';
 import '../../domain/repositories/comments_repository.dart';
 
 /// Provider para gestionar likes
 class LikesProvider extends ChangeNotifier {
   final LikesRepository _repository;
-  // final NotificationsRepository _notificationsRepository; // ✅ Not needed - Cloud Functions handle notifications
+  final NotificationsRepository _notificationsRepository;
   final String userId;
 
   // Variables para caché de datos del usuario
@@ -20,10 +20,10 @@ class LikesProvider extends ChangeNotifier {
 
   LikesProvider({
     required LikesRepository repository,
-    // required NotificationsRepository notificationsRepository, // ✅ Not needed
+    required NotificationsRepository notificationsRepository,
     required this.userId,
-  }) : _repository = repository;
-  // _notificationsRepository = notificationsRepository; // ✅ Not needed
+  }) : _repository = repository,
+       _notificationsRepository = notificationsRepository;
 
   /// Obtiene los datos del usuario desde Firestore (se ejecuta una sola vez)
   Future<void> _loadUserData() async {
@@ -121,7 +121,7 @@ class LikesProvider extends ChangeNotifier {
       targetId: postId,
       targetOwnerId: postOwnerId,
       targetPreview: postPreview,
-      // notificationType: NotificationType.likePost, // ✅ Not needed
+      notificationType: NotificationType.likePost,
     );
   }
 
@@ -162,7 +162,7 @@ class LikesProvider extends ChangeNotifier {
       targetId: finalTargetId,
       targetOwnerId: commentOwnerId,
       targetPreview: commentPreview,
-      // notificationType: NotificationType.likeComment, // ✅ Not needed
+      notificationType: NotificationType.likeComment,
       metadata: metadata.isNotEmpty ? metadata : null,
     );
   }
@@ -230,7 +230,7 @@ class LikesProvider extends ChangeNotifier {
       targetId: storyId,
       targetOwnerId: storyOwnerId,
       expiresAt: expiresAt,
-      // notificationType: NotificationType.likeStory, // ✅ Not needed
+      notificationType: NotificationType.likeStory,
     );
   }
 
@@ -246,7 +246,7 @@ class LikesProvider extends ChangeNotifier {
     required String targetOwnerId,
     String? targetPreview,
     DateTime? expiresAt,
-    // required NotificationType notificationType, // ✅ Not needed - Cloud Functions handle notifications
+    required NotificationType notificationType,
     Map<String, dynamic>? metadata,
   }) async {
     // Cooldown: verificar si está en periodo de espera
@@ -281,24 +281,23 @@ class LikesProvider extends ChangeNotifier {
       // - onLikeCommentCreated: /likes/comments/{commentPath}/{userId}
 
       // Crear notificación solo si no es el propio usuario
-      // if (targetOwnerId != userId) {
-      //   // ⚠️ Asegurar que userName no esté vacío (Firebase rules lo requieren)
-      //   final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
-      //       ? _cachedUserName!
-      //       : userId.split('_').last; // Fallback: usar parte del userId
+      if (targetOwnerId != userId) {
+        final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
+            ? _cachedUserName!
+            : userId.split('_').last;
 
-      //   await _notificationsRepository.createNotification(
-      //     userId: targetOwnerId,
-      //     type: notificationType,
-      //     fromUserId: userId,
-      //     fromUserName: safeUserName,
-      //     fromUserPhoto: _cachedUserPhoto,
-      //     targetType: _getTargetType(type),
-      //     targetId: targetId,
-      //     targetPreview: targetPreview,
-      //     metadata: metadata, // Pasar metadata con contexto del post/ride
-      //   );
-      // }
+        await _notificationsRepository.createNotification(
+          userId: targetOwnerId,
+          type: notificationType,
+          fromUserId: userId,
+          fromUserName: safeUserName,
+          fromUserPhoto: _cachedUserPhoto,
+          targetType: _getTargetType(type),
+          targetId: targetId,
+          targetPreview: targetPreview,
+          metadata: metadata,
+        );
+      }
 
       // Establecer cooldown después de completar exitosamente
       _setCooldown(targetId);
@@ -344,17 +343,17 @@ class LikesProvider extends ChangeNotifier {
     }
   }
 
-  // /// Obtiene el tipo de objetivo para notificación
-  // NotificationTargetType _getTargetType(LikeableType type) {
-  //   switch (type) {
-  //     case LikeableType.post:
-  //       return NotificationTargetType.post;
-  //     case LikeableType.comment:
-  //       return NotificationTargetType.comment;
-  //     case LikeableType.story:
-  //       return NotificationTargetType.story;
-  //   }
-  // } // ✅ Not needed - Cloud Functions handle notifications
+  /// Obtiene el tipo de objetivo para notificación
+  NotificationTargetType _getTargetType(LikeableType type) {
+    switch (type) {
+      case LikeableType.post:
+        return NotificationTargetType.post;
+      case LikeableType.comment:
+        return NotificationTargetType.comment;
+      case LikeableType.story:
+        return NotificationTargetType.story;
+    }
+  }
 
   /// Stream de likes de un contenido
   Stream<List<LikeEntity>> watchLikes(LikeableType type, String targetId) {

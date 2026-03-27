@@ -82,6 +82,7 @@ import 'package:biux/features/social/presentation/providers/follow_provider.dart
 // Shared imports
 import 'package:biux/shared/services/local_storage.dart';
 import 'package:biux/shared/services/notification_service.dart';
+import 'package:biux/shared/services/screen_time_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
 import 'package:biux/shared/widgets/offline_banner.dart';
 
@@ -135,6 +136,9 @@ void main() async {
   // Inicializar servicios core de forma diferida para evitar ANR
   // Se inicializan después del primer frame para que el splash aparezca inmediatamente
   _initServicesAsync();
+
+  // Inicializar tracking de tiempo de uso
+  await ScreenTimeService.instance.initialize();
 
   runApp(
     MultiProvider(

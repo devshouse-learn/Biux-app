@@ -109,7 +109,7 @@ class UserModel {
       email: map['email'],
       photoUrl: map['photoUrl'],
       coverPhotoUrl: map['coverPhotoUrl'],
-      phoneNumber: map['phoneNumber'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? map['phone'] ?? '',
       username: map['username'],
       isDeleting: map['isDeleting'] ?? false,
       deletionRequestDate: map['deletionRequestDate'] != null

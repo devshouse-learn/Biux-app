@@ -1,5 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter/foundation.dart';
+import 'package:biux/features/maps/data/datasources/directions_service.dart'
+    as maps;
 
 /// Resultado de una consulta de direcciones
 class DirectionsResult {
@@ -8,8 +9,7 @@ class DirectionsResult {
   const DirectionsResult({required this.points});
 }
 
-/// Servicio para obtener direcciones/rutas usando Google Directions API.
-/// STUB — pendiente de implementación real.
+/// Proxy que delega al DirectionsService real en features/maps.
 class DirectionsService {
   /// Obtiene direcciones con detalles entre dos puntos.
   static Future<DirectionsResult?> getDirectionsWithDetails({
@@ -17,10 +17,14 @@ class DirectionsService {
     required LatLng destination,
     required String travelMode,
   }) async {
-    debugPrint(
-      '⚠️ DirectionsService.getDirectionsWithDetails() — STUB: sin implementar',
+    final result = await maps.DirectionsService.getDirectionsWithDetails(
+      origin: origin,
+      destination: destination,
+      travelMode: travelMode,
     );
-    // TODO: Implementar llamada real a Google Directions API
-    return null;
+
+    if (result == null) return null;
+
+    return DirectionsResult(points: result.points);
   }
 }

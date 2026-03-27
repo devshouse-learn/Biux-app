@@ -132,6 +132,14 @@ class ExperienceModel {
       );
     }
     // Documentos legacy sin campo 'format' → siempre post
+    // Backwards compatibility: documentos sin el campo 'format'
+    // Solo clasificar como story si no tiene descripción alguna
+    final description = json['description'] as String? ?? '';
+    final media = json['media'] as List? ?? [];
+    final typeStr = json['type'] as String? ?? 'general';
+    if (media.isNotEmpty && description.trim().isEmpty && typeStr != 'ride') {
+      return ExperienceFormat.story;
+    }
     return ExperienceFormat.post;
   }
 }

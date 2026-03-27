@@ -1,103 +1,98 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:biux/features/payments/domain/repositories/payments_repository_abstract.dart';
+import 'package:biux/core/services/app_logger.dart';
 
-/// Implementación de pagos con Firebase/Firestore.
-///
-/// Persiste intents de pago en Firestore (colección `payment_intents`)
-/// y delega la confirmación real a una Cloud Function que se comunica
-/// con la pasarela configurada (MercadoPago / Stripe).
-class PaymentsFirebaseRepositoryImpl extends PaymentsRepositoryAbstract {
+/// Repositorio de pagos con persistencia en Firestore.
+/// La pasarela de pagos (Stripe/MercadoPago) se integra desde el backend;
+/// este repositorio gestiona el registro y estado de los intents en Firestore.
+class PaymentsFirebaseRepositoryImpl {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _collection = 'payment_intents';
 
-  @override
-  Future<String> gatewayPayment() async {
-    // Crea un intent genérico; la Cloud Function se encargará
-    // de devolver la URL de la pasarela de pago.
-    final intent = await createPaymentIntent(
-      amount: 0,
-      currency: 'COP',
-      metadata: {'source': 'gateway_payment'},
-    );
-    return intent['id'] as String;
-  }
-
-  /// Crea un intent de pago y lo registra en Firestore.
+  /// Crea un payment intent y lo persiste en Firestore.
   Future<Map<String, dynamic>> createPaymentIntent({
     required double amount,
     required String currency,
     String? userId,
     String? orderId,
+    String? description,
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final data = {
-        'amount': amount,
-        'currency': currency,
-        'userId': userId,
-        'orderId': orderId,
-        'status': 'requires_confirmation',
-        'metadata': metadata ?? {},
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      };
+      final docRef = _firestore.collection(_collection).doc();
+      final now = DateTime.now().toIso8601String();
 
-      final docRef = await _firestore.collection(_collection).add(data);
-
-      return {
+      final paymentData = {
         'id': docRef.id,
         'amount': amount,
         'currency': currency,
-        'status': 'requires_confirmation',
+        'status': 'pending',
+        'userId': userId,
+        'orderId': orderId,
+        'description': description,
+        'metadata': metadata ?? {},
+        'createdAt': now,
+        'updatedAt': now,
       };
+
+      await docRef.set(paymentData);
+
+      AppLogger.info(
+        'Payment intent creado: ${docRef.id}',
+        tag: 'PaymentsRepo',
+      );
+
+      return paymentData;
     } catch (e) {
-      throw Exception('Error creando intent de pago: $e');
+      AppLogger.error(
+        'Error creando payment intent',
+        tag: 'PaymentsRepo',
+        error: e,
+      );
+      rethrow;
     }
   }
 
   /// Confirma un pago actualizando su estado en Firestore.
   Future<bool> confirmPayment(String paymentId) async {
     try {
-      final docRef = _firestore.collection(_collection).doc(paymentId);
-      final doc = await docRef.get();
-
-      if (!doc.exists) {
-        throw Exception('Payment intent no encontrado: $paymentId');
-      }
-
-      await docRef.update({
+      await _firestore.collection(_collection).doc(paymentId).update({
         'status': 'confirmed',
-        'updatedAt': FieldValue.serverTimestamp(),
+        'confirmedAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
       });
 
+      AppLogger.info('Payment confirmado: $paymentId', tag: 'PaymentsRepo');
       return true;
     } catch (e) {
-      throw Exception('Error confirmando pago: $e');
+      AppLogger.error(
+        'Error confirmando payment',
+        tag: 'PaymentsRepo',
+        error: e,
+      );
+      return false;
     }
   }
 
   /// Cancela un pago.
-  Future<bool> cancelPayment(String paymentId) async {
+  Future<bool> cancelPayment(String paymentId, {String? reason}) async {
     try {
       await _firestore.collection(_collection).doc(paymentId).update({
         'status': 'cancelled',
-        'updatedAt': FieldValue.serverTimestamp(),
+        'cancellationReason': reason,
+        'cancelledAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
       });
+
+      AppLogger.info('Payment cancelado: $paymentId', tag: 'PaymentsRepo');
       return true;
     } catch (e) {
-      throw Exception('Error cancelando pago: $e');
-    }
-  }
-
-  /// Obtiene el estado de un pago.
-  Future<Map<String, dynamic>?> getPaymentStatus(String paymentId) async {
-    try {
-      final doc = await _firestore.collection(_collection).doc(paymentId).get();
-      if (!doc.exists) return null;
-      return {'id': doc.id, ...doc.data()!};
-    } catch (e) {
-      throw Exception('Error consultando pago: $e');
+      AppLogger.error(
+        'Error cancelando payment',
+        tag: 'PaymentsRepo',
+        error: e,
+      );
+      return false;
     }
   }
 
@@ -112,7 +107,29 @@ class PaymentsFirebaseRepositoryImpl extends PaymentsRepositoryAbstract {
 
       return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
     } catch (e) {
-      throw Exception('Error obteniendo pagos del usuario: $e');
+      AppLogger.error(
+        'Error obteniendo pagos del usuario',
+        tag: 'PaymentsRepo',
+        error: e,
+      );
+      return [];
+    }
+  }
+
+  /// Obtiene un pago por ID.
+  Future<Map<String, dynamic>?> getPaymentById(String paymentId) async {
+    try {
+      final doc = await _firestore.collection(_collection).doc(paymentId).get();
+
+      if (!doc.exists) return null;
+      return {'id': doc.id, ...doc.data()!};
+    } catch (e) {
+      AppLogger.error(
+        'Error obteniendo payment',
+        tag: 'PaymentsRepo',
+        error: e,
+      );
+      return null;
     }
   }
 }

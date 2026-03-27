@@ -194,12 +194,8 @@ class NotificationItem extends StatelessWidget {
     switch (notification.type) {
       // LIKES - Navegar al contenido específico
       case NotificationType.likePost:
-        // Para posts, ir directamente a los comentarios
-        final postOwnerId =
-            notification.metadata?['postOwnerId'] ?? notification.fromUserId;
-        context.push(
-          '/posts/${notification.targetId}/comments?ownerId=$postOwnerId',
-        );
+        // Para posts, ir al detalle del post
+        context.push('/post-detail/${notification.targetId}');
         break;
 
       case NotificationType.likeComment:
@@ -244,11 +240,8 @@ class NotificationItem extends StatelessWidget {
 
       // COMENTARIOS - Navegar directamente a la sección de comentarios
       case NotificationType.commentPost:
-        final postOwnerId1 =
-            notification.metadata?['postOwnerId'] ?? notification.fromUserId;
-        context.push(
-          '/posts/${notification.targetId}/comments?ownerId=$postOwnerId1',
-        );
+        // Para comentarios en posts, ir al detalle del post
+        context.push('/post-detail/${notification.targetId}');
         break;
 
       case NotificationType.commentRide:

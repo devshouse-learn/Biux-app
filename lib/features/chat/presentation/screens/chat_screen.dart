@@ -17,6 +17,15 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final _msgController = TextEditingController();
   final _scrollController = ScrollController();
+  late final Stream<QuerySnapshot> _messagesStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _messagesStream = context.read<ChatProvider>().getMessagesStream(
+      widget.chatId,
+    );
+  }
 
   @override
   void dispose() {
@@ -28,10 +37,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final chatProvider = context.read<ChatProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: ColorTokens.neutral99,
+      backgroundColor: isDark ? ColorTokens.neutral10 : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Chat'),
         backgroundColor: ColorTokens.primary30,
@@ -41,12 +50,22 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: chatProvider.getMessagesStream(widget.chatId),
+              stream: _messagesStream,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData)
+                  return const Center(child: CircularProgressIndicator());
                 final docs = snapshot.data!.docs;
                 if (docs.isEmpty) {
-                  return const Center(child: Text('Envia el primer mensaje!'));
+                  return Center(
+                    child: Text(
+                      'Envia el primer mensaje!',
+                      style: TextStyle(
+                        color: isDark
+                            ? ColorTokens.neutral70
+                            : Colors.grey[600],
+                      ),
+                    ),
+                  );
                 }
                 return ListView.builder(
                   controller: _scrollController,
@@ -61,31 +80,74 @@ class _ChatScreenState extends State<ChatScreen> {
                     final time = data['createdAt'] as Timestamp?;
 
                     return Align(
-                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      alignment: isMe
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.75,
+                        ),
                         decoration: BoxDecoration(
-                          color: isMe ? ColorTokens.primary30 : Colors.white,
+                          color: isMe
+                              ? ColorTokens.primary30
+                              : (isDark ? ColorTokens.neutral20 : Colors.white),
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(16),
                             topRight: const Radius.circular(16),
                             bottomLeft: Radius.circular(isMe ? 16 : 4),
                             bottomRight: Radius.circular(isMe ? 4 : 16),
                           ),
-                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4)],
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 4,
+                            ),
+                          ],
                         ),
                         child: Column(
-                          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                          crossAxisAlignment: isMe
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
                           children: [
-                            if (!isMe) Text(senderName, style: TextStyle(fontSize: 11, color: Colors.grey[600], fontWeight: FontWeight.w600)),
-                            Text(content, style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 15)),
+                            if (!isMe)
+                              Text(
+                                senderName,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: isDark
+                                      ? ColorTokens.neutral60
+                                      : Colors.grey[600],
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            Text(
+                              content,
+                              style: TextStyle(
+                                color: isMe
+                                    ? Colors.white
+                                    : (isDark
+                                          ? ColorTokens.neutral100
+                                          : Colors.black87),
+                                fontSize: 15,
+                              ),
+                            ),
                             if (time != null) ...[
                               const SizedBox(height: 4),
                               Text(
-                                '\${time.toDate().hour.toString().padLeft(2, "0")}:\${time.toDate().minute.toString().padLeft(2, "0")}',
-                                style: TextStyle(fontSize: 10, color: isMe ? Colors.white60 : Colors.grey[500]),
+                                '${time.toDate().hour.toString().padLeft(2, "0")}:${time.toDate().minute.toString().padLeft(2, "0")}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: isMe
+                                      ? Colors.white60
+                                      : (isDark
+                                            ? ColorTokens.neutral50
+                                            : Colors.grey[500]),
+                                ),
                               ),
                             ],
                           ],
@@ -99,24 +161,50 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Container(
             padding: EdgeInsets.only(
-              left: 12, right: 8, top: 8,
+              left: 12,
+              right: 8,
+              top: 8,
               bottom: MediaQuery.of(context).padding.bottom + 8,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, -2))],
+              color: isDark ? ColorTokens.neutral10 : Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
+                ),
+              ],
             ),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _msgController,
+                    style: TextStyle(
+                      color: isDark
+                          ? ColorTokens.neutral100
+                          : ColorTokens.neutral10,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Escribe un mensaje...',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                      hintStyle: TextStyle(
+                        color: isDark
+                            ? ColorTokens.neutral60
+                            : Colors.grey[500],
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
                       filled: true,
-                      fillColor: ColorTokens.neutral99,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      fillColor: isDark
+                          ? ColorTokens.neutral20
+                          : Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                     ),
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => _send(context),
@@ -143,7 +231,12 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty) return;
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     final name = context.read<UserProvider>().user?.name ?? 'Ciclista';
-    context.read<ChatProvider>().sendMessage(widget.chatId, senderId: uid, senderName: name, content: text);
+    context.read<ChatProvider>().sendMessage(
+      widget.chatId,
+      senderId: uid,
+      senderName: name,
+      content: text,
+    );
     _msgController.clear();
   }
 }

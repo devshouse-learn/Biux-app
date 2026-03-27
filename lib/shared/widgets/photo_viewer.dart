@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:biux/shared/widgets/optimized_network_image.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 /// Widget para visualizar fotos en pantalla completa con zoom y gestos
@@ -120,17 +119,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
   }
 
   void _sharePhoto(String photoUrl) {
-    // IMPLEMENTADO (STUB): Implementar compartir foto
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          Provider.of<LocaleNotifier>(
-            context,
-            listen: false,
-          ).t('share_photo_coming_soon'),
-        ),
-      ),
-    );
+    SharePlus.instance.share(ShareParams(uri: Uri.tryParse(photoUrl)));
   }
 }
 

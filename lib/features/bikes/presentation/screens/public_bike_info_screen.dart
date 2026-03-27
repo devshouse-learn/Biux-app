@@ -55,7 +55,6 @@ class _PublicBikeInfoScreenState extends State<PublicBikeInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null

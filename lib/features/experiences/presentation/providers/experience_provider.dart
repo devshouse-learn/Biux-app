@@ -164,6 +164,59 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
     }
   }
 
+  /// Eliminar un media individual de una experiencia.
+  /// Si es el último media, elimina la experiencia completa.
+  Future<bool> removeMediaFromExperience(
+    String experienceId,
+    int mediaIndex,
+  ) async {
+    try {
+      ExperienceEntity? exp;
+      for (final list in [
+        state.experiences,
+        state.userExperiences,
+        state.rideExperiences,
+      ]) {
+        final idx = list.indexWhere((e) => e.id == experienceId);
+        if (idx != -1) {
+          exp = list[idx];
+          break;
+        }
+      }
+
+      final willDeleteEntire = exp == null || exp.media.length <= 1;
+
+      if (willDeleteEntire) {
+        await deleteExperience(experienceId);
+        return true;
+      }
+
+      await _repository.removeMediaFromExperience(experienceId, mediaIndex);
+
+      ExperienceEntity removeMediaAt(ExperienceEntity e) {
+        final newMedia = List<ExperienceMediaEntity>.from(e.media)
+          ..removeAt(mediaIndex);
+        return e.copyWith(media: newMedia);
+      }
+
+      state = state.copyWith(
+        experiences: state.experiences
+            .map((e) => e.id == experienceId ? removeMediaAt(e) : e)
+            .toList(),
+        userExperiences: state.userExperiences
+            .map((e) => e.id == experienceId ? removeMediaAt(e) : e)
+            .toList(),
+        rideExperiences: state.rideExperiences
+            .map((e) => e.id == experienceId ? removeMediaAt(e) : e)
+            .toList(),
+      );
+      return false;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
   /// Agregar reacción
   Future<void> addReaction(String experienceId, ReactionType reaction) async {
     try {

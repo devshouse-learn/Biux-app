@@ -1,4 +1,3 @@
-import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
@@ -246,164 +245,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       }
     });
   }
-
-  void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text('Cerrar Sesión'),
-          content: Text('¿Estás seguro que deseas cerrar sesión?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              style: Styles.cancelButtonStyle,
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                // Capturar el contexto del widget antes de cualquier operación asíncrona
-                final widgetContext = context;
-
-                // Cerrar diálogo de confirmación
-                Navigator.of(dialogContext).pop();
-
-                // Verificar que el contexto sigue siendo válido antes de mostrar el loading
-                if (!widgetContext.mounted) {
-                  print('❌ Contexto inválido, abortando logout');
-                  return;
-                }
-
-                // Mostrar diálogo de loading usando el contexto capturado
-                showDialog(
-                  context: widgetContext,
-                  barrierDismissible: false,
-                  builder: (BuildContext loadingContext) {
-                    return PopScope(
-                      canPop: false,
-                      child: AlertDialog(
-                        content: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                ColorTokens.secondary50,
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Text('Cerrando sesión...'),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-
-                try {
-                  print('🔄 Iniciando logout desde perfil...');
-
-                  // Detener la escucha del MeetingPointProvider si existe
-                  try {
-                    final meetingPointProvider =
-                        Provider.of<MeetingPointProvider>(
-                          widgetContext,
-                          listen: false,
-                        );
-                    meetingPointProvider.stopListening();
-                    print('✅ MeetingPointProvider detenido');
-                  } catch (e) {
-                    print('⚠️ Error deteniendo MeetingPointProvider: $e');
-                  }
-
-                  // Limpiar UserProvider primero
-                  await widget.userProvider.signOut();
-                  print('✅ UserProvider limpiado');
-
-                  // Limpiar Firebase Auth (esto activa el refreshListenable del router)
-                  await FirebaseAuth.instance.signOut();
-                  print('✅ Firebase Auth limpiado');
-
-                  // Esperar un momento para que el router detecte el cambio
-                  await Future.delayed(Duration(milliseconds: 300));
-                  print('✅ Logout completado');
-
-                  // Cerrar loading
-                  if (widgetContext.mounted) {
-                    Navigator.of(widgetContext).pop();
-                  }
-
-                  // NO navegamos manualmente - el router detectará el cambio de auth automáticamente
-                  // gracias al refreshListenable configurado en el router
-                  print(
-                    '✅ Logout completado, esperando redirección automática del router',
-                  );
-                } catch (e) {
-                  print('❌ Error en logout desde perfil: $e');
-
-                  // Cerrar loading
-                  if (widgetContext.mounted) {
-                    Navigator.of(widgetContext).pop();
-
-                    // Mostrar error
-                    ScaffoldMessenger.of(widgetContext).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Error al cerrar sesión: ${e.toString()}',
-                        ),
-                        backgroundColor: ColorTokens.error50,
-                      ),
-                    );
-                  }
-                }
-              },
-              child: Text('Cerrar Sesión'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDeleteAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text('Eliminar Cuenta'),
-          content: Text(
-            'Esta acción marcará tu cuenta para eliminación. El proceso será revisado por nuestro equipo. ¿Continuar?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              style: Styles.cancelButtonStyle,
-              child: Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                bool success = await widget.userProvider
-                    .requestAccountDeletion();
-
-                if (mounted && success) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Solicitud de eliminación enviada'),
-                      backgroundColor: ColorTokens.warning50,
-                    ),
-                  );
-                }
-              },
-              child: Text('Eliminar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Función temporal para actualizar ciudades con departamentos
 
   void _showFollowersModal(BuildContext context) {
     final followers = widget.userProvider.user?.followers ?? {};
@@ -673,6 +514,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     );
 
     String? selectedProfileImageUrl;
+    String? selectedCoverImageUrl;
 
     showDialog(
       context: context,
@@ -739,6 +581,65 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             size: 40,
                             color: ColorTokens.neutral60,
                           ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // ========== FOTO DE PORTADA ==========
+                    Text(
+                      'Foto de Portada',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    OptimizedImagePicker(
+                      currentImageUrl: selectedCoverImageUrl != null
+                          ? (selectedCoverImageUrl?.isEmpty ?? false)
+                                ? null
+                                : selectedCoverImageUrl
+                          : widget.userProvider.user?.coverPhotoUrl,
+                      onImageSelected: (url) {
+                        setState(() {
+                          selectedCoverImageUrl = url;
+                        });
+                      },
+                      imageType: 'cover',
+                      entityId:
+                          FirebaseAuth.instance.currentUser?.uid ?? 'temp_user',
+                      width: double.infinity,
+                      height: 120,
+                      borderRadius: BorderRadius.circular(8),
+                      placeholder: Container(
+                        width: double.infinity,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: ColorTokens.neutral20,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: ColorTokens.neutral60,
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.panorama_outlined,
+                              size: 32,
+                              color: ColorTokens.neutral60,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Agregar portada',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: ColorTokens.neutral60,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -835,6 +736,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     final username = usernameController.text.trim();
                     final description = descriptionController.text.trim();
                     final profileUrl = selectedProfileImageUrl;
+                    final coverUrl = selectedCoverImageUrl;
                     final email = widget.userProvider.user?.email ?? '';
 
                     // Actualizar todos los campos de perfil
@@ -843,6 +745,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       username: username,
                       description: description,
                       photoUrl: profileUrl,
+                      coverPhotoUrl: coverUrl,
                       email: email,
                     );
 
@@ -916,14 +819,41 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   // ========== SECCIÓN DE PERFIL TIPO INSTAGRAM ==========
                   Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          ColorTokens.primary30,
-                          ColorTokens.primary30.withValues(alpha: 0.8),
-                        ],
-                      ),
+                      image:
+                          widget.userProvider.user?.coverPhotoUrl != null &&
+                              widget
+                                  .userProvider
+                                  .user!
+                                  .coverPhotoUrl!
+                                  .isNotEmpty
+                          ? DecorationImage(
+                              image: NetworkImage(
+                                widget.userProvider.user!.coverPhotoUrl!,
+                              ),
+                              fit: BoxFit.cover,
+                              colorFilter: ColorFilter.mode(
+                                ColorTokens.primary30.withValues(alpha: 0.6),
+                                BlendMode.darken,
+                              ),
+                            )
+                          : null,
+                      gradient:
+                          widget.userProvider.user?.coverPhotoUrl == null ||
+                              (widget
+                                      .userProvider
+                                      .user
+                                      ?.coverPhotoUrl
+                                      ?.isEmpty ??
+                                  true)
+                          ? LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                ColorTokens.primary30,
+                                ColorTokens.primary30.withValues(alpha: 0.8),
+                              ],
+                            )
+                          : null,
                     ),
                     child: SafeArea(
                       child: Padding(
@@ -1261,17 +1191,22 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     child: Column(
                       children: [
                         SizedBox(height: 20),
-                        // ========== SECCIÓN DE PUBLICACIONES ==========
-                        Text(
-                          'Publicaciones',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? ColorTokens.neutral100
-                                : ColorTokens.primary30,
-                          ),
+                        // ========== PUBLICACIONES ==========
+                        Row(
+                          children: [
+                            Text(
+                              'Publicaciones',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? ColorTokens.neutral100
+                                    : ColorTokens.primary30,
+                              ),
+                            ),
+                          ],
                         ),
 
                         SizedBox(height: 16),
@@ -1373,7 +1308,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                      'Comienza a compartir tus historias',
+                                      'Comienza a compartir',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: ColorTokens.neutral60,
@@ -1384,10 +1319,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               );
                             }
 
-                            // Filtrar: solo PUBLICACIONES (no historias) con media válido
+                            // Filtrar experiencias válidas
                             final allExperiences = snapshot.data as dynamic;
                             final experiences = allExperiences.where((exp) {
-                              // Excluir historias — solo publicaciones en el perfil
+                              // Filtrar historias (solo mostrar posts)
                               if (exp.isStoryFormat == true) return false;
                               try {
                                 if (exp.media == null || exp.media.isEmpty)
@@ -1460,7 +1395,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                      'Comienza a compartir tus historias',
+                                      'Crea tu primera publicación',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: ColorTokens.neutral60,
@@ -1708,47 +1643,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               },
                             );
                           },
-                        ),
-
-                        SizedBox(height: 32),
-
-                        // Botón Cerrar Sesión
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: _showLogoutDialog,
-                            icon: Icon(Icons.logout),
-                            label: Text('Cerrar Sesión'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? ColorTokens.neutral30
-                                  : ColorTokens.neutral90,
-                              foregroundColor: ColorTokens.neutral100,
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 16),
-
-                        // Botón Eliminar Cuenta
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: _showDeleteAccountDialog,
-                            icon: Icon(Icons.delete_forever),
-                            label: Text('Eliminar Cuenta'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: ColorTokens.error50,
-                              side: BorderSide(
-                                color: ColorTokens.error50,
-                                width: 1.5,
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
                         ),
 
                         SizedBox(height: 24),

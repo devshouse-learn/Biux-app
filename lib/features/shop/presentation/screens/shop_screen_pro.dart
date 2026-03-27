@@ -75,7 +75,6 @@ class _ShopScreenProState extends State<ShopScreenPro>
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const ShopMenuDrawer(),
-      backgroundColor: ColorTokens.neutral99, // Fondo claro y limpio
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -104,22 +103,29 @@ class _ShopScreenProState extends State<ShopScreenPro>
   /// AppBar limpio estilo Chrome Web Store
   Widget _buildChromeStyleAppBar() {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SliverAppBar(
       floating: true,
       snap: true,
       elevation: 0,
-      backgroundColor: ColorTokens.neutral100,
+      backgroundColor: isDark ? ColorTokens.primary20 : ColorTokens.neutral100,
       surfaceTintColor: Colors.transparent,
       toolbarHeight: 70,
       leading: IconButton(
-        icon: const Icon(Icons.menu, color: ColorTokens.primary10),
+        icon: Icon(
+          Icons.menu,
+          color: isDark ? Colors.white : ColorTokens.primary10,
+        ),
         onPressed: () => Scaffold.of(context).openDrawer(),
       ),
       flexibleSpace: Container(
         decoration: BoxDecoration(
-          color: ColorTokens.neutral100,
+          color: isDark ? ColorTokens.primary20 : ColorTokens.neutral100,
           border: Border(
-            bottom: BorderSide(color: ColorTokens.neutral95, width: 1),
+            bottom: BorderSide(
+              color: isDark ? Colors.white12 : ColorTokens.neutral95,
+              width: 1,
+            ),
           ),
         ),
         padding: EdgeInsets.only(
@@ -136,7 +142,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
-                color: ColorTokens.primary30,
+                color: isDark ? Colors.white : ColorTokens.primary30,
                 letterSpacing: -0.5,
               ),
             ),
@@ -146,32 +152,40 @@ class _ShopScreenProState extends State<ShopScreenPro>
               child: Container(
                 height: 42,
                 decoration: BoxDecoration(
-                  color: ColorTokens.neutral99,
+                  color: isDark ? ColorTokens.primary30 : ColorTokens.neutral99,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: ColorTokens.neutral95, width: 1),
+                  border: Border.all(
+                    color: isDark ? Colors.white12 : ColorTokens.neutral95,
+                    width: 1,
+                  ),
                 ),
                 child: TextField(
                   controller: _searchController,
-                  style: TextStyle(color: ColorTokens.neutral20, fontSize: 14),
+                  style: TextStyle(
+                    color: isDark ? Colors.white : ColorTokens.neutral20,
+                    fontSize: 14,
+                  ),
                   onChanged: (query) {
                     context.read<ShopProvider>().searchProducts(query);
                   },
                   decoration: InputDecoration(
                     hintText: l.t('search_products_hint'),
                     hintStyle: TextStyle(
-                      color: ColorTokens.neutral70,
+                      color: isDark ? Colors.white54 : ColorTokens.neutral70,
                       fontSize: 14,
                     ),
                     prefixIcon: Icon(
                       Icons.search,
-                      color: ColorTokens.neutral70,
+                      color: isDark ? Colors.white54 : ColorTokens.neutral70,
                       size: 20,
                     ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
                             icon: Icon(
                               Icons.clear,
-                              color: ColorTokens.neutral70,
+                              color: isDark
+                                  ? Colors.white54
+                                  : ColorTokens.neutral70,
                               size: 18,
                             ),
                             onPressed: () {

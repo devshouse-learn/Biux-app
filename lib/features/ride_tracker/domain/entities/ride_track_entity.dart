@@ -1,13 +1,19 @@
 class RideTrackEntity {
   final String id, userId;
+  final String name;
   final List<TrackPoint> points;
   final double totalKm, avgSpeed, maxSpeed;
-  final int elevationGain, durationMinutes, durationSeconds, calories, pointCount;
+  final int elevationGain,
+      durationMinutes,
+      durationSeconds,
+      calories,
+      pointCount;
   final DateTime startTime, endTime;
 
   const RideTrackEntity({
     required this.id,
     required this.userId,
+    this.name = '',
     required this.points,
     this.totalKm = 0,
     this.avgSpeed = 0,
@@ -35,6 +41,25 @@ class RideTrackEntity {
     if (h > 0) return '${h}h ${m}m';
     if (m > 0) return '${m}m';
     return '< 1m';
+  }
+
+  RideTrackEntity copyWith({String? name}) {
+    return RideTrackEntity(
+      id: id,
+      userId: userId,
+      name: name ?? this.name,
+      points: points,
+      totalKm: totalKm,
+      avgSpeed: avgSpeed,
+      maxSpeed: maxSpeed,
+      elevationGain: elevationGain,
+      durationMinutes: durationMinutes,
+      durationSeconds: durationSeconds,
+      calories: calories,
+      pointCount: pointCount,
+      startTime: startTime,
+      endTime: endTime,
+    );
   }
 }
 

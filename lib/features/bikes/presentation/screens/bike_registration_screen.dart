@@ -44,7 +44,6 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
             l.t('register_bike'),

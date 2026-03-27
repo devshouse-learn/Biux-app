@@ -24,6 +24,7 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
   bool _isLoading = true;
   // ignore: unused_field
   String? _errorMsg;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -42,30 +43,30 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
     if (_currentUserId == null) return;
     setState(() {
       _isLoading = true;
-      _errorMsg = null;
     });
 
     try {
-      final List<_LikedItem> items = [];
-
-      // Estrategia: obtener experiences de Firestore, luego verificar likes
-      // individuales en RTDB (evita leer el nodo completo que puede estar
-      // bloqueado por reglas de seguridad).
-
-      // 1. Obtener posts recientes de Firestore
-      try {
-        final expSnapshot = await _firestore
+      // Obtener experiences y stories en paralelo desde Firestore
+      final results = await Future.wait([
+        _firestore
             .collection('experiences')
             .orderBy('createdAt', descending: true)
-            .limit(500)
-            .get();
+            .limit(200)
+            .get(),
+        _firestore.collection('stories').limit(100).get(),
+      ]);
 
-        developer.log(
-          'Experiences a verificar likes: ${expSnapshot.docs.length}',
-          name: 'ActivityLikes',
-        );
+      final expDocs = results[0].docs;
+      final storyDocs = results[1].docs;
 
-        for (final doc in expSnapshot.docs) {
+      // Verificar likes en paralelo por lotes
+      final List<_LikedItem> items = [];
+      const batchSize = 30;
+
+      // Procesar experiences en lotes paralelos
+      for (int i = 0; i < expDocs.length; i += batchSize) {
+        final batch = expDocs.skip(i).take(batchSize);
+        final futures = batch.map((doc) async {
           try {
             final likeSnap = await _database
                 .ref('likes/posts/${doc.id}/$_currentUserId')
@@ -78,42 +79,30 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
               final data = doc.data();
               final format = data['format']?.toString() ?? '';
               final user = data['user'] as Map<String, dynamic>?;
-              items.add(
-                _LikedItem(
-                  targetId: doc.id,
-                  type: format == 'story' ? 'story' : 'post',
-                  timestamp: DateTime.fromMillisecondsSinceEpoch(
-                    ts > 0 ? ts : DateTime.now().millisecondsSinceEpoch,
-                  ),
-                  title: data['description']?.toString() ?? 'Publicación',
-                  imageUrl: _extractFirstImage(data),
-                  authorName: _extractAuthorName(data),
-                  authorId: user?['id']?.toString(),
+              return _LikedItem(
+                targetId: doc.id,
+                type: format == 'story' ? 'story' : 'post',
+                timestamp: DateTime.fromMillisecondsSinceEpoch(
+                  ts > 0 ? ts : DateTime.now().millisecondsSinceEpoch,
                 ),
+                title: data['description']?.toString() ?? 'Publicación',
+                imageUrl: _extractFirstImage(data),
+                authorName: _extractAuthorName(data),
+                authorId: user?['id']?.toString(),
               );
             }
-          } catch (e) {
-            developer.log(
-              'Error verificando like para ${doc.id}: $e',
-              name: 'ActivityLikes',
-            );
-          }
-        }
-      } catch (e) {
-        developer.log(
-          'Error obteniendo experiences: $e',
-          name: 'ActivityLikes',
-        );
+          } catch (_) {}
+          return null;
+        });
+        final batchResults = await Future.wait(futures);
+        items.addAll(batchResults.whereType<_LikedItem>());
       }
 
-      // 2. También verificar likes en stories legacy
-      try {
-        final storiesSnap = await _firestore
-            .collection('stories')
-            .limit(200)
-            .get();
-
-        for (final doc in storiesSnap.docs) {
+      // Procesar stories en lotes paralelos
+      final now = DateTime.now().millisecondsSinceEpoch;
+      for (int i = 0; i < storyDocs.length; i += batchSize) {
+        final batch = storyDocs.skip(i).take(batchSize);
+        final futures = batch.map((doc) async {
           try {
             final likeSnap = await _database
                 .ref('likes/stories/${doc.id}/$_currentUserId')
@@ -128,45 +117,32 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
                     ? likeData['expiresAt']
                     : null;
               }
-              if (expiresAt != null &&
-                  DateTime.now().millisecondsSinceEpoch > expiresAt) {
-                continue;
-              }
+              if (expiresAt != null && now > expiresAt) return null;
               final data = doc.data();
               final files = data['files'] as List<dynamic>?;
               final user = data['user'] as Map<String, dynamic>?;
-              items.add(
-                _LikedItem(
-                  targetId: doc.id,
-                  type: 'story',
-                  timestamp: DateTime.fromMillisecondsSinceEpoch(
-                    ts > 0 ? ts : DateTime.now().millisecondsSinceEpoch,
-                  ),
-                  title: data['description']?.toString() ?? 'Historia',
-                  imageUrl: files?.isNotEmpty == true
-                      ? files!.first.toString()
-                      : null,
-                  authorName: user?['name']?.toString() ?? '',
-                  authorId: user?['id']?.toString(),
+              return _LikedItem(
+                targetId: doc.id,
+                type: 'story',
+                timestamp: DateTime.fromMillisecondsSinceEpoch(
+                  ts > 0 ? ts : DateTime.now().millisecondsSinceEpoch,
                 ),
+                title: data['description']?.toString() ?? 'Historia',
+                imageUrl: files?.isNotEmpty == true
+                    ? files!.first.toString()
+                    : null,
+                authorName: user?['name']?.toString() ?? '',
+                authorId: user?['id']?.toString(),
               );
             }
           } catch (_) {}
-        }
-      } catch (e) {
-        developer.log(
-          'Error verificando likes stories legacy: $e',
-          name: 'ActivityLikes',
-        );
+          return null;
+        });
+        final batchResults = await Future.wait(futures);
+        items.addAll(batchResults.whereType<_LikedItem>());
       }
 
-      // Ordenar por más reciente
       items.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-
-      developer.log(
-        'Total likes encontrados: ${items.length}',
-        name: 'ActivityLikes',
-      );
 
       if (mounted) {
         setState(() {
@@ -179,7 +155,6 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMsg = 'Error cargando likes';
         });
       }
     }
@@ -282,7 +257,16 @@ class _ActivityLikesScreenState extends State<ActivityLikesScreen> {
           borderRadius: BorderRadius.circular(12),
           onTap: () {
             if (item.type == 'post') {
-              context.push('/post-detail/${item.targetId}');
+              if (_isNavigating) return;
+              _isNavigating = true;
+              context
+                  .push('/post-detail/${item.targetId}')
+                  .then((_) {
+                    _isNavigating = false;
+                  })
+                  .catchError((_) {
+                    _isNavigating = false;
+                  });
             }
           },
           child: Container(

@@ -1,42 +1,57 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
+import 'package:biux/features/advertisements/data/repositories/advertising_repository.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 /// Implementación del repositorio de publicidades usando Firestore.
 ///
 /// Colección: `publicidades`
 class AdvertisingRepositoryImpl {
+  final AdvertisingRepository _repository = AdvertisingRepository();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _collection = 'publicidades';
 
-  /// Obtiene anuncios activos (con dinero > 0) de Firestore.
-  Future<List<Advertising>> fetchAdvertisements({int limit = 10}) async {
+  /// Obtiene publicidades desde la API real.
+  Future<List<Map<String, dynamic>>> fetchAdvertisements() async {
     try {
-      final snapshot = await _firestore
-          .collection(_collection)
-          .where('money', isGreaterThan: 0.0)
-          .limit(limit)
-          .get();
-
-      return snapshot.docs
+      final ads = await _repository.getAdvertisements();
+      return ads
           .map(
-            (doc) => Advertising.fromJsonMap(json: doc.data(), docId: doc.id),
+            (ad) => {
+              'id': ad.docId,
+              'title': ad.title,
+              'imageUrl': ad.photoAd,
+              'url': ad.url,
+              'description': ad.description,
+              'textButton': ad.textButton,
+            },
           )
           .toList();
     } catch (e) {
-      throw Exception('Error obteniendo publicidades: $e');
+      AppLogger.warning(
+        'Error obteniendo publicidades, retornando lista vacía',
+        tag: 'AdvertisingRepoImpl',
+        error: e,
+      );
+      return [];
     }
   }
 
   /// Obtiene un anuncio aleatorio (para mostrar en la UI).
   Future<Advertising?> getRandomAdvertisement() async {
     try {
-      final ads = await fetchAdvertisements();
+      final ads = await _repository.getAdvertisements();
       if (ads.isEmpty) return null;
       ads.shuffle();
       return ads.first;
     } catch (e) {
-      throw Exception('Error obteniendo anuncio aleatorio: $e');
+      AppLogger.warning(
+        'Error obteniendo anuncio aleatorio',
+        tag: 'AdvertisingRepoImpl',
+        error: e,
+      );
+      return null;
     }
   }
 
@@ -46,7 +61,11 @@ class AdvertisingRepositoryImpl {
       final docRef = _firestore.collection(_collection).doc(adId);
       await docRef.update({'impressions': FieldValue.increment(1)});
     } catch (e) {
-      throw Exception('Error registrando impresión: $e');
+      AppLogger.error(
+        'Error registrando impresión',
+        tag: 'AdvertisingRepoImpl',
+        error: e,
+      );
     }
   }
 
@@ -70,28 +89,13 @@ class AdvertisingRepositoryImpl {
         'updatedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      throw Exception('Error registrando clic: $e');
+      AppLogger.error(
+        'Error registrando clic',
+        tag: 'AdvertisingRepoImpl',
+        error: e,
+      );
     }
   }
-
-  /// Actualiza los datos de un anuncio.
-  Future<Advertising> updateAdvertisement(Advertising advertising) async {
-    try {
-      await _firestore.collection(_collection).doc(advertising.docId).update({
-        'title': advertising.title,
-        'description': advertising.description,
-        'photoAd': advertising.photoAd,
-        'url': advertising.url,
-        'textButton': advertising.textButton,
-        'costOpen': advertising.costOpen,
-        'costWatch': advertising.costWatch,
-        'money': advertising.money,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-
-      return advertising;
-    } catch (e) {
-      throw Exception('Error actualizando anuncio: $e');
     }
   }
 }

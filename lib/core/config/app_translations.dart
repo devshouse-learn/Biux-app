@@ -3027,11 +3027,6 @@ class AppTranslations {
     'admin_revoke_error': 'No se puede revocar permisos a un administrador',
     'notification_channel_desc': 'Notificaciones generales de la aplicación',
 
-    // === Bike Actions Stubs ===
-    'stub_theft_report': 'Reporte de robo enviado (stub).',
-    'stub_recovered': 'Marcado como recuperada (stub).',
-    'stub_transfer': 'Transferencia iniciada (stub).',
-
     // === Firebase Diagnostic ===
     'diagnostic_not_tested': 'Sin probar',
     'diagnostic_title': 'Diagnóstico Firebase DB',
@@ -3182,10 +3177,6 @@ class AppTranslations {
     'must_join_group_for_ride':
         'Debes unirte al grupo para poder participar en esta rodada',
     'deleted_successfully': 'Se eliminó con éxito',
-    // Bike stubs
-    'stub_theft_report_sent': 'Reporte de robo enviado (stub).',
-    'stub_marked_recovered': 'Marcado como recuperada (stub).',
-    'stub_transfer_initiated': 'Transferencia iniciada (stub).',
     // Notifications
     'notif_new_notification': 'Nueva notificación',
     'notif_stolen_bike_alert_title':
@@ -6483,11 +6474,6 @@ class AppTranslations {
     'admin_revoke_error': 'Cannot revoke permissions from an administrator',
     'notification_channel_desc': 'General app notifications',
 
-    // === Bike Actions Stubs ===
-    'stub_theft_report': 'Theft report sent (stub).',
-    'stub_recovered': 'Marked as recovered (stub).',
-    'stub_transfer': 'Transfer started (stub).',
-
     // === Firebase Diagnostic ===
     'diagnostic_not_tested': 'Not tested',
     'diagnostic_title': 'Firebase DB Diagnostic',
@@ -6632,10 +6618,6 @@ class AppTranslations {
     'must_join_group_for_ride':
         'You must join the group to participate in this ride',
     'deleted_successfully': 'Deleted successfully',
-    // Bike stubs
-    'stub_theft_report_sent': 'Theft report sent (stub).',
-    'stub_marked_recovered': 'Marked as recovered (stub).',
-    'stub_transfer_initiated': 'Transfer initiated (stub).',
     // Notifications
     'notif_new_notification': 'New notification',
     'notif_stolen_bike_alert_title':
@@ -9989,11 +9971,6 @@ class AppTranslations {
         'Não é possível revogar permissões de um administrador',
     'notification_channel_desc': 'Notificações gerais do aplicativo',
 
-    // === Bike Actions Stubs ===
-    'stub_theft_report': 'Relatório de roubo enviado (stub).',
-    'stub_recovered': 'Marcada como recuperada (stub).',
-    'stub_transfer': 'Transferência iniciada (stub).',
-
     // === Firebase Diagnostic ===
     'diagnostic_not_tested': 'Não testado',
     'diagnostic_title': 'Diagnóstico Firebase DB',
@@ -10142,10 +10119,6 @@ class AppTranslations {
     'must_join_group_for_ride':
         'Você deve entrar no grupo para participar desta pedalada',
     'deleted_successfully': 'Eliminado com sucesso',
-    // Bike stubs
-    'stub_theft_report_sent': 'Relatório de roubo enviado (stub).',
-    'stub_marked_recovered': 'Marcado como recuperada (stub).',
-    'stub_transfer_initiated': 'Transferência iniciada (stub).',
     // Notifications
     'notif_new_notification': 'Nova notificação',
     'notif_stolen_bike_alert_title':
@@ -13535,11 +13508,6 @@ class AppTranslations {
         'Impossible de révoquer les permissions d\'un administrateur',
     'notification_channel_desc': 'Notifications générales de l\'application',
 
-    // === Bike Actions Stubs ===
-    'stub_theft_report': 'Signalement de vol envoyé (stub).',
-    'stub_recovered': 'Marqué comme récupéré (stub).',
-    'stub_transfer': 'Transfert lancé (stub).',
-
     // === Firebase Diagnostic ===
     'diagnostic_not_tested': 'Non testé',
     'diagnostic_title': 'Diagnostic Firebase DB',
@@ -13696,10 +13664,6 @@ class AppTranslations {
     'must_join_group_for_ride':
         'Vous devez rejoindre le groupe pour participer à cette sortie',
     'deleted_successfully': 'Supprimé avec succès',
-    // Bike stubs
-    'stub_theft_report_sent': 'Signalement de vol envoyé (stub).',
-    'stub_marked_recovered': 'Marqué comme récupéré (stub).',
-    'stub_transfer_initiated': 'Transfert initié (stub).',
     // Notifications
     'notif_new_notification': 'Nouvelle notification',
     'notif_stolen_bike_alert_title':

@@ -22,6 +22,7 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
 
   List<_CommentItem> _comments = [];
   bool _isLoading = true;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -41,105 +42,83 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
     setState(() => _isLoading = true);
 
     try {
+      final expSnapshot = await _firestore
+          .collection('experiences')
+          .orderBy('createdAt', descending: true)
+          .limit(200)
+          .get();
+
+      // Consultar comentarios de todos los posts en paralelo por lotes
       final List<_CommentItem> items = [];
+      const batchSize = 30;
 
-      // Estrategia: obtener experiences de Firestore, luego buscar comentarios
-      // del usuario en cada post individual en RTDB.
-      try {
-        final expSnapshot = await _firestore
-            .collection('experiences')
-            .orderBy('createdAt', descending: true)
-            .limit(500)
-            .get();
-
-        developer.log(
-          'Experiences a buscar comentarios: ${expSnapshot.docs.length}',
-          name: 'ActivityComments',
-        );
-
-        for (final doc in expSnapshot.docs) {
+      for (int i = 0; i < expSnapshot.docs.length; i += batchSize) {
+        final batch = expSnapshot.docs.skip(i).take(batchSize);
+        final futures = batch.map((doc) async {
+          final List<_CommentItem> docItems = [];
           try {
+            // Descargar todos los comentarios del post y filtrar por userId localmente
             final commentsSnap = await _database
                 .ref('comments/posts/${doc.id}')
                 .get();
 
             if (commentsSnap.exists && commentsSnap.value != null) {
               final commentsData = commentsSnap.value;
-              if (commentsData is! Map) continue;
+              if (commentsData is! Map) return docItems;
               final commentsMap = commentsData;
               final expData = doc.data();
-
-              for (final commentEntry in commentsMap.entries) {
-                try {
-                  final commentData = commentEntry.value;
-                  if (commentData is! Map) continue;
-                  final userId = commentData['userId']?.toString();
-                  if (userId != _currentUserId) continue;
-                  final isDeleted = commentData['isDeleted'] == true;
-                  if (isDeleted) continue;
-
-                  final createdAt = _parseTimestamp(commentData['createdAt']);
-                  final media = expData['media'] as List<dynamic>?;
-                  String? postImage;
-                  if (media != null && media.isNotEmpty) {
-                    final first = media.first;
-                    if (first is Map) {
-                      postImage = first['url']?.toString();
-                    }
-                  }
-                  final user = expData['user'] as Map<String, dynamic>?;
-
-                  items.add(
-                    _CommentItem(
-                      commentId: commentEntry.key.toString(),
-                      postId: doc.id,
-                      text: commentData['text']?.toString() ?? '',
-                      timestamp: DateTime.fromMillisecondsSinceEpoch(
-                        createdAt > 0
-                            ? createdAt
-                            : DateTime.now().millisecondsSinceEpoch,
-                      ),
-                      parentCommentId: commentData['parentCommentId']
-                          ?.toString(),
-                      postDescription:
-                          expData['description']?.toString() ?? 'Publicación',
-                      postImageUrl: postImage,
-                      postAuthorName:
-                          user?['fullName']?.toString() ??
-                          user?['userName']?.toString() ??
-                          '',
-                      postAuthorId: user?['id']?.toString(),
-                    ),
-                  );
-                } catch (e) {
-                  developer.log(
-                    'Error parseando comentario: $e',
-                    name: 'ActivityComments',
-                  );
+              final media = expData['media'] as List<dynamic>?;
+              String? postImage;
+              if (media != null && media.isNotEmpty) {
+                final first = media.first;
+                if (first is Map) {
+                  postImage = first['url']?.toString();
                 }
               }
+              final user = expData['user'] as Map<String, dynamic>?;
+
+              for (final commentEntry in commentsMap.entries) {
+                final commentData = commentEntry.value;
+                if (commentData is! Map) continue;
+                // Filtrar: solo comentarios del usuario actual
+                final commentUserId = commentData['userId']?.toString();
+                if (commentUserId != _currentUserId) continue;
+                if (commentData['isDeleted'] == true) continue;
+
+                final createdAt = _parseTimestamp(commentData['createdAt']);
+                docItems.add(
+                  _CommentItem(
+                    commentId: commentEntry.key.toString(),
+                    postId: doc.id,
+                    text: commentData['text']?.toString() ?? '',
+                    timestamp: DateTime.fromMillisecondsSinceEpoch(
+                      createdAt > 0
+                          ? createdAt
+                          : DateTime.now().millisecondsSinceEpoch,
+                    ),
+                    parentCommentId: commentData['parentCommentId']?.toString(),
+                    postDescription:
+                        expData['description']?.toString() ?? 'Publicación',
+                    postImageUrl: postImage,
+                    postAuthorName:
+                        user?['fullName']?.toString() ??
+                        user?['userName']?.toString() ??
+                        '',
+                    postAuthorId: user?['id']?.toString(),
+                  ),
+                );
+              }
             }
-          } catch (e) {
-            developer.log(
-              'Error buscando comments en ${doc.id}: $e',
-              name: 'ActivityComments',
-            );
-          }
+          } catch (_) {}
+          return docItems;
+        });
+        final batchResults = await Future.wait(futures);
+        for (final docItems in batchResults) {
+          items.addAll(docItems);
         }
-      } catch (e) {
-        developer.log(
-          'Error obteniendo experiences: $e',
-          name: 'ActivityComments',
-        );
       }
 
-      // Ordenar por más reciente
       items.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-
-      developer.log(
-        'Total comentarios encontrados: ${items.length}',
-        name: 'ActivityComments',
-      );
 
       if (mounted) {
         setState(() {
@@ -227,7 +206,16 @@ class _ActivityCommentsScreenState extends State<ActivityCommentsScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () {
-            context.push('/post-detail/${item.postId}');
+            if (_isNavigating) return;
+            _isNavigating = true;
+            context
+                .push('/post-detail/${item.postId}')
+                .then((_) {
+                  _isNavigating = false;
+                })
+                .catchError((_) {
+                  _isNavigating = false;
+                });
           },
           child: Container(
             padding: EdgeInsets.all(12),

@@ -23,7 +23,6 @@ class UserEditScreen extends StatelessWidget {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
       key: _scaffolState,
-      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         title: Text(l.t('edit_profile'), style: Styles.containerNameUser),
@@ -69,7 +68,9 @@ class _FormGroupWidget extends StatelessWidget {
           width: 350,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.0)),
           child: Card(
-            color: ColorTokens.neutral100,
+            color:
+                Theme.of(context).cardTheme.color ??
+                Theme.of(context).colorScheme.surface,
             shadowColor: ColorTokens.neutral60,
             elevation: 5,
             shape: RoundedRectangleBorder(

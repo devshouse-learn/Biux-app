@@ -11,6 +11,7 @@ import 'package:biux/features/shop/data/datasources/media_upload_service.dart';
 // import 'package:biux/features/shop/presentation/widgets/product_form_modal.dart'; // import gestionado: se usa dinámicamente desde helpers
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/shop/data/datasources/stolen_bike_verification_datasource.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -857,6 +858,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _verifyBikeNotStolen() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     // Validar que se haya ingresado el número de serie
     if (_bikeFrameSerialController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1059,6 +1061,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _saveProduct() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     if (!_formKey.currentState!.validate()) return;
 
     // Validación obligatoria de imágenes

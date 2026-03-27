@@ -91,6 +91,33 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
     }
   }
 
+  /// Obtener experiencias por una lista de IDs
+  Future<List<ExperienceEntity>> getExperiencesByIds(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    try {
+      // Firestore 'whereIn' supports max 30 items per query
+      final results = <ExperienceEntity>[];
+      for (var i = 0; i < ids.length; i += 30) {
+        final batch = ids.sublist(i, i + 30 > ids.length ? ids.length : i + 30);
+        final snapshot = await _firestore
+            .collection('experiences')
+            .where(FieldPath.documentId, whereIn: batch)
+            .get();
+        results.addAll(
+          snapshot.docs.map(
+            (doc) => ExperienceModel.fromJson({
+              ...doc.data(),
+              'id': doc.id,
+            }).toEntity(),
+          ),
+        );
+      }
+      return results;
+    } catch (e) {
+      return [];
+    }
+  }
+
   @override
   Future<ExperienceEntity?> getExperienceById(String experienceId) async {
     try {

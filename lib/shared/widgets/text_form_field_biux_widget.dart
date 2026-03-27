@@ -72,7 +72,7 @@ class TextFormFieldBiuxWidget extends StatelessWidget {
               color: ColorTokens.error50,
             ),
             errorMaxLines: 2,
-            fillColor: ColorTokens.neutral100,
+            fillColor: Theme.of(context).colorScheme.surface,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: ColorTokens.neutral60, width: 0.5),
               borderRadius: BorderRadius.circular(radiusCircular),

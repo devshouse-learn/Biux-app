@@ -121,252 +121,313 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           );
         }
 
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              // ========== SECCIÓN DE PERFIL (misma estructura que mi perfil) ==========
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      ColorTokens.primary30,
-                      ColorTokens.primary30.withValues(alpha: 0.8),
-                    ],
+        return Scaffold(
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                // ========== SECCIÓN DE PERFIL (misma estructura que mi perfil) ==========
+                Container(
+                  decoration: BoxDecoration(
+                    image: user.profileCover.isNotEmpty
+                        ? DecorationImage(
+                            image: NetworkImage(user.profileCover),
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(
+                              ColorTokens.primary30.withValues(alpha: 0.6),
+                              BlendMode.darken,
+                            ),
+                          )
+                        : null,
+                    gradient: user.profileCover.isEmpty
+                        ? LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              ColorTokens.primary30,
+                              ColorTokens.primary30.withValues(alpha: 0.8),
+                            ],
+                          )
+                        : null,
                   ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 8),
-
-                      // Fila: Foto + Nombre/Usuario
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  child: SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
+                      child: Column(
                         children: [
-                          // Foto de perfil
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: ColorTokens.neutral100,
-                                width: 2,
-                              ),
-                            ),
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundColor: ColorTokens.neutral20,
-                              backgroundImage: user.photo.isNotEmpty
-                                  ? NetworkImage(user.photo)
-                                  : null,
-                              child: user.photo.isEmpty
-                                  ? Icon(
-                                      Icons.person,
-                                      size: 40,
-                                      color: ColorTokens.neutral60,
-                                    )
-                                  : null,
-                            ),
-                          ),
-                          SizedBox(width: 16),
-
-                          // Nombre y usuario
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  user.fullName.isNotEmpty
-                                      ? user.fullName
-                                      : (user.userName.isNotEmpty
-                                            ? user.userName
-                                            : 'Usuario sin nombre'),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: ColorTokens.neutral100,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                SizedBox(height: 4),
-                                if (user.userName.isNotEmpty)
-                                  Text(
-                                    '@${user.userName}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: ColorTokens.neutral100.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: 16),
-
-                      // Estadísticas
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
+                          // Primera fila: Botón atrás a la izquierda
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${provider.userPosts.length}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+                              IconButton(
+                                icon: Icon(
+                                  Icons.arrow_back,
                                   color: ColorTokens.neutral100,
+                                  size: 24,
+                                ),
+                                onPressed: () => context.pop(),
+                                constraints: BoxConstraints(
+                                  minWidth: 32,
+                                  minHeight: 32,
+                                ),
+                                padding: EdgeInsets.zero,
+                              ),
+                              const SizedBox(),
+                            ],
+                          ),
+
+                          SizedBox(height: 16),
+
+                          // Segunda fila: Foto + Nombre/Usuario
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Foto de perfil
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: ColorTokens.neutral100,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: ColorTokens.neutral20,
+                                  backgroundImage: user.photo.isNotEmpty
+                                      ? NetworkImage(user.photo)
+                                      : null,
+                                  child: user.photo.isEmpty
+                                      ? Icon(
+                                          Icons.person,
+                                          size: 40,
+                                          color: ColorTokens.neutral60,
+                                        )
+                                      : null,
                                 ),
                               ),
-                              Text(
-                                'Posts',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: ColorTokens.neutral100.withValues(
-                                    alpha: 0.8,
-                                  ),
+                              SizedBox(width: 16),
+
+                              // Nombre y usuario - Columna al lado de la foto
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      user.fullName.isNotEmpty
+                                          ? user.fullName
+                                          : (user.userName.isNotEmpty
+                                                ? user.userName
+                                                : 'Usuario sin nombre'),
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 4),
+                                    if (user.userName.isNotEmpty)
+                                      Text(
+                                        '@${user.userName}',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: ColorTokens.neutral100
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          GestureDetector(
-                            onTap: () => _showFollowersModal(
-                              context,
-                              provider.currentUser!,
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '${provider.followersCount}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: ColorTokens.neutral100,
-                                  ),
-                                ),
-                                Text(
-                                  'Seguidores',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: ColorTokens.neutral100.withValues(
-                                      alpha: 0.8,
+
+                          SizedBox(height: 16),
+
+                          // Tercera fila: Estadísticas
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    '${_countValidPosts(provider)}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: ColorTokens.neutral100,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => _showFollowingModal(
-                              context,
-                              provider.currentUser!,
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '${provider.followingCount}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: ColorTokens.neutral100,
-                                  ),
-                                ),
-                                Text(
-                                  'Siguiendo',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: ColorTokens.neutral100.withValues(
-                                      alpha: 0.8,
+                                  Text(
+                                    'Posts',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: ColorTokens.neutral100.withValues(
+                                        alpha: 0.8,
+                                      ),
                                     ),
                                   ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () => _showFollowersModal(
+                                  context,
+                                  provider.currentUser!,
                                 ),
-                              ],
-                            ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '${provider.followersCount}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Seguidores',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => _showFollowingModal(
+                                  context,
+                                  provider.currentUser!,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '${provider.followingCount}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorTokens.neutral100,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Siguiendo',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: ColorTokens.neutral100
+                                            .withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
+
+                          SizedBox(height: 12),
+
+                          // Descripción
+                          if (user.description.isNotEmpty)
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                user.description,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: ColorTokens.neutral100.withValues(
+                                    alpha: 0.9,
+                                  ),
+                                  height: 1.4,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+
+                          SizedBox(height: 12),
+
+                          // Botón de Seguir (solo si no es el usuario actual)
+                          if (!isCurrentUser)
+                            SizedBox(
+                              width: double.infinity,
+                              child: _buildFollowButton(
+                                provider,
+                                widget.userId,
+                              ),
+                            ),
                         ],
                       ),
+                    ),
+                  ),
+                ),
 
-                      SizedBox(height: 12),
-
-                      // Descripción
-                      if (user.description.isNotEmpty)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            user.description,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: ColorTokens.neutral100.withValues(
-                                alpha: 0.9,
+                // ========== CONTENIDO: Posts o Muro Privado ==========
+                if (provider.isPrivateAccount &&
+                    !provider.isFollowing &&
+                    AuthenticationRepository().getUserId != widget.userId)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: _buildPrivateAccountWall(),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Text(
+                              'Publicaciones',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? ColorTokens.neutral100
+                                    : ColorTokens.primary30,
                               ),
-                              height: 1.4,
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          ],
                         ),
-
-                      SizedBox(height: 12),
-
-                      // Botón de Seguir (solo si no es el usuario actual)
-                      if (!isCurrentUser)
-                        SizedBox(
-                          width: double.infinity,
-                          child: _buildFollowButton(provider, widget.userId),
-                        ),
-                    ],
+                        SizedBox(height: 16),
+                        _buildPostsGrid(provider),
+                        SizedBox(height: 24),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-
-              // ========== CONTENIDO: Posts o Muro Privado ==========
-              if (provider.isPrivateAccount &&
-                  !provider.isFollowing &&
-                  AuthenticationRepository().getUserId != widget.userId)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: _buildPrivateAccountWall(),
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 20),
-                      Text(
-                        'Publicaciones',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? ColorTokens.neutral100
-                              : ColorTokens.primary30,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      _buildPostsGrid(provider),
-                      SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
         );
       },
     );
   }
 
+  int _countValidPosts(UserProfileProvider provider) {
+    return provider.userPosts.where((post) {
+      try {
+        if (post.isStoryFormat == true) return false;
+        if (post.media == null || post.media.isEmpty) return false;
+        if (post.media.first == null) return false;
+        final url = post.media.first.url ?? '';
+        if (url.isEmpty) return false;
+        if (!url.startsWith('http://') && !url.startsWith('https://'))
+          return false;
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }).length;
+  }
+
   Widget _buildPostsGrid(UserProfileProvider provider) {
     final validPosts = provider.userPosts.where((post) {
       try {
+        if (post.isStoryFormat == true) return false;
         if (post.media == null || post.media.isEmpty) return false;
         if (post.media.first == null) return false;
         final url = post.media.first.url ?? '';
@@ -424,7 +485,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         final post = validPosts[index];
         return GestureDetector(
           onTap: () {
-            context.push('/stories/post/${post.id}');
+            context.push('/post-detail/${post.id}');
           },
           child: Container(
             decoration: BoxDecoration(
@@ -433,16 +494,60 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                post.media.first.url,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: ColorTokens.neutral30,
-                    child: const Icon(
-                      Icons.image,
-                      color: ColorTokens.neutral60,
-                    ),
+              child: Builder(
+                builder: (context) {
+                  final media = post.media.first;
+                  final isVideo = media.mediaType == MediaType.video;
+                  final displayUrl = isVideo
+                      ? (media.thumbnailUrl?.isNotEmpty == true
+                            ? media.thumbnailUrl!
+                            : media.url)
+                      : media.url;
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: displayUrl,
+                        fit: BoxFit.cover,
+                        cacheManager: OptimizedCacheManager.instance,
+                        memCacheWidth: 400,
+                        memCacheHeight: 400,
+                        fadeInDuration: const Duration(milliseconds: 100),
+                        fadeOutDuration: const Duration(milliseconds: 50),
+                        placeholder: (context, url) => Container(
+                          color: ColorTokens.neutral20,
+                          child: Center(
+                            child: Icon(
+                              isVideo ? Icons.videocam : Icons.image,
+                              color: ColorTokens.neutral60,
+                              size: 32,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: ColorTokens.neutral30,
+                          child: const Icon(
+                            Icons.image,
+                            color: ColorTokens.neutral60,
+                          ),
+                        ),
+                      ),
+                      if (isVideo)
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),

@@ -20,7 +20,6 @@ class UserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.watch<UserScreenBloc>();
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         title: Selector<UserScreenBloc, BiuxUser>(
@@ -407,7 +406,6 @@ class _ViewUserImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorTokens.neutral100,
       body: SingleChildScrollView(
         child: Wrap(
           children: stories
