@@ -53,7 +53,9 @@ class StoriesFirebaseRepository extends StoriesRepositoryAbstract {
   Future deleteStory(String id) async {
     try {
       await firestore.collection(collection).doc(id).delete();
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
   }
 
   @override

@@ -484,14 +484,14 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
               Navigator.pop(context);
               final success = await provider.leaveGroup(group.id);
               if (success) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l.t('left_group')),
                     backgroundColor: ColorTokens.success40,
                   ),
                 );
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(provider.error ?? l.t('error_leaving_group')),
                     backgroundColor: ColorTokens.error50,

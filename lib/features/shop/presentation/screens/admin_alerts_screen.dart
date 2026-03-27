@@ -610,7 +610,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           );
         }
 
-        var alerts = snapshot.data!.docs;
+        if (!snapshot.hasData) return const SizedBox.shrink();
+          var alerts = snapshot.data!.docs;
 
         // Filter by search
         if (_searchQuery.isNotEmpty) {
@@ -992,7 +993,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       builder: (context, snapshot) {
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
-        final alerts = snapshot.data!.docs;
+        if (!snapshot.hasData) return const SizedBox.shrink();
+          final alerts = snapshot.data!.docs;
         final now = DateTime.now();
 
         final today = alerts.where((d) {
@@ -1274,7 +1276,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       builder: (context, snapshot) {
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
-        final blocked = snapshot.data!.docs;
+        if (!snapshot.hasData) return const SizedBox.shrink();
+          final blocked = snapshot.data!.docs;
 
         if (blocked.isEmpty) {
           return Center(

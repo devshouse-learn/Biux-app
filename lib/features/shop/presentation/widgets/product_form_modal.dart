@@ -60,6 +60,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
   }
 
   Future<void> _saveProduct() async {
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     if (!_formKey.currentState!.validate()) return;
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final user = context.read<UserProvider>().user;
@@ -100,8 +102,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
     if (!mounted) return;
     if (ok) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
+      navigator.pop();
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             widget.product == null
@@ -111,7 +113,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(content: Text(shop.errorMessage ?? l.t('error_saving'))),
       );
     }

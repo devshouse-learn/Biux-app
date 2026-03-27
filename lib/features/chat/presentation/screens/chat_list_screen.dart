@@ -150,6 +150,7 @@ class _ChatListScreenState extends State<ChatListScreen>
     );
   }
 
+
   // =================== TAB DE CHATS ===================
   Widget _buildChatsTab() {
     final chatProvider = context.read<ChatProvider>();

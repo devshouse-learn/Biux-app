@@ -244,9 +244,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('accidents')
-                .where('resolved', isEqualTo: false)
                 .orderBy('createdAt', descending: true)
-                .limit(5)
+                .limit(20)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -275,8 +274,18 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               }
 
               final docs = snapshot.data?.docs ?? [];
+              final accidents = docs
+                  .map(
+                    (d) => AccidentEntity.fromMap(
+                      d.id,
+                      d.data() as Map<String, dynamic>,
+                    ),
+                  )
+                  .where((a) => !a.resolved)
+                  .take(5)
+                  .toList();
 
-              if (docs.isEmpty) {
+              if (accidents.isEmpty) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Center(
@@ -305,11 +314,6 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   ),
                 );
               }
-
-              final accidents = docs.map((d) {
-                final data = d.data() as Map<String, dynamic>;
-                return AccidentEntity.fromMap(d.id, data);
-              }).toList();
 
               return Column(
                 children: [

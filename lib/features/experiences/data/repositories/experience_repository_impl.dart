@@ -430,7 +430,9 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
           mediaToRemove['url'] as String,
         );
         await ref.delete();
-      } catch (_) {}
+      } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
 
       // Remover del array y actualizar Firestore
       mediaList.removeAt(mediaIndex);
@@ -499,7 +501,7 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
                 final ref = FirebaseStorage.instance.refFromURL(oldUrl);
                 await ref.delete();
               } catch (e) {
-                print('Error eliminando archivo antiguo: $e');
+                debugPrint('Error eliminando archivo antiguo: $e');
               }
             }
           }

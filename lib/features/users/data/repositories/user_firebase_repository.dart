@@ -249,7 +249,9 @@ class UserFirebaseRepository extends UserRepositoryAbstract {
       });
       final response = await this.getUserId(id);
       return response;
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
   }
 
   @override

@@ -285,13 +285,14 @@ class _BotonSend extends StatelessWidget {
             ),
             onPressed: () async {
               if (form.currentState!.validate()) {
+                final messenger = ScaffoldMessenger.of(context);
                 try {
                   debugPrint('📝 Iniciando actualización de perfil...');
                   await bloc.uploadUpdate(context);
                   debugPrint('✅ Perfil actualizado, cerrando pantalla...');
 
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: l.t('user_updated'),
                         backgroundColor: ColorTokens.secondary50,
@@ -306,7 +307,7 @@ class _BotonSend extends StatelessWidget {
                 } catch (e) {
                   debugPrint('❌ Excepción capturada: $e');
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content:
                             '${l.t('error_updating_profile')}: ${e.toString()}',

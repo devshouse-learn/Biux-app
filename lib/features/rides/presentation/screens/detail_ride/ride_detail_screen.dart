@@ -291,7 +291,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
       );
 
       // Si hay imagen, compartirla con el texto
-      if (ride.imageUrl != null && ride.imageUrl!.isNotEmpty) {
+      if ((ride.imageUrl ?? '').isNotEmpty) {
         try {
           // Descargar la imagen temporalmente
           final response = await http.get(Uri.parse(ride.imageUrl!));

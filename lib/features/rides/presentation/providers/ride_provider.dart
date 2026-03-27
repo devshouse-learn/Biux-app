@@ -178,6 +178,21 @@ class RideProvider extends ChangeNotifier {
       _setError('Usuario no autenticado');
       return false;
     }
+    // Validar que la fecha no sea en el pasado
+    if (dateTime.isBefore(DateTime.now())) {
+      _setError('La fecha de la rodada no puede ser en el pasado');
+      return false;
+    }
+    // Validar kilómetros
+    if (kilometers <= 0) {
+      _setError('Los kilómetros deben ser mayor a 0');
+      return false;
+    }
+    // Validar nombre mínimo
+    if (name.trim().length < 3) {
+      _setError('El nombre debe tener al menos 3 caracteres');
+      return false;
+    }
 
     try {
       _setLoading(true);
@@ -701,7 +716,8 @@ class RideProvider extends ChangeNotifier {
 
       // Actualizar la rodada seleccionada si es la misma
       if (_selectedRide?.id == rideId) {
-        _selectedRide = _selectedRide!.copyWith(status: RideStatus.cancelled);
+        if (_selectedRide == null) return false;
+    _selectedRide = _selectedRide!.copyWith(status: RideStatus.cancelled);
       }
 
       await loadAllRides();

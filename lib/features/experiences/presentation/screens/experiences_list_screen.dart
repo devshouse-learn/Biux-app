@@ -665,9 +665,11 @@ class _ExperienceCard extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(l.t('report_post'))));
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(l.t('report_post'))));
+                  }
                 },
               ),
             ],
@@ -751,9 +753,11 @@ class _ExperienceCard extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       ).catchError((e) {
         // Fallback: si el deep link falla, mostrar mensaje
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l.t('error_generic'))));
+        }
         return false;
       });
     } catch (e) {

@@ -336,7 +336,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     context.push('/user-profile/$userId');
                   } else {
                     debugPrint('❌ Error: userId está vacío o es null');
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(l.t('error_user_id_not_available')),
                         backgroundColor: ColorTokens.error50,
@@ -740,14 +740,14 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.approveJoinRequest(groupId, userId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$userName ${l.t('user_accepted')}'),
           backgroundColor: ColorTokens.success50,
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('error_approving_request')),
           backgroundColor: ColorTokens.error50,
@@ -765,7 +765,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.rejectJoinRequest(groupId, userId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             l.t('request_of_rejected').replaceAll('{name}', userName),
@@ -774,7 +774,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('error_rejecting_request')),
           backgroundColor: ColorTokens.error50,
@@ -788,7 +788,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final result = await provider.requestJoinGroup(groupId);
 
     if (result['success'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('request_sent')),
           backgroundColor: ColorTokens.success50,
@@ -797,7 +797,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     } else if (result['requiresProfile'] == true) {
       _showProfileRequiredDialog(result['error'] ?? l.t('to_join_you_need'));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['error'] ?? l.t('error_sending_request')),
           backgroundColor: ColorTokens.error50,
@@ -834,7 +834,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('request_cancelled')),
           backgroundColor: ColorTokens.success50,

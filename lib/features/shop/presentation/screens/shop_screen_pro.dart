@@ -3015,6 +3015,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           gradientColors: [const Color(0xFF1565C0), const Color(0xFF42A5F5)],
         );
       case 'shorts':
+      case 'culotes':
         return _CategoryVisual(
           icon: Icons.accessibility_new,
           gradientColors: [const Color(0xFF2E7D32), const Color(0xFF66BB6A)],
@@ -3040,9 +3041,64 @@ class _ShopScreenProState extends State<ShopScreenPro>
       case 'shoes':
       case 'zapatillas':
       case 'calzado':
+      case 'zapatos':
         return _CategoryVisual(
           icon: Icons.directions_run,
           gradientColors: [const Color(0xFFC62828), const Color(0xFFEF5350)],
+        );
+      case 'bikes':
+      case 'bicicletas':
+        return _CategoryVisual(
+          icon: Icons.pedal_bike,
+          gradientColors: [const Color(0xFF1B5E20), const Color(0xFF4CAF50)],
+        );
+      case 'accessories':
+      case 'accesorios':
+        return _CategoryVisual(
+          icon: Icons.settings,
+          gradientColors: [const Color(0xFF4E342E), const Color(0xFF8D6E63)],
+        );
+      case 'electronics':
+      case 'electronica':
+        return _CategoryVisual(
+          icon: Icons.speed,
+          gradientColors: [const Color(0xFF0D47A1), const Color(0xFF2196F3)],
+        );
+      case 'hydration':
+      case 'hidratacion':
+        return _CategoryVisual(
+          icon: Icons.water_drop,
+          gradientColors: [const Color(0xFF006064), const Color(0xFF00BCD4)],
+        );
+      case 'components':
+      case 'componentes':
+        return _CategoryVisual(
+          icon: Icons.build,
+          gradientColors: [const Color(0xFF424242), const Color(0xFF9E9E9E)],
+        );
+      case 'nutrition':
+      case 'nutricion':
+        return _CategoryVisual(
+          icon: Icons.restaurant,
+          gradientColors: [const Color(0xFFE65100), const Color(0xFFFF9800)],
+        );
+      case 'safety':
+      case 'seguridad':
+        return _CategoryVisual(
+          icon: Icons.shield,
+          gradientColors: [const Color(0xFFB71C1C), const Color(0xFFE57373)],
+        );
+      case 'maintenance':
+      case 'mantenimiento':
+        return _CategoryVisual(
+          icon: Icons.handyman,
+          gradientColors: [const Color(0xFF37474F), const Color(0xFF78909C)],
+        );
+      case 'storage':
+      case 'almacenamiento':
+        return _CategoryVisual(
+          icon: Icons.backpack,
+          gradientColors: [const Color(0xFF3E2723), const Color(0xFF795548)],
         );
       default:
         return _CategoryVisual(

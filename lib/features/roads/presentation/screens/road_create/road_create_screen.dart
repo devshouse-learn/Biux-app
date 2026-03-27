@@ -288,7 +288,7 @@ class RoadCreateScreen extends StatelessWidget {
                       group: bloc.group,
                     );
                     final result = await bloc.createRoad(road);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: result
                             ? l.t('ride_created_success')
@@ -302,7 +302,7 @@ class RoadCreateScreen extends StatelessWidget {
                       Navigator.of(context).pop();
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: !_formKey.currentState!.validate()
                             ? l.t('must_complete_all_fields')
