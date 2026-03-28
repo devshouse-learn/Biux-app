@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats_provider.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
@@ -976,15 +977,342 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
 
   void _shareStats(CyclingStatsEntity? stats) {
     if (stats == null) return;
-    final text = '🚴 Mis estadísticas en Biux:\n\n'
-        '📏 ${stats.totalKm.toStringAsFixed(1)} km recorridos\n'
-        '🏁 ${stats.totalRides} rodadas completadas\n'
-        '⚡ ${stats.avgSpeed.toStringAsFixed(1)} km/h promedio\n'
-        '🚀 ${stats.maxSpeed.toStringAsFixed(1)} km/h velocidad máxima\n'
-        '🔥 Racha de ${stats.streak} días\n'
-        '${stats.levelEmoji} Nivel: ${stats.level.toUpperCase()}\n\n'
+    final text = '🚴 Mis estadisticas en Biux:\n\n'
+        '📏 \${stats.totalKm.toStringAsFixed(1)} km recorridos\n'
+        '🏁 \${stats.totalRides} rodadas completadas\n'
+        '⚡ \${stats.avgSpeed.toStringAsFixed(1)} km/h promedio\n'
+        '🚀 \${stats.maxSpeed.toStringAsFixed(1)} km/h velocidad maxima\n'
+        '🔥 Racha de \${stats.streak} dias\n'
+        '\${stats.levelEmoji} Nivel: \${stats.level.toUpperCase()}\n\n'
         '¡Descarga Biux y pedalea conmigo!';
-    SharePlus.instance.share(ShareParams(text: text));
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      backgroundColor: Colors.white,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text('Compartir estadisticas',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text('Elige como quieres compartir tus logros',
+              style: TextStyle(fontSize: 13, color: Colors.grey[500])),
+            const SizedBox(height: 24),
+            InkWell(
+              onTap: () { Navigator.pop(ctx); _shareInApp(stats, text); },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: ColorTokens.primary30.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: ColorTokens.primary30.withValues(alpha: 0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48, height: 48,
+                      decoration: BoxDecoration(color: ColorTokens.primary30, borderRadius: BorderRadius.circular(14)),
+                      child: const Icon(Icons.people_rounded, color: Colors.white, size: 26),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        const Text('Compartir con amigos en Biux',
+                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                        const SizedBox(height: 3),
+                        Text('Envia tus stats por chat a otros ciclistas',
+                          style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                      ]),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: () { Navigator.pop(ctx); SharePlus.instance.share(ShareParams(text: text)); },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48, height: 48,
+                      decoration: BoxDecoration(color: Colors.green[600], borderRadius: BorderRadius.circular(14)),
+                      child: const Icon(Icons.share_rounded, color: Colors.white, size: 26),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        const Text('Compartir fuera de Biux',
+                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                        const SizedBox(height: 3),
+                        Text('WhatsApp, Instagram, X y mas',
+                          style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                      ]),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _shareInApp(CyclingStatsEntity stats, String text) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      backgroundColor: Colors.white,
+      builder: (ctx) => _ShareInAppSheet(statsText: text),
+    );
+  }
+}
+
+
+// ─── WIDGET: Compartir dentro de la app ──────────────────
+class _ShareInAppSheet extends StatefulWidget {
+  final String statsText;
+  const _ShareInAppSheet({required this.statsText});
+
+  @override
+  State<_ShareInAppSheet> createState() => _ShareInAppSheetState();
+}
+
+class _ShareInAppSheetState extends State<_ShareInAppSheet> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _contacts = [];
+  List<Map<String, dynamic>> _filtered = [];
+  bool _isLoading = true;
+  final Set<String> _sent = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContacts();
+    _searchController.addListener(_filterContacts);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadContacts() async {
+    try {
+      final chatProvider = context.read<ChatProvider>();
+      final chats = chatProvider.chats;
+      final contacts = chats.map((chat) {
+        return {
+          'userId': chat.otherUserId ?? '',
+          'name': chat.otherUserName ?? 'Usuario',
+          'photo': chat.otherUserPhoto ?? '',
+          'chatId': chat.id ?? '',
+        };
+      }).where((c) => (c['userId'] as String).isNotEmpty).toList();
+
+      setState(() {
+        _contacts = contacts;
+        _filtered = contacts;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _filterContacts() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filtered = _contacts.where((c) {
+        return (c['name'] as String).toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
+  Future<void> _sendToContact(Map<String, dynamic> contact) async {
+    final chatProvider = context.read<ChatProvider>();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      await chatProvider.sendMessage(
+        chatId: contact['chatId'],
+        senderId: currentUser.uid,
+        text: widget.statsText,
+      );
+      setState(() => _sent.add(contact['userId'] as String));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Enviado a \${contact['name']}'),
+            backgroundColor: Colors.green[600],
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Error al enviar el mensaje'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      maxChildSize: 0.95,
+      minChildSize: 0.5,
+      expand: false,
+      builder: (_, scrollController) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('Enviar a amigos en Biux',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Buscar amigo...',
+                prefixIcon: const Icon(Icons.search, size: 20),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filtered.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.people_outline, size: 48, color: Colors.grey[300]),
+                              const SizedBox(height: 12),
+                              Text('No tienes chats aún',
+                                style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  context.push('/users/search');
+                                },
+                                child: const Text('Buscar ciclistas'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.separated(
+                          controller: scrollController,
+                          itemCount: _filtered.length,
+                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          itemBuilder: (_, index) {
+                            final contact = _filtered[index];
+                            final alreadySent = _sent.contains(contact['userId']);
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: ColorTokens.primary30.withValues(alpha: 0.15),
+                                backgroundImage: (contact['photo'] as String).isNotEmpty
+                                    ? NetworkImage(contact['photo'] as String)
+                                    : null,
+                                child: (contact['photo'] as String).isEmpty
+                                    ? Text(
+                                        (contact['name'] as String)[0].toUpperCase(),
+                                        style: TextStyle(
+                                          color: ColorTokens.primary30,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              title: Text(contact['name'] as String,
+                                style: const TextStyle(fontWeight: FontWeight.w600)),
+                              subtitle: Text(
+                                alreadySent ? '✅ Enviado' : 'Toca para enviar',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: alreadySent ? Colors.green[600] : Colors.grey[400],
+                                ),
+                              ),
+                              trailing: alreadySent
+                                  ? Icon(Icons.check_circle_rounded, color: Colors.green[600])
+                                  : ElevatedButton(
+                                      onPressed: () => _sendToContact(contact),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: ColorTokens.primary30,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: const Text('Enviar',
+                                        style: TextStyle(fontSize: 13)),
+                                    ),
+                            );
+                          },
+                        ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
   }
 }
 
