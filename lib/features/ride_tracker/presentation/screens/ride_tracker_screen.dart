@@ -15,10 +15,11 @@ class RideTrackerScreen extends StatefulWidget {
 }
 
 class _RideTrackerScreenState extends State<RideTrackerScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   GoogleMapController? _mapController;
   late AnimationController _pulseController;
   bool _showHistory = false;
+  final DraggableScrollableController _sheetController = DraggableScrollableController();
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   void dispose() {
     _pulseController.dispose();
     _mapController?.dispose();
+    _sheetController.dispose();
     super.dispose();
   }
 
@@ -65,12 +67,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             children: [
               _buildMapArea(p),
               _buildTopBar(p),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: _buildBottomPanel(p),
-              ),
+              _buildDraggablePanel(p),
             ],
           );
         },
@@ -314,61 +311,77 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     );
   }
 
-  // ─── PANEL INFERIOR ──────────────────────────────────────
-  Widget _buildBottomPanel(RideTrackerProvider p) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+  // ─── PANEL INFERIOR DRAGGABLE ───────────────────────────
+  Widget _buildDraggablePanel(RideTrackerProvider p) {
+    return DraggableScrollableSheet(
+      controller: _sheetController,
+      initialChildSize: 0.30,
+      minChildSize: 0.20,
+      maxChildSize: 0.85,
+      snap: true,
+      snapSizes: const [0.20, 0.30, 0.85],
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: ListView(
+            controller: scrollController,
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 0,
+              bottom: MediaQuery.of(context).padding.bottom + 12,
+            ),
             children: [
-              // Handle
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 14),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+              // Handle draggable
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
 
               // Timer principal
-              Text(
-                p.durationFormatted,
-                style: TextStyle(
-                  fontSize: 44,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.grey[800],
-                  letterSpacing: 2,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+              Center(
+                child: Text(
+                  p.durationFormatted,
+                  style: TextStyle(
+                    fontSize: 44,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.grey[800],
+                    letterSpacing: 2,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ),
-              Text(
-                'TIEMPO',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[400],
-                  letterSpacing: 1.5,
+              Center(
+                child: Text(
+                  'TIEMPO',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[400],
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
 
-              // Stats grid
+              // Stats principales
               Row(
                 children: [
                   _buildStatItem(
@@ -389,53 +402,83 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   _buildDivider(),
                   _buildStatItem(
                     icon: Icons.local_fire_department_rounded,
-                    value: '${p.calories}',
+                    value: '\${p.calories}',
                     unit: 'kcal',
                     label: 'Calorías',
                     color: const Color(0xFFFF5722),
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
 
-              // Stats secundarias
-              if (p.isTracking) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 12,
+              // Hint expandir
+              Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.grey[200])),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.keyboard_arrow_up_rounded, size: 16, color: Colors.grey[400]),
+                        Text(
+                          'desliza para más info',
+                          style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+                        ),
+                      ],
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildMiniStat(
-                        'Máx',
-                        '${p.maxSpeed.toStringAsFixed(1)} km/h',
-                      ),
-                      Container(width: 1, height: 20, color: Colors.grey[200]),
-                      _buildMiniStat(
-                        'Prom',
-                        '${p.avgSpeed.toStringAsFixed(1)} km/h',
-                      ),
-                      Container(width: 1, height: 20, color: Colors.grey[200]),
-                      _buildMiniStat('GPS', '${p.points.length} pts'),
-                    ],
-                  ),
+                  Expanded(child: Divider(color: Colors.grey[200])),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Stats secundarias (visibles al expandir)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.grey[200]!),
                 ),
-              ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildMiniStat('Vel. Max', '\${p.maxSpeed.toStringAsFixed(1)} km/h'),
+                    Container(width: 1, height: 30, color: Colors.grey[200]),
+                    _buildMiniStat('Vel. Prom', '\${p.avgSpeed.toStringAsFixed(1)} km/h'),
+                    Container(width: 1, height: 30, color: Colors.grey[200]),
+                    _buildMiniStat('Puntos GPS', '\${p.points.length}'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
 
+              // Tiempo y distancia resumidos
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: ColorTokens.primary30.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: ColorTokens.primary30.withValues(alpha: 0.15)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildMiniStat('Tiempo activo', p.durationFormatted),
+                    Container(width: 1, height: 30, color: ColorTokens.primary30.withValues(alpha: 0.2)),
+                    _buildMiniStat('Km recorridos', '\${p.totalKm.toStringAsFixed(2)} km'),
+                  ],
+                ),
+              ),
               const SizedBox(height: 16),
 
               // Botones
               _buildActionButtons(p),
+              const SizedBox(height: 12),
 
-              // Link al historial (solo si no está grabando)
-              if (!p.isTracking && p.history.isNotEmpty) ...[
-                const SizedBox(height: 12),
+              // Link al historial
+              if (!p.isTracking && p.history.isNotEmpty)
                 GestureDetector(
                   onTap: () => setState(() => _showHistory = true),
                   child: Container(
@@ -443,14 +486,10 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.history_rounded,
-                          size: 18,
-                          color: ColorTokens.primary30,
-                        ),
+                        Icon(Icons.history_rounded, size: 18, color: ColorTokens.primary30),
                         const SizedBox(width: 6),
                         Text(
-                          'Ver historial (${p.history.length} rodadas)',
+                          'Ver historial (\${p.history.length} rodadas)',
                           style: TextStyle(
                             fontSize: 13,
                             color: ColorTokens.primary30,
@@ -458,22 +497,23 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 12,
-                          color: ColorTokens.primary30,
-                        ),
+                        Icon(Icons.arrow_forward_ios_rounded, size: 12, color: ColorTokens.primary30),
                       ],
                     ),
                   ),
                 ),
-              ],
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
+
+  Widget _buildBottomPanel(RideTrackerProvider p) {
+    return const SizedBox.shrink();
+  }
+
+
 
   Widget _buildStatItem({
     required IconData icon,
