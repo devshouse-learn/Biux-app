@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
+import 'package:biux/features/ride_recommendations/presentation/widgets/send_recommendation_sheet.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 
 class RideTrackerScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   GoogleMapController? _mapController;
   late AnimationController _pulseController;
   bool _showHistory = false;
+  bool _showDetails = false;
 
   @override
   void initState() {
@@ -66,157 +69,216 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               _buildMapArea(p),
               _buildTopBar(p),
               DraggableScrollableSheet(
-                initialChildSize: 0.30,
-                minChildSize: 0.20,
-                maxChildSize: 0.85,
+                initialChildSize: p.isTracking ? 0.35 : 0.15,
+                minChildSize: p.isTracking ? 0.35 : 0.15,
+                maxChildSize: p.isTracking ? 0.52 : 0.15,
                 snap: true,
-                snapSizes: const [0.20, 0.30, 0.85],
+                snapSizes: p.isTracking ? const [0.35, 0.52] : const [0.15],
                 builder: (context, scrollController) {
                   return Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                       boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 20,
-                          offset: const Offset(0, -4),
-                        ),
+                        BoxShadow(color: Color(0x14000000), blurRadius: 20, offset: Offset(0, -4)),
                       ],
                     ),
                     child: ListView(
                       controller: scrollController,
-                      padding: EdgeInsets.only(
-                        left: 20, right: 20, top: 0,
-                        bottom: MediaQuery.of(context).padding.bottom + 12,
-                      ),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                       children: [
-                        // Handle draggable
-                        Center(
-                          child: Container(
-                            width: 40, height: 4,
-                            margin: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        ),
-                        // Timer
-                        Center(
-                          child: Text(
-                            p.durationFormatted,
-                            style: TextStyle(
-                              fontSize: 44, fontWeight: FontWeight.w800,
-                              color: Colors.grey[800], letterSpacing: 2,
-                              fontFeatures: const [FontFeature.tabularFigures()],
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: Text('TIEMPO',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600,
-                              color: Colors.grey[400], letterSpacing: 1.5)),
-                        ),
-                        const SizedBox(height: 16),
-                        // Stats principales
-                        Row(
-                          children: [
-                            _buildStatItem(icon: Icons.straighten_rounded,
-                              value: p.totalKm.toStringAsFixed(2), unit: 'km',
-                              label: 'Distancia', color: ColorTokens.primary30),
-                            _buildDivider(),
-                            _buildStatItem(icon: Icons.speed_rounded,
-                              value: p.currentSpeed.toStringAsFixed(1), unit: 'km/h',
-                              label: 'Velocidad', color: const Color(0xFFFF9800)),
-                            _buildDivider(),
-                            _buildStatItem(icon: Icons.local_fire_department_rounded,
-                              value: '\${p.calories}', unit: 'kcal',
-                              label: 'Calorías', color: const Color(0xFFFF5722)),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        // Hint expandir
-                        Row(children: [
-                          Expanded(child: Divider(color: Colors.grey[200])),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(mainAxisSize: MainAxisSize.min, children: [
-                              Icon(Icons.keyboard_arrow_up_rounded, size: 16, color: Colors.grey[400]),
-                              Text('desliza para más info',
-                                style: TextStyle(fontSize: 11, color: Colors.grey[400])),
-                            ]),
-                          ),
-                          Expanded(child: Divider(color: Colors.grey[200])),
-                        ]),
-                        const SizedBox(height: 12),
-                        // Stats secundarias
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              _buildMiniStat('Vel. Max', '\${p.maxSpeed.toStringAsFixed(1)} km/h'),
-                              Container(width: 1, height: 30, color: Colors.grey[200]),
-                              _buildMiniStat('Vel. Prom', '\${p.avgSpeed.toStringAsFixed(1)} km/h'),
-                              Container(width: 1, height: 30, color: Colors.grey[200]),
-                              _buildMiniStat('Puntos GPS', '\${p.points.length}'),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Tiempo y distancia
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: ColorTokens.primary30.withValues(alpha: 0.06),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: ColorTokens.primary30.withValues(alpha: 0.15)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              _buildMiniStat('Tiempo activo', p.durationFormatted),
-                              Container(width: 1, height: 30,
-                                color: ColorTokens.primary30.withValues(alpha: 0.2)),
-                              _buildMiniStat('Km recorridos', '\${p.totalKm.toStringAsFixed(2)} km'),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Botones
-                        _buildActionButtons(p),
-                        const SizedBox(height: 12),
-                        // Historial
-                        if (!p.isTracking && p.history.isNotEmpty)
-                          GestureDetector(
-                            onTap: () => setState(() => _showHistory = true),
+                        // Handle solo al grabar
+                        if (p.isTracking)
+                          Center(
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.history_rounded, size: 18, color: ColorTokens.primary30),
-                                  const SizedBox(width: 6),
-                                  Text('Ver historial (\${p.history.length} rodadas)',
-                                    style: TextStyle(fontSize: 13,
-                                      color: ColorTokens.primary30, fontWeight: FontWeight.w600)),
-                                  const SizedBox(width: 4),
-                                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: ColorTokens.primary30),
-                                ],
+                              width: 36, height: 4,
+                              margin: const EdgeInsets.only(top: 8, bottom: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          )
+                        else
+                          const SizedBox(height: 10),
+
+                        // Sin grabar: solo boton iniciar
+                        if (!p.isTracking) ...[
+                          SizedBox(
+                            width: double.infinity,
+                            height: 52,
+                            child: ElevatedButton.icon(
+                              onPressed: () => p.startTracking(),
+                              icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                              label: const Text('Iniciar Rodada',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorTokens.primary30,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                elevation: 0,
                               ),
                             ),
                           ),
+                          if (p.history.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () => setState(() => _showHistory = true),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                Icon(Icons.history_rounded, size: 16, color: Colors.grey[500]),
+                                const SizedBox(width: 6),
+                                Text('Ver historial (${p.history.length} rodadas)',
+                                  style: TextStyle(fontSize: 13, color: Colors.grey[500],
+                                    fontWeight: FontWeight.w500)),
+                              ]),
+                            ),
+                          ],
+                        ],
+
+                        // Grabando
+                        if (p.isTracking) ...[
+                          Center(child: Text(p.durationFormatted,
+                            style: TextStyle(fontSize: 38, fontWeight: FontWeight.w900,
+                              color: Colors.grey[800], letterSpacing: 2,
+                              fontFeatures: const [FontFeature.tabularFigures()]))),
+                          Center(child: Text('TIEMPO DE RODADA',
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600,
+                              color: Colors.grey[400], letterSpacing: 2))),
+                          const SizedBox(height: 8),
+
+                          // Stats principales
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Row(children: [
+                              _buildStatItem(icon: Icons.straighten_rounded,
+                                value: p.totalKm.toStringAsFixed(2), unit: 'km',
+                                label: 'Distancia', color: ColorTokens.primary30),
+                              _buildDivider(),
+                              _buildStatItem(icon: Icons.speed_rounded,
+                                value: p.currentSpeed.toStringAsFixed(1), unit: 'km/h',
+                                label: 'Velocidad', color: const Color(0xFFFF9800)),
+                              _buildDivider(),
+                              _buildStatItem(icon: Icons.local_fire_department_rounded,
+                                value: '${p.calories}', unit: 'kcal',
+                                label: 'Calorías', color: const Color(0xFFFF5722)),
+                            ]),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Botones pausar / finalizar
+                          Row(children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 46,
+                                child: OutlinedButton.icon(
+                                  onPressed: () => p.isPaused ? p.resumeTracking() : p.pauseTracking(),
+                                  icon: Icon(p.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded, size: 20),
+                                  label: Text(p.isPaused ? 'Reanudar' : 'Pausar',
+                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: const Color(0xFFFF9800),
+                                    side: const BorderSide(color: Color(0xFFFF9800), width: 1.5),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: SizedBox(
+                                height: 46,
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _showExitConfirmation(p),
+                                  icon: const Icon(Icons.stop_rounded, size: 20),
+                                  label: const Text('Finalizar',
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFF44336),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                    elevation: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]),
+                          const SizedBox(height: 8),
+
+                          // Separador mas detalles
+                          GestureDetector(
+                            onTap: () => setState(() => _showDetails = !_showDetails),
+                            child: Row(children: [
+                              Expanded(child: Divider(color: Colors.grey[200])),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                  Icon(
+                                    _showDetails
+                                      ? Icons.keyboard_arrow_down_rounded
+                                      : Icons.keyboard_arrow_up_rounded,
+                                    size: 14, color: Colors.grey[400]),
+                                  Text(_showDetails ? ' ocultar' : ' más detalles',
+                                    style: TextStyle(fontSize: 11, color: Colors.grey[400])),
+                                ]),
+                              ),
+                              Expanded(child: Divider(color: Colors.grey[200])),
+                            ]),
+                          ),
+
+                          // Stats secundarias
+                          if (_showDetails) ...[
+                            const SizedBox(height: 8),
+                            Row(children: [
+                              Expanded(child: _buildDetailCard(
+                                icon: Icons.rocket_launch_rounded,
+                                label: 'Vel. Máxima',
+                                value: '${p.maxSpeed.toStringAsFixed(1)} km/h',
+                                color: const Color(0xFFF44336),
+                              )),
+                              const SizedBox(width: 10),
+                              Expanded(child: _buildDetailCard(
+                                icon: Icons.analytics_rounded,
+                                label: 'Vel. Promedio',
+                                value: '${p.avgSpeed.toStringAsFixed(1)} km/h',
+                                color: const Color(0xFFFF9800),
+                              )),
+                            ]),
+                            const SizedBox(height: 6),
+                            Row(children: [
+                              Expanded(child: _buildDetailCard(
+                                icon: Icons.my_location_rounded,
+                                label: 'Puntos GPS',
+                                value: '${p.points.length}',
+                                color: ColorTokens.primary30,
+                              )),
+                              const SizedBox(width: 10),
+                              Expanded(child: _buildDetailCard(
+                                icon: Icons.timer_outlined,
+                                label: 'Tiempo activo',
+                                value: p.durationFormatted,
+                                color: Colors.purple,
+                              )),
+                            ]),
+                          ],
+                        ],
                       ],
                     ),
                   );
                 },
               ),
+
+
+
+
+
+
+
+
             ],
           );
         },
@@ -308,7 +370,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               color: Colors.grey[800],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 5),
           Text(
             p.isTracking
                 ? 'Espera mientras encontramos tu ubicación'
@@ -545,7 +607,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
 
               // Stats secundarias
               if (p.isTracking) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: 8,
@@ -581,37 +643,45 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
 
               // Link al historial (solo si no está grabando)
               if (!p.isTracking && p.history.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () => setState(() => _showHistory = true),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.history_rounded,
-                          size: 18,
-                          color: ColorTokens.primary30,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Ver historial (${p.history.length} rodadas)',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: ColorTokens.primary30,
-                            fontWeight: FontWeight.w600,
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    // Ver historial
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _showHistory = true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.history_rounded,
+                                size: 18,
+                                color: ColorTokens.primary30,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Ver historial (${p.history.length})',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: ColorTokens.primary30,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 12,
+                                color: ColorTokens.primary30,
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 12,
-                          color: ColorTokens.primary30,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+
+                  ],
                 ),
               ],
             ],
@@ -846,6 +916,11 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.share_location_rounded),
+            tooltip: 'Recomendaciones',
+            onPressed: () => context.push('/ride-recommendations'),
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh_rounded),
             tooltip: 'Actualizar',
             onPressed: () {
@@ -895,7 +970,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       color: Colors.grey[600],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 5),
                   Text(
                     'Tus rodadas grabadas aparecerán aquí',
                     style: TextStyle(fontSize: 14, color: Colors.grey[400]),
@@ -949,7 +1024,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             '${p.history.length} rodadas registradas',
             style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -1080,8 +1155,30 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       ),
                       onSelected: (value) {
                         if (value == 'delete') _confirmDeleteRide(ride, p);
+                        if (value == 'recommend') {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) => SendRecommendationSheet(track: ride),
+                          );
+                        }
                       },
                       itemBuilder: (_) => [
+                        const PopupMenuItem(
+                          value: 'recommend',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.share_location_rounded,
+                                color: Color(0xFF519192),
+                                size: 18,
+                              ),
+                              SizedBox(width: 8),
+                              Text('Recomendar ruta'),
+                            ],
+                          ),
+                        ),
                         const PopupMenuItem(
                           value: 'delete',
                           child: Row(
@@ -1103,7 +1200,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 6),
                 // Stats
                 Row(
                   children: [
@@ -1208,7 +1305,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               size: 40,
               color: ColorTokens.primary30,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 5),
             Text(
               '${date.day} ${months[date.month]} ${date.year}',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -1275,6 +1372,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               ),
             ),
             const SizedBox(height: 20),
+
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -1396,7 +1494,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 size: 44,
                 color: Color(0xFFF44336),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               const Text(
                 '¿Finalizar rodada?',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -1602,4 +1700,45 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       ),
     );
   }
+  Widget _buildDetailCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.15)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

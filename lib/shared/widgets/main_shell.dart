@@ -4,6 +4,7 @@ import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/core/utils/responsive_helper.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'app_drawer.dart';
@@ -78,12 +79,14 @@ class _MainShellState extends State<MainShell> {
               style: Styles.mainMenuTextBiux,
             ),
             actions: [
+
               // Buscar usuarios (solo en tab de inicio)
               if (_selectedIndex == 0)
                 IconButton(
                   icon: const Icon(Icons.search, color: Colors.white),
                   onPressed: () => context.push('/users/search'),
                 ),
+
               // Notificaciones con badge
               Consumer<NotificationsProvider?>(
                 builder: (context, provider, child) {

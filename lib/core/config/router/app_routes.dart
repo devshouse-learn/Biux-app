@@ -103,6 +103,10 @@ class AppRoutes {
   static const String weather = '/weather';
   static const String weatherName = 'weather';
 
+  // Ride Recommendations
+  static const String rideRecommendations = '/ride-recommendations';
+  static const String rideRecommendationsName = 'rideRecommendations';
+
   // Accidents
   static const String accidentReport = '/accidents/report';
   static const String accidentReportName = 'accidentReport';

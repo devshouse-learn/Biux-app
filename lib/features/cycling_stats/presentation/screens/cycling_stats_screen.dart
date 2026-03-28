@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats_provider.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
+import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class CyclingStatsScreen extends StatefulWidget {
   const CyclingStatsScreen({Key? key}) : super(key: key);
@@ -1100,7 +1103,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
 }
 
 
-// ─── WIDGET: Compartir dentro de la app ──────────────────
+// WIDGET: Compartir dentro de la app
 class _ShareInAppSheet extends StatefulWidget {
   final String statsText;
   const _ShareInAppSheet({required this.statsText});
@@ -1131,17 +1134,29 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
 
   Future<void> _loadContacts() async {
     try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
       final chatProvider = context.read<ChatProvider>();
-      final chats = chatProvider.chats;
-      final contacts = chats.map((chat) {
-        return {
-          'userId': chat.otherUserId ?? '',
-          'name': chat.otherUserName ?? 'Usuario',
-          'photo': chat.otherUserPhoto ?? '',
-          'chatId': chat.id ?? '',
-        };
-      }).where((c) => (c['userId'] as String).isNotEmpty).toList();
-
+      final chats = chatProvider.chats.where((c) => c.type == 'direct').toList();
+      final contacts = <Map<String, dynamic>>[];
+      for (final chat in chats) {
+        final otherId = chat.participants.firstWhere(
+          (id) => id != currentUser.uid,
+          orElse: () => '',
+        );
+        if (otherId.isEmpty) continue;
+        final doc = await FirebaseFirestore.instance.collection('users').doc(otherId).get();
+        final data = doc.data();
+        contacts.add({
+          'userId': otherId,
+          'name': data?['fullName'] ?? data?['userName'] ?? 'Ciclista',
+          'photo': data?['photo'] ?? '',
+          'chatId': chat.id,
+        });
+      }
       setState(() {
         _contacts = contacts;
         _filtered = contacts;
@@ -1165,31 +1180,27 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
     final chatProvider = context.read<ChatProvider>();
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
-
     try {
       await chatProvider.sendMessage(
-        chatId: contact['chatId'],
+        contact['chatId'] as String,
         senderId: currentUser.uid,
-        text: widget.statsText,
+        senderName: currentUser.displayName ?? 'Usuario',
+        content: widget.statsText,
       );
       setState(() => _sent.add(contact['userId'] as String));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('✅ Enviado a \${contact['name']}'),
-            backgroundColor: Colors.green[600],
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Enviado a ' + (contact['name'] as String)),
+          backgroundColor: Colors.green[600],
+          duration: const Duration(seconds: 2),
+        ));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Error al enviar el mensaje'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Error al enviar el mensaje'),
+          backgroundColor: Colors.red,
+        ));
       }
     }
   }
@@ -1242,7 +1253,7 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
                             children: [
                               Icon(Icons.people_outline, size: 48, color: Colors.grey[300]),
                               const SizedBox(height: 12),
-                              Text('No tienes chats aún',
+                              Text('No tienes chats aun',
                                 style: TextStyle(color: Colors.grey[400], fontSize: 14)),
                               const SizedBox(height: 8),
                               TextButton(
@@ -1271,17 +1282,14 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
                                 child: (contact['photo'] as String).isEmpty
                                     ? Text(
                                         (contact['name'] as String)[0].toUpperCase(),
-                                        style: TextStyle(
-                                          color: ColorTokens.primary30,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: TextStyle(color: ColorTokens.primary30, fontWeight: FontWeight.bold),
                                       )
                                     : null,
                               ),
                               title: Text(contact['name'] as String,
                                 style: const TextStyle(fontWeight: FontWeight.w600)),
                               subtitle: Text(
-                                alreadySent ? '✅ Enviado' : 'Toca para enviar',
+                                alreadySent ? 'Enviado' : 'Toca para enviar',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: alreadySent ? Colors.green[600] : Colors.grey[400],
@@ -1295,14 +1303,11 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
                                         backgroundColor: ColorTokens.primary30,
                                         foregroundColor: Colors.white,
                                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                         minimumSize: Size.zero,
                                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                       ),
-                                      child: const Text('Enviar',
-                                        style: TextStyle(fontSize: 13)),
+                                      child: const Text('Enviar', style: TextStyle(fontSize: 13)),
                                     ),
                             );
                           },
@@ -1315,6 +1320,7 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
     );
   }
 }
+
 
 class _StatItem {
   final IconData icon;
