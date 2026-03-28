@@ -118,6 +118,7 @@ import 'package:biux/features/onboarding/presentation/screens/onboarding_screen.
 import 'package:biux/features/search/presentation/screens/global_search_screen.dart';
 import 'package:biux/features/social/presentation/screens/followers_screen.dart';
 import 'package:biux/features/weather/presentation/screens/weather_screen.dart';
+import 'package:biux/features/ride_recommendations/presentation/screens/my_recommendations_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accidents_list_screen.dart';
 
@@ -907,6 +908,11 @@ final GoRouter _router = GoRouter(
       path: AppRoutes.rideTracker,
       name: AppRoutes.rideTrackerName,
       builder: (context, state) => const RideTrackerScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.rideRecommendations,
+      name: AppRoutes.rideRecommendationsName,
+      builder: (context, state) => const MyRecommendationsScreen(),
     ),
 
     // Cycling Stats (Mis estadísticas)
