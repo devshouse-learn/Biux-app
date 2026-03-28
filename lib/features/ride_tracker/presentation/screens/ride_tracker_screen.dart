@@ -65,11 +65,157 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             children: [
               _buildMapArea(p),
               _buildTopBar(p),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: _buildBottomPanel(p),
+              DraggableScrollableSheet(
+                initialChildSize: 0.30,
+                minChildSize: 0.20,
+                maxChildSize: 0.85,
+                snap: true,
+                snapSizes: const [0.20, 0.30, 0.85],
+                builder: (context, scrollController) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 20,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: ListView(
+                      controller: scrollController,
+                      padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 0,
+                        bottom: MediaQuery.of(context).padding.bottom + 12,
+                      ),
+                      children: [
+                        // Handle draggable
+                        Center(
+                          child: Container(
+                            width: 40, height: 4,
+                            margin: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                        // Timer
+                        Center(
+                          child: Text(
+                            p.durationFormatted,
+                            style: TextStyle(
+                              fontSize: 44, fontWeight: FontWeight.w800,
+                              color: Colors.grey[800], letterSpacing: 2,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Text('TIEMPO',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600,
+                              color: Colors.grey[400], letterSpacing: 1.5)),
+                        ),
+                        const SizedBox(height: 16),
+                        // Stats principales
+                        Row(
+                          children: [
+                            _buildStatItem(icon: Icons.straighten_rounded,
+                              value: p.totalKm.toStringAsFixed(2), unit: 'km',
+                              label: 'Distancia', color: ColorTokens.primary30),
+                            _buildDivider(),
+                            _buildStatItem(icon: Icons.speed_rounded,
+                              value: p.currentSpeed.toStringAsFixed(1), unit: 'km/h',
+                              label: 'Velocidad', color: const Color(0xFFFF9800)),
+                            _buildDivider(),
+                            _buildStatItem(icon: Icons.local_fire_department_rounded,
+                              value: '\${p.calories}', unit: 'kcal',
+                              label: 'Calorías', color: const Color(0xFFFF5722)),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        // Hint expandir
+                        Row(children: [
+                          Expanded(child: Divider(color: Colors.grey[200])),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(mainAxisSize: MainAxisSize.min, children: [
+                              Icon(Icons.keyboard_arrow_up_rounded, size: 16, color: Colors.grey[400]),
+                              Text('desliza para más info',
+                                style: TextStyle(fontSize: 11, color: Colors.grey[400])),
+                            ]),
+                          ),
+                          Expanded(child: Divider(color: Colors.grey[200])),
+                        ]),
+                        const SizedBox(height: 12),
+                        // Stats secundarias
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: Colors.grey[200]!),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildMiniStat('Vel. Max', '\${p.maxSpeed.toStringAsFixed(1)} km/h'),
+                              Container(width: 1, height: 30, color: Colors.grey[200]),
+                              _buildMiniStat('Vel. Prom', '\${p.avgSpeed.toStringAsFixed(1)} km/h'),
+                              Container(width: 1, height: 30, color: Colors.grey[200]),
+                              _buildMiniStat('Puntos GPS', '\${p.points.length}'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Tiempo y distancia
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: ColorTokens.primary30.withValues(alpha: 0.06),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: ColorTokens.primary30.withValues(alpha: 0.15)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildMiniStat('Tiempo activo', p.durationFormatted),
+                              Container(width: 1, height: 30,
+                                color: ColorTokens.primary30.withValues(alpha: 0.2)),
+                              _buildMiniStat('Km recorridos', '\${p.totalKm.toStringAsFixed(2)} km'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // Botones
+                        _buildActionButtons(p),
+                        const SizedBox(height: 12),
+                        // Historial
+                        if (!p.isTracking && p.history.isNotEmpty)
+                          GestureDetector(
+                            onTap: () => setState(() => _showHistory = true),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.history_rounded, size: 18, color: ColorTokens.primary30),
+                                  const SizedBox(width: 6),
+                                  Text('Ver historial (\${p.history.length} rodadas)',
+                                    style: TextStyle(fontSize: 13,
+                                      color: ColorTokens.primary30, fontWeight: FontWeight.w600)),
+                                  const SizedBox(width: 4),
+                                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: ColorTokens.primary30),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           );
