@@ -3791,8 +3791,6 @@ class AppTranslations {
     // User search screen
     'search_users_empty_title': 'Buscar usuarios',
     'searching_users': 'Buscando usuarios...',
-    'no_users_found': 'No se encontraron usuarios',
-    'try_another_search': 'Intenta con otro término de búsqueda',
     'follower_singular': 'seguidor',
 
     // User profile

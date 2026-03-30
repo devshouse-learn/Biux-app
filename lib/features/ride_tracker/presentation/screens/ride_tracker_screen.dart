@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
-import 'package:biux/shared/services/directions_service.dart';
 
 class RideTrackerScreen extends StatefulWidget {
   final bool showHistory;
@@ -2061,8 +2060,6 @@ class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
   bool _loadingSuggestions = false;
   String? _selectedPlaceId;
   String? _selectedPlaceName;
-  String? _routeDistance;
-  String? _routeDuration;
 
   @override
   void initState() {

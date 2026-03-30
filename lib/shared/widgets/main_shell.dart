@@ -36,7 +36,6 @@ class _MainShellState extends State<MainShell> {
 
   /// Retorna el título dinámico según el tab seleccionado
   String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
-<<<<<<< HEAD
     switch (index) {
       case 0:
         return 'BIUX';
