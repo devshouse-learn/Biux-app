@@ -112,10 +112,6 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag, size: 28),
-                label: '',
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.person, size: 28),
                 label: '',
               ),
@@ -149,10 +145,6 @@ class _MainShellState extends State<MainShell> {
         context.go(AppRoutes.myBikes);
         break;
       case 3:
-        // Tienda
-        context.go('/shop');
-        break;
-      case 4:
         // Mi Perfil
         context.go('/profile');
         break;
@@ -190,13 +182,9 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 2;
       });
-    } else if (location.startsWith('/shop')) {
-      setState(() {
-        _selectedIndex = 3;
-      });
     } else if (location.startsWith('/profile')) {
       setState(() {
-        _selectedIndex = 4;
+        _selectedIndex = 3;
       });
     }
   }

@@ -121,6 +121,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   pinned: true,
                   backgroundColor: ColorTokens.primary30,
                   foregroundColor: ColorTokens.neutral100,
+                  leading: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: ColorTokens.neutral100,
+                    ),
+                    onPressed: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/groups/${ride.groupId}');
+                      }
+                    },
+                  ),
                   actions: [
                     // Botón de editar (solo para el creador)
                     if (ride.createdBy == rideProvider.currentUserId &&
@@ -204,8 +217,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   ),
                   SizedBox(height: 24),
 
-                  // ⭐ BOTÓN DE ASISTENCIA - Primero (más visible)
-                  RideAttendanceButton(ride: ride),
+                  // ⭐ BOTÓN DE ASISTENCIA - Solo para no creadores
+                  if (ride.createdBy != rideProvider.currentUserId)
+                    RideAttendanceButton(ride: ride),
                   SizedBox(height: 24),
 
                   // Participantes (debajo del botón de asistencia)

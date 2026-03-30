@@ -7,6 +7,7 @@ class CyclingStatsProvider with ChangeNotifier {
 
   CyclingStatsEntity? _stats;
   List<Map<String, dynamic>> _leaderboard = [];
+  List<Map<String, dynamic>> _friendsLeaderboard = [];
   bool _isLoading = false;
   bool _isSyncing = false;
   String? _error;
@@ -14,6 +15,7 @@ class CyclingStatsProvider with ChangeNotifier {
 
   CyclingStatsEntity? get stats => _stats;
   List<Map<String, dynamic>> get leaderboard => _leaderboard;
+  List<Map<String, dynamic>> get friendsLeaderboard => _friendsLeaderboard;
   bool get isLoading => _isLoading;
   bool get isSyncing => _isSyncing;
   String? get error => _error;
@@ -118,6 +120,16 @@ class CyclingStatsProvider with ChangeNotifier {
   Future<void> loadLeaderboard() async {
     try {
       _leaderboard = await _datasource.getLeaderboard();
+      notifyListeners();
+    } catch (e) {
+      _error = 'stats_error_leaderboard';
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadFriendsLeaderboard(List<String> friendIds) async {
+    try {
+      _friendsLeaderboard = await _datasource.getLeaderboardForUsers(friendIds);
       notifyListeners();
     } catch (e) {
       _error = 'stats_error_leaderboard';
