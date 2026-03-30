@@ -322,7 +322,8 @@ class _PromoterRequestFormState extends State<_PromoterRequestForm> {
                   ),
                   const SizedBox(height: 14),
                   DropdownButtonFormField<String>(
-                    initialValue: _businessType,
+                    value: _businessType,
+                    isExpanded: true,
                     decoration: InputDecoration(
                       labelText: l.t('promotions_business_type'),
                       prefixIcon: const Icon(Icons.category),

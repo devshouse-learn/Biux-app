@@ -913,7 +913,8 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: AppRoutes.rideTracker,
       name: AppRoutes.rideTrackerName,
-      builder: (context, state) => const RideTrackerScreen(),
+      builder: (context, state) =>
+          RideTrackerScreen(showHistory: state.extra == true),
     ),
     GoRoute(
       path: AppRoutes.rideRecommendations,

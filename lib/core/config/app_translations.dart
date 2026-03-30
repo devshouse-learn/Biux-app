@@ -685,6 +685,10 @@ class AppTranslations {
     'add_photos_btn': 'Agregar Fotos',
     'field_required': 'Campo requerido',
     'bike_registered_success': 'Bicicleta registrada exitosamente',
+    'bike_marked_recovered_success':
+        'Bicicleta marcada como recuperada exitosamente',
+    'bike_marked_recovered_error':
+        'Error al marcar la bicicleta como recuperada',
     // Add product
     'product_info_section': 'Información del Producto',
     'product_name_label': 'Nombre del producto',
@@ -763,6 +767,7 @@ class AppTranslations {
     'special_discounts': 'Descuentos especiales disponibles',
     'all_categories': 'Todos',
     'cat_bikes': 'Bicis',
+    'cat_bibs': 'Licras',
     'cat_jerseys': 'Jerseys',
     'cat_shorts': 'Culotes',
     'cat_helmets': 'Cascos',
@@ -1371,7 +1376,75 @@ class AppTranslations {
 
     // Help
     'help_title': 'Centro de Ayuda',
+    'help_support': 'Ayuda y Soporte',
     'faq': 'Preguntas Frecuentes',
+    'welcome_biux': '¡Bienvenido a BiUX!',
+    'welcome_biux_desc':
+        'Aquí encontrarás respuestas a preguntas frecuentes, consejos de seguridad y cómo contactarnos si necesitas ayuda.',
+    'main_features': 'Características Principales',
+    'support_contact': 'Soporte y Contacto',
+    'legal_info': 'Información Legal',
+    'email_support': 'Correo de Soporte',
+    'website': 'Sitio Web',
+    'report_bug': 'Reportar un Error',
+    'report_bug_subtitle': 'Ayúdanos a mejorar reportando errores',
+    'software_licenses': 'Licencias de Software',
+    'all_rights_reserved': '© 2025 BiUX. Todos los derechos reservados.',
+    'biux_app_cyclists': 'BiUX - App para Ciclistas',
+    'faq_create_story_q': '¿Cómo crear una historia?',
+    'faq_create_story_a':
+        'Ve a la sección Experiencias, toca el botón +, agrega una foto o video (máx. 30 segundos), escribe una breve descripción y publica. Las historias desaparecen en 24 horas.',
+    'faq_register_bike_q': '¿Cómo registrar mi bicicleta?',
+    'faq_register_bike_a':
+        'Ve a "Mis Bicis", toca el botón +, completa la información de tu bici (marca, modelo, color, número de serie). Esto te ayudará si la pierdes o te la roban.',
+    'faq_join_ride_q': '¿Cómo unirme a una rodada?',
+    'faq_join_ride_a':
+        'Ve a la sección Rodadas, encuentra una que te interese, toca sobre ella y presiona "Unirme". Recibirás notificaciones sobre actualizaciones de la rodada.',
+    'faq_create_group_q': '¿Cómo crear un grupo?',
+    'faq_create_group_a':
+        'Ve a Grupos, toca "Crear Grupo", completa la información (nombre, descripción, foto) y decide si será público o privado. Luego invita a otros ciclistas.',
+    'faq_media_space_q': '¿Las fotos y videos ocupan mucho espacio?',
+    'faq_media_space_a':
+        'No. La app comprime automáticamente las fotos a 1080x1350px y los videos están limitados a 30 segundos para optimizar el almacenamiento.',
+    'faq_text_posts_q': '¿Puedo publicar posts sin fotos?',
+    'faq_text_posts_a':
+        'Sí, pero solo los posts de texto son permanentes. Si agregas multimedia, se publicará automáticamente como historia (24 horas).',
+    'feature_stories_title': 'Historias y Experiencias',
+    'feature_stories_desc':
+        'Comparte momentos de tus rodadas con fotos y videos. Las historias duran 24 horas.',
+    'feature_rides_title': 'Rodadas Organizadas',
+    'feature_rides_desc':
+        'Crea o únete a rodadas con otros ciclistas. Coordina rutas, horarios y puntos de encuentro.',
+    'feature_bikes_title': 'Registro de Bicicletas',
+    'feature_bikes_desc':
+        'Registra tus bicis con un QR único. Si la pierdes, otros usuarios pueden ayudarte a encontrarla.',
+    'feature_groups_title': 'Grupos y Comunidad',
+    'feature_groups_desc':
+        'Crea grupos ciclistas, comparte rutas, organiza eventos y conecta con otros riders.',
+    'feature_maps_title': 'Mapas y Rutas',
+    'feature_maps_desc':
+        'Explora rutas ciclistas, guarda tus favoritas y compártelas con la comunidad.',
+    'feature_social_title': 'Interacción Social',
+    'feature_social_desc':
+        'Da like, comenta y sigue a otros ciclistas. Recibe notificaciones de actividad.',
+    'safety_helmet_title': '🚴‍♂️ Usa siempre casco',
+    'safety_helmet_desc':
+        'Un casco puede salvarte la vida. Es obligatorio para rodadas organizadas.',
+    'safety_visible_title': '🦺 Usa ropa visible',
+    'safety_visible_desc':
+        'Los colores brillantes y reflectivos te hacen más visible, especialmente de noche.',
+    'safety_lights_title': '💡 Luces en tu bici',
+    'safety_lights_desc':
+        'Luz blanca adelante, roja atrás. Obligatorio para rodadas nocturnas.',
+    'safety_register_title': '📱 Registra tu bici',
+    'safety_register_desc':
+        'Si registras tu bicicleta en la app, será más fácil recuperarla si la pierdes.',
+    'safety_group_title': '👥 Rueda en grupo',
+    'safety_group_desc':
+        'Es más seguro rodar con otros. Usa las rodadas organizadas en la app.',
+    'safety_signals_title': '🛣️ Respeta las señales de tránsito',
+    'safety_signals_desc':
+        'Los ciclistas también deben respetar los semáforos y señales viales.',
 
     // Store cart & checkout
     'your_cart_is_empty': '¡Tu carrito está vacío!',
@@ -3187,6 +3260,7 @@ class AppTranslations {
     // Hardcoded strings fix
     'error_post_not_found': 'Publicación no encontrada',
     'error_user_not_found': 'Usuario no encontrado',
+    'error_user_not_logged_in': 'Debes iniciar sesión para continuar',
     'field_full_name': 'nombre completo',
     'field_username': 'nombre de usuario',
     'field_photo_url': 'foto de perfil',
@@ -3199,7 +3273,8 @@ class AppTranslations {
 
     // ── Traducciones añadidas automáticamente ──
     'admin_add_products_perm': 'Agregar productos',
-    'admin_all_remote_sessions_closed': 'Todas las sesiones remotas han sido cerradas',
+    'admin_all_remote_sessions_closed':
+        'Todas las sesiones remotas han sido cerradas',
     'admin_confirm_delete_seller': '¿Eliminar a',
     'admin_current': 'Actual',
     'admin_delete_products_perm': 'Eliminar productos',
@@ -3217,7 +3292,8 @@ class AppTranslations {
     'admin_no_out_of_stock': '¡No hay productos agotados!',
     'admin_no_sellers_registered': 'No hay vendedores registrados',
     'admin_notifications': 'Notificaciones',
-    'admin_password_min_6_chars': 'La contraseña debe tener al menos 6 caracteres',
+    'admin_password_min_6_chars':
+        'La contraseña debe tener al menos 6 caracteres',
     'admin_password_updated_success': 'Contraseña actualizada exitosamente',
     'admin_products_by_category': 'Productos por categoría',
     'admin_products_created': 'productos creados',
@@ -3235,7 +3311,8 @@ class AppTranslations {
     'brand_max_chars': 'La marca no puede exceder 100 caracteres',
     'brand_min_chars': 'La marca debe tener al menos 2 caracteres',
     'bug_report_subject': 'Reporte de error - BiUX App',
-    'city_and_department_required': 'La ciudad y el departamento son obligatorios',
+    'city_and_department_required':
+        'La ciudad y el departamento son obligatorios',
     'city_colon': 'Ciudad:',
     'city_department_label': 'Ciudad, Departamento',
     'city_example_hint': 'Ej: Bogotá, Cundinamarca',
@@ -3249,18 +3326,23 @@ class AppTranslations {
     'count_categories': 'categorías',
     'count_products': 'productos',
     'default_approve_comment': 'Solicitud aprobada. ¡Bienvenido al equipo!',
-    'default_seller_request_message': 'Me gustaría obtener permiso para vender productos en la tienda. Tengo experiencia en el sector ciclista.',
-    'delete_photo_description': '¿Estás seguro de que deseas eliminar esta foto?',
+    'default_seller_request_message':
+        'Me gustaría obtener permiso para vender productos en la tienda. Tengo experiencia en el sector ciclista.',
+    'delete_photo_description':
+        '¿Estás seguro de que deseas eliminar esta foto?',
     'delete_photo_title': 'Eliminar foto',
     'department_min_chars': 'El departamento debe tener al menos 2 caracteres',
     'done': 'Listo',
     'enter_user_id': 'Ingresa el ID del usuario',
-    'finalize_bike_info': 'Al finalizar, tu bicicleta quedará registrada y podrás generar su código QR',
-    'frame_serial_help': 'Busca el número de serie grabado en el cuadro de tu bicicleta',
+    'finalize_bike_info':
+        'Al finalizar, tu bicicleta quedará registrada y podrás generar su código QR',
+    'frame_serial_help':
+        'Busca el número de serie grabado en el cuadro de tu bicicleta',
     'in_preposition': 'en',
     'invoice': 'Factura',
     'main_photo': 'Foto principal',
-    'mark_recovered_confirm': '¿Estás seguro de que deseas marcar esta bicicleta como recuperada?',
+    'mark_recovered_confirm':
+        '¿Estás seguro de que deseas marcar esta bicicleta como recuperada?',
     'media_deleted_success': 'Archivo multimedia eliminado',
     'message_optional': 'Mensaje (opcional)',
     'model_colon': 'Modelo:',
@@ -3272,13 +3354,18 @@ class AppTranslations {
     'new_owner_id': 'ID del nuevo propietario',
     'no_rides_available': 'No hay rodadas disponibles',
     'ok': 'Aceptar',
-    'only_letters_numbers_hyphens': 'Solo se permiten letras, números y guiones',
-    'only_letters_numbers_spaces_hyphens': 'Solo se permiten letras, números, espacios y guiones',
-    'only_letters_numbers_spaces_hyphens_slashes': 'Solo se permiten letras, números, espacios, guiones y barras',
-    'only_letters_spaces_commas_hyphens': 'Solo se permiten letras, espacios, comas y guiones',
+    'only_letters_numbers_hyphens':
+        'Solo se permiten letras, números y guiones',
+    'only_letters_numbers_spaces_hyphens':
+        'Solo se permiten letras, números, espacios y guiones',
+    'only_letters_numbers_spaces_hyphens_slashes':
+        'Solo se permiten letras, números, espacios, guiones y barras',
+    'only_letters_spaces_commas_hyphens':
+        'Solo se permiten letras, espacios, comas y guiones',
     'permanently_delete_account': 'Eliminar cuenta permanentemente',
     'photo': 'Foto',
-    'privacy_policy_body': 'BiUX recopila y utiliza tu información personal para brindarte una mejor experiencia. Recopilamos datos como tu nombre, email, ubicación y actividad dentro de la app. Tus datos se almacenan de forma segura y no se comparten con terceros sin tu consentimiento, excepto cuando la ley lo requiera. Puedes solicitar la eliminación de tus datos en cualquier momento desde la configuración de tu cuenta.',
+    'privacy_policy_body':
+        'BiUX recopila y utiliza tu información personal para brindarte una mejor experiencia. Recopilamos datos como tu nombre, email, ubicación y actividad dentro de la app. Tus datos se almacenan de forma segura y no se comparten con terceros sin tu consentimiento, excepto cuando la ley lo requiera. Puedes solicitar la eliminación de tus datos en cualquier momento desde la configuración de tu cuenta.',
     'promotions_address': 'Dirección',
     'promotions_address_hint': 'Ej: Cra 7 #45-12, Bogotá',
     'promotions_address_location_required': 'Dirección / Ubicación *',
@@ -3286,13 +3373,15 @@ class AppTranslations {
     'promotions_address_required_error': 'La dirección es obligatoria',
     'promotions_admin_panel': 'Panel de administración',
     'promotions_admin_panel_title': 'Panel de Administración',
-    'promotions_admin_will_verify': 'Un administrador verificará tu información. Te notificaremos cuando sea aprobada.',
+    'promotions_admin_will_verify':
+        'Un administrador verificará tu información. Te notificaremos cuando sea aprobada.',
     'promotions_all_up_to_date': '¡Todo al día!',
     'promotions_approve': 'Aprobar',
     'promotions_back': 'Atrás',
     'promotions_basic_info': 'Información básica',
     'promotions_become_promoter': 'Ser promotor',
-    'promotions_benefit_auto_approved': 'Publicaciones aprobadas automáticamente',
+    'promotions_benefit_auto_approved':
+        'Publicaciones aprobadas automáticamente',
     'promotions_benefit_create_events': 'Crear eventos para la comunidad',
     'promotions_benefit_publish_ads': 'Publicar anuncios de tu negocio',
     'promotions_benefit_verified_badge': 'Obtener la insignia de verificado',
@@ -3310,13 +3399,16 @@ class AppTranslations {
     'promotions_cancel_registration': 'Cancelar registro',
     'promotions_city': 'Ciudad',
     'promotions_city_hint': 'Ej: Bogotá, Medellín...',
-    'promotions_complete_address_and_phone': 'Completa la dirección y el teléfono',
-    'promotions_complete_name_and_description': 'Completa el nombre y la descripción',
+    'promotions_complete_address_and_phone':
+        'Completa la dirección y el teléfono',
+    'promotions_complete_name_and_description':
+        'Completa el nombre y la descripción',
     'promotions_confirmation': 'Confirmación',
     'promotions_contact_info': 'Información de contacto',
     'promotions_contact_phone_email': 'Contacto (teléfono, email)',
     'promotions_create_event': 'Crear evento',
-    'promotions_create_event_subtitle': 'Organiza un evento para la comunidad ciclista',
+    'promotions_create_event_subtitle':
+        'Organiza un evento para la comunidad ciclista',
     'promotions_creating': 'Creando...',
     'promotions_date_and_time': 'Fecha y hora',
     'promotions_date_required': 'Fecha *',
@@ -3327,7 +3419,8 @@ class AppTranslations {
     'promotions_email_optional': 'Email (opcional)',
     'promotions_enrolled': 'Inscrito',
     'promotions_event_created': '¡Evento creado exitosamente!',
-    'promotions_event_describe_hint': 'Describe el evento, actividades, requisitos...',
+    'promotions_event_describe_hint':
+        'Describe el evento, actividades, requisitos...',
     'promotions_event_description_required': 'Descripción del evento *',
     'promotions_event_info': 'Información del evento',
     'promotions_event_location_hint': 'Ej: Parque Simón Bolívar, Bogotá',
@@ -3348,9 +3441,11 @@ class AppTranslations {
     'promotions_nit_optional': 'NIT (opcional)',
     'promotions_no': 'No',
     'promotions_no_businesses': 'No hay negocios aún',
-    'promotions_no_businesses_subtitle': 'Sé el primero en publicar tu negocio ciclista',
+    'promotions_no_businesses_subtitle':
+        'Sé el primero en publicar tu negocio ciclista',
     'promotions_no_events': 'No hay eventos aún',
-    'promotions_no_events_subtitle': 'Crea un evento para la comunidad ciclista',
+    'promotions_no_events_subtitle':
+        'Crea un evento para la comunidad ciclista',
     'promotions_no_pending_requests': 'No hay solicitudes pendientes',
     'promotions_once_approved': 'Una vez aprobado podrás:',
     'promotions_pending': 'Pendientes',
@@ -3360,7 +3455,8 @@ class AppTranslations {
     'promotions_physical_store': 'Local físico',
     'promotions_products_services_hint': '¿Qué productos o servicios ofreces?',
     'promotions_publish_business': 'Publicar negocio',
-    'promotions_publish_for_community': 'Publica tu negocio para la comunidad ciclista',
+    'promotions_publish_for_community':
+        'Publica tu negocio para la comunidad ciclista',
     'promotions_publishing': 'Publicando...',
     'promotions_register_to_event': 'Registrarse al evento',
     'promotions_registered_count': 'registrados',
@@ -3373,13 +3469,15 @@ class AppTranslations {
     'promotions_review_and_send': 'Revisa y envía',
     'promotions_select_event_date': 'Selecciona la fecha del evento',
     'promotions_select_event_time': 'Selecciona la hora del evento',
-    'promotions_send_error': 'Error al enviar la solicitud. Inténtalo de nuevo.',
+    'promotions_send_error':
+        'Error al enviar la solicitud. Inténtalo de nuevo.',
     'promotions_send_request': 'Enviar solicitud',
     'promotions_sending': 'Enviando...',
     'promotions_social_web_hint': 'Instagram, Facebook, sitio web...',
     'promotions_social_web_optional': 'Web o redes sociales (opcional)',
     'promotions_spots': 'cupos',
-    'promotions_terms_confirmation': 'Confirmo que la información proporcionada es verídica y acepto los términos de uso',
+    'promotions_terms_confirmation':
+        'Confirmo que la información proporcionada es verídica y acepto los términos de uso',
     'promotions_time_required': 'Hora *',
     'promotions_type': 'Tipo',
     'promotions_type_accessories': 'Accesorios',
@@ -3394,7 +3492,8 @@ class AppTranslations {
     'promotions_unlimited_spots_hint': 'Dejar vacío para cupos ilimitados',
     'promotions_verification': 'Verificación',
     'promotions_verification_data': 'Datos de verificación',
-    'promotions_verification_info_text': 'Esta información nos ayuda a verificar tu negocio. Se revisará manualmente antes de aprobar tu solicitud.',
+    'promotions_verification_info_text':
+        'Esta información nos ayuda a verificar tu negocio. Se revisará manualmente antes de aprobar tu solicitud.',
     'promotions_verify_business': 'Verificar negocio',
     'promotions_web_social': 'Web/Redes',
     'promotions_yes': 'Sí',
@@ -3407,18 +3506,69 @@ class AppTranslations {
     'serial_number_short': 'Número de serie',
     'size_colon': 'Talla:',
     'size_max_chars': 'La talla no puede exceder 10 caracteres',
-    'step4_description': 'Verifica que todos los datos de tu bicicleta estén correctos antes de finalizar',
+    'step4_description':
+        'Verifica que todos los datos de tu bicicleta estén correctos antes de finalizar',
     'tap_to_enlarge_photo': 'Toca para ampliar la foto',
-    'terms_conditions_body': 'Al usar BiUX, aceptas estos términos y condiciones. BiUX es una plataforma de uso personal para ciclistas. Los usuarios son responsables del contenido que publican. BiUX se reserva el derecho de moderar y eliminar contenido que viole las normas de la comunidad. Los datos personales se manejan conforme a nuestra política de privacidad. Nos reservamos el derecho de actualizar estos términos en cualquier momento.',
+    'terms_conditions_body':
+        'Al usar BiUX, aceptas estos términos y condiciones. BiUX es una plataforma de uso personal para ciclistas. Los usuarios son responsables del contenido que publican. BiUX se reserva el derecho de moderar y eliminar contenido que viole las normas de la comunidad. Los datos personales se manejan conforme a nuestra política de privacidad. Nos reservamos el derecho de actualizar estos términos en cualquier momento.',
     'text_max_150_chars': 'El texto no puede exceder 150 caracteres',
     'theft_description_hint': 'Describe cómo ocurrió el robo...',
     'theft_location_hint': 'Ej: Calle 50 con Carrera 7, Bogotá',
+    'theft_report_sent_success': 'Reporte de robo enviado exitosamente',
+    'theft_report_sent_error': 'Error al enviar el reporte de robo',
+    'theft_reported_by_owner': 'Robo reportado por el propietario',
     'theft_reported_success': 'Robo reportado exitosamente',
     'tomorrow': 'Mañana',
+    'transfer_request_sent_success':
+        'Solicitud de transferencia enviada exitosamente',
+    'transfer_request_sent_error':
+        'Error al enviar la solicitud de transferencia',
     'transfer_requested_success': 'Solicitud de transferencia enviada',
     'type_colon': 'Tipo:',
     'valid_size_hint': 'Ingresa una talla válida (ej: S, M, L, XL, 16, 18")',
     'year_colon': 'Año:',
+
+    // Edit username screen
+    'username_hint': 'miusuario',
+    'username_info_desc':
+        'Tu nombre de usuario (@usuario) es como otros usuarios te encontrarán. Debe ser único y solo puede contener letras, números y guiones bajos.',
+    'username_required': 'El nombre de usuario es obligatorio',
+    'username_min_chars': 'Debe tener al menos 3 caracteres',
+    'username_max_chars': 'No puede tener más de 30 caracteres',
+    'username_only_valid_chars': 'Solo letras, números y guiones bajos',
+    'username_updated_success': 'Nombre de usuario actualizado exitosamente',
+
+    // User search screen
+    'search_users_empty_title': 'Buscar usuarios',
+    'searching_users': 'Buscando usuarios...',
+    'no_users_found': 'No se encontraron usuarios',
+    'try_another_search': 'Intenta con otro término de búsqueda',
+    'follower_singular': 'seguidor',
+
+    // User profile
+    'error_loading_profile_title': 'Error al cargar perfil',
+    'user_not_found_label': 'Usuario no encontrado',
+    'no_name_user': 'Usuario sin nombre',
+    'loading_following': 'Cargando seguidos...',
+    'error_follow': 'Error al seguir',
+    'error_unfollow': 'Error al dejar de seguir',
+
+    // Privacy & security
+    'not_linked': 'No vinculado',
+    'linked_devices': 'Dispositivos vinculados',
+    'this_device': 'Este dispositivo',
+    'currently_logged_in': 'Sesión iniciada actualmente',
+    'privacy_security': 'Privacidad y seguridad',
+    'see_where_logged_in': 'Ve dónde has iniciado sesión',
+    'confirm_identity': 'Confirma tu identidad',
+    'activated': 'Activado',
+    'deactivated': 'Desactivado',
+
+    // Profile photo
+    'change_profile_photo': 'Cambiar foto de perfil',
+    'use_camera': 'Usar cámara',
+    'choose_existing_photo': 'Elegir foto existente',
+    'use_default_avatar': 'Usar avatar predeterminado',
   };
 
   // ─── ENGLISH ────────────────────────────────────────────────────
@@ -4071,6 +4221,8 @@ class AppTranslations {
     'add_photos_btn': 'Add Photos',
     'field_required': 'Field required',
     'bike_registered_success': 'Bike registered successfully',
+    'bike_marked_recovered_success': 'Bike marked as recovered successfully',
+    'bike_marked_recovered_error': 'Error marking bike as recovered',
     'product_info_section': 'Product Information',
     'product_name_label': 'Product name',
     'product_name_hint': 'E.g.: Pro Team Cycling Jersey',
@@ -4146,6 +4298,7 @@ class AppTranslations {
     'special_discounts': 'Special discounts available',
     'all_categories': 'All',
     'cat_bikes': 'Bikes',
+    'cat_bibs': 'Bibs',
     'cat_jerseys': 'Jerseys',
     'cat_shorts': 'Shorts',
     'cat_helmets': 'Helmets',
@@ -6629,6 +6782,7 @@ class AppTranslations {
     // Hardcoded strings fix
     'error_post_not_found': 'Post not found',
     'error_user_not_found': 'User not found',
+    'error_user_not_logged_in': 'You must log in to continue',
     'field_full_name': 'full name',
     'field_username': 'username',
     'field_photo_url': 'profile photo',
@@ -6691,18 +6845,22 @@ class AppTranslations {
     'count_categories': 'categories',
     'count_products': 'products',
     'default_approve_comment': 'Request approved. Welcome to the team!',
-    'default_seller_request_message': 'I would like to get permission to sell products in the store. I have experience in the cycling sector.',
+    'default_seller_request_message':
+        'I would like to get permission to sell products in the store. I have experience in the cycling sector.',
     'delete_photo_description': 'Are you sure you want to delete this photo?',
     'delete_photo_title': 'Delete photo',
     'department_min_chars': 'State must have at least 2 characters',
     'done': 'Done',
     'enter_user_id': 'Enter user ID',
-    'finalize_bike_info': 'Once finished, your bike will be registered and you can generate its QR code',
-    'frame_serial_help': 'Look for the serial number engraved on your bike frame',
+    'finalize_bike_info':
+        'Once finished, your bike will be registered and you can generate its QR code',
+    'frame_serial_help':
+        'Look for the serial number engraved on your bike frame',
     'in_preposition': 'in',
     'invoice': 'Invoice',
     'main_photo': 'Main photo',
-    'mark_recovered_confirm': 'Are you sure you want to mark this bike as recovered?',
+    'mark_recovered_confirm':
+        'Are you sure you want to mark this bike as recovered?',
     'media_deleted_success': 'Media file deleted',
     'message_optional': 'Message (optional)',
     'model_colon': 'Model:',
@@ -6715,12 +6873,16 @@ class AppTranslations {
     'no_rides_available': 'No rides available',
     'ok': 'OK',
     'only_letters_numbers_hyphens': 'Only letters, numbers and hyphens allowed',
-    'only_letters_numbers_spaces_hyphens': 'Only letters, numbers, spaces and hyphens allowed',
-    'only_letters_numbers_spaces_hyphens_slashes': 'Only letters, numbers, spaces, hyphens and slashes allowed',
-    'only_letters_spaces_commas_hyphens': 'Only letters, spaces, commas and hyphens allowed',
+    'only_letters_numbers_spaces_hyphens':
+        'Only letters, numbers, spaces and hyphens allowed',
+    'only_letters_numbers_spaces_hyphens_slashes':
+        'Only letters, numbers, spaces, hyphens and slashes allowed',
+    'only_letters_spaces_commas_hyphens':
+        'Only letters, spaces, commas and hyphens allowed',
     'permanently_delete_account': 'Permanently delete account',
     'photo': 'Photo',
-    'privacy_policy_body': 'BiUX collects and uses your personal information to provide you with a better experience. We collect data such as your name, email, location and activity within the app. Your data is stored securely and is not shared with third parties without your consent, except when required by law. You can request the deletion of your data at any time from your account settings.',
+    'privacy_policy_body':
+        'BiUX collects and uses your personal information to provide you with a better experience. We collect data such as your name, email, location and activity within the app. Your data is stored securely and is not shared with third parties without your consent, except when required by law. You can request the deletion of your data at any time from your account settings.',
     'promotions_address': 'Address',
     'promotions_address_hint': 'E.g.: 123 Main St, Miami',
     'promotions_address_location_required': 'Address / Location *',
@@ -6728,7 +6890,8 @@ class AppTranslations {
     'promotions_address_required_error': 'Address is required',
     'promotions_admin_panel': 'Admin panel',
     'promotions_admin_panel_title': 'Administration Panel',
-    'promotions_admin_will_verify': 'An administrator will verify your information. We will notify you when it is approved.',
+    'promotions_admin_will_verify':
+        'An administrator will verify your information. We will notify you when it is approved.',
     'promotions_all_up_to_date': 'All up to date!',
     'promotions_approve': 'Approve',
     'promotions_back': 'Back',
@@ -6752,24 +6915,29 @@ class AppTranslations {
     'promotions_cancel_registration': 'Cancel registration',
     'promotions_city': 'City',
     'promotions_city_hint': 'E.g.: Miami, New York...',
-    'promotions_complete_address_and_phone': 'Complete the address and phone number',
-    'promotions_complete_name_and_description': 'Complete the name and description',
+    'promotions_complete_address_and_phone':
+        'Complete the address and phone number',
+    'promotions_complete_name_and_description':
+        'Complete the name and description',
     'promotions_confirmation': 'Confirmation',
     'promotions_contact_info': 'Contact information',
     'promotions_contact_phone_email': 'Contact (phone, email)',
     'promotions_create_event': 'Create event',
-    'promotions_create_event_subtitle': 'Organize an event for the cycling community',
+    'promotions_create_event_subtitle':
+        'Organize an event for the cycling community',
     'promotions_creating': 'Creating...',
     'promotions_date_and_time': 'Date and time',
     'promotions_date_required': 'Date *',
-    'promotions_describe_hint': 'Describe your business, products and services...',
+    'promotions_describe_hint':
+        'Describe your business, products and services...',
     'promotions_description_required': 'Description *',
     'promotions_description_required_error': 'Description is required',
     'promotions_email': 'Email',
     'promotions_email_optional': 'Email (optional)',
     'promotions_enrolled': 'Enrolled',
     'promotions_event_created': 'Event created successfully!',
-    'promotions_event_describe_hint': 'Describe the event, activities, requirements...',
+    'promotions_event_describe_hint':
+        'Describe the event, activities, requirements...',
     'promotions_event_description_required': 'Event description *',
     'promotions_event_info': 'Event information',
     'promotions_event_location_hint': 'E.g.: Central Park, New York',
@@ -6790,9 +6958,11 @@ class AppTranslations {
     'promotions_nit_optional': 'Tax ID (optional)',
     'promotions_no': 'No',
     'promotions_no_businesses': 'No businesses yet',
-    'promotions_no_businesses_subtitle': 'Be the first to publish your cycling business',
+    'promotions_no_businesses_subtitle':
+        'Be the first to publish your cycling business',
     'promotions_no_events': 'No events yet',
-    'promotions_no_events_subtitle': 'Create an event for the cycling community',
+    'promotions_no_events_subtitle':
+        'Create an event for the cycling community',
     'promotions_no_pending_requests': 'No pending requests',
     'promotions_once_approved': 'Once approved you can:',
     'promotions_pending': 'Pending',
@@ -6800,9 +6970,11 @@ class AppTranslations {
     'promotions_phone_hint': 'E.g.: 555 123 4567',
     'promotions_phone_required': 'Phone *',
     'promotions_physical_store': 'Physical store',
-    'promotions_products_services_hint': 'What products or services do you offer?',
+    'promotions_products_services_hint':
+        'What products or services do you offer?',
     'promotions_publish_business': 'Publish business',
-    'promotions_publish_for_community': 'Publish your business for the cycling community',
+    'promotions_publish_for_community':
+        'Publish your business for the cycling community',
     'promotions_publishing': 'Publishing...',
     'promotions_register_to_event': 'Register for event',
     'promotions_registered_count': 'registered',
@@ -6821,7 +6993,8 @@ class AppTranslations {
     'promotions_social_web_hint': 'Instagram, Facebook, website...',
     'promotions_social_web_optional': 'Website or social media (optional)',
     'promotions_spots': 'spots',
-    'promotions_terms_confirmation': 'I confirm the information provided is truthful and I accept the terms of use',
+    'promotions_terms_confirmation':
+        'I confirm the information provided is truthful and I accept the terms of use',
     'promotions_time_required': 'Time *',
     'promotions_type': 'Type',
     'promotions_type_accessories': 'Accessories',
@@ -6836,7 +7009,8 @@ class AppTranslations {
     'promotions_unlimited_spots_hint': 'Leave empty for unlimited spots',
     'promotions_verification': 'Verification',
     'promotions_verification_data': 'Verification data',
-    'promotions_verification_info_text': 'This information helps us verify your business. It will be manually reviewed before approving your request.',
+    'promotions_verification_info_text':
+        'This information helps us verify your business. It will be manually reviewed before approving your request.',
     'promotions_verify_business': 'Verify business',
     'promotions_web_social': 'Web/Social',
     'promotions_yes': 'Yes',
@@ -6849,14 +7023,21 @@ class AppTranslations {
     'serial_number_short': 'Serial number',
     'size_colon': 'Size:',
     'size_max_chars': 'Size cannot exceed 10 characters',
-    'step4_description': 'Verify that all your bike data is correct before finishing',
+    'step4_description':
+        'Verify that all your bike data is correct before finishing',
     'tap_to_enlarge_photo': 'Tap to enlarge photo',
-    'terms_conditions_body': 'By using BiUX, you accept these terms and conditions. BiUX is a personal use platform for cyclists. Users are responsible for the content they post. BiUX reserves the right to moderate and remove content that violates community guidelines. Personal data is handled in accordance with our privacy policy. We reserve the right to update these terms at any time.',
+    'terms_conditions_body':
+        'By using BiUX, you accept these terms and conditions. BiUX is a personal use platform for cyclists. Users are responsible for the content they post. BiUX reserves the right to moderate and remove content that violates community guidelines. Personal data is handled in accordance with our privacy policy. We reserve the right to update these terms at any time.',
     'text_max_150_chars': 'Text cannot exceed 150 characters',
     'theft_description_hint': 'Describe how the theft occurred...',
     'theft_location_hint': 'E.g.: 50th St & 7th Ave, Bogotá',
+    'theft_report_sent_success': 'Theft report sent successfully',
+    'theft_report_sent_error': 'Error sending theft report',
+    'theft_reported_by_owner': 'Theft reported by owner',
     'theft_reported_success': 'Theft reported successfully',
     'tomorrow': 'Tomorrow',
+    'transfer_request_sent_success': 'Transfer request sent successfully',
+    'transfer_request_sent_error': 'Error sending transfer request',
     'transfer_requested_success': 'Transfer request sent',
     'type_colon': 'Type:',
     'valid_size_hint': 'Enter a valid size (e.g. S, M, L, XL, 16, 18")',
@@ -7525,6 +7706,9 @@ class AppTranslations {
     'add_photos_btn': 'Adicionar Fotos',
     'field_required': 'Campo obrigatório',
     'bike_registered_success': 'Bicicleta registrada com sucesso',
+    'bike_marked_recovered_success':
+        'Bicicleta marcada como recuperada com sucesso',
+    'bike_marked_recovered_error': 'Erro ao marcar a bicicleta como recuperada',
     'product_info_section': 'Informações do Produto',
     'product_name_label': 'Nome do produto',
     'product_name_hint': 'Ex: Jersey Ciclismo Pro Team',
@@ -7601,6 +7785,7 @@ class AppTranslations {
     'special_discounts': 'Descontos especiais disponíveis',
     'all_categories': 'Todos',
     'cat_bikes': 'Bicis',
+    'cat_bibs': 'Bretelles',
     'cat_jerseys': 'Jerseys',
     'cat_shorts': 'Bermudas',
     'cat_helmets': 'Capacetes',
@@ -10131,6 +10316,7 @@ class AppTranslations {
     // Hardcoded strings fix
     'error_post_not_found': 'Publicação não encontrada',
     'error_user_not_found': 'Usuário não encontrado',
+    'error_user_not_logged_in': 'Você precisa fazer login para continuar',
     'field_full_name': 'nome completo',
     'field_username': 'nome de usuário',
     'field_photo_url': 'foto de perfil',
@@ -10144,7 +10330,8 @@ class AppTranslations {
 
     // ── Traducciones añadidas automáticamente ──
     'admin_add_products_perm': 'Adicionar produtos',
-    'admin_all_remote_sessions_closed': 'Todas as sessões remotas foram encerradas',
+    'admin_all_remote_sessions_closed':
+        'Todas as sessões remotas foram encerradas',
     'admin_confirm_delete_seller': 'Excluir',
     'admin_current': 'Atual',
     'admin_delete_products_perm': 'Excluir produtos',
@@ -10194,18 +10381,22 @@ class AppTranslations {
     'count_categories': 'categorias',
     'count_products': 'produtos',
     'default_approve_comment': 'Solicitação aprovada. Bem-vindo à equipe!',
-    'default_seller_request_message': 'Gostaria de obter permissão para vender produtos na loja. Tenho experiência no setor ciclístico.',
+    'default_seller_request_message':
+        'Gostaria de obter permissão para vender produtos na loja. Tenho experiência no setor ciclístico.',
     'delete_photo_description': 'Tem certeza de que deseja excluir esta foto?',
     'delete_photo_title': 'Excluir foto',
     'department_min_chars': 'O estado deve ter pelo menos 2 caracteres',
     'done': 'Pronto',
     'enter_user_id': 'Insira o ID do usuário',
-    'finalize_bike_info': 'Ao finalizar, sua bicicleta ficará registrada e você poderá gerar o código QR',
-    'frame_serial_help': 'Procure o número de série gravado no quadro da sua bicicleta',
+    'finalize_bike_info':
+        'Ao finalizar, sua bicicleta ficará registrada e você poderá gerar o código QR',
+    'frame_serial_help':
+        'Procure o número de série gravado no quadro da sua bicicleta',
     'in_preposition': 'em',
     'invoice': 'Nota fiscal',
     'main_photo': 'Foto principal',
-    'mark_recovered_confirm': 'Tem certeza de que deseja marcar esta bicicleta como recuperada?',
+    'mark_recovered_confirm':
+        'Tem certeza de que deseja marcar esta bicicleta como recuperada?',
     'media_deleted_success': 'Arquivo de mídia excluído',
     'message_optional': 'Mensagem (opcional)',
     'model_colon': 'Modelo:',
@@ -10217,13 +10408,18 @@ class AppTranslations {
     'new_owner_id': 'ID do novo proprietário',
     'no_rides_available': 'Nenhuma pedalada disponível',
     'ok': 'OK',
-    'only_letters_numbers_hyphens': 'Somente letras, números e hífens permitidos',
-    'only_letters_numbers_spaces_hyphens': 'Somente letras, números, espaços e hífens permitidos',
-    'only_letters_numbers_spaces_hyphens_slashes': 'Somente letras, números, espaços, hífens e barras permitidos',
-    'only_letters_spaces_commas_hyphens': 'Somente letras, espaços, vírgulas e hífens permitidos',
+    'only_letters_numbers_hyphens':
+        'Somente letras, números e hífens permitidos',
+    'only_letters_numbers_spaces_hyphens':
+        'Somente letras, números, espaços e hífens permitidos',
+    'only_letters_numbers_spaces_hyphens_slashes':
+        'Somente letras, números, espaços, hífens e barras permitidos',
+    'only_letters_spaces_commas_hyphens':
+        'Somente letras, espaços, vírgulas e hífens permitidos',
     'permanently_delete_account': 'Excluir conta permanentemente',
     'photo': 'Foto',
-    'privacy_policy_body': 'O BiUX coleta e utiliza suas informações pessoais para proporcionar uma melhor experiência. Coletamos dados como seu nome, email, localização e atividade dentro do app. Seus dados são armazenados de forma segura e não são compartilhados com terceiros sem seu consentimento, exceto quando exigido por lei. Você pode solicitar a exclusão dos seus dados a qualquer momento nas configurações da sua conta.',
+    'privacy_policy_body':
+        'O BiUX coleta e utiliza suas informações pessoais para proporcionar uma melhor experiência. Coletamos dados como seu nome, email, localização e atividade dentro do app. Seus dados são armazenados de forma segura e não são compartilhados com terceiros sem seu consentimento, exceto quando exigido por lei. Você pode solicitar a exclusão dos seus dados a qualquer momento nas configurações da sua conta.',
     'promotions_address': 'Endereço',
     'promotions_address_hint': 'Ex: Rua das Flores, 123, São Paulo',
     'promotions_address_location_required': 'Endereço / Localização *',
@@ -10231,7 +10427,8 @@ class AppTranslations {
     'promotions_address_required_error': 'O endereço é obrigatório',
     'promotions_admin_panel': 'Painel de administração',
     'promotions_admin_panel_title': 'Painel de Administração',
-    'promotions_admin_will_verify': 'Um administrador verificará suas informações. Notificaremos quando for aprovada.',
+    'promotions_admin_will_verify':
+        'Um administrador verificará suas informações. Notificaremos quando for aprovada.',
     'promotions_all_up_to_date': 'Tudo em dia!',
     'promotions_approve': 'Aprovar',
     'promotions_back': 'Voltar',
@@ -10261,7 +10458,8 @@ class AppTranslations {
     'promotions_contact_info': 'Informação de contato',
     'promotions_contact_phone_email': 'Contato (telefone, email)',
     'promotions_create_event': 'Criar evento',
-    'promotions_create_event_subtitle': 'Organize um evento para a comunidade ciclista',
+    'promotions_create_event_subtitle':
+        'Organize um evento para a comunidade ciclista',
     'promotions_creating': 'Criando...',
     'promotions_date_and_time': 'Data e hora',
     'promotions_date_required': 'Data *',
@@ -10272,7 +10470,8 @@ class AppTranslations {
     'promotions_email_optional': 'Email (opcional)',
     'promotions_enrolled': 'Inscrito',
     'promotions_event_created': 'Evento criado com sucesso!',
-    'promotions_event_describe_hint': 'Descreva o evento, atividades, requisitos...',
+    'promotions_event_describe_hint':
+        'Descreva o evento, atividades, requisitos...',
     'promotions_event_description_required': 'Descrição do evento *',
     'promotions_event_info': 'Informação do evento',
     'promotions_event_location_hint': 'Ex: Parque Ibirapuera, São Paulo',
@@ -10293,9 +10492,11 @@ class AppTranslations {
     'promotions_nit_optional': 'CNPJ (opcional)',
     'promotions_no': 'Não',
     'promotions_no_businesses': 'Nenhum negócio ainda',
-    'promotions_no_businesses_subtitle': 'Seja o primeiro a publicar seu negócio ciclista',
+    'promotions_no_businesses_subtitle':
+        'Seja o primeiro a publicar seu negócio ciclista',
     'promotions_no_events': 'Nenhum evento ainda',
-    'promotions_no_events_subtitle': 'Crie um evento para a comunidade ciclista',
+    'promotions_no_events_subtitle':
+        'Crie um evento para a comunidade ciclista',
     'promotions_no_pending_requests': 'Nenhuma solicitação pendente',
     'promotions_once_approved': 'Uma vez aprovado você poderá:',
     'promotions_pending': 'Pendentes',
@@ -10303,9 +10504,11 @@ class AppTranslations {
     'promotions_phone_hint': 'Ex: 11 91234 5678',
     'promotions_phone_required': 'Telefone *',
     'promotions_physical_store': 'Loja física',
-    'promotions_products_services_hint': 'Quais produtos ou serviços você oferece?',
+    'promotions_products_services_hint':
+        'Quais produtos ou serviços você oferece?',
     'promotions_publish_business': 'Publicar negócio',
-    'promotions_publish_for_community': 'Publique seu negócio para a comunidade ciclista',
+    'promotions_publish_for_community':
+        'Publique seu negócio para a comunidade ciclista',
     'promotions_publishing': 'Publicando...',
     'promotions_register_to_event': 'Registrar-se no evento',
     'promotions_registered_count': 'registrados',
@@ -10324,7 +10527,8 @@ class AppTranslations {
     'promotions_social_web_hint': 'Instagram, Facebook, site...',
     'promotions_social_web_optional': 'Site ou redes sociais (opcional)',
     'promotions_spots': 'vagas',
-    'promotions_terms_confirmation': 'Confirmo que as informações fornecidas são verdadeiras e aceito os termos de uso',
+    'promotions_terms_confirmation':
+        'Confirmo que as informações fornecidas são verdadeiras e aceito os termos de uso',
     'promotions_time_required': 'Hora *',
     'promotions_type': 'Tipo',
     'promotions_type_accessories': 'Acessórios',
@@ -10339,7 +10543,8 @@ class AppTranslations {
     'promotions_unlimited_spots_hint': 'Deixe vazio para vagas ilimitadas',
     'promotions_verification': 'Verificação',
     'promotions_verification_data': 'Dados de verificação',
-    'promotions_verification_info_text': 'Essas informações nos ajudam a verificar seu negócio. Serão revisadas manualmente antes de aprovar sua solicitação.',
+    'promotions_verification_info_text':
+        'Essas informações nos ajudam a verificar seu negócio. Serão revisadas manualmente antes de aprovar sua solicitação.',
     'promotions_verify_business': 'Verificar negócio',
     'promotions_web_social': 'Web/Redes',
     'promotions_yes': 'Sim',
@@ -10352,18 +10557,31 @@ class AppTranslations {
     'serial_number_short': 'Número de série',
     'size_colon': 'Tamanho:',
     'size_max_chars': 'O tamanho não pode exceder 10 caracteres',
-    'step4_description': 'Verifique se todos os dados da sua bicicleta estão corretos antes de finalizar',
+    'step4_description':
+        'Verifique se todos os dados da sua bicicleta estão corretos antes de finalizar',
     'tap_to_enlarge_photo': 'Toque para ampliar a foto',
-    'terms_conditions_body': 'Ao usar o BiUX, você aceita estes termos e condições. O BiUX é uma plataforma de uso pessoal para ciclistas. Os usuários são responsáveis pelo conteúdo que publicam. O BiUX se reserva o direito de moderar e remover conteúdo que viole as normas da comunidade. Os dados pessoais são tratados conforme nossa política de privacidade. Reservamo-nos o direito de atualizar estes termos a qualquer momento.',
+    'terms_conditions_body':
+        'Ao usar o BiUX, você aceita estes termos e condições. O BiUX é uma plataforma de uso pessoal para ciclistas. Os usuários são responsáveis pelo conteúdo que publicam. O BiUX se reserva o direito de moderar e remover conteúdo que viole as normas da comunidade. Os dados pessoais são tratados conforme nossa política de privacidade. Reservamo-nos o direito de atualizar estes termos a qualquer momento.',
     'text_max_150_chars': 'O texto não pode exceder 150 caracteres',
     'theft_description_hint': 'Descreva como o roubo aconteceu...',
     'theft_location_hint': 'Ex: Rua 50 com Carrera 7, Bogotá',
+    'theft_report_sent_success': 'Relatório de roubo enviado com sucesso',
+    'theft_report_sent_error': 'Erro ao enviar o relatório de roubo',
+    'theft_reported_by_owner': 'Roubo reportado pelo proprietário',
     'theft_reported_success': 'Roubo reportado com sucesso',
     'tomorrow': 'Amanhã',
+    'transfer_request_sent_success':
+        'Pedido de transferência enviado com sucesso',
+    'transfer_request_sent_error': 'Erro ao enviar o pedido de transferência',
     'transfer_requested_success': 'Pedido de transferência enviado',
     'type_colon': 'Tipo:',
     'valid_size_hint': 'Insira um tamanho válido (ex: S, M, L, XL, 16, 18")',
     'year_colon': 'Ano:',
+
+    // Missing translations
+    'coupon_code_applied': 'Cupom aplicado',
+    'have_discount_coupon': 'Tem um cupom de desconto?',
+    'other_city': 'Outra cidade',
   };
 
   // ─── FRANÇAIS ───────────────────────────────────────────────────
@@ -11035,6 +11253,9 @@ class AppTranslations {
     'add_photos_btn': 'Ajouter des Photos',
     'field_required': 'Champ obligatoire',
     'bike_registered_success': 'Vélo enregistré avec succès',
+    'bike_marked_recovered_success': 'Vélo marqué comme récupéré avec succès',
+    'bike_marked_recovered_error':
+        'Erreur lors du marquage du vélo comme récupéré',
     'product_info_section': 'Informations du Produit',
     'product_name_label': 'Nom du produit',
     'product_name_hint': 'Ex : Maillot Cyclisme Pro Team',
@@ -11113,6 +11334,7 @@ class AppTranslations {
     'special_discounts': 'Réductions spéciales disponibles',
     'all_categories': 'Tous',
     'cat_bikes': 'Vélos',
+    'cat_bibs': 'Cuissards à bretelles',
     'cat_jerseys': 'Maillots',
     'cat_shorts': 'Cuissards',
     'cat_helmets': 'Casques',
@@ -13677,6 +13899,7 @@ class AppTranslations {
     // Hardcoded strings fix
     'error_post_not_found': 'Publication non trouvée',
     'error_user_not_found': 'Utilisateur non trouvé',
+    'error_user_not_logged_in': 'Vous devez vous connecter pour continuer',
     'field_full_name': 'nom complet',
     'field_username': 'nom d\'utilisateur',
     'field_photo_url': 'photo de profil',
@@ -13690,7 +13913,8 @@ class AppTranslations {
 
     // ── Traducciones añadidas automáticamente ──
     'admin_add_products_perm': 'Ajouter des produits',
-    'admin_all_remote_sessions_closed': 'Toutes les sessions distantes ont été fermées',
+    'admin_all_remote_sessions_closed':
+        'Toutes les sessions distantes ont été fermées',
     'admin_confirm_delete_seller': 'Supprimer',
     'admin_current': 'Actuel',
     'admin_delete_products_perm': 'Supprimer des produits',
@@ -13708,7 +13932,8 @@ class AppTranslations {
     'admin_no_out_of_stock': 'Aucun produit en rupture de stock !',
     'admin_no_sellers_registered': 'Aucun vendeur enregistré',
     'admin_notifications': 'Notifications',
-    'admin_password_min_6_chars': 'Le mot de passe doit comporter au moins 6 caractères',
+    'admin_password_min_6_chars':
+        'Le mot de passe doit comporter au moins 6 caractères',
     'admin_password_updated_success': 'Mot de passe mis à jour avec succès',
     'admin_products_by_category': 'Produits par catégorie',
     'admin_products_created': 'produits créés',
@@ -13726,7 +13951,8 @@ class AppTranslations {
     'brand_max_chars': 'La marque ne peut pas dépasser 100 caractères',
     'brand_min_chars': 'La marque doit comporter au moins 2 caractères',
     'bug_report_subject': 'Rapport de bug - BiUX App',
-    'city_and_department_required': 'La ville et le département sont obligatoires',
+    'city_and_department_required':
+        'La ville et le département sont obligatoires',
     'city_colon': 'Ville :',
     'city_department_label': 'Ville, Département',
     'city_example_hint': 'Ex : Paris, Île-de-France',
@@ -13740,18 +13966,24 @@ class AppTranslations {
     'count_categories': 'catégories',
     'count_products': 'produits',
     'default_approve_comment': 'Demande approuvée. Bienvenue dans l\'équipe !',
-    'default_seller_request_message': 'Je souhaiterais obtenir la permission de vendre des produits dans la boutique. J\'ai de l\'expérience dans le secteur cycliste.',
-    'delete_photo_description': 'Êtes-vous sûr de vouloir supprimer cette photo ?',
+    'default_seller_request_message':
+        'Je souhaiterais obtenir la permission de vendre des produits dans la boutique. J\'ai de l\'expérience dans le secteur cycliste.',
+    'delete_photo_description':
+        'Êtes-vous sûr de vouloir supprimer cette photo ?',
     'delete_photo_title': 'Supprimer la photo',
-    'department_min_chars': 'Le département doit comporter au moins 2 caractères',
+    'department_min_chars':
+        'Le département doit comporter au moins 2 caractères',
     'done': 'Terminé',
     'enter_user_id': 'Entrez l\'ID de l\'utilisateur',
-    'finalize_bike_info': 'Une fois terminé, votre vélo sera enregistré et vous pourrez générer son code QR',
-    'frame_serial_help': 'Cherchez le numéro de série gravé sur le cadre de votre vélo',
+    'finalize_bike_info':
+        'Une fois terminé, votre vélo sera enregistré et vous pourrez générer son code QR',
+    'frame_serial_help':
+        'Cherchez le numéro de série gravé sur le cadre de votre vélo',
     'in_preposition': 'dans',
     'invoice': 'Facture',
     'main_photo': 'Photo principale',
-    'mark_recovered_confirm': 'Êtes-vous sûr de vouloir marquer ce vélo comme récupéré ?',
+    'mark_recovered_confirm':
+        'Êtes-vous sûr de vouloir marquer ce vélo comme récupéré ?',
     'media_deleted_success': 'Fichier multimédia supprimé',
     'message_optional': 'Message (optionnel)',
     'model_colon': 'Modèle :',
@@ -13763,13 +13995,18 @@ class AppTranslations {
     'new_owner_id': 'ID du nouveau propriétaire',
     'no_rides_available': 'Aucune sortie disponible',
     'ok': 'OK',
-    'only_letters_numbers_hyphens': 'Seuls les lettres, chiffres et tirets sont autorisés',
-    'only_letters_numbers_spaces_hyphens': 'Seuls les lettres, chiffres, espaces et tirets sont autorisés',
-    'only_letters_numbers_spaces_hyphens_slashes': 'Seuls les lettres, chiffres, espaces, tirets et barres obliques sont autorisés',
-    'only_letters_spaces_commas_hyphens': 'Seuls les lettres, espaces, virgules et tirets sont autorisés',
+    'only_letters_numbers_hyphens':
+        'Seuls les lettres, chiffres et tirets sont autorisés',
+    'only_letters_numbers_spaces_hyphens':
+        'Seuls les lettres, chiffres, espaces et tirets sont autorisés',
+    'only_letters_numbers_spaces_hyphens_slashes':
+        'Seuls les lettres, chiffres, espaces, tirets et barres obliques sont autorisés',
+    'only_letters_spaces_commas_hyphens':
+        'Seuls les lettres, espaces, virgules et tirets sont autorisés',
     'permanently_delete_account': 'Supprimer le compte définitivement',
     'photo': 'Photo',
-    'privacy_policy_body': 'BiUX collecte et utilise vos informations personnelles pour vous offrir une meilleure expérience. Nous collectons des données telles que votre nom, email, localisation et activité dans l\'application. Vos données sont stockées de manière sécurisée et ne sont pas partagées avec des tiers sans votre consentement, sauf si la loi l\'exige. Vous pouvez demander la suppression de vos données à tout moment depuis les paramètres de votre compte.',
+    'privacy_policy_body':
+        'BiUX collecte et utilise vos informations personnelles pour vous offrir une meilleure expérience. Nous collectons des données telles que votre nom, email, localisation et activité dans l\'application. Vos données sont stockées de manière sécurisée et ne sont pas partagées avec des tiers sans votre consentement, sauf si la loi l\'exige. Vous pouvez demander la suppression de vos données à tout moment depuis les paramètres de votre compte.',
     'promotions_address': 'Adresse',
     'promotions_address_hint': 'Ex : 12 Rue de la Paix, Paris',
     'promotions_address_location_required': 'Adresse / Emplacement *',
@@ -13777,15 +14014,19 @@ class AppTranslations {
     'promotions_address_required_error': 'L\'adresse est obligatoire',
     'promotions_admin_panel': 'Panneau d\'administration',
     'promotions_admin_panel_title': 'Panneau d\'Administration',
-    'promotions_admin_will_verify': 'Un administrateur vérifiera vos informations. Nous vous informerons lorsqu\'elle sera approuvée.',
+    'promotions_admin_will_verify':
+        'Un administrateur vérifiera vos informations. Nous vous informerons lorsqu\'elle sera approuvée.',
     'promotions_all_up_to_date': 'Tout est à jour !',
     'promotions_approve': 'Approuver',
     'promotions_back': 'Retour',
     'promotions_basic_info': 'Informations de base',
     'promotions_become_promoter': 'Devenir promoteur',
-    'promotions_benefit_auto_approved': 'Publications approuvées automatiquement',
-    'promotions_benefit_create_events': 'Créer des événements pour la communauté',
-    'promotions_benefit_publish_ads': 'Publier des annonces pour votre commerce',
+    'promotions_benefit_auto_approved':
+        'Publications approuvées automatiquement',
+    'promotions_benefit_create_events':
+        'Créer des événements pour la communauté',
+    'promotions_benefit_publish_ads':
+        'Publier des annonces pour votre commerce',
     'promotions_benefit_verified_badge': 'Obtenir le badge vérifié',
     'promotions_business': 'Commerce',
     'promotions_business_data': 'Données du commerce',
@@ -13801,24 +14042,29 @@ class AppTranslations {
     'promotions_cancel_registration': 'Annuler l\'inscription',
     'promotions_city': 'Ville',
     'promotions_city_hint': 'Ex : Paris, Lyon...',
-    'promotions_complete_address_and_phone': 'Complétez l\'adresse et le téléphone',
-    'promotions_complete_name_and_description': 'Complétez le nom et la description',
+    'promotions_complete_address_and_phone':
+        'Complétez l\'adresse et le téléphone',
+    'promotions_complete_name_and_description':
+        'Complétez le nom et la description',
     'promotions_confirmation': 'Confirmation',
     'promotions_contact_info': 'Informations de contact',
     'promotions_contact_phone_email': 'Contact (téléphone, email)',
     'promotions_create_event': 'Créer un événement',
-    'promotions_create_event_subtitle': 'Organisez un événement pour la communauté cycliste',
+    'promotions_create_event_subtitle':
+        'Organisez un événement pour la communauté cycliste',
     'promotions_creating': 'Création en cours...',
     'promotions_date_and_time': 'Date et heure',
     'promotions_date_required': 'Date *',
-    'promotions_describe_hint': 'Décrivez votre commerce, produits et services...',
+    'promotions_describe_hint':
+        'Décrivez votre commerce, produits et services...',
     'promotions_description_required': 'Description *',
     'promotions_description_required_error': 'La description est obligatoire',
     'promotions_email': 'Email',
     'promotions_email_optional': 'Email (optionnel)',
     'promotions_enrolled': 'Inscrit',
     'promotions_event_created': 'Événement créé avec succès !',
-    'promotions_event_describe_hint': 'Décrivez l\'événement, les activités, les prérequis...',
+    'promotions_event_describe_hint':
+        'Décrivez l\'événement, les activités, les prérequis...',
     'promotions_event_description_required': 'Description de l\'événement *',
     'promotions_event_info': 'Informations de l\'événement',
     'promotions_event_location_hint': 'Ex : Parc de la Tête d\'Or, Lyon',
@@ -13839,9 +14085,11 @@ class AppTranslations {
     'promotions_nit_optional': 'SIRET (optionnel)',
     'promotions_no': 'Non',
     'promotions_no_businesses': 'Aucun commerce pour le moment',
-    'promotions_no_businesses_subtitle': 'Soyez le premier à publier votre commerce cycliste',
+    'promotions_no_businesses_subtitle':
+        'Soyez le premier à publier votre commerce cycliste',
     'promotions_no_events': 'Aucun événement pour le moment',
-    'promotions_no_events_subtitle': 'Créez un événement pour la communauté cycliste',
+    'promotions_no_events_subtitle':
+        'Créez un événement pour la communauté cycliste',
     'promotions_no_pending_requests': 'Aucune demande en attente',
     'promotions_once_approved': 'Une fois approuvé, vous pourrez :',
     'promotions_pending': 'En attente',
@@ -13849,9 +14097,11 @@ class AppTranslations {
     'promotions_phone_hint': 'Ex : 06 12 34 56 78',
     'promotions_phone_required': 'Téléphone *',
     'promotions_physical_store': 'Local physique',
-    'promotions_products_services_hint': 'Quels produits ou services proposez-vous ?',
+    'promotions_products_services_hint':
+        'Quels produits ou services proposez-vous ?',
     'promotions_publish_business': 'Publier commerce',
-    'promotions_publish_for_community': 'Publiez votre commerce pour la communauté cycliste',
+    'promotions_publish_for_community':
+        'Publiez votre commerce pour la communauté cycliste',
     'promotions_publishing': 'Publication en cours...',
     'promotions_register_to_event': 'S\'inscrire à l\'événement',
     'promotions_registered_count': 'inscrits',
@@ -13864,13 +14114,15 @@ class AppTranslations {
     'promotions_review_and_send': 'Vérifiez et envoyez',
     'promotions_select_event_date': 'Sélectionnez la date de l\'événement',
     'promotions_select_event_time': 'Sélectionnez l\'heure de l\'événement',
-    'promotions_send_error': 'Erreur lors de l\'envoi de la demande. Veuillez réessayer.',
+    'promotions_send_error':
+        'Erreur lors de l\'envoi de la demande. Veuillez réessayer.',
     'promotions_send_request': 'Envoyer la demande',
     'promotions_sending': 'Envoi en cours...',
     'promotions_social_web_hint': 'Instagram, Facebook, site web...',
     'promotions_social_web_optional': 'Web ou réseaux sociaux (optionnel)',
     'promotions_spots': 'places',
-    'promotions_terms_confirmation': 'Je confirme que les informations fournies sont véridiques et j\'accepte les conditions d\'utilisation',
+    'promotions_terms_confirmation':
+        'Je confirme que les informations fournies sont véridiques et j\'accepte les conditions d\'utilisation',
     'promotions_time_required': 'Heure *',
     'promotions_type': 'Type',
     'promotions_type_accessories': 'Accessoires',
@@ -13882,10 +14134,12 @@ class AppTranslations {
     'promotions_type_other': 'Autre',
     'promotions_type_repair_shop': 'Atelier de réparation',
     'promotions_understood': 'Compris',
-    'promotions_unlimited_spots_hint': 'Laisser vide pour des places illimitées',
+    'promotions_unlimited_spots_hint':
+        'Laisser vide pour des places illimitées',
     'promotions_verification': 'Vérification',
     'promotions_verification_data': 'Données de vérification',
-    'promotions_verification_info_text': 'Ces informations nous aident à vérifier votre commerce. Elles seront examinées manuellement avant d\'approuver votre demande.',
+    'promotions_verification_info_text':
+        'Ces informations nous aident à vérifier votre commerce. Elles seront examinées manuellement avant d\'approuver votre demande.',
     'promotions_verify_business': 'Vérifier le commerce',
     'promotions_web_social': 'Web/Réseaux',
     'promotions_yes': 'Oui',
@@ -13893,22 +14147,38 @@ class AppTranslations {
     'select_bike_type_title': 'Sélectionner le type de vélo',
     'select_bike_year': 'Sélectionnez l\'année',
     'select_year_title': 'Sélectionner l\'année',
-    'serial_max_chars': 'Le numéro de série ne peut pas dépasser 100 caractères',
-    'serial_min_chars': 'Le numéro de série doit comporter au moins 4 caractères',
+    'serial_max_chars':
+        'Le numéro de série ne peut pas dépasser 100 caractères',
+    'serial_min_chars':
+        'Le numéro de série doit comporter au moins 4 caractères',
     'serial_number_short': 'Numéro de série',
     'size_colon': 'Taille :',
     'size_max_chars': 'La taille ne peut pas dépasser 10 caractères',
-    'step4_description': 'Vérifiez que toutes les données de votre vélo sont correctes avant de terminer',
+    'step4_description':
+        'Vérifiez que toutes les données de votre vélo sont correctes avant de terminer',
     'tap_to_enlarge_photo': 'Appuyez pour agrandir la photo',
-    'terms_conditions_body': 'En utilisant BiUX, vous acceptez ces conditions d\'utilisation. BiUX est une plateforme d\'usage personnel pour les cyclistes. Les utilisateurs sont responsables du contenu qu\'ils publient. BiUX se réserve le droit de modérer et de supprimer le contenu qui enfreint les règles de la communauté. Les données personnelles sont traitées conformément à notre politique de confidentialité. Nous nous réservons le droit de mettre à jour ces conditions à tout moment.',
+    'terms_conditions_body':
+        'En utilisant BiUX, vous acceptez ces conditions d\'utilisation. BiUX est une plateforme d\'usage personnel pour les cyclistes. Les utilisateurs sont responsables du contenu qu\'ils publient. BiUX se réserve le droit de modérer et de supprimer le contenu qui enfreint les règles de la communauté. Les données personnelles sont traitées conformément à notre politique de confidentialité. Nous nous réservons le droit de mettre à jour ces conditions à tout moment.',
     'text_max_150_chars': 'Le texte ne peut pas dépasser 150 caractères',
     'theft_description_hint': 'Décrivez comment le vol s\'est produit...',
     'theft_location_hint': 'Ex: Rue 50 avec Carrera 7, Bogotá',
+    'theft_report_sent_success': 'Signalement de vol envoyé avec succès',
+    'theft_report_sent_error': 'Erreur lors de l\'envoi du signalement de vol',
+    'theft_reported_by_owner': 'Vol signalé par le propriétaire',
     'theft_reported_success': 'Vol signalé avec succès',
     'tomorrow': 'Demain',
+    'transfer_request_sent_success': 'Demande de transfert envoyée avec succès',
+    'transfer_request_sent_error':
+        'Erreur lors de l\'envoi de la demande de transfert',
     'transfer_requested_success': 'Demande de transfert envoyée',
     'type_colon': 'Type :',
     'valid_size_hint': 'Entrez une taille valide (ex: S, M, L, XL, 16, 18")',
     'year_colon': 'Année :',
+
+    // Missing translations
+    'coupon_code_applied': 'Coupon appliqué',
+    'have_discount_coupon': 'Avez-vous un coupon de réduction ?',
+    'other_city': 'Autre ville',
+    'time_just_now': 'À l\'instant',
   };
 }

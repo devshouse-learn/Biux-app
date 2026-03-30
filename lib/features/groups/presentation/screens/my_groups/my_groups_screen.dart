@@ -214,7 +214,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                           : null,
                       child: group.logoUrl == null
                           ? Icon(
-                              Icons.group,
+                              Icons.groups,
                               color: ColorTokens.neutral100,
                               size: 20,
                             )
@@ -360,7 +360,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                           : null,
                       child: group.logoUrl == null
                           ? Icon(
-                              Icons.group,
+                              Icons.groups,
                               color: ColorTokens.neutral100,
                               size: 20,
                             )
@@ -484,19 +484,23 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
               Navigator.pop(context);
               final success = await provider.leaveGroup(group.id);
               if (success) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l.t('left_group')),
-                    backgroundColor: ColorTokens.success40,
-                  ),
-                );
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('left_group')),
+                      backgroundColor: ColorTokens.success40,
+                    ),
+                  );
               } else {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(provider.error ?? l.t('error_leaving_group')),
-                    backgroundColor: ColorTokens.error50,
-                  ),
-                );
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        provider.error ?? l.t('error_leaving_group'),
+                      ),
+                      backgroundColor: ColorTokens.error50,
+                    ),
+                  );
               }
             },
             style: ElevatedButton.styleFrom(

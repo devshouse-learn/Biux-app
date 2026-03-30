@@ -56,14 +56,6 @@ class PostSocialActions extends StatelessWidget {
             size: 24,
             inactiveColor: theme.iconTheme.color ?? Colors.grey,
           ),
-
-          const SizedBox(width: 12),
-
-          // Botón de compartir
-          _ShareButton(postId: postId, postPreview: postPreview),
-
-          // Botón de más opciones (reportar)
-          _MoreOptionsButton(postId: postId, postOwnerId: postOwnerId),
         ],
       ),
     );

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
-import 'package:biux/features/ride_recommendations/presentation/widgets/send_recommendation_sheet.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 
 class RideTrackerScreen extends StatefulWidget {
-  const RideTrackerScreen({Key? key}) : super(key: key);
+  final bool showHistory;
+  const RideTrackerScreen({Key? key, this.showHistory = false})
+    : super(key: key);
 
   @override
   State<RideTrackerScreen> createState() => _RideTrackerScreenState();
@@ -21,11 +21,11 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   GoogleMapController? _mapController;
   late AnimationController _pulseController;
   bool _showHistory = false;
-  bool _showDetails = false;
 
   @override
   void initState() {
     super.initState();
+    _showHistory = widget.showHistory;
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -42,21 +42,32 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   @override
   void dispose() {
     _pulseController.dispose();
-    _mapController?.dispose();
+    try {
+      _mapController?.dispose();
+    } catch (_) {}
+    _mapController = null;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: isDark ? ColorTokens.primary10 : const Color(0xFFF5F5F5),
       body: Consumer<RideTrackerProvider>(
         builder: (ctx, p, _) {
           if (p.points.isNotEmpty && _mapController != null) {
-            final last = p.points.last;
-            _mapController!.animateCamera(
-              CameraUpdate.newLatLng(LatLng(last.lat, last.lng)),
-            );
+            try {
+              final last = p.points.last;
+              _mapController!.animateCamera(
+                CameraUpdate.newLatLng(LatLng(last.lat, last.lng)),
+              );
+            } catch (_) {
+              _mapController = null;
+            }
+          } else if (p.points.isEmpty) {
+            _mapController = null;
           }
 
           // Si está mostrando historial
@@ -68,217 +79,12 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             children: [
               _buildMapArea(p),
               _buildTopBar(p),
-              DraggableScrollableSheet(
-                initialChildSize: p.isTracking ? 0.35 : 0.15,
-                minChildSize: p.isTracking ? 0.35 : 0.15,
-                maxChildSize: p.isTracking ? 0.52 : 0.15,
-                snap: true,
-                snapSizes: p.isTracking ? const [0.35, 0.52] : const [0.15],
-                builder: (context, scrollController) {
-                  return Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                      boxShadow: [
-                        BoxShadow(color: Color(0x14000000), blurRadius: 20, offset: Offset(0, -4)),
-                      ],
-                    ),
-                    child: ListView(
-                      controller: scrollController,
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      children: [
-                        // Handle solo al grabar
-                        if (p.isTracking)
-                          Center(
-                            child: Container(
-                              width: 36, height: 4,
-                              margin: const EdgeInsets.only(top: 8, bottom: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          )
-                        else
-                          const SizedBox(height: 10),
-
-                        // Sin grabar: solo boton iniciar
-                        if (!p.isTracking) ...[
-                          SizedBox(
-                            width: double.infinity,
-                            height: 52,
-                            child: ElevatedButton.icon(
-                              onPressed: () => p.startTracking(),
-                              icon: const Icon(Icons.play_arrow_rounded, size: 24),
-                              label: const Text('Iniciar Rodada',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorTokens.primary30,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                elevation: 0,
-                              ),
-                            ),
-                          ),
-                          if (p.history.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: () => setState(() => _showHistory = true),
-                              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                Icon(Icons.history_rounded, size: 16, color: Colors.grey[500]),
-                                const SizedBox(width: 6),
-                                Text('Ver historial (${p.history.length} rodadas)',
-                                  style: TextStyle(fontSize: 13, color: Colors.grey[500],
-                                    fontWeight: FontWeight.w500)),
-                              ]),
-                            ),
-                          ],
-                        ],
-
-                        // Grabando
-                        if (p.isTracking) ...[
-                          Center(child: Text(p.durationFormatted,
-                            style: TextStyle(fontSize: 38, fontWeight: FontWeight.w900,
-                              color: Colors.grey[800], letterSpacing: 2,
-                              fontFeatures: const [FontFeature.tabularFigures()]))),
-                          Center(child: Text('TIEMPO DE RODADA',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600,
-                              color: Colors.grey[400], letterSpacing: 2))),
-                          const SizedBox(height: 8),
-
-                          // Stats principales
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Row(children: [
-                              _buildStatItem(icon: Icons.straighten_rounded,
-                                value: p.totalKm.toStringAsFixed(2), unit: 'km',
-                                label: 'Distancia', color: ColorTokens.primary30),
-                              _buildDivider(),
-                              _buildStatItem(icon: Icons.speed_rounded,
-                                value: p.currentSpeed.toStringAsFixed(1), unit: 'km/h',
-                                label: 'Velocidad', color: const Color(0xFFFF9800)),
-                              _buildDivider(),
-                              _buildStatItem(icon: Icons.local_fire_department_rounded,
-                                value: '${p.calories}', unit: 'kcal',
-                                label: 'Calorías', color: const Color(0xFFFF5722)),
-                            ]),
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Botones pausar / finalizar
-                          Row(children: [
-                            Expanded(
-                              child: SizedBox(
-                                height: 46,
-                                child: OutlinedButton.icon(
-                                  onPressed: () => p.isPaused ? p.resumeTracking() : p.pauseTracking(),
-                                  icon: Icon(p.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded, size: 20),
-                                  label: Text(p.isPaused ? 'Reanudar' : 'Pausar',
-                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: const Color(0xFFFF9800),
-                                    side: const BorderSide(color: Color(0xFFFF9800), width: 1.5),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: SizedBox(
-                                height: 46,
-                                child: ElevatedButton.icon(
-                                  onPressed: () => _showExitConfirmation(p),
-                                  icon: const Icon(Icons.stop_rounded, size: 20),
-                                  label: const Text('Finalizar',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFF44336),
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ]),
-                          const SizedBox(height: 8),
-
-                          // Separador mas detalles
-                          GestureDetector(
-                            onTap: () => setState(() => _showDetails = !_showDetails),
-                            child: Row(children: [
-                              Expanded(child: Divider(color: Colors.grey[200])),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                  Icon(
-                                    _showDetails
-                                      ? Icons.keyboard_arrow_down_rounded
-                                      : Icons.keyboard_arrow_up_rounded,
-                                    size: 14, color: Colors.grey[400]),
-                                  Text(_showDetails ? ' ocultar' : ' más detalles',
-                                    style: TextStyle(fontSize: 11, color: Colors.grey[400])),
-                                ]),
-                              ),
-                              Expanded(child: Divider(color: Colors.grey[200])),
-                            ]),
-                          ),
-
-                          // Stats secundarias
-                          if (_showDetails) ...[
-                            const SizedBox(height: 8),
-                            Row(children: [
-                              Expanded(child: _buildDetailCard(
-                                icon: Icons.rocket_launch_rounded,
-                                label: 'Vel. Máxima',
-                                value: '${p.maxSpeed.toStringAsFixed(1)} km/h',
-                                color: const Color(0xFFF44336),
-                              )),
-                              const SizedBox(width: 10),
-                              Expanded(child: _buildDetailCard(
-                                icon: Icons.analytics_rounded,
-                                label: 'Vel. Promedio',
-                                value: '${p.avgSpeed.toStringAsFixed(1)} km/h',
-                                color: const Color(0xFFFF9800),
-                              )),
-                            ]),
-                            const SizedBox(height: 6),
-                            Row(children: [
-                              Expanded(child: _buildDetailCard(
-                                icon: Icons.my_location_rounded,
-                                label: 'Puntos GPS',
-                                value: '${p.points.length}',
-                                color: ColorTokens.primary30,
-                              )),
-                              const SizedBox(width: 10),
-                              Expanded(child: _buildDetailCard(
-                                icon: Icons.timer_outlined,
-                                label: 'Tiempo activo',
-                                value: p.durationFormatted,
-                                color: Colors.purple,
-                              )),
-                            ]),
-                          ],
-                        ],
-                      ],
-                    ),
-                  );
-                },
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: _buildBottomPanel(p),
               ),
-
-
-
-
-
-
-
-
             ],
           );
         },
@@ -324,6 +130,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       );
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -333,7 +140,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           end: Alignment.bottomCenter,
           colors: [
             ColorTokens.primary30.withValues(alpha: 0.05),
-            const Color(0xFFF5F5F5),
+            Theme.of(context).brightness == Brightness.dark
+                ? ColorTokens.primary10
+                : const Color(0xFFF5F5F5),
           ],
         ),
       ),
@@ -355,7 +164,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                   child: Icon(
                     Icons.directions_bike_rounded,
                     size: 60,
-                    color: ColorTokens.primary30.withValues(alpha: 0.4),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.7)
+                        : ColorTokens.primary30.withValues(alpha: 0.4),
                   ),
                 ),
               );
@@ -367,16 +178,19 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: Colors.grey[800],
+              color: isDark ? Colors.white : Colors.grey[800],
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 8),
           Text(
             p.isTracking
                 ? 'Espera mientras encontramos tu ubicación'
                 : 'Presiona iniciar para grabar tu rodada',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? Colors.white70 : Colors.grey[500],
+            ),
           ),
           const SizedBox(height: 120),
         ],
@@ -474,14 +288,21 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 icon: Icons.my_location_rounded,
                 onTap: () {
                   if (p.points.isNotEmpty && _mapController != null) {
-                    _mapController!.animateCamera(
-                      CameraUpdate.newCameraPosition(
-                        CameraPosition(
-                          target: LatLng(p.points.last.lat, p.points.last.lng),
-                          zoom: 16.5,
+                    try {
+                      _mapController!.animateCamera(
+                        CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                            target: LatLng(
+                              p.points.last.lat,
+                              p.points.last.lng,
+                            ),
+                            zoom: 16.5,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } catch (_) {
+                      _mapController = null;
+                    }
                   }
                 },
               )
@@ -508,7 +329,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? ColorTokens.primary30
+              : Colors.white.withValues(alpha: 0.95),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
@@ -517,12 +340,198 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             ),
           ],
         ),
-        child: Icon(icon, size: 22, color: Colors.grey[800]),
+        child: Icon(icon, size: 22, color: Colors.white),
       ),
     );
   }
 
   // ─── PANEL INFERIOR ──────────────────────────────────────
+  Widget _buildBottomPanel(RideTrackerProvider p) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? ColorTokens.primary20 : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 14),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white24 : Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                // Timer principal
+                Text(
+                  p.durationFormatted,
+                  style: TextStyle(
+                    fontSize: 44,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? ColorTokens.neutral100 : Colors.grey[800],
+                    letterSpacing: 2,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                Text(
+                  'TIEMPO',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? ColorTokens.neutral80 : Colors.grey[400],
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Indicador de detección de movimiento en bicicleta
+                if (p.isTracking && !p.isPaused)
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: p.isMoving
+                          ? const Color(0xFF1B5E20).withValues(alpha: 0.1)
+                          : Colors.orange.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: p.isMoving
+                            ? const Color(0xFF4CAF50).withValues(alpha: 0.5)
+                            : Colors.orange.withValues(alpha: 0.5),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          p.isMoving
+                              ? Icons.directions_bike_rounded
+                              : Icons.pause_circle_outline_rounded,
+                          size: 15,
+                          color: p.isMoving
+                              ? const Color(0xFF388E3C)
+                              : Colors.orange[700],
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          p.isMoving
+                              ? 'En movimiento'
+                              : 'Detenido — esperando...',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: p.isMoving
+                                ? const Color(0xFF388E3C)
+                                : Colors.orange[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                const SizedBox(height: 16),
+
+                // Stats grid
+                Row(
+                  children: [
+                    _buildStatItem(
+                      icon: Icons.straighten_rounded,
+                      value: p.totalKm.toStringAsFixed(2),
+                      unit: 'km',
+                      label: 'Distancia',
+                      color: isDark ? Colors.white : ColorTokens.primary30,
+                    ),
+                    _buildDivider(),
+                    _buildStatItem(
+                      icon: Icons.speed_rounded,
+                      value: p.currentSpeed.toStringAsFixed(1),
+                      unit: 'km/h',
+                      label: 'Velocidad',
+                      color: const Color(0xFFFF9800),
+                    ),
+                    _buildDivider(),
+                    _buildStatItem(
+                      icon: Icons.local_fire_department_rounded,
+                      value: '${p.calories}',
+                      unit: 'kcal',
+                      label: 'Calorías',
+                      color: const Color(0xFFFF5722),
+                    ),
+                  ],
+                ),
+
+                // Stats secundarias
+                if (p.isTracking) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildMiniStat(
+                          'Máx',
+                          '${p.maxSpeed.toStringAsFixed(1)} km/h',
+                        ),
+                        Container(
+                          width: 1,
+                          height: 20,
+                          color: Colors.grey[200],
+                        ),
+                        _buildMiniStat(
+                          'Prom',
+                          '${p.avgSpeed.toStringAsFixed(1)} km/h',
+                        ),
+                        Container(
+                          width: 1,
+                          height: 20,
+                          color: Colors.grey[200],
+                        ),
+                        _buildMiniStat('GPS', '${p.points.length} pts'),
+                      ],
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 16),
+
+                // Botones
+                _buildActionButtons(p),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildStatItem({
     required IconData icon,
@@ -531,6 +540,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     required String label,
     required Color color,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Column(
         children: [
@@ -547,7 +557,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
-                      color: Colors.grey[800],
+                      color: isDark ? ColorTokens.neutral100 : Colors.grey[800],
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
@@ -557,7 +567,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[400],
+                      color: isDark ? ColorTokens.neutral80 : Colors.grey[400],
                     ),
                   ),
                 ],
@@ -569,7 +579,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             label,
             style: TextStyle(
               fontSize: 10,
-              color: Colors.grey[500],
+              color: isDark ? ColorTokens.neutral90 : Colors.grey[500],
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -581,13 +591,170 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   Widget _buildDivider() =>
       Container(width: 1, height: 36, color: Colors.grey[200]);
 
+  Widget _buildMiniStat(String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: isDark ? ColorTokens.neutral80 : Colors.grey[700],
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: isDark ? ColorTokens.neutral80 : Colors.grey[400],
+          ),
+        ),
+      ],
+    );
+  }
 
   // ─── BOTONES ─────────────────────────────────────────────
+  Widget _buildActionButtons(RideTrackerProvider p) {
+    if (!p.isTracking) {
+      return SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF4CAF50),
+            foregroundColor: Colors.white,
+            elevation: 3,
+            shadowColor: const Color(0xFF4CAF50).withValues(alpha: 0.4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          onPressed: () async {
+            HapticFeedback.mediumImpact();
+            final error = await p.startTracking();
+            if (error != null && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(
+                        Icons.location_off_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(error)),
+                    ],
+                  ),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  duration: const Duration(seconds: 4),
+                ),
+              );
+            }
+          },
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.play_arrow_rounded, size: 28),
+              SizedBox(width: 8),
+              Text(
+                'INICIAR RODADA',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 52,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: p.isPaused
+                    ? const Color(0xFF4CAF50)
+                    : const Color(0xFFFF9800),
+                foregroundColor: Colors.white,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                p.isPaused ? p.resumeTracking() : p.pauseTracking();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    p.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    p.isPaused ? 'Reanudar' : 'Pausar',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: SizedBox(
+            height: 52,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF44336),
+                foregroundColor: Colors.white,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: () => _showFinishConfirmation(p),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.stop_rounded, size: 22),
+                  SizedBox(width: 6),
+                  Text(
+                    'Finalizar',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   // ─── HISTORIAL ───────────────────────────────────────────
   Widget _buildHistoryView(RideTrackerProvider p) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: isDark ? ColorTokens.primary10 : const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
@@ -597,14 +764,15 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => setState(() => _showHistory = false),
+          onPressed: () {
+            if (widget.showHistory) {
+              Navigator.of(context).pop();
+            } else {
+              setState(() => _showHistory = false);
+            }
+          },
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share_location_rounded),
-            tooltip: 'Recomendaciones',
-            onPressed: () => context.push('/ride-recommendations'),
-          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             tooltip: 'Actualizar',
@@ -655,7 +823,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       color: Colors.grey[600],
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 8),
                   Text(
                     'Tus rodadas grabadas aparecerán aquí',
                     style: TextStyle(fontSize: 14, color: Colors.grey[400]),
@@ -709,7 +877,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             '${p.history.length} rodadas registradas',
             style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -753,6 +921,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   }
 
   Widget _buildHistoryCard(RideTrackEntity ride, RideTrackerProvider p) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final date = ride.startTime;
     final months = [
       '',
@@ -778,10 +947,13 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? ColorTokens.primary20 : Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.04),
+            blurRadius: 8,
+          ),
         ],
       ),
       child: Material(
@@ -801,12 +973,14 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: ColorTokens.primary30.withValues(alpha: 0.08),
+                        color: ColorTokens.primary30.withValues(
+                          alpha: isDark ? 0.25 : 0.08,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.directions_bike_rounded,
-                        color: ColorTokens.primary30,
+                        color: Colors.white,
                         size: 22,
                       ),
                     ),
@@ -816,14 +990,17 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            dateStr,
+                            ride.name.isNotEmpty ? ride.name : dateStr,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            '$timeStr · $durationStr',
+                            ride.name.isNotEmpty
+                                ? '$dateStr · $timeStr · $durationStr'
+                                : '$timeStr · $durationStr',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[500],
@@ -835,32 +1012,25 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     PopupMenuButton<String>(
                       icon: Icon(
                         Icons.more_vert_rounded,
-                        color: Colors.grey[400],
+                        color: isDark ? Colors.white70 : Colors.grey[400],
                         size: 20,
                       ),
                       onSelected: (value) {
+                        if (value == 'rename') _showRenameDialog(ride, p);
                         if (value == 'delete') _confirmDeleteRide(ride, p);
-                        if (value == 'recommend') {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (_) => SendRecommendationSheet(track: ride),
-                          );
-                        }
                       },
                       itemBuilder: (_) => [
-                        const PopupMenuItem(
-                          value: 'recommend',
+                        PopupMenuItem(
+                          value: 'rename',
                           child: Row(
                             children: [
                               Icon(
-                                Icons.share_location_rounded,
-                                color: Color(0xFF519192),
+                                Icons.edit_rounded,
+                                color: ColorTokens.primary30,
                                 size: 18,
                               ),
-                              SizedBox(width: 8),
-                              Text('Recomendar ruta'),
+                              const SizedBox(width: 8),
+                              const Text('Editar nombre'),
                             ],
                           ),
                         ),
@@ -885,14 +1055,14 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 12),
                 // Stats
                 Row(
                   children: [
                     _buildHistoryStat(
                       Icons.straighten_rounded,
                       '${ride.totalKm.toStringAsFixed(1)} km',
-                      ColorTokens.primary30,
+                      isDark ? Colors.white : ColorTokens.primary30,
                     ),
                     _buildHistoryStat(
                       Icons.speed_rounded,
@@ -920,6 +1090,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   }
 
   Widget _buildHistoryStat(IconData icon, String value, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -932,7 +1103,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: isDark ? ColorTokens.neutral80 : Colors.grey[700],
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -969,114 +1140,131 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           maxHeight: MediaQuery.of(context).size.height * 0.7,
         ),
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? ColorTokens.primary20
+              : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const Icon(
-              Icons.directions_bike_rounded,
-              size: 40,
-              color: ColorTokens.primary30,
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '${date.day} ${months[date.month]} ${date.year}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} - ${ride.endTime.hour.toString().padLeft(2, '0')}:${ride.endTime.minute.toString().padLeft(2, '0')}',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-            ),
-            const SizedBox(height: 20),
-            // Detalles en grid
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      _buildDetailItem(
-                        '📏',
-                        'Distancia',
-                        '${ride.totalKm.toStringAsFixed(2)} km',
-                      ),
-                      _buildDetailItem(
-                        '⏱️',
-                        'Duración',
-                        ride.durationFormatted,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      _buildDetailItem(
-                        '⚡',
-                        'Vel. Promedio',
-                        '${ride.avgSpeed.toStringAsFixed(1)} km/h',
-                      ),
-                      _buildDetailItem(
-                        '🚀',
-                        'Vel. Máxima',
-                        '${ride.maxSpeed.toStringAsFixed(1)} km/h',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      _buildDetailItem(
-                        '🔥',
-                        'Calorías',
-                        '${ride.calories} kcal',
-                      ),
-                      _buildDetailItem(
-                        '📍',
-                        'Puntos GPS',
-                        '${ride.pointCount}',
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorTokens.primary30,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text(
-                  'Cerrar',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-            ),
-          ],
+              const Icon(
+                Icons.directions_bike_rounded,
+                size: 40,
+                color: ColorTokens.primary30,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                ride.name.isNotEmpty
+                    ? ride.name
+                    : '${date.day} ${months[date.month]} ${date.year}',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (ride.name.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '${date.day} ${months[date.month]} ${date.year}',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ),
+              Text(
+                '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} - ${ride.endTime.hour.toString().padLeft(2, '0')}:${ride.endTime.minute.toString().padLeft(2, '0')}',
+                style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              ),
+              const SizedBox(height: 20),
+              // Detalles en grid
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        _buildDetailItem(
+                          '📏',
+                          'Distancia',
+                          '${ride.totalKm.toStringAsFixed(2)} km',
+                        ),
+                        _buildDetailItem(
+                          '⏱️',
+                          'Duración',
+                          ride.durationFormatted,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _buildDetailItem(
+                          '⚡',
+                          'Vel. Promedio',
+                          '${ride.avgSpeed.toStringAsFixed(1)} km/h',
+                        ),
+                        _buildDetailItem(
+                          '🚀',
+                          'Vel. Máxima',
+                          '${ride.maxSpeed.toStringAsFixed(1)} km/h',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _buildDetailItem(
+                          '🔥',
+                          'Calorías',
+                          '${ride.calories} kcal',
+                        ),
+                        _buildDetailItem(
+                          '📍',
+                          'Puntos GPS',
+                          '${ride.pointCount}',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorTokens.primary30,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text(
+                    'Cerrar',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1094,6 +1282,120 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           ),
           Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[500])),
         ],
+      ),
+    );
+  }
+
+  void _showRenameDialog(RideTrackEntity ride, RideTrackerProvider p) {
+    final ctrl = TextEditingController(text: ride.name);
+    ctrl.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: ctrl.text.length,
+    );
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: isDark ? ColorTokens.primary20 : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.edit_rounded,
+                color: ColorTokens.primary30,
+                size: 34,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Editar nombre',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: ctrl,
+                autofocus: true,
+                maxLength: 40,
+                textCapitalization: TextCapitalization.sentences,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                decoration: InputDecoration(
+                  hintText: 'Ej: Ruta del domingo',
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.grey[400],
+                  ),
+                  counterText: '',
+                  filled: true,
+                  fillColor: isDark ? ColorTokens.primary30 : Colors.grey[100],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: isDark
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorTokens.primary30,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancelar'),
+                          )
+                        : TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey[700],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancelar'),
+                          ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.primary30,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final name = ctrl.text.trim().isEmpty
+                            ? ride.name
+                            : ctrl.text.trim();
+                        Navigator.pop(ctx);
+                        await p.renameRide(ride.id, name);
+                      },
+                      child: const Text(
+                        'Guardar',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1151,59 +1453,407 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
 
   // ─── DIÁLOGOS DE GRABACIÓN ───────────────────────────────
 
+  void _showTooShortDialog(RideTrackerProvider p) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: isDark ? ColorTokens.primary20 : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.timer_off_rounded,
+                color: Colors.orange,
+                size: 44,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Rodada muy corta',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'La rodada debe durar al menos 30 segundos para poder guardarla. Llevas ${p.durationSec} segundos.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.white70 : Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          p.cancelTracking();
+                        },
+                        child: const Text(
+                          'Cancelar',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorTokens.primary30,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          p.resumeTracking();
+                        },
+                        child: const Text(
+                          'Reanudar',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-  Future<void> _finishRide(RideTrackerProvider p) async {
+  void _showFinishConfirmation(RideTrackerProvider p) {
+    // Pausar inmediatamente al tocar "Finalizar"
+    p.pauseTracking();
+
+    // Si la rodada es muy corta, no permitir guardar
+    if (p.durationSec < 30) {
+      _showTooShortDialog(p);
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? ColorTokens.primary20
+              : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white24
+                      : Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Icon(
+                Icons.flag_rounded,
+                size: 44,
+                color: Color(0xFFF44336),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                '¿Finalizar rodada?',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${p.totalKm.toStringAsFixed(2)} km en ${p.durationFormatted}',
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildSummaryItem2(
+                      '📏',
+                      '${p.totalKm.toStringAsFixed(2)} km',
+                    ),
+                    _buildSummaryItem2('⏱️', p.durationFormatted),
+                    _buildSummaryItem2(
+                      '⚡',
+                      '${p.avgSpeed.toStringAsFixed(1)} km/h',
+                    ),
+                    _buildSummaryItem2('🔥', '${p.calories} kcal'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.grey[700],
+                          side: BorderSide(color: Colors.grey[300]!),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text(
+                          'Continuar',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4CAF50),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          _showNameDialog(p);
+                        },
+                        child: const Text(
+                          'Guardar',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryItem2(String emoji, String value) {
+    return Column(
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 18)),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
+
+  /// Muestra el diálogo para que el usuario nombre su rodada antes de guardarla.
+  void _showNameDialog(RideTrackerProvider p, {bool exitAfter = false}) {
+    final now = DateTime.now();
+    const months = [
+      '',
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic',
+    ];
+    final ctrl = TextEditingController(
+      text: 'Rodada ${now.day} ${months[now.month]}',
+    );
+    // Seleccionar todo el texto por defecto para fácil reemplazo
+    ctrl.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: ctrl.text.length,
+    );
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: isDark ? ColorTokens.primary20 : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.edit_rounded,
+                color: ColorTokens.primary30,
+                size: 38,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '¿Cómo se llama esta rodada?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: ctrl,
+                autofocus: true,
+                maxLength: 40,
+                textCapitalization: TextCapitalization.sentences,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                decoration: InputDecoration(
+                  hintText: 'Ej: Ruta del domingo',
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.grey[400],
+                  ),
+                  counterText: '',
+                  filled: true,
+                  fillColor: isDark ? ColorTokens.primary30 : Colors.grey[100],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: isDark
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorTokens.primary30,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancelar'),
+                          )
+                        : TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey[700],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancelar'),
+                          ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.primary30,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final name = ctrl.text.trim().isEmpty
+                            ? 'Mi rodada'
+                            : ctrl.text.trim();
+                        Navigator.pop(ctx);
+                        await _doSave(p, name, exitAfter);
+                      },
+                      child: const Text(
+                        'Guardar',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _doSave(
+    RideTrackerProvider p,
+    String name,
+    bool exitAfter,
+  ) async {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     if (uid.isEmpty) return;
 
-    final success = await p.stopAndSave(uid);
+    final success = await p.stopAndSave(uid, name);
+    if (!mounted) return;
+    HapticFeedback.heavyImpact();
 
-    if (mounted) {
-      HapticFeedback.heavyImpact();
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
-                SizedBox(width: 10),
-                Text(
-                  '¡Rodada guardada!',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFF4CAF50),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'Ver historial',
-              textColor: Colors.white,
-              onPressed: () => setState(() => _showHistory = true),
-            ),
+    if (success) {
+      // Llevar directamente a Mis Rodadas
+      setState(() => _showHistory = true);
+      if (exitAfter) Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.warning_rounded, color: Colors.white, size: 20),
+              SizedBox(width: 10),
+              Text('Rodada muy corta, no se guardó'),
+            ],
           ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.warning_rounded, color: Colors.white, size: 20),
-                SizedBox(width: 10),
-                Text('Rodada muy corta, no se guardó'),
-              ],
-            ),
-            backgroundColor: Colors.orange,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+          backgroundColor: Colors.orange,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        );
-      }
+        ),
+      );
     }
   }
 
@@ -1247,10 +1897,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            onPressed: () async {
+            onPressed: () {
               Navigator.pop(ctx);
-              await _finishRide(p);
-              if (mounted) Navigator.of(context).pop();
+              _showNameDialog(p, exitAfter: true);
             },
             child: const Text('Guardar y Salir'),
           ),
@@ -1258,45 +1907,4 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       ),
     );
   }
-  Widget _buildDetailCard({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.15)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.grey[800],
-                  ),
-                ),
-                Text(
-                  label,
-                  style: TextStyle(fontSize: 10, color: Colors.grey[500]),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
 }

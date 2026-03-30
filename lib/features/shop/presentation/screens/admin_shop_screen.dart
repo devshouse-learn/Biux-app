@@ -136,28 +136,29 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
               Navigator.of(dialogContext).pop();
 
               // Mostrar SnackBar de inicio (no bloquea la UI)
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
+              if (context.mounted)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Text('Limpiando productos sin imágenes...'),
-                    ],
+                        const SizedBox(width: 16),
+                        const Text('Limpiando productos sin imágenes...'),
+                      ],
+                    ),
+                    duration: const Duration(seconds: 30),
+                    backgroundColor: ColorTokens.secondary50,
                   ),
-                  duration: const Duration(seconds: 30),
-                  backgroundColor: ColorTokens.secondary50,
-                ),
-              );
+                );
 
               // Ejecutar limpieza en segundo plano
               final shopProvider = context.read<ShopProvider>();
@@ -171,30 +172,31 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
 
               // Mostrar resultado
               if (context.mounted) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        Icon(
-                          deletedCount > 0 ? Icons.check_circle : Icons.info,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            deletedCount > 0
-                                ? '✅ $deletedCount producto(s) eliminado(s)'
-                                : '✨ No se encontraron productos sin imágenes',
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(
+                            deletedCount > 0 ? Icons.check_circle : Icons.info,
+                            color: Colors.white,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              deletedCount > 0
+                                  ? '✅ $deletedCount producto(s) eliminado(s)'
+                                  : '✨ No se encontraron productos sin imágenes',
+                            ),
+                          ),
+                        ],
+                      ),
+                      backgroundColor: deletedCount > 0
+                          ? Colors.green
+                          : Colors.blue,
+                      duration: const Duration(seconds: 4),
                     ),
-                    backgroundColor: deletedCount > 0
-                        ? Colors.green
-                        : Colors.blue,
-                    duration: const Duration(seconds: 4),
-                  ),
-                );
+                  );
               }
             },
             style: ElevatedButton.styleFrom(
@@ -225,21 +227,23 @@ class _AdminShopScreenState extends State<AdminShopScreen> {
               final success = await shopProvider.deleteProduct(product.id);
 
               if (success) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Producto eliminado'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              } else {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      shopProvider.errorMessage ?? 'Error al eliminar',
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Producto eliminado'),
+                      backgroundColor: Colors.green,
                     ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                  );
+              } else {
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        shopProvider.errorMessage ?? 'Error al eliminar',
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -621,12 +625,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
     } else {
       debugPrint('⚠️ No se capturó imagen');
       if (mounted) {
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se pudo acceder a la cámara'),
-            backgroundColor: Colors.orange,
-          ),
-        );
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No se pudo acceder a la cámara'),
+              backgroundColor: Colors.orange,
+            ),
+          );
       }
     }
   }
@@ -644,12 +649,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
     } catch (e) {
       debugPrint('❌ Error en _pickImageFromGallery: $e');
       if (mounted) {
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al seleccionar imagen: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al seleccionar imagen: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
       }
     }
   }
@@ -672,12 +678,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
     } catch (e) {
       debugPrint('❌ Error en _pickMultipleImages: $e');
       if (mounted) {
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al seleccionar imágenes: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al seleccionar imágenes: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
       }
     }
   }
@@ -705,19 +712,21 @@ class _ProductFormModalState extends State<ProductFormModal> {
         _imageUrls.add(url);
         _isUploading = false;
       });
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Imagen subida exitosamente')),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Imagen subida exitosamente')),
+        );
     } else {
       setState(() {
         _isUploading = false;
       });
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error al subir imagen'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al subir imagen'),
+            backgroundColor: Colors.red,
+          ),
+        );
     }
   }
 
@@ -739,12 +748,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
     // Validar duración
     final isValid = await _mediaService.validateVideoDuration(video.path);
     if (!isValid) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('El video debe durar máximo 30 segundos'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('El video debe durar máximo 30 segundos'),
+            backgroundColor: Colors.red,
+          ),
+        );
       return;
     }
 
@@ -770,19 +780,21 @@ class _ProductFormModalState extends State<ProductFormModal> {
         _videoUrl = url;
         _isUploading = false;
       });
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Video subido exitosamente')),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Video subido exitosamente')),
+        );
     } else {
       setState(() {
         _isUploading = false;
       });
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error al subir video'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al subir video'),
+            backgroundColor: Colors.red,
+          ),
+        );
     }
   }
 
@@ -859,24 +871,25 @@ class _ProductFormModalState extends State<ProductFormModal> {
   Future<void> _verifyBikeNotStolen() async {
     // Validar que se haya ingresado el número de serie
     if (_bikeFrameSerialController.text.trim().isEmpty) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.warning, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Debes ingresar el número de serie para verificar',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.warning, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Debes ingresar el número de serie para verificar',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
           ),
-          backgroundColor: Colors.orange,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+        );
       return;
     }
 
@@ -1024,24 +1037,25 @@ class _ProductFormModalState extends State<ProductFormModal> {
         );
       } else {
         // ✅ Bicicleta verificada
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.verified, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    result.message,
-                    style: TextStyle(fontWeight: FontWeight.w600),
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.verified, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      result.message,
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 4),
             ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+          );
       }
     } catch (e) {
       setState(() {
@@ -1049,12 +1063,13 @@ class _ProductFormModalState extends State<ProductFormModal> {
         _verificationResult = null;
       });
 
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al verificar: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al verificar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
     }
   }
 
@@ -1064,35 +1079,8 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
     // Validación obligatoria de imágenes
     if (_imageUrls.isEmpty) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  '¡Debes agregar al menos una foto del producto!',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: ColorTokens.error50,
-          duration: const Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
-      return;
-    }
-
-    // Validación para bicicletas: deben estar verificadas
-    if (_isBicycle) {
-      if (_bikeFrameSerialController.text.trim().isEmpty) {
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
               children: [
@@ -1100,7 +1088,7 @@ class _ProductFormModalState extends State<ProductFormModal> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '¡El número de serie es obligatorio para bicicletas!',
+                    '¡Debes agregar al menos una foto del producto!',
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
                   ),
                 ),
@@ -1108,30 +1096,66 @@ class _ProductFormModalState extends State<ProductFormModal> {
             ),
             backgroundColor: ColorTokens.error50,
             duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         );
+      return;
+    }
+
+    // Validación para bicicletas: deben estar verificadas
+    if (_isBicycle) {
+      if (_bikeFrameSerialController.text.trim().isEmpty) {
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '¡El número de serie es obligatorio para bicicletas!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: ColorTokens.error50,
+              duration: const Duration(seconds: 4),
+            ),
+          );
         return;
       }
 
       if (_verificationResult != true) {
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.warning, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    '¡Debes verificar que la bicicleta NO esté reportada como robada!',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '¡Debes verificar que la bicicleta NO esté reportada como robada!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 5),
             ),
-            backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 5),
-          ),
-        );
+          );
         return;
       }
     }
@@ -1140,9 +1164,10 @@ class _ProductFormModalState extends State<ProductFormModal> {
     final currentUser = userProvider.user;
 
     if (currentUser == null) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: usuario no encontrado')),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: usuario no encontrado')),
+        );
       return;
     }
 
@@ -1208,23 +1233,25 @@ class _ProductFormModalState extends State<ProductFormModal> {
 
     if (success) {
       if (context.mounted) Navigator.of(context).pop();
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.product == null
-                ? 'Producto creado exitosamente'
-                : 'Producto actualizado',
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              widget.product == null
+                  ? 'Producto creado exitosamente'
+                  : 'Producto actualizado',
+            ),
+            backgroundColor: Colors.green,
           ),
-          backgroundColor: Colors.green,
-        ),
-      );
+        );
     } else {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(shopProvider.errorMessage ?? 'Error al guardar'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(shopProvider.errorMessage ?? 'Error al guardar'),
+            backgroundColor: Colors.red,
+          ),
+        );
     }
   }
 
