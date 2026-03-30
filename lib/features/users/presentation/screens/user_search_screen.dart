@@ -221,30 +221,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   }
 
   Widget _buildEmptyState() {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.search, size: 80, color: ColorTokens.neutral100),
-          SizedBox(height: 24),
-          Text(
-            l.t('search_users_empty_title'),
-            style: TextStyle(
-              color: ColorTokens.neutral100,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            l.t('search_users_description'),
-            textAlign: TextAlign.center,
-            style: TextStyle(color: ColorTokens.neutral80, fontSize: 14),
-          ),
-        ],
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildLoadingState() {

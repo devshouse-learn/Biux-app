@@ -41,15 +41,8 @@ class AchievementsProvider with ChangeNotifier {
       _achievements = defaults.map((a) {
         final saved = data[a.id] as Map<String, dynamic>?;
         if (saved != null) {
-          return AchievementEntity(
-            id: a.id,
-            title: a.title,
-            description: a.description,
-            icon: a.icon,
-            category: a.category,
-            targetValue: a.targetValue,
+          return a.copyWith(
             currentValue: (saved['currentValue'] as num?)?.toDouble() ?? 0,
-            isUnlocked: saved['unlocked'] == true,
             unlockedAt: saved['unlockedAt'] != null
                 ? (saved['unlockedAt'] as dynamic).toDate()
                 : null,
