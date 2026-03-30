@@ -9,7 +9,6 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/shared/widgets/banners/offline_banner.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -23,11 +22,10 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
+  int _selectedIndex = 0; // Por defecto en Inicio (índice 0)
+  bool _isFullScreenRoute = false; // Rutas que ocultan AppBar y BottomNav
 
-  int _selectedIndex = 0;
-  bool _isFullScreenRoute = false;
-
+  /// Rutas que tienen su propio AppBar y no necesitan el shell
   static const List<String> _fullScreenRoutes = [
     '/account-settings',
     '/settings/',
@@ -37,15 +35,16 @@ class _MainShellState extends State<MainShell> {
   ];
 
   /// Retorna el título dinámico según el tab seleccionado
-  /// Para tabs 0,1,2,3 retorna null (se usa el logo)
-  /// Para tab 4 (perfil) retorna username + visibilidad
-  String? _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
+  String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
     switch (index) {
       case 0:
+        return 'BIUX';
       case 1:
+        return 'BIUX';
       case 2:
+        return 'BIUX';
       case 3:
-        return null; // Se usa el widget del logo
+        return 'BIUX';
       case 4:
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         final username = userProvider.user?.username;
@@ -58,61 +57,34 @@ class _MainShellState extends State<MainShell> {
     }
   }
 
-  /// Widget del logo para el AppBar (solo BIUX sin APP)
-  Widget _buildLogoTitle() {
-    return Image.asset(
-      'img/biux_logo_biux_only.png',
-      height: 28,
-      fit: BoxFit.contain,
-    );
-  }
-
-  /// Widget del título del perfil con icono de privacidad
-  Widget _buildProfileTitle(String title, UserProvider userProvider) {
-    final isPrivate = userProvider.user?.profileVisibility == 'private';
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          isPrivate ? Icons.lock_outline : Icons.public,
-          color: ColorTokens.neutral100,
-          size: 20,
-        ),
-        const SizedBox(width: 8),
-        Text(title, style: Styles.mainMenuTextBiux),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Consumer2 garantiza rebuild cuando cambia el idioma o datos de usuario
     return Consumer2<LocaleNotifier, UserProvider>(
       builder: (context, l, userProvider, _) {
+        // Si es una ruta de pantalla completa, mostrar solo el child sin shell
         if (_isFullScreenRoute) {
           return widget.child;
         }
 
+        // Key por idioma fuerza reconstrucción completa del Scaffold
         return Scaffold(
           key: ValueKey('shell_${l.langCode}'),
           appBar: AppBar(
             backgroundColor: ColorTokens.primary30,
             foregroundColor: ColorTokens.neutral100,
-            title: (() {
-              final title = _titleForIndex(_selectedIndex, l, context);
-              if (title == null) {
-                return _buildLogoTitle();
-              }
-              if (_selectedIndex == 4) {
-                return _buildProfileTitle(title, userProvider);
-              }
-              return Text(title, style: Styles.mainMenuTextBiux);
-            })(),
+            title: Text(
+              _titleForIndex(_selectedIndex, l, context),
+              style: Styles.mainMenuTextBiux,
+            ),
             actions: [
+              // Buscar usuarios (solo en tab de inicio)
               if (_selectedIndex == 0)
                 IconButton(
                   icon: const Icon(Icons.search, color: Colors.white),
                   onPressed: () => context.push('/users/search'),
                 ),
+              // Notificaciones con badge
               Consumer<NotificationsProvider?>(
                 builder: (context, provider, child) {
                   final unreadCount = provider?.unreadCount ?? 0;
@@ -150,18 +122,15 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.diversity_3, size: 28),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Transform.rotate(
-                  angle: -0.6,
-                  child: Icon(Icons.send, size: 28),
-                ),
+                icon: Icon(Icons.directions_bike, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.pedal_bike, size: 28),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_bag, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
@@ -171,12 +140,7 @@ class _MainShellState extends State<MainShell> {
             ],
           ),
           body: ResponsiveHelper.wrapForWeb(
-            Column(
-              children: [
-                const OfflineBanner(),
-                Expanded(child: widget.child),
-              ],
-            ),
+            Container(height: double.infinity, child: widget.child),
             context,
           ),
         );
@@ -185,27 +149,26 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _onTabTapped(int index) {
-    if (_selectedIndex == index) return; // Evitar renavegar al mismo tab
-
     setState(() {
       _selectedIndex = index;
     });
 
     switch (index) {
       case 0:
+        // Inicio
         context.go('/stories');
         break;
       case 1:
-        // Grupos
+        // Rutas/Roads
         context.go('/rides');
         break;
       case 2:
-        // Mensajes
-        context.go(AppRoutes.chatList);
-        break;
-      case 3:
         // Mis Bicis
         context.go(AppRoutes.myBikes);
+        break;
+      case 3:
+        // Tienda
+        context.go('/shop');
         break;
       case 4:
         // Mi Perfil
@@ -223,6 +186,7 @@ class _MainShellState extends State<MainShell> {
   void _updateSelectedIndex() {
     final location = GoRouterState.of(context).matchedLocation;
 
+    // Detectar si es una ruta de pantalla completa (sin shell)
     final isFullScreen = _fullScreenRoutes.any(
       (route) => location.startsWith(route),
     );
@@ -240,11 +204,11 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 1;
       });
-    } else if (location.startsWith(AppRoutes.chatList)) {
+    } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
       setState(() {
         _selectedIndex = 2;
       });
-    } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
+    } else if (location.startsWith('/shop')) {
       setState(() {
         _selectedIndex = 3;
       });
