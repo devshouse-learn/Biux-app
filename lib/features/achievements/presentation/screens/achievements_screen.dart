@@ -1085,10 +1085,10 @@ class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppShe
         return;
       }
       final chatProvider = context.read<ChatProvider>();
-      final chats = chatProvider.chats.where((c) => c.type == 'direct').toList();
+      final chats = chatProvider.chats.where((c) => c.typeString == 'direct').toList();
       final contacts = <Map<String, dynamic>>[];
       for (final chat in chats) {
-        final otherId = chat.participants.firstWhere(
+        final otherId = chat.participantIds.firstWhere(
           (id) => id != currentUser.uid,
           orElse: () => '',
         );
@@ -1131,6 +1131,7 @@ class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppShe
         senderId: currentUser.uid,
         senderName: currentUser.displayName ?? 'Usuario',
         content: widget.statsText,
+        participants: [currentUser.uid, contact['userId'] as String], // legacy
       );
       setState(() => _sent.add(contact['userId'] as String));
       if (mounted) {

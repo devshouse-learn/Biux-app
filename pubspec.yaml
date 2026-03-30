@@ -127,6 +127,11 @@ dependencies:
 
   # ─── Pull to Refresh ──────────────────────────────────
   pull_to_refresh: ^2.0.0
+  local_auth: ^3.0.1
+  record: ^6.2.0
+  audio_waveforms: ^2.0.2
+  just_audio: ^0.9.40
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:

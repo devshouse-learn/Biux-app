@@ -3,6 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:biux/features/safety/presentation/screens/report_user_screen.dart';
+import 'package:biux/features/safety/presentation/screens/biometric_settings_screen.dart';
+import 'package:biux/features/safety/presentation/screens/active_sessions_screen.dart';
+import 'package:biux/features/age_verification/presentation/screens/parental_consent_screen.dart';
+import 'package:biux/features/age_verification/presentation/screens/identity_verification_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -892,7 +897,8 @@ final GoRouter _router = GoRouter(
       name: AppRoutes.chatDetailName,
       builder: (context, state) {
         final chatId = state.pathParameters['chatId']!;
-        return ChatScreen(chatId: chatId);
+        // Crear ChatEntity mínimo con el id para navegación directa
+        return ChatScreen.fromId(chatId: chatId);
       },
     ),
 
@@ -923,6 +929,43 @@ final GoRouter _router = GoRouter(
     ),
 
     // Emergency SOS
+    GoRoute(
+      path: AppRoutes.reportUser,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        return ReportUserScreen(
+          reportedUserId: extra['userId'] ?? state.pathParameters['userId'] ?? '',
+          reportedUserName: extra['userName'] ?? 'Usuario',
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.biometricSettings,
+      builder: (context, state) => const BiometricSettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.activeSessions,
+      builder: (context, state) => const ActiveSessionsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.parentalConsent,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        return ParentalConsentScreen(
+          userId: extra['userId'] ?? '',
+          userAge: extra['userAge'] ?? 15,
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.identityVerification,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        return IdentityVerificationScreen(
+          userId: extra['userId'] ?? '',
+        );
+      },
+    ),
     GoRoute(
       path: AppRoutes.emergency,
       name: AppRoutes.emergencyName,
@@ -1007,7 +1050,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/settings/appearance',
       name: 'settingsAppearance',
-      builder: (context, state) => const AppearanceScreenDetails(),
+      builder: (context, state) => const AppearanceDetailsScreen(),
     ),
     GoRoute(
       path: '/settings/information',

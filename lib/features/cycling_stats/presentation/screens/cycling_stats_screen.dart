@@ -8,7 +8,6 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats_provider.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
-import 'package:go_router/go_router.dart';
 
 class CyclingStatsScreen extends StatefulWidget {
   const CyclingStatsScreen({Key? key}) : super(key: key);
@@ -1140,10 +1139,10 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
         return;
       }
       final chatProvider = context.read<ChatProvider>();
-      final chats = chatProvider.chats.where((c) => c.type == 'direct').toList();
+      final chats = chatProvider.chats.where((c) => c.typeString == 'direct').toList();
       final contacts = <Map<String, dynamic>>[];
       for (final chat in chats) {
-        final otherId = chat.participants.firstWhere(
+        final otherId = chat.participantIds.firstWhere(
           (id) => id != currentUser.uid,
           orElse: () => '',
         );
@@ -1186,6 +1185,7 @@ class _ShareInAppSheetState extends State<_ShareInAppSheet> {
         senderId: currentUser.uid,
         senderName: currentUser.displayName ?? 'Usuario',
         content: widget.statsText,
+        participants: [currentUser.uid, contact['userId'] as String],
       );
       setState(() => _sent.add(contact['userId'] as String));
       if (mounted) {

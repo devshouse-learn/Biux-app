@@ -1,236 +1,284 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
+import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/chat/presentation/widgets/message_bubble.dart';
+import 'package:biux/features/chat/presentation/widgets/chat_input.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String chatId;
-  const ChatScreen({Key? key, required this.chatId}) : super(key: key);
+  final ChatEntity chat;
+
+  const ChatScreen({super.key, required this.chat});
+
+  factory ChatScreen.fromId({required String chatId}) {
+    return ChatScreen(
+      chat: ChatEntity(
+        id: chatId,
+        name: '',
+        type: ChatType.direct,
+        participantIds: [],
+        updatedAt: DateTime.now(),
+        unreadCount: {},
+      ),
+    );
+  }
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _msgController = TextEditingController();
   final _scrollController = ScrollController();
+  late final ChatProvider _provider;
+
+  String _otherName = '';
+  String _otherPhoto = '';
+  bool _loadingProfile = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _provider = context.read<ChatProvider>();
+    _provider.openChat(widget.chat.id);
+    _loadOtherUserProfile();
+  }
 
   @override
   void dispose() {
-    _msgController.dispose();
+    _provider.closeChat();
     _scrollController.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final chatProvider = context.read<ChatProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Future<void> _loadOtherUserProfile() async {
+    final myUid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-    return Scaffold(
-      backgroundColor: isDark ? ColorTokens.neutral10 : Colors.grey[50],
-      appBar: AppBar(
-        title: const Text('Chat'),
-        backgroundColor: ColorTokens.primary30,
-        foregroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: chatProvider.getMessagesStream(widget.chatId),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData)
-                  return const Center(child: CircularProgressIndicator());
-                if (!snapshot.hasData) return const SizedBox.shrink();
-        if (!snapshot.hasData) return const SizedBox.shrink();
-        final docs = snapshot.data!.docs;
-                if (docs.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Envia el primer mensaje!',
-                      style: TextStyle(
-                        color: isDark
-                            ? ColorTokens.neutral70
-                            : Colors.grey[600],
-                      ),
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  controller: _scrollController,
-                  reverse: true,
-                  padding: const EdgeInsets.all(12),
-                  itemCount: docs.length,
-                  itemBuilder: (context, index) {
-                    final data = docs[index].data() as Map<String, dynamic>;
-                    final isMe = data['senderId'] == uid;
-                    final content = data['content'] as String? ?? '';
-                    final senderName = data['senderName'] as String? ?? '';
-                    final time = data['createdAt'] as Timestamp?;
+    try {
+      // 1. Obtener participantIds desde Firestore
+      List<String> participants = List.from(widget.chat.participantIds);
+      if (participants.isEmpty) {
+        final chatDoc = await FirebaseFirestore.instance
+            .collection('chats')
+            .doc(widget.chat.id)
+            .get();
+        if (chatDoc.exists) {
+          participants =
+              List<String>.from(chatDoc.data()?['participantIds'] ?? []);
+        }
+      }
 
-                    return Align(
-                      alignment: isMe
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.75,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isMe
-                              ? ColorTokens.primary30
-                              : (isDark ? ColorTokens.neutral20 : Colors.white),
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(16),
-                            topRight: const Radius.circular(16),
-                            bottomLeft: Radius.circular(isMe ? 16 : 4),
-                            bottomRight: Radius.circular(isMe ? 4 : 16),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: isMe
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            if (!isMe)
-                              Text(
-                                senderName,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: isDark
-                                      ? ColorTokens.neutral60
-                                      : Colors.grey[600],
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            Text(
-                              content,
-                              style: TextStyle(
-                                color: isMe
-                                    ? Colors.white
-                                    : (isDark
-                                          ? ColorTokens.neutral100
-                                          : Colors.black87),
-                                fontSize: 15,
-                              ),
-                            ),
-                            if (time != null) ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                '${time.toDate().hour.toString().padLeft(2, "0")}:${time.toDate().minute.toString().padLeft(2, "0")}',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: isMe
-                                      ? Colors.white60
-                                      : (isDark
-                                            ? ColorTokens.neutral50
-                                            : Colors.grey[500]),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(
-              left: 12,
-              right: 8,
-              top: 8,
-              bottom: MediaQuery.of(context).padding.bottom + 8,
-            ),
-            decoration: BoxDecoration(
-              color: isDark ? ColorTokens.neutral10 : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _msgController,
-                    style: TextStyle(
-                      color: isDark
-                          ? ColorTokens.neutral100
-                          : ColorTokens.neutral10,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Escribe un mensaje...',
-                      hintStyle: TextStyle(
-                        color: isDark
-                            ? ColorTokens.neutral60
-                            : Colors.grey[500],
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: isDark
-                          ? ColorTokens.neutral20
-                          : Colors.grey[100],
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                    ),
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _send(context),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: ColorTokens.primary30,
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white, size: 20),
-                    onPressed: () => _send(context),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+      // 2. Encontrar el otro usuario
+      final otherId =
+          participants.firstWhere((id) => id != myUid, orElse: () => '');
+      if (otherId.isEmpty) {
+        if (mounted) setState(() => _loadingProfile = false);
+        return;
+      }
+
+      // 3. Cargar perfil del otro usuario
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(otherId)
+          .get();
+
+      if (doc.exists && mounted) {
+        final data = doc.data()!;
+        setState(() {
+          _otherName = data['fullName'] ??
+              data['name'] ??
+              data['userName'] ??
+              data['username'] ??
+              'Ciclista';
+          _otherPhoto =
+              data['photo'] ?? data['photoUrl'] ?? data['photoURL'] ?? '';
+          _loadingProfile = false;
+        });
+      } else {
+        if (mounted) setState(() => _loadingProfile = false);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _loadingProfile = false);
+    }
   }
 
-  void _send(BuildContext context) {
-    final text = _msgController.text.trim();
-    if (text.isEmpty) return;
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final name = context.read<UserProvider>().user?.name ?? 'Ciclista';
-    context.read<ChatProvider>().sendMessage(
-      widget.chatId,
-      senderId: uid,
-      senderName: name,
-      content: text,
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userProvider = context.watch<UserProvider>();
+
+    // Nombre y foto del usuario actual (quien envía)
+    final myName = userProvider.user?.name?.isNotEmpty == true
+        ? userProvider.user!.name!
+        : (currentUser?.displayName?.isNotEmpty == true
+            ? currentUser!.displayName!
+            : 'Usuario');
+    final myPhoto = userProvider.user?.photoUrl?.isNotEmpty == true
+        ? userProvider.user!.photoUrl
+        : currentUser?.photoURL;
+
+    // Nombre y foto del otro usuario (AppBar)
+    final displayName = _otherName.isNotEmpty ? _otherName : 'Chat';
+    final displayPhoto = _otherPhoto;
+
+    return Scaffold(
+      backgroundColor:
+          isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade100,
+      appBar: AppBar(
+        backgroundColor:
+            isDark ? const Color(0xFF0D1B2A) : const Color(0xFF16242D),
+        foregroundColor: Colors.white,
+        title: _loadingProfile
+            ? const Row(children: [
+                SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white54),
+                ),
+                SizedBox(width: 10),
+                Text('Cargando...', style: TextStyle(fontSize: 14)),
+              ])
+            : Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: const Color(0xFF1E8BC3),
+                    backgroundImage: displayPhoto.isNotEmpty
+                        ? NetworkImage(displayPhoto)
+                        : null,
+                    child: displayPhoto.isEmpty
+                        ? Text(
+                            displayName.isNotEmpty
+                                ? displayName[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          displayName,
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const Text('Chat directo',
+                            style: TextStyle(
+                                fontSize: 11, color: Colors.white60)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
+      body: Consumer<ChatProvider>(
+        builder: (context, provider, _) {
+          final messages = provider.messages;
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => _scrollToBottom());
+
+          return Column(
+            children: [
+              Expanded(
+                child: messages.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.chat_bubble_outline,
+                                size: 64,
+                                color: isDark
+                                    ? Colors.white24
+                                    : Colors.grey.shade300),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Sé el primero en enviar un mensaje',
+                              style: TextStyle(
+                                  color: isDark
+                                      ? Colors.white38
+                                      : Colors.grey.shade500),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          final msg = messages[index];
+                          final isMe = msg.senderId == currentUser?.uid;
+                          final showAvatar = !isMe &&
+                              (index == 0 ||
+                                  messages[index - 1].senderId !=
+                                      msg.senderId);
+                          return MessageBubble(
+                            message: msg,
+                            isMe: isMe,
+                            showAvatar: showAvatar,
+                            isDark: isDark,
+                            chatId: widget.chat.id,
+                            onReply: (m) => provider.setReplyingTo(m),
+                            onReact: (m, emoji) => provider.addReaction(
+                              chatId: widget.chat.id,
+                              messageId: m.id,
+                              emoji: emoji,
+                            ),
+                            onDelete: (m) => provider.deleteMessage(
+                              chatId: widget.chat.id,
+                              messageId: m.id,
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              ChatInput(
+                chatId: widget.chat.id,
+                senderName: myName,
+                senderAvatar: myPhoto,
+                replyingTo: provider.replyingTo,
+                onSendText: (text) => provider.sendTextMessage(
+                  chatId: widget.chat.id,
+                  text: text,
+                  senderName: myName,
+                  senderAvatar: myPhoto,
+                ),
+                onSendVoice: (path, secs) => provider.sendVoiceMessage(
+                  chatId: widget.chat.id,
+                  audioUrl: path,
+                  durationSeconds: secs,
+                  senderName: myName,
+                  senderAvatar: myPhoto,
+                ),
+                onCancelReply: () => provider.setReplyingTo(null),
+                isDark: isDark,
+              ),
+            ],
+          );
+        },
+      ),
     );
-    _msgController.clear();
   }
 }

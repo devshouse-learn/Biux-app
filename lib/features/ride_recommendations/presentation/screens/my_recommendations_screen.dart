@@ -130,13 +130,13 @@ class _RecommendationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: unread
-            ? ColorTokens.primary30.withOpacity(0.4)
+            ? ColorTokens.primary30.withValues(alpha: 0.4)
             : Colors.grey[200]!,
           width: unread ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2)),
         ],
@@ -187,7 +187,7 @@ class _RecommendationCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: ColorTokens.primary30.withOpacity(0.1),
+                    color: ColorTokens.primary30.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(rec.type.label,
@@ -312,7 +312,7 @@ class _RecommendationDetailSheet extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: ColorTokens.primary30.withOpacity(0.1),
+                color: ColorTokens.primary30.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(rec.type.label,
