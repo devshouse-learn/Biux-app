@@ -137,7 +137,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      prefixIcon: Icon(Icons.group),
+                      prefixIcon: Icon(Icons.groups),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -325,12 +325,12 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                       imageType: 'avatar',
                       fit: BoxFit.cover,
                       errorWidget: Icon(
-                        Icons.group,
+                        Icons.groups,
                         size: 50,
                         color: ColorTokens.neutral60,
                       ),
                     )
-                  : Icon(Icons.group, size: 50, color: ColorTokens.neutral60),
+                  : Icon(Icons.groups, size: 50, color: ColorTokens.neutral60),
             ),
           ),
         ),

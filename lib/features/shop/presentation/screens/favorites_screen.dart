@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core/design_system/color_tokens.dart';
+import '../../../../core/design_system/locale_notifier.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/shop_provider.dart';
 import '../widgets/price_tag.dart';
@@ -15,9 +16,10 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis Favoritos'),
+        title: Text(l.t('my_favorites')),
         backgroundColor: ColorTokens.primary30,
       ),
       body: Consumer<ShopProvider>(
@@ -37,21 +39,29 @@ class FavoritesScreen extends StatelessWidget {
                     color: Colors.grey[300],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'No tienes favoritos aun',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  Text(
+                    l.t('no_favorites_yet'),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Explora la tienda y marca tus\nproductos favoritos',
+                    l.t('no_favorites_subtitle'),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
                     onPressed: () => context.go('/shop'),
                     icon: const Icon(Icons.store, size: 20),
-                    label: const Text('Ir a la tienda'),
+                    label: Text(l.t('go_to_store')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorTokens.secondary50,
                       foregroundColor: Colors.white,
@@ -62,6 +72,7 @@ class FavoritesScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      elevation: 2,
                     ),
                   ),
                 ],
@@ -103,7 +114,7 @@ class FavoritesScreen extends StatelessWidget {
                       const Icon(Icons.favorite, color: Colors.red, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        '${favs.length} producto${favs.length != 1 ? 's' : ''} favorito${favs.length != 1 ? 's' : ''}',
+                        '${favs.length} ${l.t('favorite_products')}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -168,6 +179,7 @@ class _FavCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -224,9 +236,9 @@ class _FavCard extends StatelessWidget {
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text(
-                          'VENDIDO',
-                          style: TextStyle(
+                        child: Text(
+                          l.t('sold'),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -253,6 +265,21 @@ class _FavCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   SmallPriceTag(price: product.price),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.inventory_2_outlined,
+                        size: 12,
+                        color: Colors.grey[600],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${l.t('stock_label')}: ${product.stock}',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

@@ -383,7 +383,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                             Padding(
                               padding: EdgeInsets.only(top: 4),
                               child: Text(
-                                '${_customMeetingPointLat!.toStringAsFixed(4)}, ${_customMeetingPointLng!.toStringAsFixed(4)}',
+                                '${(_customMeetingPointLat ?? 0.0).toStringAsFixed(4)}, ${(_customMeetingPointLng ?? 0.0).toStringAsFixed(4)}',
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: ColorTokens.neutral60,
@@ -704,7 +704,7 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
   void _saveRide() async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
-    if (!_formKey.currentState!.validate()) return;
+    if (_formKey.currentState == null || !_formKey.currentState!.validate()) return;
 
     // Validar que hay al menos un punto de encuentro (predefinido o personalizado)
     if (_selectedMeetingPoint == null && _customMeetingPointName == null) {
@@ -778,14 +778,14 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
       meetingPointId = customPointId;
     } else {
       // Usar el punto seleccionado
-      meetingPointId = _selectedMeetingPoint!.id;
+      meetingPointId = _selectedMeetingPoint?.id ?? '';
     }
 
     final bool success;
     if (widget.rideToEdit != null) {
       // Modo edición
       success = await provider.updateRide(
-        rideId: widget.rideToEdit!.id,
+        rideId: widget.rideToEdit?.id ?? '',
         name: _nameController.text.trim(),
         meetingPointId: meetingPointId,
         dateTime: dateTime,

@@ -87,7 +87,7 @@ class _GallerySectionState extends State<GallerySection> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
           content: Provider.of<LocaleNotifier>(
             context,
@@ -110,7 +110,7 @@ class _GallerySectionState extends State<GallerySection> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBarUtils.customSnackBar(
           content: Provider.of<LocaleNotifier>(
             context,
@@ -203,7 +203,7 @@ class _GallerySectionState extends State<GallerySection> {
                   bloc.addImageSeleted(image: entity);
                 }
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
                     content: Provider.of<LocaleNotifier>(
                       context,
@@ -360,7 +360,7 @@ class _AppbarCreateStory extends StatelessWidget
                       list: bloc.imgList,
                     );
                     bloc.changeLoading(false);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                       SnackBarUtils.customSnackBar(
                         content: result
                             ? l.t('story_created_success')
@@ -376,7 +376,7 @@ class _AppbarCreateStory extends StatelessWidget
                   },
                 );
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBarUtils.customSnackBar(
                     content: l.t('select_at_least_one_photo'),
                     backgroundColor: ColorTokens.error50,

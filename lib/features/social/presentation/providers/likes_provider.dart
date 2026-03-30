@@ -207,7 +207,6 @@ class LikesProvider extends ChangeNotifier {
     required String commentId,
     String? contextTargetId,
     CommentableType? contextType,
-    ww,
   }) {
     // Construir targetId compuesto si se proporciona contexto
     String finalTargetId = commentId;
@@ -249,6 +248,19 @@ class LikesProvider extends ChangeNotifier {
     required NotificationType notificationType,
     Map<String, dynamic>? metadata,
   }) async {
+    // Validaciones de entrada
+    if (userId.isEmpty) {
+      debugPrint('❌ LikesProvider: userId vacío, abortando like');
+      return;
+    }
+    if (targetId.isEmpty) {
+      debugPrint('❌ LikesProvider: targetId vacío, abortando like');
+      return;
+    }
+    if (targetOwnerId.isEmpty) {
+      debugPrint('❌ LikesProvider: targetOwnerId vacío, abortando like');
+      return;
+    }
     // Cooldown: verificar si está en periodo de espera
     if (_isInCooldown(targetId)) {
       debugPrint(
@@ -316,6 +328,15 @@ class LikesProvider extends ChangeNotifier {
     required LikeableType type,
     required String targetId,
   }) async {
+    // Validaciones de entrada
+    if (userId.isEmpty) {
+      debugPrint('❌ LikesProvider: userId vacío, abortando unlike');
+      return;
+    }
+    if (targetId.isEmpty) {
+      debugPrint('❌ LikesProvider: targetId vacío, abortando unlike');
+      return;
+    }
     // Cooldown: verificar si está en periodo de espera
     if (_isInCooldown(targetId)) {
       debugPrint(

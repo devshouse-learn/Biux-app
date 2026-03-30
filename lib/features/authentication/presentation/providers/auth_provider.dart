@@ -56,6 +56,15 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> sendCode(String phoneNumber) async {
+    // Validar formato de teléfono
+    final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
+    final cleanPhone = phoneNumber.trim().replaceAll(' ', '');
+    if (cleanPhone.isEmpty || !phoneRegex.hasMatch(cleanPhone)) {
+      _errorMessage = 'Número de teléfono inválido';
+      _state = AuthState.error;
+      notifyListeners();
+      return;
+    }
     try {
       debugPrint('📲 [AuthProvider] Iniciando proceso de envío de código');
       debugPrint('   Teléfono: $phoneNumber');

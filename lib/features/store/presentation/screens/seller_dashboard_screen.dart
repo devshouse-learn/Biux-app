@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/store/domain/entities/product_entity.dart';
 import 'package:biux/features/store/presentation/providers/product_provider.dart';
 import 'package:biux/features/users/domain/entities/user_entity.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Panel de vendedor para gestionar sus productos
 class SellerDashboardScreen extends StatefulWidget {

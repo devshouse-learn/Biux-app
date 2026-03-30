@@ -42,14 +42,16 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         ),
       );
       if (mounted) setState(() => _myPosition = pos);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
   }
 
   String _distanceText(double lat, double lng) {
     if (_myPosition == null) return '';
     final meters = Geolocator.distanceBetween(
-      _myPosition!.latitude,
-      _myPosition!.longitude,
+      _myPosition?.latitude ?? 0.0,
+      _myPosition?.longitude ?? 0.0,
       lat,
       lng,
     );
@@ -409,7 +411,7 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         }).toSet();
 
         final initialPos = _myPosition != null
-            ? LatLng(_myPosition!.latitude, _myPosition!.longitude)
+            ? LatLng(_myPosition?.latitude ?? 0.0, _myPosition?.longitude ?? 0.0)
             : accidents.isNotEmpty
             ? LatLng(accidents.first.latitude, accidents.first.longitude)
             : const LatLng(19.4326, -99.1332);

@@ -392,9 +392,10 @@ class GroupProvider extends ChangeNotifier {
       final user = await getUserInfo(userId);
       requests.add({
         'userId': userId,
-        'userName': user?.name ?? 'group_user_no_name',
+        'userName': user?.name ?? '',
         'userPhoto': user?.photoUrl,
-        'phoneNumber': user?.phoneNumber ?? 'group_no_phone',
+        'phoneNumber': user?.phoneNumber ?? '',
+        'hasName': user?.name != null && user!.name!.trim().isNotEmpty,
       });
     }
 
@@ -426,10 +427,11 @@ class GroupProvider extends ChangeNotifier {
 
       members.add({
         'userId': userId,
-        'userName': user?.name ?? 'group_user_no_name',
+        'userName': user?.name ?? '',
         'userPhoto': user?.photoUrl,
-        'phoneNumber': user?.phoneNumber ?? 'group_no_phone',
+        'phoneNumber': user?.phoneNumber ?? '',
         'isAdmin': group.isAdmin(userId),
+        'hasName': user?.name != null && user!.name!.trim().isNotEmpty,
       });
     }
 
@@ -501,26 +503,29 @@ class GroupProvider extends ChangeNotifier {
 
       if (user != null) {
         return {
-          'fullName': user.name ?? 'group_default_user',
-          'userName': user.username ?? 'group_default_username',
+          'fullName': user.name ?? '',
+          'userName': user.username ?? '',
           'photo': user.photoUrl ?? '',
           'email': user.email ?? '',
+          'hasName': user.name != null && user.name!.trim().isNotEmpty,
         };
       }
 
       return {
-        'fullName': 'group_default_user',
-        'userName': 'group_default_username',
+        'fullName': '',
+        'userName': '',
         'photo': '',
         'email': '',
+        'hasName': false,
       };
     } catch (e) {
       debugPrint('Error obteniendo info del admin: $e');
       return {
-        'fullName': 'group_default_user',
-        'userName': 'group_default_username',
+        'fullName': '',
+        'userName': '',
         'photo': '',
         'email': '',
+        'hasName': false,
       };
     }
   }

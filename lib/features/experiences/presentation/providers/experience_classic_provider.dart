@@ -32,9 +32,12 @@ class ExperienceProvider extends ChangeNotifier {
   StreamSubscription<DateTime?>? _feedStreamSubscription;
   DateTime? _latestKnownTimestamp;
   String? _currentFeedUserId;
+  bool _isCreating =
+      false; // Bandera para evitar race conditions con loadPersonalizedFeed
 
   // Getters
   List<ExperienceEntity> get experiences => _experiences;
+  List<ExperienceEntity> get allExperiences => _allExperiences;
   List<ExperienceEntity> get userExperiences => _userExperiences;
   List<ExperienceEntity> get rideExperiences => _rideExperiences;
   bool get isLoading => _isLoading;
@@ -118,6 +121,11 @@ class ExperienceProvider extends ChangeNotifier {
   /// - Mis publicaciones
   /// - Las publicaciones de los perfiles que sigo
   Future<void> loadPersonalizedFeed(String userId) async {
+    // No recargar el feed mientras se está creando una experiencia
+    // para evitar que el resultado de la query (que no incluye la nueva experiencia)
+    // sobreescriba la lista local que sí la contiene.
+    if (_isCreating) return;
+
     try {
       _setLoading(true);
       _error = null;
@@ -255,7 +263,7 @@ class ExperienceProvider extends ChangeNotifier {
   /// Crea una nueva experiencia
   Future<bool> createExperience(CreateExperienceRequest request) async {
     try {
-      _setLoading(true);
+      _isCreating = true;
       _error = null;
 
       final newExperience = await _repository.createExperience(request);
@@ -267,7 +275,7 @@ class ExperienceProvider extends ChangeNotifier {
       _setError(ErrorHandler.getUserMessage(e));
       return false;
     } finally {
-      _setLoading(false);
+      _isCreating = false;
     }
   }
 
@@ -461,8 +469,9 @@ class ExperienceProvider extends ChangeNotifier {
   }
 
   void _refreshAfterCreate(ExperienceEntity newExperience) {
-    // Agregar a la lista general
+    // Agregar a la lista general (y a _allExperiences para que no se pierda en paginación)
     _experiences = [newExperience, ..._experiences];
+    _allExperiences = [newExperience, ..._allExperiences];
 
     // Agregar a experiencias de usuario si corresponde
     _userExperiences = [newExperience, ..._userExperiences];

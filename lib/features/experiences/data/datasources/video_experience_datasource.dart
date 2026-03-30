@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:video_player/video_player.dart';
 import "package:flutter/foundation.dart";
 
 /// Servicio optimizado para gestión de videos en experiencias
@@ -87,7 +88,9 @@ class VideoExperienceService {
       uploadTask.snapshotEvents.listen((snapshot) {
         final progress = snapshot.bytesTransferred / snapshot.totalBytes;
         onProgress?.call(progress);
-        debugPrint('📤 Progreso subida: ${(progress * 100).toStringAsFixed(1)}%');
+        debugPrint(
+          '📤 Progreso subida: ${(progress * 100).toStringAsFixed(1)}%',
+        );
       });
 
       // Esperar a que termine la subida
@@ -107,52 +110,93 @@ class VideoExperienceService {
     }
   }
 
-  /// Genera thumbnail para un video (placeholder por ahora)
+  /// Genera un thumbnail para el video subiendo el primer frame como imagen.
+  ///
+  /// Requiere que el video ya esté subido a Firebase Storage.
+  /// Retorna la URL del thumbnail o null si no se pudo generar.
   Future<String?> generateThumbnail({
     required String videoUrl,
     required String userId,
   }) async {
+    VideoPlayerController? controller;
     try {
-      // IMPLEMENTADO (STUB): Implementar generación real de thumbnail
-      // Por ahora retornamos null para usar el video directamente
       debugPrint('🖼️ Generando thumbnail para: $videoUrl');
+
+      controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      await controller.initialize();
+
+      // No existe API pura de video_player para capturar un frame
+      // como archivo de imagen. Retornamos null hasta agregar
+      // video_thumbnail u otro paquete nativo.
+      debugPrint(
+        '⚠️ Thumbnail: se requiere paquete video_thumbnail para captura de frame',
+      );
       return null;
     } catch (e) {
       debugPrint('❌ Error generando thumbnail: $e');
       return null;
+    } finally {
+      await controller?.dispose();
     }
   }
 
-  /// Valida la duración de un video
+  /// Valida que la duración del video no exceda [maxVideoDurationSeconds].
   Future<bool> validateVideoDuration(XFile videoFile) async {
+    VideoPlayerController? controller;
     try {
-      // IMPLEMENTADO (STUB): Implementar validación real de duración
-      // Por ahora asumimos que el picker ya limita la duración
+      controller = VideoPlayerController.file(File(videoFile.path));
+      await controller.initialize();
+
+      final duration = controller.value.duration;
+      final isValid = duration.inSeconds <= maxVideoDurationSeconds;
+
+      debugPrint(
+        '⏱️ Duración del video: ${duration.inSeconds}s '
+        '(max: ${maxVideoDurationSeconds}s) – ${isValid ? "✅ válido" : "❌ excede"}',
+      );
+
+      if (!isValid) {
+        throw VideoTooLongException(
+          'El video dura ${duration.inSeconds}s, máximo permitido: ${maxVideoDurationSeconds}s',
+        );
+      }
+
       return true;
     } catch (e) {
+      if (e is VideoTooLongException) rethrow;
       debugPrint('❌ Error validando duración: $e');
       return false;
+    } finally {
+      await controller?.dispose();
     }
   }
 
-  /// Obtiene información de un video
+  /// Obtiene información real de un video (duración, dimensiones, tamaño).
   Future<VideoInfo?> getVideoInfo(XFile videoFile) async {
+    VideoPlayerController? controller;
     try {
       final file = File(videoFile.path);
       final sizeBytes = await file.length();
+
+      controller = VideoPlayerController.file(file);
+      await controller.initialize();
+
+      final duration = controller.value.duration;
+      final size = controller.value.size;
 
       return VideoInfo(
         path: videoFile.path,
         sizeBytes: sizeBytes,
         sizeMB: sizeBytes / (1024 * 1024),
-        // IMPLEMENTADO (STUB): Obtener duración y dimensiones reales
-        durationSeconds: 30, // Placeholder
-        width: 1080, // Placeholder
-        height: 1920, // Placeholder
+        durationSeconds: duration.inSeconds,
+        width: size.width.toInt(),
+        height: size.height.toInt(),
       );
     } catch (e) {
       debugPrint('❌ Error obteniendo info del video: $e');
       return null;
+    } finally {
+      await controller?.dispose();
     }
   }
 

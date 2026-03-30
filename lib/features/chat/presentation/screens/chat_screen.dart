@@ -54,7 +54,9 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData)
                   return const Center(child: CircularProgressIndicator());
-                final docs = snapshot.data!.docs;
+                if (!snapshot.hasData) return const SizedBox.shrink();
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        final docs = snapshot.data!.docs;
                 if (docs.isEmpty) {
                   return Center(
                     child: Text(

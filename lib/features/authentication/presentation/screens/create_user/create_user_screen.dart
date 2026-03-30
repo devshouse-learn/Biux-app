@@ -419,21 +419,21 @@ class CreateUserScreen extends StatelessWidget {
                             );
                           } else {
                             if (!_formKey.currentState!.validate()) {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
                                   content: l.t('must_complete_all_fields'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             } else if (bloc.image.path == '') {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
                                   content: l.t('profile_image_not_selected'),
                                   backgroundColor: ColorTokens.error50,
                                 ),
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBarUtils.customSnackBar(
                                   content: l.t('accept_terms_to_continue'),
                                   backgroundColor: ColorTokens.error50,
@@ -555,7 +555,7 @@ class CreateUserScreen extends StatelessWidget {
         if (response.message != AppStrings.emailAlreadyUse) {
           bloc.replacevalidateColor2(AppStrings.novalidoText2);
           if (response.statusCode == 200) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
               SnackBarUtils.customSnackBar(content: l.t('now_biux_user')),
             );
             String id = response.message;
@@ -569,7 +569,7 @@ class CreateUserScreen extends StatelessWidget {
           } else {
             bloc.changeLoading(false);
             bloc.replacevalidateColor2(AppStrings.validatedText);
-            ScaffoldMessenger.of(context).showSnackBar(
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
               SnackBarUtils.customSnackBar(
                 content: l
                     .t('email_already_registered')
@@ -580,7 +580,7 @@ class CreateUserScreen extends StatelessWidget {
           }
         } else {
           bloc.changeLoading(false);
-          ScaffoldMessenger.of(context).showSnackBar(
+          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
             SnackBarUtils.customSnackBar(
               content: l
                   .t('email_already_registered')
@@ -592,7 +592,7 @@ class CreateUserScreen extends StatelessWidget {
       } else {
         bloc.changeLoading(false);
         bloc.replacevalidateColor1(AppStrings.validatedText);
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
           SnackBarUtils.customSnackBar(
             content: l
                 .t('username_already_registered')

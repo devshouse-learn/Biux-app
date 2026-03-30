@@ -97,7 +97,7 @@ class _StatusCard extends StatelessWidget {
                 border: Border.all(color: color),
               ),
               child: Text(
-                OrderStatus.getDisplayName(order.status).toUpperCase(),
+                l.t(OrderStatus.getDisplayName(order.status)).toUpperCase(),
                 style: TextStyle(
                   color: color,
                   fontWeight: FontWeight.bold,

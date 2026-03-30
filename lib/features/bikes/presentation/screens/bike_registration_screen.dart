@@ -327,7 +327,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
 
   void _showValidationError([String? message]) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
-    ScaffoldMessenger.of(context).showSnackBar(
+    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message ?? l.t('complete_required_fields')),
         backgroundColor: ColorTokens.error50,
@@ -342,7 +342,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
 
     if (userId == null) {
       final l = Provider.of<LocaleNotifier>(context, listen: false);
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('must_login_register')),
           backgroundColor: ColorTokens.error50,
@@ -358,7 +358,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
     if (bike != null) {
       final l = Provider.of<LocaleNotifier>(context, listen: false);
       // Mostrar mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('bike_registered_success')),
           backgroundColor: ColorTokens.success40,
@@ -375,7 +375,7 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       });
     } else {
       // Mostrar error
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             bikeProvider.errorMessage ??

@@ -91,7 +91,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         // Mostrar snackbar solo si el widget está montado
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l.t('product_not_found')),
                 backgroundColor: Colors.red,
@@ -139,7 +139,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(l.t('error_loading_product')),
                 backgroundColor: Colors.red,
@@ -215,7 +215,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     debugPrint('✅ Producto agregado exitosamente');
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$_quantity ${_product!.name} ${l.t('added_to_cart')}'),
           action: SnackBarAction(
@@ -300,7 +300,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             onPressed: () async {
               if (addressController.text.isEmpty ||
                   phoneController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(l.t('fill_required_fields'))),
                 );
                 return;
@@ -321,7 +321,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               final orderId = await shopProvider.buyNow(
                 userId: currentUser.uid,
-                userName: currentUser.username ?? currentUser.name ?? 'Usuario',
+                userName:
+                    currentUser.username ??
+                    currentUser.name ??
+                    l.t('default_user'),
                 product: _product!,
                 quantity: _quantity,
                 selectedSize: _selectedSize,
@@ -332,8 +335,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     : notesController.text,
               );
 
+              if (!mounted) return;
               if (orderId != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l.t('purchase_success')),
                     backgroundColor: Colors.green,
@@ -341,7 +345,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 );
                 _goBack();
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
                       shopProvider.errorMessage ?? l.t('purchase_error'),
@@ -383,18 +387,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 userId,
               );
 
+              if (!mounted) return;
               if (success) {
                 setState(() {
                   _product = _product!.copyWith(isSold: true, stock: 0);
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l.t('product_marked_sold')),
                     backgroundColor: Colors.green,
                   ),
                 );
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
                       shopProvider.errorMessage ?? l.t('error_marking_sold'),
@@ -431,8 +436,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               final shopProvider = context.read<ShopProvider>();
               final success = await shopProvider.deleteProduct(_product!.id);
 
+              if (!mounted) return;
               if (success) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l.t('post_deleted')),
                     backgroundColor: Colors.green,
@@ -440,7 +446,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 );
                 _goBack();
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
                       shopProvider.errorMessage ??

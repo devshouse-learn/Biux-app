@@ -103,4 +103,29 @@ class CouponDatasourceImpl {
     }
     return null;
   }
+
+  /// Registra el uso de un cupón (incrementa contador).
+  Future<void> recordCouponUsage(String code, String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection(_collection)
+          .where('code', isEqualTo: code.toUpperCase())
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        await snapshot.docs.first.reference.update({
+          'usageCount': FieldValue.increment(1),
+          'lastUsedAt': FieldValue.serverTimestamp(),
+          'usedBy': FieldValue.arrayUnion([userId]),
+        });
+      }
+    } catch (e) {
+      AppLogger.warning(
+        'Error registrando uso de cupón',
+        tag: 'CouponDatasourceImpl',
+        error: e,
+      );
+    }
+  }
 }

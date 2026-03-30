@@ -120,7 +120,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                             errorWidget: Container(
                               color: ColorTokens.primary30,
                               child: Icon(
-                                Icons.group,
+                                Icons.groups,
                                 size: 80,
                                 color: ColorTokens.neutral100.withValues(
                                   alpha: 0.5,
@@ -131,7 +131,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         : Container(
                             color: ColorTokens.primary30,
                             child: Icon(
-                              Icons.group,
+                              Icons.groups,
                               size: 80,
                               color: ColorTokens.neutral100.withValues(
                                 alpha: 0.5,
@@ -202,7 +202,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                           radius: 40,
                           backgroundColor: ColorTokens.primary30,
                           child: Icon(
-                            Icons.group,
+                            Icons.groups,
                             size: 40,
                             color: ColorTokens.neutral100,
                           ),
@@ -213,7 +213,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       radius: 40,
                       backgroundColor: ColorTokens.primary30,
                       child: Icon(
-                        Icons.group,
+                        Icons.groups,
                         size: 40,
                         color: ColorTokens.neutral100,
                       ),
@@ -298,7 +298,9 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       )
                     : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
-                  member['userName'],
+                  (member['userName'] as String).isNotEmpty
+                      ? member['userName']
+                      : l.t('group_user_no_name'),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text(l.t('group_member')),
@@ -334,12 +336,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     context.push('/user-profile/$userId');
                   } else {
                     debugPrint('❌ Error: userId está vacío o es null');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l.t('error_user_id_not_available')),
-                        backgroundColor: ColorTokens.error50,
-                      ),
-                    );
+                    if (context.mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l.t('error_user_id_not_available')),
+                          backgroundColor: ColorTokens.error50,
+                        ),
+                      );
                   }
                 },
               ),
@@ -521,7 +524,9 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       )
                     : CircleAvatar(child: Icon(Icons.person)),
                 title: Text(
-                  request['userName'],
+                  (request['userName'] as String).isNotEmpty
+                      ? request['userName']
+                      : l.t('group_user_no_name'),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text(l.t('pending_request')),
@@ -736,19 +741,21 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.approveJoinRequest(groupId, userId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$userName ${l.t('user_accepted')}'),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$userName ${l.t('user_accepted')}'),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('error_approving_request')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('error_approving_request')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
     }
   }
 
@@ -761,21 +768,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.rejectJoinRequest(groupId, userId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l.t('request_of_rejected').replaceAll('{name}', userName),
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l.t('request_of_rejected').replaceAll('{name}', userName),
+            ),
+            backgroundColor: ColorTokens.warning50,
           ),
-          backgroundColor: ColorTokens.warning50,
-        ),
-      );
+        );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('error_rejecting_request')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('error_rejecting_request')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
     }
   }
 
@@ -784,21 +793,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final result = await provider.requestJoinGroup(groupId);
 
     if (result['success'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('request_sent')),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('request_sent')),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     } else if (result['requiresProfile'] == true) {
       _showProfileRequiredDialog(result['error'] ?? l.t('to_join_you_need'));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['error'] ?? l.t('error_sending_request')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? l.t('error_sending_request')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
     }
   }
 
@@ -830,12 +841,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('request_cancelled')),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('request_cancelled')),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     }
   }
 

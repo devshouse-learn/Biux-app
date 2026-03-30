@@ -1,3 +1,4 @@
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'dart:core';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -6,7 +7,6 @@ import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 
 // Features imports
 import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
@@ -39,6 +39,7 @@ import 'package:biux/features/bikes/domain/usecases/report_bike_theft_usecase.da
 import 'package:biux/features/bikes/domain/usecases/transfer_bike_ownership_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
+import 'package:biux/features/bikes/domain/usecases/mark_as_recovered_usecase.dart';
 import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
 import 'package:biux/features/shop/presentation/providers/seller_request_provider.dart';
 import 'package:biux/features/shop/data/repositories/product_repository_impl.dart';
@@ -132,12 +133,9 @@ void main() async {
 
   await LocalStorage().init();
 
-  // Inicializar servicios core
-  ConnectivityService().initialize();
-  await RemoteConfigService().initialize();
-
-  // Inicializar servicio de notificaciones
-  await NotificationService().initialize();
+  // Inicializar servicios core de forma diferida para evitar ANR
+  // Se inicializan después del primer frame para que el splash aparezca inmediatamente
+  _initServicesAsync();
 
   // Inicializar tracking de tiempo de uso
   await ScreenTimeService.instance.initialize();
@@ -200,6 +198,7 @@ void main() async {
               ),
               getPublicBikeInfoUseCase: GetPublicBikeInfoUseCase(repository),
               deleteBikeUseCase: DeleteBikeUseCase(repository),
+              markAsRecoveredUseCase: MarkAsRecoveredUseCase(repository),
             );
           },
         ),
@@ -220,9 +219,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PromotionsProvider()),
 
         // Seller Request Provider (para gestionar solicitudes de vendedores)
-        ChangeNotifierProvider(
-          create: (_) => SellerRequestProvider()..initialize(),
-        ),
+        // No llamar initialize() aquí - se inicializa cuando se accede a la pantalla
+        ChangeNotifierProvider(create: (_) => SellerRequestProvider()),
 
         // Store (Tienda Online) Providers
         ChangeNotifierProvider(
@@ -297,6 +295,19 @@ void main() async {
       child: MyApp(),
     ),
   );
+}
+
+/// Inicializa servicios pesados de forma asíncrona sin bloquear el arranque
+Future<void> _initServicesAsync() async {
+  try {
+    ConnectivityService().initialize();
+    // No bloquear en RemoteConfig - se carga en background
+    RemoteConfigService().initialize();
+    // No bloquear en NotificationService - se carga en background
+    NotificationService().initialize();
+  } catch (e) {
+    debugPrint('⚠️ Error en inicialización async de servicios: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {

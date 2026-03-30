@@ -68,6 +68,14 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Búsqueda de usuarios
   Future<void> searchUsers(String query) async {
+    // Validar longitud mínima de búsqueda
+    if (query.trim().length < 2) {
+      return;
+    }
+    // Validar longitud máxima
+    if (query.trim().length > 50) {
+      return;
+    }
     if (query.trim().isEmpty) {
       _searchResults = [];
       _searchQuery = '';
@@ -196,10 +204,14 @@ class UserProfileProvider extends ChangeNotifier {
               try {
                 _currentProfile = BiuxUser.fromJsonMap({...data, 'id': userId});
                 notifyListeners();
-              } catch (e) {}
+              } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
             }
           }, onError: (error) {});
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error: ' + e.toString());
+    }
   }
 
   /// Actualización rápida del perfil sin cargar contenido (para después de follow/unfollow)
@@ -210,6 +222,7 @@ class UserProfileProvider extends ChangeNotifier {
         _currentProfile = profile;
       }
     } catch (e) {
+      debugPrint('Error: ' + e.toString());
     } finally {
       notifyListeners();
     }

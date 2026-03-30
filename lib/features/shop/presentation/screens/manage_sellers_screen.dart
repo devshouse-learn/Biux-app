@@ -50,7 +50,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
     }
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             user.canSellProducts
@@ -62,7 +62,7 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
       );
       _loadUsers();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             userProvider.error ?? l.t('error_updating_permissions'),

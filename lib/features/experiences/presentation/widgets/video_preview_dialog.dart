@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 /// Diálogo para previsualizar videos antes de agregarlos
 class VideoPreviewDialog extends StatefulWidget {
@@ -191,7 +193,7 @@ class _VideoPreviewDialogState extends State<VideoPreviewDialog> {
               Icon(Icons.error_outline, size: 48, color: Colors.red[400]),
               const SizedBox(height: 8),
               Text(
-                _errorMessage ?? 'Error al cargar el video',
+                '${Provider.of<LocaleNotifier>(context).t('error_loading_video')}${_errorMessage != null ? ': $_errorMessage' : ''}',
                 style: TextStyle(color: Colors.red[600], fontSize: 14),
                 textAlign: TextAlign.center,
               ),

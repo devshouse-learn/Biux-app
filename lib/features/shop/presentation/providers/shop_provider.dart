@@ -711,6 +711,10 @@ class ShopProvider with ChangeNotifier {
       return true;
     } catch (e) {
       debugPrint('LIKE_PROVIDER>>> ERROR critico: $e');
+      // Revertir cambio local si falla Firestore
+      await loadProducts();
+      _errorMessage = 'shop_like_error';
+      notifyListeners();
       return false;
     }
   }

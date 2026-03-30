@@ -5,10 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
-import 'package:biux/features/users/presentation/providers/user_provider.dart';
-import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/shared/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:biux/features/users/data/models/user.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 
 /// Pantalla de perfil p├║blico de usuario
@@ -27,6 +29,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
   LocaleNotifier get l => Provider.of<LocaleNotifier>(context, listen: false);
   bool isFollowing = false;
   bool isCurrentUser = false;
+  Future? _experiencesFuture;
+  final Set<String> _failedImageIds = {};
+  int _postCount = 0;
 
   @override
   void initState() {
@@ -267,8 +272,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                 ],
                               ),
                               GestureDetector(
-                                onTap: () =>
-                                    _showFollowersModal(context, provider),
+                                onTap: () => _showFollowersModal(
+                                  context,
+                                  provider.currentUser!,
+                                ),
                                 child: Column(
                                   children: [
                                     Text(
@@ -291,8 +298,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () =>
-                                    _showFollowingModal(context, provider),
+                                onTap: () => _showFollowingModal(
+                                  context,
+                                  provider.currentUser!,
+                                ),
                                 child: Column(
                                   children: [
                                     Text(
@@ -680,97 +689,273 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     );
   }
 
-  void _showFollowersModal(BuildContext context, UserProfileProvider provider) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return FutureBuilder<void>(
-          future: provider.loadFollowers(widget.userId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(color: ColorTokens.primary50),
-                      SizedBox(height: 12),
-                      Text('Cargando seguidores...'),
-                    ],
+  // ignore: unused_element
+  Widget _buildPublicationsSection(BiuxUser user) {
+    return FutureBuilder(
+      future: _experiencesFuture,
+      builder: (context, snapshot) {
+        // Estado de carga
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  ColorTokens.primary30,
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Error
+        if (snapshot.hasError) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: ColorTokens.error50),
+                SizedBox(height: 12),
+                Text(
+                  l.t('error_loading_posts'),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.error50,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              );
-            }
+              ],
+            ),
+          );
+        }
 
-            final followers = provider.followers;
-            if (followers.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.people_outline,
-                        size: 48,
-                        color: ColorTokens.neutral60,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text('Sin seguidores a├║n'),
-                    ],
+        // Sin datos o lista vacía
+        if (!snapshot.hasData ||
+            snapshot.data == null ||
+            (snapshot.data as dynamic).isEmpty) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.image_not_supported,
+                  size: 48,
+                  color: ColorTokens.neutral60,
+                ),
+                SizedBox(height: 12),
+                Text(
+                  l.t('no_posts_yet'),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.neutral70,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              );
-            }
+              ],
+            ),
+          );
+        }
 
-            return DraggableScrollableSheet(
-              expand: false,
-              builder: (context, scrollController) {
-                return ListView(
-                  controller: scrollController,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'Seguidores (${followers.length})',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    ...followers.map((user) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: user.photo.isNotEmpty
-                              ? NetworkImage(user.photo)
-                              : null,
-                          child: user.photo.isEmpty
-                              ? const Icon(Icons.person)
-                              : null,
-                        ),
-                        title: Text(
-                          user.fullName.isNotEmpty
-                              ? user.fullName
-                              : user.userName,
-                        ),
-                        subtitle: Text('@${user.userName}'),
-                        onTap: () {
-                          context.pop();
-                          context.push('/user-profile/${user.id}');
-                        },
-                      );
-                    }),
-                  ],
-                );
+        // Filtrar: solo PUBLICACIONES (no historias) con media válido
+        final allExperiences = snapshot.data as dynamic;
+        final experiences = allExperiences.where((exp) {
+          // Excluir historias — solo publicaciones en el perfil
+          if (exp.isStoryFormat == true) return false;
+          try {
+            if (exp.media == null || exp.media.isEmpty) return false;
+            if (exp.media.first == null) return false;
+            final media = exp.media.first;
+            final url = media.url ?? '';
+            if (url.isEmpty) return false;
+            if (!url.startsWith('http://') && !url.startsWith('https://'))
+              return false;
+            // Para videos: validar que tenga thumbnail o URL válida
+            if (media.mediaType == MediaType.video) {
+              final thumb = media.thumbnailUrl ?? '';
+              return thumb.isNotEmpty && thumb.startsWith('http') ||
+                  url.isNotEmpty;
+            }
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }).toList();
+
+        // Eliminar publicaciones con imágenes que fallaron al cargar
+        experiences.removeWhere(
+          (exp) => _failedImageIds.contains(exp.id.toString()),
+        );
+
+        // Actualizar contador de posts
+        if (_postCount != experiences.length) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _postCount = experiences.length);
+          });
+        }
+
+        // Si después de filtrar no hay experiencias, mostrar el mensaje
+        if (experiences.isEmpty) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 40),
+            decoration: BoxDecoration(
+              color: ColorTokens.neutral10,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ColorTokens.neutral30, width: 1),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.image_not_supported,
+                  size: 48,
+                  color: ColorTokens.neutral60,
+                ),
+                SizedBox(height: 12),
+                Text(
+                  l.t('no_valid_posts'),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColorTokens.neutral70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Mostrar grid de publicaciones
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1,
+          ),
+          itemCount: experiences.length,
+          itemBuilder: (context, index) {
+            final experience = experiences[index];
+            return GestureDetector(
+              onTap: () {
+                context.push('/stories/post/${experience.id}');
               },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: ColorTokens.primary30, width: 1),
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Imagen/thumbnail de la experiencia optimizada
+                    experience.media.isNotEmpty
+                        ? Builder(
+                            builder: (context) {
+                              final media = experience.media.first;
+                              final isVideo =
+                                  media.mediaType == MediaType.video;
+                              final displayUrl = isVideo
+                                  ? (media.thumbnailUrl?.isNotEmpty == true
+                                        ? media.thumbnailUrl!
+                                        : media.url)
+                                  : media.url;
+                              return Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: displayUrl,
+                                    fit: BoxFit.cover,
+                                    cacheManager:
+                                        OptimizedCacheManager.instance,
+                                    memCacheWidth: 400,
+                                    memCacheHeight: 400,
+                                    fadeInDuration: const Duration(
+                                      milliseconds: 100,
+                                    ),
+                                    fadeOutDuration: const Duration(
+                                      milliseconds: 50,
+                                    ),
+                                    placeholder: (context, url) => Container(
+                                      color: ColorTokens.neutral20,
+                                      child: Center(
+                                        child: Icon(
+                                          isVideo
+                                              ? Icons.videocam
+                                              : Icons.image,
+                                          color: ColorTokens.neutral60,
+                                          size: 32,
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) {
+                                      final expId = experience.id.toString();
+                                      if (!_failedImageIds.contains(expId)) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                              if (mounted) {
+                                                setState(() {
+                                                  _failedImageIds.add(expId);
+                                                });
+                                              }
+                                            });
+                                      }
+                                      return SizedBox.shrink();
+                                    },
+                                  ),
+                                  if (isVideo)
+                                    Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.5,
+                                          ),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.play_arrow,
+                                          color: Colors.white,
+                                          size: 24,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          )
+                        : Container(
+                            color: ColorTokens.neutral20,
+                            child: Icon(
+                              Icons.image,
+                              color: ColorTokens.neutral60,
+                            ),
+                          ),
+                  ],
+                ),
+              ),
             );
           },
         );
@@ -778,101 +963,296 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     );
   }
 
-  void _showFollowingModal(BuildContext context, UserProfileProvider provider) {
+  void _showFollowersModal(BuildContext context, BiuxUser user) {
+    final provider = context.read<UserProfileProvider>();
+    provider.loadFollowers(user.id);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return FutureBuilder<void>(
-          future: provider.loadFollowing(widget.userId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(color: ColorTokens.primary50),
-                      SizedBox(height: 12),
-                      Text('Cargando seguidos...'),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            final following = provider.following;
-            if (following.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.people_outline,
-                        size: 48,
-                        color: ColorTokens.neutral60,
-                      ),
-                      const SizedBox(height: 12),
-                      const Text('No sigue a nadie a├║n'),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return DraggableScrollableSheet(
-              expand: false,
-              builder: (context, scrollController) {
-                return ListView(
-                  controller: scrollController,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'Siguiendo (${following.length})',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral10,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.neutral20,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
                       ),
                     ),
-                    ...following.map((user) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: user.photo.isNotEmpty
-                              ? NetworkImage(user.photo)
-                              : null,
-                          child: user.photo.isEmpty
-                              ? const Icon(Icons.person)
-                              : null,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l.t('followers'),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
                         ),
-                        title: Text(
-                          user.fullName.isNotEmpty
-                              ? user.fullName
-                              : user.userName,
+                        IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
+                          onPressed: () => Navigator.pop(modalContext),
                         ),
-                        subtitle: Text('@${user.userName}'),
-                        onTap: () {
-                          context.pop();
-                          context.push('/user-profile/${user.id}');
-                        },
-                      );
-                    }),
-                  ],
-                );
-              },
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListenableBuilder(
+                      listenable: provider,
+                      builder: (context, _) {
+                        if (provider.isLoadingFollowers) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorTokens.primary30,
+                              ),
+                            ),
+                          );
+                        }
+                        if (provider.followers.isEmpty) {
+                          return Center(
+                            child: Text(
+                              l.t('no_followers_yet'),
+                              style: TextStyle(
+                                color: ColorTokens.neutral60,
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: provider.followers.length,
+                          itemBuilder: (context, index) {
+                            final follower = provider.followers[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                radius: 20,
+                                backgroundColor: ColorTokens.neutral20,
+                                backgroundImage: follower.photo.isNotEmpty
+                                    ? CachedNetworkImageProvider(
+                                        follower.photo,
+                                        cacheManager: OptimizedCacheManager
+                                            .avatarInstance,
+                                      )
+                                    : null,
+                                child: follower.photo.isEmpty
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 20,
+                                        color: ColorTokens.neutral60,
+                                      )
+                                    : null,
+                              ),
+                              title: Text(
+                                follower.fullName.isNotEmpty
+                                    ? follower.fullName
+                                    : l.t('user'),
+                                style: TextStyle(
+                                  color: ColorTokens.neutral100,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: follower.userName.isNotEmpty
+                                  ? Text(
+                                      '@${follower.userName}',
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral60,
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  : null,
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: ColorTokens.neutral60,
+                              ),
+                              onTap: () {
+                                Navigator.pop(modalContext);
+                                context.push('/user-profile/${follower.id}');
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         );
       },
+    );
+  }
+
+  void _showFollowingModal(BuildContext context, BiuxUser user) {
+    final provider = context.read<UserProfileProvider>();
+    provider.loadFollowing(user.id);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: ColorTokens.neutral10,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.neutral20,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l.t('following'),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorTokens.neutral100,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: ColorTokens.neutral100,
+                          ),
+                          onPressed: () => Navigator.pop(modalContext),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListenableBuilder(
+                      listenable: provider,
+                      builder: (context, _) {
+                        if (provider.isLoadingFollowing) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorTokens.primary30,
+                              ),
+                            ),
+                          );
+                        }
+                        if (provider.following.isEmpty) {
+                          return Center(
+                            child: Text(
+                              l.t('not_following_anyone'),
+                              style: TextStyle(
+                                color: ColorTokens.neutral60,
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          controller: scrollController,
+                          itemCount: provider.following.length,
+                          itemBuilder: (context, index) {
+                            final followingUser = provider.following[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                radius: 20,
+                                backgroundColor: ColorTokens.neutral20,
+                                backgroundImage: followingUser.photo.isNotEmpty
+                                    ? CachedNetworkImageProvider(
+                                        followingUser.photo,
+                                        cacheManager: OptimizedCacheManager
+                                            .avatarInstance,
+                                      )
+                                    : null,
+                                child: followingUser.photo.isEmpty
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 20,
+                                        color: ColorTokens.neutral60,
+                                      )
+                                    : null,
+                              ),
+                              title: Text(
+                                followingUser.fullName.isNotEmpty
+                                    ? followingUser.fullName
+                                    : l.t('user'),
+                                style: TextStyle(
+                                  color: ColorTokens.neutral100,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              subtitle: followingUser.userName.isNotEmpty
+                                  ? Text(
+                                      '@${followingUser.userName}',
+                                      style: TextStyle(
+                                        color: ColorTokens.neutral60,
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  : null,
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: ColorTokens.neutral60,
+                              ),
+                              onTap: () {
+                                Navigator.pop(modalContext);
+                                context.push(
+                                  '/user-profile/${followingUser.id}',
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ignore: unused_element
+  Future<void> _shareProfile(BiuxUser user) async {
+    await SharePlus.instance.share(
+      ShareParams(
+        text: 'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
+      ),
     );
   }
 }

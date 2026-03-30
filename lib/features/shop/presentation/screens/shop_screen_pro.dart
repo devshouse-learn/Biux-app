@@ -102,6 +102,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// AppBar limpio estilo Chrome Web Store
   Widget _buildChromeStyleAppBar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SliverAppBar(
       floating: true,
@@ -137,7 +138,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           children: [
             // Logo o título
             Text(
-              '🚴 Tienda Biux',
+              l.t('biux_shop'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -168,7 +169,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     context.read<ShopProvider>().searchProducts(query);
                   },
                   decoration: InputDecoration(
-                    hintText: 'Buscar productos...',
+                    hintText: l.t('search_products_hint'),
                     hintStyle: TextStyle(
                       color: isDark ? Colors.white54 : ColorTokens.neutral70,
                       fontSize: 14,
@@ -228,7 +229,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             : ColorTokens.primary30,
                       ),
                       onPressed: () => context.push('/shop/favorites'),
-                      tooltip: 'Mis Favoritos',
+                      tooltip: l.t('my_favorites'),
                       style: IconButton.styleFrom(
                         backgroundColor: ColorTokens.neutral99,
                       ),
@@ -365,7 +366,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'Info de Productos',
+                            l.t('product_info_menu'),
                             style: TextStyle(color: Colors.blue[800]),
                           ),
                         ],
@@ -377,7 +378,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         children: [
                           Icon(Icons.campaign, size: 20, color: Colors.orange),
                           const SizedBox(width: 12),
-                          Text('Promociones'),
+                          Text(l.t('promotions_menu')),
                         ],
                       ),
                     ),
@@ -391,8 +392,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                             size: 22,
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Ofertas y Beneficios',
+                          Text(
+                            l.t('offers_benefits'),
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -409,8 +410,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               size: 22,
                             ),
                             const SizedBox(width: 12),
-                            const Text(
-                              'Panel Admin',
+                            Text(
+                              l.t('admin_panel'),
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                           ],
@@ -427,8 +428,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                               size: 22,
                             ),
                             const SizedBox(width: 12),
-                            const Text(
-                              'Agregar Producto',
+                            Text(
+                              l.t('add_product'),
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
                           ],
@@ -446,6 +447,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Bottom sheet con información de productos y sugerencias
   void _showShopInfoBottomSheet(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -490,7 +492,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Información de la Tienda',
+                      l.t('store_info_title'),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -646,41 +648,42 @@ class _ShopScreenProState extends State<ShopScreenPro>
   /// Chips de categorías horizontales estilo Chrome
   // ignore: unused_element
   Widget _buildCategoryChips() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     final categories = [
-      {'icon': Icons.apps, 'label': 'Todos', 'value': null},
+      {'icon': Icons.apps, 'label': l.t('all_categories'), 'value': null},
       {
         'icon': Icons.pedal_bike,
-        'label': 'Bicis',
+        'label': l.t('cat_bikes'),
         'value': ProductCategories.bikes,
       },
       {
         'icon': Icons.checkroom,
-        'label': 'Jerseys',
+        'label': l.t('cat_jerseys'),
         'value': ProductCategories.jerseys,
       },
       {
         'icon': Icons.sports,
-        'label': 'Culotes',
+        'label': l.t('cat_bibs'),
         'value': ProductCategories.shorts,
       },
       {
         'icon': Icons.sports_motorsports,
-        'label': 'Cascos',
+        'label': l.t('cat_helmets'),
         'value': ProductCategories.helmets,
       },
       {
         'icon': Icons.directions_run,
-        'label': 'Calzado',
+        'label': l.t('cat_shoes'),
         'value': ProductCategories.shoes,
       },
       {
         'icon': Icons.settings,
-        'label': 'Componentes',
+        'label': l.t('cat_components'),
         'value': ProductCategories.components,
       },
       {
         'icon': Icons.category,
-        'label': 'Accesorios',
+        'label': l.t('cat_accessories'),
         'value': ProductCategories.accessories,
       },
     ];
@@ -753,6 +756,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   /// Barra de ofertas desplegable limpia
   // ignore: unused_element
   Widget _buildOffersBar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -802,7 +806,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Ofertas y Beneficios',
+                            l.t('offers_benefits'),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -812,8 +816,8 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           const SizedBox(height: 2),
                           Text(
                             _showOffersExpanded
-                                ? 'Ocultar promociones'
-                                : 'Descuentos especiales disponibles',
+                                ? l.t('hide_promotions')
+                                : l.t('special_discounts'),
                             style: TextStyle(
                               fontSize: 13,
                               color: ColorTokens.neutral60,
@@ -969,6 +973,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Sección de productos destacados
   Widget _buildFeaturedSection() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return SliverToBoxAdapter(
       child: Consumer<ShopProvider>(
         builder: (context, provider, child) {
@@ -1003,7 +1008,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Destacados para ti',
+                      l.t('featured_for_you'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -1014,7 +1019,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Productos seleccionados para ciclistas',
+                  l.t('selected_for_cyclists'),
                   style: TextStyle(fontSize: 13, color: ColorTokens.neutral60),
                 ),
                 const SizedBox(height: 16),
@@ -1117,6 +1122,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Toolbar minimalista
   Widget _buildMinimalToolbar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: ColorTokens.neutral100,
@@ -1130,7 +1136,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               }).length;
 
               return Text(
-                '$validCount productos',
+                '$validCount ${l.t('products_count')}',
                 style: TextStyle(
                   color: ColorTokens.neutral50,
                   fontSize: 14,
@@ -1149,7 +1155,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               color: ColorTokens.primary30,
             ),
             label: Text(
-              'Filtros',
+              l.t('filters_label'),
               style: TextStyle(
                 color: ColorTokens.primary30,
                 fontWeight: FontWeight.w600,
@@ -1210,6 +1216,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   /// AppBar profesional con búsqueda integrada (antiguo)
   // ignore: unused_element
   Widget _buildSliverAppBar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return SliverAppBar(
       expandedHeight: 120,
       pinned: true,
@@ -1369,37 +1376,41 @@ class _ShopScreenProState extends State<ShopScreenPro>
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'orders',
                   child: Row(
                     children: [
-                      Icon(Icons.receipt_long, size: 20),
-                      SizedBox(width: 12),
-                      Text('Mis Pedidos'),
+                      const Icon(Icons.receipt_long, size: 20),
+                      const SizedBox(width: 12),
+                      Text(l.t('my_orders')),
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'favorites',
                   child: Row(
                     children: [
-                      Icon(Icons.favorite_border, size: 20),
-                      SizedBox(width: 12),
-                      Text('Favoritos'),
+                      const Icon(Icons.favorite_border, size: 20),
+                      const SizedBox(width: 12),
+                      Text(l.t('favorites')),
                     ],
                   ),
                 ),
                 // Solo mostrar a usuarios NO autorizados (para solicitar permiso)
                 if (!isAdmin && !(currentUser?.canSellProducts ?? false)) ...[
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'request_seller',
                     child: Row(
                       children: [
-                        Icon(Icons.request_page, size: 20, color: Colors.blue),
-                        SizedBox(width: 12),
+                        const Icon(
+                          Icons.request_page,
+                          size: 20,
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(width: 12),
                         Text(
-                          'Solicitar Vender Productos',
-                          style: TextStyle(
+                          l.t('request_sell_products'),
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
                           ),
@@ -1424,9 +1435,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Solicitudes de Vendedores',
-                          style: TextStyle(
+                        Text(
+                          l.t('seller_requests_menu'),
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.purple,
                           ),
@@ -1434,15 +1445,19 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'manage_sellers',
                     child: Row(
                       children: [
-                        Icon(Icons.people, size: 20, color: Colors.orange),
-                        SizedBox(width: 12),
+                        const Icon(
+                          Icons.people,
+                          size: 20,
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(width: 12),
                         Text(
-                          'Gestionar Vendedores',
-                          style: TextStyle(
+                          l.t('manage_sellers_menu'),
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.orange,
                           ),
@@ -1450,15 +1465,19 @@ class _ShopScreenProState extends State<ShopScreenPro>
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete_all_products',
                     child: Row(
                       children: [
-                        Icon(Icons.delete_forever, size: 20, color: Colors.red),
-                        SizedBox(width: 12),
+                        const Icon(
+                          Icons.delete_forever,
+                          size: 20,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(width: 12),
                         Text(
-                          'Eliminar Todos los Productos',
-                          style: TextStyle(
+                          l.t('delete_all_products'),
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.red,
                           ),
@@ -1467,13 +1486,13 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ),
                 ],
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'help',
                   child: Row(
                     children: [
-                      Icon(Icons.help_outline, size: 20),
-                      SizedBox(width: 12),
-                      Text('Ayuda'),
+                      const Icon(Icons.help_outline, size: 20),
+                      const SizedBox(width: 12),
+                      Text(l.t('help_center')),
                     ],
                   ),
                 ),
@@ -2037,6 +2056,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
   /// Toolbar con ordenamiento y vista
   // ignore: unused_element
   Widget _buildToolbar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,
@@ -2050,7 +2070,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
               }).length;
 
               return Text(
-                '$validCount productos',
+                '$validCount ${l.t('products_count')}',
                 style: TextStyle(
                   color: Colors.grey[700],
                   fontSize: 14,
@@ -2075,21 +2095,27 @@ class _ShopScreenProState extends State<ShopScreenPro>
               underline: const SizedBox(),
               icon: const Icon(Icons.sort, size: 18),
               isDense: true,
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'relevant',
-                  child: Text('Más relevantes'),
+                  child: Text(l.t('sort_most_relevant')),
                 ),
                 DropdownMenuItem(
                   value: 'price_low',
-                  child: Text('Menor precio'),
+                  child: Text(l.t('sort_lowest_price')),
                 ),
                 DropdownMenuItem(
                   value: 'price_high',
-                  child: Text('Mayor precio'),
+                  child: Text(l.t('sort_highest_price')),
                 ),
-                DropdownMenuItem(value: 'newest', child: Text('Más recientes')),
-                DropdownMenuItem(value: 'popular', child: Text('Más vendidos')),
+                DropdownMenuItem(
+                  value: 'newest',
+                  child: Text(l.t('sort_newest')),
+                ),
+                DropdownMenuItem(
+                  value: 'popular',
+                  child: Text(l.t('sort_best_selling')),
+                ),
               ],
               onChanged: (value) {
                 setState(() => _sortBy = value!);
@@ -2133,6 +2159,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Panel de filtros avanzados
   Widget _buildAdvancedFilters() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -2155,25 +2182,28 @@ class _ShopScreenProState extends State<ShopScreenPro>
             children: [
               const Icon(Icons.tune, color: ColorTokens.primary30),
               const SizedBox(width: 8),
-              const Text(
-                'Filtros Avanzados',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                l.t('advanced_filters'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               // Evitar Spacer() que expande indefinidamente dentro de filas
               // anidadas en Slivers; usar un SizedBox flexible en su lugar.
               const SizedBox(height: 4),
               TextButton(
                 onPressed: _clearFilters,
-                child: const Text('Limpiar'),
+                child: Text(l.t('clear_filters')),
               ),
             ],
           ),
           const Divider(),
 
           // Rango de precios
-          const Text(
-            'Rango de precio',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          Text(
+            l.t('price_range'),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           RangeSlider(
@@ -2201,7 +2231,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
           // Checkboxes
           CheckboxListTile(
-            title: const Text('Solo productos en stock'),
+            title: Text(l.t('in_stock_only')),
             value: _inStockOnly,
             onChanged: (value) => setState(() => _inStockOnly = value!),
             activeColor: ColorTokens.primary30,
@@ -2212,9 +2242,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
           const SizedBox(height: 16),
 
           // Calificación mínima
-          const Text(
-            'Calificación mínima',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          Text(
+            l.t('min_rating'),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Row(
@@ -2244,9 +2274,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Aplicar Filtros',
-                style: TextStyle(
+              child: Text(
+                l.t('apply_filters'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -2261,17 +2291,18 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Grid de productos (responsive)
   Widget _buildProductsGrid() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Consumer<ShopProvider>(
       builder: (context, shopProvider, child) {
         if (shopProvider.isLoadingProducts) {
-          return const SliverFillRemaining(
+          return SliverFillRemaining(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Cargando productos...'),
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(l.t('loading_products')),
                 ],
               ),
             ),
@@ -2302,7 +2333,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   Icon(Icons.search_off, size: 80, color: Colors.grey[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'No se encontraron productos',
+                    l.t('no_products_found'),
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],
@@ -2312,7 +2343,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: _clearFilters,
-                    child: const Text('Limpiar filtros'),
+                    child: Text(l.t('clear_filters')),
                   ),
                 ],
               ),
@@ -2349,6 +2380,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Card de producto estilo grid (Amazon/MercadoLibre)
   Widget _buildProductCardGrid(ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return GestureDetector(
       onTap: () => context.push('/shop/${product.id}'),
       child: Container(
@@ -2385,29 +2417,30 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                   ),
 
-                  // Badge de descuento (si aplica)
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        '20% OFF',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                  // Badge de descuento (solo si el producto tiene descuento real)
+                  if (product.hasDiscount)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '${product.discount!.toInt()}% OFF',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
                   // Botón favorito
                   Positioned(
@@ -2504,28 +2537,25 @@ class _ShopScreenProState extends State<ShopScreenPro>
                     ),
                     const SizedBox(height: 4),
 
-                    // Rating
-                    Row(
-                      children: [
-                        Row(
-                          children: List.generate(5, (index) {
-                            return Icon(
-                              index < 4 ? Icons.star : Icons.star_border,
-                              size: 11,
-                              color: Colors.amber,
-                            );
-                          }),
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          '4.5',
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: Colors.grey[600],
+                    // Rating (basado en datos reales del producto)
+                    if (product.likesCount > 0)
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.favorite,
+                            size: 11,
+                            color: Colors.red[300],
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${product.likesCount}',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
 
                     // Precio
                     Row(
@@ -2535,18 +2565,19 @@ class _ShopScreenProState extends State<ShopScreenPro>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Precio tachado
-                              Text(
-                                '\$${_formatPrice(product.price * 1.25)}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey[500],
-                                  decoration: TextDecoration.lineThrough,
+                              // Precio tachado (solo si hay descuento real)
+                              if (product.hasDiscount)
+                                Text(
+                                  '\$${_formatPrice(product.price)}',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey[500],
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
                                 ),
-                              ),
-                              // Precio actual
+                              // Precio actual (con descuento aplicado si existe)
                               Text(
-                                '\$${_formatPrice(product.price)}',
+                                '\$${_formatPrice(product.finalPrice)}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -2567,11 +2598,11 @@ class _ShopScreenProState extends State<ShopScreenPro>
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                        '${product.name} agregado al carrito',
+                                        '${product.name} ${l.t('added_to_cart')}',
                                       ),
                                       duration: const Duration(seconds: 2),
                                       action: SnackBarAction(
-                                        label: 'Ver Carrito',
+                                        label: l.t('view_cart'),
                                         onPressed: () =>
                                             context.push('/shop/cart'),
                                       ),
@@ -2609,6 +2640,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
 
   /// Card de producto estilo lista
   Widget _buildProductCardList(ProductEntity product) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(12),
@@ -2715,9 +2747,9 @@ class _ShopScreenProState extends State<ShopScreenPro>
             onPressed: () {
               context.read<ShopProvider>().addToCart(product);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Producto agregado al carrito'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(l.t('product_added_to_cart')),
+                  duration: const Duration(seconds: 2),
                 ),
               );
             },
@@ -2983,6 +3015,7 @@ class _ShopScreenProState extends State<ShopScreenPro>
           gradientColors: [const Color(0xFF1565C0), const Color(0xFF42A5F5)],
         );
       case 'shorts':
+      case 'culotes':
         return _CategoryVisual(
           icon: Icons.accessibility_new,
           gradientColors: [const Color(0xFF2E7D32), const Color(0xFF66BB6A)],
@@ -3008,9 +3041,64 @@ class _ShopScreenProState extends State<ShopScreenPro>
       case 'shoes':
       case 'zapatillas':
       case 'calzado':
+      case 'zapatos':
         return _CategoryVisual(
           icon: Icons.directions_run,
           gradientColors: [const Color(0xFFC62828), const Color(0xFFEF5350)],
+        );
+      case 'bikes':
+      case 'bicicletas':
+        return _CategoryVisual(
+          icon: Icons.pedal_bike,
+          gradientColors: [const Color(0xFF1B5E20), const Color(0xFF4CAF50)],
+        );
+      case 'accessories':
+      case 'accesorios':
+        return _CategoryVisual(
+          icon: Icons.settings,
+          gradientColors: [const Color(0xFF4E342E), const Color(0xFF8D6E63)],
+        );
+      case 'electronics':
+      case 'electronica':
+        return _CategoryVisual(
+          icon: Icons.speed,
+          gradientColors: [const Color(0xFF0D47A1), const Color(0xFF2196F3)],
+        );
+      case 'hydration':
+      case 'hidratacion':
+        return _CategoryVisual(
+          icon: Icons.water_drop,
+          gradientColors: [const Color(0xFF006064), const Color(0xFF00BCD4)],
+        );
+      case 'components':
+      case 'componentes':
+        return _CategoryVisual(
+          icon: Icons.build,
+          gradientColors: [const Color(0xFF424242), const Color(0xFF9E9E9E)],
+        );
+      case 'nutrition':
+      case 'nutricion':
+        return _CategoryVisual(
+          icon: Icons.restaurant,
+          gradientColors: [const Color(0xFFE65100), const Color(0xFFFF9800)],
+        );
+      case 'safety':
+      case 'seguridad':
+        return _CategoryVisual(
+          icon: Icons.shield,
+          gradientColors: [const Color(0xFFB71C1C), const Color(0xFFE57373)],
+        );
+      case 'maintenance':
+      case 'mantenimiento':
+        return _CategoryVisual(
+          icon: Icons.handyman,
+          gradientColors: [const Color(0xFF37474F), const Color(0xFF78909C)],
+        );
+      case 'storage':
+      case 'almacenamiento':
+        return _CategoryVisual(
+          icon: Icons.backpack,
+          gradientColors: [const Color(0xFF3E2723), const Color(0xFF795548)],
         );
       default:
         return _CategoryVisual(

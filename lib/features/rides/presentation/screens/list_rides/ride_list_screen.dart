@@ -679,7 +679,7 @@ class _RideListScreenState extends State<RideListScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.joinRide(rideId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('joined_ride')),
           backgroundColor: ColorTokens.success40,
@@ -692,7 +692,7 @@ class _RideListScreenState extends State<RideListScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.maybeJoinRide(rideId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('marked_maybe')),
           backgroundColor: ColorTokens.warning60,
@@ -705,7 +705,7 @@ class _RideListScreenState extends State<RideListScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.leaveRide(rideId);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l.t('left_ride')),
           backgroundColor: ColorTokens.neutral60,
@@ -784,7 +784,7 @@ class _RideListScreenState extends State<RideListScreen> {
                       Navigator.of(context).pop();
                     } else {
                       // Mostrar un mensaje de error si no se ha seleccionado ningún grupo
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(l.t('please_select_group')),
                           backgroundColor: ColorTokens.error50,

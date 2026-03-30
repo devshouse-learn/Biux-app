@@ -177,7 +177,7 @@ class _AttendeeCard extends StatelessWidget {
       '🔍 Avatar Debug - userName: "${metadata.userName}", photoUrl: "${metadata.photoUrl}"',
     );
 
-    if (metadata.photoUrl != null && metadata.photoUrl!.isNotEmpty) {
+    if ((metadata.photoUrl ?? '').isNotEmpty) {
       return CircleAvatar(
         radius: 20,
         backgroundImage: NetworkImage(metadata.photoUrl!),

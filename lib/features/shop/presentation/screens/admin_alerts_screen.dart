@@ -5,6 +5,8 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:biux/features/shop/data/datasources/alert_pdf_export_datasource.dart';
+import 'package:provider/provider.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});
@@ -608,7 +610,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
           );
         }
 
-        var alerts = snapshot.data!.docs;
+        if (!snapshot.hasData) return const SizedBox.shrink();
+          var alerts = snapshot.data!.docs;
 
         // Filter by search
         if (_searchQuery.isNotEmpty) {
@@ -990,7 +993,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       builder: (context, snapshot) {
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
-        final alerts = snapshot.data!.docs;
+        if (!snapshot.hasData) return const SizedBox.shrink();
+          final alerts = snapshot.data!.docs;
         final now = DateTime.now();
 
         final today = alerts.where((d) {
@@ -1272,7 +1276,8 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
       builder: (context, snapshot) {
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
-        final blocked = snapshot.data!.docs;
+        if (!snapshot.hasData) return const SizedBox.shrink();
+          final blocked = snapshot.data!.docs;
 
         if (blocked.isEmpty) {
           return Center(
@@ -1842,6 +1847,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     );
 
     try {
+      final l = Provider.of<LocaleNotifier>(context, listen: false);
       final snapshot = await _getAlertsQuery().get();
       final alerts = snapshot.docs;
 
