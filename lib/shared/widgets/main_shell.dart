@@ -4,7 +4,6 @@ import 'package:biux/core/config/strings.dart';
 import 'package:biux/core/config/styles.dart';
 import 'package:biux/core/utils/responsive_helper.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
 import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'app_drawer.dart';

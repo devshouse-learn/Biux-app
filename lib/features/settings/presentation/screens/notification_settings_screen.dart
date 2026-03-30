@@ -50,7 +50,7 @@ class NotificationSettingsScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AppearanceScreenDetails(),
+                  builder: (context) => const AppearanceDetailsScreen(),
                 ),
               );
             },

@@ -1,3 +1,4 @@
+// ignore_for_file: must_be_immutable
 import 'dart:io';
 
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -16,6 +17,8 @@ import 'package:biux/shared/widgets/loading_widget.dart';
 import 'package:biux/shared/widgets/text_field_widget.dart';
 import 'package:biux/core/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/features/age_verification/domain/entities/age_verification_entity.dart';
+import 'package:biux/features/age_verification/presentation/widgets/birth_date_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +33,7 @@ class CreateUserScreen extends StatelessWidget {
       TextEditingController();
   final TextEditingController userNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  DateTime? _birthDate;
 
   Future getImageFromGallery(CreateUserBloc bloc) async {
     final ImagePicker picker = ImagePicker();
@@ -202,6 +206,12 @@ class CreateUserScreen extends StatelessWidget {
                                         return '';
                                       }
                                       return null;
+                                    },
+                                  ),
+                                  BirthDatePicker(
+                                    selectedDate: _birthDate,
+                                    onDateSelected: (date) {
+                                      _birthDate = date;
                                     },
                                   ),
                                   Container(
@@ -393,6 +403,50 @@ class CreateUserScreen extends StatelessWidget {
                           if (_formKey.currentState!.validate() &&
                               bloc.image.path != '' &&
                               bloc.isChecked) {
+                            // Validar fecha de nacimiento
+                            if (_birthDate == null) {
+                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBarUtils.customSnackBar(
+                                  content: 'Ingresa tu fecha de nacimiento',
+                                  backgroundColor: ColorTokens.error50,
+                                ),
+                              );
+                              return;
+                            }
+                            final ageInfo = AgeVerificationEntity
+                                .fromBirthDate((_birthDate ?? DateTime.now()));
+                            // Bloquear menores de 13
+                            if (ageInfo.ageGroup == AgeGroup.underage) {
+                              if (context.mounted) {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (_) => AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16)),
+                                    title: const Row(children: [
+                                      Icon(Icons.block_rounded,
+                                        color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Text('Acceso restringido'),
+                                    ]),
+                                    content: const Text(
+                                      'Lo sentimos, Biux está disponible '
+                                      'únicamente para usuarios mayores de 13 años.',
+                                      style: TextStyle(height: 1.5),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context),
+                                        child: const Text('Entendido'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return;
+                            }
                             bloc.changeLoading(true);
                             City citySeleted = City();
                             bloc.listCities.forEach((element) {
@@ -416,6 +470,7 @@ class CreateUserScreen extends StatelessWidget {
                               ),
                               bloc,
                               context,
+                              ageInfo,
                             );
                           } else {
                             if (!_formKey.currentState!.validate()) {
@@ -543,6 +598,7 @@ class CreateUserScreen extends StatelessWidget {
     BiuxUser user,
     CreateUserBloc bloc,
     BuildContext context,
+    AgeVerificationEntity ageInfo,
   ) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     try {
@@ -562,9 +618,18 @@ class CreateUserScreen extends StatelessWidget {
             await FirebaseAnalytics.instance.logSignUp(signUpMethod: 'email');
             await bloc.uploadPhoto(id);
             Future.delayed(Duration(seconds: 3), () async {
-              if (context.mounted) {
-                context.go(AppRoutes.mainMenu);
-              }
+  if (context.mounted) {
+                  if (ageInfo.ageGroup == AgeGroup.minor) {
+                    context.go(AppRoutes.parentalConsent, extra: {
+                      'userId': id,
+                      'userAge': ageInfo.age,
+                    });
+                  } else {
+                    context.go(AppRoutes.identityVerification, extra: {
+                      'userId': id,
+                    });
+                  }
+                }
             });
           } else {
             bloc.changeLoading(false);
