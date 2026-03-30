@@ -38,13 +38,13 @@ class _MainShellState extends State<MainShell> {
   String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
     switch (index) {
       case 0:
-        return 'FEED';
+        return 'BIUX';
       case 1:
-        return 'RODADAS';
+        return 'BIUX';
       case 2:
-        return 'MIS BICIS';
+        return 'BIUX';
       case 3:
-        return l.t('shop').toUpperCase();
+        return 'BIUX';
       case 4:
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         final username = userProvider.user?.username;
