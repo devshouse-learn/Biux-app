@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
-import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/chat/presentation/widgets/message_bubble.dart';

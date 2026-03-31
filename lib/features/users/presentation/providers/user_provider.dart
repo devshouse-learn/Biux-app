@@ -1,4 +1,5 @@
 import 'package:biux/features/users/data/models/user_model.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/users/data/datasources/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +21,9 @@ class UserProvider extends ChangeNotifier {
 
   // 🔴 Constructor que auto-inicializa en web
   UserProvider() {
-    debugPrint('🟦 UserProvider constructor llamado');
+    AppLogger.debug('🟦 UserProvider constructor llamado');
     if (kIsWeb) {
-      debugPrint('🌐 Es WEB - Creando usuario admin de prueba automáticamente');
+      AppLogger.debug('🌐 Es WEB - Creando usuario admin de prueba automáticamente');
       _createWebTestUser();
     } else {
       loadUserData();
@@ -38,7 +39,7 @@ class UserProvider extends ChangeNotifier {
 
   // 🔴 Crear usuario admin de prueba SOLO para Chrome web
   Future<void> _createWebTestUser() async {
-    debugPrint('🟦 Creando usuario admin para CHROME web (desarrollo)...');
+    AppLogger.debug('🟦 Creando usuario admin para CHROME web (desarrollo)...');
     _setLoading(true);
 
     try {
@@ -53,22 +54,22 @@ class UserProvider extends ChangeNotifier {
         canSellProducts: true,
       );
 
-      debugPrint('✅ Usuario admin de Chrome creado (SOLO WEB)');
-      debugPrint('👤 Nombre: ${_user!.name}');
-      debugPrint('🛡️ Es admin: ${_user!.isAdmin}');
-      debugPrint('🛒 Puede vender: ${_user!.canSellProducts}');
-      debugPrint('✅ Puede crear productos: ${_user!.canCreateProducts}');
-      debugPrint('');
-      debugPrint('⚠️  IMPORTANTE:');
-      debugPrint('   - Este admin SOLO funciona en Chrome web');
-      debugPrint(
+      AppLogger.info('✅ Usuario admin de Chrome creado (SOLO WEB)');
+      AppLogger.debug('👤 Nombre: ${_user!.name}');
+      AppLogger.debug('🛡️ Es admin: ${_user!.isAdmin}');
+      AppLogger.debug('🛒 Puede vender: ${_user!.canSellProducts}');
+      AppLogger.info('✅ Puede crear productos: ${_user!.canCreateProducts}');
+      AppLogger.debug('');
+      AppLogger.warning('⚠️  IMPORTANTE:');
+      AppLogger.debug('   - Este admin SOLO funciona en Chrome web');
+      AppLogger.debug(
         '   - En simuladores móviles, los usuarios deben pedir permiso',
       );
-      debugPrint('');
+      AppLogger.debug('');
 
       notifyListeners(); // ← IMPORTANTE: Notificar a los listeners
     } catch (e) {
-      debugPrint('❌ Error creando usuario de prueba: $e');
+      AppLogger.error('❌ Error creando usuario de prueba: $e');
       _error = 'user_error_creating_test';
     }
 
@@ -81,22 +82,22 @@ class UserProvider extends ChangeNotifier {
     String? uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    debugPrint('');
-    debugPrint('�' * 30);
-    debugPrint('� SIMULADOR MÓVIL - Sistema de Permisos');
-    debugPrint('📱 TU UID ES: $uid');
-    debugPrint('�');
-    debugPrint('📱 ⚠️  IMPORTANTE:');
-    debugPrint('📱 - Por defecto, NO eres administrador');
-    debugPrint('📱 - NO puedes subir productos automáticamente');
-    debugPrint('📱 - Debes solicitar permisos a un administrador');
-    debugPrint('📱');
-    debugPrint('📱 Para solicitar permisos:');
-    debugPrint('📱 1. Ve a tu perfil');
-    debugPrint('📱 2. Solicita ser vendedor');
-    debugPrint('📱 3. Un admin debe aprobar tu solicitud');
-    debugPrint('�' * 30);
-    debugPrint('');
+    AppLogger.debug('');
+    AppLogger.debug('�' * 30);
+    AppLogger.debug('� SIMULADOR MÓVIL - Sistema de Permisos');
+    AppLogger.debug('📱 TU UID ES: $uid');
+    AppLogger.debug('�');
+    AppLogger.debug('📱 ⚠️  IMPORTANTE:');
+    AppLogger.debug('📱 - Por defecto, NO eres administrador');
+    AppLogger.debug('📱 - NO puedes subir productos automáticamente');
+    AppLogger.debug('📱 - Debes solicitar permisos a un administrador');
+    AppLogger.debug('📱');
+    AppLogger.debug('📱 Para solicitar permisos:');
+    AppLogger.debug('📱 1. Ve a tu perfil');
+    AppLogger.debug('📱 2. Solicita ser vendedor');
+    AppLogger.debug('📱 3. Un admin debe aprobar tu solicitud');
+    AppLogger.debug('�' * 30);
+    AppLogger.debug('');
 
     _setLoading(true);
     _error = null;
@@ -134,21 +135,21 @@ class UserProvider extends ChangeNotifier {
           }
         }
 
-        debugPrint('👤 Usuario cargado: ${_user!.name ?? "Sin nombre"}');
-        debugPrint('🛡️ Es admin: ${_user!.isAdmin}');
-        debugPrint('🛒 Puede vender: ${_user!.canSellProducts}');
-        debugPrint('✅ Puede crear productos: ${_user!.canCreateProducts}');
+        AppLogger.debug('👤 Usuario cargado: ${_user!.name ?? "Sin nombre"}');
+        AppLogger.debug('🛡️ Es admin: ${_user!.isAdmin}');
+        AppLogger.debug('🛒 Puede vender: ${_user!.canSellProducts}');
+        AppLogger.info('✅ Puede crear productos: ${_user!.canCreateProducts}');
 
         if (!_user!.canCreateProducts) {
-          debugPrint('');
-          debugPrint('⚠️  NO PUEDES SUBIR PRODUCTOS');
-          debugPrint('   Necesitas autorización de un administrador');
-          debugPrint('');
+          AppLogger.debug('');
+          AppLogger.warning('⚠️  NO PUEDES SUBIR PRODUCTOS');
+          AppLogger.debug('   Necesitas autorización de un administrador');
+          AppLogger.debug('');
         }
       }
     } catch (e) {
       _error = 'user_error_loading_data';
-      debugPrint('Error en loadUserData: $e');
+      AppLogger.debug('Error en loadUserData: $e');
     }
 
     _setLoading(false);
@@ -166,10 +167,10 @@ class UserProvider extends ChangeNotifier {
       _userService.listenToUser(uid, (userData) {
         _user = userData;
         notifyListeners();
-        debugPrint('🔄 Datos de usuario actualizados en tiempo real');
+        AppLogger.debug('🔄 Datos de usuario actualizados en tiempo real');
       });
     } catch (e) {
-      debugPrint('Error configurando listener: $e');
+      AppLogger.debug('Error configurando listener: $e');
     }
   }
 
@@ -182,19 +183,19 @@ class UserProvider extends ChangeNotifier {
     String? coverPhotoUrl,
     DateTime? birthDate,
   }) async {
-    debugPrint('🔍 ====== USER PROVIDER: updateProfile ======');
-    debugPrint('📝 Nombre recibido: "$name"');
-    debugPrint('📧 Email recibido: "$email"');
-    debugPrint('📋 Descripción recibida: "$description"');
-    debugPrint('👤 Username recibido: "$username"');
-    debugPrint('🖼️ Foto de perfil recibida: "$photoUrl"');
-    debugPrint('🏞️ Foto de portada recibida: "$coverPhotoUrl"');
+    AppLogger.debug('🔍 ====== USER PROVIDER: updateProfile ======');
+    AppLogger.debug('📝 Nombre recibido: "$name"');
+    AppLogger.debug('📧 Email recibido: "$email"');
+    AppLogger.debug('📋 Descripción recibida: "$description"');
+    AppLogger.debug('👤 Username recibido: "$username"');
+    AppLogger.debug('🖼️ Foto de perfil recibida: "$photoUrl"');
+    AppLogger.debug('🏞️ Foto de portada recibida: "$coverPhotoUrl"');
 
     // SIEMPRE usar Firebase Auth como fuente de verdad
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
     if (firebaseUser == null) {
-      debugPrint(
+      AppLogger.debug(
         '❌ ERROR CRÍTICO: No hay usuario autenticado en Firebase Auth',
       );
       _error = 'user_error_not_logged_in';
@@ -203,9 +204,9 @@ class UserProvider extends ChangeNotifier {
     }
 
     final uid = firebaseUser.uid;
-    debugPrint('✅ Usuario autenticado encontrado');
-    debugPrint('🆔 UID de Firebase Auth: $uid');
-    debugPrint('📞 Teléfono: ${firebaseUser.phoneNumber}');
+    AppLogger.info('✅ Usuario autenticado encontrado');
+    AppLogger.debug('🆔 UID de Firebase Auth: $uid');
+    AppLogger.debug('📞 Teléfono: ${firebaseUser.phoneNumber}');
 
     // Validar que al menos uno de los campos tenga valor
     // Permitir null/empty para fotos (para poder eliminarlas)
@@ -221,7 +222,7 @@ class UserProvider extends ChangeNotifier {
     bool hasBirthDateUpdate = birthDate != null;
 
     if (!hasTextUpdate && !hasPhotoUpdate && !hasBirthDateUpdate) {
-      debugPrint('❌ ERROR: Todos los campos vacíos');
+      AppLogger.error('❌ ERROR: Todos los campos vacíos');
       _error = 'user_error_empty_fields';
       notifyListeners();
       return false;
@@ -232,9 +233,9 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      debugPrint('📝 Iniciando actualización de perfil...');
-      debugPrint('   Foto de perfil: "$photoUrl"');
-      debugPrint('   Foto de portada: "$coverPhotoUrl"');
+      AppLogger.debug('📝 Iniciando actualización de perfil...');
+      AppLogger.debug('   Foto de perfil: "$photoUrl"');
+      AppLogger.debug('   Foto de portada: "$coverPhotoUrl"');
 
       bool success = await _userService.updateUserProfile(
         uid: uid,
@@ -247,40 +248,40 @@ class UserProvider extends ChangeNotifier {
         birthDate: birthDate,
       );
 
-      debugPrint('📊 Respuesta del servicio: $success');
+      AppLogger.debug('📊 Respuesta del servicio: $success');
 
       if (success) {
-        debugPrint('✅ Actualización exitosa, recargando datos...');
+        AppLogger.info('✅ Actualización exitosa, recargando datos...');
         // Recargar datos del usuario desde Firebase
         await loadUserData();
 
-        debugPrint('✅ Datos recargados:');
-        debugPrint('   Nombre actual: ${_user?.name}');
-        debugPrint('   Email actual: ${_user?.email}');
-        debugPrint('   Username actual: ${_user?.username}');
-        debugPrint('   Descripción actual: ${_user?.description}');
-        debugPrint('   Foto de perfil actual: ${_user?.photoUrl}');
-        debugPrint('   Foto de portada actual: ${_user?.coverPhotoUrl}');
+        AppLogger.info('✅ Datos recargados:');
+        AppLogger.debug('   Nombre actual: ${_user?.name}');
+        AppLogger.debug('   Email actual: ${_user?.email}');
+        AppLogger.debug('   Username actual: ${_user?.username}');
+        AppLogger.debug('   Descripción actual: ${_user?.description}');
+        AppLogger.debug('   Foto de perfil actual: ${_user?.photoUrl}');
+        AppLogger.debug('   Foto de portada actual: ${_user?.coverPhotoUrl}');
 
         _error = null;
       } else {
-        debugPrint('❌ El servicio retornó false');
+        AppLogger.error('❌ El servicio retornó false');
         _error = 'user_error_update_profile';
       }
 
       _setLoading(false);
       notifyListeners();
-      debugPrint(
+      AppLogger.debug(
         '🔍 ====== FIN updateProfile (${success ? "ÉXITO" : "ERROR"}) ======\n',
       );
       return success;
     } catch (e) {
-      debugPrint('❌ EXCEPCIÓN en updateProfile: $e');
-      debugPrint('   Tipo: ${e.runtimeType}');
+      AppLogger.error('❌ EXCEPCIÓN en updateProfile: $e');
+      AppLogger.debug('   Tipo: ${e.runtimeType}');
       _error = 'user_error_update_profile';
       _setLoading(false);
       notifyListeners();
-      debugPrint('🔍 ====== FIN updateProfile (EXCEPCIÓN) ======\n');
+      AppLogger.debug('🔍 ====== FIN updateProfile (EXCEPCIÓN) ======\n');
       return false;
     }
   }
@@ -434,7 +435,7 @@ class UserProvider extends ChangeNotifier {
     }
 
     final currentUserId = currentUser.uid;
-    debugPrint(
+    AppLogger.debug(
       '📱 followUser: currentUserId=$currentUserId, userIdToFollow=$userIdToFollow',
     );
 
@@ -450,7 +451,7 @@ class UserProvider extends ChangeNotifier {
       if (success) {
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        debugPrint('✅ Ya sigues a $userIdToFollow');
+        AppLogger.info('✅ Ya sigues a $userIdToFollow');
       } else {
         _error = 'user_error_follow';
       }
@@ -477,7 +478,7 @@ class UserProvider extends ChangeNotifier {
     }
 
     final currentUserId = currentUser.uid;
-    debugPrint(
+    AppLogger.debug(
       '📱 unfollowUser: currentUserId=$currentUserId, userIdToUnfollow=$userIdToUnfollow',
     );
 
@@ -493,7 +494,7 @@ class UserProvider extends ChangeNotifier {
       if (success) {
         // Actualizar la lista de seguidos localmente
         await loadUserData();
-        debugPrint('✅ Dejaste de seguir a $userIdToUnfollow');
+        AppLogger.info('✅ Dejaste de seguir a $userIdToUnfollow');
       } else {
         _error = 'user_error_unfollow';
       }

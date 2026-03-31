@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:biux/features/maps/data/datasources/danger_zones_datasource.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
 
 class DangerZonesScreen extends StatefulWidget {
   const DangerZonesScreen({super.key});
@@ -13,6 +12,7 @@ class DangerZonesScreen extends StatefulWidget {
   State<DangerZonesScreen> createState() => _DangerZonesScreenState();
 }
 
+// ignore_for_file: unused_field
 class _DangerZonesScreenState extends State<DangerZonesScreen> {
   GoogleMapController? _mapController;
   Position? _position;
@@ -27,7 +27,6 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
   }
 
   Future<void> _getLocation() async {
-    final ok = await DangerZonesDatasource.zonesStream().isEmpty;
     try {
       final pos = await Geolocator.getCurrentPosition();
       setState(() => _position = pos);
