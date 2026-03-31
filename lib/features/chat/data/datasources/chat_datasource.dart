@@ -42,9 +42,12 @@ class ChatDatasource {
     return _db
         .collection('chats')
         .where('participantIds', arrayContains: uid)
-        .orderBy('updatedAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map((d) => _chatFromDoc(d)).toList());
+        .map((snap) {
+          final chats = snap.docs.map((d) => _chatFromDoc(d)).toList();
+          chats.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+          return chats;
+        });
   }
 
   Stream<List<MessageEntity>> getMessages(String chatId) {
@@ -54,7 +57,11 @@ class ChatDatasource {
         .collection('messages')
         .orderBy('sentAt', descending: false)
         .snapshots()
-        .map((snap) => snap.docs.map((d) => MessageEntity.fromMap(d.data(), d.id)).toList());
+        .map(
+          (snap) => snap.docs
+              .map((d) => MessageEntity.fromMap(d.data(), d.id))
+              .toList(),
+        );
   }
 
   // ── Mutations ──────────────────────────────────────────────────────────────
@@ -84,7 +91,11 @@ class ChatDatasource {
     required String chatId,
     required MessageEntity message,
   }) async {
-    final ref = _db.collection('chats').doc(chatId).collection('messages').doc();
+    final ref = _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc();
     final data = message.toMap();
     data['id'] = ref.id;
     await ref.set(data);
@@ -97,9 +108,7 @@ class ChatDatasource {
   Future<void> markMessagesAsRead(String chatId) async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) return;
-    await _db.collection('chats').doc(chatId).update({
-      'unreadCount.$uid': 0,
-    });
+    await _db.collection('chats').doc(chatId).update({'unreadCount.$uid': 0});
   }
 
   Future<void> addReaction({
@@ -114,9 +123,7 @@ class ChatDatasource {
         .doc(chatId)
         .collection('messages')
         .doc(messageId)
-        .update({
-      'reactions.$uid': emoji,
-    });
+        .update({'reactions.$uid': emoji});
   }
 
   Future<void> removeReaction({
@@ -130,9 +137,7 @@ class ChatDatasource {
         .doc(chatId)
         .collection('messages')
         .doc(messageId)
-        .update({
-      'reactions.$uid': FieldValue.delete(),
-    });
+        .update({'reactions.$uid': FieldValue.delete()});
   }
 
   Future<void> deleteMessage({
@@ -161,7 +166,10 @@ class ChatDatasource {
       ),
       participantIds: List<String>.from(data['participantIds'] ?? []),
       lastMessage: data['lastMessage'] != null
-          ? MessageEntity.fromMap(data['lastMessage'], data['lastMessage']['id'] ?? '')
+          ? MessageEntity.fromMap(
+              data['lastMessage'],
+              data['lastMessage']['id'] ?? '',
+            )
           : null,
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       unreadCount: Map<String, int>.from(data['unreadCount'] ?? {}),

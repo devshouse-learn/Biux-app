@@ -328,7 +328,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                       );
                     }
                     // Ordenar client-side por updatedAt o lastMessageTime descendente
-                    final docs = snapshot.data!.docs.toList()
+                    final allDocs = snapshot.data!.docs.toList()
                       ..sort((a, b) {
                         final aData = a.data() as Map<String, dynamic>;
                         final bData = b.data() as Map<String, dynamic>;
@@ -339,6 +339,23 @@ class _ChatListScreenState extends State<ChatListScreen>
                         if (bTime == null) return -1;
                         return bTime.compareTo(aTime);
                       });
+
+                    // Deduplicar: para chats directos, una sola entrada por par de usuarios
+                    final seenKeys = <String>{};
+                    final docs = allDocs.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      final type = data['type'] as String? ?? 'direct';
+                      if (type != 'direct')
+                        return true; // grupos siempre se muestran
+                      final ids = List<String>.from(
+                        data['participantIds'] ?? data['participants'] ?? [],
+                      );
+                      ids.sort();
+                      final key = ids.join('_');
+                      if (seenKeys.contains(key)) return false;
+                      seenKeys.add(key);
+                      return true;
+                    }).toList();
                     return ListView.builder(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -349,7 +366,9 @@ class _ChatListScreenState extends State<ChatListScreen>
                         final data = docs[i].data() as Map<String, dynamic>;
                         final chatId = docs[i].id;
                         final participants =
-                            data['participants'] as List<dynamic>? ?? [];
+                            data['participantIds'] as List<dynamic>? ??
+                            data['participants'] as List<dynamic>? ??
+                            [];
                         final lastTime = (data['updatedAt'] ?? data['lastMessageTime']) as Timestamp?;
                         final lastMsgRaw = data['lastMessage'];
                         final String lastMsg;

@@ -1,4 +1,4 @@
-import 'package:biux/features/rides/data/models/ride_model.dart';
+﻿import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
@@ -28,16 +28,13 @@ class _RideListScreenState extends State<RideListScreen> {
       final groupProvider = Provider.of<GroupProvider>(context, listen: false);
 
       if (widget.groupId != null) {
-        // Cargar rodadas de un grupo específico
         provider.loadGroupRides(widget.groupId!);
       } else {
-        // Cargar todas las rodadas de todos los grupos
         provider.loadAllRides();
       }
 
-      // Cargar los grupos de admin del usuario siempre (tanto para grupo específico como general)
-      // Esto evita recargas innecesarias al presionar el Botón +
       groupProvider.loadAdminGroups();
+      groupProvider.loadAllGroups();
     });
   }
 
@@ -45,40 +42,81 @@ class _RideListScreenState extends State<RideListScreen> {
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      body: Consumer<RideProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<RideProvider, GroupProvider>(
+        builder: (context, provider, groupProvider, child) {
           if (provider.isLoading) {
             return Center(child: CircularProgressIndicator());
           }
 
           final rides = provider.rides;
 
+          // Pantalla general (sin grupo) → banner + rodadas o grupos
+          if (widget.groupId == null) {
+            final groups = groupProvider.allGroups;
+            final items = rides.isNotEmpty ? rides : null;
+            return RefreshIndicator(
+              onRefresh: () async => provider.loadAllRides(),
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                itemCount: 1 + (items != null ? items.length : groups.length),
+                itemBuilder: (context, index) {
+                  if (index == 0) return _buildBanner();
+                  final i = index - 1;
+                  if (items != null) return _buildRideCard(items[i], provider);
+                  if (groups.isEmpty) return const SizedBox.shrink();
+                  final group = groups[i];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      leading: group.logoUrl != null
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(group.logoUrl!),
+                              radius: 24,
+                            )
+                          : const CircleAvatar(
+                              radius: 24,
+                              backgroundColor: ColorTokens.primary30,
+                              child: Icon(
+                                Icons.groups,
+                                color: ColorTokens.neutral100,
+                              ),
+                            ),
+                      title: Text(
+                        group.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text('${group.memberCount} miembros'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/groups/${group.id}'),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+
+          // Pantalla específica de un grupo
           if (rides.isEmpty) {
             return _buildEmptyState();
           }
 
           return RefreshIndicator(
-            onRefresh: () async {
-              if (widget.groupId != null) {
-                provider.loadGroupRides(widget.groupId!);
-              } else {
-                provider.loadAllRides();
-              }
-            },
+            onRefresh: () async => provider.loadGroupRides(widget.groupId!),
             child: ListView.builder(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               itemCount: rides.length,
-              itemBuilder: (context, index) {
-                final ride = rides[index];
-                return _buildRideCard(ride, provider);
-              },
+              itemBuilder: (context, index) =>
+                  _buildRideCard(rides[index], provider),
             ),
           );
         },
       ),
       floatingActionButton: Consumer<GroupProvider>(
         builder: (context, groupProvider, child) {
-          // Si estamos viendo las rodadas de un grupo específico
           if (widget.groupId != null) {
             return FloatingActionButton(
               onPressed: () => context.push('/rides/create/${widget.groupId}'),
@@ -87,8 +125,6 @@ class _RideListScreenState extends State<RideListScreen> {
               tooltip: l.t('create_ride'),
             );
           }
-
-          // Si estamos en el listado general y el usuario es admin de algún grupo
           if (groupProvider.adminGroups.isNotEmpty) {
             return FloatingActionButton(
               onPressed: () => _showCreateRideDialog(context, groupProvider),
@@ -97,9 +133,60 @@ class _RideListScreenState extends State<RideListScreen> {
               tooltip: l.t('create_ride'),
             );
           }
-
-          return SizedBox.shrink();
+          return FloatingActionButton.extended(
+            onPressed: () => context.push('/groups/create'),
+            backgroundColor: ColorTokens.primary30,
+            icon: Icon(Icons.group_add, color: ColorTokens.neutral100),
+            label: Text(
+              'Crear grupo',
+              style: TextStyle(color: ColorTokens.neutral100),
+            ),
+          );
         },
+      ),
+    );
+  }
+
+  Widget _buildBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            ColorTokens.primary30,
+            ColorTokens.primary30.withValues(alpha: 0.75),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Row(
+        children: [
+          Text('🚴', style: TextStyle(fontSize: 28)),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Aquí nadie rueda solo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Únete y no te pierdas ninguna salida',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -108,33 +195,34 @@ class _RideListScreenState extends State<RideListScreen> {
     return Consumer<GroupProvider>(
       builder: (context, groupProvider, child) {
         final l = Provider.of<LocaleNotifier>(context);
+
+        // Si hay un grupo específico sin rodadas
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.directions_bike_outlined,
-                size: 80,
+                size: 64,
                 color: ColorTokens.neutral60,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 12),
               Text(
                 widget.groupId != null
                     ? l.t('no_rides_in_group')
                     : l.t('no_rides_scheduled'),
                 style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 8),
               Text(
                 widget.groupId != null
                     ? l.t('be_first_to_organize')
-                    : groupProvider.adminGroups.isNotEmpty
-                    ? l.t('organize_first_ride')
-                    : l.t('join_group_for_rides'),
+                    : l.t('organize_first_ride'),
                 style: TextStyle(color: ColorTokens.neutral60),
+                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 24),
-              // Botón en estado vac�o
+              SizedBox(height: 16),
               if (widget.groupId != null)
                 ElevatedButton.icon(
                   onPressed: () =>
@@ -156,22 +244,103 @@ class _RideListScreenState extends State<RideListScreen> {
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
                   ),
-                )
-              else
-                ElevatedButton.icon(
-                  onPressed: () => context.push('/groups'),
-                  icon: Icon(Icons.group),
-                  label: Text(l.t('view_groups')),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorTokens.primary30,
-                    foregroundColor: ColorTokens.neutral100,
-                  ),
                 ),
             ],
           ),
         );
       },
     );
+  }
+
+  // Lista de grupos como ListView directo (para usar dentro de Expanded en build)
+  Widget _buildGroupsListView(GroupProvider groupProvider) {
+    final groups = groupProvider.allGroups;
+    if (groups.isEmpty) {
+      return const Center(
+        child: Text(
+          'No hay grupos disponibles',
+          style: TextStyle(color: Colors.grey),
+        ),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      itemCount: groups.length,
+      itemBuilder: (context, index) {
+        final group = groups[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ListTile(
+            leading: group.logoUrl != null
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(group.logoUrl!),
+                    radius: 24,
+                  )
+                : CircleAvatar(
+                    radius: 24,
+                    backgroundColor: ColorTokens.primary30,
+                    child: Icon(Icons.groups, color: ColorTokens.neutral100),
+                  ),
+            title: Text(
+              group.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text('${group.memberCount} miembros'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/groups/${group.id}'),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildGroupsList(GroupProvider groupProvider) {
+    final groups = groupProvider.allGroups;
+    if (groups.isEmpty) return [];
+    return [
+      Expanded(
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          itemCount: groups.length,
+          itemBuilder: (context, index) {
+            final group = groups[index];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                leading: group.logoUrl != null
+                    ? CircleAvatar(
+                        backgroundImage: NetworkImage(group.logoUrl!),
+                        radius: 24,
+                      )
+                    : CircleAvatar(
+                        radius: 24,
+                        backgroundColor: ColorTokens.primary30,
+                        child: Icon(
+                          Icons.groups,
+                          color: ColorTokens.neutral100,
+                        ),
+                      ),
+                title: Text(
+                  group.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text('${group.memberCount} miembros'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/groups/${group.id}'),
+              ),
+            );
+          },
+        ),
+      ),
+    ];
   }
 
   Widget _buildRideCard(RideModel ride, RideProvider provider) {
@@ -451,19 +620,21 @@ class _RideListScreenState extends State<RideListScreen> {
                         ),
                         SizedBox(height: 12),
 
-                        // Estado de participación del usuario
-                        _buildParticipationChip(participationStatus, l),
+                        // Estado de participación del usuario (solo para no creadores)
+                        if (!isCreator)
+                          _buildParticipationChip(participationStatus, l),
                         SizedBox(height: 16),
 
-                        // Botones de acción
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: _buildActionButton(
-                            ride,
-                            participationStatus,
-                            provider,
+                        // Botones de acción (solo para no creadores)
+                        if (!isCreator)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: _buildActionButton(
+                              ride,
+                              participationStatus,
+                              provider,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -679,12 +850,13 @@ class _RideListScreenState extends State<RideListScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.joinRide(rideId);
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('joined_ride')),
-          backgroundColor: ColorTokens.success40,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('joined_ride')),
+            backgroundColor: ColorTokens.success40,
+          ),
+        );
     }
   }
 
@@ -692,12 +864,13 @@ class _RideListScreenState extends State<RideListScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.maybeJoinRide(rideId);
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('marked_maybe')),
-          backgroundColor: ColorTokens.warning60,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('marked_maybe')),
+            backgroundColor: ColorTokens.warning60,
+          ),
+        );
     }
   }
 
@@ -705,12 +878,13 @@ class _RideListScreenState extends State<RideListScreen> {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.leaveRide(rideId);
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('left_ride')),
-          backgroundColor: ColorTokens.neutral60,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('left_ride')),
+            backgroundColor: ColorTokens.neutral60,
+          ),
+        );
     }
   }
 
@@ -784,12 +958,13 @@ class _RideListScreenState extends State<RideListScreen> {
                       Navigator.of(context).pop();
                     } else {
                       // Mostrar un mensaje de error si no se ha seleccionado ningún grupo
-                      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l.t('please_select_group')),
-                          backgroundColor: ColorTokens.error50,
-                        ),
-                      );
+                      if (context.mounted)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l.t('please_select_group')),
+                            backgroundColor: ColorTokens.error50,
+                          ),
+                        );
                     }
                   },
                   child: Text(l.t('continue_action')),

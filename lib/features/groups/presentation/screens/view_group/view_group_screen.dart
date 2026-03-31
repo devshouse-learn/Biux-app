@@ -108,6 +108,19 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   pinned: true,
                   backgroundColor: ColorTokens.primary30,
                   foregroundColor: ColorTokens.neutral100,
+                  leading: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: ColorTokens.neutral100,
+                    ),
+                    onPressed: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/rides');
+                      }
+                    },
+                  ),
                   actions: _buildAppBarActions(group, provider),
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
@@ -562,7 +575,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       trailing: IconButton(
                         onPressed: () {
                           // Navegar a la pantalla de detalles de la rodada
-                          context.go('/rides/${ride.id}');
+                          context.push('/rides/${ride.id}');
                         },
                         icon: Icon(Icons.arrow_forward),
                       ),
@@ -667,6 +680,35 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
   }
 
+  void _showDeleteGroupDialog(GroupModel group, GroupProvider provider) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('¿Eliminar grupo?'),
+        content: Text(
+          'Esta acción es permanente y eliminará "${group.name}" para todos los miembros. ¿Estás seguro?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final success = await provider.deleteGroup(group.id);
+              if (success && mounted) {
+                context.go('/rides');
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: ColorTokens.error50),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _buildAppBarActions(GroupModel group, GroupProvider provider) {
     final l = Provider.of<LocaleNotifier>(context);
     final userStatus = provider.getUserStatus(group);
@@ -681,6 +723,33 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             tooltip: l.t('edit_group'),
           ),
         );
+        // Solo el dueño (adminId) puede eliminar el grupo
+        if (group.adminId == provider.currentUserId) {
+          actions.add(
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'delete') {
+                  _showDeleteGroupDialog(group, provider);
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_forever, color: ColorTokens.error50),
+                      SizedBox(width: 8),
+                      Text(
+                        'Eliminar grupo',
+                        style: TextStyle(color: ColorTokens.error50),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
         break;
       case GroupMembershipStatus.member:
         actions.add(
