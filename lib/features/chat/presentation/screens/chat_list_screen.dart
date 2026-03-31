@@ -327,17 +327,13 @@ class _ChatListScreenState extends State<ChatListScreen>
                         ),
                       );
                     }
-                    // Ordenar client-side por updatedAt descendente
+                    // Ordenar client-side por updatedAt o lastMessageTime descendente
                     final allDocs = snapshot.data!.docs.toList()
                       ..sort((a, b) {
                         final aData = a.data() as Map<String, dynamic>;
                         final bData = b.data() as Map<String, dynamic>;
-                        final aTime =
-                            (aData['updatedAt'] ?? aData['lastMessageTime'])
-                                as Timestamp?;
-                        final bTime =
-                            (bData['updatedAt'] ?? bData['lastMessageTime'])
-                                as Timestamp?;
+                        final aTime = (aData['updatedAt'] ?? aData['lastMessageTime']) as Timestamp?;
+                        final bTime = (bData['updatedAt'] ?? bData['lastMessageTime']) as Timestamp?;
                         if (aTime == null && bTime == null) return 0;
                         if (aTime == null) return 1;
                         if (bTime == null) return -1;
@@ -373,13 +369,28 @@ class _ChatListScreenState extends State<ChatListScreen>
                             data['participantIds'] as List<dynamic>? ??
                             data['participants'] as List<dynamic>? ??
                             [];
-                        final lastMsgMap = data['lastMessage'];
-                        final lastMsg = lastMsgMap is Map
-                            ? (lastMsgMap['content'] as String? ?? '')
-                            : (lastMsgMap as String? ?? '');
-                        final lastTime =
-                            (data['updatedAt'] as Timestamp?) ??
-                            data['lastMessageTime'] as Timestamp?;
+                        final lastTime = (data['updatedAt'] ?? data['lastMessageTime']) as Timestamp?;
+                        final lastMsgRaw = data['lastMessage'];
+                        final String lastMsg;
+                        if (lastMsgRaw is String) {
+                          lastMsg = lastMsgRaw;
+                        } else if (lastMsgRaw is Map) {
+                          final type = lastMsgRaw['type'] as String? ?? 'text';
+                          final content = lastMsgRaw['content'] as String? ?? '';
+                          if (type == 'voice') {
+                            lastMsg = '🎤 Audio';
+                          } else if (type == 'image') {
+                            lastMsg = '📷 Imagen';
+                          } else if (type == 'location') {
+                            lastMsg = '📍 Ubicación';
+                          } else {
+                            lastMsg = content;
+                          }
+                        } else {
+                          lastMsg = '';
+                        }
+                        final unreadCount = data['unreadCount'] as Map<String, dynamic>? ?? {};
+                        final unread = (unreadCount[_uid] as int?) ?? 0;
                         final type = data['type'] as String? ?? 'direct';
                         final isGroup = type == 'group';
                         final otherUid = isGroup
@@ -465,13 +476,13 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                   child: Text(
                                                     name,
                                                     style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w700
+                                                          : FontWeight.w600,
                                                       fontSize: 15,
                                                       color: isDark
                                                           ? Colors.white
-                                                          : ColorTokens
-                                                                .neutral10,
+                                                          : ColorTokens.neutral10,
                                                     ),
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -485,30 +496,58 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                     ),
                                                     style: TextStyle(
                                                       fontSize: 11,
-                                                      color: isDark
-                                                          ? Colors.white54
-                                                          : Colors.grey[500],
+                                                      color: unread > 0
+                                                          ? ColorTokens.primary30
+                                                          : (isDark
+                                                              ? Colors.white54
+                                                              : Colors.grey[500]),
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
                                                     ),
                                                   ),
                                               ],
                                             ),
                                             const SizedBox(height: 4),
-                                            Text(
-                                              lastMsg.isEmpty
-                                                  ? 'Sin mensajes aún'
-                                                  : lastMsg,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: lastMsg.isEmpty
-                                                    ? (isDark
-                                                          ? Colors.white38
-                                                          : Colors.grey[400])
-                                                    : (isDark
-                                                          ? Colors.white70
-                                                          : Colors.grey[600]),
-                                              ),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    lastMsg.isEmpty
+                                                        ? 'Sin mensajes aún'
+                                                        : lastMsg,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                      color: lastMsg.isEmpty
+                                                          ? (isDark ? Colors.white38 : Colors.grey[400])
+                                                          : (isDark ? Colors.white70 : Colors.grey[600]),
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (unread > 0)
+                                                  Container(
+                                                    margin: const EdgeInsets.only(left: 6),
+                                                    padding: const EdgeInsets.symmetric(
+                                                        horizontal: 7, vertical: 3),
+                                                    decoration: BoxDecoration(
+                                                      color: ColorTokens.primary30,
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    child: Text(
+                                                      unread > 99 ? '99+' : '\$unread',
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 11,
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
                                             ),
                                           ],
                                         ),
