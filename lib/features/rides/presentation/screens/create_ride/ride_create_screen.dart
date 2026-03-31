@@ -95,6 +95,16 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
         ),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: ColorTokens.neutral100,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/rides');
+            }
+          },
+        ),
       ),
       body: Consumer2<RideProvider, MeetingPointProvider>(
         builder: (context, rideProvider, meetingPointProvider, child) {
@@ -704,7 +714,8 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
 
   void _saveRide() async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
-    if (_formKey.currentState == null || !_formKey.currentState!.validate()) return;
+    if (_formKey.currentState == null || !_formKey.currentState!.validate())
+      return;
 
     // Validar que hay al menos un punto de encuentro (predefinido o personalizado)
     if (_selectedMeetingPoint == null && _customMeetingPointName == null) {

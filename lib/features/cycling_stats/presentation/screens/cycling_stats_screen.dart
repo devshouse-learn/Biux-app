@@ -7,6 +7,7 @@ import 'package:biux/features/cycling_stats/presentation/providers/cycling_stats
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 
 class CyclingStatsScreen extends StatefulWidget {
   const CyclingStatsScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _selectedPeriod = 'total';
+  String _rankingMode = 'amigos'; // 'amigos' | 'regional'
 
   @override
   void initState() {
@@ -1357,28 +1359,120 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
 
   // ─── TAB RANKING ─────────────────────────────────────────
   Widget _buildLeaderboardTab(CyclingStatsProvider provider) {
-    final leaderboard = provider.leaderboard;
+    final userProvider = context.watch<UserProvider>();
+    final currentUser = userProvider.user;
+    final followingIds = (currentUser?.following?.keys.toList() ?? []);
+    // Incluir al usuario actual en amigos
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null && !followingIds.contains(uid)) followingIds.add(uid);
 
-    if (leaderboard.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.leaderboard_rounded,
-        title: 'Ranking vacío',
-        subtitle: 'Aún no hay ciclistas en el ranking.\n¡Sé el primero!',
-      );
-    }
+    final leaderboard = _rankingMode == 'amigos'
+        ? provider.friendsLeaderboard
+        : provider.leaderboard;
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await context.read<CyclingStatsProvider>().loadLeaderboard();
-      },
-      color: ColorTokens.primary30,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: leaderboard.length + 1, // +1 para el header
-        itemBuilder: (context, index) {
-          if (index == 0) return _buildLeaderboardHeader(leaderboard);
-          return _buildLeaderboardItem(leaderboard[index - 1], index - 1);
-        },
+    return Column(
+      children: [
+        // ── SELECTOR DE MODO ──
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: Row(
+            children: [
+              _rankingChip(
+                label: '👥 Amigos',
+                selected: _rankingMode == 'amigos',
+                onTap: () {
+                  setState(() => _rankingMode = 'amigos');
+                  provider.loadFriendsLeaderboard(followingIds);
+                },
+              ),
+              const SizedBox(width: 8),
+              _rankingChip(
+                label: '📍 Regional',
+                selected: _rankingMode == 'regional',
+                onTap: () {
+                  setState(() => _rankingMode = 'regional');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Ranking regional próximamente'),
+                      backgroundColor: ColorTokens.primary30,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        // ── LISTA ──
+        Expanded(
+          child: leaderboard.isEmpty
+              ? _buildEmptyState(
+                  icon: Icons.leaderboard_rounded,
+                  title: _rankingMode == 'amigos'
+                      ? 'Sin amigos en el ranking'
+                      : 'Ranking vacío',
+                  subtitle: _rankingMode == 'amigos'
+                      ? 'Sigue a otros ciclistas\npara verlos aquí'
+                      : 'Aún no hay ciclistas en el ranking.\n¡Sé el primero!',
+                )
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    if (_rankingMode == 'amigos') {
+                      await provider.loadFriendsLeaderboard(followingIds);
+                    } else {
+                      await provider.loadLeaderboard();
+                    }
+                  },
+                  color: ColorTokens.primary30,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: leaderboard.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0)
+                        return _buildLeaderboardHeader(leaderboard);
+                      return _buildLeaderboardItem(
+                        leaderboard[index - 1],
+                        index - 1,
+                      );
+                    },
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _rankingChip({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? ColorTokens.primary30 : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected
+                ? ColorTokens.primary30
+                : Colors.grey.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            color: selected ? Colors.white : null,
+          ),
+        ),
       ),
     );
   }
