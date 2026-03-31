@@ -276,27 +276,25 @@ class _RideCreateScreenState extends State<RideCreateScreen> {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            // Datos clave en fila
-                            Row(
+                            // Datos clave en fila (Wrap para evitar overflow)
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
                               children: [
                                 _weatherDataChip(
                                   '💨',
                                   '${wp.windSpeed.round()} km/h ${wp.windDirectionLabel}',
                                 ),
-                                const SizedBox(width: 8),
                                 _weatherDataChip('💧', '${wp.humidity}%'),
-                                const SizedBox(width: 8),
                                 _weatherDataChip(
                                   '🌡️',
                                   'ST ${wp.feelsLike.round()}°C',
                                 ),
-                                if (wp.uvIndex > 0) ...[
-                                  const SizedBox(width: 8),
+                                if (wp.uvIndex > 0)
                                   _weatherDataChip(
                                     '☀️',
                                     'UV ${wp.uvIndex.toStringAsFixed(1)}',
                                   ),
-                                ],
                               ],
                             ),
                             if (wp.rideAdvice.isNotEmpty) ...[

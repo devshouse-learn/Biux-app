@@ -177,8 +177,13 @@ class _GroupListScreenState extends State<GroupListScreen> {
         title: Text(
           group.name,
           style: const TextStyle(fontWeight: FontWeight.bold),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text('${group.memberIds.length} miembros'),
+        subtitle: Text(
+          '${group.memberIds.length} miembros',
+          style: const TextStyle(fontSize: 13),
+        ),
         trailing: _buildStatusChip(provider.getUserStatus(group)),
         onTap: () => context.push('/groups/${group.id}'),
       ),
