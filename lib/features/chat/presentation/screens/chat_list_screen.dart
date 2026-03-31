@@ -327,22 +327,39 @@ class _ChatListScreenState extends State<ChatListScreen>
                         ),
                       );
                     }
-                    // Ordenar client-side por lastMessageTime descendente
-                    final docs = snapshot.data!.docs.toList()
+                    // Ordenar client-side por updatedAt descendente
+                    final allDocs = snapshot.data!.docs.toList()
                       ..sort((a, b) {
+                        final aData = a.data() as Map<String, dynamic>;
+                        final bData = b.data() as Map<String, dynamic>;
                         final aTime =
-                            (a.data()
-                                    as Map<String, dynamic>)['lastMessageTime']
+                            (aData['updatedAt'] ?? aData['lastMessageTime'])
                                 as Timestamp?;
                         final bTime =
-                            (b.data()
-                                    as Map<String, dynamic>)['lastMessageTime']
+                            (bData['updatedAt'] ?? bData['lastMessageTime'])
                                 as Timestamp?;
                         if (aTime == null && bTime == null) return 0;
                         if (aTime == null) return 1;
                         if (bTime == null) return -1;
                         return bTime.compareTo(aTime);
                       });
+
+                    // Deduplicar: para chats directos, una sola entrada por par de usuarios
+                    final seenKeys = <String>{};
+                    final docs = allDocs.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      final type = data['type'] as String? ?? 'direct';
+                      if (type != 'direct')
+                        return true; // grupos siempre se muestran
+                      final ids = List<String>.from(
+                        data['participantIds'] ?? data['participants'] ?? [],
+                      );
+                      ids.sort();
+                      final key = ids.join('_');
+                      if (seenKeys.contains(key)) return false;
+                      seenKeys.add(key);
+                      return true;
+                    }).toList();
                     return ListView.builder(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -353,9 +370,16 @@ class _ChatListScreenState extends State<ChatListScreen>
                         final data = docs[i].data() as Map<String, dynamic>;
                         final chatId = docs[i].id;
                         final participants =
-                            data['participants'] as List<dynamic>? ?? [];
-                        final lastMsg = data['lastMessage'] as String? ?? '';
-                        final lastTime = data['lastMessageTime'] as Timestamp?;
+                            data['participantIds'] as List<dynamic>? ??
+                            data['participants'] as List<dynamic>? ??
+                            [];
+                        final lastMsgMap = data['lastMessage'];
+                        final lastMsg = lastMsgMap is Map
+                            ? (lastMsgMap['content'] as String? ?? '')
+                            : (lastMsgMap as String? ?? '');
+                        final lastTime =
+                            (data['updatedAt'] as Timestamp?) ??
+                            data['lastMessageTime'] as Timestamp?;
                         final type = data['type'] as String? ?? 'direct';
                         final isGroup = type == 'group';
                         final otherUid = isGroup

@@ -8,6 +8,7 @@ import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/weather/presentation/providers/weather_provider.dart';
 
 class CyclingStatsScreen extends StatefulWidget {
   const CyclingStatsScreen({Key? key}) : super(key: key);
@@ -36,6 +37,10 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
     if (uid != null) {
       context.read<CyclingStatsProvider>().refreshAll(uid);
       context.read<RideTrackerProvider>().loadHistory(uid);
+    }
+    final wp = context.read<WeatherProvider>();
+    if (wp.weatherData == null && !wp.loading) {
+      wp.loadWeather();
     }
   }
 
@@ -372,6 +377,10 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
           _buildPeriodFilter(),
           const SizedBox(height: 16),
 
+          // Clima actual para ciclismo
+          _buildWeatherCard(),
+          const SizedBox(height: 16),
+
           // Stats principales en grid
           _buildMainStatsGrid(stats),
           const SizedBox(height: 16),
@@ -445,6 +454,210 @@ class _CyclingStatsScreenState extends State<CyclingStatsScreen>
       default: // total
         return rides;
     }
+  }
+
+  // ─── TARJETA DE CLIMA ────────────────────────────────────
+  Widget _buildWeatherCard() {
+    return Consumer<WeatherProvider>(
+      builder: (context, wp, _) {
+        if (wp.loading) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.blue.withValues(alpha: 0.15)),
+            ),
+            child: const Row(
+              children: [
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  'Cargando clima...',
+                  style: TextStyle(fontSize: 12, color: Colors.blue),
+                ),
+              ],
+            ),
+          );
+        }
+        if (wp.weatherData == null) return const SizedBox.shrink();
+
+        final safe = wp.isSafeToRide;
+        final safeColor = safe ? Colors.green : Colors.orange;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isDark
+                ? safeColor.withValues(alpha: 0.08)
+                : safeColor.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: safeColor.withValues(alpha: 0.25)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Título de sección
+              Row(
+                children: [
+                  const Icon(
+                    Icons.wb_sunny_outlined,
+                    size: 14,
+                    color: Colors.amber,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Clima actual para rodar',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white54 : Colors.grey[600],
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: safeColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      safe ? '✅ Apto para rodar' : '⚠️ Precaución',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: safeColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              // Fila principal: emoji + temp + datos
+              Row(
+                children: [
+                  Text(wp.weatherEmoji, style: const TextStyle(fontSize: 32)),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        wp.temperature,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        wp.description,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white54 : Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // Grid de datos
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      _statsWeatherRow(
+                        '💨',
+                        '${wp.windSpeed.round()} km/h ${wp.windDirectionLabel}',
+                      ),
+                      const SizedBox(height: 4),
+                      _statsWeatherRow('💧', 'Humedad ${wp.humidity}%'),
+                      const SizedBox(height: 4),
+                      _statsWeatherRow('🌡️', 'ST ${wp.feelsLike.round()}°C'),
+                    ],
+                  ),
+                ],
+              ),
+              if (wp.uvIndex > 0 || wp.precipitationProbability > 0) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    if (wp.uvIndex > 0)
+                      _statsWeatherChip(
+                        '☀️ UV ${wp.uvIndex.toStringAsFixed(1)} · ${wp.uvAdvice}',
+                      ),
+                    if (wp.uvIndex > 0 && wp.precipitationProbability > 0)
+                      const SizedBox(width: 8),
+                    if (wp.precipitationProbability > 0)
+                      _statsWeatherChip(
+                        '🌧️ Prec. ${wp.precipitationProbability}%',
+                      ),
+                  ],
+                ),
+              ],
+              if (wp.rideAdvice.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: safeColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    wp.rideAdvice,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: safeColor.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _statsWeatherRow(String emoji, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 12)),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+        ),
+      ],
+    );
+  }
+
+  Widget _statsWeatherChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+      ),
+    );
   }
 
   // ─── FILTRO DE PERÍODO ───────────────────────────────────

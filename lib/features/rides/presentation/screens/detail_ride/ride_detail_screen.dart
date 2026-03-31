@@ -452,7 +452,7 @@ class GroupInfoWidget extends StatelessWidget {
             return Card(
               child: InkWell(
                 onTap: () {
-                  context.go('/groups/${groupInfo['id']}');
+                  context.push('/groups/${groupInfo['id']}');
                 },
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(

@@ -6,9 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math' show sin, cos, sqrt, atan2, pi;
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
+import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
+import 'package:biux/features/road_reports/domain/entities/road_report_entity.dart';
 
 class RideTrackerScreen extends StatefulWidget {
   final bool showHistory;
@@ -44,6 +47,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       provider.initLivePosition();
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid != null) provider.loadHistory(uid);
+      context.read<RoadReportsProvider>().loadReports();
     });
   }
 
@@ -653,6 +657,11 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
 
                 const SizedBox(height: 16),
 
+                // Alertas viales cercanas
+                _buildRoadAlertsSection(p),
+
+                const SizedBox(height: 16),
+
                 // Botones
                 _buildActionButtons(p),
               ],
@@ -877,6 +886,268 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         ),
       ],
     );
+  }
+
+  // ─── ALERTAS VIALES ──────────────────────────────────────
+  Widget _buildRoadAlertsSection(RideTrackerProvider p) {
+    return Consumer<RoadReportsProvider>(
+      builder: (context, rrp, _) {
+        if (rrp.isLoading) {
+          return const SizedBox(
+            height: 30,
+            child: Center(
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+
+        // Filtrar solo activos; si hay posición, ordenar por proximidad (<=20 km)
+        final pos =
+            p.livePosition ??
+            (p.points.isNotEmpty
+                ? LatLng(p.points.last.lat, p.points.last.lng)
+                : null);
+
+        final active = rrp.reports.where((r) => r.isActive).toList();
+        List<RoadReportEntity> nearby;
+        if (pos != null) {
+          nearby =
+              active
+                  .where(
+                    (r) =>
+                        _distKm(
+                          pos.latitude,
+                          pos.longitude,
+                          r.latitude,
+                          r.longitude,
+                        ) <=
+                        20.0,
+                  )
+                  .toList()
+                ..sort(
+                  (a, b) =>
+                      _distKm(
+                        pos.latitude,
+                        pos.longitude,
+                        a.latitude,
+                        a.longitude,
+                      ).compareTo(
+                        _distKm(
+                          pos.latitude,
+                          pos.longitude,
+                          b.latitude,
+                          b.longitude,
+                        ),
+                      ),
+                );
+        } else {
+          nearby = active;
+        }
+
+        if (nearby.isEmpty) return const SizedBox.shrink();
+
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Encabezado
+            Row(
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  size: 14,
+                  color: Colors.orange,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Alertas viales${pos != null ? ' cercanas' : ''}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white54 : Colors.grey[600],
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    '${nearby.length}',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.orange,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => rrp.loadReports(),
+                  child: Icon(
+                    Icons.refresh,
+                    size: 14,
+                    color: isDark ? Colors.white38 : Colors.grey[400],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Lista de alertas (máx 3 visibles, scroll horizontal)
+            SizedBox(
+              height: 76,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: nearby.length > 5 ? 5 : nearby.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, i) {
+                  final r = nearby[i];
+                  final distStr = pos != null
+                      ? _formatDist(
+                          _distKm(
+                            pos.latitude,
+                            pos.longitude,
+                            r.latitude,
+                            r.longitude,
+                          ),
+                        )
+                      : null;
+                  return _buildAlertChip(r, distStr, isDark);
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildAlertChip(RoadReportEntity r, String? dist, bool isDark) {
+    final Color chipColor;
+    switch (r.type) {
+      case 'danger':
+        chipColor = Colors.red;
+        break;
+      case 'construction':
+        chipColor = Colors.orange;
+        break;
+      case 'flooding':
+        chipColor = Colors.blue;
+        break;
+      case 'pothole':
+        chipColor = Colors.brown;
+        break;
+      default:
+        chipColor = Colors.orange;
+    }
+
+    return Container(
+      width: 130,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: chipColor.withValues(alpha: isDark ? 0.12 : 0.07),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: chipColor.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Text(r.typeIcon, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  r.typeName,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: chipColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            r.description.isEmpty ? r.typeName : r.description,
+            style: TextStyle(
+              fontSize: 10,
+              color: isDark ? Colors.white54 : Colors.grey[600],
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (dist != null) ...[
+            const SizedBox(height: 3),
+            Row(
+              children: [
+                Icon(
+                  Icons.near_me,
+                  size: 9,
+                  color: isDark ? Colors.white38 : Colors.grey[400],
+                ),
+                const SizedBox(width: 3),
+                Text(
+                  dist,
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: isDark ? Colors.white38 : Colors.grey[400],
+                  ),
+                ),
+                if (r.confirmations > 0) ...[
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.thumb_up_alt,
+                    size: 9,
+                    color: chipColor.withValues(alpha: 0.7),
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    '${r.confirmations}',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: chipColor.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Distancia Haversine en kilómetros
+  double _distKm(double lat1, double lon1, double lat2, double lon2) {
+    const r = 6371.0;
+    final dLat = (lat2 - lat1) * pi / 180;
+    final dLon = (lon2 - lon1) * pi / 180;
+    final a =
+        sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1 * pi / 180) *
+            cos(lat2 * pi / 180) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    return r * 2 * atan2(sqrt(a), sqrt(1 - a));
+  }
+
+  String _formatDist(double km) {
+    if (km < 1) return '${(km * 1000).round()} m';
+    return '${km.toStringAsFixed(1)} km';
   }
 
   // ─── HISTORIAL ───────────────────────────────────────────
