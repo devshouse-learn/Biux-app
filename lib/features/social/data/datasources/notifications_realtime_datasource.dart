@@ -109,17 +109,34 @@ class NotificationsRealtimeDatasource {
   }
 
   /// Crea una nueva notificación
+  /// Si se provee [notificationId], usa ese ID determinístico (para likes).
+  /// Esto evita duplicados: un segundo set() en el mismo path pisa la anterior
+  /// y no incrementa el contador.
   Future<void> createNotification({
     required String userId,
     required NotificationModel notification,
+    String? notificationId,
   }) async {
-    final notificationRef = _database.ref('notifications/$userId').push();
-    final notificationId =
-        notificationRef.key!; // ⚠️ Obtener ID generado por Firebase
+    final DatabaseReference notificationRef;
+    final String resolvedId;
 
-    // ⚠️ Crear nueva notificación con el ID correcto
+    if (notificationId != null) {
+      notificationRef = _database.ref('notifications/$userId/$notificationId');
+      resolvedId = notificationId;
+    } else {
+      notificationRef = _database.ref('notifications/$userId').push();
+      resolvedId = notificationRef.key!;
+    }
+
+    // Para IDs determinísticos verificar si ya existe antes de incrementar contador
+    bool isNewNotification = true;
+    if (notificationId != null) {
+      final existing = await notificationRef.get();
+      isNewNotification = !existing.exists;
+    }
+
     final notificationWithId = NotificationModel(
-      id: notificationId,
+      id: resolvedId,
       type: notification.type,
       fromUserId: notification.fromUserId,
       fromUserName: notification.fromUserName,
@@ -133,22 +150,21 @@ class NotificationsRealtimeDatasource {
       metadata: notification.metadata,
     );
 
-    // ⚠️ Las notificaciones ahora son creadas por Cloud Functions
-    // Este método solo se usa para casos legacy
     await notificationRef.set(notificationWithId.toJson());
 
-    // Incrementar contador de no leídas
-    final unreadRef = _database.ref('notifications/unread/$userId');
-    final snapshot = await unreadRef.get();
+    // Solo incrementar contador para notificaciones realmente nuevas
+    if (isNewNotification) {
+      final unreadRef = _database.ref('notifications/unread/$userId');
+      final snapshot = await unreadRef.get();
 
-    // ⚠️ Las reglas esperan estructura {count: number, lastUpdated: number}
-    final currentData = snapshot.value as Map<dynamic, dynamic>?;
-    final currentCount = currentData?['count'] as int? ?? 0;
+      final currentData = snapshot.value as Map<dynamic, dynamic>?;
+      final currentCount = currentData?['count'] as int? ?? 0;
 
-    await unreadRef.set({
-      'count': currentCount + 1,
-      'lastUpdated': DateTime.now().millisecondsSinceEpoch,
-    });
+      await unreadRef.set({
+        'count': currentCount + 1,
+        'lastUpdated': DateTime.now().millisecondsSinceEpoch,
+      });
+    }
   }
 
   /// Elimina una notificación

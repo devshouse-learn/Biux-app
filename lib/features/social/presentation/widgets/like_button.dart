@@ -76,13 +76,22 @@ class _LikeButtonState extends State<LikeButton>
         // Remover like
         switch (widget.type) {
           case LikeableType.post:
-            await provider.unlikePost(widget.targetId);
+            await provider.unlikePost(
+              widget.targetId,
+              postOwnerId: widget.targetOwnerId,
+            );
             break;
           case LikeableType.comment:
-            await provider.unlikeComment(widget.targetId);
+            await provider.unlikeComment(
+              widget.targetId,
+              commentOwnerId: widget.targetOwnerId,
+            );
             break;
           case LikeableType.story:
-            await provider.unlikeStory(widget.targetId);
+            await provider.unlikeStory(
+              widget.targetId,
+              storyOwnerId: widget.targetOwnerId,
+            );
             break;
         }
       } else {
