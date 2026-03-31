@@ -103,6 +103,9 @@ import 'package:provider/provider.dart';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:biux/core/config/firebase_options.dart';
+import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
+import 'package:biux/core/design_system/dark_theme.dart';
+import 'package:biux/core/services/accessibility_service.dart';
 
 void main() async {
   if (kIsWeb) {
@@ -293,6 +296,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => AccidentProvider()),
         ChangeNotifierProvider(create: (_) => FollowProvider()),
+        ChangeNotifierProvider(create: (_) => SafetyProvider()),
       ],
       child: MyApp(),
     ),

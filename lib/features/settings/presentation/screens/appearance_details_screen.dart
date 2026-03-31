@@ -1,104 +1,194 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
-import 'package:biux/core/design_system/theme_notifier.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/design_system/color_tokens.dart';
-import '../widgets/settings_shared_widgets.dart';
+import 'package:biux/core/design_system/theme_notifier.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
-class AppearanceScreenDetails extends StatelessWidget {
-  const AppearanceScreenDetails({super.key});
+class AppearanceDetailsScreen extends StatelessWidget {
+  const AppearanceDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l = Provider.of<LocaleNotifier>(context);
-
     return Scaffold(
-      backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
-      appBar: SettingsWidgets.buildAppBar(context, l.t('appearance')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          SettingsWidgets.buildSectionTitle(l.t('theme'), isDark),
-          const SizedBox(height: 12),
-          _buildThemeToggleCard(context, isDark, l),
-          const SizedBox(height: 24),
-          SettingsWidgets.buildSectionTitle(l.t('language'), isDark),
-          const SizedBox(height: 12),
-          SettingsWidgets.buildOptionCard(
-            context: context,
-            icon: Icons.language,
-            title: l.t('language'),
-            subtitle: '${l.t('currently')}: ${l.languageName}',
-            isDark: isDark,
-            onTap: () => _showLanguageDialog(context),
-          ),
-          const SizedBox(height: 32),
-        ],
+      appBar: AppBar(
+        title: const Text('Apariencia'),
+        backgroundColor: const Color(0xFF16242D),
+        foregroundColor: Colors.white,
+      ),
+      body: Consumer<ThemeNotifier>(
+        builder: (context, theme, _) {
+          final isDark = theme.isDark;
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              _SectionTitle(title: 'Tema de la aplicación'),
+              const SizedBox(height: 12),
+              _ThemeOptionTile(
+                icon: Icons.light_mode_rounded,
+                title: 'Modo claro',
+                subtitle: 'Fondo blanco, colores brillantes',
+                selected: theme.mode == ThemeMode.light,
+                onTap: () => theme.setMode(ThemeMode.light),
+                isDark: isDark,
+              ),
+              const SizedBox(height: 8),
+              _ThemeOptionTile(
+                icon: Icons.dark_mode_rounded,
+                title: 'Modo oscuro',
+                subtitle: 'Fondo oscuro, menor fatiga visual',
+                selected: theme.mode == ThemeMode.dark,
+                onTap: () => theme.setMode(ThemeMode.dark),
+                isDark: isDark,
+              ),
+              const SizedBox(height: 8),
+              _ThemeOptionTile(
+                icon: Icons.phone_android_rounded,
+                title: 'Seguir al sistema',
+                subtitle: 'Usa la preferencia del dispositivo',
+                selected: theme.mode == ThemeMode.system,
+                onTap: () => theme.setMode(ThemeMode.system),
+                isDark: isDark,
+              ),
+              const SizedBox(height: 24),
+              _SectionTitle(title: 'Cambio rápido'),
+              const SizedBox(height: 12),
+              _QuickToggleCard(theme: theme, isDark: isDark),
+            ],
+          );
+        },
       ),
     );
   }
+}
 
-  static Widget _buildThemeToggleCard(
-    BuildContext context,
-    bool isDark,
-    LocaleNotifier l,
-  ) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final isLightMode =
-        themeNotifier.themeMode == ThemeMode.light ||
-        (themeNotifier.themeMode == ThemeMode.system &&
-            MediaQuery.of(context).platformBrightness == Brightness.light);
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle({required this.title});
 
-    return SettingsWidgets.buildToggleCard(
-      context: context,
-      icon: isLightMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
-      title: l.t('app_theme'),
-      subtitle: isLightMode ? l.t('light_mode') : l.t('dark_mode'),
-      isDark: isDark,
-      value: !isLightMode,
-      onChanged: (_) => themeNotifier.toggleTheme(),
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+          color: Colors.grey),
     );
   }
+}
 
-  static void _showLanguageDialog(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final localeNotifier = context.read<LocaleNotifier>();
-    final languages = LocaleNotifier.supportedLanguages.keys.toList();
+class _ThemeOptionTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool isDark;
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: isDark ? ColorTokens.primary30 : Colors.white,
-        title: Text(
-          localeNotifier.t('select_language'),
-          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+  const _ThemeOptionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: selected
+              ? ColorTokens.primary30.withValues(alpha: 0.08)
+              : (isDark ? const Color(0xFF1A2B3C) : Colors.white),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+              color: selected
+                  ? ColorTokens.primary30
+                  : Colors.grey.shade300,
+              width: selected ? 2 : 1),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: languages.map((lang) {
-            final isSelected = localeNotifier.languageName == lang;
-            return ListTile(
-              title: Text(
-                lang,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: selected
+                    ? ColorTokens.primary30.withValues(alpha: 0.15)
+                    : Colors.grey.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              leading: isSelected
-                  ? const Icon(Icons.check_circle, color: ColorTokens.primary30)
-                  : Icon(
-                      Icons.circle_outlined,
-                      color: isDark ? Colors.white30 : Colors.black26,
-                    ),
-              onTap: () {
-                localeNotifier.setLanguage(lang);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
+              child: Icon(icon,
+                  color: selected ? ColorTokens.primary30 : Colors.grey,
+                  size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: selected
+                              ? ColorTokens.primary30
+                              : (isDark ? Colors.white : Colors.black87))),
+                  const SizedBox(height: 2),
+                  Text(subtitle,
+                      style: const TextStyle(
+                          fontSize: 12, color: Colors.grey)),
+                ],
+              ),
+            ),
+            if (selected)
+              Icon(Icons.check_circle_rounded,
+                  color: ColorTokens.primary30, size: 22),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _QuickToggleCard extends StatelessWidget {
+  final ThemeNotifier theme;
+  final bool isDark;
+
+  const _QuickToggleCard({required this.theme, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+            color: ColorTokens.primary30,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              isDark ? 'Modo oscuro activo' : 'Modo claro activo',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Switch(
+            value: isDark,
+            activeColor: ColorTokens.primary30,
+            onChanged: (_) => theme.toggle(),
+          ),
+        ],
       ),
     );
   }
