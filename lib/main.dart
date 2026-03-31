@@ -104,8 +104,6 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:biux/core/config/firebase_options.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
-import 'package:biux/core/design_system/dark_theme.dart';
-import 'package:biux/core/services/accessibility_service.dart';
 
 void main() async {
   if (kIsWeb) {

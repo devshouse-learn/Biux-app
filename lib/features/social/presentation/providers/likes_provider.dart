@@ -126,8 +126,12 @@ class LikesProvider extends ChangeNotifier {
   }
 
   /// Quita like de un post
-  Future<void> unlikePost(String postId) async {
-    await _unlike(type: LikeableType.post, targetId: postId);
+  Future<void> unlikePost(String postId, {String? postOwnerId}) async {
+    await _unlike(
+      type: LikeableType.post,
+      targetId: postId,
+      targetOwnerId: postOwnerId,
+    );
   }
 
   /// Da like a un comentario
@@ -172,6 +176,7 @@ class LikesProvider extends ChangeNotifier {
     String commentId, {
     String? contextTargetId,
     CommentableType? contextType,
+    String? commentOwnerId,
   }) async {
     // Construir targetId compuesto para comentarios si se proporciona contexto
     String finalTargetId = commentId;
@@ -180,7 +185,11 @@ class LikesProvider extends ChangeNotifier {
       finalTargetId = '${typeStr}_${contextTargetId}_$commentId';
     }
 
-    await _unlike(type: LikeableType.comment, targetId: finalTargetId);
+    await _unlike(
+      type: LikeableType.comment,
+      targetId: finalTargetId,
+      targetOwnerId: commentOwnerId,
+    );
   }
 
   /// Observa si el usuario actual dio like a un comentario
@@ -234,8 +243,12 @@ class LikesProvider extends ChangeNotifier {
   }
 
   /// Quita like de una historia
-  Future<void> unlikeStory(String storyId) async {
-    await _unlike(type: LikeableType.story, targetId: storyId);
+  Future<void> unlikeStory(String storyId, {String? storyOwnerId}) async {
+    await _unlike(
+      type: LikeableType.story,
+      targetId: storyId,
+      targetOwnerId: storyOwnerId,
+    );
   }
 
   /// Toggle like (interno)
@@ -286,17 +299,22 @@ class LikesProvider extends ChangeNotifier {
         expiresAt: expiresAt,
       );
 
-      // ✅ NOTIFICATIONS NOW CREATED BY CLOUD FUNCTIONS
-      // Cloud Functions handle notifications automatically when likes are created:
-      // - onLikePostCreated: /likes/posts/{postId}/{userId}
-      // - onLikeRideCreated: /likes/rides/{rideId}/{userId}
-      // - onLikeCommentCreated: /likes/comments/{commentPath}/{userId}
-
-      // Crear notificación solo si no es el propio usuario
+      // Crear notificación con ID determinístico para evitar duplicados.
+      // Si el usuario da like más de una vez (ej. doble-tap + botón),
+      // el set() en el mismo path pisa la notificación anterior sin
+      // incrementar el contador.
       if (targetOwnerId != userId) {
         final safeUserName = (_cachedUserName ?? '').trim().isNotEmpty
             ? _cachedUserName!
             : userId.split('_').last;
+
+        // ID determinístico: permite sobrescribir sin duplicar
+        final typeStr = type == LikeableType.post
+            ? 'post'
+            : type == LikeableType.comment
+            ? 'comment'
+            : 'story';
+        final deterministicId = '${userId}_like_${typeStr}_$targetId';
 
         await _notificationsRepository.createNotification(
           userId: targetOwnerId,
@@ -308,6 +326,7 @@ class LikesProvider extends ChangeNotifier {
           targetId: targetId,
           targetPreview: targetPreview,
           metadata: metadata,
+          notificationId: deterministicId,
         );
       }
 
@@ -327,6 +346,7 @@ class LikesProvider extends ChangeNotifier {
   Future<void> _unlike({
     required LikeableType type,
     required String targetId,
+    String? targetOwnerId,
   }) async {
     // Validaciones de entrada
     if (userId.isEmpty) {
@@ -351,6 +371,20 @@ class LikesProvider extends ChangeNotifier {
       notifyListeners();
 
       await _repository.unlike(type: type, targetId: targetId, userId: userId);
+
+      // Eliminar la notificación de like usando el mismo ID determinístico
+      if (targetOwnerId != null && targetOwnerId != userId) {
+        final typeStr = type == LikeableType.post
+            ? 'post'
+            : type == LikeableType.comment
+            ? 'comment'
+            : 'story';
+        final deterministicId = '${userId}_like_${typeStr}_$targetId';
+        await _notificationsRepository.deleteNotification(
+          targetOwnerId,
+          deterministicId,
+        );
+      }
 
       // Establecer cooldown después de completar exitosamente
       _setCooldown(targetId);

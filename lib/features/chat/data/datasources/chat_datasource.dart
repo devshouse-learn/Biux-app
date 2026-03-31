@@ -99,9 +99,36 @@ class ChatDatasource {
     final data = message.toMap();
     data['id'] = ref.id;
     await ref.set(data);
+
+    // Obtener participantIds para incrementar unread del receptor
+    final chatDoc = await _db.collection('chats').doc(chatId).get();
+    final participants = List<String>.from(
+      chatDoc.data()?['participantIds'] ?? [],
+    );
+    final unreadUpdate = <String, dynamic>{};
+    for (final uid in participants) {
+      if (uid != message.senderId) {
+        unreadUpdate['unreadCount.$uid'] = FieldValue.increment(1);
+      }
+    }
+
+    // Preview de última mensaje para la lista de chats
+    final previewContent = message.type == MessageType.voice
+        ? '🎵 Nota de voz'
+        : message.content;
+
     await _db.collection('chats').doc(chatId).update({
-      'lastMessage': data,
+      'lastMessage': {
+        'id': data['id'],
+        'senderId': message.senderId,
+        'senderName': message.senderName,
+        'content': previewContent,
+        'type': message.type.name,
+        'sentAt': FieldValue.serverTimestamp(),
+        if (message.mediaUrl != null) 'mediaUrl': message.mediaUrl,
+      },
       'updatedAt': FieldValue.serverTimestamp(),
+      ...unreadUpdate,
     });
   }
 
@@ -144,12 +171,58 @@ class ChatDatasource {
     required String chatId,
     required String messageId,
   }) async {
+    // Marcar el mensaje como eliminado
     await _db
         .collection('chats')
         .doc(chatId)
         .collection('messages')
         .doc(messageId)
-        .update({'deleted': true, 'content': ''});
+        .update({'deleted': true, 'content': '', 'type': 'deleted'});
+
+    // Si el lastMessage del chat es este mismo mensaje, actualizarlo
+    final chatDoc = await _db.collection('chats').doc(chatId).get();
+    final lastMsgMap = chatDoc.data()?['lastMessage'] as Map?;
+    if (lastMsgMap != null && lastMsgMap['id'] == messageId) {
+      // Buscar el mensaje anterior más reciente que no esté eliminado
+      final prevSnap = await _db
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .orderBy('sentAt', descending: true)
+          .limit(5)
+          .get();
+
+      final prev = prevSnap.docs.firstWhere(
+        (d) => d.id != messageId && (d.data()['deleted'] != true),
+        orElse: () =>
+            prevSnap.docs.isEmpty ? prevSnap.docs.first : prevSnap.docs.first,
+      );
+
+      final hasValidPrev = prevSnap.docs.any(
+        (d) => d.id != messageId && (d.data()['deleted'] != true),
+      );
+
+      if (hasValidPrev) {
+        final prevData = prev.data();
+        final prevType = prevData['type'] as String? ?? 'text';
+        final prevContent = prevType == 'voice'
+            ? '🎵 Nota de voz'
+            : (prevData['content'] as String? ?? '');
+        await _db.collection('chats').doc(chatId).update({
+          'lastMessage': {
+            'id': prev.id,
+            'senderId': prevData['senderId'] ?? '',
+            'senderName': prevData['senderName'] ?? '',
+            'content': prevContent,
+            'type': prevType,
+            'sentAt': prevData['sentAt'],
+          },
+        });
+      } else {
+        // No quedan mensajes válidos
+        await _db.collection('chats').doc(chatId).update({'lastMessage': null});
+      }
+    }
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

@@ -8,8 +8,7 @@ class MyRecommendationsScreen extends StatefulWidget {
   const MyRecommendationsScreen({super.key});
 
   @override
-  State<MyRecommendationsScreen> createState() =>
-      _MyRecommendationsScreenState();
+  State<MyRecommendationsScreen> createState() => _MyRecommendationsScreenState();
 }
 
 class _MyRecommendationsScreenState extends State<MyRecommendationsScreen>
@@ -38,10 +37,8 @@ class _MyRecommendationsScreenState extends State<MyRecommendationsScreen>
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text(
-          'Recomendaciones',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
+        title: const Text('Recomendaciones',
+          style: TextStyle(fontWeight: FontWeight.w800)),
         bottom: TabBar(
           controller: _tabs,
           indicatorColor: ColorTokens.primary30,
@@ -76,21 +73,18 @@ class _MyRecommendationsScreenState extends State<MyRecommendationsScreen>
     required RideRecommendationProvider prov,
   }) {
     if (list.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.route_outlined, size: 64, color: Colors.grey[300]),
-            const SizedBox(height: 12),
-            Text(
-              isReceived
-                  ? 'Sin recomendaciones recibidas'
-                  : 'No has enviado recomendaciones',
-              style: TextStyle(color: Colors.grey[400], fontSize: 15),
-            ),
-          ],
-        ),
-      );
+      return Center(child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.route_outlined, size: 64, color: Colors.grey[300]),
+          const SizedBox(height: 12),
+          Text(
+            isReceived
+              ? 'Sin recomendaciones recibidas'
+              : 'No has enviado recomendaciones',
+            style: TextStyle(color: Colors.grey[400], fontSize: 15)),
+        ],
+      ));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -136,16 +130,15 @@ class _RecommendationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: unread
-              ? ColorTokens.primary30.withValues(alpha: 0.4)
-              : Colors.grey[200]!,
+            ? ColorTokens.primary30.withValues(alpha: 0.4)
+            : Colors.grey[200]!,
           width: unread ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
+            offset: const Offset(0, 2)),
         ],
       ),
       child: InkWell(
@@ -164,139 +157,87 @@ class _RecommendationCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundImage: rec.fromUserPhoto != null
-                        ? NetworkImage(rec.fromUserPhoto!)
-                        : null,
-                    backgroundColor: Colors.grey[200],
-                    child: rec.fromUserPhoto == null
-                        ? Text(
-                            rec.fromUserName.isNotEmpty
-                                ? rec.fromUserName[0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          )
-                        : null,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isReceived ? rec.fromUserName : 'Enviada',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          _timeAgo(rec.createdAt),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: ColorTokens.primary30.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      rec.type.label,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: ColorTokens.primary30,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  if (unread) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: ColorTokens.primary30,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                rec.routeName,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
+              Row(children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundImage: rec.fromUserPhoto != null
+                    ? NetworkImage(rec.fromUserPhoto!) : null,
+                  backgroundColor: Colors.grey[200],
+                  child: rec.fromUserPhoto == null
+                    ? Text(
+                        rec.fromUserName.isNotEmpty
+                          ? rec.fromUserName[0].toUpperCase() : '?',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 13))
+                    : null,
                 ),
-              ),
+                const SizedBox(width: 10),
+                Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isReceived ? rec.fromUserName : 'Enviada',
+                      style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w700)),
+                    Text(_timeAgo(rec.createdAt),
+                      style: TextStyle(fontSize: 11, color: Colors.grey[400])),
+                  ],
+                )),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: ColorTokens.primary30.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(rec.type.label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: ColorTokens.primary30,
+                      fontWeight: FontWeight.w600)),
+                ),
+                if (unread) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    width: 8, height: 8,
+                    decoration: BoxDecoration(
+                      color: ColorTokens.primary30,
+                      shape: BoxShape.circle)),
+                ],
+              ]),
+              const SizedBox(height: 10),
+              Text(rec.routeName,
+                style: const TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.w800)),
               if (rec.description.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                Text(
-                  rec.description,
+                Text(rec.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600])),
               ],
               const SizedBox(height: 10),
-              Wrap(
-                spacing: 10,
-                children: [
-                  _chip(
-                    Icons.straighten_rounded,
-                    '${rec.totalKm.toStringAsFixed(1)} km',
-                  ),
-                  _chip(Icons.timer_outlined, rec.estimatedTimeFormatted),
-                  _chip(
-                    Icons.speed_rounded,
-                    '${rec.avgSpeed.toStringAsFixed(1)} km/h',
-                  ),
-                  _chip(
-                    Icons.local_fire_department_rounded,
-                    '${rec.calories} kcal',
-                  ),
-                ],
-              ),
+              Wrap(spacing: 10, children: [
+                _chip(Icons.straighten_rounded,
+                  '${rec.totalKm.toStringAsFixed(1)} km'),
+                _chip(Icons.timer_outlined, rec.estimatedTimeFormatted),
+                _chip(Icons.speed_rounded,
+                  '${rec.avgSpeed.toStringAsFixed(1)} km/h'),
+                _chip(Icons.local_fire_department_rounded,
+                  '${rec.calories} kcal'),
+              ]),
               if (rec.highlights.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  children: rec.highlights
-                      .map(
-                        (h) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.amber[50],
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.amber[200]!),
-                          ),
-                          child: Text(
-                            '📍 $h',
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
+                Wrap(spacing: 6, children: rec.highlights.map((h) => Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.amber[50],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.amber[200]!)),
+                  child: Text('📍 $h',
+                    style: const TextStyle(fontSize: 11)),
+                )).toList()),
               ],
             ],
           ),
@@ -310,14 +251,10 @@ class _RecommendationCard extends StatelessWidget {
     children: [
       Icon(icon, size: 13, color: Colors.grey[500]),
       const SizedBox(width: 2),
-      Text(
-        text,
-        style: TextStyle(
-          fontSize: 11,
-          color: Colors.grey[600],
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      Text(text, style: TextStyle(
+        fontSize: 11,
+        color: Colors.grey[600],
+        fontWeight: FontWeight.w600)),
     ],
   );
 }
@@ -334,58 +271,39 @@ class _RecommendationDetailSheet extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(
-        20,
-        0,
-        20,
-        MediaQuery.of(context).padding.bottom + 20,
-      ),
+        20, 0, 20, MediaQuery.of(context).padding.bottom + 20),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Text(
-              rec.routeName,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
-            ),
+            Center(child: Container(
+              width: 36, height: 4,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2)),
+            )),
+            Text(rec.routeName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
             const SizedBox(height: 4),
-            Text(
-              'Recomendado por ${rec.fromUserName}',
-              style: TextStyle(fontSize: 13, color: Colors.grey[500]),
-            ),
+            Text('Recomendado por ${rec.fromUserName}',
+              style: TextStyle(fontSize: 13, color: Colors.grey[500])),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
+                border: Border.all(color: Colors.grey[200]!)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _detailStat(
-                    '📏',
-                    '${rec.totalKm.toStringAsFixed(1)} km',
-                    'Distancia',
-                  ),
+                  _detailStat('📏',
+                    '${rec.totalKm.toStringAsFixed(1)} km', 'Distancia'),
                   _detailStat('⏱️', rec.estimatedTimeFormatted, 'Duracion'),
-                  _detailStat(
-                    '⚡',
-                    '${rec.avgSpeed.toStringAsFixed(1)} km/h',
-                    'Vel avg',
-                  ),
+                  _detailStat('⚡',
+                    '${rec.avgSpeed.toStringAsFixed(1)} km/h', 'Vel avg'),
                   _detailStat('🔥', '${rec.calories} kcal', 'Calorias'),
                 ],
               ),
@@ -397,56 +315,37 @@ class _RecommendationDetailSheet extends StatelessWidget {
                 color: ColorTokens.primary30.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                rec.type.label,
+              child: Text(rec.type.label,
                 style: TextStyle(
                   color: ColorTokens.primary30,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+                  fontWeight: FontWeight.w700)),
             ),
             if (rec.description.isNotEmpty) ...[
               const SizedBox(height: 14),
-              const Text(
-                'Descripcion',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-              ),
+              const Text('Descripcion',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
               const SizedBox(height: 6),
-              Text(
-                rec.description,
+              Text(rec.description,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                  height: 1.5,
-                ),
-              ),
+                  fontSize: 14, color: Colors.grey[700], height: 1.5)),
             ],
             if (rec.highlights.isNotEmpty) ...[
               const SizedBox(height: 14),
-              const Text(
-                'Sitios destacados',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-              ),
+              const Text('Sitios destacados',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
-              ...rec.highlights.map(
-                (h) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: ColorTokens.primary30,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(h, style: const TextStyle(fontSize: 14)),
-                    ],
-                  ),
-                ),
-              ),
+              ...rec.highlights.map((h) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(children: [
+                  Container(
+                    width: 6, height: 6,
+                    decoration: BoxDecoration(
+                      color: ColorTokens.primary30,
+                      shape: BoxShape.circle)),
+                  const SizedBox(width: 10),
+                  Text(h, style: const TextStyle(fontSize: 14)),
+                ]),
+              )),
             ],
             const SizedBox(height: 16),
             SizedBox(
@@ -461,8 +360,7 @@ class _RecommendationDetailSheet extends StatelessWidget {
                   foregroundColor: Colors.grey[800],
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                    borderRadius: BorderRadius.circular(14)),
                 ),
               ),
             ),
@@ -477,11 +375,10 @@ class _RecommendationDetailSheet extends StatelessWidget {
     children: [
       Text(emoji, style: const TextStyle(fontSize: 20)),
       const SizedBox(height: 2),
-      Text(
-        value,
-        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
-      ),
-      Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+      Text(value,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+      Text(label,
+        style: TextStyle(fontSize: 11, color: Colors.grey[500])),
     ],
   );
 }

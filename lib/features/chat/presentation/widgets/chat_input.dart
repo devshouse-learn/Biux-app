@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:record/record.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
@@ -813,9 +812,9 @@ class _ChatInputState extends State<ChatInput>
   void _send() {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-    widget.onSendText(text);
     _controller.clear();
     if (_showEmojiPanel) setState(() => _showEmojiPanel = false);
+    widget.onSendText(text);
   }
 
   // ── Emoji panel ────────────────────────────────────────────────────────────
