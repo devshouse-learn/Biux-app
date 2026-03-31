@@ -36,7 +36,25 @@ class _MainShellState extends State<MainShell> {
 
   /// Retorna el título dinámico según el tab seleccionado
   String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
-    return 'BIUX';
+    switch (index) {
+      case 0:
+        return 'BIUX';
+      case 1:
+        return 'BIUX';
+      case 2:
+        return 'BIUX';
+      case 3:
+        return 'BIUX';
+      case 4:
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final username = userProvider.user?.username;
+        if (username != null && username.isNotEmpty) return '@$username';
+        final userName = userProvider.user?.name;
+        if (userName != null && userName.isNotEmpty) return userName;
+        return l.t('nav_profile');
+      default:
+        return AppStrings.APP_NAME.toUpperCase();
+    }
   }
 
   @override
