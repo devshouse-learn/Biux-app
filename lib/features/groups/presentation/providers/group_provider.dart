@@ -569,4 +569,11 @@ class GroupProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+  /// Total de miembros del grupo seleccionado
+  int get selectedGroupMemberCount {
+    final g = selectedGroup;
+    if (g == null) return 0;
+    return (g.memberIds?.length ?? 0) + 1; // +1 admin
+  }
+
 }

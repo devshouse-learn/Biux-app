@@ -752,4 +752,18 @@ class RideTrackerProvider with ChangeNotifier {
   }
 
   double _rad(double d) => d * pi / 180;
+  /// Genera datos para story automática al terminar rodada
+  Map<String, dynamic> buildRideStorySummary() {
+    return {
+      'type': 'ride_summary',
+      'km': _totalKm,
+      'durationSec': _durationSec,
+      'maxSpeed': _maxSpeed,
+      'avgSpeed': avgSpeed,
+      'calories': calories,
+      'points': _points.map((p) => {'lat': p.lat, 'lng': p.lng}).toList(),
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+  }
+
 }
