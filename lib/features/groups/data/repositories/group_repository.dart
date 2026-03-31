@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/group_model.dart';
-import "package:flutter/foundation.dart";
 
 class GroupRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -55,12 +55,12 @@ class GroupRepository {
       await docRef.set(group.toFirestore());
 
       // Log para debug
-      debugPrint('✅ Grupo creado exitosamente: ${docRef.id}');
-      debugPrint('📋 Datos del grupo: ${group.toFirestore()}');
+      AppLogger.info('✅ Grupo creado exitosamente: ${docRef.id}');
+      AppLogger.debug('📋 Datos del grupo: ${group.toFirestore()}');
 
       return docRef.id;
     } catch (e) {
-      debugPrint('❌ Error creando grupo: $e');
+      AppLogger.error('❌ Error creando grupo: $e');
       return null;
     }
   }
@@ -68,21 +68,21 @@ class GroupRepository {
   // NUEVO: Obtener grupos por ciudad
   // No filtramos isActive en query para incluir docs antiguos sin ese campo
   Stream<List<GroupModel>> getGroupsByCity(String cityId) {
-    debugPrint('🔍 Obteniendo grupos de la ciudad: $cityId');
+    AppLogger.debug('🔍 Obteniendo grupos de la ciudad: $cityId');
 
     return _firestore
         .collection(_collection)
         .where('cityId', isEqualTo: cityId)
         .snapshots()
         .map((snapshot) {
-          debugPrint('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
+          AppLogger.debug('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
 
           final groups = snapshot.docs
               .map((doc) {
                 try {
                   return GroupModel.fromFirestore(doc);
                 } catch (e) {
-                  debugPrint('❌ Error parseando grupo ${doc.id}: $e');
+                  AppLogger.error('❌ Error parseando grupo ${doc.id}: $e');
                   return null;
                 }
               })
@@ -94,7 +94,7 @@ class GroupRepository {
           // Ordenar por fecha en memoria
           groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-          debugPrint('✅ Grupos procesados correctamente: ${groups.length}');
+          AppLogger.info('✅ Grupos procesados correctamente: ${groups.length}');
           return groups;
         });
   }
@@ -104,17 +104,17 @@ class GroupRepository {
   // documentos antiguos pueden no tener ese campo y serían excluidos.
   // En su lugar, filtramos en memoria tratando ausencia como true.
   Stream<List<GroupModel>> getGroups() {
-    debugPrint('🔍 Obteniendo todos los grupos...');
+    AppLogger.debug('🔍 Obteniendo todos los grupos...');
 
     return _firestore.collection(_collection).snapshots().map((snapshot) {
-      debugPrint('📊 Grupos encontrados: ${snapshot.docs.length}');
+      AppLogger.debug('📊 Grupos encontrados: ${snapshot.docs.length}');
 
       final groups = snapshot.docs
           .map((doc) {
             try {
               return GroupModel.fromFirestore(doc);
             } catch (e) {
-              debugPrint('❌ Error parseando grupo ${doc.id}: $e');
+              AppLogger.error('❌ Error parseando grupo ${doc.id}: $e');
               return null;
             }
           })
@@ -126,7 +126,7 @@ class GroupRepository {
       // Ordenar por fecha en memoria
       groups.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      debugPrint('✅ Grupos procesados correctamente: ${groups.length}');
+      AppLogger.info('✅ Grupos procesados correctamente: ${groups.length}');
       return groups;
     });
   }
@@ -174,7 +174,7 @@ class GroupRepository {
       }
       return null;
     } catch (e) {
-      debugPrint('Error obteniendo grupo: $e');
+      AppLogger.debug('Error obteniendo grupo: $e');
       return null;
     }
   }
@@ -229,7 +229,7 @@ class GroupRepository {
           }
         }
       } catch (notifError) {
-        debugPrint(
+        AppLogger.debug(
           'Error creando notificación de solicitud de ingreso: $notifError',
         );
         // No fallar la operación si la notificación falla
@@ -237,7 +237,7 @@ class GroupRepository {
 
       return true;
     } catch (e) {
-      debugPrint('Error solicitando unirse al grupo: $e');
+      AppLogger.debug('Error solicitando unirse al grupo: $e');
       return false;
     }
   }
@@ -252,7 +252,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      debugPrint('Error aprobando solicitud: $e');
+      AppLogger.debug('Error aprobando solicitud: $e');
       return false;
     }
   }
@@ -266,7 +266,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      debugPrint('Error rechazando solicitud: $e');
+      AppLogger.debug('Error rechazando solicitud: $e');
       return false;
     }
   }
@@ -280,7 +280,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      debugPrint('Error cancelando solicitud: $e');
+      AppLogger.debug('Error cancelando solicitud: $e');
       return false;
     }
   }
@@ -294,7 +294,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      debugPrint('Error saliendo del grupo: $e');
+      AppLogger.debug('Error saliendo del grupo: $e');
       return false;
     }
   }
@@ -330,7 +330,7 @@ class GroupRepository {
       await _firestore.collection(_collection).doc(groupId).update(updates);
       return true;
     } catch (e) {
-      debugPrint('Error actualizando grupo: $e');
+      AppLogger.debug('Error actualizando grupo: $e');
       return false;
     }
   }
@@ -344,7 +344,7 @@ class GroupRepository {
       });
       return true;
     } catch (e) {
-      debugPrint('Error eliminando grupo: $e');
+      AppLogger.debug('Error eliminando grupo: $e');
       return false;
     }
   }
@@ -357,7 +357,7 @@ class GroupRepository {
       final snapshot = await uploadTask;
       return await snapshot.ref.getDownloadURL();
     } catch (e) {
-      debugPrint('Error subiendo imagen: $e');
+      AppLogger.debug('Error subiendo imagen: $e');
       return null;
     }
   }
@@ -375,7 +375,7 @@ class GroupRepository {
 
       return snapshot.docs.map((doc) => GroupModel.fromFirestore(doc)).toList();
     } catch (e) {
-      debugPrint('Error buscando grupos: $e');
+      AppLogger.debug('Error buscando grupos: $e');
       return [];
     }
   }

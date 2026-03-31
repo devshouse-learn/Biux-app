@@ -574,9 +574,12 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                       ),
                     ],
                     const Spacer(),
-                    Text(
-                      l.t('visible_for_all'),
-                      style: TextStyle(color: Colors.grey[400], fontSize: 11),
+                    Flexible(
+                      child: Text(
+                        l.t('visible_for_all'),
+                        style: TextStyle(color: Colors.grey[400], fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(width: 4),
                     Icon(Icons.public, size: 14, color: Colors.grey[400]),
@@ -933,6 +936,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ── TAB 3: FORMULARIO DE REPORTE ────────────────────
   // ═══════════════════════════════════════════════════════
   Widget _buildReportForm(LocaleNotifier l) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -943,9 +947,13 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.red[50],
+              color: isDark
+                  ? Colors.red[900]!.withValues(alpha: 0.3)
+                  : Colors.red[50],
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.red[200]!),
+              border: Border.all(
+                color: isDark ? Colors.red[700]! : Colors.red[200]!,
+              ),
             ),
             child: Row(
               children: [
@@ -955,7 +963,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                   child: Text(
                     l.t('report_visible_disclaimer'),
                     style: TextStyle(
-                      color: Colors.red[800],
+                      color: isDark ? Colors.red[300] : Colors.red[800],
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1122,7 +1130,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 borderRadius: BorderRadius.circular(12),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: isDark ? const Color(0xFF1E2A32) : Colors.grey[50],
             ),
           ),
 
@@ -1145,9 +1153,13 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: isDark
+                          ? const Color(0xFF1E2A32)
+                          : Colors.grey[100],
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!),
+                      border: Border.all(
+                        color: isDark ? Colors.white24 : Colors.grey[300]!,
+                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1248,7 +1260,9 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
+              color: isDark
+                  ? Colors.blue[900]!.withValues(alpha: 0.3)
+                  : Colors.blue[50],
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -1259,7 +1273,10 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
                 Expanded(
                   child: Text(
                     l.t('call_911_disclaimer'),
-                    style: TextStyle(color: Colors.blue[800], fontSize: 12),
+                    style: TextStyle(
+                      color: isDark ? Colors.blue[300] : Colors.blue[800],
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -1273,6 +1290,7 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   }
 
   Widget _severityChip(String value, String label, Color color, IconData icon) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final selected = _severity == value;
     return Expanded(
       child: GestureDetector(
@@ -1280,10 +1298,16 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: selected ? color.withValues(alpha: 0.2) : Colors.grey[100],
+            color: selected
+                ? color.withValues(alpha: 0.2)
+                : isDark
+                ? const Color(0xFF1E2A32)
+                : Colors.grey[100],
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: selected ? color : Colors.transparent,
+              color: selected
+                  ? color
+                  : (isDark ? Colors.white12 : Colors.transparent),
               width: 2,
             ),
           ),

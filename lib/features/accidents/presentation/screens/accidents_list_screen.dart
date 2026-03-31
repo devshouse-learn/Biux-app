@@ -315,11 +315,16 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
                           color: Colors.grey[500],
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          a.userName.isNotEmpty ? a.userName : l.t('anonymous'),
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 12,
+                        Flexible(
+                          child: Text(
+                            a.userName.isNotEmpty
+                                ? a.userName
+                                : l.t('anonymous'),
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (dist.isNotEmpty) ...[
@@ -411,7 +416,10 @@ class _AccidentsListScreenState extends State<AccidentsListScreen>
         }).toSet();
 
         final initialPos = _myPosition != null
-            ? LatLng(_myPosition?.latitude ?? 0.0, _myPosition?.longitude ?? 0.0)
+            ? LatLng(
+                _myPosition?.latitude ?? 0.0,
+                _myPosition?.longitude ?? 0.0,
+              )
             : accidents.isNotEmpty
             ? LatLng(accidents.first.latitude, accidents.first.longitude)
             : const LatLng(19.4326, -99.1332);

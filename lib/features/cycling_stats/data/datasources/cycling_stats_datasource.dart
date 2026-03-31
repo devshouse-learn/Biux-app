@@ -136,4 +136,47 @@ class CyclingStatsDatasource {
     }
     return stats;
   }
+
+  Future<List<Map<String, dynamic>>> getLeaderboardForUsers(
+    List<String> userIds,
+  ) async {
+    if (userIds.isEmpty) return [];
+    final List<Map<String, dynamic>> stats = [];
+    for (var i = 0; i < userIds.length; i += 30) {
+      final batch = userIds.sublist(
+        i,
+        i + 30 > userIds.length ? userIds.length : i + 30,
+      );
+      final snap = await _firestore
+          .collection('cycling_stats')
+          .where(FieldPath.documentId, whereIn: batch)
+          .get();
+      for (final doc in snap.docs) {
+        stats.add({'id': doc.id, ...doc.data()});
+      }
+    }
+    stats.sort(
+      (a, b) =>
+          ((b['totalKm'] as num?) ?? 0).compareTo((a['totalKm'] as num?) ?? 0),
+    );
+    final Map<String, String> names = {};
+    for (var i = 0; i < userIds.length; i += 30) {
+      final batch = userIds.sublist(
+        i,
+        i + 30 > userIds.length ? userIds.length : i + 30,
+      );
+      final usersSnap = await _firestore
+          .collection('users')
+          .where(FieldPath.documentId, whereIn: batch)
+          .get();
+      for (final doc in usersSnap.docs) {
+        final data = doc.data();
+        names[doc.id] = (data['fullName'] ?? data['name'] ?? '') as String;
+      }
+    }
+    for (final entry in stats) {
+      entry['userName'] = names[entry['id']] ?? '';
+    }
+    return stats;
+  }
 }

@@ -35,24 +35,6 @@ class _GroupListScreenState extends State<GroupListScreen> {
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
     return Scaffold(
-      appBar: AppBar(
-        // Añadir botón de volver explícito (flecha)
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              // Fallback: ir al menú principal si no hay historial
-              context.go('/main');
-            }
-          },
-        ),
-        automaticallyImplyLeading: false,
-        title: Text(l.t('groups')),
-        backgroundColor: ColorTokens.primary30,
-        foregroundColor: ColorTokens.neutral100,
-      ),
       body: Column(
         children: [
           // Lista de grupos (sin selector de ciudades)
@@ -75,9 +57,10 @@ class _GroupListScreenState extends State<GroupListScreen> {
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: groups.length,
+                    itemCount: groups.length + 1,
                     itemBuilder: (context, index) {
-                      final group = groups[index];
+                      if (index == 0) return _buildBanner();
+                      final group = groups[index - 1];
                       return _buildGroupCard(group, provider);
                     },
                   ),
@@ -87,19 +70,11 @@ class _GroupListScreenState extends State<GroupListScreen> {
           ),
         ],
       ),
-      floatingActionButton: Consumer<GroupProvider>(
-        builder: (context, provider, child) {
-          // Solo mostrar el FAB si el usuario no es admin de ningún grupo
-          if (provider.canCreateGroup) {
-            return FloatingActionButton(
-              onPressed: () => context.go('/groups/create'),
-              backgroundColor: ColorTokens.primary30,
-              child: const Icon(Icons.add, color: ColorTokens.neutral100),
-              tooltip: l.t('create_group'),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.go('/groups/create'),
+        backgroundColor: ColorTokens.primary30,
+        child: const Icon(Icons.add, color: ColorTokens.neutral100),
+        tooltip: l.t('create_group'),
       ),
     );
   }
@@ -139,7 +114,79 @@ class _GroupListScreenState extends State<GroupListScreen> {
     );
   }
 
+  Widget _buildBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            ColorTokens.primary30,
+            ColorTokens.primary30.withValues(alpha: 0.75),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Row(
+        children: [
+          Text('🚴', style: TextStyle(fontSize: 28)),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Aquí nadie rueda solo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Únete y no te pierdas ninguna salida',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGroupCard(GroupModel group, GroupProvider provider) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: group.logoUrl != null
+            ? CircleAvatar(
+                backgroundImage: NetworkImage(group.logoUrl!),
+                radius: 24,
+              )
+            : const CircleAvatar(
+                radius: 24,
+                backgroundColor: ColorTokens.primary30,
+                child: Icon(Icons.groups, color: ColorTokens.neutral100),
+              ),
+        title: Text(
+          group.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text('${group.memberIds.length} miembros'),
+        trailing: _buildStatusChip(provider.getUserStatus(group)),
+        onTap: () => context.push('/groups/${group.id}'),
+      ),
+    );
+  }
+
+  // ignore: unused_element
+  Widget _buildGroupCardFull(GroupModel group, GroupProvider provider) {
     final l = Provider.of<LocaleNotifier>(context);
     final status = provider.getUserStatus(group);
 
@@ -153,30 +200,6 @@ class _GroupListScreenState extends State<GroupListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen de portada
-            if (group.coverUrl != null)
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(12),
-                ),
-                child: OptimizedNetworkImage(
-                  imageUrl: group.coverUrl!,
-                  height: 150,
-                  width: double.infinity,
-                  imageType: 'cover',
-                  fit: BoxFit.cover,
-                  errorWidget: Container(
-                    height: 150,
-                    color: ColorTokens.neutral20,
-                    child: const Icon(
-                      Icons.image_not_supported,
-                      size: 50,
-                      color: ColorTokens.neutral60,
-                    ),
-                  ),
-                ),
-              ),
-
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(

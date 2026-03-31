@@ -195,13 +195,15 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   // ── Accidentes Recientes (NUEVO) ─────────────────────────
   // ══════════════════════════════════════════════════════════
   Widget _buildRecentAccidents(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8),
         ],
       ),
       child: Column(
@@ -210,33 +212,38 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
-                children: [
-                  Icon(Icons.car_crash, color: Colors.red, size: 22),
-                  SizedBox(width: 8),
-                  Text(
-                    'Accidentes Recientes',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  TextButton.icon(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AccidentReportScreen(),
+              Flexible(
+                child: Row(
+                  children: [
+                    const Icon(Icons.car_crash, color: Colors.red, size: 22),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Accidentes Recientes',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    icon: const Icon(Icons.add, size: 16),
-                    label: const Text('Reportar'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.red[700],
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                    ),
+                  ],
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AccidentReportScreen(),
                   ),
-                ],
+                ),
+                icon: const Icon(Icons.add, size: 16),
+                label: const Text('Reportar'),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red[700],
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
               ),
             ],
           ),
@@ -506,86 +513,244 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
 
   // ── Números de Emergencia ──────────────────────────────
   Widget _buildQuickEmergency() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Números de Emergencia',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
           ),
           const SizedBox(height: 12),
-          _eTile('🚑 Emergencias', '123', Colors.red),
-          _eTile('�� Policía', '112', Colors.blue),
-          _eTile('🚒 Bomberos', '119', Colors.orange),
-          _eTile('🏥 Cruz Roja', '132', Colors.red[800]!),
+          _eTile(
+            emoji: '🚑',
+            service: 'Ambulancia / SAMU',
+            description: 'Emergencias médicas y accidentes',
+            number: '123',
+            color: Colors.red,
+          ),
+          _eTile(
+            emoji: '🚔',
+            service: 'Policía Nacional',
+            description: 'Seguridad, delitos y orden público',
+            number: '112',
+            color: Colors.blue,
+          ),
+          _eTile(
+            emoji: '🚒',
+            service: 'Bomberos',
+            description: 'Incendios, rescates y materiales peligrosos',
+            number: '119',
+            color: Colors.orange,
+          ),
+          _eTile(
+            emoji: '🏥',
+            service: 'Cruz Roja',
+            description: 'Primeros auxilios y asistencia humanitaria',
+            number: '132',
+            color: Colors.red[800]!,
+          ),
+          _eTile(
+            emoji: '🛡️',
+            service: 'Defensa Civil',
+            description: 'Desastres naturales y emergencias civiles',
+            number: '144',
+            color: Colors.green[700]!,
+          ),
+          const SizedBox(height: 12),
+          // Advertencia
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.amber.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('⚠️', style: TextStyle(fontSize: 18)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Llama solo en caso de emergencia real',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: isDark ? Colors.amber[200] : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Realizar llamadas falsas a servicios de emergencia es una infracción legal que puede acarrear multas o sanciones penales, y desvía recursos que podrían salvar vidas reales.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.white60 : Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _eTile(String t, String n, Color c) {
-    return ListTile(
-      dense: true,
-      contentPadding: EdgeInsets.zero,
-      title: Text(t, style: const TextStyle(fontWeight: FontWeight.w500)),
-      trailing: ElevatedButton.icon(
-        onPressed: () => _makeCall(n, t),
-        icon: const Icon(Icons.phone, size: 16),
-        label: Text(n),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: c,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        ),
+  Widget _eTile({
+    required String emoji,
+    required String service,
+    required String description,
+    required String number,
+    required Color color,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 20)),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  service,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? Colors.white54 : Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
+            onPressed: () => _makeCall(number, service),
+            icon: const Icon(Icons.phone, size: 15),
+            label: Text(
+              number,
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   // ── Contactos de Emergencia ────────────────────────────
   Widget _buildContacts(BuildContext context, EmergencyProvider p) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E2A32) : Colors.white;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Mis Contactos de Emergencia',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.add_circle,
-                  color: ColorTokens.primary30,
+              Flexible(
+                child: Text(
+                  'Mis Contactos de Emergencia',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                onPressed: () => _showAdd(context),
+              ),
+              GestureDetector(
+                onTap: () => _showAdd(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add, color: Colors.white, size: 16),
+                      SizedBox(width: 4),
+                      Text(
+                        'Agregar',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
           if (p.contacts.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16),
+            Padding(
+              padding: const EdgeInsets.all(16),
               child: Text(
                 'Agrega contactos de emergencia para que sean notificados en caso de alerta',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
                 textAlign: TextAlign.center,
               ),
             )
@@ -641,11 +806,18 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   }
 
   Future<void> _makeCall(String number, String name) async {
-    final uri = Uri.parse('tel://$number');
-    final canCall = await canLaunchUrl(uri);
-    if (canCall) {
+    final uri = Uri(scheme: 'tel', path: number);
+    if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
+      return;
+    }
+    // Fallback: intentar de todas formas con launchUrl
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return;
+    } catch (_) {}
+    // Solo si definitivamente no se puede, mostrar dialog
+    if (true) {
       if (!mounted) return;
       var dialogOpen = true;
       showDialog(
