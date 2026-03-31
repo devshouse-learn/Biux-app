@@ -111,4 +111,20 @@ class AppRoutes {
   static const String accidentReport = '/accidents/report';
   static const String accidentReportName = 'accidentReport';
 
+  // Age Verification
+  static const String parentalConsent = '/parental-consent';
+  static const String parentalConsentName = 'parentalConsent';
+  static const String identityVerification = '/identity-verification';
+  static const String identityVerificationName = 'identityVerification';
+
+  // Safety
+  static const String reportUser = '/report-user/:userId';
+  static const String reportUserName = 'reportUser';
+  static const String biometricSettings = '/settings/biometric';
+  static const String biometricSettingsName = 'biometricSettings';
+  static const String activeSessions = '/settings/sessions';
+  static const String activeSessionsName = 'activeSessions';
+  static const twoFactor = '/two-factor';
+  static const dangerZones = '/danger-zones';
+  static const accessibilitySettings = '/accessibility-settings';
 }
