@@ -81,7 +81,6 @@ doc/api/
 .pub-cache/
 .pub/
 coverage/
-lib/generated_plugin_registrant.dart
 # For library packages, don’t commit the pubspec.lock file.
 # Regenerating the pubspec.lock file lets you test your package against the latest compatible versions of its dependencies.
 # See https://dart.dev/guides/libraries/private-files#pubspeclock
@@ -412,3 +411,29 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/flutter,androidstudio,android,xcode,visualstudiocode,swift,objective-c,dart
+
+# === SEGURIDAD: Archivos con credenciales ===
+# Nunca commitear archivos con passwords, tokens, o API keys
+*.key
+*.pem
+*.p12
+*.mobileprovision
+.env
+.env.*
+!.env.example
+secrets/
+credentials/
+*.credentials
+.secrets
+config/secrets.json
+firebase-adminsdk-*.json
+
+# === Logs de Deploy ===
+.deploy-daemon.log
+.last-deployed-commit
+deploy-*.log
+
+# === Archivos de usuario ===
+.DS_Store
+.vscode/settings.json
+.idea/workspace.xml

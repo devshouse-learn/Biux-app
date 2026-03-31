@@ -1,0 +1,1148 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:video_player/video_player.dart';
+import 'package:biux/features/shop/domain/entities/product_entity.dart';
+import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
+import 'package:biux/features/shop/presentation/widgets/price_tag.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:go_router/go_router.dart';
+
+/// Pantalla de detalle de producto mejorada
+class ProductDetailScreen extends StatefulWidget {
+  final String productId;
+
+  const ProductDetailScreen({Key? key, required this.productId})
+    : super(key: key);
+
+  @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  ProductEntity? _product;
+  String? _selectedSize;
+  int _quantity = 1;
+  int _currentImageIndex = 0;
+  VideoPlayerController? _videoController;
+  bool _isVideoInitialized = false;
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // No llamar _loadProduct aquí para evitar usar context antes de que el widget esté montado
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isLoading) {
+      _loadProduct();
+    }
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadProduct() async {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    try {
+      debugPrint('🔍 Buscando producto con ID: ${widget.productId}');
+      final shopProvider = context.read<ShopProvider>();
+
+      // Asegurarse de que los productos estén cargados
+      if (shopProvider.products.isEmpty) {
+        debugPrint('📦 Cargando productos desde Firebase...');
+        await shopProvider.loadProducts();
+        debugPrint('✅ Productos cargados: ${shopProvider.products.length}');
+      } else {
+        debugPrint(
+          '📦 Ya hay ${shopProvider.products.length} productos cargados',
+        );
+      }
+
+      // Buscar el producto específico
+      ProductEntity? product;
+      try {
+        product = shopProvider.products.firstWhere(
+          (p) => p.id == widget.productId,
+        );
+        debugPrint('✅ Producto encontrado: ${product.name}');
+      } catch (e) {
+        debugPrint('❌ Producto con ID ${widget.productId} no encontrado');
+        debugPrint(
+          '📋 IDs disponibles: ${shopProvider.products.map((p) => p.id).join(", ")}',
+        );
+
+        if (!mounted) return;
+
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
+
+        // Mostrar snackbar solo si el widget está montado
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l.t('product_not_found')),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+
+            // Regresar a la tienda después de mostrar el error
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                debugPrint('⬅️ Regresando a la tienda...');
+                _goBack();
+              }
+            });
+          }
+        });
+        return;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _product = product;
+        _isLoading = false;
+        _hasError = false;
+        if (product!.sizes.isNotEmpty) {
+          _selectedSize = product.sizes.first;
+        }
+      });
+
+      // Inicializar video si existe
+      if (product.hasVideo &&
+          product.videoUrl != null &&
+          product.videoUrl!.isNotEmpty) {
+        debugPrint('🎥 Inicializando video: ${product.videoUrl}');
+        _initializeVideo(product.videoUrl!);
+      }
+    } catch (e) {
+      debugPrint('❌ Error cargando producto: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l.t('error_loading_product')),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        });
+      }
+    }
+  }
+
+  void _goBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/shop');
+    }
+  }
+
+  Future<void> _initializeVideo(String videoUrl) async {
+    try {
+      _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      await _videoController!.initialize();
+      if (mounted) {
+        setState(() {
+          _isVideoInitialized = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error inicializando video: $e');
+      // Si falla el video, simplemente no lo mostramos
+      if (mounted) {
+        setState(() {
+          _isVideoInitialized = false;
+        });
+      }
+    }
+  }
+
+  void _addToCart() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    if (_product == null) {
+      debugPrint('⚠️ ERROR: Producto es null');
+      return;
+    }
+
+    debugPrint('🛒 Intentando agregar al carrito: ${_product!.name}');
+    debugPrint('  - ID: ${_product!.id}');
+    debugPrint('  - Precio: \$${_product!.price}');
+    debugPrint('  - Cantidad: $_quantity');
+    debugPrint('  - Talla seleccionada: $_selectedSize');
+    debugPrint('  - Disponible: ${_product!.isAvailable}');
+    debugPrint('  - Stock: ${_product!.stock}');
+    debugPrint('  - Activo: ${_product!.isActive}');
+    debugPrint('  - Vendido: ${_product!.isSold}');
+
+    if (_product!.sizes.isNotEmpty && _selectedSize == null) {
+      debugPrint('⚠️ ERROR: Debe seleccionar una talla');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('select_size'))));
+      return;
+    }
+
+    final shopProvider = context.read<ShopProvider>();
+    debugPrint('📦 Carrito antes: ${shopProvider.cartItems.length} items');
+
+    for (int i = 0; i < _quantity; i++) {
+      shopProvider.addToCart(_product!, selectedSize: _selectedSize);
+    }
+
+    debugPrint('📦 Carrito después: ${shopProvider.cartItems.length} items');
+    debugPrint('✅ Producto agregado exitosamente');
+
+    if (mounted) {
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$_quantity ${_product!.name} ${l.t('added_to_cart')}'),
+          action: SnackBarAction(
+            label: l.t('view_cart'),
+            onPressed: () => context.push('/shop/cart'),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _buyNow() {
+    if (_product == null) return;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+
+    if (_product!.sizes.isNotEmpty && _selectedSize == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.t('select_size'))));
+      return;
+    }
+
+    _showBuyNowDialog();
+  }
+
+  void _showBuyNowDialog() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final TextEditingController addressController = TextEditingController();
+    final TextEditingController phoneController = TextEditingController();
+    final TextEditingController notesController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l.t('buy_now')),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${_product!.name} x$_quantity',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              LargePriceTag(price: _product!.price * _quantity),
+              const SizedBox(height: 16),
+              TextField(
+                controller: addressController,
+                decoration: InputDecoration(
+                  labelText: l.t('delivery_address'),
+                  border: const OutlineInputBorder(),
+                ),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: phoneController,
+                decoration: InputDecoration(
+                  labelText: l.t('contact_phone'),
+                  border: const OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: notesController,
+                decoration: InputDecoration(
+                  labelText: l.t('additional_notes'),
+                  border: const OutlineInputBorder(),
+                ),
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l.t('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (addressController.text.isEmpty ||
+                  phoneController.text.isEmpty) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l.t('fill_required_fields'))),
+                );
+                return;
+              }
+
+              Navigator.of(dialogContext).pop();
+
+              final shopProvider = context.read<ShopProvider>();
+              final userProvider = context.read<UserProvider>();
+              final currentUser = userProvider.user;
+
+              if (currentUser == null) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.t('user_not_found'))));
+                return;
+              }
+
+              final orderId = await shopProvider.buyNow(
+                userId: currentUser.uid,
+                userName:
+                    currentUser.username ??
+                    currentUser.name ??
+                    l.t('default_user'),
+                product: _product!,
+                quantity: _quantity,
+                selectedSize: _selectedSize,
+                deliveryAddress: addressController.text,
+                phoneNumber: phoneController.text,
+                notes: notesController.text.isEmpty
+                    ? null
+                    : notesController.text,
+              );
+
+              if (!mounted) return;
+              if (orderId != null) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l.t('purchase_success')),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                _goBack();
+              } else {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      shopProvider.errorMessage ?? l.t('purchase_error'),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorTokens.secondary50,
+            ),
+            child: Text(l.t('confirm_purchase')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMarkAsSoldDialog(String userId) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l.t('mark_as_sold')),
+        content: Text(l.t('mark_sold_confirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l.t('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              final shopProvider = context.read<ShopProvider>();
+              final success = await shopProvider.markProductAsSold(
+                _product!.id,
+                userId,
+              );
+
+              if (!mounted) return;
+              if (success) {
+                setState(() {
+                  _product = _product!.copyWith(isSold: true, stock: 0);
+                });
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l.t('product_marked_sold')),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      shopProvider.errorMessage ?? l.t('error_marking_sold'),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: Text(l.t('mark_sold_btn')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteProductDialog(String userId) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l.t('delete_post')),
+        content: Text(l.t('delete_listing_confirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l.t('cancel')),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              final shopProvider = context.read<ShopProvider>();
+              final success = await shopProvider.deleteProduct(_product!.id);
+
+              if (!mounted) return;
+              if (success) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l.t('post_deleted')),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                _goBack();
+              } else {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      shopProvider.errorMessage ??
+                          l.t('error_deleting_listing'),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text(l.t('delete')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    if (_hasError) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l.t('product_label'))),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 78, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(
+                  l.t('could_not_load_product'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => _goBack(),
+                  child: Text(l.t('back_to_store')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    if (_product == null) {
+      return Scaffold(
+        appBar: AppBar(backgroundColor: ColorTokens.primary30),
+        body: Center(
+          child: CircularProgressIndicator(color: ColorTokens.secondary50),
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          // App Bar con imagen o video
+          SliverAppBar(
+            expandedHeight: 400,
+            pinned: true,
+            backgroundColor: ColorTokens.primary30,
+            leading: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              onPressed: () => _goBack(),
+            ),
+            flexibleSpace: FlexibleSpaceBar(background: _buildMediaSection()),
+            actions: [
+              // Boton de favorito
+              Consumer2<UserProvider, ShopProvider>(
+                builder: (context, userProvider, shopProvider, _) {
+                  final currentUser = userProvider.user;
+                  if (currentUser == null || _product == null)
+                    return const SizedBox.shrink();
+                  final uid = currentUser.uid;
+                  final updatedProduct = shopProvider.products
+                      .where((p) => p.id == _product!.id)
+                      .firstOrNull;
+                  final isLiked =
+                      updatedProduct?.isLikedBy(uid) ??
+                      _product!.isLikedBy(uid);
+                  return IconButton(
+                    onPressed: () {
+                      debugPrint(
+                        'LIKE_DETAIL>>> TAP on ${_product!.id} by $uid isLiked=$isLiked',
+                      );
+                      shopProvider.toggleProductLike(_product!.id, uid);
+                    },
+                    icon: Icon(
+                      isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: isLiked ? Colors.red : Colors.white,
+                      size: 24,
+                    ),
+                  );
+                },
+              ),
+              // Botón de opciones para el vendedor
+              Consumer<UserProvider>(
+                builder: (context, userProvider, child) {
+                  final currentUser = userProvider.user;
+                  if (currentUser == null ||
+                      _product!.sellerId != currentUser.uid) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, color: Colors.white),
+                    onSelected: (value) async {
+                      if (value == 'mark_sold') {
+                        _showMarkAsSoldDialog(currentUser.uid);
+                      } else if (value == 'delete') {
+                        _showDeleteProductDialog(currentUser.uid);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      if (!_product!.isSold)
+                        PopupMenuItem(
+                          value: 'mark_sold',
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(l.t('mark_as_sold')),
+                            ],
+                          ),
+                        ),
+                      if (_product!.isSold)
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.delete, color: Colors.red),
+                              const SizedBox(width: 8),
+                              Text(l.t('delete_post')),
+                            ],
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+
+          // Contenido
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Indicador de imágenes/video
+                  if (_product!.images.length > 1 || _product!.hasVideo)
+                    _buildMediaIndicator(),
+                  const SizedBox(height: 20),
+
+                  // Nombre del producto
+                  Text(
+                    _product!.name,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Precio
+                  LargePriceTag(price: _product!.price),
+                  const SizedBox(height: 8),
+
+                  // Badge VENDIDO
+                  if (_product!.isSold)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        l.t('product_sold_badge'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  if (_product!.isSold) const SizedBox(height: 8),
+
+                  // Stock
+                  _buildStockIndicator(),
+                  const SizedBox(height: 16),
+
+                  // Ciudad del vendedor
+                  if (_product!.sellerCity != null) ...[
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 20,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${l.t('location_prefix')} ${_product!.sellerCity}',
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Vendedor
+                  Row(
+                    children: [
+                      Icon(Icons.person, size: 20, color: Colors.grey[600]),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${l.t('seller_prefix')} ${_product!.sellerName}',
+                        style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Tallas
+                  if (_product!.sizes.isNotEmpty) ...[
+                    Text(
+                      l.t('available_sizes'),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      children: _product!.sizes.map((size) {
+                        final isSelected = size == _selectedSize;
+                        return ChoiceChip(
+                          label: Text(size),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedSize = size;
+                            });
+                          },
+                          // ✅ Colores con buen contraste para leer las tallas
+                          selectedColor: ColorTokens.primary30,
+                          backgroundColor: Colors.grey[100],
+                          labelStyle: TextStyle(
+                            color: isSelected ? Colors.white : Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          side: BorderSide(
+                            color: isSelected
+                                ? ColorTokens.primary30
+                                : Colors.grey.shade400,
+                          ),
+                          checkmarkColor: Colors.white,
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
+                  // Descripción detallada
+                  Text(
+                    l.t('description'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _product!.displayDescription,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 120), // Espacio para botones
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      // Barra inferior con botones
+      bottomNavigationBar: _buildBottomBar(),
+    );
+  }
+
+  Widget _buildMediaSection() {
+    final totalItems = _product!.images.length + (_product!.hasVideo ? 1 : 0);
+
+    return PageView.builder(
+      itemCount: totalItems,
+      onPageChanged: (index) {
+        setState(() {
+          _currentImageIndex = index;
+        });
+
+        // Control de video
+        if (_product!.hasVideo) {
+          if (index == _product!.images.length && _videoController != null) {
+            _videoController!.play();
+          } else {
+            _videoController?.pause();
+          }
+        }
+      },
+      itemBuilder: (context, index) {
+        // Mostrar video en el último índice si existe
+        if (_product!.hasVideo && index == _product!.images.length) {
+          return _buildVideoPlayer();
+        }
+
+        // Mostrar imágenes
+        final imageUrl = _product!.images[index];
+
+        // ✅ Soportar imágenes locales con protocolo asset://
+        if (imageUrl.startsWith('asset://')) {
+          final assetPath = imageUrl.replaceFirst('asset://', '');
+          return Image.asset(
+            assetPath,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Container(
+              color: Colors.grey[200],
+              child: const Icon(
+                Icons.shopping_bag,
+                size: 100,
+                color: Colors.grey,
+              ),
+            ),
+          );
+        }
+
+        // ✅ Soportar mock placeholders
+        if (imageUrl.startsWith('mock://')) {
+          return Container(
+            color: Colors.grey[200],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.shopping_bag, size: 100, color: Colors.grey),
+                const SizedBox(height: 8),
+                Text(
+                  _product!.name,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // URLs normales (http/https)
+        return CachedNetworkImage(
+          imageUrl: imageUrl,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: Colors.grey[200],
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+          errorWidget: (context, url, error) => Container(
+            color: Colors.grey[200],
+            child: const Icon(
+              Icons.shopping_bag,
+              size: 100,
+              color: Colors.grey,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildVideoPlayer() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    if (!_isVideoInitialized || _videoController == null) {
+      return Container(
+        color: Colors.black,
+        child: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Center(
+          child: AspectRatio(
+            aspectRatio: _videoController!.value.aspectRatio,
+            child: VideoPlayer(_videoController!),
+          ),
+        ),
+        Center(
+          child: IconButton(
+            icon: Icon(
+              _videoController!.value.isPlaying
+                  ? Icons.pause_circle_filled
+                  : Icons.play_circle_filled,
+              size: 64,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+            onPressed: () {
+              setState(() {
+                if (_videoController!.value.isPlaying) {
+                  _videoController!.pause();
+                } else {
+                  _videoController!.play();
+                }
+              });
+            },
+          ),
+        ),
+        Positioned(
+          top: 16,
+          right: 16,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.videocam, color: Colors.white, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  l.t('admin_video_label'),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMediaIndicator() {
+    final totalItems = _product!.images.length + (_product!.hasVideo ? 1 : 0);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(totalItems, (index) {
+        final isVideo = _product!.hasVideo && index == _product!.images.length;
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _currentImageIndex == index
+                ? ColorTokens.secondary50
+                : Colors.grey[300],
+            border: isVideo ? Border.all(color: Colors.red, width: 1) : null,
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildStockIndicator() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    return Row(
+      children: [
+        Icon(
+          _product!.isAvailable ? Icons.check_circle : Icons.cancel,
+          color: _product!.isAvailable ? Colors.green : Colors.red,
+          size: 20,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          _product!.isAvailable
+              ? l.t('in_stock_count').replaceAll('{n}', '${_product!.stock}')
+              : l.t('out_of_stock'),
+          style: TextStyle(
+            color: _product!.isAvailable ? Colors.green : Colors.red,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar() {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Selector de cantidad
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: () {
+                      if (_quantity > 1) {
+                        setState(() {
+                          _quantity--;
+                        });
+                      }
+                    },
+                  ),
+                  Text(
+                    _quantity.toString(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      if (_quantity < _product!.stock) {
+                        setState(() {
+                          _quantity++;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Botones de acción
+            Row(
+              children: [
+                // Botón Agregar al carrito
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _product!.isAvailable ? _addToCart : null,
+                    icon: const Icon(Icons.shopping_cart_outlined),
+                    label: Text(l.t('add_to_cart')),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: ColorTokens.secondary50,
+                      side: BorderSide(color: ColorTokens.secondary50),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+
+                // Botón Comprar ahora
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _product!.isAvailable ? _buyNow : null,
+                    icon: const Icon(Icons.flash_on),
+                    label: Text(l.t('buy_now_btn')),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorTokens.secondary50,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // NUEVA FUNCIONALIDAD: Botón para ver código QR (solo para bicis verificadas)
+            if (_product!.isBicycle && _product!.isVerifiedNotStolen) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: ColorTokens.success99,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: ColorTokens.success40, width: 2),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          color: ColorTokens.success40,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l.t('verified_bike_badge'),
+                                style: TextStyle(
+                                  color: ColorTokens.success30,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                l.t('bike_verified_not_stolen'),
+                                style: TextStyle(
+                                  color: ColorTokens.neutral50,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.push(
+                          '/shop/bike-qr/${_product!.id}',
+                          extra: {
+                            'frameSerial': _product!.bikeFrameSerial ?? '',
+                            'verificationDate':
+                                _product!.stolenVerificationDate ??
+                                DateTime.now(),
+                            'verifierUid': _product!.stolenVerificationBy ?? '',
+                            'bikeBrand': _product!.bikeBrand,
+                            'bikeModel': _product!.bikeModel,
+                            'bikeColor': _product!.bikeColor,
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.qr_code_2),
+                      label: Text(l.t('view_qr_verification')),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorTokens.success40,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

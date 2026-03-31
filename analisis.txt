@@ -1,0 +1,844 @@
+Analyzing biux...                                               
+
+warning • The declaration '<unnamed>' isn't referenced • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:1:1 • unused_element
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:2:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:2:3 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:2:5 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:2:7 • expected_executable
+  error • Expected to find ';' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:2:9 • expected_token
+  error • Undefined class 'HEAD' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:2:9 • undefined_class
+  error • Directives must appear before any declarations • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:3:1 • directive_after_declaration
+  error • Expected an identifier • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:3:1 • missing_identifier
+  error • Directives must appear before any declarations • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:4:1 • directive_after_declaration
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:5:1 • expected_executable
+  error • The '===' operator is not supported • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:5:1 • unsupported_operator
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:5:4 • expected_executable
+  error • The '===' operator is not supported • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:5:4 • unsupported_operator
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:5:7 • expected_executable
+  error • Directives must appear before any declarations • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:6:1 • directive_after_declaration
+  error • Directives must appear before any declarations • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:7:1 • directive_after_declaration
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:4 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:7 • expected_executable
+  error • Expected to find ';' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:9 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:9 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:15 • expected_executable
+  error • Expected to find ';' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:16 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:16 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:23 • expected_executable
+  error • Expected to find ';' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:24 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:24 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:28 • expected_executable
+  error • Expected to find ';' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:29 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:8:29 • missing_const_final_var_or_type
+  error • Methods must have an explicit list of parameters • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:1 • missing_method_parameters
+  error • Operator '<<' should declare exactly 1 parameters, but 0 found • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:1 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:1 • missing_keyword_operator
+  error • A function body must be provided • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:3 • missing_function_body
+  error • Methods must have an explicit list of parameters • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:3 • missing_method_parameters
+  error • Operator '<<' should declare exactly 1 parameters, but 0 found • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:3 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:3 • missing_keyword_operator
+  error • The name '<<' is already defined • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:3 • duplicate_definition
+  error • A function body must be provided • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:5 • missing_function_body
+  error • Methods must have an explicit list of parameters • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:5 • missing_method_parameters
+  error • Operator '<<' should declare exactly 1 parameters, but 0 found • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:5 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:5 • missing_keyword_operator
+  error • The name '<<' is already defined • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:5 • duplicate_definition
+  error • Types parameters aren't allowed when defining an operator • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:7 • type_parameter_on_operator
+  error • Expected to find '>' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:14:9 • expected_token
+  error • A function body must be provided • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:15:3 • missing_function_body
+  error • Expected an identifier • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:1 • unsupported_operator
+warning • Dead code • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:4 • dead_code
+  error • Illegal assignment to non-assignable expression • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:4 • unsupported_operator
+  error • Expected an identifier • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:7 • missing_identifier
+  error • Expected to find ';' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:40:7 • expected_token
+  error • Expected an identifier • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:41:3 • missing_identifier
+  error • Can't have modifier 'static' here • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:42:3 • extraneous_modifier
+warning • The declaration 'getRandomAdvertisement' isn't referenced • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:64:24 • unused_element
+warning • The declaration 'recordImpression' isn't referenced • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:76:16 • unused_element
+warning • The declaration 'recordClick' isn't referenced • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:86:16 • unused_element
+warning • The declaration 'updateAdvertisement' isn't referenced • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:110:23 • unused_element
+  error • Expected an identifier • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:127:1 • missing_identifier
+  error • Expected an identifier • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:127:4 • missing_identifier
+  error • Expected an identifier • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:127:7 • missing_identifier
+  error • Expected to find ';' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:127:29 • expected_token
+  error • Expected to find '}' • lib/features/advertisements/data/repositories/advertising_repository_impl.dart:131:1 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:738:1 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:738:3 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:738:5 • missing_identifier
+  error • Expected to find ';' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:738:9 • expected_token
+  error • Expected to find '>' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:738:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/bikes/presentation/screens/bike_detail_screen.dart:738:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:739:15 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:749:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/bike_detail_screen.dart:749:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/bikes/presentation/screens/bike_detail_screen.dart:749:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:749:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/bike_detail_screen.dart:749:4 • unsupported_operator
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:749:7 • missing_identifier
+  error • This expression has a type of 'void' so its value can't be used • lib/features/bikes/presentation/screens/bike_detail_screen.dart:750:25 • use_of_void_result
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:1 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:4 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:29 • expected_token
+  error • Undefined name 'updates' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:788:29 • undefined_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:802:1 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:802:3 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:802:5 • missing_identifier
+  error • Expected to find ';' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:802:9 • expected_token
+  error • Expected to find '>' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:802:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/bikes/presentation/screens/bike_detail_screen.dart:802:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:803:5 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:823:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/bike_detail_screen.dart:823:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/bikes/presentation/screens/bike_detail_screen.dart:823:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:823:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/bike_detail_screen.dart:823:4 • unsupported_operator
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:823:7 • missing_identifier
+  error • Expected to find ';' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:823:7 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:825:5 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:1 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:4 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:29 • expected_token
+  error • Undefined name 'updates' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:867:29 • undefined_identifier
+  error • Expected to find '}' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:869:3 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:907:1 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:907:3 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:907:5 • missing_identifier
+  error • Expected to find ';' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:907:9 • expected_token
+  error • Expected to find '>' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:907:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/bikes/presentation/screens/bike_detail_screen.dart:907:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:908:15 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:917:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/bike_detail_screen.dart:917:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/bikes/presentation/screens/bike_detail_screen.dart:917:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:917:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/bike_detail_screen.dart:917:4 • unsupported_operator
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:917:7 • missing_identifier
+  error • This expression has a type of 'void' so its value can't be used • lib/features/bikes/presentation/screens/bike_detail_screen.dart:918:25 • use_of_void_result
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:1 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:4 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:29 • expected_token
+  error • Undefined name 'updates' • lib/features/bikes/presentation/screens/bike_detail_screen.dart:954:29 • undefined_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:519:1 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:519:3 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:519:5 • missing_identifier
+  error • Expected to find '>' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:519:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:519:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:520:11 • expected_token
+  error • Expected to find '[' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:520:11 • expected_token
+  error • Too many positional arguments: 1 expected, but 2 found • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:520:11 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:524:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:524:1 • unsupported_operator
+  error • Arguments of a constant creation must be constant expressions • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:524:4 • const_with_non_constant_argument
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:524:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:524:4 • unsupported_operator
+  error • Too many positional arguments: 0 expected, but 1 found • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:524:4 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:524:7 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:1 • missing_identifier
+  error • Too many positional arguments: 0 expected, but 1 found • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:1 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:4 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:24 • undefined_identifier
+  error • Undefined name 'updates' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:527:29 • undefined_identifier
+  error • Expected to find ',' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:528:13 • expected_token
+  error • Expected to find ')' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:530:10 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:536:1 • missing_identifier
+  error • Too many positional arguments: 0 expected, but 2 found • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:536:1 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:536:3 • missing_identifier
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:536:5 • missing_identifier
+  error • Expected to find '>' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:536:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:536:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:537:13 • expected_token
+  error • Expected to find '[' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:537:13 • expected_token
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:538:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:538:1 • unsupported_operator
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:538:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:538:4 • unsupported_operator
+  error • Expected an identifier • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:538:7 • missing_identifier
+  error • Undefined name 'content' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:539:13 • undefined_identifier
+  error • Expected to find ')' • lib/features/bikes/presentation/screens/public_bike_info_screen.dart:539:20 • expected_token
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:134:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:134:3 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:134:5 • missing_identifier
+  error • Expected to find ';' • lib/features/experiences/data/models/experience_model.dart:134:9 • expected_token
+  error • Expected to find '>' • lib/features/experiences/data/models/experience_model.dart:134:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/experiences/data/models/experience_model.dart:134:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/experiences/data/models/experience_model.dart:137:5 • expected_token
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:143:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/experiences/data/models/experience_model.dart:143:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/experiences/data/models/experience_model.dart:143:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/experiences/data/models/experience_model.dart:143:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/experiences/data/models/experience_model.dart:143:4 • unsupported_operator
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:143:7 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:145:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:145:4 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/data/models/experience_model.dart:145:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/experiences/data/models/experience_model.dart:145:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/experiences/data/models/experience_model.dart:145:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/experiences/data/models/experience_model.dart:145:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/experiences/data/models/experience_model.dart:145:29 • expected_token
+  error • Undefined name 'updates' • lib/features/experiences/data/models/experience_model.dart:145:29 • undefined_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:668:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:668:3 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:668:5 • missing_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:668:9 • expected_token
+  error • Expected to find '>' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:668:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/experiences/presentation/screens/experiences_list_screen.dart:668:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:669:19 • expected_token
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:674:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:674:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/experiences/presentation/screens/experiences_list_screen.dart:674:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:674:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:674:4 • unsupported_operator
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:674:7 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:4 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:29 • expected_token
+  error • Undefined name 'updates' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:678:29 • undefined_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:739:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:739:3 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:739:5 • missing_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:739:9 • expected_token
+  error • Expected to find '>' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:739:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/experiences/presentation/screens/experiences_list_screen.dart:739:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:740:9 • expected_token
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:743:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:743:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/experiences/presentation/screens/experiences_list_screen.dart:743:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:743:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:743:4 • unsupported_operator
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:743:7 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:4 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:29 • expected_token
+  error • Undefined name 'updates' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:747:29 • undefined_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:768:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:768:3 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:768:5 • missing_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:768:9 • expected_token
+  error • Expected to find '>' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:768:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/experiences/presentation/screens/experiences_list_screen.dart:768:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:769:9 • expected_token
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:772:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:772:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/experiences/presentation/screens/experiences_list_screen.dart:772:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:772:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:772:4 • unsupported_operator
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:772:7 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:4 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:29 • expected_token
+  error • Undefined name 'updates' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:776:29 • undefined_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1234:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1234:3 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1234:5 • missing_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1234:9 • expected_token
+  error • Expected to find '>' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1234:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1234:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1235:13 • expected_token
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1240:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1240:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1240:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1240:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1240:4 • unsupported_operator
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1240:7 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:1 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:4 • missing_identifier
+  error • Expected an identifier • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:29 • expected_token
+  error • Undefined name 'updates' • lib/features/experiences/presentation/screens/experiences_list_screen.dart:1244:29 • undefined_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:10:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:10:3 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:10:5 • missing_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository.dart:10:9 • expected_token
+  error • Expected to find '>' • lib/features/payments/data/repositories/payments_firebase_repository.dart:10:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/payments/data/repositories/payments_firebase_repository.dart:10:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/payments/data/repositories/payments_firebase_repository.dart:11:5 • expected_token
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:26:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository.dart:26:1 • unsupported_operator
+warning • Dead code • lib/features/payments/data/repositories/payments_firebase_repository.dart:26:4 • dead_code
+  error • Illegal assignment to non-assignable expression • lib/features/payments/data/repositories/payments_firebase_repository.dart:26:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/payments/data/repositories/payments_firebase_repository.dart:26:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository.dart:26:4 • unsupported_operator
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:26:7 • missing_identifier
+  error • Unexpected text 'return' • lib/features/payments/data/repositories/payments_firebase_repository.dart:28:5 • unexpected_token
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:4 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:29 • expected_token
+  error • Undefined name 'updates' • lib/features/payments/data/repositories/payments_firebase_repository.dart:29:29 • undefined_identifier
+warning • The declaration '<unnamed>' isn't referenced • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:1:1 • unused_element
+  error • Expected a method, getter, setter or operator declaration • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:3:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:3:3 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:3:5 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:3:7 • expected_executable
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:3:9 • expected_token
+  error • Undefined class 'HEAD' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:3:9 • undefined_class
+  error • Directives must appear before any declarations • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:4:1 • directive_after_declaration
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:4:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:71:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:71:1 • unsupported_operator
+warning • Dead code • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:71:4 • dead_code
+  error • Illegal assignment to non-assignable expression • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:71:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:71:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:71:4 • unsupported_operator
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:71:7 • missing_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:72:1 • expected_token
+  error • Undefined name 'import' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:72:1 • undefined_identifier
+  error • 'class' can't be used as an identifier because it's a keyword • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:1 • expected_identifier_but_got_keyword
+  error • Expected a statement • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:1 • missing_statement
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:1 • expected_token
+  error • Undefined name 'class' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:1 • undefined_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:7 • expected_token
+  error • 'extends' can't be used as an identifier because it's a keyword • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:38 • expected_identifier_but_got_keyword
+  error • Expected a statement • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:38 • missing_statement
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:38 • expected_token
+  error • Undefined name 'extends' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:38 • undefined_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:46 • expected_token
+  error • Undefined name 'PaymentsRepositoryAbstract' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:79:46 • undefined_identifier
+  error • Can't have modifier 'static' here • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:81:3 • extraneous_modifier
+warning • The declaration 'gatewayPayment' isn't referenced • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:84:18 • unused_element
+  error • Local variable 'createPaymentIntent' can't be referenced before it is declared • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:87:26 • referenced_before_declaration
+warning • The declaration 'confirmPayment' isn't referenced • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:129:16 • unused_element
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:4 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:29 • expected_token
+  error • Undefined name 'updates' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:146:29 • undefined_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:151:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:151:3 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:151:5 • missing_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:151:9 • expected_token
+  error • Expected to find '>' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:151:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:151:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:152:3 • expected_token
+warning • The declaration 'cancelPayment' isn't referenced • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:152:16 • unused_element
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:170:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:170:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:170:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:170:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:170:4 • unsupported_operator
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:170:7 • missing_identifier
+  error • Function expressions can't be named • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:171:16 • named_function_expression
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:181:3 • expected_token
+warning • The declaration 'getPaymentStatus' isn't referenced • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:184:33 • unused_element
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:4 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:29 • expected_token
+  error • Undefined name 'updates' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:191:29 • undefined_identifier
+warning • The declaration 'getUserPayments' isn't referenced • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:196:38 • unused_element
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:204:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:204:3 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:204:5 • missing_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:204:9 • expected_token
+  error • Expected to find '>' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:204:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:204:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:205:7 • expected_token
+warning • The declaration 'getPaymentById' isn't referenced • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:217:33 • unused_element
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:230:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:230:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:230:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:230:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:230:4 • unsupported_operator
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:230:7 • missing_identifier
+  error • Unexpected text 'return' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:231:7 • unexpected_token
+  error • Undefined name 'snapshot' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:231:14 • undefined_identifier
+warning • Dead code: Catch clauses after a 'catch (e)' or an 'on Object catch (e)' are never reached • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:232:7 • dead_code_catch_following_catch
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:1 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:4 • missing_identifier
+  error • Expected an identifier • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:29 • expected_token
+  error • Undefined name 'updates' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:234:29 • undefined_identifier
+  error • Expected to find '}' • lib/features/payments/data/repositories/payments_firebase_repository_impl.dart:238:1 • expected_token
+warning • Duplicate import • lib/features/shop/presentation/screens/admin_alerts_screen.dart:8:8 • duplicate_import
+warning • Duplicate import • lib/features/shop/presentation/screens/admin_alerts_screen.dart:9:8 • duplicate_import
+warning • The value of the local variable 'l' isn't used • lib/features/shop/presentation/screens/admin_alerts_screen.dart:1835:11 • unused_local_variable
+warning • Duplicate import • lib/features/shop/presentation/screens/admin_shop_screen.dart:17:8 • duplicate_import
+warning • The value of the local variable 'l' isn't used • lib/features/shop/presentation/screens/admin_shop_screen.dart:861:11 • unused_local_variable
+warning • The value of the local variable 'l' isn't used • lib/features/shop/presentation/screens/admin_shop_screen.dart:1141:11 • unused_local_variable
+  error • The name 'l' is already defined • lib/features/shop/presentation/screens/admin_shop_screen.dart:1141:11 • duplicate_definition
+  error • Undefined name 'Provider' • lib/features/shop/presentation/screens/bike_qr_screen.dart:329:19 • undefined_identifier
+  error • The name 'LocaleNotifier' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/bike_qr_screen.dart:329:31 • non_type_as_type_argument
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:22:1 • missing_identifier
+  error • Too many positional arguments: 0 expected, but 2 found • lib/features/shop/presentation/screens/favorites_screen.dart:22:1 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:22:3 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:22:5 • missing_identifier
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:22:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/favorites_screen.dart:22:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/shop/presentation/screens/favorites_screen.dart:23:9 • expected_token
+  error • Expected to find '[' • lib/features/shop/presentation/screens/favorites_screen.dart:23:9 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:24:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:24:1 • unsupported_operator
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/shop/presentation/screens/favorites_screen.dart:24:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:24:4 • unsupported_operator
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:24:7 • missing_identifier
+  error • Undefined name 'title' • lib/features/shop/presentation/screens/favorites_screen.dart:25:9 • undefined_identifier
+  error • Expected to find ')' • lib/features/shop/presentation/screens/favorites_screen.dart:25:14 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:46:1 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:46:3 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:46:5 • missing_identifier
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:46:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/favorites_screen.dart:46:9 • non_type_as_type_argument
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:56:1 • unsupported_operator
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:56:4 • unsupported_operator
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:82:1 • unsupported_operator
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:82:4 • unsupported_operator
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:96:1 • unsupported_operator
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:96:4 • unsupported_operator
+  error • Expected to find ')' • lib/features/shop/presentation/screens/favorites_screen.dart:101:17 • expected_token
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:101:17 • expected_token
+  error • Expected to find '[' • lib/features/shop/presentation/screens/favorites_screen.dart:101:17 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:124:1 • missing_identifier
+  error • Too many positional arguments: 0 expected, but 2 found • lib/features/shop/presentation/screens/favorites_screen.dart:124:1 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:124:3 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:124:5 • missing_identifier
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:124:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/favorites_screen.dart:124:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/shop/presentation/screens/favorites_screen.dart:125:19 • expected_token
+  error • Expected to find '[' • lib/features/shop/presentation/screens/favorites_screen.dart:125:19 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:126:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:126:1 • unsupported_operator
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/shop/presentation/screens/favorites_screen.dart:126:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:126:4 • unsupported_operator
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:126:7 • missing_identifier
+  error • Undefined name 'color' • lib/features/shop/presentation/screens/favorites_screen.dart:127:19 • undefined_identifier
+  error • Expected to find ')' • lib/features/shop/presentation/screens/favorites_screen.dart:127:24 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:144:1 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:144:3 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:144:5 • missing_identifier
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:144:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/favorites_screen.dart:144:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/shop/presentation/screens/favorites_screen.dart:145:25 • expected_token
+  error • Expected to find '[' • lib/features/shop/presentation/screens/favorites_screen.dart:145:25 • expected_token
+  error • Too many positional arguments: 1 expected, but 4 found • lib/features/shop/presentation/screens/favorites_screen.dart:145:25 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:146:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:146:1 • unsupported_operator
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/shop/presentation/screens/favorites_screen.dart:146:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:146:4 • unsupported_operator
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:146:7 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:148:1 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:148:4 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:148:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/shop/presentation/screens/favorites_screen.dart:148:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/shop/presentation/screens/favorites_screen.dart:148:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/shop/presentation/screens/favorites_screen.dart:148:24 • undefined_identifier
+  error • Undefined name 'updates' • lib/features/shop/presentation/screens/favorites_screen.dart:148:29 • undefined_identifier
+  error • Expected to find ',' • lib/features/shop/presentation/screens/favorites_screen.dart:149:25 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:240:1 • missing_identifier
+  error • Too many positional arguments: 0 expected, but 2 found • lib/features/shop/presentation/screens/favorites_screen.dart:240:1 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:240:3 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:240:5 • missing_identifier
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:240:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/favorites_screen.dart:240:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/shop/presentation/screens/favorites_screen.dart:241:27 • expected_token
+  error • Expected to find '[' • lib/features/shop/presentation/screens/favorites_screen.dart:241:27 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:242:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:242:1 • unsupported_operator
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/shop/presentation/screens/favorites_screen.dart:242:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:242:4 • unsupported_operator
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:242:7 • missing_identifier
+  error • Undefined name 'color' • lib/features/shop/presentation/screens/favorites_screen.dart:243:27 • undefined_identifier
+  error • Expected to find ')' • lib/features/shop/presentation/screens/favorites_screen.dart:243:32 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:274:1 • missing_identifier
+  error • Too many positional arguments: 0 expected, but 1 found • lib/features/shop/presentation/screens/favorites_screen.dart:274:1 • extra_positional_arguments_could_be_named
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:274:3 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:274:5 • missing_identifier
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:274:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/favorites_screen.dart:274:9 • non_type_as_type_argument
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:278:1 • unsupported_operator
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:278:4 • unsupported_operator
+  error • Expected to find ')' • lib/features/shop/presentation/screens/favorites_screen.dart:290:17 • expected_token
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:290:17 • expected_token
+  error • Expected to find '[' • lib/features/shop/presentation/screens/favorites_screen.dart:290:17 • expected_token
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:309:1 • missing_identifier
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/shop/presentation/screens/favorites_screen.dart:309:1 • missing_assignable_selector
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:309:3 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:309:5 • missing_identifier
+  error • Expected to find '>' • lib/features/shop/presentation/screens/favorites_screen.dart:309:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/shop/presentation/screens/favorites_screen.dart:309:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/shop/presentation/screens/favorites_screen.dart:310:1 • expected_token
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:310:1 • unsupported_operator
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:310:4 • missing_identifier
+  error • The '===' operator is not supported • lib/features/shop/presentation/screens/favorites_screen.dart:310:4 • unsupported_operator
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:326:1 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:326:4 • missing_identifier
+  error • Expected an identifier • lib/features/shop/presentation/screens/favorites_screen.dart:326:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/shop/presentation/screens/favorites_screen.dart:326:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/shop/presentation/screens/favorites_screen.dart:326:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/shop/presentation/screens/favorites_screen.dart:326:24 • undefined_identifier
+  error • Undefined name 'updates' • lib/features/shop/presentation/screens/favorites_screen.dart:326:29 • undefined_identifier
+warning • Duplicate import • lib/features/shop/presentation/screens/stolen_bikes_screen.dart:8:8 • duplicate_import
+warning • The declaration '<unnamed>' isn't referenced • lib/features/store/data/datasources/coupon_datasource_impl.dart:1:1 • unused_element
+  error • Expected a method, getter, setter or operator declaration • lib/features/store/data/datasources/coupon_datasource_impl.dart:3:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/store/data/datasources/coupon_datasource_impl.dart:3:3 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/store/data/datasources/coupon_datasource_impl.dart:3:5 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/store/data/datasources/coupon_datasource_impl.dart:3:7 • expected_executable
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:3:9 • expected_token
+  error • Undefined class 'HEAD' • lib/features/store/data/datasources/coupon_datasource_impl.dart:3:9 • undefined_class
+  error • Directives must appear before any declarations • lib/features/store/data/datasources/coupon_datasource_impl.dart:4:1 • directive_after_declaration
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:4:1 • missing_identifier
+  error • Directives must appear before any declarations • lib/features/store/data/datasources/coupon_datasource_impl.dart:5:1 • directive_after_declaration
+  error • Directives must appear before any declarations • lib/features/store/data/datasources/coupon_datasource_impl.dart:6:1 • directive_after_declaration
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:66:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/store/data/datasources/coupon_datasource_impl.dart:66:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/store/data/datasources/coupon_datasource_impl.dart:66:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/store/data/datasources/coupon_datasource_impl.dart:66:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/store/data/datasources/coupon_datasource_impl.dart:66:4 • unsupported_operator
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:66:7 • missing_identifier
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:67:1 • expected_token
+  error • Undefined name 'import' • lib/features/store/data/datasources/coupon_datasource_impl.dart:67:1 • undefined_identifier
+  error • 'class' can't be used as an identifier because it's a keyword • lib/features/store/data/datasources/coupon_datasource_impl.dart:73:1 • expected_identifier_but_got_keyword
+  error • Expected a statement • lib/features/store/data/datasources/coupon_datasource_impl.dart:73:1 • missing_statement
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:73:1 • expected_token
+  error • Undefined name 'class' • lib/features/store/data/datasources/coupon_datasource_impl.dart:73:1 • undefined_identifier
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:73:7 • expected_token
+  error • Can't have modifier 'static' here • lib/features/store/data/datasources/coupon_datasource_impl.dart:75:3 • extraneous_modifier
+warning • The value of the local variable '_cacheTimestamp' isn't used • lib/features/store/data/datasources/coupon_datasource_impl.dart:79:13 • unused_local_variable
+  error • Can't have modifier 'static' here • lib/features/store/data/datasources/coupon_datasource_impl.dart:80:3 • extraneous_modifier
+warning • The value of the local variable '_cacheDuration' isn't used • lib/features/store/data/datasources/coupon_datasource_impl.dart:80:25 • unused_local_variable
+  error • Undefined name '_isCacheValid' • lib/features/store/data/datasources/coupon_datasource_impl.dart:88:11 • undefined_identifier
+  error • Local variable '_couponFromDoc' can't be referenced before it is declared • lib/features/store/data/datasources/coupon_datasource_impl.dart:102:22 • referenced_before_declaration
+warning • The declaration 'validateCoupon' isn't referenced • lib/features/store/data/datasources/coupon_datasource_impl.dart:115:16 • unused_element
+warning • The declaration 'getAvailableCoupons' isn't referenced • lib/features/store/data/datasources/coupon_datasource_impl.dart:121:30 • unused_element
+  error • Undefined name '_isCacheValid' • lib/features/store/data/datasources/coupon_datasource_impl.dart:123:11 • undefined_identifier
+  error • Local variable '_couponFromDoc' can't be referenced before it is declared • lib/features/store/data/datasources/coupon_datasource_impl.dart:132:41 • referenced_before_declaration
+warning • The declaration 'recordCouponUsage' isn't referenced • lib/features/store/data/datasources/coupon_datasource_impl.dart:145:16 • unused_element
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:1 • missing_identifier
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:4 • missing_identifier
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:29 • expected_token
+  error • Undefined name 'updates' • lib/features/store/data/datasources/coupon_datasource_impl.dart:146:29 • undefined_identifier
+  error • The operator '<<' isn't defined for the type 'Query<Map<String, dynamic>>' • lib/features/store/data/datasources/coupon_datasource_impl.dart:151:1 • undefined_operator
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:151:3 • missing_identifier
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:151:5 • missing_identifier
+  error • The name 'where' isn't a type, so it can't be used as a type argument • lib/features/store/data/datasources/coupon_datasource_impl.dart:151:9 • non_type_as_type_argument
+  error • Expected to find '>' • lib/features/store/data/datasources/coupon_datasource_impl.dart:152:12 • expected_token
+  error • Expected to find '[' • lib/features/store/data/datasources/coupon_datasource_impl.dart:153:11 • expected_token
+  error • The method 'limit' isn't defined for the type 'List' • lib/features/store/data/datasources/coupon_datasource_impl.dart:153:12 • undefined_method
+  error • A value of type 'CouponEntity?' can't be returned from the function 'recordCouponUsage' because it has a return type of 'Future<void>' • lib/features/store/data/datasources/coupon_datasource_impl.dart:172:16 • return_of_invalid_type
+  error • A value of type 'CouponEntity' can't be returned from the function 'recordCouponUsage' because it has a return type of 'Future<void>' • lib/features/store/data/datasources/coupon_datasource_impl.dart:185:14 • return_of_invalid_type
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:188:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/store/data/datasources/coupon_datasource_impl.dart:188:1 • unsupported_operator
+warning • Dead code • lib/features/store/data/datasources/coupon_datasource_impl.dart:188:4 • dead_code
+  error • Illegal assignment to non-assignable expression • lib/features/store/data/datasources/coupon_datasource_impl.dart:188:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/store/data/datasources/coupon_datasource_impl.dart:188:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/store/data/datasources/coupon_datasource_impl.dart:188:4 • unsupported_operator
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:188:7 • missing_identifier
+  error • This requires the 'dot-shorthands' language feature to be enabled • lib/features/store/data/datasources/coupon_datasource_impl.dart:189:11 • experiment_not_enabled
+  error • The static method or constructor 'limit' isn't defined for the context type '_' • lib/features/store/data/datasources/coupon_datasource_impl.dart:189:12 • dot_shorthand_undefined_member
+  error • Undefined name 'snapshot' • lib/features/store/data/datasources/coupon_datasource_impl.dart:192:11 • undefined_identifier
+  error • Undefined name 'snapshot' • lib/features/store/data/datasources/coupon_datasource_impl.dart:193:15 • undefined_identifier
+  error • 'catch' can't be used as an identifier because it's a keyword • lib/features/store/data/datasources/coupon_datasource_impl.dart:199:7 • expected_identifier_but_got_keyword
+  error • The method 'catch' isn't defined for the type 'CouponDatasourceImpl' • lib/features/store/data/datasources/coupon_datasource_impl.dart:199:7 • undefined_method
+  error • Undefined name 'e' • lib/features/store/data/datasources/coupon_datasource_impl.dart:199:14 • undefined_identifier
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:199:15 • expected_token
+  error • Undefined name 'e' • lib/features/store/data/datasources/coupon_datasource_impl.dart:200:57 • undefined_identifier
+warning • Dead code • lib/features/store/data/datasources/coupon_datasource_impl.dart:205:3 • dead_code
+warning • The declaration 'clearCache' isn't referenced • lib/features/store/data/datasources/coupon_datasource_impl.dart:205:8 • unused_element
+  error • Undefined name '_cache' • lib/features/store/data/datasources/coupon_datasource_impl.dart:206:5 • undefined_identifier
+  error • Undefined name '_cacheTimestamp' • lib/features/store/data/datasources/coupon_datasource_impl.dart:207:5 • undefined_identifier
+warning • The value of the local variable 'get' isn't used • lib/features/store/data/datasources/coupon_datasource_impl.dart:210:8 • unused_local_variable
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:210:8 • expected_token
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:210:12 • expected_token
+  error • Undefined name '_isCacheValid' • lib/features/store/data/datasources/coupon_datasource_impl.dart:210:12 • undefined_identifier
+  error • Undefined name '_cache' • lib/features/store/data/datasources/coupon_datasource_impl.dart:211:9 • undefined_identifier
+  error • Undefined name '_cacheTimestamp' • lib/features/store/data/datasources/coupon_datasource_impl.dart:211:27 • undefined_identifier
+  error • A value of type 'bool' can't be returned from the method 'validateCoupon' because it has a return type of 'Future<CouponEntity?>' • lib/features/store/data/datasources/coupon_datasource_impl.dart:211:59 • return_of_invalid_type
+  error • A value of type 'bool' can't be returned from the method 'validateCoupon' because it has a return type of 'Future<CouponEntity?>' • lib/features/store/data/datasources/coupon_datasource_impl.dart:212:12 • return_of_invalid_type
+  error • Undefined name '_cacheTimestamp' • lib/features/store/data/datasources/coupon_datasource_impl.dart:212:38 • undefined_identifier
+  error • Undefined name '_cacheDuration' • lib/features/store/data/datasources/coupon_datasource_impl.dart:212:58 • undefined_identifier
+  error • Local variable '_parseCouponType' can't be referenced before it is declared • lib/features/store/data/datasources/coupon_datasource_impl.dart:220:13 • referenced_before_declaration
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:1 • missing_identifier
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:4 • missing_identifier
+  error • Expected an identifier • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:29 • expected_token
+  error • Undefined name 'updates' • lib/features/store/data/datasources/coupon_datasource_impl.dart:238:29 • undefined_identifier
+  error • Expected to find '}' • lib/features/store/data/datasources/coupon_datasource_impl.dart:241:1 • expected_token
+warning • Duplicate import • lib/features/store/presentation/screens/seller_dashboard_screen.dart:7:8 • duplicate_import
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:147:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:147:3 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:147:5 • missing_identifier
+  error • Expected to find '>' • lib/features/users/presentation/screens/account_settings_screen.dart:147:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/users/presentation/screens/account_settings_screen.dart:147:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/users/presentation/screens/account_settings_screen.dart:149:17 • expected_token
+  error • Expected to find '[' • lib/features/users/presentation/screens/account_settings_screen.dart:149:17 • expected_token
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:159:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:168:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:177:17 • undefined_method
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:196:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/account_settings_screen.dart:196:1 • unsupported_operator
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/users/presentation/screens/account_settings_screen.dart:196:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/account_settings_screen.dart:196:4 • unsupported_operator
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:196:7 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:208:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:208:4 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:208:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/users/presentation/screens/account_settings_screen.dart:208:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/users/presentation/screens/account_settings_screen.dart:208:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/users/presentation/screens/account_settings_screen.dart:208:24 • undefined_identifier
+  error • Undefined name 'updates' • lib/features/users/presentation/screens/account_settings_screen.dart:208:29 • undefined_identifier
+  error • Expected to find ',' • lib/features/users/presentation/screens/account_settings_screen.dart:210:15 • expected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:233:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:233:3 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:233:5 • missing_identifier
+  error • Expected to find '>' • lib/features/users/presentation/screens/account_settings_screen.dart:233:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/users/presentation/screens/account_settings_screen.dart:233:9 • non_type_as_type_argument
+  error • Expected to find ',' • lib/features/users/presentation/screens/account_settings_screen.dart:234:17 • expected_token
+  error • Expected to find '[' • lib/features/users/presentation/screens/account_settings_screen.dart:234:17 • expected_token
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:234:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:243:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:252:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:272:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:281:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:290:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:299:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:320:17 • undefined_method
+  error • The method '_buildSettingOptionButton' isn't defined for the type '_AccountSettingsScreenState' • lib/features/users/presentation/screens/account_settings_screen.dart:332:17 • undefined_method
+  error • Expected to find ';' • lib/features/users/presentation/screens/account_settings_screen.dart:344:13 • expected_token
+warning • Dead code • lib/features/users/presentation/screens/account_settings_screen.dart:344:14 • dead_code
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:344:14 • missing_identifier
+  error • Unexpected text ';' • lib/features/users/presentation/screens/account_settings_screen.dart:344:14 • unexpected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:345:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/account_settings_screen.dart:345:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/users/presentation/screens/account_settings_screen.dart:345:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/users/presentation/screens/account_settings_screen.dart:345:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/account_settings_screen.dart:345:4 • unsupported_operator
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:345:7 • missing_identifier
+  error • Expected to find ';' • lib/features/users/presentation/screens/account_settings_screen.dart:346:40 • expected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:346:41 • missing_identifier
+  error • Expected to find ';' • lib/features/users/presentation/screens/account_settings_screen.dart:346:41 • expected_token
+  error • Unexpected text ';' • lib/features/users/presentation/screens/account_settings_screen.dart:346:41 • unexpected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:347:13 • missing_identifier
+  error • Expected to find ';' • lib/features/users/presentation/screens/account_settings_screen.dart:347:13 • expected_token
+  error • Unexpected text ';' • lib/features/users/presentation/screens/account_settings_screen.dart:347:13 • unexpected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:347:14 • missing_identifier
+  error • Unexpected text ';' • lib/features/users/presentation/screens/account_settings_screen.dart:347:14 • unexpected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:348:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:348:4 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:348:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/users/presentation/screens/account_settings_screen.dart:348:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/users/presentation/screens/account_settings_screen.dart:348:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/users/presentation/screens/account_settings_screen.dart:348:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/users/presentation/screens/account_settings_screen.dart:348:29 • expected_token
+  error • Undefined name 'updates' • lib/features/users/presentation/screens/account_settings_screen.dart:348:29 • undefined_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/account_settings_screen.dart:349:11 • missing_identifier
+  error • Unexpected text ';' • lib/features/users/presentation/screens/account_settings_screen.dart:349:11 • unexpected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:67:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:67:3 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:67:5 • missing_identifier
+  error • Expected to find ';' • lib/features/users/presentation/screens/activity_comments_screen.dart:67:9 • expected_token
+  error • Expected to find '>' • lib/features/users/presentation/screens/activity_comments_screen.dart:67:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/users/presentation/screens/activity_comments_screen.dart:67:9 • non_type_as_type_argument
+  error • Expected to find '[' • lib/features/users/presentation/screens/activity_comments_screen.dart:68:15 • expected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:69:1 • missing_identifier
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/activity_comments_screen.dart:69:1 • unsupported_operator
+  error • Illegal assignment to non-assignable expression • lib/features/users/presentation/screens/activity_comments_screen.dart:69:4 • illegal_assignment_to_non_assignable
+  error • Missing selector such as '.identifier' or '[0]' • lib/features/users/presentation/screens/activity_comments_screen.dart:69:4 • missing_assignable_selector
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/activity_comments_screen.dart:69:4 • unsupported_operator
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:69:7 • missing_identifier
+  error • Expected to find ';' • lib/features/users/presentation/screens/activity_comments_screen.dart:69:7 • expected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:70:15 • missing_identifier
+warning • Unnecessary type check; the result is always 'false' • lib/features/users/presentation/screens/activity_comments_screen.dart:70:19 • unnecessary_type_check
+  error • A continue statement can't be used outside of a loop or switch statement • lib/features/users/presentation/screens/activity_comments_screen.dart:70:41 • continue_outside_of_loop
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:71:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:71:4 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/activity_comments_screen.dart:71:7 • missing_identifier
+  error • Undefined name 'origin' • lib/features/users/presentation/screens/activity_comments_screen.dart:71:9 • undefined_identifier
+  error • Undefined name 'feature' • lib/features/users/presentation/screens/activity_comments_screen.dart:71:16 • undefined_identifier
+  error • Undefined name 'keli' • lib/features/users/presentation/screens/activity_comments_screen.dart:71:24 • undefined_identifier
+  error • Expected to find ';' • lib/features/users/presentation/screens/activity_comments_screen.dart:71:29 • expected_token
+  error • Undefined name 'updates' • lib/features/users/presentation/screens/activity_comments_screen.dart:71:29 • undefined_identifier
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:25:1 • missing_method_parameters
+  error • Operator '<<' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:25:1 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:25:1 • missing_keyword_operator
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:25:3 • missing_function_body
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:25:3 • missing_method_parameters
+  error • Operator '<<' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:25:3 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:25:3 • missing_keyword_operator
+  error • The name '<<' is already defined • lib/features/users/presentation/screens/activity_likes_screen.dart:25:3 • duplicate_definition
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:25:5 • missing_function_body
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:25:5 • missing_method_parameters
+  error • Operator '<<' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:25:5 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:25:5 • missing_keyword_operator
+  error • The name '<<' is already defined • lib/features/users/presentation/screens/activity_likes_screen.dart:25:5 • duplicate_definition
+  error • Types parameters aren't allowed when defining an operator • lib/features/users/presentation/screens/activity_likes_screen.dart:25:7 • type_parameter_on_operator
+  error • Expected to find ',' • lib/features/users/presentation/screens/activity_likes_screen.dart:26:3 • expected_token
+  error • Expected to find '>' • lib/features/users/presentation/screens/activity_likes_screen.dart:26:3 • expected_token
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:26:8 • missing_function_body
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/activity_likes_screen.dart:26:8 • missing_const_final_var_or_type
+  error • Expected a class member • lib/features/users/presentation/screens/activity_likes_screen.dart:27:1 • expected_class_member
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/activity_likes_screen.dart:27:1 • unsupported_operator
+  error • Expected a class member • lib/features/users/presentation/screens/activity_likes_screen.dart:27:4 • expected_class_member
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/activity_likes_screen.dart:27:4 • unsupported_operator
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:27:7 • missing_method_parameters
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:27:7 • missing_keyword_operator
+  error • The string '=' isn't a user-definable operator • lib/features/users/presentation/screens/activity_likes_screen.dart:27:7 • invalid_operator
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:29:3 • missing_function_body
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:30:1 • missing_method_parameters
+  error • Operator '>>>' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:30:1 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:1 • missing_keyword_operator
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:30:4 • missing_function_body
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:30:4 • missing_method_parameters
+  error • Operator '>>>' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:30:4 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:4 • missing_keyword_operator
+  error • The name '>>>' is already defined • lib/features/users/presentation/screens/activity_likes_screen.dart:30:4 • duplicate_definition
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:30:7 • missing_function_body
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:30:7 • missing_method_parameters
+  error • Operator '>' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:30:7 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:7 • missing_keyword_operator
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:30:9 • missing_function_body
+  error • Expected to find ';' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:9 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/activity_likes_screen.dart:30:9 • missing_const_final_var_or_type
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:30:15 • missing_method_parameters
+  error • Operator '/' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:30:15 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:15 • missing_keyword_operator
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:30:16 • missing_function_body
+  error • Expected to find ';' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:16 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/activity_likes_screen.dart:30:16 • missing_const_final_var_or_type
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:30:23 • missing_method_parameters
+  error • Operator '/' should declare exactly 1 parameters, but 0 found • lib/features/users/presentation/screens/activity_likes_screen.dart:30:23 • wrong_number_of_parameters_for_operator
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:23 • missing_keyword_operator
+  error • The name '/' is already defined • lib/features/users/presentation/screens/activity_likes_screen.dart:30:23 • duplicate_definition
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:30:24 • missing_function_body
+  error • Expected to find ';' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:24 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/activity_likes_screen.dart:30:24 • missing_const_final_var_or_type
+  error • Methods must have an explicit list of parameters • lib/features/users/presentation/screens/activity_likes_screen.dart:30:28 • missing_method_parameters
+  error • Operator declarations must be preceded by the keyword 'operator' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:28 • missing_keyword_operator
+  error • A function body must be provided • lib/features/users/presentation/screens/activity_likes_screen.dart:30:29 • missing_function_body
+  error • Expected to find ';' • lib/features/users/presentation/screens/activity_likes_screen.dart:30:29 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/activity_likes_screen.dart:30:29 • missing_const_final_var_or_type
+warning • The declaration '<unnamed>' isn't referenced • lib/features/users/presentation/screens/public_user_profile_screen.dart:1:1 • unused_element
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:14:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:14:3 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:14:5 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:14:7 • expected_executable
+  error • Expected to find ';' • lib/features/users/presentation/screens/public_user_profile_screen.dart:14:9 • expected_token
+  error • Undefined class 'HEAD' • lib/features/users/presentation/screens/public_user_profile_screen.dart:14:9 • undefined_class
+  error • Directives must appear before any declarations • lib/features/users/presentation/screens/public_user_profile_screen.dart:15:1 • directive_after_declaration
+  error • Expected an identifier • lib/features/users/presentation/screens/public_user_profile_screen.dart:15:1 • missing_identifier
+  error • Directives must appear before any declarations • lib/features/users/presentation/screens/public_user_profile_screen.dart:16:1 • directive_after_declaration
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:17:1 • expected_executable
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/public_user_profile_screen.dart:17:1 • unsupported_operator
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:17:4 • expected_executable
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/public_user_profile_screen.dart:17:4 • unsupported_operator
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:17:7 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:4 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:7 • expected_executable
+  error • Expected to find ';' • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:9 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:9 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:15 • expected_executable
+  error • Expected to find ';' • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:16 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:16 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:23 • expected_executable
+  error • Expected to find ';' • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:24 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:24 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:28 • expected_executable
+  error • Expected to find ';' • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:29 • expected_token
+  error • Undefined class 'updates' • lib/features/users/presentation/screens/public_user_profile_screen.dart:18:29 • undefined_class
+  error • Directives must appear before any declarations • lib/features/users/presentation/screens/public_user_profile_screen.dart:19:1 • directive_after_declaration
+  error • Expected an identifier • lib/features/users/presentation/screens/public_user_profile_screen.dart:19:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/public_user_profile_screen.dart:251:1 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/public_user_profile_screen.dart:251:3 • missing_identifier
+  error • Expected an identifier • lib/features/users/presentation/screens/public_user_profile_screen.dart:251:5 • missing_identifier
+  error • Expected to find '>' • lib/features/users/presentation/screens/public_user_profile_screen.dart:251:9 • expected_token
+  error • The name 'HEAD' isn't a type, so it can't be used as a type argument • lib/features/users/presentation/screens/public_user_profile_screen.dart:251:9 • non_type_as_type_argument
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/public_user_profile_screen.dart:276:1 • unsupported_operator
+  error • The '===' operator is not supported • lib/features/users/presentation/screens/public_user_profile_screen.dart:276:4 • unsupported_operator
+  error • Expected to find ')' • lib/features/users/presentation/screens/public_user_profile_screen.dart:328:33 • expected_token
+  error • Expected to find ')' • lib/features/users/presentation/screens/public_user_profile_screen.dart:378:29 • expected_token
+  error • Expected to find '>' • lib/features/users/presentation/screens/public_user_profile_screen.dart:414:21 • expected_token
+  error • Expected to find '[' • lib/features/users/presentation/screens/public_user_profile_screen.dart:414:21 • expected_token
+  error • Expected to find ']' • lib/features/users/presentation/screens/public_user_profile_screen.dart:414:21 • expected_token
+  error • Expected an identifier • lib/features/users/presentation/screens/public_user_profile_screen.dart:419:17 • missing_identifier
+  error • Expected to find ')' • lib/features/users/presentation/screens/public_user_profile_screen.dart:419:17 • expected_token
+  error • Expected to find ',' • lib/features/users/presentation/screens/public_user_profile_screen.dart:419:17 • expected_token
+warning • The declaration '_countValidPosts' isn't referenced • lib/features/users/presentation/screens/public_user_profile_screen.dart:462:7 • unused_element
+warning • The declaration '_buildFollowButton' isn't referenced • lib/features/users/presentation/screens/public_user_profile_screen.dart:613:10 • unused_element
+warning • The declaration '_showFollowersModal' isn't referenced • lib/features/users/presentation/screens/public_user_profile_screen.dart:1018:8 • unused_element
+warning • The declaration '_showFollowingModal' isn't referenced • lib/features/users/presentation/screens/public_user_profile_screen.dart:1159:8 • unused_element
+warning • The declaration '<unnamed>' isn't referenced • lib/shared/services/video_experience_service_impl.dart:1:1 • unused_element
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:1:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:1:3 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:1:5 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:1:7 • expected_executable
+  error • Expected to find ';' • lib/shared/services/video_experience_service_impl.dart:1:9 • expected_token
+  error • Undefined class 'HEAD' • lib/shared/services/video_experience_service_impl.dart:1:9 • undefined_class
+  error • Directives must appear before any declarations • lib/shared/services/video_experience_service_impl.dart:2:1 • directive_after_declaration
+  error • Expected an identifier • lib/shared/services/video_experience_service_impl.dart:2:1 • missing_identifier
+  error • Directives must appear before any declarations • lib/shared/services/video_experience_service_impl.dart:3:1 • directive_after_declaration
+  error • Directives must appear before any declarations • lib/shared/services/video_experience_service_impl.dart:4:1 • directive_after_declaration
+  error • Directives must appear before any declarations • lib/shared/services/video_experience_service_impl.dart:5:1 • directive_after_declaration
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:81:1 • expected_executable
+  error • The '===' operator is not supported • lib/shared/services/video_experience_service_impl.dart:81:1 • unsupported_operator
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:81:4 • expected_executable
+  error • The '===' operator is not supported • lib/shared/services/video_experience_service_impl.dart:81:4 • unsupported_operator
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:81:7 • expected_executable
+  error • Directives must appear before any declarations • lib/shared/services/video_experience_service_impl.dart:86:1 • directive_after_declaration
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:87:1 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:87:4 • expected_executable
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:87:7 • expected_executable
+  error • Expected to find ';' • lib/shared/services/video_experience_service_impl.dart:87:9 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/shared/services/video_experience_service_impl.dart:87:9 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:87:15 • expected_executable
+  error • Expected to find ';' • lib/shared/services/video_experience_service_impl.dart:87:16 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/shared/services/video_experience_service_impl.dart:87:16 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:87:23 • expected_executable
+  error • Expected to find ';' • lib/shared/services/video_experience_service_impl.dart:87:24 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/shared/services/video_experience_service_impl.dart:87:24 • missing_const_final_var_or_type
+  error • Expected a method, getter, setter or operator declaration • lib/shared/services/video_experience_service_impl.dart:87:28 • expected_executable
+  error • Expected to find ';' • lib/shared/services/video_experience_service_impl.dart:87:29 • expected_token
+  error • Variables must be declared using the keywords 'const', 'final', 'var' or a type name • lib/shared/services/video_experience_service_impl.dart:87:29 • missing_const_final_var_or_type
+
+840 issues found. (ran in 3.9s)

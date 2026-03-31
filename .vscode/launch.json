@@ -5,9 +5,41 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "biux",
+            "name": "biux (Release)",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": ["--release"]
+        },
+        {
+            "name": "biux (Debug - Cualquier Dispositivo)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "biux (Flutter Emulador Android)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "preLaunchTask": "flutter-android-emulator",
+            "env": {
+                "FLUTTER_DEVICE_TYPE": "android"
+            }
+        },
+        {
+            "name": "biux (Flutter iOS Simulator)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+
+        },  
+        {
+            "name": "biux (Web)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": ["-d", "chrome"]
         }
     ]
 }

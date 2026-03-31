@@ -1,0 +1,64 @@
+default_platform(:ios)
+
+platform :ios do
+  
+  desc "Show version info"
+  lane :version_info do
+    version = get_version_number(xcodeproj: "Runner.xcodeproj")
+    build = get_build_number(xcodeproj: "Runner.xcodeproj")
+    UI.message("📊 Version: #{version} (Build: #{build})")
+  end
+  
+  desc "Build and upload to TestFlight"
+  lane :testflight do
+    UI.important("🚀 Build and upload to TestFlight...")
+    increment_build_number
+    build_number = get_build_number(xcodeproj: "Runner.xcodeproj")
+    UI.success("✅ Build number: #{build_number}")
+    
+    UI.important("🔨 Compiling...")
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Release",
+      derived_data_path: "build/",
+      destination: "generic/platform=iOS",
+      export_method: "app-store",
+      skip_package_ipa: false,
+      skip_package_pkg: true
+    )
+    UI.success("✅ Build done")
+    
+    UI.important("📤 Uploading to TestFlight...")
+    upload_to_testflight(
+      ipa: "Runner.ipa",
+      skip_waiting_for_build_processing: true,
+      distribute_external: false
+    )
+    UI.success("✅ TestFlight upload complete!")
+  end
+  
+  desc "Increment build number"
+  lane :increment_build do
+    increment_build_number
+    build_number = get_build_number(xcodeproj: "Runner.xcodeproj")
+    UI.success("✅ Build number: #{build_number}")
+  end
+  
+  desc "Build iOS app"
+  lane :build_ios do
+    UI.important("🔨 Building iOS...")
+    increment_build_number
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Release",
+      derived_data_path: "build/",
+      destination: "generic/platform=iOS",
+      export_method: "app-store",
+      skip_package_ipa: false,
+      skip_package_pkg: true
+    )
+    UI.success("✅ Build complete")
+  end
+end

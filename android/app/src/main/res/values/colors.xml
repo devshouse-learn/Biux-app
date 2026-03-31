@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores principales de Biux -->
+    <color name="biux_primary">#16242D</color>        <!-- blackPearl -->
+    <color name="biux_secondary">#519192</color>      <!-- strongCyan -->
+    <color name="biux_success">#4CAF50</color>        <!-- softGreen -->
+    <color name="biux_warning">#FF9800</color>        <!-- naranja -->
+    <color name="biux_error">#F44336</color>          <!-- rojo -->
+    
+    <!-- Colores de fondo -->
+    <color name="biux_background_light">#FFFFFF</color>
+    <color name="biux_background_dark">#16242D</color>
+    
+    <!-- Colores de texto -->
+    <color name="biux_text_primary">#212121</color>
+    <color name="biux_text_secondary">#757575</color>
+    <color name="biux_text_on_primary">#FFFFFF</color>
+</resources>

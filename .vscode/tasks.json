@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "enable-android-developer-mode",
+      "type": "shell",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "command": "sh",
+      "args": [
+        "-c",
+        "if command -v adb >/dev/null 2>&1; then\n  echo 'adb found, listing devices...'\n  adb devices -l\n  echo 'Intentando habilitar ajustes de desarrollo en emuladores (si es posible)...'\n  EMUS=$(adb devices | awk 'NR>1 && $2==\"device\" {print $1}')\n  for id in $EMUS; do\n    echo \"Procesando dispositivo: $id\"\n    adb -s $id shell settings put global development_settings_enabled 1 || true\n    adb -s $id shell settings put secure adb_enabled 1 || true\n    echo \"Intentadas modificaciones en $id\"\n  done\n  echo 'Task finalizada.'\nelse\n  echo 'adb no está disponible en PATH. Instala Android Platform Tools para usar esta tarea.'\nfi"
+      ],
+      "group": { "kind": "build", "isDefault": false }
+    }
+  ]
+}

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Biux</string>
-    <string name="facebook_app_id">1770404886582959</string>
-    <string name="fb_login_protocol_scheme">fb1770404886582959</string>
-    <string name="facebook_client_token">15754bfa7c84802c26bef01a916270cd</string>
+    <string name="app_description">Tu compañero ciclista ideal</string>
 </resources>

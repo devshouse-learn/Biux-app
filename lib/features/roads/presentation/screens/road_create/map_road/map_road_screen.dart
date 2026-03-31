@@ -1,0 +1,58 @@
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/config/styles.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/roads/presentation/screens/road_create/map_road/map_road_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+
+class MapRoadsLocation extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.watch<MapRoadBloc>();
+    final l = Provider.of<LocaleNotifier>(context);
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: ColorTokens.primary30,
+        title: Text(l.t('meeting_point'), style: Styles.mainMenuTextBiux),
+      ),
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: bloc.locationPosition,
+            zoomControlsEnabled: false,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            onMapCreated: (GoogleMapController controller) {
+              bloc.controller.complete(controller);
+            },
+            onTap: (argument) => bloc.changeLocation(argument),
+            markers: <Marker>{
+              Marker(
+                consumeTapEvents: true,
+                markerId: MarkerId('locationData'),
+                position: LatLng(
+                  bloc.locationData.latitude!,
+                  bloc.locationData.longitude!,
+                ),
+              ),
+            },
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              width: 200,
+              child: TextButton(
+                style: Styles().textButtonStyle,
+                onPressed: () => Navigator.pop(context, bloc.locationData),
+                child: Text(l.t('save_point'), style: Styles.containerNameUser),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
