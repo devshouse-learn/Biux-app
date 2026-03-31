@@ -234,11 +234,14 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                       (e) => e.toLowerCase().contains(filter.toLowerCase()),
                     )
                     .toList();
+          final isDarkSheet = Theme.of(ctx).brightness == Brightness.dark;
           return Container(
             height: MediaQuery.of(context).size.height * 0.7,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            decoration: BoxDecoration(
+              color: isDarkSheet ? const Color(0xFF1E2A32) : Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
             ),
             child: Column(
               children: [
@@ -294,7 +297,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                         ),
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF8F9FA),
+                      fillColor: isDarkSheet
+                          ? const Color(0xFF1E2A32)
+                          : const Color(0xFFF8F9FA),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 10,
@@ -510,7 +515,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         ),
         Container(
           padding: const EdgeInsets.all(12),
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF1E2A32)
+              : Colors.white,
           child: Column(
             children: [
               TextField(
@@ -533,7 +540,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     ),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF8F9FA),
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF1E2A32)
+                      : const Color(0xFFF8F9FA),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
@@ -696,7 +705,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 borderSide: BorderSide(color: ColorTokens.primary50, width: 2),
               ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF1E2A32)
+                  : Colors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -737,9 +748,15 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.amber.shade50,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.amber.shade900.withValues(alpha: 0.25)
+                  : Colors.amber.shade50,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.amber.shade200),
+              border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.amber.shade700
+                    : Colors.amber.shade200,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -822,7 +839,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF1E2A32)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -980,7 +999,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                   vertical: 14,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF1E2A32)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
@@ -998,7 +1019,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                           : 'Fecha del robo *',
                       style: TextStyle(
                         color: _theftDate != null
-                            ? Colors.black87
+                            ? (Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black87)
                             : Colors.grey[500],
                         fontSize: 14,
                       ),
@@ -1171,7 +1194,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8F9FA),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF1E2A32)
+              : const Color(0xFFF8F9FA),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.grey.shade300),
         ),
@@ -1180,7 +1205,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             value: value,
             isExpanded: true,
             isDense: true,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF16242D)),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : const Color(0xFF16242D),
+            ),
             items: items
                 .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                 .toList(),
@@ -1223,7 +1253,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
           borderSide: BorderSide(color: ColorTokens.error50),
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E2A32)
+            : Colors.white,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 14,
           vertical: 12,
@@ -1245,7 +1277,9 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF1E2A32)
+              : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade300),
         ),
@@ -1257,7 +1291,11 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
               child: Text(
                 isEmpty ? label : value,
                 style: TextStyle(
-                  color: isEmpty ? Colors.grey[500] : Colors.black87,
+                  color: isEmpty
+                      ? Colors.grey[500]
+                      : (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87),
                   fontSize: 14,
                 ),
               ),

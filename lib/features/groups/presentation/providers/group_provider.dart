@@ -327,6 +327,29 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
+  // Eliminar grupo (solo para el dueño/adminId)
+  Future<bool> deleteGroup(String groupId) async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final success = await _repository.deleteGroup(groupId);
+      if (success) {
+        _allGroups.removeWhere((g) => g.id == groupId);
+        _adminGroups.removeWhere((g) => g.id == groupId);
+        _userGroups.removeWhere((g) => g.id == groupId);
+        if (_selectedGroup?.id == groupId) _selectedGroup = null;
+        notifyListeners();
+      }
+      _setLoading(false);
+      return success;
+    } catch (e) {
+      _setError('group_error_delete');
+      _setLoading(false);
+      return false;
+    }
+  }
+
   // Buscar grupos
   Future<void> searchGroups(String query) async {
     if (query.trim().isEmpty) {
