@@ -1,12 +1,10 @@
+import 'dart:async';
+import 'dart:math' show sin, cos, sqrt, atan2, pi;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'dart:math' show sin, cos, sqrt, atan2, pi;
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/ride_tracker/presentation/providers/ride_tracker_provider.dart';
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
@@ -28,10 +26,6 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   late AnimationController _pulseController;
   bool _showHistory = false;
 
-  // Panel deslizable
-  double _panelHeight = 270.0;
-  static const double _kPanelMin = 210.0;
-  static const double _kPanelMax = 520.0;
 
   @override
   void initState() {
@@ -92,8 +86,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
               _buildMapArea(p),
               _buildTopBar(p),
               Positioned(
-                bottom: 0, left: 0, right: 0,
-                height: _panelHeight,
+                left: 0,
+                right: 0,
+                bottom: 0,
                 child: _buildBottomPanel(p),
               ),
             ],
@@ -120,57 +115,92 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             width: 5,
           ),
         },
-        markers: {
-          Marker(
-            markerId: const MarkerId('start'),
-            position: LatLng(p.points.first.lat, p.points.first.lng),
-            infoWindow: const InfoWindow(title: 'Inicio'),
+        markers: p.points.length > 1
+            ? {
+                Marker(
+                  markerId: const MarkerId('start'),
+                  position: LatLng(p.points.first.lat, p.points.first.lng),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueGreen,
+                  ),
+                  infoWindow: const InfoWindow(title: 'Inicio'),
+                ),
+              }
+            : {},
+        myLocationEnabled: true,
+        myLocationButtonEnabled: false,
+        zoomControlsEnabled: false,
+        compassEnabled: false,
+        mapToolbarEnabled: false,
+        padding: const EdgeInsets.only(bottom: 300),
+      );
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            ColorTokens.primary30.withValues(alpha: 0.05),
+            Theme.of(context).brightness == Brightness.dark
+                ? ColorTokens.primary10
+                : const Color(0xFFF5F5F5),
+          ],
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: _pulseController,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: 1.0 + (_pulseController.value * 0.08),
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: ColorTokens.primary30.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.directions_bike_rounded,
+                    size: 60,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.7)
+                        : ColorTokens.primary30.withValues(alpha: 0.4),
+                  ),
+                ),
+              );
+            },
           ),
-        },
-      );
-    }
-
-    final Set<Marker> markers = {};
-    final Set<Polyline> polylines = {};
-    LatLng center = const LatLng(19.4326, -99.1332);
-
-    if (p.livePosition != null) {
-      center = p.livePosition!;
-    }
-
-    if (p.plannedRoute.isNotEmpty) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('dest'),
-          position: p.plannedRoute.last,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(title: p.plannedDestinationName ?? 'Destino'),
-        ),
-      );
-      polylines.add(
-        Polyline(
-          polylineId: const PolylineId('planned'),
-          points: p.plannedRoute,
-          color: ColorTokens.primary30,
-          width: 4,
-          patterns: [PatternItem.dash(20), PatternItem.gap(10)],
-        ),
-      );
-    }
-
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(target: center, zoom: 16.5),
-      onMapCreated: (controller) {
-        _mapController = controller;
-      },
-      polylines: polylines,
-      markers: markers,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
-      compassEnabled: false,
-      mapToolbarEnabled: false,
-      padding: EdgeInsets.only(bottom: _panelHeight),
+          const SizedBox(height: 24),
+          Text(
+            p.isTracking ? 'Obteniendo señal GPS...' : '¿Listo para pedalear?',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            p.isTracking
+                ? 'Espera mientras encontramos tu ubicación'
+                : 'Presiona iniciar para grabar tu rodada',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? Colors.white70 : Colors.grey[500],
+            ),
+          ),
+          const SizedBox(height: 120),
+        ],
+      ),
     );
   }
 
@@ -345,35 +375,14 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Handle deslizable
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onVerticalDragUpdate: (details) {
-                    setState(() {
-                      _panelHeight = (_panelHeight - details.delta.dy).clamp(
-                        _kPanelMin,
-                        _kPanelMax,
-                      );
-                    });
-                  },
-                  onVerticalDragEnd: (details) {
-                    final mid = (_kPanelMin + _kPanelMax) / 2;
-                    final snap = _panelHeight >= mid ? _kPanelMax : _kPanelMin;
-                    HapticFeedback.lightImpact();
-                    setState(() => _panelHeight = snap);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 14),
-                    child: Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.white24 : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
+                // Handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 14),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white24 : Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
 
@@ -749,268 +758,6 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         ),
       ],
     );
-  }
-
-  // ─── ALERTAS VIALES ──────────────────────────────────────
-  Widget _buildRoadAlertsSection(RideTrackerProvider p) {
-    return Consumer<RoadReportsProvider>(
-      builder: (context, rrp, _) {
-        if (rrp.isLoading) {
-          return const SizedBox(
-            height: 30,
-            child: Center(
-              child: SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          );
-        }
-
-        // Filtrar solo activos; si hay posición, ordenar por proximidad (<=20 km)
-        final pos =
-            p.livePosition ??
-            (p.points.isNotEmpty
-                ? LatLng(p.points.last.lat, p.points.last.lng)
-                : null);
-
-        final active = rrp.reports.where((r) => r.isActive).toList();
-        List<RoadReportEntity> nearby;
-        if (pos != null) {
-          nearby =
-              active
-                  .where(
-                    (r) =>
-                        _distKm(
-                          pos.latitude,
-                          pos.longitude,
-                          r.latitude,
-                          r.longitude,
-                        ) <=
-                        20.0,
-                  )
-                  .toList()
-                ..sort(
-                  (a, b) =>
-                      _distKm(
-                        pos.latitude,
-                        pos.longitude,
-                        a.latitude,
-                        a.longitude,
-                      ).compareTo(
-                        _distKm(
-                          pos.latitude,
-                          pos.longitude,
-                          b.latitude,
-                          b.longitude,
-                        ),
-                      ),
-                );
-        } else {
-          nearby = active;
-        }
-
-        if (nearby.isEmpty) return const SizedBox.shrink();
-
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Encabezado
-            Row(
-              children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 14,
-                  color: Colors.orange,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Alertas viales${pos != null ? ' cercanas' : ''}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white54 : Colors.grey[600],
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '${nearby.length}',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => rrp.loadReports(),
-                  child: Icon(
-                    Icons.refresh,
-                    size: 14,
-                    color: isDark ? Colors.white38 : Colors.grey[400],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Lista de alertas (máx 3 visibles, scroll horizontal)
-            SizedBox(
-              height: 76,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: nearby.length > 5 ? 5 : nearby.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, i) {
-                  final r = nearby[i];
-                  final distStr = pos != null
-                      ? _formatDist(
-                          _distKm(
-                            pos.latitude,
-                            pos.longitude,
-                            r.latitude,
-                            r.longitude,
-                          ),
-                        )
-                      : null;
-                  return _buildAlertChip(r, distStr, isDark);
-                },
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildAlertChip(RoadReportEntity r, String? dist, bool isDark) {
-    final Color chipColor;
-    switch (r.type) {
-      case 'danger':
-        chipColor = Colors.red;
-        break;
-      case 'construction':
-        chipColor = Colors.orange;
-        break;
-      case 'flooding':
-        chipColor = Colors.blue;
-        break;
-      case 'pothole':
-        chipColor = Colors.brown;
-        break;
-      default:
-        chipColor = Colors.orange;
-    }
-
-    return Container(
-      width: 130,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: chipColor.withValues(alpha: isDark ? 0.12 : 0.07),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: chipColor.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Text(r.typeIcon, style: const TextStyle(fontSize: 14)),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  r.typeName,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: chipColor,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            r.description.isEmpty ? r.typeName : r.description,
-            style: TextStyle(
-              fontSize: 10,
-              color: isDark ? Colors.white54 : Colors.grey[600],
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (dist != null) ...[
-            const SizedBox(height: 3),
-            Row(
-              children: [
-                Icon(
-                  Icons.near_me,
-                  size: 9,
-                  color: isDark ? Colors.white38 : Colors.grey[400],
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  dist,
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: isDark ? Colors.white38 : Colors.grey[400],
-                  ),
-                ),
-                if (r.confirmations > 0) ...[
-                  const SizedBox(width: 6),
-                  Icon(
-                    Icons.thumb_up_alt,
-                    size: 9,
-                    color: chipColor.withValues(alpha: 0.7),
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${r.confirmations}',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: chipColor.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  /// Distancia Haversine en kilómetros
-  double _distKm(double lat1, double lon1, double lat2, double lon2) {
-    const r = 6371.0;
-    final dLat = (lat2 - lat1) * pi / 180;
-    final dLon = (lon2 - lon1) * pi / 180;
-    final a =
-        sin(dLat / 2) * sin(dLat / 2) +
-        cos(lat1 * pi / 180) *
-            cos(lat2 * pi / 180) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
-    return r * 2 * atan2(sqrt(a), sqrt(1 - a));
-  }
-
-  String _formatDist(double km) {
-    if (km < 1) return '${(km * 1000).round()} m';
-    return '${km.toStringAsFixed(1)} km';
   }
 
   // ─── HISTORIAL ───────────────────────────────────────────
@@ -2171,578 +1918,261 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       ),
     );
   }
-}
 
-// ─── SHEET DE PLANIFICACIÓN DE RUTA ──────────────────────────────────────────
-class _RoutePlannerSheet extends StatefulWidget {
-  final RideTrackerProvider provider;
-  final void Function(List<LatLng> points, String destName) onRouteSet;
+  // ─── ALERTAS VIALES ──────────────────────────────────────
+  Widget _buildRoadAlertsSection(RideTrackerProvider p) {
+    return Consumer<RoadReportsProvider>(
+      builder: (context, rrp, _) {
+        if (rrp.isLoading) {
+          return const SizedBox(
+            height: 30,
+            child: Center(
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
 
-  const _RoutePlannerSheet({required this.provider, required this.onRouteSet});
+        final pos =
+            p.points.isNotEmpty
+                ? LatLng(p.points.last.lat, p.points.last.lng)
+                : null;
 
-  @override
-  State<_RoutePlannerSheet> createState() => _RoutePlannerSheetState();
-}
+        final active = rrp.reports.where((r) => r.isActive).toList();
+        List<RoadReportEntity> nearby;
+        if (pos != null) {
+          nearby =
+              active
+                  .where(
+                    (r) =>
+                        _distKm(
+                          pos.latitude,
+                          pos.longitude,
+                          r.latitude,
+                          r.longitude,
+                        ) <=
+                        20.0,
+                  )
+                  .toList()
+                ..sort(
+                  (a, b) =>
+                      _distKm(
+                        pos.latitude,
+                        pos.longitude,
+                        a.latitude,
+                        a.longitude,
+                      ).compareTo(
+                        _distKm(
+                          pos.latitude,
+                          pos.longitude,
+                          b.latitude,
+                          b.longitude,
+                        ),
+                      ),
+                );
+        } else {
+          nearby = active;
+        }
 
-class _RoutePlannerSheetState extends State<_RoutePlannerSheet> {
-  static const String _apiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
+        if (nearby.isEmpty) return const SizedBox.shrink();
 
-  final _destController = TextEditingController();
-  List<Map<String, dynamic>> _suggestions = [];
-  Timer? _debounce;
-  bool _loadingRoute = false;
-  bool _loadingSuggestions = false;
-  String? _selectedPlaceId;
-  String? _selectedPlaceName;
-
-  @override
-  void initState() {
-    super.initState();
-    // Si hay ruta activa, mostrar el nombre
-    if (widget.provider.plannedDestinationName != null) {
-      _destController.text = widget.provider.plannedDestinationName!;
-    }
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _destController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _fetchSuggestions(String input) async {
-    if (input.length < 3) {
-      setState(() => _suggestions = []);
-      return;
-    }
-    setState(() => _loadingSuggestions = true);
-    try {
-      final origin = widget.provider.livePosition;
-      final locationBias = origin != null
-          ? '&location=${origin.latitude},${origin.longitude}&radius=50000'
-          : '';
-      final uri = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json'
-        '?input=${Uri.encodeComponent(input)}'
-        '&key=$_apiKey'
-        '&language=es'
-        '$locationBias',
-      );
-      final res = await http.get(uri).timeout(const Duration(seconds: 8));
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        if (data['status'] == 'OK') {
-          setState(() {
-            _suggestions = List<Map<String, dynamic>>.from(
-              data['predictions'].map(
-                (p) => {
-                  'place_id': p['place_id'],
-                  'description': p['description'],
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  size: 14,
+                  color: Colors.orange,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Alertas viales${pos != null ? ' cercanas' : ''}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white54 : Colors.grey[600],
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    '${nearby.length}',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.orange,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => rrp.loadReports(),
+                  child: Icon(
+                    Icons.refresh,
+                    size: 14,
+                    color: isDark ? Colors.white38 : Colors.grey[400],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 76,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: nearby.length > 5 ? 5 : nearby.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, i) {
+                  final r = nearby[i];
+                  final distStr = pos != null
+                      ? _formatDist(
+                          _distKm(
+                            pos.latitude,
+                            pos.longitude,
+                            r.latitude,
+                            r.longitude,
+                          ),
+                        )
+                      : null;
+                  return _buildAlertChip(r, distStr, isDark);
                 },
               ),
-            );
-          });
-        } else {
-          setState(() => _suggestions = []);
-        }
-      }
-    } catch (_) {
-      setState(() => _suggestions = []);
-    } finally {
-      setState(() => _loadingSuggestions = false);
-    }
-  }
-
-  Future<LatLng?> _getPlaceLatLng(String placeId) async {
-    try {
-      final uri = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json'
-        '?place_id=$placeId&key=$_apiKey',
-      );
-      final res = await http.get(uri).timeout(const Duration(seconds: 8));
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        debugPrint('Geocode place_id status: ${data['status']}');
-        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
-          final loc = data['results'][0]['geometry']['location'];
-          return LatLng(loc['lat'] as double, loc['lng'] as double);
-        }
-      }
-    } catch (e) {
-      debugPrint('_getPlaceLatLng error: $e');
-    }
-    return null;
-  }
-
-  /// Geocodifica texto libre cuando el usuario no seleccionó de la lista.
-  Future<LatLng?> _geocodeText(String text) async {
-    try {
-      final origin = widget.provider.livePosition;
-      final biasParam = origin != null
-          ? '&bounds=${origin.latitude - 0.5},${origin.longitude - 0.5}|${origin.latitude + 0.5},${origin.longitude + 0.5}'
-          : '';
-      final uri = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json'
-        '?address=${Uri.encodeComponent(text)}&key=$_apiKey&language=es$biasParam',
-      );
-      final res = await http.get(uri).timeout(const Duration(seconds: 8));
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        debugPrint('Geocode text status: ${data['status']}');
-        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
-          final loc = data['results'][0]['geometry']['location'];
-          return LatLng(loc['lat'] as double, loc['lng'] as double);
-        }
-      }
-    } catch (e) {
-      debugPrint('_geocodeText error: $e');
-    }
-    return null;
-  }
-
-  /// Llama a Google Directions API directamente con la clave y decodifica la
-  /// polyline. Intenta primero en bicicleta; si la región no lo soporta,
-  /// cae a modo conducción (misma red vial, útil para ciclismo).
-  /// Llama a Google Directions API y concatena las polylines detalladas de
-  /// CADA PASO, obteniendo la geometría exacta de la ruta calle por calle.
-  Future<List<LatLng>?> _callDirections(
-    LatLng origin,
-    LatLng dest,
-    String mode,
-  ) async {
-    const baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
-    // &alternatives=false  → solo la mejor ruta, sin variantes
-    final url =
-        '$baseUrl?origin=${origin.latitude},${origin.longitude}'
-        '&destination=${dest.latitude},${dest.longitude}'
-        '&mode=$mode'
-        '&alternatives=false'
-        '&units=metric'
-        '&key=$_apiKey';
-    debugPrint('🗺️ Directions [$mode]: $url');
-    try {
-      final res = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 15));
-      if (res.statusCode != 200) {
-        debugPrint('HTTP ${res.statusCode}');
-        return null;
-      }
-      final data = jsonDecode(res.body);
-      debugPrint('Directions status: ${data['status']}');
-      if (data['status'] != 'OK' || (data['routes'] as List).isEmpty) {
-        if (data['error_message'] != null) {
-          debugPrint('API error_message: ${data['error_message']}');
-        }
-        return null;
-      }
-
-      // Concatenar la polyline detallada de CADA PASO de la ruta.
-      // Esto da la geometría exacta calle por calle, sin simplificaciones.
-      final steps = data['routes'][0]['legs'][0]['steps'] as List<dynamic>;
-      final points = <LatLng>[];
-      for (final step in steps) {
-        final encoded = step['polyline']['points'] as String;
-        points.addAll(_decodePolyline(encoded));
-      }
-      debugPrint('✅ Ruta con ${points.length} puntos (${steps.length} pasos)');
-      return points;
-    } catch (e) {
-      debugPrint('_callDirections error: $e');
-    }
-    return null;
-  }
-
-  List<LatLng> _decodePolyline(String encoded) {
-    final list = <LatLng>[];
-    int index = 0, lat = 0, lng = 0;
-    while (index < encoded.length) {
-      int b, shift = 0, result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      lat += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.codeUnitAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-      list.add(LatLng(lat / 1e5, lng / 1e5));
-    }
-    return list;
-  }
-
-  Future<void> _traceRoute() async {
-    final origin = widget.provider.livePosition;
-    if (origin == null) {
-      _showError('Esperando señal GPS. Inténtalo en un momento.');
-      return;
-    }
-
-    final destText = _destController.text.trim();
-    if (destText.isEmpty) {
-      _showError('Escribe un destino primero.');
-      return;
-    }
-
-    setState(() => _loadingRoute = true);
-    try {
-      // 1. Coordenadas del destino
-      LatLng? dest;
-      if (_selectedPlaceId != null) {
-        dest = await _getPlaceLatLng(_selectedPlaceId!);
-      }
-      dest ??= await _geocodeText(destText);
-
-      if (dest == null) {
-        _showError(
-          'No se encontró la dirección "$destText". Escribe un nombre más específico.',
+            ),
+          ],
         );
-        return;
-      }
-
-      // 2. Trazar ruta: intenta bicycling primero, cae a driving si no está disponible
-      List<LatLng>? points = await _callDirections(origin, dest, 'bicycling');
-      if (points == null || points.isEmpty) {
-        points = await _callDirections(origin, dest, 'driving');
-      }
-
-      if (points == null || points.isEmpty) {
-        _showError(
-          'No se encontró ninguna ruta hacia "$destText". '
-          'Verifica que la dirección exista y esté dentro de un área con calles.',
-        );
-        return;
-      }
-
-      widget.onRouteSet(points, _selectedPlaceName ?? destText);
-
-      if (mounted) Navigator.of(context).pop();
-    } catch (e) {
-      debugPrint('_traceRoute error: $e');
-      _showError('Error al trazar ruta: $e');
-    } finally {
-      if (mounted) setState(() => _loadingRoute = false);
-    }
+      },
+    );
   }
 
-  void _showError(String msg) {
-    if (!mounted) return;
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('No se pudo trazar la ruta'),
-        content: Text(msg),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Entendido'),
+  Widget _buildAlertChip(RoadReportEntity r, String? dist, bool isDark) {
+    final Color chipColor;
+    switch (r.type) {
+      case 'danger':
+        chipColor = Colors.red;
+        break;
+      case 'construction':
+        chipColor = Colors.orange;
+        break;
+      case 'flooding':
+        chipColor = Colors.blue;
+        break;
+      case 'pothole':
+        chipColor = Colors.brown;
+        break;
+      default:
+        chipColor = Colors.orange;
+    }
+
+    return Container(
+      width: 130,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: chipColor.withValues(alpha: isDark ? 0.12 : 0.07),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: chipColor.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Text(r.typeIcon, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  r.typeName,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: chipColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 4),
+          Text(
+            r.description.isEmpty ? r.typeName : r.description,
+            style: TextStyle(
+              fontSize: 10,
+              color: isDark ? Colors.white54 : Colors.grey[600],
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (dist != null) ...[
+            const SizedBox(height: 3),
+            Row(
+              children: [
+                Icon(
+                  Icons.near_me,
+                  size: 9,
+                  color: isDark ? Colors.white38 : Colors.grey[400],
+                ),
+                const SizedBox(width: 3),
+                Text(
+                  dist,
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: isDark ? Colors.white38 : Colors.grey[400],
+                  ),
+                ),
+                if (r.confirmations > 0) ...[
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.thumb_up_alt,
+                    size: 9,
+                    color: chipColor.withValues(alpha: 0.7),
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    '${r.confirmations}',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: chipColor.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? const Color(0xFF1A2635) : Colors.white;
-    final hasRoute = widget.provider.plannedRoute.isNotEmpty;
+  double _distKm(double lat1, double lon1, double lat2, double lon2) {
+    const r = 6371.0;
+    final dLat = (lat2 - lat1) * pi / 180;
+    final dLon = (lon2 - lon1) * pi / 180;
+    final a =
+        sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1 * pi / 180) *
+            cos(lat2 * pi / 180) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    return r * 2 * atan2(sqrt(a), sqrt(1 - a));
+  }
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Handle
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: isDark ? Colors.white24 : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.directions_bike_rounded,
-                      color: Color(0xFF1E88E5),
-                      size: 22,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Planear ruta',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: isDark ? Colors.white : Colors.grey[800],
-                      ),
-                    ),
-                    const Spacer(),
-                    if (hasRoute)
-                      TextButton.icon(
-                        onPressed: () {
-                          widget.provider.clearPlannedRoute();
-                          Navigator.of(context).pop();
-                        },
-                        icon: const Icon(Icons.close, size: 16),
-                        label: const Text('Limpiar'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Origin (posición actual)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFF4CAF50).withValues(alpha: 0.4),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.my_location_rounded,
-                        color: Color(0xFF4CAF50),
-                        size: 18,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        widget.provider.livePosition != null
-                            ? 'Mi ubicación actual'
-                            : 'Obteniendo GPS...',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: isDark ? Colors.white70 : Colors.grey[700],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Flecha conectora
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Icon(
-                    Icons.more_vert_rounded,
-                    color: Colors.grey[400],
-                    size: 20,
-                  ),
-                ),
-
-                const SizedBox(height: 4),
-
-                // Destination
-                TextField(
-                  controller: _destController,
-                  autofocus: true,
-                  style: TextStyle(
-                    color: isDark ? Colors.white : Colors.grey[800],
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Hacia dónde vas...',
-                    hintStyle: TextStyle(
-                      color: isDark ? Colors.white38 : Colors.grey[400],
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.location_on_rounded,
-                      color: Color(0xFFE53935),
-                      size: 20,
-                    ),
-                    suffixIcon: _destController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () {
-                              _destController.clear();
-                              setState(() {
-                                _suggestions = [];
-                                _selectedPlaceId = null;
-                                _selectedPlaceName = null;
-                              });
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: const Color(0xFFE53935).withValues(alpha: 0.4),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFE53935),
-                        width: 1.5,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                  ),
-                  onChanged: (val) {
-                    _selectedPlaceId = null;
-                    _debounce?.cancel();
-                    _debounce = Timer(const Duration(milliseconds: 400), () {
-                      _fetchSuggestions(val);
-                    });
-                    setState(() {});
-                  },
-                ),
-
-                // Sugerencias
-                if (_loadingSuggestions)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Center(
-                      child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                  )
-                else if (_suggestions.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    constraints: const BoxConstraints(maxHeight: 200),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E2D3D) : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      itemCount: _suggestions.length,
-                      separatorBuilder: (_, __) => Divider(
-                        height: 1,
-                        color: isDark ? Colors.white10 : Colors.grey[100],
-                      ),
-                      itemBuilder: (context, i) {
-                        final s = _suggestions[i];
-                        return ListTile(
-                          dense: true,
-                          leading: const Icon(
-                            Icons.place_rounded,
-                            size: 18,
-                            color: Color(0xFF1E88E5),
-                          ),
-                          title: Text(
-                            s['description'] as String,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: isDark ? Colors.white : Colors.grey[800],
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onTap: () {
-                            setState(() {
-                              _selectedPlaceId = s['place_id'] as String;
-                              _selectedPlaceName = s['description'] as String;
-                              _destController.text = s['description'] as String;
-                              _suggestions = [];
-                            });
-                            FocusScope.of(context).unfocus();
-                          },
-                        );
-                      },
-                    ),
-                  ),
-
-                const SizedBox(height: 16),
-
-                // Botón trazar ruta
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E88E5),
-                      foregroundColor: Colors.white,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    onPressed: _loadingRoute ? null : _traceRoute,
-                    icon: _loadingRoute
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Icon(Icons.alt_route_rounded),
-                    label: Text(
-                      _loadingRoute
-                          ? 'Trazando ruta...'
-                          : 'Trazar ruta en bicicleta',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+  String _formatDist(double km) {
+    if (km < 1) return '${(km * 1000).round()} m';
+    return '${km.toStringAsFixed(1)} km';
   }
 }

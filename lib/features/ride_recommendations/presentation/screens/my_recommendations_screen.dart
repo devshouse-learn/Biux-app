@@ -199,6 +199,13 @@ class _RecommendationCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.primary30.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                  ),
                   child: Text(rec.type.label,
                     style: TextStyle(
                       fontSize: 10,
