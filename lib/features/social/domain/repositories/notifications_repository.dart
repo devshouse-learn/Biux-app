@@ -14,7 +14,8 @@ abstract class NotificationsRepository {
   /// Marca todas las notificaciones como leídas
   Future<void> markAllAsRead(String userId);
 
-  /// Crea una nueva notificación
+  /// Crea una nueva notificación.
+  /// [notificationId]: si se provee, usa ID determinístico (para likes sin duplicados).
   Future<void> createNotification({
     required String userId,
     required NotificationType type,
@@ -25,6 +26,7 @@ abstract class NotificationsRepository {
     String? targetId,
     String? targetPreview,
     Map<String, dynamic>? metadata,
+    String? notificationId,
   });
 
   /// Elimina una notificación

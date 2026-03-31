@@ -44,6 +44,7 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
     String? targetId,
     String? targetPreview,
     Map<String, dynamic>? metadata,
+    String? notificationId,
   }) {
     final message = _buildNotificationMessage(
       type: type,
@@ -76,6 +77,7 @@ class NotificationsRepositoryImpl implements NotificationsRepository {
     return _datasource.createNotification(
       userId: userId,
       notification: notification,
+      notificationId: notificationId,
     );
   }
 

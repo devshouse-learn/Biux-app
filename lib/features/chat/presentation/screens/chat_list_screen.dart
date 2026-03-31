@@ -374,9 +374,17 @@ class _ChatListScreenState extends State<ChatListScreen>
                             data['participants'] as List<dynamic>? ??
                             [];
                         final lastMsgMap = data['lastMessage'];
-                        final lastMsg = lastMsgMap is Map
+                        final lastMsgType = lastMsgMap is Map
+                            ? (lastMsgMap['type'] as String? ?? 'text')
+                            : 'text';
+                        final rawContent = lastMsgMap is Map
                             ? (lastMsgMap['content'] as String? ?? '')
                             : (lastMsgMap as String? ?? '');
+                        final lastMsg = lastMsgType == 'voice'
+                            ? '🎵 Nota de voz'
+                            : lastMsgType == 'deleted'
+                            ? 'Mensaje eliminado'
+                            : rawContent;
                         final lastTime =
                             (data['updatedAt'] as Timestamp?) ??
                             data['lastMessageTime'] as Timestamp?;
@@ -385,6 +393,11 @@ class _ChatListScreenState extends State<ChatListScreen>
                         final otherUid = isGroup
                             ? ''
                             : _getOtherUid(participants);
+                        final unreadMap = Map<String, dynamic>.from(
+                          data['unreadCount'] as Map? ?? {},
+                        );
+                        final unreadCount = (unreadMap[_uid] as int? ?? 0)
+                            .clamp(0, 99);
 
                         return FutureBuilder<Map<String, dynamic>>(
                           future: isGroup
@@ -466,7 +479,9 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                     name,
                                                     style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.w600,
+                                                          unreadCount > 0
+                                                          ? FontWeight.bold
+                                                          : FontWeight.w600,
                                                       fontSize: 15,
                                                       color: isDark
                                                           ? Colors.white
@@ -485,30 +500,89 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                     ),
                                                     style: TextStyle(
                                                       fontSize: 11,
-                                                      color: isDark
-                                                          ? Colors.white54
-                                                          : Colors.grey[500],
+                                                      color: unreadCount > 0
+                                                          ? ColorTokens
+                                                                .primary30
+                                                          : (isDark
+                                                                ? Colors.white54
+                                                                : Colors
+                                                                      .grey[500]),
+                                                      fontWeight:
+                                                          unreadCount > 0
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal,
                                                     ),
                                                   ),
                                               ],
                                             ),
                                             const SizedBox(height: 4),
-                                            Text(
-                                              lastMsg.isEmpty
-                                                  ? 'Sin mensajes aún'
-                                                  : lastMsg,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: lastMsg.isEmpty
-                                                    ? (isDark
-                                                          ? Colors.white38
-                                                          : Colors.grey[400])
-                                                    : (isDark
-                                                          ? Colors.white70
-                                                          : Colors.grey[600]),
-                                              ),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    lastMsg.isEmpty
+                                                        ? 'Sin mensajes aún'
+                                                        : lastMsg,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          unreadCount > 0
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                      color: lastMsg.isEmpty
+                                                          ? (isDark
+                                                                ? Colors.white38
+                                                                : Colors
+                                                                      .grey[400])
+                                                          : (unreadCount > 0
+                                                                ? (isDark
+                                                                      ? Colors
+                                                                            .white
+                                                                      : ColorTokens
+                                                                            .neutral10)
+                                                                : (isDark
+                                                                      ? Colors
+                                                                            .white70
+                                                                      : Colors
+                                                                            .grey[600])),
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (unreadCount > 0)
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                          left: 6,
+                                                        ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 7,
+                                                          vertical: 3,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          ColorTokens.primary30,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                    ),
+                                                    child: Text(
+                                                      unreadCount > 99
+                                                          ? '99+'
+                                                          : '$unreadCount',
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
                                             ),
                                           ],
                                         ),

@@ -38,10 +38,20 @@ class ChatProvider extends ChangeNotifier {
   void openChat(String chatId) {
     _activeChatId = chatId;
     _messagesSub?.cancel();
-    _messagesSub = _ds.getMessages(chatId).listen((list) {
-      _messages = list;
-      notifyListeners();
-    });
+    _messagesSub = _ds
+        .getMessages(chatId)
+        .listen(
+          (list) {
+            _messages = list;
+            notifyListeners();
+          },
+          onError: (error) {
+            debugPrint('❌ Error al escuchar mensajes del chat $chatId: $error');
+            _error =
+                'No se pudieron cargar los mensajes. Verifica tu conexión.';
+            notifyListeners();
+          },
+        );
     _ds.markMessagesAsRead(chatId);
   }
 

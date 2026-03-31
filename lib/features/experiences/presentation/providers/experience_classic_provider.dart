@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/core/services/retry_service.dart';
 import 'package:biux/core/error/error_handler.dart';
@@ -389,6 +390,33 @@ class ExperienceProvider extends ChangeNotifier {
     } catch (e) {
       // Error silencioso para las visualizaciones
       debugPrint('Error marcando como vista: ${e.toString()}');
+    }
+  }
+
+  /// Registra al usuario actual como viewer de una historia
+  Future<void> recordStoryView(String experienceId, UserEntity viewer) async {
+    try {
+      await _repository.addViewer(experienceId, viewer);
+    } catch (e) {
+      debugPrint('Error registrando viewer: ${e.toString()}');
+    }
+  }
+
+  /// Retorna un stream en tiempo real de los viewers de una historia
+  Stream<List<UserEntity>> watchViewers(String experienceId) {
+    return _repository.watchViewers(experienceId);
+  }
+
+  /// Repostea una historia en el perfil del usuario actual
+  Future<void> repostStory(
+    ExperienceEntity original, {
+    String caption = '',
+  }) async {
+    try {
+      await _repository.repostExperience(original, caption: caption);
+    } catch (e) {
+      debugPrint('Error reposteando historia: ${e.toString()}');
+      rethrow;
     }
   }
 

@@ -38,8 +38,9 @@ class MessageBubble extends StatelessWidget {
           bottom: 4,
         ),
         child: Row(
-          mainAxisAlignment:
-              isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: isMe
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (!isMe && showAvatar) ...[
@@ -49,9 +50,11 @@ class MessageBubble extends StatelessWidget {
                     ? NetworkImage(message.senderAvatar!)
                     : null,
                 child: message.senderAvatar == null
-                    ? Text(message.senderName.isNotEmpty
-                        ? message.senderName[0].toUpperCase()
-                        : '?')
+                    ? Text(
+                        message.senderName.isNotEmpty
+                            ? message.senderName[0].toUpperCase()
+                            : '?',
+                      )
                     : null,
               ),
               const SizedBox(width: 6),
@@ -60,8 +63,9 @@ class MessageBubble extends StatelessWidget {
             ],
             Flexible(
               child: Column(
-                crossAxisAlignment:
-                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: isMe
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   if (!isMe && showAvatar)
                     Padding(
@@ -69,16 +73,15 @@ class MessageBubble extends StatelessWidget {
                       child: Text(
                         message.senderName,
                         style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color:
-                                isDark ? Colors.white54 : Colors.black45),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white54 : Colors.black45,
+                        ),
                       ),
                     ),
                   if (message.replyToId != null)
                     _ReplyPreview(message: message, isDark: isDark),
-                  _BubbleContent(
-                      message: message, isMe: isMe, isDark: isDark),
+                  _BubbleContent(message: message, isMe: isMe, isDark: isDark),
                   if (message.reactions.isNotEmpty)
                     _ReactionsRow(reactions: message.reactions),
                 ],
@@ -117,10 +120,11 @@ class MessageBubble extends StatelessWidget {
             ),
             if (isMe)
               ListTile(
-                leading:
-                    const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text('Eliminar',
-                    style: TextStyle(color: Colors.red)),
+                leading: const Icon(Icons.delete_outline, color: Colors.red),
+                title: const Text(
+                  'Eliminar',
+                  style: TextStyle(color: Colors.red),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   onDelete(message);
@@ -133,14 +137,13 @@ class MessageBubble extends StatelessWidget {
   }
 
   void _showEmojiPicker(BuildContext context) {
-    const emojis = ['👍', '❤️', '😂', '��', '😢', '🔥', '💪', '🚴'];
+    const emojis = ['👍', '❤️', '😂', '😮', '😢', '🔥', '💪', '🚴'];
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        padding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
@@ -167,8 +170,7 @@ class MessageBubble extends StatelessWidget {
                       color: Colors.grey.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child:
-                        Text(e, style: const TextStyle(fontSize: 28)),
+                    child: Text(e, style: const TextStyle(fontSize: 28)),
                   ),
                 ),
               )
@@ -195,12 +197,14 @@ class _BubbleContent extends StatelessWidget {
     final bg = isMe
         ? const Color(0xFF1E8BC3)
         : (isDark ? const Color(0xFF1A2B3C) : Colors.white);
-    final textColor =
-        isMe ? Colors.white : (isDark ? Colors.white70 : Colors.black87);
+    final textColor = isMe
+        ? Colors.white
+        : (isDark ? Colors.white70 : Colors.black87);
 
     return Container(
       constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.72),
+        maxWidth: MediaQuery.of(context).size.width * 0.72,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: bg,
@@ -212,9 +216,10 @@ class _BubbleContent extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 4,
-              offset: const Offset(0, 2))
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -225,8 +230,9 @@ class _BubbleContent extends StatelessWidget {
           Text(
             _formatTime(message.sentAt),
             style: TextStyle(
-                fontSize: 10,
-                color: isMe ? Colors.white70 : Colors.grey),
+              fontSize: 10,
+              color: isMe ? Colors.white70 : Colors.grey,
+            ),
           ),
         ],
       ),
@@ -237,16 +243,22 @@ class _BubbleContent extends StatelessWidget {
     switch (message.type) {
       case MessageType.voice:
         return _VoiceMessage(
-            message: message, isMe: isMe, textColor: textColor);
+          message: message,
+          isMe: isMe,
+          textColor: textColor,
+        );
       case MessageType.image:
         return _ImageMessage(url: message.mediaUrl ?? '');
       case MessageType.location:
         return _LocationMessage(
-            lat: message.locationLat ?? 0,
-            lng: message.locationLng ?? 0);
+          lat: message.locationLat ?? 0,
+          lng: message.locationLng ?? 0,
+        );
       default:
-        return Text(message.content,
-            style: TextStyle(color: textColor, fontSize: 14));
+        return Text(
+          message.content,
+          style: TextStyle(color: textColor, fontSize: 14),
+        );
     }
   }
 
@@ -389,8 +401,7 @@ class _VoiceMessageState extends State<_VoiceMessage> {
                   child: LinearProgressIndicator(
                     value: progress.toDouble(),
                     backgroundColor: widget.textColor.withValues(alpha: 0.2),
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(widget.textColor),
+                    valueColor: AlwaysStoppedAnimation<Color>(widget.textColor),
                     minHeight: 3,
                   ),
                 ),
@@ -403,14 +414,14 @@ class _VoiceMessageState extends State<_VoiceMessage> {
                       _isPlaying || _position.inSeconds > 0
                           ? _fmt(_position)
                           : _fmt(fallbackDuration),
-                      style: TextStyle(
-                          color: widget.textColor, fontSize: 10),
+                      style: TextStyle(color: widget.textColor, fontSize: 10),
                     ),
                     Text(
                       _fmt(total),
                       style: TextStyle(
-                          color: widget.textColor.withValues(alpha: 0.6),
-                          fontSize: 10),
+                        color: widget.textColor.withValues(alpha: 0.6),
+                        fontSize: 10,
+                      ),
                     ),
                   ],
                 ),
@@ -423,7 +434,6 @@ class _VoiceMessageState extends State<_VoiceMessage> {
   }
 }
 
-
 class _ImageMessage extends StatelessWidget {
   final String url;
   const _ImageMessage({required this.url});
@@ -432,8 +442,7 @@ class _ImageMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image.network(url,
-          width: 200, height: 150, fit: BoxFit.cover),
+      child: Image.network(url, width: 200, height: 150, fit: BoxFit.cover),
     );
   }
 }
@@ -484,15 +493,17 @@ class _ReplyPreview extends StatelessWidget {
             : Colors.black.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: const Border(
-            left: BorderSide(color: Color(0xFF1E8BC3), width: 3)),
+          left: BorderSide(color: Color(0xFF1E8BC3), width: 3),
+        ),
       ),
       child: Text(
         message.replyPreview ?? '',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-            fontSize: 11,
-            color: isDark ? Colors.white54 : Colors.black45),
+          fontSize: 11,
+          color: isDark ? Colors.white54 : Colors.black45,
+        ),
       ),
     );
   }
@@ -513,17 +524,20 @@ class _ReactionsRow extends StatelessWidget {
       child: Wrap(
         spacing: 4,
         children: counts.entries
-            .map((e) => Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Text('${e.key} ${e.value}',
-                      style: const TextStyle(fontSize: 11)),
-                ))
+            .map(
+              (e) => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Text(
+                  '${e.key} ${e.value}',
+                  style: const TextStyle(fontSize: 11),
+                ),
+              ),
+            )
             .toList(),
       ),
     );
@@ -538,12 +552,14 @@ class _DeletedBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          left: isMe ? 48 : 8, right: isMe ? 8 : 48, bottom: 4),
+        left: isMe ? 48 : 8,
+        right: isMe ? 8 : 48,
+        bottom: 4,
+      ),
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(12),
@@ -551,9 +567,10 @@ class _DeletedBubble extends StatelessWidget {
           child: const Text(
             'Mensaje eliminado',
             style: TextStyle(
-                color: Colors.grey,
-                fontSize: 13,
-                fontStyle: FontStyle.italic),
+              color: Colors.grey,
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ),
       ),
