@@ -121,6 +121,7 @@ import '../../../shared/screens/splash_screen.dart';
 import 'app_routes.dart';
 import 'auth_notifier.dart';
 import 'package:biux/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:biux/features/onboarding/presentation/screens/welcome_screen.dart';
 import 'package:biux/features/search/presentation/screens/global_search_screen.dart';
 import 'package:biux/features/social/presentation/screens/followers_screen.dart';
 import 'package:biux/features/weather/presentation/screens/weather_screen.dart';
@@ -344,6 +345,20 @@ final GoRouter _router = GoRouter(
       path: AppRoutes.splash,
       name: AppRoutes.splashName,
       builder: (context, state) => const SplashScreen(),
+    ),
+
+    // Welcome post-registro
+    GoRoute(
+      path: '/welcome',
+      name: 'welcome',
+      builder: (context, state) => const WelcomeScreen(),
+    ),
+
+    // Onboarding
+    GoRoute(
+      path: AppRoutes.onboarding,
+      name: AppRoutes.onboardingName,
+      builder: (context, state) => const OnboardingScreen(),
     ),
 
     // Ruta de login (N8N Webhook original)

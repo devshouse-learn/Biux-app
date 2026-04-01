@@ -157,4 +157,24 @@ class AchievementsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Callback para mostrar overlay cuando se desbloquea un logro
+  Function(String achievementId)? onAchievementUnlocked;
+
+  /// Verificar y desbloquear logros según estadísticas
+  Future<void> checkAndUnlock({
+    required String userId,
+    required Map<String, dynamic> stats,
+  }) async {
+    for (final a in _achievements.where((x) => !x.isUnlocked)) {
+      final progress = stats[a.id] as double? ?? 0;
+      if (progress >= (a.targetValue ?? double.infinity)) {
+        await _datasource.unlockAchievement(userId, a.id);
+        _newlyUnlocked = a.id;
+        _recentlyUnlocked = [..._recentlyUnlocked, a];
+        onAchievementUnlocked?.call(a.id);
+        notifyListeners();
+      }
+    }
+  }
+
 }

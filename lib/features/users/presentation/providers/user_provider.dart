@@ -1,4 +1,5 @@
 import 'package:biux/core/services/auto_logout_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/users/data/datasources/user_service.dart';
@@ -560,6 +561,28 @@ class UserProvider extends ChangeNotifier {
   String get shareProfileText {
     final name = _user?.name ?? 'Ciclista';
     return '¡Sígueme en Biux! �� $name\n$publicProfileUrl';
+  }
+
+  /// Guarda el UID del usuario en caché para acceso rápido al arranque
+  Future<void> _cacheUserLocally(String uid) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cached_uid', uid);
+      await prefs.setString('cached_user_name', _user?.name ?? '');
+      await prefs.setString('cached_user_photo', _user?.photoUrl ?? '');
+    } catch (_) {}
+  }
+
+  /// Carga datos básicos del caché local para arranque rápido
+  Future<void> loadFromCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final uid = prefs.getString('cached_uid');
+      if (uid != null && _user == null) {
+        // Datos mínimos mientras carga Firestore
+        notifyListeners();
+      }
+    } catch (_) {}
   }
 
 }
