@@ -158,15 +158,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [
-                            _getDifficultyColor(ride.difficulty),
-                            ColorTokens.primary30,
-                          ],
+                          colors: ride.status == RideStatus.cancelled
+                              ? [ColorTokens.error50, const Color(0xFF8B0000)]
+                              : [
+                                  _getDifficultyColor(ride.difficulty),
+                                  ColorTokens.primary30,
+                                ],
                         ),
                       ),
                       child: Center(
                         child: Icon(
-                          Icons.directions_bike,
+                          ride.status == RideStatus.cancelled
+                              ? Icons.cancel
+                              : Icons.directions_bike,
                           size: 80,
                           color: ColorTokens.neutral100.withValues(alpha: 0.3),
                         ),
@@ -181,6 +185,61 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Banner de cancelación
+                  if (ride.status == RideStatus.cancelled)
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.error50,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: ColorTokens.error50.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.cancel,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Rodada cancelada',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Esta rodada ha sido cancelada por el organizador.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   // Información del grupo organizador
                   GroupInfoWidget(ride: ride),
                   SizedBox(height: 16),
@@ -217,12 +276,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   ),
                   SizedBox(height: 24),
 
-                  // ⭐ BOTÓN DE ASISTENCIA - Solo para no creadores
-                  if (ride.createdBy != rideProvider.currentUserId)
-                    RideAttendanceButton(ride: ride),
-                  SizedBox(height: 24),
-
-                  // Participantes (debajo del botón de asistencia)
+                  // Participantes + botón de asistencia
                   ParticipantsSectionWidget(ride: ride),
                   SizedBox(height: 24),
 
@@ -588,13 +642,17 @@ class BasicInfoWidget extends StatelessWidget {
               children: [
                 Icon(Icons.trending_up, color: ColorTokens.neutral60),
                 SizedBox(width: 12),
-                Text(
-                  '${l.t('difficulty')}: ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: ColorTokens.neutral60,
+                Flexible(
+                  child: Text(
+                    '${l.t('difficulty')}: ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: ColorTokens.neutral60,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 4),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
@@ -833,6 +891,9 @@ class ParticipantsSectionWidget extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
+            // ⭐ Botón de asistencia - visible para todos
+            RideAttendanceButton(ride: ride),
+            SizedBox(height: 20),
             Row(
               children: [
                 Expanded(

@@ -464,6 +464,15 @@ final GoRouter _router = GoRouter(
                     return EditGroupScreen(groupId: groupId);
                   },
                 ),
+                // NUEVA RUTA: Rodadas de un grupo
+                GoRoute(
+                  path: 'rides',
+                  name: 'groupRides',
+                  builder: (context, state) {
+                    final groupId = state.pathParameters['groupId']!;
+                    return RideListScreen(groupId: groupId);
+                  },
+                ),
                 // NUEVA RUTA: Editar rodada
                 GoRoute(
                   path: 'rides/edit',
@@ -951,7 +960,8 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>? ?? {};
         return ReportUserScreen(
-          reportedUserId: extra['userId'] ?? state.pathParameters['userId'] ?? '',
+          reportedUserId:
+              extra['userId'] ?? state.pathParameters['userId'] ?? '',
           reportedUserName: extra['userName'] ?? 'Usuario',
         );
       },
@@ -978,9 +988,7 @@ final GoRouter _router = GoRouter(
       path: AppRoutes.identityVerification,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>? ?? {};
-        return IdentityVerificationScreen(
-          userId: extra['userId'] ?? '',
-        );
+        return IdentityVerificationScreen(userId: extra['userId'] ?? '');
       },
     ),
     GoRoute(
