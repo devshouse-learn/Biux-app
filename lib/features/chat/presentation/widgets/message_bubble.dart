@@ -126,12 +126,13 @@ class MessageBubble extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Handle
-              Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 6),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle
+                Container(
+                  margin: const EdgeInsets.only(top: 10, bottom: 6),
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
@@ -396,8 +397,9 @@ class MessageBubble extends StatelessWidget {
                     );
                   },
                 ),
-              const SizedBox(height: 4),
-            ],
+                const SizedBox(height: 4),
+              ],
+            ),
           ),
         ),
       ),
