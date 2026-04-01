@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
@@ -50,11 +53,46 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   bool isMediaReady =
       false; // Nueva variable para controlar cuando el media está listo
 
+  List<UserEntity> _viewers = [];
+  StreamSubscription<List<UserEntity>>? _viewersSub;
+
   @override
   void initState() {
     super.initState();
     _initializeControllers();
     _startCurrentMedia();
+    // Inicializar viewers con los datos estáticos del entity
+    _viewers = List<UserEntity>.from(widget.experience.viewers);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _recordStoryView();
+      _subscribeViewers();
+    });
+  }
+
+  void _subscribeViewers() {
+    _viewersSub = context
+        .read<ExperienceProvider>()
+        .watchViewers(widget.experience.id)
+        .listen((viewers) {
+          if (mounted) {
+            setState(() {
+              _viewers = viewers;
+            });
+          }
+        });
+  }
+
+  void _recordStoryView() {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUid == null) return;
+    if (currentUid == widget.experience.user.id) return;
+    final userModel = context.read<UserProvider>().user;
+    if (userModel == null) return;
+    final viewer = userModel.toEntity();
+    context.read<ExperienceProvider>().recordStoryView(
+      widget.experience.id,
+      viewer,
+    );
   }
 
   void _initializeControllers() {
@@ -215,6 +253,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ),
 
+            // Áreas de toque para navegación
+            _buildTouchAreas(),
+
             // Botón de like para la historia (solo para otros usuarios, no para el propietario)
             if (FirebaseAuth.instance.currentUser?.uid !=
                 widget.experience.user.id)
@@ -258,7 +299,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          widget.experience.viewers.length.toString(),
+                          _viewers.length.toString(),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -271,31 +312,26 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                 ),
               ),
 
-            // Áreas de toque para navegación
-            _buildTouchAreas(),
-
-            // Botón de TRES PUNTOS BLANCO arriba a la derecha - SOLO para propietarios
-            if (FirebaseAuth.instance.currentUser?.uid ==
-                widget.experience.user.id)
-              Positioned(
-                top: MediaQuery.of(context).padding.top + 10,
-                right: 10,
-                child: GestureDetector(
-                  onTap: () => _showStoryOptions(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.more_vert,
-                      color: Colors.white,
-                      size: 28,
-                    ),
+            // Botón de TRES PUNTOS BLANCO arriba a la derecha - visible para todos
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 10,
+              right: 10,
+              child: GestureDetector(
+                onTap: () => _showStoryOptions(context),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(
+                    Icons.more_vert,
+                    color: Colors.white,
+                    size: 28,
                   ),
                 ),
               ),
+            ),
           ],
         ),
       ),
@@ -458,6 +494,47 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             color: Colors.white70,
                             fontSize: 11,
                             height: 1.2,
+                          ),
+                        ),
+                      if (widget.experience.isRepost &&
+                          widget.experience.originalAuthorUserName != null)
+                        GestureDetector(
+                          onTap: () {
+                            final authorId = widget.experience.originalAuthorId;
+                            if (authorId != null && authorId.isNotEmpty) {
+                              final currentUid =
+                                  FirebaseAuth.instance.currentUser?.uid;
+                              if (currentUid == authorId) {
+                                context.push('/profile');
+                              } else {
+                                context.push('/user-profile/$authorId');
+                              }
+                            }
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.repeat_rounded,
+                                color: Colors.greenAccent,
+                                size: 11,
+                              ),
+                              const SizedBox(width: 3),
+                              Flexible(
+                                child: Text(
+                                  'de @${widget.experience.originalAuthorUserName}',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    color: Colors.greenAccent,
+                                    fontSize: 11,
+                                    height: 1.2,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.greenAccent,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                     ],
@@ -660,6 +737,8 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   void _showStoryOptions(BuildContext context) {
     final theme = Theme.of(context);
     final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final isOwner =
+        FirebaseAuth.instance.currentUser?.uid == widget.experience.user.id;
 
     // Pausar el progreso mientras se muestra el menú
     _progressController.stop();
@@ -715,32 +794,65 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
               const SizedBox(height: 8),
 
-              // Opción: Eliminar
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+              // Opción: Repostear (solo para quienes no son dueños)
+              if (!isOwner) ...[
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.repeat_rounded,
+                      color: Colors.green,
+                    ),
                   ),
-                  child: const Icon(Icons.delete_outline, color: Colors.red),
-                ),
-                title: Text(
-                  l.t('delete_story'),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.red,
+                  title: const Text(
+                    'Repostear',
+                    style: TextStyle(fontWeight: FontWeight.w600),
                   ),
+                  subtitle: const Text('Agrega esta historia a las tuyas'),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(modalContext);
+                    _showRepostModal(context);
+                  },
                 ),
-                subtitle: Text(l.t('action_cannot_undo')),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              ],
+
+              const SizedBox(height: 8),
+
+              // Opción: Eliminar (solo para el dueño)
+              if (isOwner) ...[
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.delete_outline, color: Colors.red),
+                  ),
+                  title: Text(
+                    l.t('delete_story'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.red,
+                    ),
+                  ),
+                  subtitle: Text(l.t('action_cannot_undo')),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(modalContext);
+                    _confirmDeleteStory(context);
+                  },
                 ),
-                onTap: () {
-                  Navigator.pop(modalContext);
-                  _confirmDeleteStory(context);
-                },
-              ),
+              ],
 
               const SizedBox(height: 12),
 
@@ -755,6 +867,167 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
       ),
     ).whenComplete(() {
       // Reanudar el progreso cuando se cierre el menú
+      if (!isPaused && isMediaReady) {
+        _progressController.forward();
+      }
+    });
+  }
+
+  /// Muestra el modal para repostear con caption opcional
+  void _showRepostModal(BuildContext context) {
+    final theme = Theme.of(context);
+    final captionController = TextEditingController();
+    bool isLoading = false;
+
+    _progressController.stop();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: theme.cardColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (modalContext) => StatefulBuilder(
+        builder: (_, setModalState) => Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(modalContext).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.repeat_rounded,
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Repostear historia',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Historia de @${widget.experience.user.userName}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.textTheme.bodySmall?.color?.withValues(
+                    alpha: 0.6,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: captionController,
+                maxLength: 200,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Añade un mensaje (opcional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          setModalState(() => isLoading = true);
+                          // Capturar referencias antes del gap async para evitar
+                          // el error "_dependents.isEmpty" con contextos inválidos
+                          final provider = modalContext
+                              .read<ExperienceProvider>();
+                          final messenger = ScaffoldMessenger.of(context);
+                          try {
+                            await provider.repostStory(
+                              widget.experience,
+                              caption: captionController.text.trim(),
+                            );
+                            if (modalContext.mounted) {
+                              Navigator.pop(modalContext);
+                            }
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  '¡Historia reposteada en tu perfil!',
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          } catch (e) {
+                            if (modalContext.mounted) {
+                              ScaffoldMessenger.of(modalContext).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error al repostear: $e'),
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (modalContext.mounted) {
+                              setModalState(() => isLoading = false);
+                            }
+                          }
+                        },
+                  icon: isLoading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.repeat_rounded),
+                  label: Text(isLoading ? 'Reposteando...' : 'Repostear'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).whenComplete(() {
+      captionController.dispose();
       if (!isPaused && isMediaReady) {
         _progressController.forward();
       }
@@ -790,7 +1063,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
   void _showViewersModal(BuildContext context) {
     final theme = Theme.of(context);
     final l = Provider.of<LocaleNotifier>(context, listen: false);
-    final viewers = widget.experience.viewers;
+    final viewers = _viewers;
     final viewsCount = viewers.length;
     final hasViewers = viewers.isNotEmpty;
     final likesProvider = context.read<LikesProvider>();
@@ -1095,6 +1368,7 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
 
   @override
   void dispose() {
+    _viewersSub?.cancel();
     _progressController.dispose();
     super.dispose();
   }

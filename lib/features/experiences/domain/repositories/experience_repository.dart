@@ -1,4 +1,5 @@
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 
 /// Repository abstracto para la gestión de experiencias
 abstract class ExperienceRepository {
@@ -40,6 +41,15 @@ abstract class ExperienceRepository {
 
   /// Marca una experiencia como vista
   Future<void> markAsViewed(String experienceId);
+
+  /// Agrega el usuario actual a la lista de viewers de una experiencia
+  Future<void> addViewer(String experienceId, UserEntity viewer);
+
+  /// Observa en tiempo real la lista de viewers de una experiencia
+  Stream<List<UserEntity>> watchViewers(String experienceId);
+
+  /// Repostea una experiencia en el perfil del usuario actual
+  Future<void> repostExperience(ExperienceEntity original, {String caption});
 
   /// Observa cambios en la colección de experiencias (última publicación)
   Stream<DateTime?> watchLatestExperienceTimestamp();

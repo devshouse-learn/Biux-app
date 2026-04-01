@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/social/presentation/widgets/post_social_actions.dart';
-import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -100,18 +99,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black87,
-        foregroundColor: Colors.white,
+        title: const Text('Publicación'),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'Publicación',
-          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: _buildBody(),
@@ -120,19 +113,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            CircularProgressIndicator(color: Colors.white30),
-            SizedBox(height: 16),
-            Text(
-              'Cargando publicación...',
-              style: TextStyle(color: Colors.white54, fontSize: 14),
-            ),
-          ],
-        ),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_error != null || _experience == null) {
@@ -140,20 +121,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.image_not_supported, color: Colors.grey[600], size: 64),
+            const Icon(Icons.image_not_supported, size: 64),
             const SizedBox(height: 16),
             Text(
               _error ?? 'Publicación no encontrada',
-              style: TextStyle(color: Colors.grey[400], fontSize: 16),
+              style: const TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => context.pop(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.primary50,
-                foregroundColor: Colors.white,
-              ),
               child: const Text('Volver'),
             ),
           ],

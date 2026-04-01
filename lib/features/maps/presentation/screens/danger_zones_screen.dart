@@ -1,4 +1,3 @@
-
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,10 +13,7 @@ class DangerZonesScreen extends StatefulWidget {
 
 // ignore_for_file: unused_field
 class _DangerZonesScreenState extends State<DangerZonesScreen> {
-  GoogleMapController? _mapController;
   Position? _position;
-  DangerType _selectedType = DangerType.accident;
-  final _descController = TextEditingController();
   bool _reportMode = false;
 
   @override
@@ -42,7 +38,9 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(_reportMode ? Icons.close_rounded : Icons.add_location_rounded),
+            icon: Icon(
+              _reportMode ? Icons.close_rounded : Icons.add_location_rounded,
+            ),
             onPressed: () => setState(() => _reportMode = !_reportMode),
             tooltip: _reportMode ? 'Cancelar' : 'Reportar zona',
           ),
@@ -62,8 +60,8 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                     z.type == DangerType.accident
                         ? BitmapDescriptor.hueRed
                         : z.type == DangerType.theft
-                            ? BitmapDescriptor.hueOrange
-                            : BitmapDescriptor.hueYellow,
+                        ? BitmapDescriptor.hueOrange
+                        : BitmapDescriptor.hueYellow,
                   ),
                   infoWindow: InfoWindow(
                     title: z.typeLabel,
@@ -83,7 +81,6 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                 markers: markers,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
-                onMapCreated: (c) => _mapController = c,
                 onTap: _reportMode ? _onMapTap : null,
               );
             },
@@ -99,16 +96,18 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 8)
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                  ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Leyenda',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 12)),
+                  const Text(
+                    'Leyenda',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                  ),
                   const SizedBox(height: 6),
                   _LegendItem(color: Colors.red, label: 'Accidente'),
                   _LegendItem(color: Colors.orange, label: 'Robo'),
@@ -131,15 +130,19 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.touch_app_rounded,
-                        color: Colors.red, size: 20),
+                    const Icon(
+                      Icons.touch_app_rounded,
+                      color: Colors.red,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     const Text(
                       'Toca el mapa para reportar una zona peligrosa',
                       style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600),
+                        color: Colors.red,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -155,10 +158,8 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _ReportSheet(
-        lat: position.latitude,
-        lng: position.longitude,
-      ),
+      builder: (_) =>
+          _ReportSheet(lat: position.latitude, lng: position.longitude),
     ).then((_) => setState(() => _reportMode = false));
   }
 
@@ -176,27 +177,42 @@ class _DangerZonesScreenState extends State<DangerZonesScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(zone.typeLabel,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 18)),
+            Text(
+              zone.typeLabel,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+            ),
             const SizedBox(height: 8),
-            Text(zone.description,
-                style: const TextStyle(color: Colors.black54)),
+            Text(
+              zone.description,
+              style: const TextStyle(color: Colors.black54),
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.person_outline_rounded,
-                    size: 16, color: Colors.grey),
+                Icon(
+                  Icons.person_outline_rounded,
+                  size: 16,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 4),
-                Text('Reportado por \${zone.reportedByName}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(
+                  'Reportado por \${zone.reportedByName}',
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
                 const Spacer(),
-                Icon(Icons.warning_amber_rounded,
-                    size: 16, color: Colors.orange),
+                Icon(
+                  Icons.warning_amber_rounded,
+                  size: 16,
+                  color: Colors.orange,
+                ),
                 const SizedBox(width: 4),
-                Text('\${zone.reportCount} reportes',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w700)),
+                Text(
+                  '\${zone.reportCount} reportes',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -249,30 +265,38 @@ class _ReportSheetState extends State<_ReportSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Reportar zona peligrosa',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+          const Text(
+            'Reportar zona peligrosa',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          ),
           const SizedBox(height: 16),
           DropdownButtonFormField<DangerType>(
             value: _type,
             decoration: InputDecoration(
               labelText: 'Tipo de peligro',
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             items: DangerType.values
-                .map((t) => DropdownMenuItem(
+                .map(
+                  (t) => DropdownMenuItem(
                     value: t,
-                    child: Text(DangerZoneEntity(
-                            id: '',
-                            reportedBy: '',
-                            reportedByName: '',
-                            type: t,
-                            description: '',
-                            lat: 0,
-                            lng: 0,
-                            reportCount: 0,
-                            createdAt: DateTime.now())
-                        .typeLabel)))
+                    child: Text(
+                      DangerZoneEntity(
+                        id: '',
+                        reportedBy: '',
+                        reportedByName: '',
+                        type: t,
+                        description: '',
+                        lat: 0,
+                        lng: 0,
+                        reportCount: 0,
+                        createdAt: DateTime.now(),
+                      ).typeLabel,
+                    ),
+                  ),
+                )
                 .toList(),
             onChanged: (v) => setState(() => _type = v ?? DangerType.accident),
           ),
@@ -282,7 +306,8 @@ class _ReportSheetState extends State<_ReportSheet> {
             decoration: InputDecoration(
               labelText: 'Descripción (opcional)',
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             maxLines: 2,
           ),
@@ -298,7 +323,8 @@ class _ReportSheetState extends State<_ReportSheet> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
@@ -333,11 +359,11 @@ class _LegendItem extends StatelessWidget {
     return Row(
       children: [
         Container(
-            width: 12,
-            height: 12,
-            margin: const EdgeInsets.only(right: 6, top: 4),
-            decoration:
-                BoxDecoration(color: color, shape: BoxShape.circle)),
+          width: 12,
+          height: 12,
+          margin: const EdgeInsets.only(right: 6, top: 4),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         Text(label, style: const TextStyle(fontSize: 11)),
       ],
     );

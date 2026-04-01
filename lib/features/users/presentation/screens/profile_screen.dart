@@ -16,7 +16,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
-import 'package:biux/shared/widgets/fullscreen_image_viewer.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -103,15 +102,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     setState(() {
       _experiencesFuture = _loadExperiences();
     });
-  }
-
-  /// Muestra las imágenes en pantalla completa con PageView
-  void _showFullScreenImage(
-    BuildContext context,
-    List<String> imageUrls,
-    int initialIndex,
-  ) {
-    FullScreenImageViewer.show(context, imageUrls, initialIndex);
   }
 
   void _showExperienceMenu(BuildContext context, dynamic experience) {
@@ -248,7 +238,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   // Función temporal para actualizar ciudades con departamentos
-
 
   void _showFollowersModal(BuildContext context) {
     final followers = widget.userProvider.user?.followers ?? {};
@@ -1426,18 +1415,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 final experience = experiences[index];
                                 return GestureDetector(
                                   onTap: () {
-                                    // Abrir foto en pantalla completa
-                                    final allUrls = experience.media
-                                        .map((m) => m.url)
-                                        .where(
-                                          (u) =>
-                                              u.isNotEmpty &&
-                                              u.startsWith('http'),
-                                        )
-                                        .toList();
-                                    if (allUrls.isNotEmpty) {
-                                      _showFullScreenImage(context, allUrls, 0);
-                                    }
+                                    context.push(
+                                      '/post-detail/${experience.id}',
+                                    );
                                   },
                                   onLongPress: () {
                                     _showExperienceMenu(context, experience);

@@ -16,6 +16,9 @@ class ExperienceModel {
   final List<ExperienceReactionModel> reactions;
   final List<UserModel> viewers;
   final bool isEdited;
+  final bool isRepost;
+  final String? originalAuthorUserName;
+  final String? originalAuthorId;
 
   const ExperienceModel({
     required this.id,
@@ -31,6 +34,9 @@ class ExperienceModel {
     this.reactions = const [],
     this.viewers = const [],
     this.isEdited = false,
+    this.isRepost = false,
+    this.originalAuthorUserName,
+    this.originalAuthorId,
   });
 
   /// Convertir a entidad de dominio
@@ -49,6 +55,9 @@ class ExperienceModel {
       reactions: reactions.map((e) => e.toEntity()).toList(),
       viewers: viewers.map((e) => e.toEntity()).toList(),
       isEdited: isEdited,
+      isRepost: isRepost,
+      originalAuthorUserName: originalAuthorUserName,
+      originalAuthorId: originalAuthorId,
     );
   }
 
@@ -71,6 +80,9 @@ class ExperienceModel {
           .toList(),
       viewers: entity.viewers.map((e) => UserModel.fromEntity(e)).toList(),
       isEdited: entity.isEdited,
+      isRepost: entity.isRepost,
+      originalAuthorUserName: entity.originalAuthorUserName,
+      originalAuthorId: entity.originalAuthorId,
     );
   }
 
@@ -91,6 +103,9 @@ class ExperienceModel {
       'reactions': reactions.map((e) => e.toJson()).toList(),
       'viewers': viewers.map((e) => e.toJson()).toList(),
       'isEdited': isEdited,
+      'isRepost': isRepost,
+      'originalAuthorUserName': originalAuthorUserName,
+      'originalAuthorId': originalAuthorId,
     };
   }
 
@@ -117,6 +132,14 @@ class ExperienceModel {
           .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       isEdited: json['isEdited'] as bool? ?? false,
+      isRepost: json['isRepost'] as bool? ?? false,
+      originalAuthorUserName:
+          json['originalAuthorUserName'] as String? ??
+          (json['originalAuthor'] as Map<String, dynamic>?)?['userName']
+              as String?,
+      originalAuthorId:
+          json['originalAuthorId'] as String? ??
+          (json['originalAuthor'] as Map<String, dynamic>?)?['id'] as String?,
     );
   }
 

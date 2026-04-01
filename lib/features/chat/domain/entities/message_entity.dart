@@ -12,7 +12,9 @@ class MessageEntity {
   final MessageType type;
   final DateTime sentAt;
   final bool isRead;
+  final bool isDelivered;
   final bool deleted;
+  final List<String> deletedFor;
   final String? replyToId;
   final String? replyPreview;
   final Map<String, String> reactions;
@@ -31,7 +33,9 @@ class MessageEntity {
     this.type = MessageType.text,
     required this.sentAt,
     this.isRead = false,
+    this.isDelivered = false,
     this.deleted = false,
+    this.deletedFor = const [],
     this.replyToId,
     this.replyPreview,
     this.reactions = const {},
@@ -55,7 +59,9 @@ class MessageEntity {
       ),
       sentAt: (data['sentAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isRead: data['isRead'] ?? false,
+      isDelivered: data['isDelivered'] ?? false,
       deleted: data['deleted'] ?? false,
+      deletedFor: List<String>.from(data['deletedFor'] ?? []),
       replyToId: data['replyToId'],
       replyPreview: data['replyPreview'],
       reactions: Map<String, String>.from(data['reactions'] ?? {}),
@@ -76,12 +82,15 @@ class MessageEntity {
       'type': type.name,
       'sentAt': FieldValue.serverTimestamp(),
       'isRead': isRead,
+      'isDelivered': isDelivered,
       'deleted': deleted,
+      'deletedFor': deletedFor,
       if (replyToId != null) 'replyToId': replyToId,
       if (replyPreview != null) 'replyPreview': replyPreview,
       'reactions': reactions,
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
-      if (audioDurationSeconds != null) 'audioDurationSeconds': audioDurationSeconds,
+      if (audioDurationSeconds != null)
+        'audioDurationSeconds': audioDurationSeconds,
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
     };
@@ -90,6 +99,7 @@ class MessageEntity {
   MessageEntity copyWith({
     String? content,
     bool? isRead,
+    bool? isDelivered,
     bool? deleted,
     Map<String, String>? reactions,
   }) {
@@ -103,6 +113,7 @@ class MessageEntity {
       type: type,
       sentAt: sentAt,
       isRead: isRead ?? this.isRead,
+      isDelivered: isDelivered ?? this.isDelivered,
       deleted: deleted ?? this.deleted,
       replyToId: replyToId,
       replyPreview: replyPreview,

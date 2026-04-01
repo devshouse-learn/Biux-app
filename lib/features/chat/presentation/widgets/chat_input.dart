@@ -812,9 +812,9 @@ class _ChatInputState extends State<ChatInput>
   void _send() {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-    widget.onSendText(text);
     _controller.clear();
     if (_showEmojiPanel) setState(() => _showEmojiPanel = false);
+    widget.onSendText(text);
   }
 
   // ── Emoji panel ────────────────────────────────────────────────────────────

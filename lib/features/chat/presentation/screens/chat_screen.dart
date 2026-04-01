@@ -66,14 +66,17 @@ class _ChatScreenState extends State<ChatScreen> {
             .doc(widget.chat.id)
             .get();
         if (chatDoc.exists) {
-          participants =
-              List<String>.from(chatDoc.data()?['participantIds'] ?? []);
+          participants = List<String>.from(
+            chatDoc.data()?['participantIds'] ?? [],
+          );
         }
       }
 
       // 2. Encontrar el otro usuario
-      final otherId =
-          participants.firstWhere((id) => id != myUid, orElse: () => '');
+      final otherId = participants.firstWhere(
+        (id) => id != myUid,
+        orElse: () => '',
+      );
       if (otherId.isEmpty) {
         if (mounted) setState(() => _loadingProfile = false);
         return;
@@ -88,7 +91,8 @@ class _ChatScreenState extends State<ChatScreen> {
       if (doc.exists && mounted) {
         final data = doc.data()!;
         setState(() {
-          _otherName = data['fullName'] ??
+          _otherName =
+              data['fullName'] ??
               data['name'] ??
               data['userName'] ??
               data['username'] ??
@@ -125,8 +129,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
         : (currentUser?.displayName?.isNotEmpty == true
-            ? currentUser!.displayName!
-            : 'Usuario');
+              ? currentUser!.displayName!
+              : 'Usuario');
     final myPhoto = userProvider.user?.photoUrl?.isNotEmpty == true
         ? userProvider.user!.photoUrl
         : currentUser?.photoURL;
@@ -136,23 +140,27 @@ class _ChatScreenState extends State<ChatScreen> {
     final displayPhoto = _otherPhoto;
 
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade100,
+      backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor:
-            isDark ? const Color(0xFF0D1B2A) : const Color(0xFF16242D),
+        backgroundColor: isDark
+            ? const Color(0xFF0D1B2A)
+            : const Color(0xFF16242D),
         foregroundColor: Colors.white,
         title: _loadingProfile
-            ? const Row(children: [
-                SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.white54),
-                ),
-                SizedBox(width: 10),
-                Text('Cargando...', style: TextStyle(fontSize: 14)),
-              ])
+            ? const Row(
+                children: [
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white54,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Text('Cargando...', style: TextStyle(fontSize: 14)),
+                ],
+              )
             : Row(
                 children: [
                   CircleAvatar(
@@ -167,8 +175,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ? displayName[0].toUpperCase()
                                 : '?',
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           )
                         : null,
                   ),
@@ -180,12 +189,15 @@ class _ChatScreenState extends State<ChatScreen> {
                         Text(
                           displayName,
                           style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const Text('Chat directo',
-                            style: TextStyle(
-                                fontSize: 11, color: Colors.white60)),
+                        const Text(
+                          'Chat directo',
+                          style: TextStyle(fontSize: 11, color: Colors.white60),
+                        ),
                       ],
                     ),
                   ),
@@ -195,8 +207,9 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Consumer<ChatProvider>(
         builder: (context, provider, _) {
           final messages = provider.messages;
-          WidgetsBinding.instance
-              .addPostFrameCallback((_) => _scrollToBottom());
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _scrollToBottom(),
+          );
 
           return Column(
             children: [
@@ -206,18 +219,21 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.chat_bubble_outline,
-                                size: 64,
-                                color: isDark
-                                    ? Colors.white24
-                                    : Colors.grey.shade300),
+                            Icon(
+                              Icons.chat_bubble_outline,
+                              size: 64,
+                              color: isDark
+                                  ? Colors.white24
+                                  : Colors.grey.shade300,
+                            ),
                             const SizedBox(height: 12),
                             Text(
                               'Sé el primero en enviar un mensaje',
                               style: TextStyle(
-                                  color: isDark
-                                      ? Colors.white38
-                                      : Colors.grey.shade500),
+                                color: isDark
+                                    ? Colors.white38
+                                    : Colors.grey.shade500,
+                              ),
                             ),
                           ],
                         ),
@@ -229,23 +245,28 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemBuilder: (context, index) {
                           final msg = messages[index];
                           final isMe = msg.senderId == currentUser?.uid;
-                          final showAvatar = !isMe &&
+                          final showAvatar =
+                              !isMe &&
                               (index == 0 ||
-                                  messages[index - 1].senderId !=
-                                      msg.senderId);
+                                  messages[index - 1].senderId != msg.senderId);
                           return MessageBubble(
                             message: msg,
                             isMe: isMe,
                             showAvatar: showAvatar,
                             isDark: isDark,
                             chatId: widget.chat.id,
+                            currentUserId: currentUser?.uid ?? '',
                             onReply: (m) => provider.setReplyingTo(m),
                             onReact: (m, emoji) => provider.addReaction(
                               chatId: widget.chat.id,
                               messageId: m.id,
                               emoji: emoji,
                             ),
-                            onDelete: (m) => provider.deleteMessage(
+                            onDeleteForMe: (m) => provider.deleteMessageForMe(
+                              chatId: widget.chat.id,
+                              messageId: m.id,
+                            ),
+                            onDeleteForAll: (m) => provider.deleteMessage(
                               chatId: widget.chat.id,
                               messageId: m.id,
                             ),

@@ -1938,10 +1938,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
           );
         }
 
-        final pos =
-            p.points.isNotEmpty
-                ? LatLng(p.points.last.lat, p.points.last.lng)
-                : null;
+        final pos = p.points.isNotEmpty
+            ? LatLng(p.points.last.lat, p.points.last.lng)
+            : null;
 
         final active = rrp.reports.where((r) => r.isActive).toList();
         List<RoadReportEntity> nearby;

@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/domain/repositories/experience_repository.dart';
 import 'package:biux/features/experiences/data/models/experience_model.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 import "package:flutter/foundation.dart";
 
 /// Implementación del repository para experiencias usando Firebase
@@ -431,8 +432,8 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         );
         await ref.delete();
       } catch (e) {
-      debugPrint('Error: ' + e.toString());
-    }
+        debugPrint('Error: ' + e.toString());
+      }
 
       // Remover del array y actualizar Firestore
       mediaList.removeAt(mediaIndex);
@@ -615,6 +616,97 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
       });
     } catch (e) {
       throw Exception('Error marcando como vista: $e');
+    }
+  }
+
+  @override
+  Future<void> addViewer(String experienceId, UserEntity viewer) async {
+    try {
+      final viewerMap = UserModel.fromEntity(viewer).toJson();
+      await _firestore.collection('experiences').doc(experienceId).update({
+        'viewers': FieldValue.arrayUnion([viewerMap]),
+        'views': FieldValue.increment(1),
+      });
+    } catch (e) {
+      throw Exception('Error agregando viewer: $e');
+    }
+  }
+
+  @override
+  Stream<List<UserEntity>> watchViewers(String experienceId) {
+    return _firestore
+        .collection('experiences')
+        .doc(experienceId)
+        .snapshots()
+        .map((snap) {
+          if (!snap.exists) return [];
+          final data = snap.data() as Map<String, dynamic>;
+          final viewersList = data['viewers'] as List? ?? [];
+          return viewersList
+              .map((v) {
+                try {
+                  return UserModel.fromJson(
+                    v as Map<String, dynamic>,
+                  ).toEntity();
+                } catch (_) {
+                  return null;
+                }
+              })
+              .whereType<UserEntity>()
+              .toList();
+        });
+  }
+
+  @override
+  Future<void> repostExperience(
+    ExperienceEntity original, {
+    String caption = '',
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('Usuario no autenticado');
+
+      final userModel = await _getUserModel(user);
+      final newId = _firestore.collection('experiences').doc().id;
+
+      final mediaList = original.media.asMap().entries.map((entry) {
+        final m = entry.value;
+        return ExperienceMediaModel(
+          id: '${newId}_media_${entry.key}',
+          url: m.url,
+          mediaType: m.mediaType,
+          duration: m.duration,
+          aspectRatio: m.aspectRatio,
+          thumbnailUrl: m.thumbnailUrl,
+          description: m.description,
+        );
+      }).toList();
+
+      final repostModel = ExperienceModel(
+        id: newId,
+        description: caption,
+        tags: original.tags,
+        user: userModel,
+        createdAt: DateTime.now(),
+        media: mediaList,
+        type: original.type,
+        format: original.format,
+        views: 0,
+        reactions: const [],
+        viewers: const [],
+        isRepost: true,
+        originalAuthorUserName: original.user.userName.isNotEmpty
+            ? original.user.userName
+            : original.user.fullName,
+        originalAuthorId: original.user.id.isNotEmpty ? original.user.id : null,
+      );
+
+      final data = repostModel.toJson();
+      data['originalStoryId'] = original.id;
+
+      await _firestore.collection('experiences').doc(newId).set(data);
+    } catch (e) {
+      throw Exception('Error reposteando experiencia: $e');
     }
   }
 
