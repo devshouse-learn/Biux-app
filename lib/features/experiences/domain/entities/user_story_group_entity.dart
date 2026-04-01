@@ -24,8 +24,9 @@ class UserStoryGroupEntity {
   /// Obtiene la URL de la foto de perfil del usuario
   String get userProfilePhoto => user.photo;
 
-  /// Obtiene el nombre del usuario
-  String get userName => user.fullName;
+  /// Obtiene el nombre de usuario (@username)
+  String get userName =>
+      user.userName.isNotEmpty ? user.userName : user.fullName;
 
   /// Obtiene el ID del usuario
   String get userId => user.id;

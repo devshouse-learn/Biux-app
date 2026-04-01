@@ -10,6 +10,7 @@ class ChatProvider extends ChangeNotifier {
 
   List<ChatEntity> _chats = [];
   List<MessageEntity> _messages = [];
+  ChatEntity? _activeChat;
   bool _loading = false;
   String? _error;
   String? _activeChatId;
@@ -17,9 +18,11 @@ class ChatProvider extends ChangeNotifier {
 
   StreamSubscription<List<ChatEntity>>? _chatsSub;
   StreamSubscription<List<MessageEntity>>? _messagesSub;
+  StreamSubscription<ChatEntity?>? _activeChatSub;
 
   List<ChatEntity> get chats => _chats;
   List<MessageEntity> get messages => _messages;
+  ChatEntity? get activeChat => _activeChat;
   bool get loading => _loading;
   String? get error => _error;
   String? get activeChatId => _activeChatId;
@@ -38,11 +41,12 @@ class ChatProvider extends ChangeNotifier {
   void openChat(String chatId) {
     _activeChatId = chatId;
     _messagesSub?.cancel();
+    _activeChatSub?.cancel();
     _messagesSub = _ds
         .getMessages(chatId)
         .listen(
           (list) {
-            _messages = list;
+            _messages = _applyReadStatus(list);
             notifyListeners();
           },
           onError: (error) {
@@ -52,6 +56,12 @@ class ChatProvider extends ChangeNotifier {
             notifyListeners();
           },
         );
+    _activeChatSub = _ds.getChatStream(chatId).listen((chat) {
+      _activeChat = chat;
+      // Re-aplicar estado de lectura con los timestamps actualizados
+      _messages = _applyReadStatus(_messages);
+      notifyListeners();
+    }, onError: (e) => debugPrint('❌ Error en getChatStream $chatId: $e'));
     _ds.markMessagesAsRead(chatId);
   }
 
@@ -169,6 +179,13 @@ class ChatProvider extends ChangeNotifier {
     await _ds.deleteMessage(chatId: chatId, messageId: messageId);
   }
 
+  Future<void> deleteMessageForMe({
+    required String chatId,
+    required String messageId,
+  }) async {
+    await _ds.deleteMessageForMe(chatId: chatId, messageId: messageId);
+  }
+
   /// Stream directo de Firestore (compatibilidad con chat_list_screen)
   Stream<QuerySnapshot> getChatsStream(String uid) {
     return FirebaseFirestore.instance
@@ -221,10 +238,38 @@ class ChatProvider extends ChangeNotifier {
     await _ds.sendMessage(chatId: chatId, message: msg);
   }
 
+  /// Aplica isRead/isDelivered en memoria según los timestamps del chat doc.
+  /// No necesita escribir en Firestore — funciona en tiempo real.
+  List<MessageEntity> _applyReadStatus(List<MessageEntity> messages) {
+    if (_activeChat == null) return messages;
+    final uid = currentUid;
+    final otherUid = _activeChat!.participantIds.firstWhere(
+      (id) => id != uid,
+      orElse: () => '',
+    );
+    if (otherUid.isEmpty) return messages;
+    final theirReadAt = _activeChat!.lastReadAt[otherUid];
+    final theirDeliveredAt = _activeChat!.lastDeliveredAt[otherUid];
+    return messages.map((m) {
+      if (m.senderId != uid) return m;
+      final computedRead =
+          m.isRead || (theirReadAt != null && !m.sentAt.isAfter(theirReadAt));
+      final computedDelivered =
+          computedRead ||
+          m.isDelivered ||
+          (theirDeliveredAt != null && !m.sentAt.isAfter(theirDeliveredAt));
+      if (computedRead == m.isRead && computedDelivered == m.isDelivered) {
+        return m;
+      }
+      return m.copyWith(isRead: computedRead, isDelivered: computedDelivered);
+    }).toList();
+  }
+
   @override
   void dispose() {
     _chatsSub?.cancel();
     _messagesSub?.cancel();
+    _activeChatSub?.cancel();
     super.dispose();
   }
 }

@@ -344,7 +344,7 @@ class _OrderCard extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return DateFormat('dd/MM/yyyy HH:mm', 'es_ES').format(date);
+    return DateFormat('dd/MM/yyyy hh:mm a', 'es_ES').format(date);
   }
 }
 

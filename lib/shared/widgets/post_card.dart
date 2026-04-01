@@ -50,6 +50,9 @@ class PostCard extends StatelessWidget {
   /// Widgets a la derecha del header (ej.: badge publicidad, botón eliminar, compartir)
   final List<Widget>? headerTrailing;
 
+  /// Widget debajo del chip de usuario (ej.: banner de repost)
+  final Widget? headerSubtitle;
+
   /// Widget para la descripción personalizada (si es null usa texto simple)
   final Widget? descriptionWidget;
 
@@ -73,6 +76,7 @@ class PostCard extends StatelessWidget {
     this.actionsWidget,
     this.galleryOverlays,
     this.headerTrailing,
+    this.headerSubtitle,
     this.descriptionWidget,
     this.bottomWidget,
     this.isEdited = false,
@@ -93,6 +97,7 @@ class PostCard extends StatelessWidget {
             isEdited: isEdited,
             onUserTap: onUserTap,
             trailing: headerTrailing,
+            subtitle: headerSubtitle,
           ),
           // Galería de imágenes cuadrada (1:1)
           Padding(
@@ -131,6 +136,7 @@ class _PostCardHeader extends StatelessWidget {
   final bool isEdited;
   final VoidCallback? onUserTap;
   final List<Widget>? trailing;
+  final Widget? subtitle;
 
   const _PostCardHeader({
     required this.user,
@@ -138,6 +144,7 @@ class _PostCardHeader extends StatelessWidget {
     this.isEdited = false,
     this.onUserTap,
     this.trailing,
+    this.subtitle,
   });
 
   @override
@@ -147,98 +154,108 @@ class _PostCardHeader extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          GestureDetector(
-            onTap: onUserTap,
-            child: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey[800] : Colors.grey[100],
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    radius: 14,
-                    backgroundColor: isDark
-                        ? Colors.grey[700]
-                        : Colors.grey[300],
-                    backgroundImage: user.photo.isNotEmpty
-                        ? CachedNetworkImageProvider(
-                            user.photo,
-                            cacheManager: OptimizedCacheManager.avatarInstance,
-                          )
-                        : null,
-                    child: user.photo.isEmpty
-                        ? Icon(
-                            Icons.person,
-                            color: isDark ? Colors.grey[400] : Colors.grey,
-                            size: 14,
-                          )
-                        : null,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: onUserTap,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey[800] : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  const SizedBox(width: 6),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        user.fullName.isNotEmpty
-                            ? user.fullName
-                            : user.userName,
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurface,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      CircleAvatar(
+                        radius: 14,
+                        backgroundColor: isDark
+                            ? Colors.grey[700]
+                            : Colors.grey[300],
+                        backgroundImage: user.photo.isNotEmpty
+                            ? CachedNetworkImageProvider(
+                                user.photo,
+                                cacheManager:
+                                    OptimizedCacheManager.avatarInstance,
+                              )
+                            : null,
+                        child: user.photo.isEmpty
+                            ? Icon(
+                                Icons.person,
+                                color: isDark ? Colors.grey[400] : Colors.grey,
+                                size: 14,
+                              )
+                            : null,
                       ),
-                      if (user.userName.isNotEmpty)
-                        Text(
-                          '@${user.userName}',
-                          style: TextStyle(
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                            fontSize: 10,
+                      const SizedBox(width: 6),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            user.fullName.isNotEmpty
+                                ? user.fullName
+                                : user.userName,
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                          if (user.userName.isNotEmpty)
+                            Text(
+                              '@${user.userName}',
+                              style: TextStyle(
+                                color: isDark
+                                    ? Colors.grey[400]
+                                    : Colors.grey[600],
+                                fontSize: 10,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ),
-          if (timestamp.isNotEmpty) ...[
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  timestamp,
-                  style: TextStyle(
-                    color: isDark ? Colors.grey[400] : Colors.grey[600],
-                    fontSize: 12,
-                  ),
                 ),
-                if (isEdited)
-                  Text(
-                    l.t('post_edited'),
-                    style: TextStyle(
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
-                      fontSize: 10,
+              ),
+              if (timestamp.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      timestamp,
+                      style: TextStyle(
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
+                    if (isEdited)
+                      Text(
+                        l.t('post_edited'),
+                        style: TextStyle(
+                          color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          fontSize: 10,
+                        ),
+                      ),
+                  ],
+                ),
               ],
-            ),
-          ],
-          const Spacer(),
-          if (trailing != null) ...trailing!,
+              const Spacer(),
+              if (trailing != null) ...trailing!,
+            ],
+          ),
+          if (subtitle != null) ...[const SizedBox(height: 4), subtitle!],
         ],
       ),
     );

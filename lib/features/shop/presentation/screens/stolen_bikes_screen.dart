@@ -458,8 +458,11 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: isDark
+          ? const Color(0xFF0D1B2A)
+          : const Color(0xFFF5F6FA),
       appBar: AppBar(
         title: const Text('Bicicletas Robadas'),
         backgroundColor: ColorTokens.error50,
@@ -1321,10 +1324,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF16242D),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : const Color(0xFF16242D),
           ),
         ),
       ],
@@ -1332,6 +1337,7 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   }
 
   Widget _tip(String text) {
+    final isDarkTip = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(left: 28, bottom: 4),
       child: Row(
@@ -1340,12 +1346,18 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
             width: 4,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.amber[700],
+              color: Colors.amber[isDarkTip ? 400 : 700],
               shape: BoxShape.circle,
             ),
           ),
           const SizedBox(width: 8),
-          Text(text, style: TextStyle(fontSize: 12, color: Colors.amber[900])),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: isDarkTip ? Colors.amber[300] : Colors.amber[900],
+            ),
+          ),
         ],
       ),
     );
@@ -1412,7 +1424,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                           placeholder: (c, u) => Container(
                             width: 90,
                             height: 90,
-                            color: Colors.grey[200],
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1E2A32)
+                                : Colors.grey[200],
                             child: const Center(
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
@@ -1420,7 +1435,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                           errorWidget: (c, u, e) => Container(
                             width: 90,
                             height: 90,
-                            color: Colors.grey[200],
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1E2A32)
+                                : Colors.grey[200],
                             child: Icon(
                               Icons.pedal_bike,
                               size: 36,
@@ -1432,7 +1450,10 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                           width: 90,
                           height: 90,
                           decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF1E2A32)
+                                : Colors.grey[200],
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
@@ -1449,10 +1470,12 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                     children: [
                       Text(
                         '${bike.brand} ${bike.model}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF16242D),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : const Color(0xFF16242D),
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -1476,14 +1499,18 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF8E1),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF2A2000)
+                      : const Color(0xFFFFF8E1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   theft.description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[700],
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[400]
+                        : Colors.grey[700],
                     height: 1.3,
                   ),
                   maxLines: 3,
@@ -1538,16 +1565,24 @@ class _StolenBikesScreenState extends State<StolenBikesScreen>
   }
 
   Widget _infoRow(IconData icon, String text) {
+    final isDarkRow = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: Row(
         children: [
-          Icon(icon, size: 13, color: Colors.grey[500]),
+          Icon(
+            icon,
+            size: 13,
+            color: isDarkRow ? Colors.grey[400] : Colors.grey[500],
+          ),
           const SizedBox(width: 5),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              style: TextStyle(
+                fontSize: 12,
+                color: isDarkRow ? Colors.grey[300] : Colors.grey[700],
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),

@@ -24,6 +24,9 @@ class ExperienceProvider extends ChangeNotifier {
   bool _isLoadingMore = false; // Para cargar más posts
   bool _hasMorePosts = true; // Si hay más posts por cargar
   String? _error;
+
+  /// Mapa de { originalPostId → repostExperienceId } del usuario actual
+  Map<String, String> _myReposts = {};
   static const int _postsPerPage =
       20; // Posts por página (aumentado para mejor UX)
   static const int _initialPostsCount =
@@ -414,8 +417,38 @@ class ExperienceProvider extends ChangeNotifier {
   }) async {
     try {
       await _repository.repostExperience(original, caption: caption);
+      // Invalidar cache de reposts para que se recargue la próxima vez
+      _myReposts.remove('_loaded');
     } catch (e) {
       debugPrint('Error reposteando historia: ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  /// Carga los reposts del usuario actual desde Firestore (una sola vez)
+  Future<void> loadMyReposts(String userId) async {
+    try {
+      _myReposts = await _repository.getUserReposts(userId);
+      _myReposts['_loaded'] = 'true'; // marca para no recargar
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error cargando reposts: $e');
+    }
+  }
+
+  /// Verifica si el usuario ya reposteó el post con ese ID
+  bool hasRepostedPost(String postId) => _myReposts.containsKey(postId);
+
+  /// Elimina el repost del usuario actual para un post original
+  Future<void> removeRepost(String originalPostId) async {
+    final repostId = _myReposts[originalPostId];
+    if (repostId == null) return;
+    try {
+      await deleteExperience(repostId);
+      _myReposts.remove(originalPostId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error eliminando repost: $e');
       rethrow;
     }
   }
@@ -551,6 +584,8 @@ class ExperienceProvider extends ChangeNotifier {
     _experiences.removeWhere((exp) => exp.id == experienceId);
     _userExperiences.removeWhere((exp) => exp.id == experienceId);
     _rideExperiences.removeWhere((exp) => exp.id == experienceId);
+    // Si el item eliminado era un repost, limpiar la entrada en _myReposts
+    _myReposts.removeWhere((_, repostId) => repostId == experienceId);
     notifyListeners();
   }
 

@@ -327,7 +327,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                         ),
                       );
                     }
-                    // Ordenar client-side por updatedAt o lastMessageTime descendente
+                    // Ordenar client-side por updatedAt descendente
                     final allDocs = snapshot.data!.docs.toList()
                       ..sort((a, b) {
                         final aData = a.data() as Map<String, dynamic>;

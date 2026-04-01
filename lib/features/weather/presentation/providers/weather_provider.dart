@@ -1,4 +1,4 @@
-
+﻿
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,7 +23,7 @@ class WeatherProvider extends ChangeNotifier {
   bool get hasAlerts => _cyclistAlerts.isNotEmpty;
 
   String get temperature => _weatherData != null
-      ? '\${(_weatherData!["main"]["temp"] as num).round()}°C'
+      ? '\${(_weatherData!["main"]["temp"] as num).round()}Â°C'
       : "--";
   String get description => _weatherData?["weather"]?[0]?["description"] ?? "";
   double get windSpeed =>
@@ -90,36 +90,36 @@ class WeatherProvider extends ChangeNotifier {
     final temp = (_weatherData?["main"]?["temp"] as num?)?.toDouble() ?? 20;
 
     if (isFreezingCondition) {
-      _cyclistAlerts.add("⚠️ Lluvia helada — No recomendado salir");
+      _cyclistAlerts.add("âš ï¸ Lluvia helada â€” No recomendado salir");
     }
     if (main == "Thunderstorm") {
-      _cyclistAlerts.add("⛈️ Tormenta eléctrica — Permanece en interior");
+      _cyclistAlerts.add("â›ˆï¸ Tormenta elÃ©ctrica â€” Permanece en interior");
     }
     if (main == "Snow") {
-      _cyclistAlerts.add("❄️ Nieve — Riesgo de caída en piso resbaladizo");
+      _cyclistAlerts.add("â„ï¸ Nieve â€” Riesgo de caÃ­da en piso resbaladizo");
     }
     if (gustsKmh > 50) {
-      _cyclistAlerts.add("💨 Ráfagas de \${gustsKmh.toInt()} km/h — Peligroso");
+      _cyclistAlerts.add("ðŸ’¨ RÃ¡fagas de \${gustsKmh.toInt()} km/h â€” Peligroso");
     } else if (windKmh > 30) {
-      _cyclistAlerts.add("🌬️ Viento fuerte \${windKmh.toInt()} km/h — Precaución");
+      _cyclistAlerts.add("ðŸŒ¬ï¸ Viento fuerte \${windKmh.toInt()} km/h â€” PrecauciÃ³n");
     }
     if (main == "Rain") {
-      _cyclistAlerts.add("🌧️ Lluvia — Piso resbaladizo, reduce velocidad");
+      _cyclistAlerts.add("ðŸŒ§ï¸ Lluvia â€” Piso resbaladizo, reduce velocidad");
     }
     if (uvIndex > 8) {
-      _cyclistAlerts.add("☀️ UV muy alto (\${uvIndex.toInt()}) — Usa protector solar");
+      _cyclistAlerts.add("â˜€ï¸ UV muy alto (\${uvIndex.toInt()}) â€” Usa protector solar");
     }
     if (temp > 35) {
-      _cyclistAlerts.add("🌡️ Calor extremo \${temp.toInt()}°C — Hidratación constante");
+      _cyclistAlerts.add("ðŸŒ¡ï¸ Calor extremo \${temp.toInt()}Â°C â€” HidrataciÃ³n constante");
     }
     if (temp < 5) {
-      _cyclistAlerts.add("🥶 Temperatura baja \${temp.toInt()}°C — Abrígate bien");
+      _cyclistAlerts.add("ðŸ¥¶ Temperatura baja \${temp.toInt()}Â°C â€” AbrÃ­gate bien");
     }
     if (visibility < 1000) {
-      _cyclistAlerts.add("🌫️ Visibilidad reducida — Usa luces y reflectores");
+      _cyclistAlerts.add("ðŸŒ«ï¸ Visibilidad reducida â€” Usa luces y reflectores");
     }
     if (precipitationProbability > 60) {
-      _cyclistAlerts.add("☔ \${precipitationProbability}% probabilidad de lluvia");
+      _cyclistAlerts.add("â˜” \${precipitationProbability}% probabilidad de lluvia");
     }
   }
 
@@ -140,7 +140,7 @@ class WeatherProvider extends ChangeNotifier {
 
       const apiKey = "5b8ae9b3d2804c5c9a65ccc18e4a2b1a";
       final url =
-          "https://api.openweathermap.org/data/2.5/weather?lat=\${pos.latitude}&lon=\${pos.longitude}&appid=\$apiKey&units=metric&lang=es";
+          "https://api.openweathermap.org/data/2.5/weather?lat=${pos.latitude}&lon=${pos.longitude}&appid=$apiKey&units=metric&lang=es";
 
       final res = await http.get(Uri.parse(url));
       if (res.statusCode == 200) {
@@ -165,43 +165,43 @@ class WeatherProvider extends ChangeNotifier {
 
   /// Emoji representativo del clima actual
   String get weatherEmoji {
-    if (_weatherData == null) return '🌡️';
+    if (_weatherData == null) return 'ðŸŒ¡ï¸';
     final main = _weatherData?['weather']?[0]?['main'] ?? '';
     switch (main) {
-      case 'Clear': return isDay ? '☀️' : '🌙';
-      case 'Clouds': return '☁️';
-      case 'Rain': return '🌧️';
-      case 'Drizzle': return '🌦️';
-      case 'Thunderstorm': return '⛈️';
-      case 'Snow': return '❄️';
+      case 'Clear': return isDay ? 'â˜€ï¸' : 'ðŸŒ™';
+      case 'Clouds': return 'â˜ï¸';
+      case 'Rain': return 'ðŸŒ§ï¸';
+      case 'Drizzle': return 'ðŸŒ¦ï¸';
+      case 'Thunderstorm': return 'â›ˆï¸';
+      case 'Snow': return 'â„ï¸';
       case 'Mist':
-      case 'Fog': return '🌫️';
-      default: return '🌡️';
+      case 'Fog': return 'ðŸŒ«ï¸';
+      default: return 'ðŸŒ¡ï¸';
     }
   }
 
-  /// Consejo sobre radiación UV para ciclistas
+  /// Consejo sobre radiaciÃ³n UV para ciclistas
   String get uvAdvice {
-    if (uvIndex >= 11) return 'UV extremo — usa ropa protectora y SPF 50+';
-    if (uvIndex >= 8) return 'UV muy alto — aplica bloqueador cada hora';
-    if (uvIndex >= 6) return 'UV alto — usa bloqueador SPF 30+';
-    if (uvIndex >= 3) return 'UV moderado — bloqueador recomendado';
-    return 'UV bajo — condiciones seguras';
+    if (uvIndex >= 11) return 'UV extremo â€” usa ropa protectora y SPF 50+';
+    if (uvIndex >= 8) return 'UV muy alto â€” aplica bloqueador cada hora';
+    if (uvIndex >= 6) return 'UV alto â€” usa bloqueador SPF 30+';
+    if (uvIndex >= 3) return 'UV moderado â€” bloqueador recomendado';
+    return 'UV bajo â€” condiciones seguras';
   }
 
-  /// Consejo general de rodada según condiciones
+  /// Consejo general de rodada segÃºn condiciones
   String get rideAdvice {
     switch (cyclingCondition) {
       case 'ideal':
-        return '¡Condiciones perfectas para pedalear! 🚴';
+        return 'Â¡Condiciones perfectas para pedalear! ðŸš´';
       case 'bueno':
-        return 'Buenas condiciones, disfruta la rodada 👍';
+        return 'Buenas condiciones, disfruta la rodada ðŸ‘';
       case 'regular':
-        return 'Condiciones aceptables, ve con precaución ⚠️';
+        return 'Condiciones aceptables, ve con precauciÃ³n âš ï¸';
       case 'malo':
-        return 'No recomendado salir, espera mejores condiciones 🌧️';
+        return 'No recomendado salir, espera mejores condiciones ðŸŒ§ï¸';
       case 'peligroso':
-        return 'Peligroso para ciclistas — permanece en interior ⛔';
+        return 'Peligroso para ciclistas â€” permanece en interior â›”';
       default:
         return 'Cargando condiciones...';
     }

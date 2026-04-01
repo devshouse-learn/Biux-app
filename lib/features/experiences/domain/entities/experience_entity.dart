@@ -16,6 +16,9 @@ class ExperienceEntity {
   final List<ExperienceReactionEntity> reactions;
   final List<UserEntity> viewers; // Usuarios que han visto la historia
   final bool isEdited;
+  final bool isRepost;
+  final String? originalAuthorUserName;
+  final String? originalAuthorId;
 
   const ExperienceEntity({
     required this.id,
@@ -31,6 +34,9 @@ class ExperienceEntity {
     this.reactions = const [],
     this.viewers = const [],
     this.isEdited = false,
+    this.isRepost = false,
+    this.originalAuthorUserName,
+    this.originalAuthorId,
   });
 
   /// Duración total de la experiencia en segundos
@@ -73,6 +79,9 @@ class ExperienceEntity {
     List<ExperienceReactionEntity>? reactions,
     List<UserEntity>? viewers,
     bool? isEdited,
+    bool? isRepost,
+    String? originalAuthorUserName,
+    String? originalAuthorId,
   }) {
     return ExperienceEntity(
       id: id ?? this.id,
@@ -88,6 +97,10 @@ class ExperienceEntity {
       reactions: reactions ?? this.reactions,
       viewers: viewers ?? this.viewers,
       isEdited: isEdited ?? this.isEdited,
+      isRepost: isRepost ?? this.isRepost,
+      originalAuthorUserName:
+          originalAuthorUserName ?? this.originalAuthorUserName,
+      originalAuthorId: originalAuthorId ?? this.originalAuthorId,
     );
   }
 

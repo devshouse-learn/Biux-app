@@ -694,20 +694,42 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         views: 0,
         reactions: const [],
         viewers: const [],
+        isRepost: true,
+        originalAuthorUserName: original.user.userName.isNotEmpty
+            ? original.user.userName
+            : original.user.fullName,
+        originalAuthorId: original.user.id.isNotEmpty ? original.user.id : null,
       );
 
       final data = repostModel.toJson();
-      data['isRepost'] = true;
       data['originalStoryId'] = original.id;
-      data['originalAuthor'] = {
-        'id': original.user.id,
-        'fullName': original.user.fullName,
-        'userName': original.user.userName,
-      };
 
       await _firestore.collection('experiences').doc(newId).set(data);
     } catch (e) {
       throw Exception('Error reposteando experiencia: $e');
+    }
+  }
+
+  @override
+  Future<Map<String, String>> getUserReposts(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('experiences')
+          .where('user.id', isEqualTo: userId)
+          .where('isRepost', isEqualTo: true)
+          .get();
+
+      final result = <String, String>{};
+      for (final doc in snapshot.docs) {
+        final originalId = doc.data()['originalStoryId'] as String?;
+        if (originalId != null && originalId.isNotEmpty) {
+          result[originalId] = doc.id;
+        }
+      }
+      return result;
+    } catch (e) {
+      debugPrint('Error obteniendo reposts del usuario: $e');
+      return {};
     }
   }
 

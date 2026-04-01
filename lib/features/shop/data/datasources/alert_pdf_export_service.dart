@@ -13,7 +13,7 @@ class AlertPdfExportService {
   }) async {
     final pdf = pw.Document();
     final now = DateTime.now();
-    final dateStr = DateFormat('dd/MM/yyyy HH:mm').format(now);
+    final dateStr = DateFormat('dd/MM/yyyy hh:mm a').format(now);
 
     // Header info
     final totalAlerts = alerts.length;
@@ -324,7 +324,7 @@ class AlertPdfExportService {
     final data = doc.data() as Map<String, dynamic>;
     final ts = data['timestamp'] as Timestamp?;
     final date = ts != null
-        ? DateFormat('dd/MM/yyyy HH:mm').format(ts.toDate())
+        ? DateFormat('dd/MM/yyyy hh:mm a').format(ts.toDate())
         : t('pdf_no_date');
     final seller = data['sellerName']?.toString() ?? t('pdf_unknown_seller');
     final sellerUid = data['sellerUid']?.toString() ?? '';
