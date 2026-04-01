@@ -306,6 +306,35 @@ class ChatDatasource {
     }
   }
 
+
+  // ── Typing ────────────────────────────────────────────────────────────────
+
+  Stream<Map<String, bool>> getTypingStream(String chatId) {
+    return _db
+        .collection('chats')
+        .doc(chatId)
+        .snapshots()
+        .map((doc) {
+          if (!doc.exists) return <String, bool>{};
+          final raw = doc.data()?['typing'];
+          if (raw == null) return <String, bool>{};
+          return Map<String, bool>.from(raw as Map);
+        });
+  }
+
+  Future<void> setTyping({
+    required String chatId,
+    required bool isTyping,
+  }) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      await _db.collection('chats').doc(chatId).update({
+        'typing.\$uid': isTyping,
+      });
+    } catch (_) {}
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   ChatEntity _chatFromDoc(DocumentSnapshot doc) {
