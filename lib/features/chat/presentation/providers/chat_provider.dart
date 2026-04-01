@@ -34,6 +34,7 @@ class ChatProvider extends ChangeNotifier {
   MessageEntity? get replyingTo => _replyingTo;
   Map<String, bool> get otherTyping => _otherTyping;
   bool get someoneIsTyping => _otherTyping.values.any((v) => v);
+  ChatDatasource get ds => _ds;
 
   String get currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
@@ -221,6 +222,50 @@ class ChatProvider extends ChangeNotifier {
       audioDurationSeconds: durationSeconds,
     );
     await _ds.sendMessage(chatId: chatId, message: message);
+  }
+
+
+  Future<void> editMessage({
+    required String chatId,
+    required String messageId,
+    required String newContent,
+  }) async {
+    if (newContent.trim().isEmpty) return;
+    await _ds.editMessage(
+      chatId: chatId,
+      messageId: messageId,
+      newContent: newContent.trim(),
+    );
+  }
+
+  Future<void> pinMessage({
+    required String chatId,
+    required String messageId,
+    required bool pin,
+  }) async {
+    await _ds.pinMessage(chatId: chatId, messageId: messageId, pin: pin);
+  }
+
+  Future<void> starMessage({
+    required String chatId,
+    required String messageId,
+    required bool star,
+  }) async {
+    await _ds.starMessage(chatId: chatId, messageId: messageId, star: star);
+  }
+
+  Future<void> forwardMessage({
+    required MessageEntity message,
+    required String targetChatId,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    await _ds.forwardMessage(
+      message: message,
+      targetChatId: targetChatId,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+    );
   }
 
   Future<void> markAsRead(String chatId) async {

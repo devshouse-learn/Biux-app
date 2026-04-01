@@ -15,6 +15,10 @@ class MessageBubble extends StatelessWidget {
   final void Function(MessageEntity, String) onReact;
   final void Function(MessageEntity) onDeleteForMe;
   final void Function(MessageEntity) onDeleteForAll;
+  final void Function(MessageEntity, String) onEdit;
+  final void Function(MessageEntity) onPin;
+  final void Function(MessageEntity) onStar;
+  final void Function(MessageEntity) onForward;
 
   const MessageBubble({
     super.key,
@@ -28,6 +32,10 @@ class MessageBubble extends StatelessWidget {
     required this.onReact,
     required this.onDeleteForMe,
     required this.onDeleteForAll,
+    required this.onEdit,
+    required this.onPin,
+    required this.onStar,
+    required this.onForward,
   });
 
   @override
@@ -37,6 +45,10 @@ class MessageBubble extends StatelessWidget {
       return const SizedBox.shrink();
     }
     if (message.deleted) return _DeletedBubble(isMe: isMe);
+    // Ocultar si expiró
+    if (message.expiresAt != null && DateTime.now().isAfter(message.expiresAt!)) {
+      return const SizedBox.shrink();
+    }
 
     return GestureDetector(
       onLongPress: () => _showOptions(context),
@@ -209,6 +221,131 @@ class MessageBubble extends StatelessWidget {
                     );
                   },
                 ),
+              // Editar (solo mis mensajes de texto)
+              if (isMe && message.type == MessageType.text)
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.edit_outlined, color: Colors.blue, size: 20),
+                  ),
+                  title: Text('Editar',
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    final controller = TextEditingController(text: message.content);
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                        title: const Row(children: [
+                          Icon(Icons.edit_outlined,
+                              color: Color(0xFF1E8BC3), size: 20),
+                          SizedBox(width: 8),
+                          Text('Editar mensaje',
+                              style: TextStyle(fontSize: 16)),
+                        ]),
+                        content: TextField(
+                          controller: controller,
+                          maxLines: 4,
+                          minLines: 1,
+                          autofocus: true,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Escribe el nuevo mensaje...',
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancelar'),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1E8BC3),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onPressed: () {
+                              final newText = controller.text.trim();
+                              Navigator.pop(ctx);
+                              if (newText.isNotEmpty &&
+                                  newText != message.content) {
+                                onEdit(message, newText);
+                              }
+                            },
+                            child: const Text('Guardar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              // Reenviar
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.teal.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.forward, color: Colors.teal, size: 20),
+                ),
+                title: Text('Reenviar',
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                onTap: () {
+                  Navigator.pop(context);
+                  onForward(message);
+                },
+              ),
+              // Fijar / Desfijar
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    message.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                    color: Colors.purple, size: 20),
+                ),
+                title: Text(message.isPinned ? 'Desfijar' : 'Fijar mensaje',
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                onTap: () {
+                  Navigator.pop(context);
+                  onPin(message);
+                },
+              ),
+              // Destacar / Quitar destacado
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    message.starredBy.isNotEmpty
+                        ? Icons.star
+                        : Icons.star_border,
+                    color: Colors.amber, size: 20),
+                ),
+                title: Text(
+                    message.starredBy.isNotEmpty
+                        ? 'Quitar destacado'
+                        : 'Destacar',
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                onTap: () {
+                  Navigator.pop(context);
+                  onStar(message);
+                },
+              ),
               const Divider(height: 1),
               // Eliminar para mí (todos pueden)
               ListTile(
