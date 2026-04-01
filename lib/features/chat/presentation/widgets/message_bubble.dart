@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
@@ -102,56 +103,206 @@ class MessageBubble extends StatelessWidget {
   }
 
   void _showOptions(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.reply_rounded),
-              title: const Text('Responder'),
-              onTap: () {
-                Navigator.pop(context);
-                onReply(message);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.emoji_emotions_outlined),
-              title: const Text('Reaccionar'),
-              onTap: () {
-                Navigator.pop(context);
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _showEmojiPicker(context);
-                });
-              },
-            ),
-            if (isMe) ...[
-              ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text(
-                  'Eliminar para mí',
-                  style: TextStyle(color: Colors.red),
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 6),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(2),
                 ),
+              ),
+              // Título: preview del mensaje
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: Text(
+                  message.type == MessageType.voice
+                      ? '🎤 Mensaje de voz'
+                      : message.type == MessageType.image
+                          ? '🖼️ Imagen'
+                          : message.content.length > 40
+                              ? message.content.substring(0, 40) + '...'
+                              : message.content,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white38 : Colors.black38,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const Divider(height: 1),
+              // Responder
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E8BC3).withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.reply_rounded, color: Color(0xFF1E8BC3), size: 20),
+                ),
+                title: Text('Responder',
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                 onTap: () {
                   Navigator.pop(context);
-                  onDeleteForMe(message);
+                  onReply(message);
                 },
               ),
+              // Reaccionar
               ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.red),
-                title: const Text(
-                  'Eliminar para todos',
-                  style: TextStyle(color: Colors.red),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.emoji_emotions_outlined, color: Colors.orange, size: 20),
                 ),
+                title: Text('Reaccionar',
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                 onTap: () {
                   Navigator.pop(context);
-                  onDeleteForAll(message);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _showEmojiPicker(context);
+                  });
                 },
               ),
+              // Copiar (solo texto)
+              if (message.type == MessageType.text)
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.copy_rounded,
+                        color: isDark ? Colors.white60 : Colors.black54, size: 20),
+                  ),
+                  title: Text('Copiar texto',
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Clipboard.setData(ClipboardData(text: message.content));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Texto copiado'),
+                        duration: Duration(seconds: 1),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                ),
+              const Divider(height: 1),
+              // Eliminar para mí (todos pueden)
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                ),
+                title: const Text('Eliminar para mí',
+                    style: TextStyle(color: Colors.red)),
+                subtitle: const Text('Solo tú dejarás de ver este mensaje',
+                    style: TextStyle(fontSize: 11, color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmDelete(
+                    context,
+                    title: 'Eliminar para mí',
+                    message: '¿Eliminar este mensaje solo para ti?',
+                    onConfirm: () => onDeleteForMe(message),
+                  );
+                },
+              ),
+              // Eliminar para todos (solo remitente)
+              if (isMe)
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.delete_forever, color: Colors.red, size: 20),
+                  ),
+                  title: const Text('Eliminar para todos',
+                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+                  subtitle: const Text('Todos dejarán de ver este mensaje',
+                      style: TextStyle(fontSize: 11, color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _confirmDelete(
+                      context,
+                      title: 'Eliminar para todos',
+                      message: '¿Eliminar este mensaje para todos los participantes?',
+                      onConfirm: () => onDeleteForAll(message),
+                    );
+                  },
+                ),
+              const SizedBox(height: 4),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _confirmDelete(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 22),
+            const SizedBox(width: 8),
+            Text(title, style: const TextStyle(fontSize: 16)),
           ],
         ),
+        content: Text(message, style: const TextStyle(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              onConfirm();
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
       ),
     );
   }
