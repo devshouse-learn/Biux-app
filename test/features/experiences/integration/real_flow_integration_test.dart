@@ -192,6 +192,22 @@ class MockFirebaseExperienceRepository implements ExperienceRepository {
     }
     return 'https://firebase-storage.com/media/${DateTime.now().millisecondsSinceEpoch}';
   }
+
+  @override
+  Future<void> addViewer(String experienceId, UserEntity viewer) async {}
+
+  @override
+  Stream<List<UserEntity>> watchViewers(String experienceId) =>
+      Stream.value([]);
+
+  @override
+  Future<void> repostExperience(
+    ExperienceEntity original, {
+    String caption = '',
+  }) async {}
+
+  @override
+  Future<Map<String, String>> getUserReposts(String userId) async => {};
 }
 
 // Widget que simula la pantalla real

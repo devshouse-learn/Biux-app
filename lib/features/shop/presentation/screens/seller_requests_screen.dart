@@ -191,7 +191,7 @@ class _SellerRequestsScreenState extends State<SellerRequestsScreen>
     bool canReview,
   ) {
     final l = Provider.of<LocaleNotifier>(context);
-    final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+    final dateFormat = DateFormat('dd/MM/yyyy hh:mm a');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),

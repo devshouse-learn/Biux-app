@@ -29,6 +29,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void initState() {
     super.initState();
     _loadExperience();
+    // Cargar reposts del usuario para que isReposted sea correcto
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<ExperienceProvider>().loadMyReposts(uid);
+        }
+      });
+    }
   }
 
   Future<void> _loadExperience() async {
@@ -98,9 +107,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isRepost = _experience?.isRepost == true;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Publicación'),
+        title: Text(isRepost ? 'Reposteo' : 'Publicación'),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -155,6 +165,16 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         description: experience.description,
         timestamp: _formatRelativeTime(experience.createdAt),
         isEdited: experience.isEdited,
+        headerSubtitle: experience.isRepost
+            ? _RepostBannerDetail(
+                userName:
+                    (experience.originalAuthorUserName?.isNotEmpty == true)
+                    ? experience.originalAuthorUserName!
+                    : 'usuario',
+                authorId: experience.originalAuthorId,
+                currentUserId: currentUserId,
+              )
+            : null,
         onUserTap: () => context.push('/user-profile/${experience.user.id}'),
         onImageLongPress: (index) {
           _showMediaOptions(context, imageUrls[index]);
@@ -169,12 +189,67 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         ],
         actionsWidget: Padding(
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-          child: PostSocialActions(
-            postId: experience.id,
-            postOwnerId: experience.user.id,
-            postPreview: experience.description.length > 50
-                ? experience.description.substring(0, 50)
-                : experience.description,
+          child: Builder(
+            builder: (ctx) {
+              final provider = ctx.watch<ExperienceProvider>();
+              final uid = FirebaseAuth.instance.currentUser?.uid;
+              final isOwner = uid == experience.user.id;
+              final isMyOwnRepost = experience.isRepost && isOwner;
+              final hasRepostedOriginal = provider.hasRepostedPost(
+                experience.id,
+              );
+              final isReposted = isMyOwnRepost || hasRepostedOriginal;
+              final showRepostButton = !(isOwner && !experience.isRepost);
+              return PostSocialActions(
+                postId: experience.id,
+                postOwnerId: experience.user.id,
+                postPreview: experience.description.length > 50
+                    ? experience.description.substring(0, 50)
+                    : experience.description,
+                isReposted: isReposted,
+                onRepost: showRepostButton && !isReposted
+                    ? () async {
+                        final confirmed = await showDialog<bool>(
+                          context: ctx,
+                          builder: (dialogCtx) => AlertDialog(
+                            title: const Text('Repostear publicación'),
+                            content: Text(
+                              'De @${experience.user.userName.isNotEmpty ? experience.user.userName : experience.user.fullName}',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(dialogCtx, false),
+                                child: const Text('Cancelar'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(dialogCtx, true),
+                                child: const Text('Repostear'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed != true || !ctx.mounted) return;
+                        await provider.repostStory(experience);
+                        if (uid != null && ctx.mounted) {
+                          provider.loadMyReposts(uid);
+                        }
+                      }
+                    : null,
+                onUnrepost: showRepostButton && isReposted
+                    ? () async {
+                        if (isMyOwnRepost) {
+                          await provider.deleteExperience(experience.id);
+                        } else {
+                          await provider.removeRepost(experience.id);
+                        }
+                        if (uid != null && ctx.mounted) {
+                          provider.loadMyReposts(uid);
+                        }
+                      }
+                    : null,
+              );
+            },
           ),
         ),
         bottomWidget: Column(
@@ -379,5 +454,58 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         );
       }
     }
+  }
+}
+
+/// Banner de repost para PostDetailScreen
+class _RepostBannerDetail extends StatelessWidget {
+  final String userName;
+  final String? authorId;
+  final String? currentUserId;
+
+  const _RepostBannerDetail({
+    required this.userName,
+    required this.authorId,
+    required this.currentUserId,
+  });
+
+  void _navigate(BuildContext context) {
+    if (authorId != null && authorId!.isNotEmpty) {
+      if (currentUserId == authorId) {
+        context.push('/profile');
+      } else {
+        context.push('/user-profile/$authorId');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    return GestureDetector(
+      onTap: () => _navigate(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: primaryColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.repeat_rounded, size: 14, color: Colors.white),
+            const SizedBox(width: 5),
+            Text(
+              'Reposteado de @$userName',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

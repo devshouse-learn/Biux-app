@@ -99,8 +99,9 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
   Future<void> _loadFeed() async {
     final userId = _currentUserId;
     if (userId != null) {
-      // Cambiar a feed personalizado que incluye grupos, mis posts y posts de seguidos
-      await context.read<ExperienceProvider>().loadPersonalizedFeed(userId);
+      final provider = context.read<ExperienceProvider>();
+      await provider.loadPersonalizedFeed(userId);
+      provider.loadMyReposts(userId);
       // Cargar grupos que sigue el usuario
       context.read<GroupProvider>().loadUserGroups();
     }
@@ -179,22 +180,12 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     // - EXCLUYE las que ya se muestran como stories
     final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
 
-    // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
-    return Column(
-      children: [
-        // Sección de Stories con indicador
-        const ExperiencesStoriesWidget(),
-
-        // Lista de posts abajo o estado vacío
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: _loadFeed,
-            child: posts.isEmpty
-                ? _buildEmptyStateInLayout()
-                : _buildExperiencesList(posts),
-          ),
-        ),
-      ],
+    // Layout tipo Instagram: Stories arriba, publicaciones abajo — todo en un scroll
+    return RefreshIndicator(
+      onRefresh: _loadFeed,
+      child: posts.isEmpty
+          ? _buildEmptyStateInLayout()
+          : _buildExperiencesList(posts),
     );
   }
 
@@ -251,40 +242,45 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.article_outlined,
-                size: 64,
-                color: theme.iconTheme.color?.withValues(alpha: 0.5),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                l.t('experiences_share_first_post'),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: theme.textTheme.bodyLarge?.color,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l.t('empty_no_posts_desc'),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: theme.textTheme.bodySmall?.color?.withValues(
-                    alpha: 0.7,
+      child: Column(
+        children: [
+          const ExperiencesStoriesWidget(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.article_outlined,
+                    size: 64,
+                    color: theme.iconTheme.color?.withValues(alpha: 0.5),
                   ),
-                ),
-                textAlign: TextAlign.center,
+                  const SizedBox(height: 16),
+                  Text(
+                    l.t('experiences_share_first_post'),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: theme.textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l.t('empty_no_posts_desc'),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: theme.textTheme.bodySmall?.color?.withValues(
+                        alpha: 0.7,
+                      ),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -312,11 +308,19 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       child: ListView.builder(
         padding: EdgeInsets.zero,
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: intercaledList.length + (provider.hasMorePosts ? 1 : 0),
+        // +1 para el widget de historias al inicio, +1 para el loader al final
+        itemCount: 1 + intercaledList.length + (provider.hasMorePosts ? 1 : 0),
         itemBuilder: (context, index) {
+          // Primer ítem: sección de historias
+          if (index == 0) {
+            return const ExperiencesStoriesWidget();
+          }
+
+          final itemIndex = index - 1;
+
           // Mostrar post normal o anuncio
-          if (index < intercaledList.length) {
-            final item = intercaledList[index];
+          if (itemIndex < intercaledList.length) {
+            final item = intercaledList[itemIndex];
 
             if (item is ExperienceEntity) {
               return _ExperienceCard(experience: item);
@@ -618,21 +622,53 @@ class _ExperienceCard extends StatelessWidget {
                 ),
               ),
             ],
-            actionsWidget: PostSocialActions(
-              postId: experience.id,
-              postOwnerId: experience.user.id,
-              postPreview: experience.description.length > 50
-                  ? experience.description.substring(0, 50)
-                  : experience.description,
-              onRepost:
-                  FirebaseAuth.instance.currentUser?.uid != experience.user.id
-                  ? () => _repostPost(context)
-                  : null,
-            ),
-            bottomWidget: PostCommentsPreview(
-              postId: experience.id,
-              postOwnerId: experience.user.id,
-              maxComments: 2,
+            actionsWidget: Builder(
+              builder: (ctx) {
+                final provider = ctx.watch<ExperienceProvider>();
+                final uid = FirebaseAuth.instance.currentUser?.uid;
+                final isOwner = uid == experience.user.id;
+                // Es repost propio (el item en sí es un repost del usuario)
+                final isMyOwnRepost = experience.isRepost && isOwner;
+                // El usuario reposteó este post original
+                final hasRepostedOriginal = provider.hasRepostedPost(
+                  experience.id,
+                );
+                final isReposted = isMyOwnRepost || hasRepostedOriginal;
+                // No mostrar botón de repost para posts propios que NO son reposts
+                final showRepostButton = !(isOwner && !experience.isRepost);
+
+                return PostSocialActions(
+                  postId: experience.id,
+                  postOwnerId: experience.user.id,
+                  postPreview: experience.description.length > 50
+                      ? experience.description.substring(0, 50)
+                      : experience.description,
+                  isReposted: isReposted,
+                  onRepost: showRepostButton && !isReposted
+                      ? () => _repostPost(context)
+                      : null,
+                  onUnrepost: showRepostButton && isReposted
+                      ? () async {
+                          try {
+                            if (isMyOwnRepost) {
+                              // Eliminar el repost directamente
+                              await provider.deleteExperience(experience.id);
+                            } else {
+                              await provider.removeRepost(experience.id);
+                            }
+                            if (ctx.mounted) {
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Reposteo eliminado'),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          } catch (_) {}
+                        }
+                      : null,
+                );
+              },
             ),
           ),
         ],
@@ -785,10 +821,16 @@ class _ExperienceCard extends StatelessWidget {
     if (confirmed != true) return;
     if (!context.mounted) return;
     try {
-      await context.read<ExperienceProvider>().repostStory(
+      final provider = context.read<ExperienceProvider>();
+      await provider.repostStory(
         experience,
         caption: captionController.text.trim(),
       );
+      // Recargar mapa de reposts para que el botón refleje estado actual
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null && context.mounted) {
+        provider.loadMyReposts(uid);
+      }
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

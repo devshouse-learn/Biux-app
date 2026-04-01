@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -240,6 +241,26 @@ class NativePhoneAuthProvider extends ChangeNotifier {
         tag: 'Auth',
         error: e,
       );
+    }
+
+    // Registrar la sesión del dispositivo actual
+    if (user != null) {
+      try {
+        final platform = Platform.isIOS ? 'ios' : 'android';
+        final now = DateTime.now();
+        final sessionEntry = {
+          'deviceName': Platform.isIOS ? 'iPhone' : 'Android',
+          'platform': platform,
+          'phoneNumber': _phoneNumber ?? '',
+          'lastActive': now.toIso8601String(),
+          'timestamp': now.millisecondsSinceEpoch,
+        };
+        await _firestore.collection('users').doc(user.uid).set({
+          'sessions': FieldValue.arrayUnion([sessionEntry]),
+        }, SetOptions(merge: true));
+      } catch (e) {
+        AppLogger.warning('Error registrando sesión', tag: 'Auth', error: e);
+      }
     }
 
     _state = AuthState.authenticated;

@@ -63,12 +63,12 @@ class AppStrings {
   static const payText = "pagar";
   static const followers = "Seguidores";
   static const rolled = "Rodadas";
-  static const dateFormat = "dd-MM-yyyy KK:mm";
+  static const dateFormat = "dd-MM-yyyy hh:mm a";
   static const dateFormat2 = "dd-MM-yyyy";
-  static const dateFormat3 = "dd-MM-yyyy KK:mm:a";
-  static const dateFormat4 = "dd-MM-yyyy HH:mm:ss";
-  static const dateFormat5 = "yyyy-MM-dd HH:mm";
-  static const dateFormat6 = "kk:mm";
+  static const dateFormat3 = "dd-MM-yyyy hh:mm a";
+  static const dateFormat4 = "dd-MM-yyyy hh:mm:ss a";
+  static const dateFormat5 = "yyyy-MM-dd hh:mm a";
+  static const dateFormat6 = "hh:mm a";
   static const dateNotFound = "no encontrada fecha";
   static const route = "Ruta : ";
   static const meeting = "Encuentro : ";

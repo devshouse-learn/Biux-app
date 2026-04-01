@@ -711,6 +711,29 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
   }
 
   @override
+  Future<Map<String, String>> getUserReposts(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('experiences')
+          .where('user.id', isEqualTo: userId)
+          .where('isRepost', isEqualTo: true)
+          .get();
+
+      final result = <String, String>{};
+      for (final doc in snapshot.docs) {
+        final originalId = doc.data()['originalStoryId'] as String?;
+        if (originalId != null && originalId.isNotEmpty) {
+          result[originalId] = doc.id;
+        }
+      }
+      return result;
+    } catch (e) {
+      debugPrint('Error obteniendo reposts del usuario: $e');
+      return {};
+    }
+  }
+
+  @override
   Future<String> uploadMedia({
     required String filePath,
     required MediaType mediaType,

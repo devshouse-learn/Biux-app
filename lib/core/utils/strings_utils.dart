@@ -1,19 +1,10 @@
 import 'package:biux/core/config/strings.dart';
+import 'package:intl/intl.dart';
 
 extension StringsExtension on String {
   String get hourFormatter {
-    String hour;
-    DateTime dt = DateTime.parse(this);
-    if (dt.hour <= 12 && dt.minute < 10) {
-      hour = '${dt.hour}:0${dt.minute}\nA.M';
-    } else if (dt.hour <= 12) {
-      hour = '${dt.hour}:${dt.minute}\nA.M';
-    } else if (dt.minute < 10) {
-      hour = '${dt.hour - 12}:0${dt.minute}\nP.M';
-    } else {
-      hour = '${dt.hour - 12}:${dt.minute}\nP.M';
-    }
-    return hour;
+    final dt = DateTime.parse(this);
+    return DateFormat('h:mm\na').format(dt).toUpperCase();
   }
 
   String get dateFormatterWithDe {

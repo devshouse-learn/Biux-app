@@ -73,20 +73,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
               const SizedBox(height: 24),
 
-              // --- Dispositivos ---
-              SettingsWidgets.buildSectionTitle(l.t('linked_devices'), isDark),
-              const SizedBox(height: 12),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.smartphone,
-                title: l.t('this_device'),
-                subtitle: l.t('currently_logged_in'),
-                isDark: isDark,
-                onTap: () {},
-              ),
-
-              const SizedBox(height: 24),
-
               // --- Privacidad y Seguridad ---
               SettingsWidgets.buildSectionTitle(
                 l.t('privacy_security'),
@@ -115,14 +101,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 title: l.t('activity_history'),
                 subtitle: l.t('see_where_logged_in'),
                 isDark: isDark,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l.t('feature_in_development')),
-                      backgroundColor: Colors.orange.shade600,
-                    ),
-                  );
-                },
+                onTap: () => context.push(AppRoutes.activeSessions),
               ),
               const SizedBox(height: 8),
               SettingsWidgets.buildOptionCard(
@@ -139,6 +118,56 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     ),
                   );
                 },
+              ),
+
+              const SizedBox(height: 24),
+
+              // --- Tu Actividad ---
+              SettingsWidgets.buildSectionTitle(l.t('your_activity'), isDark),
+              const SizedBox(height: 12),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.favorite_outline,
+                title: l.t('activity_likes'),
+                subtitle: l.t('activity_likes_subtitle'),
+                isDark: isDark,
+                onTap: () => context.push('/activity/likes'),
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.chat_bubble_outline,
+                title: l.t('activity_comments'),
+                subtitle: l.t('activity_comments_subtitle'),
+                isDark: isDark,
+                onTap: () => context.push('/activity/comments'),
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.grid_on_outlined,
+                title: l.t('activity_posts'),
+                subtitle: l.t('activity_posts_subtitle'),
+                isDark: isDark,
+                onTap: () => context.push('/activity/posts'),
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.auto_stories_outlined,
+                title: l.t('activity_stories'),
+                subtitle: l.t('activity_stories_subtitle'),
+                isDark: isDark,
+                onTap: () => context.push('/activity/stories'),
+              ),
+              const SizedBox(height: 8),
+              SettingsWidgets.buildOptionCard(
+                context: context,
+                icon: Icons.access_time_outlined,
+                title: l.t('activity_screen_time'),
+                subtitle: l.t('activity_screen_time_subtitle'),
+                isDark: isDark,
+                onTap: () => context.push('/activity/screen-time'),
               ),
 
               const SizedBox(height: 24),
@@ -429,7 +458,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       }
     }
 
-    final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+    final dateFormat = DateFormat('dd/MM/yyyy hh:mm a');
 
     showModalBottomSheet(
       context: context,

@@ -609,7 +609,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
         }
 
         if (!snapshot.hasData) return const SizedBox.shrink();
-          var alerts = snapshot.data!.docs;
+        var alerts = snapshot.data!.docs;
 
         // Filter by search
         if (_searchQuery.isNotEmpty) {
@@ -696,7 +696,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
     final id = doc.id;
     final ts = data['timestamp'] as Timestamp?;
     final date = ts != null
-        ? DateFormat('dd/MM/yy HH:mm').format(ts.toDate())
+        ? DateFormat('dd/MM/yy h:mm a').format(ts.toDate())
         : '—';
     final bike = data['bikeData'] as Map<String, dynamic>? ?? {};
     final seller = data['sellerName'] ?? 'Desconocido';
@@ -992,7 +992,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
         if (!snapshot.hasData) return const SizedBox.shrink();
-          final alerts = snapshot.data!.docs;
+        final alerts = snapshot.data!.docs;
         final now = DateTime.now();
 
         final today = alerts.where((d) {
@@ -1275,7 +1275,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
         if (!snapshot.hasData)
           return const Center(child: CircularProgressIndicator());
         if (!snapshot.hasData) return const SizedBox.shrink();
-          final blocked = snapshot.data!.docs;
+        final blocked = snapshot.data!.docs;
 
         if (blocked.isEmpty) {
           return Center(
@@ -1307,7 +1307,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen>
             final reason = d['blockedReason'] ?? 'Sin razon';
             final blockedAt = d['blockedAt'] as Timestamp?;
             final dateStr = blockedAt != null
-                ? DateFormat('dd/MM/yy HH:mm').format(blockedAt.toDate())
+                ? DateFormat('dd/MM/yy h:mm a').format(blockedAt.toDate())
                 : '—';
 
             return Card(

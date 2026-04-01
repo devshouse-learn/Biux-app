@@ -8,7 +8,7 @@ import '../providers/comments_provider.dart';
 import 'comment_item.dart';
 
 /// Widget de lista de comentarios
-class CommentsList extends StatelessWidget {
+class CommentsList extends StatefulWidget {
   final CommentableType type;
   final String targetId;
   final String targetOwnerId;
@@ -25,15 +25,31 @@ class CommentsList extends StatelessWidget {
   });
 
   @override
+  State<CommentsList> createState() => _CommentsListState();
+}
+
+class _CommentsListState extends State<CommentsList> {
+  late Stream<List<CommentEntity>> _commentsStream;
+
+  @override
+  void initState() {
+    super.initState();
+    // Cachear el stream en initState para que no se recree con cada notifyListeners()
+    _commentsStream = context.read<CommentsProvider>().watchComments(
+      widget.type,
+      widget.targetId,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final provider = context.watch<CommentsProvider>();
     final l = Provider.of<LocaleNotifier>(context);
 
     return Column(
       children: [
         Expanded(
           child: StreamBuilder<List<CommentEntity>>(
-            stream: provider.watchComments(type, targetId),
+            stream: _commentsStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -68,21 +84,21 @@ class CommentsList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return CommentItem(
                     comment: comments[index],
-                    type: type,
-                    targetId: targetId,
-                    targetOwnerId: targetOwnerId,
+                    type: widget.type,
+                    targetId: widget.targetId,
+                    targetOwnerId: widget.targetOwnerId,
                   );
                 },
               );
             },
           ),
         ),
-        if (showTextField)
+        if (widget.showTextField)
           _CommentTextField(
-            type: type,
-            targetId: targetId,
-            targetOwnerId: targetOwnerId,
-            placeholder: placeholder ?? l.t('write_comment'),
+            type: widget.type,
+            targetId: widget.targetId,
+            targetOwnerId: widget.targetOwnerId,
+            placeholder: widget.placeholder ?? l.t('write_comment'),
           ),
       ],
     );
@@ -226,7 +242,7 @@ class _CommentTextFieldState extends State<_CommentTextField> {
                   horizontal: 16,
                   vertical: 8,
                 ),
-                errorText: provider.error,
+                errorText: null,
               ),
             ),
           ),

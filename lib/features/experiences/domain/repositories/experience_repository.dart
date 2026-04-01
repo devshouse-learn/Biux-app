@@ -51,6 +51,9 @@ abstract class ExperienceRepository {
   /// Repostea una experiencia en el perfil del usuario actual
   Future<void> repostExperience(ExperienceEntity original, {String caption});
 
+  /// Obtiene los reposts del usuario: mapa de { originalStoryId → repostExperienceId }
+  Future<Map<String, String>> getUserReposts(String userId);
+
   /// Observa cambios en la colección de experiencias (última publicación)
   Stream<DateTime?> watchLatestExperienceTimestamp();
 

@@ -231,6 +231,9 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
               child: _buildProgressBar(),
             ),
 
+            // Áreas de toque para navegación (antes del header para que el header quede encima)
+            _buildTouchAreas(),
+
             // Header con información del usuario
             Positioned(
               top: MediaQuery.of(context).padding.top + 50,
@@ -252,9 +255,6 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                   child: SingleChildScrollView(child: _buildDescription()),
                 ),
               ),
-
-            // Áreas de toque para navegación
-            _buildTouchAreas(),
 
             // Botón de like para la historia (solo para otros usuarios, no para el propietario)
             if (FirebaseAuth.instance.currentUser?.uid !=
