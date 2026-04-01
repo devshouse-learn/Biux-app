@@ -8,6 +8,9 @@ import 'package:provider/provider.dart';
 
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
+import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:biux/features/chat/presentation/screens/chat_screen.dart';
 
 class ViewGroupScreen extends StatefulWidget {
   @override
@@ -19,6 +22,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   TabController? _tabController;
   String? groupId;
   bool? _lastAdminStatus;
+  String? _groupChatId;
+  bool _loadingChat = false;
 
   @override
   void initState() {
@@ -44,7 +49,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       _tabController?.dispose();
 
       // Ahora siempre son 4 tabs: Info, Miembros, Rodadas, y Solicitudes (solo para admin)
-      final tabCount = isAdmin ? 4 : 3;
+      final tabCount = isAdmin ? 5 : 4;
       _tabController = TabController(length: tabCount, vsync: this);
       _lastAdminStatus = isAdmin;
     }
@@ -167,6 +172,16 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         Tab(text: l.t('info')),
                         Tab(text: '${l.t('members')} (${group.memberCount})'),
                         Tab(text: l.t('rides')),
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.chat_bubble_outline, size: 16),
+                              const SizedBox(width: 4),
+                              Text(l.t('group_chat')),
+                            ],
+                          ),
+                        ),
                         if (isAdmin)
                           Tab(
                             text:
@@ -184,12 +199,101 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 _buildInfoTab(group, provider),
                 _buildMembersTab(group, provider),
                 _buildRidesTab(group, provider),
+                _buildGroupChatTab(group),
                 if (isAdmin) _buildRequestsTab(group, provider),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Future<String> _getOrCreateGroupChat(GroupModel group) async {
+    if (_groupChatId != null) return _groupChatId!;
+    setState(() => _loadingChat = true);
+    final chatProvider = context.read<ChatProvider>();
+    final existing = chatProvider.chats.where(
+      (c) => c.type == ChatType.group && c.name == group.name,
+    ).firstOrNull;
+    if (existing != null) {
+      _groupChatId = existing.id;
+      chatProvider.openChat(existing.id);
+      setState(() => _loadingChat = false);
+      return existing.id;
+    }
+    final chatId = await chatProvider.createGroupChat(
+      participantIds: group.memberIds,
+      name: group.name,
+      photoUrl: group.logoUrl,
+    );
+    chatProvider.openChat(chatId);
+    _groupChatId = chatId;
+    setState(() => _loadingChat = false);
+    return chatId;
+  }
+
+  Widget _buildGroupChatTab(GroupModel group) {
+    final l = Provider.of<LocaleNotifier>(context);
+    final currentUid = context.read<ChatProvider>().currentUid;
+    final isMember = group.isMember(currentUid);
+
+    if (!isMember) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.lock_outline, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              l.t('join_to_chat'),
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_loadingChat) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return FutureBuilder<String>(
+      future: _getOrCreateGroupChat(group),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
+                const SizedBox(height: 12),
+                Text(l.t('chat_error'), style: TextStyle(color: Colors.grey[600])),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => setState(() => _groupChatId = null),
+                  child: Text(l.t('retry')),
+                ),
+              ],
+            ),
+          );
+        }
+        final chatId = snapshot.data!;
+        final chat = ChatEntity(
+          id: chatId,
+          name: group.name,
+          photoUrl: group.logoUrl,
+          type: ChatType.group,
+          participantIds: group.memberIds,
+          updatedAt: DateTime.now(),
+          unreadCount: const {},
+        );
+        return ChatScreen(chat: chat);
+      },
     );
   }
 

@@ -15,6 +15,7 @@ class TwoFactorScreen extends StatefulWidget {
 
 class _TwoFactorScreenState extends State<TwoFactorScreen> {
   _TwoFactorMethod _method = _TwoFactorMethod.sms;
+  bool _enabled = false; // tracks 2FA activation state
   bool _loading = false;
   bool _codeSent = false;
   final _codeControllers = List.generate(6, (_) => TextEditingController());
@@ -81,6 +82,16 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
       backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Verificación en dos pasos'),
+        actions: [
+          if (_enabled)
+            const Padding(
+              padding: EdgeInsets.only(right: 12),
+              child: Icon(
+                Icons.verified_user_rounded,
+                color: Colors.greenAccent,
+              ),
+            ),
+        ],
         backgroundColor: const Color(0xFF16242D),
         foregroundColor: Colors.white,
       ),

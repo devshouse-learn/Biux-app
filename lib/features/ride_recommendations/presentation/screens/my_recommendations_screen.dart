@@ -130,8 +130,8 @@ class _RecommendationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: unread
-            ? ColorTokens.primary30.withValues(alpha: 0.4)
-            : Colors.grey[200]!,
+              ? ColorTokens.primary30.withValues(alpha: 0.4)
+              : Colors.grey[200]!,
           width: unread ? 1.5 : 1,
         ),
         boxShadow: [
@@ -157,38 +157,54 @@ class _RecommendationCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundImage: rec.fromUserPhoto != null
-                    ? NetworkImage(rec.fromUserPhoto!) : null,
-                  backgroundColor: Colors.grey[200],
-                  child: rec.fromUserPhoto == null
-                    ? Text(
-                        rec.fromUserName.isNotEmpty
-                          ? rec.fromUserName[0].toUpperCase() : '?',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 13))
-                    : null,
-                ),
-                const SizedBox(width: 10),
-                Expanded(child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isReceived ? rec.fromUserName : 'Enviada',
-                      style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w700)),
-                    Text(_timeAgo(rec.createdAt),
-                      style: TextStyle(fontSize: 11, color: Colors.grey[400])),
-                  ],
-                )),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: ColorTokens.primary30.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundImage: rec.fromUserPhoto != null
+                        ? NetworkImage(rec.fromUserPhoto!)
+                        : null,
+                    backgroundColor: Colors.grey[200],
+                    child: rec.fromUserPhoto == null
+                        ? Text(
+                            rec.fromUserName.isNotEmpty
+                                ? rec.fromUserName[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isReceived ? rec.fromUserName : 'Enviada',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          _timeAgo(rec.createdAt),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: ColorTokens.primary30.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(rec.type.label,
                     style: TextStyle(

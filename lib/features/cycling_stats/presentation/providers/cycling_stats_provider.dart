@@ -136,4 +136,47 @@ class CyclingStatsProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  // Progreso semanal (últimas 8 semanas)
+  List<Map<String, dynamic>> _weeklyProgress = [];
+  List<Map<String, dynamic>> get weeklyProgress => _weeklyProgress;
+
+  /// Récords personales
+  Map<String, dynamic> get personalRecords {
+    if (_stats == null) return {};
+    return {
+      'maxSpeed': _stats!.maxSpeed,
+      'longestRide': _stats!.totalKm > 0 ? _stats!.totalKm : 0,
+      'bestStreak': _stats!.streak,
+      'totalCalories': _stats!.totalCalories,
+    };
+  }
+
+  void computeWeeklyProgress(List<Map<String, dynamic>> rides) {
+    final now = DateTime.now();
+    final weeks = <String, double>{};
+
+    for (int i = 7; i >= 0; i--) {
+      final weekStart = now.subtract(Duration(days: now.weekday - 1 + i * 7));
+      final key = "\${weekStart.day}/\${weekStart.month}";
+      weeks[key] = 0;
+    }
+
+    for (final ride in rides) {
+      try {
+        final date = (ride["startTime"] as dynamic).toDate() as DateTime;
+        final km = (ride["km"] as num?)?.toDouble() ?? 0;
+        final weekStart = date.subtract(Duration(days: date.weekday - 1));
+        final key = "\${weekStart.day}/\${weekStart.month}";
+        if (weeks.containsKey(key)) {
+          weeks[key] = (weeks[key] ?? 0) + km;
+        }
+      } catch (_) {}
+    }
+
+    _weeklyProgress = weeks.entries
+        .map((e) => {"week": e.key, "km": e.value})
+        .toList();
+    notifyListeners();
+  }
+
 }

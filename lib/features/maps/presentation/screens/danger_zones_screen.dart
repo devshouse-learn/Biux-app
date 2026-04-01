@@ -11,6 +11,7 @@ class DangerZonesScreen extends StatefulWidget {
   State<DangerZonesScreen> createState() => _DangerZonesScreenState();
 }
 
+// ignore_for_file: unused_field
 class _DangerZonesScreenState extends State<DangerZonesScreen> {
   Position? _position;
   bool _reportMode = false;
