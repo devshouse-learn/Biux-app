@@ -496,6 +496,47 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                             height: 1.2,
                           ),
                         ),
+                      if (widget.experience.isRepost &&
+                          widget.experience.originalAuthorUserName != null)
+                        GestureDetector(
+                          onTap: () {
+                            final authorId = widget.experience.originalAuthorId;
+                            if (authorId != null && authorId.isNotEmpty) {
+                              final currentUid =
+                                  FirebaseAuth.instance.currentUser?.uid;
+                              if (currentUid == authorId) {
+                                context.push('/profile');
+                              } else {
+                                context.push('/user-profile/$authorId');
+                              }
+                            }
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.repeat_rounded,
+                                color: Colors.greenAccent,
+                                size: 11,
+                              ),
+                              const SizedBox(width: 3),
+                              Flexible(
+                                child: Text(
+                                  'de @${widget.experience.originalAuthorUserName}',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    color: Colors.greenAccent,
+                                    fontSize: 11,
+                                    height: 1.2,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.greenAccent,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -933,34 +974,39 @@ class _ExperienceStoryViewerState extends State<ExperienceStoryViewer>
                       ? null
                       : () async {
                           setModalState(() => isLoading = true);
+                          // Capturar referencias antes del gap async para evitar
+                          // el error "_dependents.isEmpty" con contextos inválidos
+                          final provider = modalContext
+                              .read<ExperienceProvider>();
+                          final messenger = ScaffoldMessenger.of(context);
                           try {
-                            await context
-                                .read<ExperienceProvider>()
-                                .repostStory(
-                                  widget.experience,
-                                  caption: captionController.text.trim(),
-                                );
-                            if (context.mounted) {
+                            await provider.repostStory(
+                              widget.experience,
+                              caption: captionController.text.trim(),
+                            );
+                            if (modalContext.mounted) {
                               Navigator.pop(modalContext);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    '¡Historia reposteada en tu perfil!',
-                                  ),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
                             }
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  '¡Historia reposteada en tu perfil!',
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
                           } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                            if (modalContext.mounted) {
+                              ScaffoldMessenger.of(modalContext).showSnackBar(
                                 SnackBar(
                                   content: Text('Error al repostear: $e'),
                                 ),
                               );
                             }
                           } finally {
-                            setModalState(() => isLoading = false);
+                            if (modalContext.mounted) {
+                              setModalState(() => isLoading = false);
+                            }
                           }
                         },
                   icon: isLoading

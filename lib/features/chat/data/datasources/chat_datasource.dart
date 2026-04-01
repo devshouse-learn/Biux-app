@@ -13,6 +13,8 @@ class ChatEntity {
   final MessageEntity? lastMessage;
   final DateTime updatedAt;
   final Map<String, int> unreadCount;
+  final Map<String, DateTime> lastReadAt;
+  final Map<String, DateTime> lastDeliveredAt;
 
   /// Alias de participantIds (compatibilidad)
   List<String> get participants => participantIds;
@@ -27,6 +29,8 @@ class ChatEntity {
     this.lastMessage,
     required this.updatedAt,
     required this.unreadCount,
+    this.lastReadAt = const {},
+    this.lastDeliveredAt = const {},
   });
 }
 
@@ -135,7 +139,67 @@ class ChatDatasource {
   Future<void> markMessagesAsRead(String chatId) async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) return;
-    await _db.collection('chats').doc(chatId).update({'unreadCount.$uid': 0});
+    await _db.collection('chats').doc(chatId).update({
+      'unreadCount.$uid': 0,
+      'lastReadAt.$uid': FieldValue.serverTimestamp(),
+      'lastDeliveredAt.$uid': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> markMessagesAsDelivered(String chatId) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    await _db.collection('chats').doc(chatId).update({
+      'lastDeliveredAt.$uid': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Stream<ChatEntity?> getChatStream(String chatId) {
+    return _db
+        .collection('chats')
+        .doc(chatId)
+        .snapshots()
+        .map((doc) => doc.exists ? _chatFromDoc(doc) : null);
+  }
+
+  /// El remitente actualiza sus PROPIOS mensajes con isRead/isDelivered
+  /// basándose en el lastReadAt/lastDeliveredAt del otro usuario.
+  /// Solo el propietario del mensaje puede actualizarlo (senderId == currentUid).
+  Future<void> syncMyMessageReadStatus({
+    required String chatId,
+    required DateTime otherLastReadAt,
+    DateTime? otherLastDeliveredAt,
+  }) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    final snap = await _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .where('senderId', isEqualTo: uid)
+        .get();
+    final batch = _db.batch();
+    bool hasChanges = false;
+    for (final doc in snap.docs) {
+      final data = doc.data();
+      final sentAt = (data['sentAt'] as Timestamp?)?.toDate();
+      if (sentAt == null) continue;
+      final shouldRead = !sentAt.isAfter(otherLastReadAt);
+      final shouldDeliver =
+          otherLastDeliveredAt != null && !sentAt.isAfter(otherLastDeliveredAt);
+      final curRead = data['isRead'] as bool? ?? false;
+      final curDelivered = data['isDelivered'] as bool? ?? false;
+      final updates = <String, dynamic>{};
+      if (shouldRead && !curRead) updates['isRead'] = true;
+      if ((shouldRead || shouldDeliver) && !curDelivered) {
+        updates['isDelivered'] = true;
+      }
+      if (updates.isNotEmpty) {
+        batch.update(doc.reference, updates);
+        hasChanges = true;
+      }
+    }
+    if (hasChanges) await batch.commit();
   }
 
   Future<void> addReaction({
@@ -167,11 +231,28 @@ class ChatDatasource {
         .update({'reactions.$uid': FieldValue.delete()});
   }
 
+  /// Elimina el mensaje solo para el usuario actual (lo oculta con deletedFor)
+  Future<void> deleteMessageForMe({
+    required String chatId,
+    required String messageId,
+  }) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    await _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+          'deletedFor': FieldValue.arrayUnion([uid]),
+        });
+  }
+
   Future<void> deleteMessage({
     required String chatId,
     required String messageId,
   }) async {
-    // Marcar el mensaje como eliminado
+    // Marcar el mensaje como eliminado para todos
     await _db
         .collection('chats')
         .doc(chatId)
@@ -229,6 +310,18 @@ class ChatDatasource {
 
   ChatEntity _chatFromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    Map<String, DateTime> _parseTimestampMap(dynamic raw) {
+      if (raw == null) return {};
+      final result = <String, DateTime>{};
+      final map = Map<String, dynamic>.from(raw as Map);
+      for (final entry in map.entries) {
+        final v = entry.value;
+        if (v is Timestamp) result[entry.key] = v.toDate();
+      }
+      return result;
+    }
+
     return ChatEntity(
       id: doc.id,
       name: data['name'] ?? '',
@@ -246,6 +339,8 @@ class ChatDatasource {
           : null,
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       unreadCount: Map<String, int>.from(data['unreadCount'] ?? {}),
+      lastReadAt: _parseTimestampMap(data['lastReadAt']),
+      lastDeliveredAt: _parseTimestampMap(data['lastDeliveredAt']),
     );
   }
 }

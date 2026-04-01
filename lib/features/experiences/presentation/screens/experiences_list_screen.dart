@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
@@ -179,24 +180,21 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     final posts = allExperiences.where((exp) => exp.isPostFormat).toList();
 
     // Layout tipo Instagram: Grupos arriba, Stories en medio, publicaciones abajo
-    return RefreshIndicator(
-      onRefresh: _loadFeed,
-      child: Column(
-        children: [
-          // Sección de Grupos que sigo (temporalmente comentado)
-          // _buildGroupsSection(),
+    return Column(
+      children: [
+        // Sección de Stories con indicador
+        const ExperiencesStoriesWidget(),
 
-          // Sección de Stories con indicador
-          const ExperiencesStoriesWidget(),
-
-          // Lista de posts abajo o estado vacío
-          Expanded(
+        // Lista de posts abajo o estado vacío
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _loadFeed,
             child: posts.isEmpty
                 ? _buildEmptyStateInLayout()
                 : _buildExperiencesList(posts),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -313,6 +311,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
       },
       child: ListView.builder(
         padding: EdgeInsets.zero,
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: intercaledList.length + (provider.hasMorePosts ? 1 : 0),
         itemBuilder: (context, index) {
           // Mostrar post normal o anuncio
@@ -561,63 +560,82 @@ class _ExperienceCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: PostCard(
-        user: PostCardUser(
-          id: experience.user.id,
-          fullName: experience.user.fullName,
-          userName: experience.user.userName,
-          photo: experience.user.photo,
-        ),
-        imageUrls: imageUrls,
-        description: experience.description,
-        timestamp: _formatDate(experience.createdAt),
-        isEdited: experience.isEdited,
-        onUserTap: () {
-          if (experience.user.id.isNotEmpty) {
-            if (currentUserId == experience.user.id) {
-              context.push('/profile');
-            } else {
-              context.push('/user-profile/${experience.user.id}');
-            }
-          }
-        },
-        // Sin onImageTap: zoom directo en la galería estilo Instagram
-        onDoubleTap: () {
-          // Doble-tap = like (estilo Instagram)
-          final likesProvider = context.read<LikesProvider>();
-          likesProvider.likePost(
-            postId: experience.id,
-            postOwnerId: experience.user.id,
-            postPreview: experience.description.length > 50
-                ? experience.description.substring(0, 50)
-                : experience.description,
-          );
-        },
-        headerTrailing: [
-          GestureDetector(
-            onTap: () => _showPostMenu(context),
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: Icon(
-                Icons.more_vert,
-                color: Theme.of(context).iconTheme.color ?? Colors.grey,
-                size: 22,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PostCard(
+            user: PostCardUser(
+              id: experience.user.id,
+              fullName: experience.user.fullName,
+              userName: experience.user.userName,
+              photo: experience.user.photo,
+            ),
+            imageUrls: imageUrls,
+            description: experience.description,
+            timestamp: _formatDate(experience.createdAt),
+            isEdited: experience.isEdited,
+            headerSubtitle: experience.isRepost
+                ? _RepostBanner(
+                    userName:
+                        (experience.originalAuthorUserName?.isNotEmpty == true)
+                        ? experience.originalAuthorUserName!
+                        : 'usuario',
+                    authorId: experience.originalAuthorId,
+                    currentUserId: currentUserId,
+                  )
+                : null,
+            onUserTap: () {
+              if (experience.user.id.isNotEmpty) {
+                if (currentUserId == experience.user.id) {
+                  context.push('/profile');
+                } else {
+                  context.push('/user-profile/${experience.user.id}');
+                }
+              }
+            },
+            // Sin onImageTap: zoom directo en la galería estilo Instagram
+            onDoubleTap: () {
+              // Doble-tap = like (estilo Instagram)
+              final likesProvider = context.read<LikesProvider>();
+              likesProvider.likePost(
+                postId: experience.id,
+                postOwnerId: experience.user.id,
+                postPreview: experience.description.length > 50
+                    ? experience.description.substring(0, 50)
+                    : experience.description,
+              );
+            },
+            headerTrailing: [
+              GestureDetector(
+                onTap: () => _showPostMenu(context),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.more_vert,
+                    color: Theme.of(context).iconTheme.color ?? Colors.grey,
+                    size: 22,
+                  ),
+                ),
               ),
+            ],
+            actionsWidget: PostSocialActions(
+              postId: experience.id,
+              postOwnerId: experience.user.id,
+              postPreview: experience.description.length > 50
+                  ? experience.description.substring(0, 50)
+                  : experience.description,
+              onRepost:
+                  FirebaseAuth.instance.currentUser?.uid != experience.user.id
+                  ? () => _repostPost(context)
+                  : null,
+            ),
+            bottomWidget: PostCommentsPreview(
+              postId: experience.id,
+              postOwnerId: experience.user.id,
+              maxComments: 2,
             ),
           ),
         ],
-        actionsWidget: PostSocialActions(
-          postId: experience.id,
-          postOwnerId: experience.user.id,
-          postPreview: experience.description.length > 50
-              ? experience.description.substring(0, 50)
-              : experience.description,
-        ),
-        bottomWidget: PostCommentsPreview(
-          postId: experience.id,
-          postOwnerId: experience.user.id,
-          maxComments: 2,
-        ),
       ),
     );
   }
@@ -713,6 +731,82 @@ class _ExperienceCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _repostPost(BuildContext context) async {
+    final theme = Theme.of(context);
+    final captionController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: theme.dialogTheme.backgroundColor ?? theme.cardColor,
+        title: const Text('Repostear publicación'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'De @${experience.user.userName.isNotEmpty ? experience.user.userName : experience.user.fullName}',
+              style: TextStyle(
+                fontSize: 13,
+                color: theme.textTheme.bodySmall?.color,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: captionController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: 'Añade un comentario (opcional)',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                isDense: true,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Repostear'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+    try {
+      await context.read<ExperienceProvider>().repostStory(
+        experience,
+        caption: captionController.text.trim(),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Publicación reposteada!'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al repostear: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   void _confirmDelete(BuildContext context) {
@@ -872,6 +966,77 @@ class _PostOptionTile extends StatelessWidget {
   }
 }
 */
+
+/// Banner de repost que se muestra debajo del chip de usuario en el PostCard
+class _RepostBanner extends StatelessWidget {
+  final String userName;
+  final String? authorId;
+  final String? currentUserId;
+
+  const _RepostBanner({
+    required this.userName,
+    required this.authorId,
+    required this.currentUserId,
+  });
+
+  Future<void> _navigate(BuildContext context) async {
+    if (authorId != null && authorId!.isNotEmpty) {
+      if (currentUserId == authorId) {
+        context.push('/profile');
+      } else {
+        context.push('/user-profile/$authorId');
+      }
+    } else {
+      try {
+        final snap = await FirebaseFirestore.instance
+            .collection('users')
+            .where('userName', isEqualTo: userName)
+            .limit(1)
+            .get();
+        if (snap.docs.isNotEmpty && context.mounted) {
+          final foundId =
+              snap.docs.first.data()['id'] as String? ?? snap.docs.first.id;
+          if (currentUserId == foundId) {
+            context.push('/profile');
+          } else {
+            context.push('/user-profile/$foundId');
+          }
+        }
+      } catch (_) {}
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    return GestureDetector(
+      onTap: () => _navigate(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: primaryColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.repeat_rounded, size: 14, color: Colors.white),
+            const SizedBox(width: 5),
+            Text(
+              'Reposteado de @$userName',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Widget para mostrar un anuncio publicitario en el feed
 class _AdvertisementCard extends StatelessWidget {
   final AdvertisementEntity advertisement;

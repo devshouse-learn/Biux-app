@@ -255,13 +255,18 @@ class _ChatScreenState extends State<ChatScreen> {
                             showAvatar: showAvatar,
                             isDark: isDark,
                             chatId: widget.chat.id,
+                            currentUserId: currentUser?.uid ?? '',
                             onReply: (m) => provider.setReplyingTo(m),
                             onReact: (m, emoji) => provider.addReaction(
                               chatId: widget.chat.id,
                               messageId: m.id,
                               emoji: emoji,
                             ),
-                            onDelete: (m) => provider.deleteMessage(
+                            onDeleteForMe: (m) => provider.deleteMessageForMe(
+                              chatId: widget.chat.id,
+                              messageId: m.id,
+                            ),
+                            onDeleteForAll: (m) => provider.deleteMessage(
                               chatId: widget.chat.id,
                               messageId: m.id,
                             ),

@@ -694,16 +694,15 @@ class ExperienceRepositoryImpl implements ExperienceRepository {
         views: 0,
         reactions: const [],
         viewers: const [],
+        isRepost: true,
+        originalAuthorUserName: original.user.userName.isNotEmpty
+            ? original.user.userName
+            : original.user.fullName,
+        originalAuthorId: original.user.id.isNotEmpty ? original.user.id : null,
       );
 
       final data = repostModel.toJson();
-      data['isRepost'] = true;
       data['originalStoryId'] = original.id;
-      data['originalAuthor'] = {
-        'id': original.user.id,
-        'fullName': original.user.fullName,
-        'userName': original.user.userName,
-      };
 
       await _firestore.collection('experiences').doc(newId).set(data);
     } catch (e) {

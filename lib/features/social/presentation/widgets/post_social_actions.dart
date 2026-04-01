@@ -14,12 +14,14 @@ class PostSocialActions extends StatelessWidget {
   final String postId;
   final String postOwnerId;
   final String? postPreview; // Texto o descripción corta del post
+  final VoidCallback? onRepost;
 
   const PostSocialActions({
     super.key,
     required this.postId,
     required this.postOwnerId,
     this.postPreview,
+    this.onRepost,
   });
 
   @override
@@ -45,6 +47,22 @@ class PostSocialActions extends StatelessWidget {
 
           // Botón de comentarios
           _CommentsButton(postId: postId, postOwnerId: postOwnerId),
+
+          if (onRepost != null) ...[
+            const SizedBox(width: 16),
+            InkWell(
+              onTap: onRepost,
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Icon(
+                  Icons.repeat_rounded,
+                  size: 24,
+                  color: theme.iconTheme.color ?? Colors.grey,
+                ),
+              ),
+            ),
+          ],
 
           const Spacer(),
 
