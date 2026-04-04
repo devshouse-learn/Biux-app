@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -327,6 +328,29 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
+  // Eliminar grupo (solo para el dueño/adminId)
+  Future<bool> deleteGroup(String groupId) async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final success = await _repository.deleteGroup(groupId);
+      if (success) {
+        _allGroups.removeWhere((g) => g.id == groupId);
+        _adminGroups.removeWhere((g) => g.id == groupId);
+        _userGroups.removeWhere((g) => g.id == groupId);
+        if (_selectedGroup?.id == groupId) _selectedGroup = null;
+        notifyListeners();
+      }
+      _setLoading(false);
+      return success;
+    } catch (e) {
+      _setError('group_error_delete');
+      _setLoading(false);
+      return false;
+    }
+  }
+
   // Buscar grupos
   Future<void> searchGroups(String query) async {
     if (query.trim().isEmpty) {
@@ -339,7 +363,7 @@ class GroupProvider extends ChangeNotifier {
       _searchResults = await _repository.searchGroups(query);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error buscando grupos: $e');
+      AppLogger.debug('Error buscando grupos: $e');
     }
   }
 
@@ -377,7 +401,7 @@ class GroupProvider extends ChangeNotifier {
       }
       return user;
     } catch (e) {
-      debugPrint('Error obteniendo usuario $userId: $e');
+      AppLogger.debug('Error obteniendo usuario $userId: $e');
       return null;
     }
   }
@@ -408,22 +432,22 @@ class GroupProvider extends ChangeNotifier {
   ) async {
     List<Map<String, dynamic>> members = [];
 
-    debugPrint('=== OBTENIENDO MIEMBROS DEL GRUPO ===');
-    debugPrint('Grupo: ${group.name}');
-    debugPrint('Admin ID: ${group.adminId}');
-    debugPrint('Member IDs: ${group.memberIds}');
-    debugPrint('====================================');
+    AppLogger.debug('=== OBTENIENDO MIEMBROS DEL GRUPO ===');
+    AppLogger.debug('Grupo: ${group.name}');
+    AppLogger.debug('Admin ID: ${group.adminId}');
+    AppLogger.debug('Member IDs: ${group.memberIds}');
+    AppLogger.debug('====================================');
 
     for (String userId in group.memberIds) {
       final user = await getUserInfo(userId);
 
-      debugPrint('--- Procesando usuario $userId ---');
-      debugPrint('Usuario obtenido: $user');
-      debugPrint('Nombre: ${user?.name}');
-      debugPrint('Foto: ${user?.photoUrl}');
-      debugPrint('Teléfono: ${user?.phoneNumber}');
-      debugPrint('Es admin: ${group.isAdmin(userId)}');
-      debugPrint('--------------------------------');
+      AppLogger.debug('--- Procesando usuario $userId ---');
+      AppLogger.debug('Usuario obtenido: $user');
+      AppLogger.debug('Nombre: ${user?.name}');
+      AppLogger.debug('Foto: ${user?.photoUrl}');
+      AppLogger.debug('Teléfono: ${user?.phoneNumber}');
+      AppLogger.debug('Es admin: ${group.isAdmin(userId)}');
+      AppLogger.debug('--------------------------------');
 
       members.add({
         'userId': userId,
@@ -435,13 +459,13 @@ class GroupProvider extends ChangeNotifier {
       });
     }
 
-    debugPrint('=== RESULTADO FINAL ===');
+    AppLogger.debug('=== RESULTADO FINAL ===');
     for (var member in members) {
-      debugPrint(
+      AppLogger.debug(
         'Miembro: ${member['userName']} (${member['userId']}) - Admin: ${member['isAdmin']}',
       );
     }
-    debugPrint('======================');
+    AppLogger.debug('======================');
 
     return members;
   }
@@ -477,7 +501,7 @@ class GroupProvider extends ChangeNotifier {
       );
       return image;
     } catch (e) {
-      debugPrint('Error seleccionando imagen: $e');
+      AppLogger.debug('Error seleccionando imagen: $e');
       _setError('group_error_select_image');
       return null;
     }
@@ -491,7 +515,7 @@ class GroupProvider extends ChangeNotifier {
       final stream = _rideRepository.getGroupRides(group.id);
       return await stream.first;
     } catch (e) {
-      debugPrint('Error obteniendo rodadas del grupo: $e');
+      AppLogger.debug('Error obteniendo rodadas del grupo: $e');
       return [];
     }
   }
@@ -519,7 +543,7 @@ class GroupProvider extends ChangeNotifier {
         'hasName': false,
       };
     } catch (e) {
-      debugPrint('Error obteniendo info del admin: $e');
+      AppLogger.debug('Error obteniendo info del admin: $e');
       return {
         'fullName': '',
         'userName': '',

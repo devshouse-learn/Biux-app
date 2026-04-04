@@ -1,5 +1,6 @@
+
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:biux/features/achievements/data/datasources/achievements_datasource.dart';
 import 'package:biux/features/achievements/data/datasources/achievements_sync_service.dart';
@@ -7,13 +8,12 @@ import 'package:biux/features/achievements/data/datasources/achievements_sync_se
 class AchievementsProvider with ChangeNotifier {
   final AchievementsDatasource _datasource = AchievementsDatasource();
 
-  static const _lastSyncKey = 'achievements_last_sync';
-  static const _syncIntervalDays = 7;
 
   List<AchievementEntity> _achievements = [];
   bool _isLoading = false;
   bool _isSyncing = false;
   String? _newlyUnlocked;
+  List<AchievementEntity> _recentlyUnlocked = [];
 
   List<AchievementEntity> get achievements => _achievements;
   List<AchievementEntity> get unlockedAchievements =>
@@ -22,34 +22,26 @@ class AchievementsProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isSyncing => _isSyncing;
   String? get newlyUnlocked => _newlyUnlocked;
+  List<AchievementEntity> get recentlyUnlocked => _recentlyUnlocked;
 
   void clearNewlyUnlocked() {
     _newlyUnlocked = null;
+    _recentlyUnlocked = [];
     notifyListeners();
   }
 
   Future<void> loadAchievements(String userId) async {
     _isLoading = true;
     notifyListeners();
-
     try {
       await _syncIfNeeded(userId);
-
       final data = await _datasource.getUserAchievements(userId);
       final defaults = AchievementEntity.defaultAchievements();
-
       _achievements = defaults.map((a) {
         final saved = data[a.id] as Map<String, dynamic>?;
         if (saved != null) {
-          return AchievementEntity(
-            id: a.id,
-            title: a.title,
-            description: a.description,
-            icon: a.icon,
-            category: a.category,
-            targetValue: a.targetValue,
+          return a.copyWith(
             currentValue: (saved['currentValue'] as num?)?.toDouble() ?? 0,
-            isUnlocked: saved['unlocked'] == true,
             unlockedAt: saved['unlockedAt'] != null
                 ? (saved['unlockedAt'] as dynamic).toDate()
                 : null,
@@ -60,95 +52,109 @@ class AchievementsProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('Error loading achievements: \$e');
     }
-
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> _syncIfNeeded(String userId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final lastSync = prefs.getInt(_lastSyncKey) ?? 0;
-      final now = DateTime.now().millisecondsSinceEpoch;
-      final daysSinceSync = (now - lastSync) / (1000 * 60 * 60 * 24);
-
-      if (daysSinceSync >= _syncIntervalDays) {
-        _isSyncing = true;
-        notifyListeners();
-
-        debugPrint(
-          '\ud83d\udd04 Logros: Sync semanal (ultima vez hace \${daysSinceSync.toInt()} dias)',
-        );
-        await AchievementsSyncService.fullSync(userId);
-        await prefs.setInt(_lastSyncKey, now);
-        debugPrint('\u2705 Logros: Sync semanal completada');
-
-        _isSyncing = false;
-      }
-    } catch (e) {
-      _isSyncing = false;
-      debugPrint('\u274c Error en sync semanal: \$e');
-    }
-  }
-
-  Future<void> forceSync(String userId) async {
-    _isSyncing = true;
-    notifyListeners();
-
-    try {
-      await AchievementsSyncService.fullSync(userId);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(_lastSyncKey, DateTime.now().millisecondsSinceEpoch);
-      debugPrint('\u2705 Logros: Sync forzada completada');
-    } catch (e) {
-      debugPrint('\u274c Error en sync forzada: \$e');
-    }
-
-    _isSyncing = false;
-    await loadAchievements(userId);
-  }
-
-  Future<void> checkAndUpdateAchievements(
-    String userId, {
-    double? totalKm,
-    int? totalRides,
-    double? maxSpeed,
-    int? streak,
-    int? groupCount,
+  /// Llamar al terminar una rodada para actualizar logros automáticamente
+  Future<void> onRideCompleted({
+    required String userId,
+    required double km,
+    required double maxSpeedKmh,
+    required int durationSec,
+    required double totalKmAccumulated,
+    required int totalRides,
+    required int streakDays,
   }) async {
-    for (final a in _achievements) {
+    if (_achievements.isEmpty) await loadAchievements(userId);
+
+    _recentlyUnlocked = [];
+
+    for (int i = 0; i < _achievements.length; i++) {
+      final a = _achievements[i];
       if (a.isUnlocked) continue;
 
       double newValue = a.currentValue;
 
       switch (a.category) {
         case 'distance':
-          if (totalKm != null) newValue = totalKm;
+          newValue = totalKmAccumulated;
           break;
         case 'rides':
-          if (totalRides != null) newValue = totalRides.toDouble();
+          newValue = totalRides.toDouble();
           break;
         case 'speed':
-          if (maxSpeed != null) newValue = maxSpeed;
+          if (maxSpeedKmh > a.currentValue) newValue = maxSpeedKmh;
           break;
         case 'streak':
-          if (streak != null) newValue = streak.toDouble();
+          newValue = streakDays.toDouble();
           break;
-        case 'social':
-          if (groupCount != null) newValue = groupCount.toDouble();
+        default:
           break;
       }
 
       if (newValue != a.currentValue) {
-        await _datasource.updateProgress(userId, a.id, newValue);
+        _achievements[i] = a.copyWith(currentValue: newValue);
       }
 
-      if (newValue >= a.targetValue && !a.isUnlocked) {
-        await _datasource.unlockAchievement(userId, a.id);
-        _newlyUnlocked = a.title;
+      // Verificar si se desbloquea
+      if (_achievements[i].currentValue >= _achievements[i].targetValue &&
+          !_achievements[i].isUnlocked) {
+        _achievements[i] = _achievements[i].copyWith(
+          unlockedAt: DateTime.now(),
+        );
+        _recentlyUnlocked.add(_achievements[i]);
+        _newlyUnlocked = _achievements[i].id;
       }
     }
 
-    await loadAchievements(userId);
+    // Persistir en Firestore
+    if (_recentlyUnlocked.isNotEmpty || true) {
+      try {
+        final batch = FirebaseFirestore.instance.batch();
+        final ref = FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('achievements');
+
+        for (final a in _achievements) {
+          batch.set(ref.doc(a.id), {
+            'currentValue': a.currentValue,
+            'unlockedAt': a.unlockedAt,
+          }, SetOptions(merge: true));
+        }
+        await batch.commit();
+      } catch (e) {
+        debugPrint('Error saving achievements: \$e');
+      }
+    }
+
+    notifyListeners();
   }
+
+  Future<void> _syncIfNeeded(String userId) async {
+    _isSyncing = true;
+    notifyListeners();
+    try {
+      await AchievementsSyncService.syncIfNeeded(userId);
+    } catch (e) {
+      debugPrint('Sync error: $e');
+    }
+    _isSyncing = false;
+    notifyListeners();
+  }
+  /// Fuerza sincronización completa — llamado desde UI
+  Future<void> forceSync(String userId) async {
+    _isSyncing = true;
+    notifyListeners();
+    try {
+      await AchievementsSyncService.fullSync(userId);
+      await loadAchievements(userId);
+    } catch (e) {
+      debugPrint('forceSync error: $e');
+    }
+    _isSyncing = false;
+    notifyListeners();
+  }
+
 }

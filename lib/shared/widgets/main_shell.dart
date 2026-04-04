@@ -38,13 +38,13 @@ class _MainShellState extends State<MainShell> {
   String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
     switch (index) {
       case 0:
-        return 'FEED';
+        return 'BIUX';
       case 1:
-        return 'RODADAS';
+        return 'BIUX';
       case 2:
-        return 'MIS BICIS';
+        return 'BIUX';
       case 3:
-        return l.t('shop').toUpperCase();
+        return 'BIUX';
       case 4:
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         final username = userProvider.user?.username;
@@ -78,14 +78,12 @@ class _MainShellState extends State<MainShell> {
               style: Styles.mainMenuTextBiux,
             ),
             actions: [
-
               // Buscar usuarios (solo en tab de inicio)
               if (_selectedIndex == 0)
                 IconButton(
                   icon: const Icon(Icons.search, color: Colors.white),
                   onPressed: () => context.push('/users/search'),
                 ),
-
               // Notificaciones con badge
               Consumer<NotificationsProvider?>(
                 builder: (context, provider, child) {
@@ -124,15 +122,11 @@ class _MainShellState extends State<MainShell> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.group, size: 28),
+                icon: Icon(Icons.diversity_3, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.pedal_bike, size: 28),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
@@ -169,10 +163,6 @@ class _MainShellState extends State<MainShell> {
         context.go(AppRoutes.myBikes);
         break;
       case 3:
-        // Tienda
-        context.go('/shop');
-        break;
-      case 4:
         // Mi Perfil
         context.go('/profile');
         break;
@@ -210,13 +200,9 @@ class _MainShellState extends State<MainShell> {
       setState(() {
         _selectedIndex = 2;
       });
-    } else if (location.startsWith('/shop')) {
-      setState(() {
-        _selectedIndex = 3;
-      });
     } else if (location.startsWith('/profile')) {
       setState(() {
-        _selectedIndex = 4;
+        _selectedIndex = 3;
       });
     }
   }

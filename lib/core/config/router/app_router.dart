@@ -1,4 +1,5 @@
 import 'package:biux/features/shop/presentation/screens/add_product_screen.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -134,22 +135,22 @@ final AuthNotifier _authNotifier = AuthNotifier();
 /// Convierte URLs de dominio personalizado a rutas internas
 /// Ej: https://biux.devshouse.org/ride/123 → /rides/123
 String? _convertDeepLinkToRoute(String location) {
-  debugPrint('🔗 Intentando convertir deep link: $location');
+  AppLogger.debug('🔗 Intentando convertir deep link: $location');
 
   try {
     final uri = Uri.parse(location);
 
     // Manejar dominio personalizado
     if (uri.scheme == 'https' && uri.host == 'biux.devshouse.org') {
-      debugPrint('🔗 Detectado app link de biux.devshouse.org');
-      debugPrint('🔗 Path: ${uri.path}, Segments: ${uri.pathSegments}');
+      AppLogger.debug('🔗 Detectado app link de biux.devshouse.org');
+      AppLogger.debug('🔗 Path: ${uri.path}, Segments: ${uri.pathSegments}');
 
       // https://biux.devshouse.org/ride/{rideId} → /rides/{rideId}
       if (uri.path.startsWith('/ride/')) {
         final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          debugPrint('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
           return newRoute;
         }
       }
@@ -159,20 +160,20 @@ String? _convertDeepLinkToRoute(String location) {
         final rideId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          debugPrint('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
           return newRoute;
         }
       }
 
       // https://biux.devshouse.org/posts/{postId} → /stories
       if (uri.path.startsWith('/posts/')) {
-        debugPrint('✅ Ruta convertida: $location → /stories');
+        AppLogger.info('✅ Ruta convertida: $location → /stories');
         return '/stories';
       }
 
       // https://biux.devshouse.org/stories/{storyId} → /stories
       if (uri.path.startsWith('/stories/')) {
-        debugPrint('✅ Ruta convertida: $location → /stories');
+        AppLogger.info('✅ Ruta convertida: $location → /stories');
         return '/stories';
       }
 
@@ -183,7 +184,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
-          debugPrint('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
           return newRoute;
         }
       }
@@ -193,7 +194,7 @@ String? _convertDeepLinkToRoute(String location) {
         final userId = uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
         if (userId != null && userId.isNotEmpty) {
           final newRoute = '/user-profile/$userId';
-          debugPrint('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
           return newRoute;
         }
       }
@@ -201,7 +202,7 @@ String? _convertDeepLinkToRoute(String location) {
 
     // Manejar esquema biux://
     if (uri.scheme == 'biux') {
-      debugPrint('🔗 Detectado deep link con esquema biux://');
+      AppLogger.debug('🔗 Detectado deep link con esquema biux://');
 
       // biux://ride/{rideId}
       if (uri.host == 'ride') {
@@ -210,7 +211,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (rideId != null && rideId.isNotEmpty) {
           final newRoute = '/rides/$rideId';
-          debugPrint('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
           return newRoute;
         }
       }
@@ -222,7 +223,7 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (groupId != null && groupId.isNotEmpty) {
           final newRoute = '/groups/$groupId';
-          debugPrint('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
           return newRoute;
         }
       }
@@ -234,13 +235,13 @@ String? _convertDeepLinkToRoute(String location) {
             : null;
         if (userId != null && userId.isNotEmpty) {
           final newRoute = '/user-profile/$userId';
-          debugPrint('✅ Ruta convertida: $location → $newRoute');
+          AppLogger.info('✅ Ruta convertida: $location → $newRoute');
           return newRoute;
         }
       }
     }
   } catch (e) {
-    debugPrint('❌ Error al procesar deep link: $e');
+    AppLogger.error('❌ Error al procesar deep link: $e');
   }
 
   return null;
@@ -252,17 +253,17 @@ String? _guard(BuildContext context, GoRouterState state) {
   final User? user = _authNotifier.user;
   final String location = state.uri.toString();
 
-  debugPrint(
+  AppLogger.debug(
     '🔍 Router Guard - Location: $location, isLoggedIn: $isLoggedIn, uid: ${user?.uid}',
   );
 
   // EN WEB: Permitir acceso sin autenticación
   if (kIsWeb) {
-    debugPrint('🌐 WEB: Permitiendo acceso sin autenticación');
+    AppLogger.debug('🌐 WEB: Permitiendo acceso sin autenticación');
 
     // Si está en root, redirigir a las rutas
     if (location == '/') {
-      debugPrint('📍 Root en web, redirigiendo a rutas');
+      AppLogger.debug('📍 Root en web, redirigiendo a rutas');
       return '/roads';
     }
 
@@ -275,16 +276,16 @@ String? _guard(BuildContext context, GoRouterState state) {
   final convertedRoute = _convertDeepLinkToRoute(location);
   if (convertedRoute != null) {
     effectiveLocation = convertedRoute;
-    debugPrint('🔗 Deep link convertido: $location → $effectiveLocation');
+    AppLogger.debug('🔗 Deep link convertido: $location → $effectiveLocation');
   }
 
   // Si está en la ruta root '/', decidir dónde ir según autenticación
   if (effectiveLocation == '/') {
     if (isLoggedIn) {
-      debugPrint('📍 Usuario logueado en root, redirigiendo a inicio');
+      AppLogger.debug('📍 Usuario logueado en root, redirigiendo a inicio');
       return '/stories';
     } else {
-      debugPrint('📍 Usuario no logueado en root, redirigiendo al login');
+      AppLogger.debug('📍 Usuario no logueado en root, redirigiendo al login');
       return AppRoutes.login;
     }
   }
@@ -302,7 +303,7 @@ String? _guard(BuildContext context, GoRouterState state) {
   if (isPublicRoute) {
     // Si está logueado y trata de ir al login, redirigir a experiencias
     if (isLoggedIn && effectiveLocation == AppRoutes.login) {
-      debugPrint(
+      AppLogger.debug(
         '📍 Usuario logueado intentando ir al login, redirigiendo a experiencias',
       );
       return '/stories';
@@ -313,20 +314,20 @@ String? _guard(BuildContext context, GoRouterState state) {
 
   // Para rutas privadas, verificar autenticación
   if (!isLoggedIn) {
-    debugPrint('🚫 Usuario no autenticado, redirigiendo al login');
+    AppLogger.debug('🚫 Usuario no autenticado, redirigiendo al login');
     return AppRoutes.login;
   }
 
   // Usuario autenticado accediendo a ruta privada
   // Si hubo conversión de deep link, redirigir a la ruta convertida
   if (convertedRoute != null) {
-    debugPrint(
+    AppLogger.debug(
       '✅ Usuario autenticado, redirigiendo a ruta convertida: $convertedRoute',
     );
     return convertedRoute;
   }
 
-  debugPrint('✅ Usuario autenticado, permitiendo acceso');
+  AppLogger.info('✅ Usuario autenticado, permitiendo acceso');
   return null;
 }
 
@@ -913,7 +914,8 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: AppRoutes.rideTracker,
       name: AppRoutes.rideTrackerName,
-      builder: (context, state) => const RideTrackerScreen(),
+      builder: (context, state) =>
+          RideTrackerScreen(showHistory: state.extra == true),
     ),
     GoRoute(
       path: AppRoutes.rideRecommendations,

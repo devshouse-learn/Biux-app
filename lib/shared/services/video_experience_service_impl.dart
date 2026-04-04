@@ -1,3 +1,6 @@
+/// Re-exporta el servicio de video implementado en el feature de experiencias.
+export 'package:biux/features/experiences/data/datasources/video_experience_datasource.dart';
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';

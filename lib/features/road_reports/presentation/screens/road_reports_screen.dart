@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/road_reports/presentation/providers/road_reports_provider.dart';
@@ -16,12 +19,56 @@ class RoadReportsScreen extends StatefulWidget {
 class _RoadReportsScreenState extends State<RoadReportsScreen> {
   String get _currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
+  // Caché de reverse geocoding para evitar llamadas repetidas
+  final Map<String, String> _addressCache = {};
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RoadReportsProvider>().loadReports();
     });
+  }
+
+  /// Devuelve dirección legible usando Nominatim (OpenStreetMap), sin API key.
+  Future<String> _reverseGeocode(double lat, double lon) async {
+    final key = '${lat.toStringAsFixed(5)},${lon.toStringAsFixed(5)}';
+    if (_addressCache.containsKey(key)) return _addressCache[key]!;
+    try {
+      final uri = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&addressdetails=1&accept-language=es',
+      );
+      final res = await http.get(uri, headers: {'User-Agent': 'BiuxApp/1.0'});
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body) as Map<String, dynamic>;
+        final addr = data['address'] as Map<String, dynamic>? ?? {};
+        final parts = <String>[];
+        // Calle / barrio
+        final street =
+            addr['road'] as String? ?? addr['pedestrian'] as String? ?? '';
+        final suburb =
+            addr['suburb'] as String? ?? addr['neighbourhood'] as String? ?? '';
+        if (street.isNotEmpty) parts.add(street);
+        if (suburb.isNotEmpty && suburb != street) parts.add(suburb);
+        // Ciudad / municipio
+        final city =
+            addr['city'] as String? ??
+            addr['town'] as String? ??
+            addr['municipality'] as String? ??
+            addr['village'] as String? ??
+            '';
+        if (city.isNotEmpty) parts.add(city);
+        // Departamento / estado
+        final state = addr['state'] as String? ?? '';
+        if (state.isNotEmpty && state != city) parts.add(state);
+        final result = parts.isNotEmpty
+            ? parts.join(', ')
+            : 'Ubicación desconocida';
+        _addressCache[key] = result;
+        return result;
+      }
+    } catch (_) {}
+    return 'Lat ${lat.toStringAsFixed(4)}, Lon ${lon.toStringAsFixed(4)}';
   }
 
   Future<Position?> _getCurrentPosition() async {
@@ -293,6 +340,91 @@ class _RoadReportsScreenState extends State<RoadReportsScreen> {
             Text(
               r.description,
               style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 8),
+
+            // Ubicación — dirección detallada
+            FutureBuilder<String>(
+              future: _reverseGeocode(r.latitude, r.longitude),
+              builder: (context, snap) {
+                final address = snap.data ?? '';
+                final loading = snap.connectionState == ConnectionState.waiting;
+                return GestureDetector(
+                  onTap: () async {
+                    final uri = Uri.parse(
+                      'https://www.google.com/maps/search/?api=1&query=${r.latitude},${r.longitude}',
+                    );
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.blue.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          size: 14,
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: loading
+                              ? Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                      height: 10,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 1.5,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Obteniendo dirección...',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.blue.withValues(
+                                          alpha: 0.7,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Text(
+                                  address,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.open_in_new,
+                          size: 11,
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 12),
 

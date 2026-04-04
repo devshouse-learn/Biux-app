@@ -159,24 +159,31 @@ class ChatProvider extends ChangeNotifier {
     await _ds.deleteMessage(chatId: chatId, messageId: messageId);
   }
 
-
   /// Stream directo de Firestore (compatibilidad con chat_list_screen)
   Stream<QuerySnapshot> getChatsStream(String uid) {
     return FirebaseFirestore.instance
         .collection('chats')
         .where('participantIds', arrayContains: uid)
-        .orderBy('updatedAt', descending: true)
         .snapshots();
   }
 
   /// Crea o recupera un chat directo (compatibilidad legacy)
   Future<String> startDirectChat(String myUid, String otherUid) async {
-    // Buscar si ya existe
-    final existing = _chats.where((c) =>
-        c.type == ChatType.direct &&
-        c.participantIds.contains(myUid) &&
-        c.participantIds.contains(otherUid)).toList();
-    if (existing.isNotEmpty) return existing.first.id;
+    // Buscar en Firestore si ya existe un chat directo entre estos dos usuarios
+    final query = await FirebaseFirestore.instance
+        .collection('chats')
+        .where('participantIds', arrayContains: myUid)
+        .where('type', isEqualTo: 'direct')
+        .get();
+
+    for (final doc in query.docs) {
+      final data = doc.data();
+      final ids = List<String>.from(data['participantIds'] ?? []);
+      if (ids.contains(otherUid) && ids.length == 2) {
+        return doc.id;
+      }
+    }
+
     return _ds.createChat(
       participantIds: [myUid, otherUid],
       type: ChatType.direct,

@@ -29,11 +29,41 @@ class _ChatListScreenState extends State<ChatListScreen>
   List<Map<String, dynamic>> _followingUsers = [];
   Set<String> _mutualUidSet = {};
 
+  // Stream cacheado para evitar recrear suscripciones
+  Stream<QuerySnapshot>? _chatsStream;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _loadFriends();
+    _initChat();
+  }
+
+  Future<void> _initChat() async {
+    // Esperar a que Firebase Auth tenga usuario si aún no lo tiene
+    var uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) {
+      // Esperar al primer evento de auth
+      final user = await FirebaseAuth.instance.authStateChanges().firstWhere(
+        (u) => u != null,
+      );
+      uid = user?.uid;
+    }
+    if (uid != null && uid.isNotEmpty && mounted) {
+      _initChatsStream(uid);
+      _loadFriends();
+    } else {
+      if (mounted) setState(() => _loadingFriends = false);
+    }
+  }
+
+  void _initChatsStream(String uid) {
+    final chatProvider = context.read<ChatProvider>();
+    if (mounted) {
+      setState(() {
+        _chatsStream = chatProvider.getChatsStream(uid);
+      });
+    }
   }
 
   @override
@@ -46,7 +76,10 @@ class _ChatListScreenState extends State<ChatListScreen>
   String get _uid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   Future<void> _loadFriends() async {
-    if (_uid.isEmpty) return;
+    if (_uid.isEmpty) {
+      if (mounted) setState(() => _loadingFriends = false);
+      return;
+    }
     try {
       final myDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -116,7 +149,7 @@ class _ChatListScreenState extends State<ChatListScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? ColorTokens.neutral10 : Colors.grey[50],
+      backgroundColor: isDark ? ColorTokens.primary10 : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Mensajes'),
         backgroundColor: ColorTokens.primary30,
@@ -150,38 +183,36 @@ class _ChatListScreenState extends State<ChatListScreen>
     );
   }
 
-
   // =================== TAB DE CHATS ===================
   Widget _buildChatsTab() {
-    final chatProvider = context.read<ChatProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
         // Barra de busqueda
         Container(
           padding: const EdgeInsets.all(12),
-          color: isDark ? ColorTokens.neutral10 : Colors.white,
+          color: isDark ? ColorTokens.primary10 : Colors.white,
           child: TextField(
             controller: _searchCtrl,
             style: TextStyle(
-              color: isDark ? ColorTokens.neutral100 : ColorTokens.neutral10,
+              color: isDark ? Colors.white : ColorTokens.neutral10,
             ),
             decoration: InputDecoration(
               hintText: 'Buscar conversación...',
               hintStyle: TextStyle(
-                color: isDark ? ColorTokens.neutral60 : Colors.grey[500],
+                color: isDark ? Colors.white54 : Colors.grey[500],
               ),
               prefixIcon: Icon(
                 Icons.search,
                 size: 20,
-                color: isDark ? ColorTokens.neutral60 : Colors.grey[500],
+                color: isDark ? Colors.white54 : Colors.grey[500],
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(24),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: isDark ? ColorTokens.neutral20 : Colors.grey[100],
+              fillColor: isDark ? ColorTokens.primary20 : Colors.grey[100],
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 10,
@@ -193,212 +224,358 @@ class _ChatListScreenState extends State<ChatListScreen>
         ),
         // Lista de chats
         Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: chatProvider.getChatsStream(_uid),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ColorTokens.primary30.withValues(alpha: 0.1),
-                        ),
-                        child: Icon(
-                          Icons.chat_bubble_outline,
-                          size: 64,
-                          color: ColorTokens.primary30.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'No tienes conversaciones',
-                        style: TextStyle(
-                          color: isDark
-                              ? ColorTokens.neutral90
-                              : Colors.grey[700],
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Inicia un chat con otro ciclista',
-                        style: TextStyle(
-                          color: isDark
-                              ? ColorTokens.neutral60
-                              : Colors.grey[400],
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: () => _showNewChat(context),
-                        icon: const Icon(Icons.add),
-                        label: const Text('Nuevo mensaje'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorTokens.primary30,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              final docs = snapshot.data!.docs;
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                itemCount: docs.length,
-                itemBuilder: (context, i) {
-                  final data = docs[i].data() as Map<String, dynamic>;
-                  final chatId = docs[i].id;
-                  final participants =
-                      data['participants'] as List<dynamic>? ?? [];
-                  final lastMsg = data['lastMessage'] as String? ?? '';
-                  final lastTime = data['lastMessageTime'] as Timestamp?;
-                  final type = data['type'] as String? ?? 'direct';
-                  final isGroup = type == 'group';
-                  final otherUid = isGroup ? '' : _getOtherUid(participants);
-
-                  return FutureBuilder<Map<String, dynamic>>(
-                    future: isGroup ? Future.value({}) : _getUserData(otherUid),
-                    builder: (context, userSnap) {
-                      // No renderizar hasta que la data del usuario esté lista
-                      if (!isGroup &&
-                          userSnap.connectionState != ConnectionState.done) {
-                        return const SizedBox.shrink();
-                      }
-                      final userData = userSnap.data ?? {};
-                      final name = isGroup
-                          ? 'Chat grupal'
-                          : (userData['name'] as String? ?? 'Ciclista');
-                      final photo = userData['photoUrl'] as String? ?? '';
-
-                      if (_searchQuery.isNotEmpty &&
-                          !name.toLowerCase().contains(_searchQuery)) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 4),
-                        color: isDark ? ColorTokens.neutral10 : Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => context.push('/chat/$chatId'),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
+          child: _chatsStream == null
+              ? const Center(child: CircularProgressIndicator())
+              : StreamBuilder<QuerySnapshot>(
+                  stream: _chatsStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      debugPrint('Error en chats stream: ${snapshot.error}');
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              size: 48,
+                              color: Colors.red[300],
                             ),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 26,
-                                  backgroundColor: isGroup
-                                      ? Colors.blue.withValues(alpha: 0.1)
-                                      : ColorTokens.primary30.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                  backgroundImage: photo.isNotEmpty
-                                      ? NetworkImage(photo)
-                                      : null,
-                                  child: photo.isEmpty
-                                      ? Icon(
-                                          isGroup ? Icons.group : Icons.person,
-                                          color: isGroup
-                                              ? Colors.blue
-                                              : ColorTokens.primary30,
-                                          size: 26,
-                                        )
-                                      : null,
+                            const SizedBox(height: 12),
+                            Text(
+                              'Error al cargar chats',
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.grey[700],
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _chatsStream = context
+                                      .read<ChatProvider>()
+                                      .getChatsStream(_uid);
+                                });
+                              },
+                              child: const Text('Reintentar'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: ColorTokens.primary30.withValues(
+                                  alpha: 0.1,
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                              ),
+                              child: Icon(
+                                Icons.chat_bubble_outline,
+                                size: 64,
+                                color: ColorTokens.primary30.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'No tienes conversaciones',
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.grey[700],
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Inicia un chat con otro ciclista',
+                              style: TextStyle(
+                                color: isDark
+                                    ? Colors.white54
+                                    : Colors.grey[400],
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () => _showNewChat(context),
+                              icon: const Icon(Icons.add),
+                              label: const Text('Nuevo mensaje'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorTokens.primary30,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    // Ordenar client-side por updatedAt o lastMessageTime descendente
+                    final allDocs = snapshot.data!.docs.toList()
+                      ..sort((a, b) {
+                        final aData = a.data() as Map<String, dynamic>;
+                        final bData = b.data() as Map<String, dynamic>;
+                        final aTime = (aData['updatedAt'] ?? aData['lastMessageTime']) as Timestamp?;
+                        final bTime = (bData['updatedAt'] ?? bData['lastMessageTime']) as Timestamp?;
+                        if (aTime == null && bTime == null) return 0;
+                        if (aTime == null) return 1;
+                        if (bTime == null) return -1;
+                        return bTime.compareTo(aTime);
+                      });
+
+                    // Deduplicar: para chats directos, una sola entrada por par de usuarios
+                    final seenKeys = <String>{};
+                    final docs = allDocs.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      final type = data['type'] as String? ?? 'direct';
+                      if (type != 'direct')
+                        return true; // grupos siempre se muestran
+                      final ids = List<String>.from(
+                        data['participantIds'] ?? data['participants'] ?? [],
+                      );
+                      ids.sort();
+                      final key = ids.join('_');
+                      if (seenKeys.contains(key)) return false;
+                      seenKeys.add(key);
+                      return true;
+                    }).toList();
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      itemCount: docs.length,
+                      itemBuilder: (context, i) {
+                        final data = docs[i].data() as Map<String, dynamic>;
+                        final chatId = docs[i].id;
+                        final participants =
+                            data['participantIds'] as List<dynamic>? ??
+                            data['participants'] as List<dynamic>? ??
+                            [];
+                        final lastTime = (data['updatedAt'] ?? data['lastMessageTime']) as Timestamp?;
+                        final lastMsgRaw = data['lastMessage'];
+                        final String lastMsg;
+                        if (lastMsgRaw is String) {
+                          lastMsg = lastMsgRaw;
+                        } else if (lastMsgRaw is Map) {
+                          final type = lastMsgRaw['type'] as String? ?? 'text';
+                          final content = lastMsgRaw['content'] as String? ?? '';
+                          if (type == 'voice') {
+                            lastMsg = '🎤 Audio';
+                          } else if (type == 'image') {
+                            lastMsg = '📷 Imagen';
+                          } else if (type == 'location') {
+                            lastMsg = '📍 Ubicación';
+                          } else {
+                            lastMsg = content;
+                          }
+                        } else {
+                          lastMsg = '';
+                        }
+                        final unreadCount = data['unreadCount'] as Map<String, dynamic>? ?? {};
+                        final unread = (unreadCount[_uid] as int?) ?? 0;
+                        final type = data['type'] as String? ?? 'direct';
+                        final isGroup = type == 'group';
+                        final otherUid = isGroup
+                            ? ''
+                            : _getOtherUid(participants);
+
+                        return FutureBuilder<Map<String, dynamic>>(
+                          future: isGroup
+                              ? Future.value({})
+                              : _getUserData(otherUid),
+                          builder: (context, userSnap) {
+                            // No renderizar hasta que la data del usuario esté lista
+                            if (!isGroup &&
+                                userSnap.connectionState !=
+                                    ConnectionState.done) {
+                              return const SizedBox.shrink();
+                            }
+                            final userData = userSnap.data ?? {};
+                            final name = isGroup
+                                ? 'Chat grupal'
+                                : (userData['fullName'] as String? ??
+                                      userData['name'] as String? ??
+                                      'Ciclista');
+                            final photo =
+                                userData['photoUrl'] as String? ??
+                                userData['photo'] as String? ??
+                                '';
+
+                            if (_searchQuery.isNotEmpty &&
+                                !name.toLowerCase().contains(_searchQuery)) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 4),
+                              color: isDark
+                                  ? ColorTokens.primary20
+                                  : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () => context.push('/chat/$chatId'),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                  child: Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              name,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15,
-                                                color: isDark
-                                                    ? ColorTokens.neutral100
-                                                    : ColorTokens.neutral10,
+                                      CircleAvatar(
+                                        radius: 26,
+                                        backgroundColor: isGroup
+                                            ? Colors.blue.withValues(alpha: 0.1)
+                                            : ColorTokens.primary30.withValues(
+                                                alpha: 0.1,
                                               ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          if (lastTime != null)
-                                            Text(
-                                              timeago.format(
-                                                lastTime.toDate(),
-                                                locale: 'es',
-                                              ),
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: isDark
-                                                    ? ColorTokens.neutral60
-                                                    : Colors.grey[500],
-                                              ),
-                                            ),
-                                        ],
+                                        backgroundImage: photo.isNotEmpty
+                                            ? NetworkImage(photo)
+                                            : null,
+                                        child: photo.isEmpty
+                                            ? Icon(
+                                                isGroup
+                                                    ? Icons.group
+                                                    : Icons.person,
+                                                color: isGroup
+                                                    ? Colors.blue
+                                                    : ColorTokens.primary30,
+                                                size: 26,
+                                              )
+                                            : null,
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        lastMsg.isEmpty
-                                            ? 'Sin mensajes aún'
-                                            : lastMsg,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: lastMsg.isEmpty
-                                              ? (isDark
-                                                    ? ColorTokens.neutral50
-                                                    : Colors.grey[400])
-                                              : (isDark
-                                                    ? ColorTokens.neutral70
-                                                    : Colors.grey[600]),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    name,
+                                                    style: TextStyle(
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w700
+                                                          : FontWeight.w600,
+                                                      fontSize: 15,
+                                                      color: isDark
+                                                          ? Colors.white
+                                                          : ColorTokens.neutral10,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                if (lastTime != null)
+                                                  Text(
+                                                    timeago.format(
+                                                      lastTime.toDate(),
+                                                      locale: 'es',
+                                                    ),
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: unread > 0
+                                                          ? ColorTokens.primary30
+                                                          : (isDark
+                                                              ? Colors.white54
+                                                              : Colors.grey[500]),
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    lastMsg.isEmpty
+                                                        ? 'Sin mensajes aún'
+                                                        : lastMsg,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                      color: lastMsg.isEmpty
+                                                          ? (isDark ? Colors.white38 : Colors.grey[400])
+                                                          : (isDark ? Colors.white70 : Colors.grey[600]),
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (unread > 0)
+                                                  Container(
+                                                    margin: const EdgeInsets.only(left: 6),
+                                                    padding: const EdgeInsets.symmetric(
+                                                        horizontal: 7, vertical: 3),
+                                                    decoration: BoxDecoration(
+                                                      color: ColorTokens.primary30,
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    child: Text(
+                                                      unread > 99 ? '99+' : '\$unread',
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 11,
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
         ),
       ],
     );
+  }
+
+  /// Obtiene el nombre de un mapa de datos de usuario con fallback
+  String _getUserName(Map<String, dynamic> data) {
+    return data['fullName'] as String? ?? data['name'] as String? ?? 'Ciclista';
+  }
+
+  /// Obtiene la foto de un mapa de datos de usuario con fallback
+  String _getUserPhoto(Map<String, dynamic> data) {
+    return data['photoUrl'] as String? ?? data['photo'] as String? ?? '';
   }
 
   // =================== TAB DE AMIGOS ===================
@@ -429,7 +606,7 @@ class _ChatListScreenState extends State<ChatListScreen>
             Text(
               'Aún no tienes amigos',
               style: TextStyle(
-                color: isDark ? ColorTokens.neutral90 : Colors.grey[700],
+                color: isDark ? Colors.white : Colors.grey[700],
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -441,7 +618,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                 'Sigue a otros ciclistas y cuando te sigan de vuelta aparecerán aquí',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: isDark ? ColorTokens.neutral60 : Colors.grey[400],
+                  color: isDark ? Colors.white54 : Colors.grey[400],
                   fontSize: 14,
                 ),
               ),
@@ -457,13 +634,16 @@ class _ChatListScreenState extends State<ChatListScreen>
       itemBuilder: (context, i) {
         final friend = _friends[i];
         final friendUid = friend['uid'] as String;
-        final name = friend['name'] as String? ?? 'Ciclista';
-        final photo = friend['photoUrl'] as String? ?? '';
-        final username = friend['username'] as String? ?? '';
+        final name = _getUserName(friend);
+        final photo = _getUserPhoto(friend);
+        final username =
+            friend['username'] as String? ??
+            friend['userName'] as String? ??
+            '';
 
         return Card(
           margin: const EdgeInsets.only(bottom: 4),
-          color: isDark ? ColorTokens.neutral10 : Colors.white,
+          color: isDark ? ColorTokens.primary20 : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -510,7 +690,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
                             color: isDark
-                                ? ColorTokens.neutral100
+                                ? Colors.white
                                 : ColorTokens.neutral10,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -521,9 +701,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                             '@$username',
                             style: TextStyle(
                               fontSize: 13,
-                              color: isDark
-                                  ? ColorTokens.neutral60
-                                  : Colors.grey[500],
+                              color: isDark ? Colors.white54 : Colors.grey[500],
                             ),
                           ),
                         ],
@@ -556,13 +734,13 @@ class _ChatListScreenState extends State<ChatListScreen>
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setBS) {
+          final mIsDark = Theme.of(ctx).brightness == Brightness.dark;
           final filtered = filterQuery.isEmpty
               ? _followingUsers
               : _followingUsers
                     .where(
-                      (u) => (u['name'] as String? ?? '')
-                          .toLowerCase()
-                          .contains(filterQuery),
+                      (u) =>
+                          _getUserName(u).toLowerCase().contains(filterQuery),
                     )
                     .toList();
 
@@ -593,7 +771,10 @@ class _ChatListScreenState extends State<ChatListScreen>
                   const SizedBox(height: 4),
                   Text(
                     'Elige un ciclista que sigues',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    style: TextStyle(
+                      color: mIsDark ? Colors.white54 : Colors.grey[500],
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -619,15 +800,19 @@ class _ChatListScreenState extends State<ChatListScreen>
                                 Icon(
                                   Icons.person_search,
                                   size: 48,
-                                  color: Colors.grey[300],
+                                  color: mIsDark
+                                      ? Colors.white24
+                                      : Colors.grey[300],
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   _followingUsers.isEmpty
-                                      ? 'A\u00fan no sigues a nadie'
+                                      ? 'Aún no sigues a nadie'
                                       : 'Sin resultados',
                                   style: TextStyle(
-                                    color: Colors.grey[400],
+                                    color: mIsDark
+                                        ? Colors.white54
+                                        : Colors.grey[400],
                                     fontSize: 13,
                                   ),
                                 ),
@@ -640,10 +825,8 @@ class _ChatListScreenState extends State<ChatListScreen>
                             itemBuilder: (ctx, i) {
                               final userData = filtered[i];
                               final userId = userData['uid'] as String;
-                              final name =
-                                  userData['name'] as String? ?? 'Ciclista';
-                              final photo =
-                                  userData['photoUrl'] as String? ?? '';
+                              final name = _getUserName(userData);
+                              final photo = _getUserPhoto(userData);
                               final isMutual = _mutualUidSet.contains(userId);
 
                               return ListTile(
@@ -718,8 +901,13 @@ class _ChatListScreenState extends State<ChatListScreen>
           .collection('users')
           .doc(_uid)
           .get();
-      final myName = myDoc.data()?['name'] as String? ?? 'Ciclista';
-      final myPhoto = myDoc.data()?['photoUrl'] as String? ?? '';
+      final myData = myDoc.data() ?? {};
+      final myName =
+          myData['fullName'] as String? ??
+          myData['name'] as String? ??
+          'Ciclista';
+      final myPhoto =
+          myData['photoUrl'] as String? ?? myData['photo'] as String? ?? '';
 
       // Verificar si ya existe una solicitud pendiente
       final existing = await FirebaseFirestore.instance

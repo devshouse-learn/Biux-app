@@ -175,28 +175,24 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           color: Colors.white70,
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      // Fila de detalles principales
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _weatherDetail(
-                            '💨',
-                            'Viento',
-                            '${wp.windSpeed.toStringAsFixed(1)} km/h',
-                          ),
-                          _weatherDetail('💧', 'Humedad', '${wp.humidity}%'),
-                          _weatherDetail(
-                            '🌡️',
-                            'Sensación',
-                            '${wp.feelsLike.round()}°C',
-                          ),
-                        ],
+                      const SizedBox(height: 6),
+                      Text(
+                        'Sensación térmica · ${wp.feelsLike.round()}°C',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white60,
+                          letterSpacing: 0.3,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
+
+                // === MÉTRICAS RÁPIDAS ===
+                _metricsRow(wp, isDark),
+
+                const SizedBox(height: 24),
 
                 // === DETALLES ADICIONALES ===
                 Row(
@@ -258,31 +254,44 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
                 // === PRONÓSTICO HORARIO ===
                 if (wp.hourlyForecast.isNotEmpty) ...[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Próximas horas',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? ColorTokens.neutral90
-                            : ColorTokens.neutral10,
+                  Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: ColorTokens.primary30,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Pronóstico por horas',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? ColorTokens.neutral90
+                              : ColorTokens.neutral10,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   SizedBox(
-                    height: 110,
+                    height: 128,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: wp.hourlyForecast.length,
                       itemBuilder: (ctx, i) {
                         final h = wp.hourlyForecast[i];
                         return Container(
-                          width: 72,
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          width: 76,
+                          margin: const EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: isDark
                                 ? ColorTokens.neutral20
@@ -328,6 +337,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.blue[400],
+                                  ),
+                                ),
+                              // Alerta visual si hay ráfagas fuertes en esa hora
+                              if ((h['gusts'] as num) >= 40)
+                                Text(
+                                  '💨${(h['gusts'] as num).round()}',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                             ],
@@ -415,15 +434,28 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Tips para tu rodada',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? ColorTokens.neutral100
-                              : ColorTokens.neutral10,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: ColorTokens.primary30,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Recomendaciones de seguridad',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? ColorTokens.neutral100
+                                  : ColorTokens.neutral10,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       ..._getContextualTips(
@@ -481,10 +513,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
     required String subtitle,
   }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? ColorTokens.neutral20 : Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6),
         ],
@@ -528,22 +560,76 @@ class _WeatherScreenState extends State<WeatherScreen> {
     );
   }
 
-  Widget _weatherDetail(String emoji, String label, String value) {
+  Widget _metricsRow(WeatherProvider wp, bool isDark) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _statPill(
+          Icons.water_drop_outlined,
+          '${wp.humidity}%',
+          'Humedad',
+          const Color(0xFF1976D2),
+          isDark,
+        ),
+        _statPill(
+          Icons.air,
+          '${wp.windSpeed.round()} km/h',
+          'Viento',
+          const Color(0xFF0288D1),
+          isDark,
+        ),
+        _statPill(
+          Icons.storm,
+          '${wp.windGusts.round()} km/h',
+          'Ráfagas',
+          const Color(0xFFEF6C00),
+          isDark,
+        ),
+        _statPill(
+          Icons.explore_outlined,
+          wp.windDirectionLabel,
+          'Dirección',
+          const Color(0xFF00796B),
+          isDark,
+        ),
+      ],
+    );
+  }
+
+  Widget _statPill(
+    IconData icon,
+    String value,
+    String label,
+    Color color,
+    bool isDark,
+  ) {
     return Column(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 24)),
-        const SizedBox(height: 4),
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: isDark ? 0.22 : 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(icon, size: 24, color: color),
+        ),
+        const SizedBox(height: 7),
         Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 15,
+            fontSize: 13,
+            color: isDark ? ColorTokens.neutral100 : ColorTokens.neutral10,
           ),
         ),
+        const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: Colors.white60, fontSize: 12),
+          style: TextStyle(
+            fontSize: 11,
+            color: isDark ? ColorTokens.neutral60 : Colors.grey[500],
+          ),
         ),
       ],
     );

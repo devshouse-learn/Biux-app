@@ -137,7 +137,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
-                          Icons.group,
+                          Icons.groups,
                           color: ColorTokens.neutral100,
                           size: 30,
                         ),

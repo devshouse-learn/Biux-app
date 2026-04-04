@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/achievements/presentation/providers/achievements_provider.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
 import 'package:share_plus/share_plus.dart';
@@ -28,6 +29,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     {'id': 'streak', 'label': 'Racha', 'icon': '🔥'},
     {'id': 'social', 'label': 'Social', 'icon': '👥'},
     {'id': 'special', 'label': 'Especiales', 'icon': '⭐'},
+    {'id': 'aventura', 'label': 'Aventura', 'icon': '🏔️'},
   ];
 
   @override
@@ -62,11 +64,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             return const Center(child: CircularProgressIndicator());
           }
 
-          final filtered = _selectedCategory == 'all'
+          final allInCategory = _selectedCategory == 'all'
               ? provider.achievements
               : provider.achievements
                     .where((a) => a.category == _selectedCategory)
                     .toList();
+
+          final filtered = allInCategory;
 
           final unlocked = provider.unlockedCount;
           final total = provider.achievements.length;
@@ -76,7 +80,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             slivers: [
               // AppBar con resumen
               SliverAppBar(
-                expandedHeight: 260,
+                expandedHeight: 310,
                 pinned: true,
                 backgroundColor: Colors.amber[800],
                 foregroundColor: Colors.white,
@@ -202,12 +206,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Stats rapidos
+                            // Stats rapidos — fila 1
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 _statBadge(
-                                  '🥇',
+                                  '🚴',
                                   '${_countByCategory(provider, 'distance')}',
                                   'Distancia',
                                 ),
@@ -225,6 +229,28 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                                   '🔥',
                                   '${_countByCategory(provider, 'streak')}',
                                   'Racha',
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            // Stats rapidos — fila 2
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                _statBadge(
+                                  '👥',
+                                  '${_countByCategory(provider, 'social')}',
+                                  'Social',
+                                ),
+                                _statBadge(
+                                  '⭐',
+                                  '${_countByCategory(provider, 'special')}',
+                                  'Especiales',
+                                ),
+                                _statBadge(
+                                  '🏔️',
+                                  '${_countByCategory(provider, 'aventura')}',
+                                  'Aventura',
                                 ),
                               ],
                             ),
@@ -280,9 +306,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   TabBar(
                     controller: _tabCtrl,
                     isScrollable: true,
-                    labelColor: Colors.amber[800],
-                    unselectedLabelColor: Colors.grey[600],
-                    indicatorColor: Colors.amber[800],
+                    labelColor: Colors.amber[700],
+                    unselectedLabelColor:
+                        Theme.of(context).brightness == Brightness.dark
+                        ? ColorTokens.neutral90
+                        : Colors.grey[600],
+                    indicatorColor: Colors.amber[700],
                     indicatorWeight: 3,
                     tabAlignment: TabAlignment.start,
                     tabs: _categories
@@ -300,7 +329,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     children: [
                       Text(
                         '${filtered.length} logros',
-                        style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? ColorTokens.neutral90
+                              : Colors.grey[600],
+                        ),
                       ),
                       const Spacer(),
                       Text(
@@ -332,7 +366,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             const SizedBox(height: 12),
                             Text(
                               'No hay logros en esta categoría',
-                              style: TextStyle(color: Colors.grey[500]),
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? ColorTokens.neutral90
+                                    : Colors.grey[500],
+                              ),
                             ),
                           ],
                         ),
@@ -402,26 +442,30 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     AchievementEntity a,
     AchievementsProvider provider,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isUnlocked = a.isUnlocked;
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final title = l.t(a.title);
+    final description = l.t(a.description);
     return GestureDetector(
-      onTap: () => _showAchievementDetail(a),
+      onTap: () => _showAchievementDetail(a, provider),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isUnlocked
-              ? Colors.amber.withValues(alpha: 0.08)
-              : Colors.white,
+              ? Colors.amber.withValues(alpha: isDark ? 0.15 : 0.08)
+              : (isDark ? ColorTokens.primary20 : Colors.white),
           borderRadius: BorderRadius.circular(14),
           border: isUnlocked
               ? Border.all(
-                  color: Colors.amber.withValues(alpha: 0.4),
+                  color: Colors.amber.withValues(alpha: isDark ? 0.5 : 0.4),
                   width: 1.5,
                 )
-              : null,
+              : (isDark ? Border.all(color: ColorTokens.primary40) : null),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.12 : 0.04),
               blurRadius: 6,
             ),
           ],
@@ -461,13 +505,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     children: [
                       Expanded(
                         child: Text(
-                          a.title,
+                          title,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                             color: isUnlocked
-                                ? Colors.black87
-                                : Colors.grey[600],
+                                ? (isDark ? Colors.amber[300] : Colors.black87)
+                                : (isDark ? Colors.white : Colors.grey[600]),
                           ),
                         ),
                       ),
@@ -505,8 +549,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    a.description,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? ColorTokens.neutral90 : Colors.grey[500],
+                    ),
                   ),
                   const SizedBox(height: 8),
                   // Barra de progreso
@@ -531,13 +578,22 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       Text(
                         isUnlocked
                             ? '100%'
-                            : '${a.currentValue.toInt()} / ${a.targetValue.toInt()}',
+                            : () {
+                                final unit = _unitLabel(a.category);
+                                final cur = a.currentValue.toInt();
+                                final tgt = a.targetValue.toInt();
+                                return unit.isEmpty
+                                    ? '$cur / $tgt'
+                                    : '$cur $unit / $tgt $unit';
+                              }(),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: isUnlocked
                               ? Colors.amber[800]
-                              : Colors.grey[600],
+                              : (isDark
+                                    ? ColorTokens.neutral90
+                                    : Colors.grey[600]),
                         ),
                       ),
                     ],
@@ -546,263 +602,476 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 20),
+            Icon(
+              Icons.chevron_right,
+              color: isDark ? Colors.white54 : Colors.grey[400],
+              size: 20,
+            ),
           ],
         ),
       ),
     );
   }
 
-  void _showAchievementDetail(AchievementEntity a) {
+  void _showAchievementDetail(
+    AchievementEntity a,
+    AchievementsProvider provider,
+  ) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+
+    // Los 5 niveles internos del logro tocado
+    final levels = a.levels;
+    const tierNames = ['Bronce', 'Plata', 'Oro', 'Platino', 'Diamante'];
+
+    final pageCtrl = PageController(initialPage: 0);
+    int currentPage = 0;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setStateModal) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
               ),
-              const SizedBox(height: 20),
-              // Icono grande
-              Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  gradient: a.isUnlocked
-                      ? LinearGradient(
-                          colors: [Colors.amber[200]!, Colors.amber[600]!],
-                        )
-                      : null,
-                  color: a.isUnlocked ? null : Colors.grey[200],
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(a.icon, style: const TextStyle(fontSize: 48)),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Titulo
-              Text(
-                a.title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                a.description,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              // Categoria
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  _categoryLabel(a.category),
-                  style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Progreso
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${a.currentValue.toInt()}',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: a.isUnlocked
-                          ? Colors.amber[800]
-                          : ColorTokens.primary30,
-                    ),
-                  ),
-                  Text(
-                    ' / ${a.targetValue.toInt()}',
-                    style: TextStyle(fontSize: 28, color: Colors.grey[400]),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: a.progress,
-                  minHeight: 12,
-                  backgroundColor: Colors.grey.withValues(alpha: 0.12),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    a.isUnlocked ? Colors.amber : ColorTokens.primary30,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${(a.progress * 100).toInt()}% completado',
-                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 20),
-              // Estado
-              if (a.isUnlocked) ...[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.green.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.emoji_events,
-                        color: Colors.amber,
-                        size: 28,
+              child: SizedBox(
+                height: MediaQuery.of(ctx).size.height * 0.78,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+                    // Barra de arrastre
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Logro desbloqueado',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.green,
+                    ),
+                    // Indicadores de pagina (solo si tiene mas de 1 nivel)
+                    if (levels.length > 1) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(levels.length, (i) {
+                          final isActive = i == currentPage;
+                          final levelUnlocked =
+                              a.currentValue >= levels[i].targetValue;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              width: isActive ? 20 : 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: levelUnlocked
+                                    ? (isActive
+                                          ? Colors.amber[800]
+                                          : Colors.amber[300])
+                                    : (isActive
+                                          ? Colors.grey[600]
+                                          : Colors.grey[300]),
+                                borderRadius: BorderRadius.circular(4),
                               ),
                             ),
-                            if (a.unlockedAt != null)
-                              Text(
-                                'Obtenido el ${a.unlockedAt?.day ?? 0}/${a.unlockedAt?.month ?? 0}/${a.unlockedAt?.year ?? 0}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        a.isUnlocked
+                            ? '¡Todos los niveles completados! 🏆'
+                            : 'Desliza para ver todos los niveles 👉',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                      ),
+                    ],
+                    const SizedBox(height: 4),
+                    // Paginas deslizables — una por nivel
+                    Expanded(
+                      child: PageView.builder(
+                        controller: pageCtrl,
+                        itemCount: levels.length,
+                        onPageChanged: (i) =>
+                            setStateModal(() => currentPage = i),
+                        itemBuilder: (_, i) {
+                          final level = levels[i];
+                          final tierName = i < tierNames.length
+                              ? tierNames[i]
+                              : 'Nivel ${i + 1}';
+                          final levelUnlocked =
+                              a.currentValue >= level.targetValue;
+                          final levelProgress = level.targetValue > 0
+                              ? (a.currentValue / level.targetValue).clamp(
+                                  0.0,
+                                  1.0,
+                                )
+                              : 0.0;
+                          final titleText = l.t(a.title);
+                          final descText = l.t(a.description);
+                          return SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Icono del nivel
+                                Container(
+                                  width: 90,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    gradient: levelUnlocked
+                                        ? LinearGradient(
+                                            colors: [
+                                              Colors.amber[200]!,
+                                              Colors.amber[600]!,
+                                            ],
+                                          )
+                                        : null,
+                                    color: levelUnlocked
+                                        ? null
+                                        : Colors.grey[200],
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      levelUnlocked ? level.icon : '🔒',
+                                      style: const TextStyle(fontSize: 48),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      SharePlus.instance.share(
-                        ShareParams(
-                          text:
-                              'Desbloqueé el logro "${a.title}" (${a.icon}) en Biux - App para Ciclistas.',
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.share, size: 18),
-                    label: const Text('Compartir logro'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber[800],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ] else ...[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.blue.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.lock_outline,
-                        color: Colors.blue,
-                        size: 28,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Aún no desbloqueado',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.blue,
-                              ),
+                                const SizedBox(height: 12),
+                                // Etiqueta del nivel (Bronce, Plata, Oro…)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: levelUnlocked
+                                        ? Colors.amber.withValues(alpha: 0.15)
+                                        : Colors.grey.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: levelUnlocked
+                                          ? Colors.amber.withValues(alpha: 0.5)
+                                          : Colors.grey.withValues(alpha: 0.3),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    tierName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: levelUnlocked
+                                          ? Colors.amber[800]
+                                          : Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                // Titulo del logro
+                                Text(
+                                  titleText,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: levelUnlocked
+                                        ? null
+                                        : Colors.grey[500],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 6),
+                                // Descripcion
+                                Text(
+                                  levelUnlocked
+                                      ? descText
+                                      : 'Alcanza ${level.targetValue.toInt()} ${_unitLabel(a.category)} para desbloquear este nivel.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 16),
+                                // Categoria
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    _categoryLabel(a.category),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                // Progreso hacia este nivel
+                                Builder(
+                                  builder: (_) {
+                                    final unit = _unitLabel(a.category);
+                                    final cur = a.currentValue.toInt();
+                                    final tgt = level.targetValue.toInt();
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          unit.isEmpty ? '$cur' : '$cur $unit',
+                                          style: TextStyle(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold,
+                                            color: levelUnlocked
+                                                ? Colors.amber[800]
+                                                : ColorTokens.primary30,
+                                          ),
+                                        ),
+                                        Text(
+                                          unit.isEmpty
+                                              ? ' / $tgt'
+                                              : ' / $tgt $unit',
+                                          style: TextStyle(
+                                            fontSize: 28,
+                                            color: Colors.grey[400],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: LinearProgressIndicator(
+                                    value: levelProgress,
+                                    minHeight: 12,
+                                    backgroundColor: Colors.grey.withValues(
+                                      alpha: 0.12,
+                                    ),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      levelUnlocked
+                                          ? Colors.amber
+                                          : ColorTokens.primary30,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '${(levelProgress * 100).toInt()}% completado',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                // Estado y acciones
+                                if (levelUnlocked) ...[
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.green.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.emoji_events,
+                                          color: Colors.amber,
+                                          size: 28,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '¡Nivel $tierName desbloqueado!',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                              if (a.isUnlocked &&
+                                                  a.unlockedAt != null)
+                                                Text(
+                                                  'Completado el ${a.unlockedAt!.day}/${a.unlockedAt!.month}/${a.unlockedAt!.year}',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  if (a.isUnlocked)
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton.icon(
+                                        onPressed: () {
+                                          Navigator.pop(ctx);
+                                          SharePlus.instance.share(
+                                            ShareParams(
+                                              text:
+                                                  'Desbloqueé el nivel $tierName de "${l.t(a.title)}" (${level.icon}) en Biux - App para Ciclistas.',
+                                            ),
+                                          );
+                                        },
+                                        icon: const Icon(Icons.share, size: 18),
+                                        label: const Text('Compartir logro'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.amber[800],
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ] else ...[
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.blue.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.lock_outline,
+                                          color: Colors.blue,
+                                          size: 28,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Text(
+                                                'Aún no desbloqueado',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                              Text(
+                                                _getLevelHint(a, level),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: OutlinedButton.icon(
+                                      onPressed: () => Navigator.pop(ctx),
+                                      icon: const Icon(
+                                        Icons.pedal_bike,
+                                        size: 18,
+                                      ),
+                                      label: const Text('Seguir pedaleando'),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: ColorTokens.primary30,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        side: BorderSide(
+                                          color: ColorTokens.primary30,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 8),
+                              ],
                             ),
-                            Text(
-                              _getHint(a),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () => Navigator.pop(ctx),
-                    icon: const Icon(Icons.pedal_bike, size: 18),
-                    label: const Text('Seguir pedaleando'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: ColorTokens.primary30,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      side: BorderSide(color: ColorTokens.primary30),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
+
+  /// Devuelve una pista para el nivel pendiente del logro
+  String _getLevelHint(AchievementEntity a, AchievementLevel level) {
+    final remaining = (level.targetValue - a.currentValue);
+    final unit = _unitLabel(a.category);
+    if (remaining <= 0) return '¡Casi lo tienes!';
+    final rem = remaining % 1 == 0
+        ? remaining.toInt().toString()
+        : remaining.toStringAsFixed(1);
+    return unit.isEmpty ? 'Te faltan $rem más' : 'Te faltan $rem $unit';
+  }
+
+  String _unitLabel(String cat) => switch (cat) {
+    'distance' => 'km',
+    'rides' => 'rodadas',
+    'speed' => 'km/h',
+    'streak' => 'días',
+    'social' => 'grupos',
+    'aventura' => 'km',
+    _ => '',
+  };
 
   String _categoryLabel(String cat) => switch (cat) {
     'distance' => '🚴 Distancia',
@@ -811,21 +1080,9 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     'streak' => '🔥 Racha',
     'social' => '👥 Social',
     'special' => '⭐ Especiales',
+    'aventura' => '🏔️ Aventura',
     _ => '🏆 General',
   };
-
-  String _getHint(AchievementEntity a) {
-    final remaining = (a.targetValue - a.currentValue).toInt();
-    return switch (a.category) {
-      'distance' => 'Te faltan $remaining km. ¡Sigue pedaleando!',
-      'rides' => 'Te faltan $remaining rodadas. ¡Sal a rodar!',
-      'speed' => 'Necesitas alcanzar ${a.targetValue.toInt()} km/h',
-      'streak' => 'Pedalea $remaining días más seguidos',
-      'social' => 'Únete a $remaining grupos más',
-      'special' => 'Completa este reto especial',
-      _ => '¡Sigue así, lo lograrás!',
-    };
-  }
 
   void _shareAchievements(AchievementsProvider provider) {
     final unlocked = provider.unlockedCount;

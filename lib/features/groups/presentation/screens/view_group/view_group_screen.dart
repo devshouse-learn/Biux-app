@@ -8,6 +8,9 @@ import 'package:provider/provider.dart';
 
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
+import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:biux/features/chat/presentation/screens/chat_screen.dart';
 
 class ViewGroupScreen extends StatefulWidget {
   @override
@@ -19,6 +22,8 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
   TabController? _tabController;
   String? groupId;
   bool? _lastAdminStatus;
+  String? _groupChatId;
+  bool _loadingChat = false;
 
   @override
   void initState() {
@@ -44,7 +49,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       _tabController?.dispose();
 
       // Ahora siempre son 4 tabs: Info, Miembros, Rodadas, y Solicitudes (solo para admin)
-      final tabCount = isAdmin ? 4 : 3;
+      final tabCount = isAdmin ? 5 : 4;
       _tabController = TabController(length: tabCount, vsync: this);
       _lastAdminStatus = isAdmin;
     }
@@ -103,6 +108,19 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   pinned: true,
                   backgroundColor: ColorTokens.primary30,
                   foregroundColor: ColorTokens.neutral100,
+                  leading: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: ColorTokens.neutral100,
+                    ),
+                    onPressed: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/rides');
+                      }
+                    },
+                  ),
                   actions: _buildAppBarActions(group, provider),
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
@@ -120,7 +138,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                             errorWidget: Container(
                               color: ColorTokens.primary30,
                               child: Icon(
-                                Icons.group,
+                                Icons.groups,
                                 size: 80,
                                 color: ColorTokens.neutral100.withValues(
                                   alpha: 0.5,
@@ -131,7 +149,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         : Container(
                             color: ColorTokens.primary30,
                             child: Icon(
-                              Icons.group,
+                              Icons.groups,
                               size: 80,
                               color: ColorTokens.neutral100.withValues(
                                 alpha: 0.5,
@@ -154,6 +172,16 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         Tab(text: l.t('info')),
                         Tab(text: '${l.t('members')} (${group.memberCount})'),
                         Tab(text: l.t('rides')),
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.chat_bubble_outline, size: 16),
+                              const SizedBox(width: 4),
+                              Text(l.t('group_chat')),
+                            ],
+                          ),
+                        ),
                         if (isAdmin)
                           Tab(
                             text:
@@ -171,12 +199,101 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 _buildInfoTab(group, provider),
                 _buildMembersTab(group, provider),
                 _buildRidesTab(group, provider),
+                _buildGroupChatTab(group),
                 if (isAdmin) _buildRequestsTab(group, provider),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Future<String> _getOrCreateGroupChat(GroupModel group) async {
+    if (_groupChatId != null) return _groupChatId!;
+    setState(() => _loadingChat = true);
+    final chatProvider = context.read<ChatProvider>();
+    final existing = chatProvider.chats.where(
+      (c) => c.type == ChatType.group && c.name == group.name,
+    ).firstOrNull;
+    if (existing != null) {
+      _groupChatId = existing.id;
+      chatProvider.openChat(existing.id);
+      setState(() => _loadingChat = false);
+      return existing.id;
+    }
+    final chatId = await chatProvider.createGroupChat(
+      participantIds: group.memberIds,
+      name: group.name,
+      photoUrl: group.logoUrl,
+    );
+    chatProvider.openChat(chatId);
+    _groupChatId = chatId;
+    setState(() => _loadingChat = false);
+    return chatId;
+  }
+
+  Widget _buildGroupChatTab(GroupModel group) {
+    final l = Provider.of<LocaleNotifier>(context);
+    final currentUid = context.read<ChatProvider>().currentUid;
+    final isMember = group.isMember(currentUid);
+
+    if (!isMember) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.lock_outline, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              l.t('join_to_chat'),
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_loadingChat) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return FutureBuilder<String>(
+      future: _getOrCreateGroupChat(group),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
+                const SizedBox(height: 12),
+                Text(l.t('chat_error'), style: TextStyle(color: Colors.grey[600])),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => setState(() => _groupChatId = null),
+                  child: Text(l.t('retry')),
+                ),
+              ],
+            ),
+          );
+        }
+        final chatId = snapshot.data!;
+        final chat = ChatEntity(
+          id: chatId,
+          name: group.name,
+          photoUrl: group.logoUrl,
+          type: ChatType.group,
+          participantIds: group.memberIds,
+          updatedAt: DateTime.now(),
+          unreadCount: const {},
+        );
+        return ChatScreen(chat: chat);
+      },
     );
   }
 
@@ -202,7 +319,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                           radius: 40,
                           backgroundColor: ColorTokens.primary30,
                           child: Icon(
-                            Icons.group,
+                            Icons.groups,
                             size: 40,
                             color: ColorTokens.neutral100,
                           ),
@@ -213,7 +330,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       radius: 40,
                       backgroundColor: ColorTokens.primary30,
                       child: Icon(
-                        Icons.group,
+                        Icons.groups,
                         size: 40,
                         color: ColorTokens.neutral100,
                       ),
@@ -336,12 +453,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                     context.push('/user-profile/$userId');
                   } else {
                     debugPrint('❌ Error: userId está vacío o es null');
-                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l.t('error_user_id_not_available')),
-                        backgroundColor: ColorTokens.error50,
-                      ),
-                    );
+                    if (context.mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l.t('error_user_id_not_available')),
+                          backgroundColor: ColorTokens.error50,
+                        ),
+                      );
                   }
                 },
               ),
@@ -457,7 +575,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       trailing: IconButton(
                         onPressed: () {
                           // Navegar a la pantalla de detalles de la rodada
-                          context.go('/rides/${ride.id}');
+                          context.push('/rides/${ride.id}');
                         },
                         icon: Icon(Icons.arrow_forward),
                       ),
@@ -562,6 +680,35 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
   }
 
+  void _showDeleteGroupDialog(GroupModel group, GroupProvider provider) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('¿Eliminar grupo?'),
+        content: Text(
+          'Esta acción es permanente y eliminará "${group.name}" para todos los miembros. ¿Estás seguro?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final success = await provider.deleteGroup(group.id);
+              if (success && mounted) {
+                context.go('/rides');
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: ColorTokens.error50),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _buildAppBarActions(GroupModel group, GroupProvider provider) {
     final l = Provider.of<LocaleNotifier>(context);
     final userStatus = provider.getUserStatus(group);
@@ -576,6 +723,33 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
             tooltip: l.t('edit_group'),
           ),
         );
+        // Solo el dueño (adminId) puede eliminar el grupo
+        if (group.adminId == provider.currentUserId) {
+          actions.add(
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'delete') {
+                  _showDeleteGroupDialog(group, provider);
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_forever, color: ColorTokens.error50),
+                      SizedBox(width: 8),
+                      Text(
+                        'Eliminar grupo',
+                        style: TextStyle(color: ColorTokens.error50),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
         break;
       case GroupMembershipStatus.member:
         actions.add(
@@ -740,19 +914,21 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.approveJoinRequest(groupId, userId);
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$userName ${l.t('user_accepted')}'),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$userName ${l.t('user_accepted')}'),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     } else {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('error_approving_request')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('error_approving_request')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
     }
   }
 
@@ -765,21 +941,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.rejectJoinRequest(groupId, userId);
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l.t('request_of_rejected').replaceAll('{name}', userName),
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l.t('request_of_rejected').replaceAll('{name}', userName),
+            ),
+            backgroundColor: ColorTokens.warning50,
           ),
-          backgroundColor: ColorTokens.warning50,
-        ),
-      );
+        );
     } else {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('error_rejecting_request')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('error_rejecting_request')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
     }
   }
 
@@ -788,21 +966,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final result = await provider.requestJoinGroup(groupId);
 
     if (result['success'] == true) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('request_sent')),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('request_sent')),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     } else if (result['requiresProfile'] == true) {
       _showProfileRequiredDialog(result['error'] ?? l.t('to_join_you_need'));
     } else {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['error'] ?? l.t('error_sending_request')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['error'] ?? l.t('error_sending_request')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
     }
   }
 
@@ -834,12 +1014,13 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.cancelJoinRequest(groupId);
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('request_cancelled')),
-          backgroundColor: ColorTokens.success50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('request_cancelled')),
+            backgroundColor: ColorTokens.success50,
+          ),
+        );
     }
   }
 

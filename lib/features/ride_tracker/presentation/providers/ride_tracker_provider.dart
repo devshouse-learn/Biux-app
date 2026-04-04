@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 import 'package:biux/features/ride_tracker/data/datasources/ride_tracker_datasource.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,17 +25,39 @@ class RideTrackerProvider with ChangeNotifier {
   StreamSubscription<Position>? _posSub;
   Timer? _timer;
 
+  // Posición en vivo (antes y durante el tracking)
+  LatLng? _livePosition;
+  StreamSubscription<Position>? _livePosSub;
+
+  // Ruta planeada (origen→destino)
+  List<LatLng> _plannedRoute = []; // porción RESTANTE (la no recorrida)
+  List<LatLng> _fullPlannedRoute =
+      []; // ruta completa original (para recálculo)
+  String? _plannedDestinationName;
+  bool _routeLoading = false;
+  bool _isRerouting = false; // recalculando ruta actualmente
+  static const _kOffRouteMeters = 50.0; // desvío máximo tolerado (m)
+  static const _kDirectionsApiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
+
   List<TrackPoint> get points => _points;
   List<RideTrackEntity> get history => _history;
   bool get isTracking => _isTracking;
   bool get isPaused => _isPaused;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
+  LatLng? get livePosition => _livePosition;
+  List<LatLng> get plannedRoute => _plannedRoute;
+  String? get plannedDestinationName => _plannedDestinationName;
+  bool get routeLoading => _routeLoading;
+  bool get isRerouting => _isRerouting;
   double get totalKm => _totalKm;
   double get currentSpeed => _currentSpeed;
   double get maxSpeed => _maxSpeed;
   int get durationSec => _durationSec;
   int get calories => (_totalKm * 30).toInt();
+
+  /// Verdadero solo cuando la velocidad GPS indica movimiento en bicicleta (≥ 3 km/h).
+  bool get isMoving => _currentSpeed >= 3.0;
 
   double get avgSpeed {
     if (_durationSec < 1 || _totalKm <= 0) return 0;
@@ -47,8 +72,200 @@ class RideTrackerProvider with ChangeNotifier {
     return '${hh.toString().padLeft(2, "0")}:${mm.toString().padLeft(2, "0")}:${ss.toString().padLeft(2, "0")}';
   }
 
+  // ─── POSICIÓN EN VIVO (avant tracking) ────────────────────
+  /// Pide permiso GPS y empieza a escuchar la posición en tiempo real.
+  Future<void> initLivePosition() async {
+    if (_livePosSub != null) return; // ya iniciado
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever)
+        return;
+
+      // Posición inicial rápida
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+      _livePosition = LatLng(pos.latitude, pos.longitude);
+      notifyListeners();
+
+      // Stream continuo para actualizar en tiempo real
+      _livePosSub =
+          Geolocator.getPositionStream(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+              distanceFilter: 5,
+            ),
+          ).listen((p) {
+            _livePosition = LatLng(p.latitude, p.longitude);
+            notifyListeners();
+          });
+    } catch (e) {
+      debugPrint('initLivePosition error: $e');
+    }
+  }
+
+  void _stopLivePositionStream() {
+    _livePosSub?.cancel();
+    _livePosSub = null;
+  }
+
+  // ─── RUTA PLANEADA ────────────────────────────────────────
+  void setPlannedRoute(List<LatLng> points, String destinationName) {
+    _plannedRoute = List.from(points);
+    _fullPlannedRoute = List.from(
+      points,
+    ); // guarda la ruta completa para recálculo
+    _plannedDestinationName = destinationName;
+    notifyListeners();
+  }
+
+  void setRouteLoading(bool v) {
+    _routeLoading = v;
+    notifyListeners();
+  }
+
+  void clearPlannedRoute() {
+    _plannedRoute = [];
+    _fullPlannedRoute = [];
+    _plannedDestinationName = null;
+    _isRerouting = false;
+    notifyListeners();
+  }
+
+  // ─── NAVEGACIÓN EN VIVO ───────────────────────────────────
+
+  /// Distancia haversine en metros entre dos LatLng.
+  double _distMeters(LatLng a, LatLng b) =>
+      _calcDist(a.latitude, a.longitude, b.latitude, b.longitude) * 1000;
+
+  /// Devuelve el índice del punto de la ruta más cercano a [pos].
+  int _nearestRouteIndex(LatLng pos) {
+    double best = double.infinity;
+    int idx = 0;
+    for (int i = 0; i < _plannedRoute.length; i++) {
+      final d = _distMeters(pos, _plannedRoute[i]);
+      if (d < best) {
+        best = d;
+        idx = i;
+      }
+    }
+    return idx;
+  }
+
+  /// Llamado cada vez que llega una posición GPS durante el tracking.
+  /// • Recorta la porción ya transitada de la ruta.
+  /// • Si el ciclista se desvía ≥ 50 m, recalcula.
+  void _updateNavigation(LatLng pos) {
+    if (_plannedRoute.isEmpty || _fullPlannedRoute.isEmpty) return;
+
+    // 1. Encontrar el punto de la ruta más cercano
+    final nearIdx = _nearestRouteIndex(pos);
+    final distToRoute = _distMeters(pos, _plannedRoute[nearIdx]);
+
+    // 2. Consumir la ruta: eliminar todos los puntos ya superados
+    if (nearIdx > 0) {
+      _plannedRoute = _plannedRoute.sublist(nearIdx);
+      notifyListeners();
+    }
+
+    // 3. Detectar desvío y recalcular
+    if (distToRoute > _kOffRouteMeters && !_isRerouting) {
+      _rerouteFrom(pos);
+    }
+  }
+
+  /// Recalcula la ruta desde la posición actual hasta el destino original.
+  Future<void> _rerouteFrom(LatLng origin) async {
+    if (_fullPlannedRoute.isEmpty || _isRerouting) return;
+    _isRerouting = true;
+    notifyListeners();
+
+    final destination = _fullPlannedRoute.last;
+    debugPrint('🔄 Recalculando ruta desde $origin hasta $destination');
+
+    try {
+      final points = await _fetchRoute(origin, destination);
+      if (points != null && points.isNotEmpty) {
+        _plannedRoute = points;
+        _fullPlannedRoute = List.from(points);
+        debugPrint('✅ Ruta recalculada con ${points.length} puntos');
+      } else {
+        debugPrint('⚠️ No se pudo recalcular ruta');
+      }
+    } catch (e) {
+      debugPrint('_rerouteFrom error: $e');
+    } finally {
+      _isRerouting = false;
+      notifyListeners();
+    }
+  }
+
+  /// Llama a Google Directions y devuelve puntos detallados paso a paso.
+  Future<List<LatLng>?> _fetchRoute(LatLng origin, LatLng dest) async {
+    for (final mode in ['bicycling', 'driving']) {
+      try {
+        final url =
+            'https://maps.googleapis.com/maps/api/directions/json'
+            '?origin=${origin.latitude},${origin.longitude}'
+            '&destination=${dest.latitude},${dest.longitude}'
+            '&mode=$mode&alternatives=false&units=metric'
+            '&key=$_kDirectionsApiKey';
+        final res = await http
+            .get(Uri.parse(url))
+            .timeout(const Duration(seconds: 12));
+        if (res.statusCode != 200) continue;
+        final data = jsonDecode(res.body);
+        if (data['status'] != 'OK' || (data['routes'] as List).isEmpty)
+          continue;
+        final steps = data['routes'][0]['legs'][0]['steps'] as List;
+        final points = <LatLng>[];
+        for (final step in steps) {
+          points.addAll(_decodePolyline(step['polyline']['points'] as String));
+        }
+        if (points.isNotEmpty) return points;
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  List<LatLng> _decodePolyline(String encoded) {
+    final list = <LatLng>[];
+    int index = 0, lat = 0, lng = 0;
+    while (index < encoded.length) {
+      int b, shift = 0, result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lat += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lng += (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      list.add(LatLng(lat / 1e5, lng / 1e5));
+    }
+    return list;
+  }
+
   /// Inicia tracking. Retorna null si OK, o String con error.
   Future<String?> startTracking() async {
+    // Al iniciar tracking, el live stream se torna redundante —
+    // el tracking stream lo reemplazará.
+    _stopLivePositionStream();
+
     // Verificar permisos GPS
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -86,26 +303,54 @@ class RideTrackerProvider with ChangeNotifier {
     _posSub =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 2,
+            // best: usa GPS + wifi + red para máxima exactitud
+            accuracy: LocationAccuracy.best,
+            // Solo emite si el dispositivo se movió ≥ 10 m reales
+            // evita el ruido de posición estando quieto
+            distanceFilter: 10,
           ),
         ).listen(
           (pos) {
             if (_isPaused) return;
+
+            // FILTRO 1: Precisión GPS insuficiente (pérdida de señal, inicio de adquisición)
+            // Si el margen de error es > 20 m, el punto no es confiable
+            if (pos.accuracy > 20.0) return;
+
+            // pos.speed viene en m/s del chipset GPS (método Doppler, muy exacto)
+            final speedKmh = pos.speed * 3.6;
+
             final pt = TrackPoint(
               lat: pos.latitude,
               lng: pos.longitude,
               elevation: pos.altitude,
-              speed: pos.speed * 3.6,
+              speed: speedKmh,
               timestamp: DateTime.now(),
             );
+
             if (_points.isNotEmpty) {
-              final last = _points.last;
-              _totalKm += _calcDist(last.lat, last.lng, pt.lat, pt.lng);
+              // FILTRO 2: Velocidad mínima para contar distancia.
+              // < 3 km/h significa que el ciclista está detenido o es ruido GPS.
+              // pos.speed ≈ 0 cuando el dispositivo está quieto (aunque GPS fluctúe).
+              if (pos.speed >= 0.84) {
+                // 0.84 m/s ≈ 3 km/h
+                final last = _points.last;
+                final segKm = _calcDist(last.lat, last.lng, pt.lat, pt.lng);
+
+                // FILTRO 3: Segmento mínimo de 8 m — ignora jitter residual
+                // FILTRO 4: Segmento máximo de 300 m — evita saltos por pérdida de señal
+                if (segKm >= 0.008 && segKm <= 0.3) {
+                  _totalKm += segKm;
+                }
+              }
             }
-            _currentSpeed = pt.speed;
-            if (pt.speed > _maxSpeed) _maxSpeed = pt.speed;
+
+            // Mostrar 0 en pantalla cuando el ciclista está detenido
+            _currentSpeed = pos.speed >= 0.5 ? speedKmh : 0.0;
+            if (_currentSpeed > _maxSpeed) _maxSpeed = _currentSpeed;
             _points.add(pt);
+            // Actualizar navegación: consumir ruta y detectar desvíos
+            _updateNavigation(LatLng(pos.latitude, pos.longitude));
             notifyListeners();
           },
           onError: (e) {
@@ -126,7 +371,7 @@ class RideTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> stopAndSave(String userId) async {
+  Future<bool> stopAndSave(String userId, String name) async {
     _isSaving = true;
     _isTracking = false;
     _posSub?.cancel();
@@ -154,6 +399,7 @@ class RideTrackerProvider with ChangeNotifier {
 
     try {
       final trackId = await _ds.saveTrackFast(userId, {
+        'name': name,
         'totalKm': savedKm,
         'avgSpeed': savedAvg,
         'maxSpeed': savedMax,
@@ -170,6 +416,7 @@ class RideTrackerProvider with ChangeNotifier {
         RideTrackEntity(
           id: trackId,
           userId: userId,
+          name: name,
           points: [],
           totalKm: savedKm,
           avgSpeed: savedAvg,
@@ -184,6 +431,10 @@ class RideTrackerProvider with ChangeNotifier {
       );
 
       _points = [];
+      _totalKm = 0;
+      _currentSpeed = 0;
+      _maxSpeed = 0;
+      _durationSec = 0;
       _isSaving = false;
       notifyListeners();
 
@@ -402,11 +653,17 @@ class RideTrackerProvider with ChangeNotifier {
 
   void cancelTracking() {
     _isTracking = false;
+    _isPaused = false;
     _posSub?.cancel();
     _posSub = null;
     _timer?.cancel();
     _timer = null;
     _points = [];
+    _totalKm = 0;
+    _currentSpeed = 0;
+    _maxSpeed = 0;
+    _durationSec = 0;
+    _startTime = null;
     notifyListeners();
   }
 
@@ -437,6 +694,7 @@ class RideTrackerProvider with ChangeNotifier {
           (m) => RideTrackEntity(
             id: m['id'] ?? '',
             userId: m['userId'] ?? '',
+            name: m['name'] ?? '',
             points: [],
             totalKm: (m['totalKm'] as num?)?.toDouble() ?? 0,
             avgSpeed: (m['avgSpeed'] as num?)?.toDouble() ?? 0,
@@ -462,9 +720,23 @@ class RideTrackerProvider with ChangeNotifier {
     }
   }
 
+  Future<void> renameRide(String trackId, String newName) async {
+    try {
+      await _ds.updateRideName(trackId, newName);
+      final idx = _history.indexWhere((r) => r.id == trackId);
+      if (idx != -1) {
+        _history[idx] = _history[idx].copyWith(name: newName);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error renaming ride: $e');
+    }
+  }
+
   @override
   void dispose() {
     _posSub?.cancel();
+    _livePosSub?.cancel();
     _timer?.cancel();
     super.dispose();
   }

@@ -14,7 +14,9 @@ class PaymentsFirebaseRepositoryImpl {
     required double amount,
     required String currency,
     String? userId,
+    String? orderId,
     String? description,
+    Map<String, dynamic>? metadata,
   }) async {
     try {
       final docRef = _firestore.collection(_collection).doc();
@@ -26,7 +28,9 @@ class PaymentsFirebaseRepositoryImpl {
         'currency': currency,
         'status': 'pending',
         'userId': userId,
+        'orderId': orderId,
         'description': description,
+        'metadata': metadata ?? {},
         'createdAt': now,
         'updatedAt': now,
       };
@@ -101,7 +105,7 @@ class PaymentsFirebaseRepositoryImpl {
           .orderBy('createdAt', descending: true)
           .get();
 
-      return snapshot.docs.map((doc) => doc.data()).toList();
+      return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
     } catch (e) {
       AppLogger.error(
         'Error obteniendo pagos del usuario',
@@ -118,7 +122,7 @@ class PaymentsFirebaseRepositoryImpl {
       final doc = await _firestore.collection(_collection).doc(paymentId).get();
 
       if (!doc.exists) return null;
-      return doc.data();
+      return {'id': doc.id, ...doc.data()!};
     } catch (e) {
       AppLogger.error(
         'Error obteniendo payment',

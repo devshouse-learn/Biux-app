@@ -27,6 +27,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       final provider = context.read<GroupProvider>();
       provider.loadUserGroups();
       provider.loadAdminGroups();
+      provider.loadAllGroups();
     });
   }
 
@@ -70,30 +71,29 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   }
 
   Widget _buildMemberGroupsTab(GroupProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
     if (provider.isLoading) {
       return Center(child: CircularProgressIndicator());
     }
 
-    if (provider.userGroups.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.group_outlined,
-        title: l.t('not_member_any_group'),
-        subtitle: l.t('explore_and_join'),
-        actionText: l.t('view_groups'),
-        onAction: () => context.push('/groups'),
-      );
+    final groups = provider.userGroups.isNotEmpty
+        ? provider.userGroups
+        : provider.allGroups;
+
+    if (groups.isEmpty) {
+      return Center(child: CircularProgressIndicator());
     }
 
     return RefreshIndicator(
       onRefresh: () async {
         provider.loadUserGroups();
+        provider.loadAllGroups();
       },
       child: ListView.builder(
         padding: EdgeInsets.all(16),
-        itemCount: provider.userGroups.length,
+        itemCount: groups.length + 1,
         itemBuilder: (context, index) {
-          final group = provider.userGroups[index];
+          if (index == 0) return _buildBanner();
+          final group = groups[index - 1];
           return _buildGroupCard(group, provider);
         },
       ),
@@ -122,9 +122,10 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       },
       child: ListView.builder(
         padding: EdgeInsets.all(16),
-        itemCount: provider.adminGroups.length,
+        itemCount: provider.adminGroups.length + 1,
         itemBuilder: (context, index) {
-          final group = provider.adminGroups[index];
+          if (index == 0) return _buildBanner();
+          final group = provider.adminGroups[index - 1];
           return _buildAdminGroupCard(group, provider);
         },
       ),
@@ -169,7 +170,79 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
     );
   }
 
+  Widget _buildBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            ColorTokens.primary30,
+            ColorTokens.primary30.withValues(alpha: 0.75),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: const Row(
+        children: [
+          Text('🚴', style: TextStyle(fontSize: 28)),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Aquí nadie rueda solo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Únete y no te pierdas ninguna salida',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGroupCard(GroupModel group, GroupProvider provider) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: group.logoUrl != null
+            ? CircleAvatar(
+                backgroundImage: NetworkImage(group.logoUrl!),
+                radius: 24,
+              )
+            : const CircleAvatar(
+                radius: 24,
+                backgroundColor: ColorTokens.primary30,
+                child: Icon(Icons.groups, color: ColorTokens.neutral100),
+              ),
+        title: Text(
+          group.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text('${group.memberCount} miembros'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push('/groups/${group.id}'),
+      ),
+    );
+  }
+
+  // ignore: unused_element
+  Widget _buildGroupCardFull(GroupModel group, GroupProvider provider) {
     final l = Provider.of<LocaleNotifier>(context);
     return Card(
       margin: EdgeInsets.only(bottom: 16),
@@ -214,7 +287,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                           : null,
                       child: group.logoUrl == null
                           ? Icon(
-                              Icons.group,
+                              Icons.groups,
                               color: ColorTokens.neutral100,
                               size: 20,
                             )
@@ -291,6 +364,113 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
   }
 
   Widget _buildAdminGroupCard(GroupModel group, GroupProvider provider) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: ColorTokens.success40, width: 1.5),
+      ),
+      child: ListTile(
+        leading: group.logoUrl != null
+            ? CircleAvatar(
+                backgroundImage: NetworkImage(group.logoUrl!),
+                radius: 24,
+              )
+            : const CircleAvatar(
+                radius: 24,
+                backgroundColor: ColorTokens.primary30,
+                child: Icon(Icons.groups, color: ColorTokens.neutral100),
+              ),
+        title: Text(
+          group.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text('${group.memberCount} miembros'),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (group.pendingRequestCount > 0)
+              Container(
+                margin: const EdgeInsets.only(right: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: ColorTokens.warning50,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${group.pendingRequestCount}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            if (group.adminId == provider.currentUserId)
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    _showDeleteGroupDialog(group, provider);
+                  }
+                },
+                itemBuilder: (ctx) => [
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_forever, color: ColorTokens.error50),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Eliminar grupo',
+                          style: TextStyle(color: ColorTokens.error50),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            else
+              const Icon(Icons.chevron_right),
+          ],
+        ),
+        onTap: () => context.push('/groups/${group.id}'),
+      ),
+    );
+  }
+
+  void _showDeleteGroupDialog(GroupModel group, GroupProvider provider) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('¿Eliminar grupo?'),
+        content: Text(
+          'Esta acción es permanente y eliminará "${group.name}" para todos los miembros. ¿Estás seguro?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final success = await provider.deleteGroup(group.id);
+              if (success && mounted) {
+                context.go('/rides');
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: ColorTokens.error50),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ignore: unused_element
+  Widget _buildAdminGroupCardFull(GroupModel group, GroupProvider provider) {
     final l = Provider.of<LocaleNotifier>(context);
     return Card(
       margin: EdgeInsets.only(bottom: 16),
@@ -360,7 +540,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
                           : null,
                       child: group.logoUrl == null
                           ? Icon(
-                              Icons.group,
+                              Icons.groups,
                               color: ColorTokens.neutral100,
                               size: 20,
                             )
@@ -484,19 +664,23 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
               Navigator.pop(context);
               final success = await provider.leaveGroup(group.id);
               if (success) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l.t('left_group')),
-                    backgroundColor: ColorTokens.success40,
-                  ),
-                );
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('left_group')),
+                      backgroundColor: ColorTokens.success40,
+                    ),
+                  );
               } else {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(provider.error ?? l.t('error_leaving_group')),
-                    backgroundColor: ColorTokens.error50,
-                  ),
-                );
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        provider.error ?? l.t('error_leaving_group'),
+                      ),
+                      backgroundColor: ColorTokens.error50,
+                    ),
+                  );
               }
             },
             style: ElevatedButton.styleFrom(

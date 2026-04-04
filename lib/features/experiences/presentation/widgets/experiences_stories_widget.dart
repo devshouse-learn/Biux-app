@@ -21,26 +21,21 @@ class ExperiencesStoriesWidget extends StatefulWidget {
 }
 
 class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
+  ExperienceProvider? _experienceProvider;
+
   @override
-  void initState() {
-    super.initState();
-    // Escuchar cambios del ExperienceProvider para re-agrupar stories
-    // cuando el feed se cargue o actualice
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final experienceProvider = context.read<ExperienceProvider>();
-      experienceProvider.addListener(_onExperiencesChanged);
-      // Intentar agrupar si ya hay datos
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_experienceProvider == null) {
+      _experienceProvider = context.read<ExperienceProvider>();
+      _experienceProvider!.addListener(_onExperiencesChanged);
       _loadAndGroupStories();
-    });
+    }
   }
 
   @override
   void dispose() {
-    // Remover listener de forma segura
-    try {
-      final experienceProvider = context.read<ExperienceProvider>();
-      experienceProvider.removeListener(_onExperiencesChanged);
-    } catch (_) {}
+    _experienceProvider?.removeListener(_onExperiencesChanged);
     super.dispose();
   }
 
@@ -53,11 +48,9 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
   Future<void> _loadAndGroupStories() async {
     if (!mounted) return;
     final storyGroupsProvider = context.read<StoryGroupsProvider>();
-    final experienceProvider = context.read<ExperienceProvider>();
 
     // Usar TODAS las experiencias válidas (no solo las paginadas del feed)
-    // para que stories de otros dispositivos o de posiciones 16+ no se pierdan.
-    final allExperiences = experienceProvider.allExperiences;
+    final allExperiences = _experienceProvider!.allExperiences;
 
     // No agrupar si no hay datos aún (evitar resetear)
     if (allExperiences.isEmpty) return;
@@ -69,6 +62,9 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 
     // Agrupar por usuario y calcular vistas localmente
     await storyGroupsProvider.groupExistingStories(storyExperiences);
+
+    // Verificar mounted después del await antes de cualquier uso de context
+    if (!mounted) return;
   }
 
   @override
@@ -95,7 +91,7 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       // Primer elemento: botón "Tu Story"
-                      return _AddStoryButton();
+                      return const _AddStoryButton();
                     }
 
                     // Elementos restantes: grupos de stories por usuario
@@ -111,6 +107,7 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
 
 /// Botón para agregar una nueva story general
 class _AddStoryButton extends StatefulWidget {
+  const _AddStoryButton();
   @override
   State<_AddStoryButton> createState() => _AddStoryButtonState();
 }
