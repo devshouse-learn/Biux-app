@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 // Core imports
 import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/config/api_config.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
 
@@ -148,7 +149,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => app_auth.AuthProvider(
             authRepository: AuthRepository(
-              baseUrl: 'https://n8n.oktavia.me/webhook',
+              baseUrl: ApiConfig.authBaseUrl,
             ),
           ),
         ),

@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:biux/features/sites/data/models/sites.dart';
 import 'package:biux/features/sites/data/models/types_sites.dart';
+import 'package:biux/core/config/api_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class SitesRepository {
-  final URL_BASE = "https://biux-prod.ibacrea.com/api/v1/sitios";
-  final urlfilter =
-      "https://biux-prod.ibacrea.com/api/v1/sitios?tipoSitio.tipo=Negocio";
   Future<List<Sites>> getSites() async {
-    var url = '$URL_BASE?';
+    var url = '${ApiConfig.sitios}?';
     var response = await http.get(Uri.parse(url));
     Map responseData = json.decode(response.body);
     List sitesJson = responseData["data"];
@@ -20,7 +18,7 @@ class SitesRepository {
   }
 
   Future<List<Sites>> getSitesFilter() async {
-    var url = '$urlfilter';
+    var url = ApiConfig.sitiosNegocios;
     var response = await http.get(Uri.parse(url));
     Map responseData = json.decode(response.body);
     List sitesJson = responseData["data"];
@@ -32,7 +30,7 @@ class SitesRepository {
 
   Future<TypesSites> getTypesSites() async {
     var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
-    var url = '$URL_BASE';
+    var url = ApiConfig.sitios;
     final http.Response response = await http.get(
       Uri.parse(url),
       headers: headers,

@@ -1,3 +1,4 @@
+import 'package:biux/core/config/api_config.dart';
 import '../models/auth_response.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:dio/dio.dart';
@@ -8,7 +9,7 @@ class AuthRepository {
 
   AuthRepository({Dio? dio, String? baseUrl})
     : _dio = dio ?? Dio(),
-      _baseUrl = baseUrl ?? 'https://n8n.oktavia.me/webhook' {
+      _baseUrl = baseUrl ?? ApiConfig.authBaseUrl {
     // Configurar timeout y headers
     _dio.options.connectTimeout = const Duration(seconds: 30);
     _dio.options.receiveTimeout = const Duration(seconds: 30);

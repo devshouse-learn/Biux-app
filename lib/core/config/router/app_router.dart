@@ -380,12 +380,6 @@ final GoRouter _router = GoRouter(
         );
       },
       routes: [
-        // Menu principal - redirigir a experiencias
-        GoRoute(
-          path: AppRoutes.mainMenu,
-          name: AppRoutes.mainMenuName,
-          redirect: (context, state) => '/stories',
-        ),
         // Mapa
         GoRoute(
           path: AppRoutes.map,
@@ -1167,7 +1161,6 @@ extension AppRouterExtension on BuildContext {
   void goToLogin() => go(AppRoutes.login);
   void goToMap() => go(AppRoutes.map);
   void goToProfile() => go(AppRoutes.profile);
-  void goToMainMenu() => go(AppRoutes.mainMenu);
   void goToGroupList() => go(AppRoutes.groupList);
   void goToCreateGroup() => go('${AppRoutes.groupList}/create');
   void goToViewGroup(String groupId, {String? adminId}) {

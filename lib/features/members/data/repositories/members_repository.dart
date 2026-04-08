@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:biux/features/members/data/models/member.dart';
+import 'package:biux/core/config/api_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class MembersRepository {
-  final URLMembers = "https://biux-prod.ibacrea.com/api/v1/miembros";
   Future<List<Member>> getMembers(int offset) async {
-    var url = '$URLMembers?&offset=$offset';
+    var url = '${ApiConfig.miembros}?&offset=$offset';
     var response = await http.get(Uri.parse(url));
 
     Map responseData = json.decode(response.body);
@@ -19,7 +19,7 @@ class MembersRepository {
   }
 
   Future<List<Member>> getMembersGroup(String id, int offset) async {
-    var url = '$URLMembers?grupo.id=$id&offset=$offset';
+    var url = '${ApiConfig.miembrosPorGrupo(id)}&offset=$offset';
 
     var response = await http.get(Uri.parse(url));
 
@@ -34,17 +34,12 @@ class MembersRepository {
 
   Future<bool> joinGroups(String userId, String groupId) async {
     var uriResponse = await http.post(
-      Uri.parse("https://biux-prod.ibacrea.com/api/v1/miembros"),
+      Uri.parse(ApiConfig.miembros),
       body: jsonEncode({"userId": userId, "groupId": groupId}),
       headers: {'Content-type': 'application/json'},
     );
 
     if (uriResponse.statusCode == 200) {
-      // final data = json.decode(uriResponse.body); // IMPLEMENTADO (STUB): Use when implementing response handling
-
-      // bool approved = data["approved"];
-      // LocalStorage().saveApproved(approved);
-
       return true;
     } else {
       return false;
@@ -54,7 +49,7 @@ class MembersRepository {
   Future<Member> getApproved(String id, String userId) async {
     var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
 
-    var url = '$URLMembers?grupo.id=$id&usuarioId=$userId';
+    var url = '${ApiConfig.miembros}?grupo.id=$id&usuarioId=$userId';
 
     var response = await http.get(Uri.parse(url), headers: headers);
 
@@ -66,7 +61,7 @@ class MembersRepository {
   }
 
   Future<List<Member>> getMyGroups(String id) async {
-    var url = '$URLMembers?usuario.id=$id';
+    var url = ApiConfig.miembrosPorUsuario(id);
 
     var response = await http.get(Uri.parse(url));
 
@@ -80,8 +75,7 @@ class MembersRepository {
   }
 
   Future<Member> getMyGroupsUser(String id) async {
-    var url =
-        'https://biux-prod.ibacrea.com/api/v1/miembros?grupo.administrador.id=$id';
+    var url = ApiConfig.miembrosPorAdmin(id);
 
     final http.Response response = await http.get(Uri.parse(url));
 
@@ -98,20 +92,14 @@ class MembersRepository {
   Future<Member> deleteMember(Member member) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
-    var url = '$URLMembers/${member.id}';
+    var url = ApiConfig.miembroById(member.id);
     final http.Response response = await http.delete(
       Uri.parse(url),
       headers: headers,
     );
 
     return Member.fromJson(json.decode(response.body));
-
-    //Map<String, dynamic> responseData = json.decode(response.body);
-    //return Usuario.fromJsonMap(responseData);
-
-    //return Usuario.fromJsonMap(personasJson.first);
   }
 }
