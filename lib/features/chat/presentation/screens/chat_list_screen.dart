@@ -373,31 +373,37 @@ class _ChatListScreenState extends State<ChatListScreen>
                             data['participantIds'] as List<dynamic>? ??
                             data['participants'] as List<dynamic>? ??
                             [];
-                        final lastMsgMap = data['lastMessage'];
-                        final lastMsgType = lastMsgMap is Map
-                            ? (lastMsgMap['type'] as String? ?? 'text')
-                            : 'text';
-                        final rawContent = lastMsgMap is Map
-                            ? (lastMsgMap['content'] as String? ?? '')
-                            : (lastMsgMap as String? ?? '');
-                        final lastMsg = lastMsgType == 'voice'
-                            ? '🎵 Nota de voz'
-                            : lastMsgType == 'deleted'
-                            ? 'Mensaje eliminado'
-                            : rawContent;
                         final lastTime =
-                            (data['updatedAt'] as Timestamp?) ??
-                            data['lastMessageTime'] as Timestamp?;
+                            (data['updatedAt'] ?? data['lastMessageTime'])
+                                as Timestamp?;
+                        final lastMsgRaw = data['lastMessage'];
+                        final String lastMsg;
+                        if (lastMsgRaw is String) {
+                          lastMsg = lastMsgRaw;
+                        } else if (lastMsgRaw is Map) {
+                          final type = lastMsgRaw['type'] as String? ?? 'text';
+                          final content =
+                              lastMsgRaw['content'] as String? ?? '';
+                          if (type == 'voice') {
+                            lastMsg = '🎤 Audio';
+                          } else if (type == 'image') {
+                            lastMsg = '📷 Imagen';
+                          } else if (type == 'location') {
+                            lastMsg = '📍 Ubicación';
+                          } else {
+                            lastMsg = content;
+                          }
+                        } else {
+                          lastMsg = '';
+                        }
+                        final unreadCount =
+                            data['unreadCount'] as Map<String, dynamic>? ?? {};
+                        final unread = (unreadCount[_uid] as int?) ?? 0;
                         final type = data['type'] as String? ?? 'direct';
                         final isGroup = type == 'group';
                         final otherUid = isGroup
                             ? ''
                             : _getOtherUid(participants);
-                        final unreadMap = Map<String, dynamic>.from(
-                          data['unreadCount'] as Map? ?? {},
-                        );
-                        final unreadCount = (unreadMap[_uid] as int? ?? 0)
-                            .clamp(0, 99);
 
                         return FutureBuilder<Map<String, dynamic>>(
                           future: isGroup
@@ -478,9 +484,8 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                   child: Text(
                                                     name,
                                                     style: TextStyle(
-                                                      fontWeight:
-                                                          unreadCount > 0
-                                                          ? FontWeight.bold
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w700
                                                           : FontWeight.w600,
                                                       fontSize: 15,
                                                       color: isDark
@@ -500,16 +505,15 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                     ),
                                                     style: TextStyle(
                                                       fontSize: 11,
-                                                      color: unreadCount > 0
+                                                      color: unread > 0
                                                           ? ColorTokens
                                                                 .primary30
                                                           : (isDark
                                                                 ? Colors.white54
                                                                 : Colors
                                                                       .grey[500]),
-                                                      fontWeight:
-                                                          unreadCount > 0
-                                                          ? FontWeight.bold
+                                                      fontWeight: unread > 0
+                                                          ? FontWeight.w600
                                                           : FontWeight.normal,
                                                     ),
                                                   ),
@@ -528,8 +532,7 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                         TextOverflow.ellipsis,
                                                     style: TextStyle(
                                                       fontSize: 13,
-                                                      fontWeight:
-                                                          unreadCount > 0
+                                                      fontWeight: unread > 0
                                                           ? FontWeight.w600
                                                           : FontWeight.normal,
                                                       color: lastMsg.isEmpty
@@ -537,21 +540,14 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                                 ? Colors.white38
                                                                 : Colors
                                                                       .grey[400])
-                                                          : (unreadCount > 0
-                                                                ? (isDark
-                                                                      ? Colors
-                                                                            .white
-                                                                      : ColorTokens
-                                                                            .neutral10)
-                                                                : (isDark
-                                                                      ? Colors
-                                                                            .white70
-                                                                      : Colors
-                                                                            .grey[600])),
+                                                          : (isDark
+                                                                ? Colors.white70
+                                                                : Colors
+                                                                      .grey[600]),
                                                     ),
                                                   ),
                                                 ),
-                                                if (unreadCount > 0)
+                                                if (unread > 0)
                                                   Container(
                                                     margin:
                                                         const EdgeInsets.only(
@@ -571,14 +567,14 @@ class _ChatListScreenState extends State<ChatListScreen>
                                                           ),
                                                     ),
                                                     child: Text(
-                                                      unreadCount > 99
+                                                      unread > 99
                                                           ? '99+'
-                                                          : '$unreadCount',
+                                                          : '$unread',
                                                       style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 11,
                                                         fontWeight:
-                                                            FontWeight.bold,
+                                                            FontWeight.w700,
                                                       ),
                                                     ),
                                                   ),
