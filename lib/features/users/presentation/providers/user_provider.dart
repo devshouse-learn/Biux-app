@@ -1,9 +1,10 @@
+import 'package:biux/core/services/auto_logout_service.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:biux/features/users/data/datasources/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
 
 class UserProvider extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -22,7 +23,7 @@ class UserProvider extends ChangeNotifier {
   // 🔴 Constructor que auto-inicializa en web
   UserProvider() {
     AppLogger.debug('🟦 UserProvider constructor llamado');
-    if (kIsWeb) {
+    if (kIsWeb && !kReleaseMode) {
       AppLogger.debug('🌐 Es WEB - Creando usuario admin de prueba automáticamente');
       _createWebTestUser();
     } else {
@@ -519,6 +520,46 @@ class UserProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
-}
+  /// Porcentaje de completitud del perfil (0-100)
+  int get profileCompletionPercent {
+    if (_user == null) return 0;
+    int total = 0;
+    int completed = 0;
+    final checks = <bool>[
+      _user!.name?.isNotEmpty ?? false,
+      _user!.username?.isNotEmpty ?? false,
+      _user!.email?.isNotEmpty ?? false,
+      _user!.phoneNumber.isNotEmpty,
+      _user!.photoUrl?.isNotEmpty ?? false,
+      _user!.description?.isNotEmpty ?? false,
+    ];
+    total = checks.length;
+    completed = checks.where((c) => c).length;
+    return ((completed / total) * 100).round();
+  }
 
-// Resolución de conflictos: Mantener la lógica más reciente y relevante para el proyecto.
+  /// Campos faltantes del perfil
+  List<String> get missingProfileFields {
+    if (_user == null) return [];
+    final missing = <String>[];
+    if (!(_user!.name?.isNotEmpty ?? false)) missing.add('Nombre');
+    if (!(_user!.username?.isNotEmpty ?? false)) missing.add('Nombre de usuario');
+    if (!(_user!.photoUrl?.isNotEmpty ?? false)) missing.add('Foto de perfil');
+    if (!(_user!.description?.isNotEmpty ?? false)) missing.add('Biografía');
+    return missing;
+  }
+
+  bool get isProfileComplete => profileCompletionPercent >= 80;
+
+  /// URL pública del perfil para compartir
+  String get publicProfileUrl {
+    final username = _user?.username ?? _user?.uid ?? '';
+    return 'https://biux.app/u/$username';
+  }
+
+  String get shareProfileText {
+    final name = _user?.name ?? 'Ciclista';
+    return '¡Sígueme en Biux! �� $name\n$publicProfileUrl';
+  }
+
+}

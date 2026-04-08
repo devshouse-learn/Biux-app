@@ -740,4 +740,67 @@ class RideProvider extends ChangeNotifier {
       return null;
     }
   }
+  // Filtros
+  String _filterDifficulty = 'all';
+  String _searchQuery = '';
+  DateTime? _filterFromDate;
+
+  String get filterDifficulty => _filterDifficulty;
+  String get searchQuery => _searchQuery;
+
+  void setFilterDifficulty(String difficulty) {
+    _filterDifficulty = difficulty;
+    notifyListeners();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query.toLowerCase().trim();
+    notifyListeners();
+  }
+
+  void setFilterFromDate(DateTime? date) {
+    _filterFromDate = date;
+    notifyListeners();
+  }
+
+  void clearFilters() {
+    _filterDifficulty = 'all';
+    _searchQuery = '';
+    _filterFromDate = null;
+    notifyListeners();
+  }
+
+  /// Rides filtrados según criterios activos
+  List<dynamic> get filteredRides {
+    var list = rides.toList();
+    if (_filterDifficulty != 'all') {
+      list = list.where((r) =>
+        r.difficulty?.toString().contains(_filterDifficulty) ?? false
+      ).toList();
+    }
+    if (_searchQuery.isNotEmpty) {
+      list = list.where((r) =>
+        (r.name ?? '').toLowerCase().contains(_searchQuery)
+      ).toList();
+    }
+    if (_filterFromDate != null) {
+      list = list.where((r) {
+        final date = r.dateTime;
+        return date != null && date.isAfter(_filterFromDate!);
+      }).toList();
+    }
+    return list;
+  }
+
+  // Paginación
+  static const int _pageSize = 15;
+  DocumentSnapshot? _lastDocument;
+  bool _hasMoreRides = true;
+  bool get hasMoreRides => _hasMoreRides;
+
+  void resetPagination() {
+    _lastDocument = null;
+    _hasMoreRides = true;
+  }
+
 }
