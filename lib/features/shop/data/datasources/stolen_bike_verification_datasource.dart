@@ -1,7 +1,7 @@
 import 'package:biux/features/bikes/domain/repositories/bike_repository.dart';
 import 'package:biux/features/bikes/domain/entities/bike_entity.dart';
 import 'package:biux/features/bikes/domain/entities/bike_theft_entity.dart';
-import 'package:biux/shared/services/notification_service.dart';
+import 'package:biux/core/services/notification_service.dart';
 import "package:flutter/foundation.dart";
 
 /// Servicio para verificar si una bicicleta está reportada como robada

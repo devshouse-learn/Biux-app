@@ -1,4 +1,4 @@
-import '../../domain/entities/notification_entity.dart';
+import 'package:biux/features/social/domain/entities/notification_entity.dart';
 
 /// Modelo de notificación para Firebase Realtime Database
 class NotificationModel {

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../data/models/promotion_request_model.dart';
+import 'package:biux/features/promotions/data/models/promotion_request_model.dart';
 
 class PromotionsProvider with ChangeNotifier {
   final FirebaseFirestore firestore;

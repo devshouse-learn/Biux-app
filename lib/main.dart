@@ -82,9 +82,9 @@ import 'package:biux/features/weather/presentation/providers/weather_provider.da
 import 'package:biux/features/social/presentation/providers/follow_provider.dart';
 
 // Shared imports
-import 'package:biux/shared/services/local_storage.dart';
-import 'package:biux/shared/services/notification_service.dart';
-import 'package:biux/shared/services/screen_time_service.dart';
+import 'package:biux/core/services/local_storage.dart';
+import 'package:biux/core/services/notification_service.dart';
+import 'package:biux/core/services/screen_time_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
 import 'package:biux/shared/widgets/offline_banner.dart';
 

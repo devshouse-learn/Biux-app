@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import '../../../users/presentation/providers/user_provider.dart';
-import '../providers/seller_request_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/shop/presentation/providers/seller_request_provider.dart';
 
 /// Diálogo para solicitar permiso para vender productos
 class RequestSellerPermissionDialog extends StatefulWidget {

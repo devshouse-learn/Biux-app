@@ -1,4 +1,4 @@
-import '../entities/ride_recommendation_entity.dart';
+import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
 
 abstract class RideRecommendationRepository {
   Future<void> sendRecommendation(RideRecommendationEntity recommendation);

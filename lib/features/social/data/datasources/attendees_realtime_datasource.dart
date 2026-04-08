@@ -1,5 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
-import '../models/attendee_model.dart';
+import 'package:biux/features/social/data/models/attendee_model.dart';
 
 /// Datasource para asistentes en Firebase Realtime Database
 class AttendeesRealtimeDatasource {

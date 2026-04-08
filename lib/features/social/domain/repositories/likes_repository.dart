@@ -1,4 +1,4 @@
-import '../entities/like_entity.dart';
+import 'package:biux/features/social/domain/entities/like_entity.dart';
 
 /// Tipos de contenido que pueden recibir likes
 enum LikeableType { post, comment, story }

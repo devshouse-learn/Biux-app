@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/design_system/color_tokens.dart';
-import '../../../../core/design_system/locale_notifier.dart';
-import '../../../users/presentation/providers/user_provider.dart';
-import '../../domain/entities/seller_request_entity.dart';
-import '../providers/seller_request_provider.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/shop/domain/entities/seller_request_entity.dart';
+import 'package:biux/features/shop/presentation/providers/seller_request_provider.dart';
 
 /// Pantalla para gestionar solicitudes de vendedores (solo admins)
 class SellerRequestsScreen extends StatefulWidget {

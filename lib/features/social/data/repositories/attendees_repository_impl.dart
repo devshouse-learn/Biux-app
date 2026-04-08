@@ -1,7 +1,7 @@
-import '../../domain/entities/attendee_entity.dart';
-import '../../domain/repositories/attendees_repository.dart';
-import '../datasources/attendees_realtime_datasource.dart';
-import '../models/attendee_model.dart';
+import 'package:biux/features/social/domain/entities/attendee_entity.dart';
+import 'package:biux/features/social/domain/repositories/attendees_repository.dart';
+import 'package:biux/features/social/data/datasources/attendees_realtime_datasource.dart';
+import 'package:biux/features/social/data/models/attendee_model.dart';
 
 /// Implementación del repositorio de asistentes
 class AttendeesRepositoryImpl implements AttendeesRepository {

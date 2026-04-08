@@ -1,5 +1,5 @@
-import '../entities/user_entity.dart';
-import '../repositories/user_repository.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
+import 'package:biux/features/users/domain/repositories/user_repository.dart';
 
 // Use Case for getting user profile
 class GetUserProfileUseCase {

@@ -1,5 +1,5 @@
 import 'package:biux/core/config/api_config.dart';
-import '../models/auth_response.dart';
+import 'package:biux/features/authentication/data/models/auth_response.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:dio/dio.dart';
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/ride_recommendation_entity.dart';
-import '../../data/repositories/ride_recommendation_repository_impl.dart';
-import '../../../ride_tracker/domain/entities/ride_track_entity.dart';
-import '../../../users/domain/entities/user_entity.dart';
+import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
+import 'package:biux/features/ride_recommendations/data/repositories/ride_recommendation_repository_impl.dart';
+import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 
 class RideRecommendationProvider extends ChangeNotifier {
   final _repo = RideRecommendationRepositoryImpl();

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../domain/entities/notification_settings_entity.dart';
-import '../../domain/repositories/notification_settings_repository.dart';
+import 'package:biux/features/settings/domain/entities/notification_settings_entity.dart';
+import 'package:biux/features/settings/domain/repositories/notification_settings_repository.dart';
 import "package:flutter/foundation.dart";
 
 class NotificationSettingsRepositoryImpl

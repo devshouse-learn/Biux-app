@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import '../models/comment_model.dart';
+import 'package:biux/features/social/data/models/comment_model.dart';
 
 /// Datasource para comentarios en Firebase Realtime Database
 class CommentsRealtimeDatasource {

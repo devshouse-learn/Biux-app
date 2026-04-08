@@ -1,4 +1,4 @@
-import '../../domain/entities/like_entity.dart';
+import 'package:biux/features/social/domain/entities/like_entity.dart';
 
 /// Modelo de like para Firebase Realtime Database
 class LikeModel {

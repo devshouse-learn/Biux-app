@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import '../../domain/entities/comment_entity.dart';
-import '../../domain/repositories/comments_repository.dart';
-import '../providers/comments_provider.dart';
+import 'package:biux/features/social/domain/entities/comment_entity.dart';
+import 'package:biux/features/social/domain/repositories/comments_repository.dart';
+import 'package:biux/features/social/presentation/providers/comments_provider.dart';
 import 'comment_item.dart';
 
 /// Widget de lista de comentarios

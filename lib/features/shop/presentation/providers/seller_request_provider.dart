@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../../domain/entities/seller_request_entity.dart';
-import '../../data/datasources/seller_request_service.dart';
+import 'package:biux/features/shop/domain/entities/seller_request_entity.dart';
+import 'package:biux/features/shop/data/datasources/seller_request_service.dart';
 
 /// Provider para gestionar solicitudes de vendedores
 class SellerRequestProvider with ChangeNotifier {

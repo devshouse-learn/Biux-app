@@ -1,4 +1,4 @@
-import '../entities/user_entity.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 
 // Domain Repository Interface (Abstract)
 abstract class UserRepository {

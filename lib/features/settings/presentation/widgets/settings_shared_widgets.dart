@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 /// Widgets compartidos para todas las pantallas de Configuración.
 /// Garantizan un estilo visual consistente en toda la sección de ajustes.

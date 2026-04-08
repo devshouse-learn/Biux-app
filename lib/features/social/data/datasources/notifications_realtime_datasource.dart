@@ -1,5 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
-import '../models/notification_model.dart';
+import 'package:biux/features/social/data/models/notification_model.dart';
 import "package:flutter/foundation.dart";
 
 /// Datasource para notificaciones en Firebase Realtime Database

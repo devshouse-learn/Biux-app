@@ -5,7 +5,7 @@ import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../models/group_model.dart';
+import 'package:biux/features/groups/data/models/group_model.dart';
 
 import 'package:biux/features/groups/domain/repositories/group_repository_interface.dart';
 

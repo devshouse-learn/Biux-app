@@ -1,7 +1,7 @@
-import '../../domain/entities/like_entity.dart';
-import '../../domain/repositories/likes_repository.dart';
-import '../datasources/likes_realtime_datasource.dart';
-import '../models/like_model.dart';
+import 'package:biux/features/social/domain/entities/like_entity.dart';
+import 'package:biux/features/social/domain/repositories/likes_repository.dart';
+import 'package:biux/features/social/data/datasources/likes_realtime_datasource.dart';
+import 'package:biux/features/social/data/models/like_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 /// Implementación del repositorio de likes

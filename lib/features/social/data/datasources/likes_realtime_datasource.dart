@@ -1,7 +1,7 @@
 import "package:flutter/foundation.dart";
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/like_model.dart';
+import 'package:biux/features/social/data/models/like_model.dart';
 
 /// Datasource para likes en Firebase Realtime Database
 class LikesRealtimeDatasource {

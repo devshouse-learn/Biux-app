@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../domain/entities/attendee_entity.dart';
-import '../../domain/repositories/attendees_repository.dart';
-// import '../../domain/repositories/notifications_repository.dart'; // ✅ Not needed - Cloud Functions handle notifications
-// import '../../domain/entities/notification_entity.dart'; // ✅ Not needed - Cloud Functions handle notifications
-import '../../data/datasources/attendees_firestore_adapter.dart';
-import '../../../users/domain/repositories/user_repository.dart';
+import 'package:biux/features/social/domain/entities/attendee_entity.dart';
+import 'package:biux/features/social/domain/repositories/attendees_repository.dart';
+// import 'package:biux/features/social/domain/repositories/notifications_repository.dart'; // ✅ Not needed - Cloud Functions handle notifications
+// import 'package:biux/features/social/domain/entities/notification_entity.dart'; // ✅ Not needed - Cloud Functions handle notifications
+import 'package:biux/features/social/data/datasources/attendees_firestore_adapter.dart';
+import 'package:biux/features/users/domain/repositories/user_repository.dart';
 
 /// Provider para gestionar asistentes a rodadas
 class AttendeesProvider extends ChangeNotifier {

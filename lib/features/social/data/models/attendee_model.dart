@@ -1,4 +1,4 @@
-import '../../domain/entities/attendee_entity.dart';
+import 'package:biux/features/social/domain/entities/attendee_entity.dart';
 
 /// Modelo de asistente para Firebase Realtime Database
 class AttendeeModel {

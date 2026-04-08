@@ -21,7 +21,7 @@ import 'package:biux/features/groups/domain/usecases/cancel_join_request_usecase
 import 'package:biux/features/groups/domain/usecases/search_groups_usecase.dart';
 
 // Repositories (para creación de use cases y operaciones cross-feature)
-import '../../data/repositories/group_repository.dart';
+import 'package:biux/features/groups/data/repositories/group_repository.dart';
 import 'package:biux/features/rides/data/repositories/ride_repository.dart';
 import 'package:biux/features/users/data/repositories/user_repository.dart';
 

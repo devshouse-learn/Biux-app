@@ -11,7 +11,7 @@ import 'package:biux/features/bikes/domain/usecases/get_public_bike_info_usecase
 import 'package:biux/features/bikes/domain/usecases/delete_bike_usecase.dart';
 import 'package:biux/features/bikes/domain/usecases/mark_as_recovered_usecase.dart';
 import 'package:biux/features/bikes/data/repositories/bike_repository_impl.dart';
-import 'package:biux/shared/services/optimized_storage_service.dart';
+import 'package:biux/core/services/optimized_storage_service.dart';
 
 /// Estados del provider de bicicletas
 enum BikeProviderState { initial, loading, loaded, error }

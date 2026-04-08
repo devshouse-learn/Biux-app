@@ -1,5 +1,5 @@
 import 'package:biux/core/config/strings.dart';
-import 'package:biux/shared/services/storage_keys.dart';
+import 'package:biux/core/services/storage_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {

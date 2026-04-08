@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import '../../domain/entities/attendee_entity.dart';
-import '../providers/attendees_provider.dart';
+import 'package:biux/features/social/domain/entities/attendee_entity.dart';
+import 'package:biux/features/social/presentation/providers/attendees_provider.dart';
 import 'user_avatar.dart';
 import 'package:go_router/go_router.dart';
 
