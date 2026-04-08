@@ -74,7 +74,7 @@ class _ExperiencesStoriesWidgetState extends State<ExperiencesStoriesWidget> {
         final storyGroups = storyProvider.storyGroups;
 
         return Container(
-          height: 92,
+          height: 100,
           margin: const EdgeInsets.only(top: 8, bottom: 4),
           child: storyProvider.isLoading
               ? const Center(

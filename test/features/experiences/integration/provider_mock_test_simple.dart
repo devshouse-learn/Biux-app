@@ -159,6 +159,22 @@ class MockExperienceRepository implements ExperienceRepository {
 
     return 'https://mock-url.com/media/$experienceId.${mediaType == MediaType.image ? 'jpg' : 'mp4'}';
   }
+
+  @override
+  Future<void> addViewer(String experienceId, UserEntity viewer) async {}
+
+  @override
+  Stream<List<UserEntity>> watchViewers(String experienceId) =>
+      Stream.value([]);
+
+  @override
+  Future<void> repostExperience(
+    ExperienceEntity original, {
+    String caption = '',
+  }) async {}
+
+  @override
+  Future<Map<String, String>> getUserReposts(String userId) async => {};
 }
 
 /// Helper para crear entidades de prueba

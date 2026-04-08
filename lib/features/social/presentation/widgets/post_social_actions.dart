@@ -13,18 +13,26 @@ import '../../domain/repositories/comments_repository.dart';
 class PostSocialActions extends StatelessWidget {
   final String postId;
   final String postOwnerId;
-  final String? postPreview; // Texto o descripción corta del post
+  final String? postPreview;
+  final VoidCallback? onRepost;
+  final VoidCallback? onUnrepost;
+  final bool isReposted;
 
   const PostSocialActions({
     super.key,
     required this.postId,
     required this.postOwnerId,
     this.postPreview,
+    this.onRepost,
+    this.onUnrepost,
+    this.isReposted = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final iconColor = isDark ? Colors.white : Colors.black;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -45,6 +53,30 @@ class PostSocialActions extends StatelessWidget {
 
           // Botón de comentarios
           _CommentsButton(postId: postId, postOwnerId: postOwnerId),
+
+          const SizedBox(width: 16),
+          InkWell(
+            onTap: isReposted ? onUnrepost : onRepost,
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.repeat_rounded, size: 24, color: iconColor),
+                  if (isReposted)
+                    Transform.rotate(
+                      angle: -0.785,
+                      child: Container(
+                        width: 28,
+                        height: 2.5,
+                        color: iconColor,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
 
           const Spacer(),
 

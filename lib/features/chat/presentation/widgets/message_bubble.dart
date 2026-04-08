@@ -9,9 +9,11 @@ class MessageBubble extends StatelessWidget {
   final bool showAvatar;
   final bool isDark;
   final String chatId;
+  final String currentUserId;
   final void Function(MessageEntity) onReply;
   final void Function(MessageEntity, String) onReact;
-  final void Function(MessageEntity) onDelete;
+  final void Function(MessageEntity) onDeleteForMe;
+  final void Function(MessageEntity) onDeleteForAll;
 
   const MessageBubble({
     super.key,
@@ -20,13 +22,19 @@ class MessageBubble extends StatelessWidget {
     required this.showAvatar,
     required this.isDark,
     required this.chatId,
+    required this.currentUserId,
     required this.onReply,
     required this.onReact,
-    required this.onDelete,
+    required this.onDeleteForMe,
+    required this.onDeleteForAll,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Ocultar si fue eliminado para el usuario actual
+    if (message.deletedFor.contains(currentUserId)) {
+      return const SizedBox.shrink();
+    }
     if (message.deleted) return _DeletedBubble(isMe: isMe);
 
     return GestureDetector(
@@ -118,18 +126,30 @@ class MessageBubble extends StatelessWidget {
                 });
               },
             ),
-            if (isMe)
+            if (isMe) ...[
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
                 title: const Text(
-                  'Eliminar',
+                  'Eliminar para mí',
                   style: TextStyle(color: Colors.red),
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  onDelete(message);
+                  onDeleteForMe(message);
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.delete_forever, color: Colors.red),
+                title: const Text(
+                  'Eliminar para todos',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  onDeleteForAll(message);
+                },
+              ),
+            ],
           ],
         ),
       ),
@@ -227,12 +247,25 @@ class _BubbleContent extends StatelessWidget {
         children: [
           _buildContent(textColor),
           const SizedBox(height: 2),
-          Text(
-            _formatTime(message.sentAt),
-            style: TextStyle(
-              fontSize: 10,
-              color: isMe ? Colors.white70 : Colors.grey,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                _formatTime(message.sentAt),
+                style: TextStyle(
+                  fontSize: 10,
+                  color: isMe ? Colors.white70 : Colors.grey,
+                ),
+              ),
+              if (isMe) ...[
+                const SizedBox(width: 3),
+                _MessageStatusTicks(
+                  isRead: message.isRead,
+                  isDelivered: message.isDelivered,
+                ),
+              ],
+            ],
           ),
         ],
       ),
@@ -263,9 +296,11 @@ class _BubbleContent extends StatelessWidget {
   }
 
   String _formatTime(DateTime dt) {
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '$h:$m';
+    final hour = dt.hour;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final h = hour % 12 == 0 ? 12 : hour % 12;
+    return '$h:$minute $period';
   }
 }
 
@@ -335,10 +370,9 @@ class _VoiceMessageState extends State<_VoiceMessage> {
 
     setState(() => _loading = true);
     try {
-      if (_player.processingState == ProcessingState.idle ||
-          _player.processingState == ProcessingState.completed) {
-        await _player.setUrl(url);
-      }
+      // Siempre re-setear la URL para garantizar que funcione en cualquier estado
+      await _player.stop();
+      await _player.setUrl(url);
       await _player.play();
     } catch (e) {
       if (mounted) {
@@ -544,10 +578,87 @@ class _ReactionsRow extends StatelessWidget {
   }
 }
 
+/// Chulos de estado del mensaje (estilo WhatsApp)
+/// - 1 gris: enviado
+/// - 2 grises: entregado
+/// - 2 azules: leído
+class _MessageStatusTicks extends StatelessWidget {
+  final bool isRead;
+  final bool isDelivered;
+
+  const _MessageStatusTicks({required this.isRead, required this.isDelivered});
+
+  @override
+  Widget build(BuildContext context) {
+    if (isRead) {
+      // Dos chulos azules
+      return _buildTicks(Colors.lightBlue, isDouble: true);
+    } else if (isDelivered) {
+      // Dos chulos blancos/grises
+      return _buildTicks(Colors.white70, isDouble: true);
+    } else {
+      // Un chulo blanco/gris: enviado
+      return _buildTicks(Colors.white70, isDouble: false);
+    }
+  }
+
+  Widget _buildTicks(Color color, {required bool isDouble}) {
+    return SizedBox(
+      width: isDouble ? 20 : 10,
+      height: 12,
+      child: CustomPaint(
+        painter: _TickPainter(color: color, isDouble: isDouble),
+      ),
+    );
+  }
+}
+
+class _TickPainter extends CustomPainter {
+  final Color color;
+  final bool isDouble;
+
+  _TickPainter({required this.color, required this.isDouble});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    void drawTick(double offsetX) {
+      final h = size.height;
+      // Palo corto bajando
+      canvas.drawLine(
+        Offset(offsetX, h * 0.45),
+        Offset(offsetX + h * 0.25, h * 0.75),
+        paint,
+      );
+      // Palo largo subiendo
+      canvas.drawLine(
+        Offset(offsetX + h * 0.25, h * 0.75),
+        Offset(offsetX + h * 0.7, h * 0.15),
+        paint,
+      );
+    }
+
+    if (isDouble) {
+      drawTick(0);
+      drawTick(size.width * 0.45);
+    } else {
+      drawTick(size.width * 0.15);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_TickPainter old) =>
+      old.color != color || old.isDouble != isDouble;
+}
+
 class _DeletedBubble extends StatelessWidget {
   final bool isMe;
   const _DeletedBubble({required this.isMe});
-
   @override
   Widget build(BuildContext context) {
     return Padding(

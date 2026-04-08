@@ -15,7 +15,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
-import 'package:biux/shared/widgets/fullscreen_image_viewer.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -68,6 +67,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   final Set<String> _failedImageIds = {};
   late Future<dynamic> _experiencesFuture;
   int _postCount = 0;
+  int _selectedTab = 0; // 0 = publicaciones, 1 = reposteos
   int _lastKnownFeedLength = -1;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -102,15 +102,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     setState(() {
       _experiencesFuture = _loadExperiences();
     });
-  }
-
-  /// Muestra las imágenes en pantalla completa con PageView
-  void _showFullScreenImage(
-    BuildContext context,
-    List<String> imageUrls,
-    int initialIndex,
-  ) {
-    FullScreenImageViewer.show(context, imageUrls, initialIndex);
   }
 
   void _showExperienceMenu(BuildContext context, dynamic experience) {
@@ -247,7 +238,6 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   }
 
   // Función temporal para actualizar ciudades con departamentos
-
 
   void _showFollowersModal(BuildContext context) {
     final followers = widget.userProvider.user?.followers ?? {};
@@ -1194,19 +1184,62 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     child: Column(
                       children: [
                         SizedBox(height: 20),
-                        // ========== PUBLICACIONES ==========
+                        // ========== TABS PUBLICACIONES / REPOSTEOS ==========
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Publicaciones',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? ColorTokens.neutral100
-                                    : ColorTokens.primary30,
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => setState(() => _selectedTab = 0),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: _selectedTab == 0
+                                            ? ColorTokens.primary30
+                                            : Colors.transparent,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.grid_on_rounded,
+                                    color: _selectedTab == 0
+                                        ? ColorTokens.primary30
+                                        : ColorTokens.neutral60,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => setState(() => _selectedTab = 1),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: _selectedTab == 1
+                                            ? ColorTokens.primary30
+                                            : Colors.transparent,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.repeat_rounded,
+                                    color: _selectedTab == 1
+                                        ? ColorTokens.primary30
+                                        : ColorTokens.neutral60,
+                                    size: 22,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -1356,7 +1389,18 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                   _failedImageIds.contains(exp.id.toString()),
                             );
 
-                            // Actualizar contador de posts
+                            // Filtrar por tab: 0 = posts propios, 1 = reposteos
+                            if (_selectedTab == 0) {
+                              experiences.removeWhere(
+                                (exp) => exp.isRepost == true,
+                              );
+                            } else {
+                              experiences.removeWhere(
+                                (exp) => exp.isRepost != true,
+                              );
+                            }
+
+                            // Actualizar contador de posts (solo no-reposts)
                             if (_postCount != experiences.length) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 if (mounted)
@@ -1389,7 +1433,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      'Sin publicaciones válidas',
+                                      _selectedTab == 0
+                                          ? 'Sin publicaciones válidas'
+                                          : 'Sin reposteos aún',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.neutral70,
@@ -1398,7 +1444,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                      'Crea tu primera publicación',
+                                      _selectedTab == 0
+                                          ? 'Crea tu primera publicación'
+                                          : 'Repostea publicaciones de otros usuarios',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: ColorTokens.neutral60,
@@ -1425,18 +1473,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 final experience = experiences[index];
                                 return GestureDetector(
                                   onTap: () {
-                                    // Abrir foto en pantalla completa
-                                    final allUrls = experience.media
-                                        .map((m) => m.url)
-                                        .where(
-                                          (u) =>
-                                              u.isNotEmpty &&
-                                              u.startsWith('http'),
-                                        )
-                                        .toList();
-                                    if (allUrls.isNotEmpty) {
-                                      _showFullScreenImage(context, allUrls, 0);
-                                    }
+                                    context.push(
+                                      '/post-detail/${experience.id}',
+                                    );
                                   },
                                   onLongPress: () {
                                     _showExperienceMenu(context, experience);
@@ -1572,6 +1611,106 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                   color: ColorTokens.neutral60,
                                                 ),
                                               ),
+                                        // Badge de repost con línea diagonal (quitar repost al tocar)
+                                        if (_selectedTab == 1)
+                                          Positioned(
+                                            top: 4,
+                                            left: 4,
+                                            child: GestureDetector(
+                                              onTap: () async {
+                                                final confirmed =
+                                                    await showDialog<bool>(
+                                                      context: context,
+                                                      builder: (ctx) => AlertDialog(
+                                                        title: const Text(
+                                                          'Quitar reposteo',
+                                                        ),
+                                                        content: const Text(
+                                                          '¿Deseas eliminar este reposteo de tu perfil?',
+                                                        ),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                  ctx,
+                                                                  false,
+                                                                ),
+                                                            child: const Text(
+                                                              'Cancelar',
+                                                            ),
+                                                          ),
+                                                          ElevatedButton(
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                  ctx,
+                                                                  true,
+                                                                ),
+                                                            child: const Text(
+                                                              'Eliminar',
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                if (confirmed != true ||
+                                                    !mounted)
+                                                  return;
+                                                try {
+                                                  final provider = context
+                                                      .read<
+                                                        ExperienceProvider
+                                                      >();
+                                                  await provider
+                                                      .deleteExperience(
+                                                        experience.id,
+                                                      );
+                                                  if (mounted) {
+                                                    _refreshExperiences();
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          'Reposteo eliminado',
+                                                        ),
+                                                        behavior:
+                                                            SnackBarBehavior
+                                                                .floating,
+                                                      ),
+                                                    );
+                                                  }
+                                                } catch (_) {}
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.all(
+                                                  4,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: ColorTokens.primary30
+                                                      .withValues(alpha: 0.85),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.repeat_rounded,
+                                                      color: Colors.white,
+                                                      size: 14,
+                                                    ),
+                                                    Transform.rotate(
+                                                      angle: -0.785,
+                                                      child: Container(
+                                                        width: 18,
+                                                        height: 2,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         // Botón de 3 puntos (menú)
                                         Positioned(
                                           top: 4,

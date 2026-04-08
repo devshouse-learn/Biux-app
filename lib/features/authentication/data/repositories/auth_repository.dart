@@ -1,6 +1,6 @@
 import '../models/auth_response.dart';
+import 'package:biux/core/services/app_logger.dart';
 import 'package:dio/dio.dart';
-import "package:flutter/foundation.dart";
 
 class AuthRepository {
   final Dio _dio;
@@ -18,7 +18,7 @@ class AuthRepository {
       'Accept': 'application/json',
     };
 
-    debugPrint('🔧 [AuthRepo] Inicializado con URL: $_baseUrl');
+    AppLogger.debug('🔧 [AuthRepo] Inicializado con URL: $_baseUrl');
   }
 
   // Validar formato de número telefónico - PERMISIVO
@@ -30,25 +30,25 @@ class AuthRepository {
 
   Future<bool> sendOTP(String phoneNumber) async {
     try {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📱 [AuthRepo] ENVIANDO CÓDIGO SMS');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📞 NÚMERO DESTINO: $phoneNumber');
-      debugPrint('📞 EL CÓDIGO SE ENVIARÁ A: $phoneNumber');
-      debugPrint('🌐 URL Backend: $_baseUrl');
-      debugPrint('⏰ Timestamp: ${DateTime.now().toIso8601String()}');
-      debugPrint('');
-      debugPrint('⚠️  IMPORTANTE: El SMS se envía al número ingresado');
-      debugPrint('⚠️  NO se envía al número del administrador');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('📱 [AuthRepo] ENVIANDO CÓDIGO SMS');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('📞 NÚMERO DESTINO: $phoneNumber');
+      AppLogger.debug('📞 EL CÓDIGO SE ENVIARÁ A: $phoneNumber');
+      AppLogger.debug('🌐 URL Backend: $_baseUrl');
+      AppLogger.debug('⏰ Timestamp: ${DateTime.now().toIso8601String()}');
+      AppLogger.debug('');
+      AppLogger.warning('⚠️  IMPORTANTE: El SMS se envía al número ingresado');
+      AppLogger.warning('⚠️  NO se envía al número del administrador');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       // Validación muy permisiva
       if (!_isValidPhoneNumber(phoneNumber)) {
-        debugPrint('❌ [AuthRepo] Número inválido: $phoneNumber');
+        AppLogger.error('❌ [AuthRepo] Número inválido: $phoneNumber');
         throw Exception('Número inválido. Debe tener al menos 8 dígitos');
       }
 
-      debugPrint('✅ [AuthRepo] Número válido: $phoneNumber');
+      AppLogger.info('✅ [AuthRepo] Número válido: $phoneNumber');
 
       final url = '$_baseUrl/send-otp';
       final requestData = {
@@ -56,37 +56,37 @@ class AuthRepository {
         'timestamp': DateTime.now().toIso8601String(),
       };
 
-      debugPrint('📤 [AuthRepo] Enviando POST a: $url');
-      debugPrint('� [AuthRepo] Datos: $requestData');
-      debugPrint('🔧 [AuthRepo] Headers: ${_dio.options.headers}');
+      AppLogger.debug('📤 [AuthRepo] Enviando POST a: $url');
+      AppLogger.debug('� [AuthRepo] Datos: $requestData');
+      AppLogger.debug('🔧 [AuthRepo] Headers: ${_dio.options.headers}');
 
       final response = await _dio.post(url, data: requestData);
 
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📨 [AuthRepo] RESPUESTA RECIBIDA');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('📊 Status Code: ${response.statusCode}');
-      debugPrint('📝 Response Data: ${response.data}');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('📨 [AuthRepo] RESPUESTA RECIBIDA');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('📊 Status Code: ${response.statusCode}');
+      AppLogger.debug('📝 Response Data: ${response.data}');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('✅ [AuthRepo] ¡OTP ENVIADO EXITOSAMENTE!');
+        AppLogger.info('✅ [AuthRepo] ¡OTP ENVIADO EXITOSAMENTE!');
         return true;
       } else {
-        debugPrint('⚠️ [AuthRepo] Status inesperado: ${response.statusCode}');
+        AppLogger.warning('⚠️ [AuthRepo] Status inesperado: ${response.statusCode}');
         throw Exception('err_server_status');
       }
     } on DioException catch (e) {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('❌ [AuthRepo] ERROR DE CONEXIÓN');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('🔴 Tipo de error: ${e.type}');
-      debugPrint('💬 Mensaje: ${e.message}');
-      debugPrint('📍 URL intentada: ${e.requestOptions.uri}');
-      debugPrint('📦 Datos enviados: ${e.requestOptions.data}');
-      debugPrint('📨 Response Status: ${e.response?.statusCode}');
-      debugPrint('📝 Response Data: ${e.response?.data}');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.error('❌ [AuthRepo] ERROR DE CONEXIÓN');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.error('🔴 Tipo de error: ${e.type}');
+      AppLogger.debug('💬 Mensaje: ${e.message}');
+      AppLogger.debug('📍 URL intentada: ${e.requestOptions.uri}');
+      AppLogger.debug('📦 Datos enviados: ${e.requestOptions.data}');
+      AppLogger.debug('📨 Response Status: ${e.response?.statusCode}');
+      AppLogger.debug('📝 Response Data: ${e.response?.data}');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       String errorMessage = 'err_send_otp';
 
@@ -125,29 +125,29 @@ class AuthRepository {
           errorMessage = 'err_unexpected';
       }
 
-      debugPrint('🔴 Mensaje de error final: $errorMessage');
+      AppLogger.error('🔴 Mensaje de error final: $errorMessage');
       throw Exception(errorMessage);
     } catch (e) {
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('❌ [AuthRepo] ERROR INESPERADO');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      debugPrint('🔴 Tipo: ${e.runtimeType}');
-      debugPrint('🔴 Detalles: $e');
-      debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.error('❌ [AuthRepo] ERROR INESPERADO');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      AppLogger.error('🔴 Tipo: ${e.runtimeType}');
+      AppLogger.error('🔴 Detalles: $e');
+      AppLogger.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       throw Exception('err_unexpected');
     }
   }
 
   Future<AuthResponse> validateOTP(String phoneNumber, String code) async {
     try {
-      debugPrint('🔑 [AuthRepo] Validando código para: $phoneNumber');
-      debugPrint('📝 [AuthRepo] Código: ${code.replaceAll(RegExp(r'.'), '*')}');
+      AppLogger.debug('🔑 [AuthRepo] Validando código para: $phoneNumber');
+      AppLogger.debug('📝 [AuthRepo] Código: ${code.replaceAll(RegExp(r'.'), '*')}');
 
       if (code.length != 6) {
         throw Exception('err_code_6_digits');
       }
 
-      debugPrint('📤 [AuthRepo] Enviando validación a: $_baseUrl/validate-otp');
+      AppLogger.debug('📤 [AuthRepo] Enviando validación a: $_baseUrl/validate-otp');
 
       final response = await _dio.post(
         '$_baseUrl/validate-otp',
@@ -158,24 +158,24 @@ class AuthRepository {
         },
       );
 
-      debugPrint(
+      AppLogger.debug(
         '✅ [AuthRepo] Respuesta de validación recibida - Status: ${response.statusCode}',
       );
 
       if (response.statusCode == 200) {
         final authResponse = AuthResponse.fromJson(response.data);
-        debugPrint('🎫 [AuthRepo] Token obtenido exitosamente');
+        AppLogger.debug('🎫 [AuthRepo] Token obtenido exitosamente');
         return authResponse;
       } else {
-        debugPrint(
+        AppLogger.debug(
           '⚠️ [AuthRepo] Validación fallida - Status: ${response.statusCode}',
         );
         throw Exception('err_code_invalid_or_expired');
       }
     } on DioException catch (e) {
-      debugPrint('❌ [AuthRepo] Error en validación:');
-      debugPrint('   Tipo: ${e.type}');
-      debugPrint('   Status: ${e.response?.statusCode}');
+      AppLogger.error('❌ [AuthRepo] Error en validación:');
+      AppLogger.debug('   Tipo: ${e.type}');
+      AppLogger.debug('   Status: ${e.response?.statusCode}');
 
       String errorMessage = 'err_validate_code';
 
@@ -189,7 +189,7 @@ class AuthRepository {
 
       throw Exception(errorMessage);
     } catch (e) {
-      debugPrint('❌ [AuthRepo] Error inesperado en validación: $e');
+      AppLogger.error('❌ [AuthRepo] Error inesperado en validación: $e');
       throw Exception('err_validate_code');
     }
   }
