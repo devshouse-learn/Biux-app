@@ -91,6 +91,9 @@ import 'package:biux/shared/widgets/offline_banner.dart';
 // Core services
 import 'package:biux/core/services/connectivity_service.dart';
 import 'package:biux/core/services/remote_config_service.dart';
+import 'package:biux/core/services/snackbar_service.dart';
+import 'package:biux/core/services/performance_service.dart';
+import 'package:biux/core/services/app_update_service.dart';
 
 // External packages
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -310,6 +313,10 @@ Future<void> _initServicesAsync() async {
     RemoteConfigService().initialize();
     // No bloquear en NotificationService - se carga en background
     NotificationService().initialize();
+    // Inicializar info del paquete para update checker
+    AppUpdateService.initialize();
+    // Performance monitoring
+    PerformanceService.startAppLoadTrace();
   } catch (e) {
     debugPrint('⚠️ Error en inicialización async de servicios: $e');
   }
@@ -329,6 +336,7 @@ class MyApp extends StatelessWidget {
 
     return BiuxNotificationListener(
       child: MaterialApp.router(
+        scaffoldMessengerKey: SnackBarService.messengerKey,
         debugShowCheckedModeBanner: false,
         locale: localeNotifier.locale,
         localizationsDelegates: const [

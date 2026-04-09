@@ -12,6 +12,7 @@ import 'package:biux/features/age_verification/presentation/screens/identity_ver
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/services/analytics_service.dart';
 
 // Feature imports (providers)
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
@@ -336,6 +337,7 @@ final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: AppRoutes.splash,
   debugLogDiagnostics: false,
+  observers: [AnalyticsService.observer],
   redirect: _guard,
   refreshListenable: _authNotifier,
   routes: [
