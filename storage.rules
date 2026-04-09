@@ -1,0 +1,66 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isUnder10MB() {
+      return request.resource.size < 10 * 1024 * 1024;
+    }
+
+    function isUnder50MB() {
+      return request.resource.size < 50 * 1024 * 1024;
+    }
+
+    // Fotos de perfil
+    match /users/{userId}/profile/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isImage() && isUnder10MB();
+    }
+
+    // Fotos de experiencias/stories
+    match /experiences/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isImage() && isUnder10MB();
+    }
+
+    // Fotos de grupos
+    match /groups/{groupId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isImage() && isUnder10MB();
+    }
+
+    // Fotos de bicicletas
+    match /bikes/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isImage() && isUnder10MB();
+    }
+
+    // Fotos de productos
+    match /products/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isImage() && isUnder10MB();
+    }
+
+    // Archivos de chat
+    match /chats/{chatId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isUnder50MB();
+    }
+
+    // Denegar todo lo demás
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

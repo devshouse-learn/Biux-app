@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import '../../domain/entities/ride_recommendation_entity.dart';
-import '../providers/ride_recommendation_provider.dart';
+import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
+import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
 
 class MyRecommendationsScreen extends StatefulWidget {
   const MyRecommendationsScreen({super.key});

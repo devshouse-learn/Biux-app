@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import '../../../users/domain/repositories/user_repository.dart';
-import '../../../users/domain/entities/user_entity.dart';
+import 'package:biux/features/users/domain/repositories/user_repository.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
 import 'package:go_router/go_router.dart';
 
 /// Widget que muestra la lista de asistentes a una rodada

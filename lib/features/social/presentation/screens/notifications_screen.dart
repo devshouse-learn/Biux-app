@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import '../widgets/notifications_list.dart';
+import 'package:biux/features/social/presentation/widgets/notifications_list.dart';
 
 /// Pantalla de notificaciones
 class NotificationsScreen extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import '../../domain/entities/notification_entity.dart';
-import '../providers/notifications_provider.dart';
+import 'package:biux/features/social/domain/entities/notification_entity.dart';
+import 'package:biux/features/social/presentation/providers/notifications_provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:go_router/go_router.dart';
 

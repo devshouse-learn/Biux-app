@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/design_system/locale_notifier.dart';
-import '../widgets/settings_shared_widgets.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 import 'notifications_details_screen.dart';
 import 'appearance_details_screen.dart';
 import 'privacy_details_screen.dart';

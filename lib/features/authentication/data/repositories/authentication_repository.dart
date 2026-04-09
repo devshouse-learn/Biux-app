@@ -1,4 +1,4 @@
-import 'package:biux/shared/services/local_storage.dart';
+import 'package:biux/core/services/local_storage.dart';
 import 'package:biux/core/models/common/response.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_firebase_repository.dart';

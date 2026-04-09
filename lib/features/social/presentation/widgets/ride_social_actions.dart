@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import '../providers/comments_provider.dart';
-import '../../domain/repositories/comments_repository.dart';
+import 'package:biux/features/social/presentation/providers/comments_provider.dart';
+import 'package:biux/features/social/domain/repositories/comments_repository.dart';
 
 /// Widget que muestra las acciones sociales para una rodada
 /// (Asistentes y Comentarios)

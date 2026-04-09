@@ -1,16 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:biux/features/advertisements/data/models/advertising.dart';
+import 'package:biux/core/config/api_config.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:http/http.dart' as http;
 
 class AdvertisingRepository {
-  static const String _urlBase =
-      'https://biux-prod.ibacrea.com/api/v1/publicidades';
-
   /// Obtiene una publicidad aleatoria con dinero disponible.
   Future<Advertising> getAdvertising() async {
-    final url = '$_urlBase?randomValues=true&dinero.gt=0.0';
+    final url = ApiConfig.publicidadesAleatorias;
     try {
       final response = await http
           .get(Uri.parse(url))
@@ -43,7 +41,7 @@ class AdvertisingRepository {
     int limit = 10,
     int offset = 0,
   }) async {
-    final url = '$_urlBase?limit=$limit&offset=$offset';
+    final url = ApiConfig.publicidadesConPaginacion(limit: limit, offset: offset);
     try {
       final response = await http
           .get(Uri.parse(url))
@@ -86,7 +84,7 @@ class AdvertisingRepository {
       'costWatch': advertising.costWatch,
       'money': advertising.money,
     });
-    final url = '$_urlBase/${advertising.docId}';
+    final url = ApiConfig.publicidadById(advertising.docId);
     try {
       final response = await http
           .patch(Uri.parse(url), headers: headers, body: body)

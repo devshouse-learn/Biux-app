@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 // Core imports
 import 'package:biux/core/config/router/app_router.dart';
 import 'package:biux/core/config/strings.dart';
+import 'package:biux/core/config/api_config.dart';
 import 'package:biux/core/design_system/theme_notifier.dart';
 import 'package:biux/core/design_system/app_theme.dart';
 
@@ -81,10 +82,10 @@ import 'package:biux/features/weather/presentation/providers/weather_provider.da
 import 'package:biux/features/social/presentation/providers/follow_provider.dart';
 
 // Shared imports
-import 'package:biux/shared/services/local_storage.dart';
-import 'package:biux/shared/services/notification_service.dart';
-import 'package:biux/shared/services/push_notification_service.dart';
-import 'package:biux/shared/services/screen_time_service.dart';
+import 'package:biux/core/services/local_storage.dart';
+import 'package:biux/core/services/notification_service.dart';
+import 'package:biux/core/services/push_notification_service.dart';
+import 'package:biux/core/services/screen_time_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
 import 'package:biux/shared/widgets/offline_banner.dart';
 import 'package:biux/shared/widgets/connectivity_banner.dart';
@@ -92,6 +93,9 @@ import 'package:biux/shared/widgets/connectivity_banner.dart';
 // Core services
 import 'package:biux/core/services/connectivity_service.dart';
 import 'package:biux/core/services/remote_config_service.dart';
+import 'package:biux/core/services/snackbar_service.dart';
+import 'package:biux/core/services/performance_service.dart';
+import 'package:biux/core/services/app_update_service.dart';
 
 // External packages
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -149,9 +153,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (_) => app_auth.AuthProvider(
-            authRepository: AuthRepository(
-              baseUrl: 'https://n8n.oktavia.me/webhook',
-            ),
+            authRepository: AuthRepository(baseUrl: ApiConfig.authBaseUrl),
           ),
         ),
         ChangeNotifierProvider<ThemeNotifier>(create: (_) => ThemeNotifier()),
@@ -311,6 +313,10 @@ Future<void> _initServicesAsync() async {
     NotificationService().initialize();
     // Inicializar Push Notifications
     await PushNotificationService.initialize();
+    // Inicializar info del paquete para update checker
+    AppUpdateService.initialize();
+    // Performance monitoring
+    PerformanceService.startAppLoadTrace();
   } catch (e) {
     debugPrint('⚠️ Error en inicialización async de servicios: $e');
   }
@@ -330,6 +336,7 @@ class MyApp extends StatelessWidget {
 
     return BiuxNotificationListener(
       child: MaterialApp.router(
+        scaffoldMessengerKey: SnackBarService.messengerKey,
         debugShowCheckedModeBanner: false,
         locale: localeNotifier.locale,
         localizationsDelegates: const [

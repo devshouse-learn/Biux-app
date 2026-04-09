@@ -1,6 +1,6 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/seller_request_model.dart';
-import '../../domain/entities/seller_request_entity.dart';
+import 'package:biux/features/shop/data/models/seller_request_model.dart';
+import 'package:biux/features/shop/domain/entities/seller_request_entity.dart';
 import "package:flutter/foundation.dart";
 
 /// Servicio para gestionar solicitudes de vendedores

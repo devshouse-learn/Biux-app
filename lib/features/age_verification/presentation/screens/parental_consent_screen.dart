@@ -215,7 +215,7 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
         SizedBox(
           width: double.infinity, height: 52,
           child: ElevatedButton(
-            onPressed: () => context.go(AppRoutes.mainMenu),
+            onPressed: () => context.go('/stories'),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary30,
               foregroundColor: Colors.white,

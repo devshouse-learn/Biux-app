@@ -1,4 +1,4 @@
-import '../entities/comment_entity.dart';
+import 'package:biux/features/social/domain/entities/comment_entity.dart';
 
 /// Tipos de contenido que pueden recibir comentarios
 enum CommentableType { post, ride }

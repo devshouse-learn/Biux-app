@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import '../services/image_compression_service.dart';
+import 'package:biux/core/services/image_compression_service.dart';
 
 /// Servicio optimizado para Firebase Storage que reduce costos significativamente
 /// - Comprime imágenes antes de subir

@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/config/router/app_routes.dart';
 
 class IdentityVerificationScreen extends StatefulWidget {
   final String userId;
@@ -203,7 +202,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
         SizedBox(
           width: double.infinity, height: 48,
           child: TextButton(
-            onPressed: () => context.go(AppRoutes.mainMenu),
+            onPressed: () => context.go('/stories'),
             child: const Text('Verificar más tarde (acceso limitado)',
               style: TextStyle(color: Colors.grey, fontSize: 13))),
         ),
@@ -289,7 +288,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
         SizedBox(
           width: double.infinity, height: 52,
           child: ElevatedButton(
-            onPressed: () => context.go(AppRoutes.mainMenu),
+            onPressed: () => context.go('/stories'),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary30,
               foregroundColor: Colors.white,

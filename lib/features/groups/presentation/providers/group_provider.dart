@@ -6,19 +6,47 @@ import 'package:image_picker/image_picker.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
-import '../../data/repositories/group_repository.dart';
+
+// Use Cases
+import 'package:biux/features/groups/domain/usecases/create_group_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/get_groups_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/join_group_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/leave_group_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/delete_group_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/edit_group_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/get_group_by_id_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/approve_join_request_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/reject_join_request_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/cancel_join_request_usecase.dart';
+import 'package:biux/features/groups/domain/usecases/search_groups_usecase.dart';
+
+// Repositories (para creación de use cases y operaciones cross-feature)
+import 'package:biux/features/groups/data/repositories/group_repository.dart';
 import 'package:biux/features/rides/data/repositories/ride_repository.dart';
 import 'package:biux/features/users/data/repositories/user_repository.dart';
 
 enum GroupMembershipStatus { admin, member, pending, notMember }
 
 class GroupProvider extends ChangeNotifier {
-  final GroupRepository _repository = GroupRepository();
-  final UserRepository _userRepository = UserRepository();
-  final RideRepository _rideRepository = RideRepository();
-  final ImagePicker _imagePicker = ImagePicker();
+  // Repositorios auxiliares (otros features — no pasan por use cases de grupos)
+  final UserRepository _userRepository;
+  final RideRepository _rideRepository;
+  final ImagePicker _imagePicker;
 
-  // Estado
+  // ─── Use Cases ────────────────────────────────────────────────────────
+  final CreateGroupUseCase _createGroupUseCase;
+  final GetGroupsUseCase _getGroupsUseCase;
+  final JoinGroupUseCase _joinGroupUseCase;
+  final LeaveGroupUseCase _leaveGroupUseCase;
+  final DeleteGroupUseCase _deleteGroupUseCase;
+  final EditGroupUseCase _editGroupUseCase;
+  final GetGroupByIdUseCase _getGroupByIdUseCase;
+  final ApproveJoinRequestUseCase _approveJoinRequestUseCase;
+  final RejectJoinRequestUseCase _rejectJoinRequestUseCase;
+  final CancelJoinRequestUseCase _cancelJoinRequestUseCase;
+  final SearchGroupsUseCase _searchGroupsUseCase;
+
+  // ─── Estado ───────────────────────────────────────────────────────────
   List<GroupModel> _allGroups = [];
   List<GroupModel> _userGroups = [];
   List<GroupModel> _adminGroups = [];
@@ -26,9 +54,37 @@ class GroupProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   GroupModel? _selectedGroup;
-  Map<String, UserModel> _userCache = {}; // Cache de usuarios
+  final Map<String, UserModel> _userCache = {};
 
-  // Getters
+  // ─── Constructor (compatible sin parámetros para main.dart) ───────────
+  GroupProvider({
+    GroupRepository? repository,
+    UserRepository? userRepository,
+    RideRepository? rideRepository,
+    ImagePicker? imagePicker,
+  })  : _userRepository = userRepository ?? UserRepository(),
+        _rideRepository = rideRepository ?? RideRepository(),
+        _imagePicker = imagePicker ?? ImagePicker(),
+        _createGroupUseCase =
+            CreateGroupUseCase(repository ?? GroupRepository()),
+        _getGroupsUseCase = GetGroupsUseCase(repository ?? GroupRepository()),
+        _joinGroupUseCase = JoinGroupUseCase(repository ?? GroupRepository()),
+        _leaveGroupUseCase = LeaveGroupUseCase(repository ?? GroupRepository()),
+        _deleteGroupUseCase =
+            DeleteGroupUseCase(repository ?? GroupRepository()),
+        _editGroupUseCase = EditGroupUseCase(repository ?? GroupRepository()),
+        _getGroupByIdUseCase =
+            GetGroupByIdUseCase(repository ?? GroupRepository()),
+        _approveJoinRequestUseCase =
+            ApproveJoinRequestUseCase(repository ?? GroupRepository()),
+        _rejectJoinRequestUseCase =
+            RejectJoinRequestUseCase(repository ?? GroupRepository()),
+        _cancelJoinRequestUseCase =
+            CancelJoinRequestUseCase(repository ?? GroupRepository()),
+        _searchGroupsUseCase =
+            SearchGroupsUseCase(repository ?? GroupRepository());
+
+  // ─── Getters ──────────────────────────────────────────────────────────
   List<GroupModel> get allGroups => _allGroups;
   List<GroupModel> get userGroups => _userGroups;
   List<GroupModel> get adminGroups => _adminGroups;
@@ -39,51 +95,55 @@ class GroupProvider extends ChangeNotifier {
 
   String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
-  // NUEVO: Verificar si el usuario ya es admin de algún grupo
   bool get isAdminOfAnyGroup => _adminGroups.isNotEmpty;
-
-  // NUEVO: Verificar si el usuario puede crear un grupo (no es admin de ninguno)
   bool get canCreateGroup => !isAdminOfAnyGroup;
 
-  // Cargar todos los grupos
+  // ─── Cargar grupos (Use Case: GetGroupsUseCase) ──────────────────────
+
   void loadAllGroups() {
-    _repository.getGroups().listen((groups) {
-      // Ordenar por cantidad de miembros (de mayor a menor)
+    _getGroupsUseCase.call().listen((groups) {
       groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
       _allGroups = groups;
       notifyListeners();
     });
   }
 
-  // Cargar grupos del usuario
   void loadUserGroups() {
     if (currentUserId != null) {
-      _repository.getUserGroups(currentUserId!).listen((groups) {
-        // Ordenar por cantidad de miembros (de mayor a menor)
-        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+      _getGroupsUseCase.byUser(currentUserId!).listen((groups) {
+        groups.sort(
+            (a, b) => b.memberIds.length.compareTo(a.memberIds.length));
         _userGroups = groups;
         notifyListeners();
       });
     }
   }
 
-  // Cargar grupos administrados
   void loadAdminGroups() {
     if (currentUserId != null) {
-      _repository.getAdminGroups(currentUserId!).listen((groups) {
-        // Ordenar por cantidad de miembros (de mayor a menor)
-        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+      _getGroupsUseCase.adminGroups(currentUserId!).listen((groups) {
+        groups.sort(
+            (a, b) => b.memberIds.length.compareTo(a.memberIds.length));
         _adminGroups = groups;
         notifyListeners();
       });
     }
   }
 
-  // Crear grupo
+  void loadGroupsByCity(String cityId) {
+    _getGroupsUseCase.byCity(cityId).listen((groups) {
+      groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+      _allGroups = groups;
+      notifyListeners();
+    });
+  }
+
+  // ─── Crear grupo (Use Case: CreateGroupUseCase) ──────────────────────
+
   Future<bool> createGroup({
     required String name,
     required String description,
-    required String cityId, // NUEVO PARÁMETRO REQUERIDO
+    required String cityId,
     XFile? logoFile,
     XFile? coverFile,
   }) async {
@@ -93,11 +153,11 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final groupId = await _repository.createGroup(
+      final groupId = await _createGroupUseCase(
         name: name,
         description: description,
         adminId: currentUserId!,
-        cityId: cityId, // PASAR CIUDAD AL REPOSITORIO
+        cityId: cityId,
         logoFile: logoFile,
         coverFile: coverFile,
       );
@@ -111,17 +171,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // NUEVO: Cargar grupos por ciudad
-  void loadGroupsByCity(String cityId) {
-    _repository.getGroupsByCity(cityId).listen((groups) {
-      // Ordenar por cantidad de miembros (de mayor a menor)
-      groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
-      _allGroups = groups;
-      notifyListeners();
-    });
-  }
+  // ─── Editar grupo (Use Case: EditGroupUseCase) ────────────────────────
 
-  // NUEVO: Editar grupo (solo para administradores)
   Future<bool> editGroup({
     required String groupId,
     String? name,
@@ -135,7 +186,7 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final success = await _repository.updateGroup(
+      final success = await _editGroupUseCase(
         groupId: groupId,
         name: name,
         description: description,
@@ -144,7 +195,6 @@ class GroupProvider extends ChangeNotifier {
       );
 
       if (success) {
-        // Actualizar el grupo seleccionado si está cargado
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
         }
@@ -159,13 +209,13 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Seleccionar grupo
+  // ─── Seleccionar grupo (Use Case: GetGroupByIdUseCase) ───────────────
+
   Future<void> selectGroup(String groupId) async {
     _setLoading(true);
     try {
-      _selectedGroup = await _repository.getGroup(groupId);
+      _selectedGroup = await _getGroupByIdUseCase(groupId);
 
-      // Cargar información de usuarios para mostrar nombres
       if (_selectedGroup != null) {
         await _loadUsersForGroup(_selectedGroup!);
       }
@@ -175,7 +225,8 @@ class GroupProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  // Solicitar unirse a grupo CON VALIDACIÓN DE NOMBRE
+  // ─── Solicitar unirse (Use Case: JoinGroupUseCase) ────────────────────
+
   Future<Map<String, dynamic>> requestJoinGroup(String groupId) async {
     if (currentUserId == null) {
       return {'success': false, 'error': 'group_error_not_authenticated'};
@@ -185,7 +236,7 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      // 1. VALIDAR QUE EL USUARIO TENGA NOMBRE
+      // 1. Validar que el usuario tenga nombre (cross-feature: UserRepository)
       final currentUser = await _userRepository.getUserById(currentUserId!);
 
       if (currentUser == null) {
@@ -206,14 +257,10 @@ class GroupProvider extends ChangeNotifier {
         };
       }
 
-      // 2. Si tiene nombre, proceder con la solicitud
-      final success = await _repository.requestJoinGroup(
-        groupId,
-        currentUserId!,
-      );
+      // 2. Proceder con la solicitud via Use Case
+      final success = await _joinGroupUseCase(groupId, currentUserId!);
 
       if (success) {
-        // Actualizar el grupo seleccionado si está cargado
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
         }
@@ -228,7 +275,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Aprobar solicitud (solo admin)
+  // ─── Aprobar solicitud (Use Case: ApproveJoinRequestUseCase) ──────────
+
   Future<bool> approveJoinRequest(String groupId, String userId) async {
     if (currentUserId == null) return false;
 
@@ -236,9 +284,8 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final success = await _repository.approveJoinRequest(groupId, userId);
+      final success = await _approveJoinRequestUseCase(groupId, userId);
       if (success) {
-        // Actualizar el grupo seleccionado si está cargado
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
         }
@@ -252,7 +299,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Rechazar solicitud (solo admin)
+  // ─── Rechazar solicitud (Use Case: RejectJoinRequestUseCase) ──────────
+
   Future<bool> rejectJoinRequest(String groupId, String userId) async {
     if (currentUserId == null) return false;
 
@@ -260,9 +308,8 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final success = await _repository.rejectJoinRequest(groupId, userId);
+      final success = await _rejectJoinRequestUseCase(groupId, userId);
       if (success) {
-        // Actualizar el grupo seleccionado si está cargado
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
         }
@@ -276,7 +323,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Cancelar solicitud
+  // ─── Cancelar solicitud (Use Case: CancelJoinRequestUseCase) ─────────
+
   Future<bool> cancelJoinRequest(String groupId) async {
     if (currentUserId == null) return false;
 
@@ -284,12 +332,9 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final success = await _repository.cancelJoinRequest(
-        groupId,
-        currentUserId!,
-      );
+      final success =
+          await _cancelJoinRequestUseCase(groupId, currentUserId!);
       if (success) {
-        // Actualizar el grupo seleccionado si está cargado
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
         }
@@ -303,7 +348,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Salir del grupo
+  // ─── Salir del grupo (Use Case: LeaveGroupUseCase) ────────────────────
+
   Future<bool> leaveGroup(String groupId) async {
     if (currentUserId == null) return false;
 
@@ -311,9 +357,8 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final success = await _repository.leaveGroup(groupId, currentUserId!);
+      final success = await _leaveGroupUseCase(groupId, currentUserId!);
       if (success) {
-        // Actualizar listas
         loadUserGroups();
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
@@ -328,13 +373,14 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Eliminar grupo (solo para el dueño/adminId)
+  // ─── Eliminar grupo (Use Case: DeleteGroupUseCase) ────────────────────
+
   Future<bool> deleteGroup(String groupId) async {
     _setLoading(true);
     _clearError();
 
     try {
-      final success = await _repository.deleteGroup(groupId);
+      final success = await _deleteGroupUseCase(groupId);
       if (success) {
         _allGroups.removeWhere((g) => g.id == groupId);
         _adminGroups.removeWhere((g) => g.id == groupId);
@@ -351,7 +397,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Buscar grupos
+  // ─── Buscar grupos (Use Case: SearchGroupsUseCase) ────────────────────
+
   Future<void> searchGroups(String query) async {
     if (query.trim().isEmpty) {
       _searchResults = [];
@@ -360,7 +407,7 @@ class GroupProvider extends ChangeNotifier {
     }
 
     try {
-      _searchResults = await _repository.searchGroups(query);
+      _searchResults = await _searchGroupsUseCase(query);
       notifyListeners();
     } catch (e) {
       AppLogger.debug('Error buscando grupos: $e');
@@ -372,7 +419,8 @@ class GroupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Obtener estado de membresía del usuario
+  // ─── Estado de membresía (lógica pura, sin repositorio) ──────────────
+
   GroupMembershipStatus getUserStatus(GroupModel group) {
     if (currentUserId == null) return GroupMembershipStatus.notMember;
 
@@ -387,9 +435,9 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Obtener información de usuario (con cache)
+  // ─── Cache de usuarios (cross-feature: UserRepository) ────────────────
+
   Future<UserModel?> getUserInfo(String userId) async {
-    // Verificar cache primero
     if (_userCache.containsKey(userId)) {
       return _userCache[userId];
     }
@@ -397,7 +445,7 @@ class GroupProvider extends ChangeNotifier {
     try {
       final user = await _userRepository.getUserById(userId);
       if (user != null) {
-        _userCache[userId] = user; // Guardar en cache
+        _userCache[userId] = user;
       }
       return user;
     } catch (e) {
@@ -406,7 +454,6 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Obtener nombres de usuarios para solicitudes pendientes
   Future<List<Map<String, dynamic>>> getPendingRequestsWithNames(
     GroupModel group,
   ) async {
@@ -426,29 +473,13 @@ class GroupProvider extends ChangeNotifier {
     return requests;
   }
 
-  // Obtener nombres de miembros del grupo
   Future<List<Map<String, dynamic>>> getMembersWithNames(
     GroupModel group,
   ) async {
     List<Map<String, dynamic>> members = [];
 
-    AppLogger.debug('=== OBTENIENDO MIEMBROS DEL GRUPO ===');
-    AppLogger.debug('Grupo: ${group.name}');
-    AppLogger.debug('Admin ID: ${group.adminId}');
-    AppLogger.debug('Member IDs: ${group.memberIds}');
-    AppLogger.debug('====================================');
-
     for (String userId in group.memberIds) {
       final user = await getUserInfo(userId);
-
-      AppLogger.debug('--- Procesando usuario $userId ---');
-      AppLogger.debug('Usuario obtenido: $user');
-      AppLogger.debug('Nombre: ${user?.name}');
-      AppLogger.debug('Foto: ${user?.photoUrl}');
-      AppLogger.debug('Teléfono: ${user?.phoneNumber}');
-      AppLogger.debug('Es admin: ${group.isAdmin(userId)}');
-      AppLogger.debug('--------------------------------');
-
       members.add({
         'userId': userId,
         'userName': user?.name ?? '',
@@ -459,37 +490,24 @@ class GroupProvider extends ChangeNotifier {
       });
     }
 
-    AppLogger.debug('=== RESULTADO FINAL ===');
-    for (var member in members) {
-      AppLogger.debug(
-        'Miembro: ${member['userName']} (${member['userId']}) - Admin: ${member['isAdmin']}',
-      );
-    }
-    AppLogger.debug('======================');
-
     return members;
   }
 
-  // Cargar usuarios para un grupo específico
   Future<void> _loadUsersForGroup(GroupModel group) async {
-    // Cargar admin
     await getUserInfo(group.adminId);
-
-    // Cargar miembros
     for (String memberId in group.memberIds) {
       await getUserInfo(memberId);
     }
-
-    // Cargar solicitudes pendientes
     for (String requestId in group.pendingRequestIds) {
       await getUserInfo(requestId);
     }
   }
 
-  // Limpiar cache de usuarios
   void clearUserCache() {
     _userCache.clear();
   }
+
+  // ─── Utilidades ───────────────────────────────────────────────────────
 
   Future<XFile?> pickImage(ImageSource source) async {
     try {
@@ -507,11 +525,10 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Método para obtener las rodadas de un grupo
+  // ─── Cross-feature: Rodadas del grupo (RideRepository) ────────────────
+
   Future<List<RideModel>> getRidesByGroup(GroupModel group) async {
     try {
-      // Usar el método getGroupRides que ya existe en el repositorio
-      // Como retorna un Stream, tomamos el primer valor
       final stream = _rideRepository.getGroupRides(group.id);
       return await stream.first;
     } catch (e) {
@@ -520,7 +537,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Obtener información del admin/creador del grupo
+  // ─── Cross-feature: Info del admin (UserRepository) ───────────────────
+
   Future<Map<String, dynamic>> getUserAdminInfo(String userId) async {
     try {
       final user = await _userRepository.getUserById(userId);
@@ -554,7 +572,8 @@ class GroupProvider extends ChangeNotifier {
     }
   }
 
-  // Métodos privados
+  // ─── Métodos privados ─────────────────────────────────────────────────
+
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -567,7 +586,6 @@ class GroupProvider extends ChangeNotifier {
 
   void _clearError() {
     _error = null;
-    notifyListeners();
   }
   /// Total de miembros del grupo seleccionado
   int get selectedGroupMemberCount {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/design_system/color_tokens.dart';
-import '../../../../core/design_system/locale_notifier.dart';
-import '../providers/notification_settings_provider.dart';
-import '../widgets/settings_shared_widgets.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/settings/presentation/providers/notification_settings_provider.dart';
+import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 class NotificationsDetailsScreen extends StatefulWidget {
   const NotificationsDetailsScreen({super.key});

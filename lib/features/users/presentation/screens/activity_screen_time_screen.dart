@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/shared/services/screen_time_service.dart';
+import 'package:biux/core/services/screen_time_service.dart';
 
 /// Pantalla de estadísticas de tiempo de uso, estilo Instagram.
 /// Lee datos del servicio global ScreenTimeService.

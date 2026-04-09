@@ -1,4 +1,4 @@
-import '../entities/attendee_entity.dart';
+import 'package:biux/features/social/domain/entities/attendee_entity.dart';
 
 /// Repositorio de asistentes (interfaz)
 abstract class AttendeesRepository {

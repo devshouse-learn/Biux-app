@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/design_system/color_tokens.dart';
-import '../../../../core/design_system/locale_notifier.dart';
-import '../../domain/entities/order_entity.dart';
-import '../providers/shop_provider.dart';
-import '../widgets/price_tag.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/shop/domain/entities/order_entity.dart';
+import 'package:biux/features/shop/presentation/providers/shop_provider.dart';
+import 'package:biux/features/shop/presentation/widgets/price_tag.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({Key? key}) : super(key: key);

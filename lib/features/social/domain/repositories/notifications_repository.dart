@@ -1,4 +1,4 @@
-import '../entities/notification_entity.dart';
+import 'package:biux/features/social/domain/entities/notification_entity.dart';
 
 /// Repositorio de notificaciones (interfaz)
 abstract class NotificationsRepository {

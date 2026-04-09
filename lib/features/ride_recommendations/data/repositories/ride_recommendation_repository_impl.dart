@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/ride_recommendation_entity.dart';
-import '../../domain/repositories/ride_recommendation_repository.dart';
-import '../models/ride_recommendation_model.dart';
+import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
+import 'package:biux/features/ride_recommendations/domain/repositories/ride_recommendation_repository.dart';
+import 'package:biux/features/ride_recommendations/data/models/ride_recommendation_model.dart';
 
 class RideRecommendationRepositoryImpl implements RideRecommendationRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;

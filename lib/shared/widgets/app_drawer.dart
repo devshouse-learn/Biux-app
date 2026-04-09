@@ -6,8 +6,8 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/design_system.dart';
-import '../../core/config/router/app_routes.dart';
-import '../../features/users/presentation/providers/user_provider.dart';
+import 'package:biux/core/config/router/app_routes.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 
 class AppDrawer extends StatefulWidget {
   @override

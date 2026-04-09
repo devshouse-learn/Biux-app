@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
-import '../../domain/repositories/comments_repository.dart';
-import '../widgets/comments_list.dart';
+import 'package:biux/features/social/domain/repositories/comments_repository.dart';
+import 'package:biux/features/social/presentation/widgets/comments_list.dart';
 
 /// Pantalla de comentarios de un post
 class PostCommentsScreen extends StatelessWidget {

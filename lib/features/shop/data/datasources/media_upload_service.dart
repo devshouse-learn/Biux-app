@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_player/video_player.dart';
-import 'package:biux/shared/services/image_compression_service.dart';
+import 'package:biux/core/services/image_compression_service.dart';
 
 /// Servicio para selección y subida de media (imágenes/videos) para la tienda.
 class MediaUploadService {

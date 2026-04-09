@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../domain/entities/comment_entity.dart';
-import '../../domain/entities/notification_entity.dart';
-import '../../domain/repositories/comments_repository.dart';
-import '../../domain/repositories/notifications_repository.dart';
+import 'package:biux/features/social/domain/entities/comment_entity.dart';
+import 'package:biux/features/social/domain/entities/notification_entity.dart';
+import 'package:biux/features/social/domain/repositories/comments_repository.dart';
+import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
 
 /// Provider para gestionar comentarios
 class CommentsProvider extends ChangeNotifier {

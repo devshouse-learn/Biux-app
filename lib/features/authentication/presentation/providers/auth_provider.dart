@@ -2,12 +2,12 @@ import 'package:biux/core/services/biometric_service.dart';
 import 'package:biux/core/services/rate_limiter.dart';
 import 'dart:async';
 
-import '../../data/repositories/auth_repository.dart';
+import 'package:biux/features/authentication/data/repositories/auth_repository.dart';
 import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:biux/shared/services/notification_service.dart';
-import 'package:biux/shared/services/push_notification_service.dart';
+import 'package:biux/core/services/notification_service.dart';
+import 'package:biux/core/services/push_notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum AuthState { initial, loading, codeSent, authenticated, error }
@@ -98,7 +98,9 @@ class AuthProvider extends ChangeNotifier {
 
       AppLogger.error('❌ [AuthProvider] Error al enviar código:');
       AppLogger.debug('   Mensaje: $_errorMessage');
-      AppLogger.debug('   Intentos realizados: $_sendAttempts/$_maxSendAttempts');
+      AppLogger.debug(
+        '   Intentos realizados: $_sendAttempts/$_maxSendAttempts',
+      );
 
       // Limpiar el mensaje de excepción si empieza con "Exception: "
       if (_errorMessage?.startsWith('Exception: ') ?? false) {
@@ -168,7 +170,9 @@ class AuthProvider extends ChangeNotifier {
       await _checkProfileSetup(user!.uid);
 
       _state = AuthState.authenticated;
-      AppLogger.info('✅ [AuthProvider] ¡Autenticación completada exitosamente!');
+      AppLogger.info(
+        '✅ [AuthProvider] ¡Autenticación completada exitosamente!',
+      );
     } catch (e) {
       _state = AuthState.codeSent;
       _errorMessage = e.toString();
@@ -266,7 +270,9 @@ class AuthProvider extends ChangeNotifier {
       } else {
         // Si el documento no existe, necesita crear perfil
         _needsProfileSetup = true;
-        AppLogger.warning('⚠️ Documento de usuario no existe, necesita crear perfil');
+        AppLogger.warning(
+          '⚠️ Documento de usuario no existe, necesita crear perfil',
+        );
       }
     } catch (e) {
       AppLogger.error('❌ Error verificando perfil: $e');

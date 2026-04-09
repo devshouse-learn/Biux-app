@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/seller_request_entity.dart';
+import 'package:biux/features/shop/domain/entities/seller_request_entity.dart';
 
 /// Modelo de datos para solicitud de vendedor
 class SellerRequestModel extends SellerRequestEntity {

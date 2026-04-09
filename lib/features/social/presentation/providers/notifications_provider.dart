@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../../domain/entities/notification_entity.dart';
-import '../../domain/repositories/notifications_repository.dart';
+import 'package:biux/features/social/domain/entities/notification_entity.dart';
+import 'package:biux/features/social/domain/repositories/notifications_repository.dart';
 
 /// Provider para gestionar notificaciones
 class NotificationsProvider extends ChangeNotifier {

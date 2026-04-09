@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:go_router/go_router.dart';
-import '../providers/comments_provider.dart';
-import '../widgets/like_button.dart';
-import '../widgets/bookmark_button.dart';
-import '../../domain/repositories/likes_repository.dart';
-import '../../domain/repositories/comments_repository.dart';
+import 'package:biux/features/social/presentation/providers/comments_provider.dart';
+import 'package:biux/features/social/presentation/widgets/like_button.dart';
+import 'package:biux/features/social/presentation/widgets/bookmark_button.dart';
+import 'package:biux/features/social/domain/repositories/likes_repository.dart';
+import 'package:biux/features/social/domain/repositories/comments_repository.dart';
 
 /// Widget que muestra las acciones sociales para un post/experiencia
 /// (Likes y Comentarios)

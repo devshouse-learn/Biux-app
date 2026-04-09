@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/models/city_model.dart';
-import '../../data/repositories/city_repository.dart';
+import 'package:biux/features/cities/data/models/city_model.dart';
+import 'package:biux/features/cities/data/repositories/city_repository.dart';
 
 class CityProvider extends ChangeNotifier {
   final CityRepository _repository = CityRepository();

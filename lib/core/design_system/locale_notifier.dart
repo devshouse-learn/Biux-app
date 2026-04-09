@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../config/app_translations.dart';
+import 'package:biux/core/config/app_translations.dart';
 
 /// Notifier para cambiar el idioma de la app de forma reactiva.
 /// Similar a ThemeNotifier pero para Locale.

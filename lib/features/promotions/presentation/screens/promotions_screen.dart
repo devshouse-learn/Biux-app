@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
-import '../../data/models/promotion_request_model.dart';
-import '../providers/promotions_provider.dart';
+import 'package:biux/features/promotions/data/models/promotion_request_model.dart';
+import 'package:biux/features/promotions/presentation/providers/promotions_provider.dart';
 import 'package:intl/intl.dart';
 
 class PromotionsScreen extends StatefulWidget {

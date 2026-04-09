@@ -1,0 +1,234 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ══════════════════════════════════════════
+    // Helper functions
+    // ══════════════════════════════════════════
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidString(field, maxLength) {
+      return field is string && field.size() <= maxLength;
+    }
+
+    // ══════════════════════════════════════════
+    // Usuarios
+    // ══════════════════════════════════════════
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+
+      match /private/{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /followers/{followerId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isAuthenticated() && request.auth.uid == followerId;
+      }
+
+      match /following/{followingId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isOwner(userId);
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Grupos
+    // ══════════════════════════════════════════
+
+    match /groups/{groupId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() &&
+        (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() &&
+        (resource.data.createdBy == request.auth.uid || isAdmin());
+
+      match /members/{memberId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow delete: if isAuthenticated() &&
+          (memberId == request.auth.uid ||
+           get(/databases/$(database)/documents/groups/$(groupId)).data.createdBy == request.auth.uid);
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Rodadas
+    // ══════════════════════════════════════════
+
+    match /rides/{rideId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() &&
+        (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() &&
+        (resource.data.createdBy == request.auth.uid || isAdmin());
+
+      match /participants/{participantId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isAuthenticated();
+      }
+
+      match /comments/{commentId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() &&
+          resource.data.userId == request.auth.uid;
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Experiencias / Posts
+    // ══════════════════════════════════════════
+
+    match /experiences/{experienceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+
+      match /likes/{likeId} {
+        allow read: if isAuthenticated();
+        allow create, delete: if isAuthenticated() && request.auth.uid == likeId;
+      }
+
+      match /comments/{commentId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() &&
+          resource.data.userId == request.auth.uid;
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Rutas / Roads
+    // ══════════════════════════════════════════
+
+    match /roads/{roadId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+        (resource.data.createdBy == request.auth.uid || isAdmin());
+    }
+
+    // ══════════════════════════════════════════
+    // Bicicletas
+    // ══════════════════════════════════════════
+
+    match /bikes/{bikeId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+        (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    // ══════════════════════════════════════════
+    // Chat
+    // ══════════════════════════════════════════
+
+    match /chats/{chatId} {
+      allow read: if isAuthenticated() &&
+        request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated();
+
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow delete: if isAuthenticated() &&
+          resource.data.senderId == request.auth.uid;
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Notificaciones
+    // ══════════════════════════════════════════
+
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+    }
+
+    // ══════════════════════════════════════════
+    // Productos / Tienda
+    // ══════════════════════════════════════════
+
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+        (resource.data.sellerId == request.auth.uid || isAdmin());
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.buyerId == request.auth.uid ||
+         resource.data.sellerId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() &&
+        (resource.data.buyerId == request.auth.uid ||
+         resource.data.sellerId == request.auth.uid);
+    }
+
+    // ══════════════════════════════════════════
+    // Reportes y seguridad
+    // ══════════════════════════════════════════
+
+    match /reports/{reportId} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin();
+    }
+
+    match /road_reports/{reportId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+        resource.data.userId == request.auth.uid;
+    }
+
+    match /danger_zones/{zoneId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // ══════════════════════════════════════════
+    // Admins (solo lectura para verificación)
+    // ══════════════════════════════════════════
+
+    match /admins/{adminId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ══════════════════════════════════════════
+    // App config (solo lectura)
+    // ══════════════════════════════════════════
+
+    match /app_config/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+  }
+}

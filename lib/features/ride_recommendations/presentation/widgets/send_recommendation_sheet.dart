@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:biux/core/design_system/color_tokens.dart';
-import '../../../ride_tracker/domain/entities/ride_track_entity.dart';
-import '../../../users/domain/entities/user_entity.dart';
-import '../../domain/entities/ride_recommendation_entity.dart';
-import '../providers/ride_recommendation_provider.dart';
+import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
+import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
+import 'package:biux/features/ride_recommendations/presentation/providers/ride_recommendation_provider.dart';
 
 class SendRecommendationSheet extends StatefulWidget {
   final RideTrackEntity track;

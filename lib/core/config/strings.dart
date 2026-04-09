@@ -9,14 +9,8 @@ class AppStrings {
   static const urlDetailGroup =
       "https://cdn.browshot.com/static/images/not-found.png";
   static const urlFacebook = "https://www.facebook.com/";
-  static const urlBiuxGrupos = "https://biux-prod.ibacrea.com/api/v1/grupos";
-  static const urlBiuxUsuarios =
-      "https://biux-prod.ibacrea.com/api/v1/usuarios";
   static const urlGoogleapis =
       "https://www.googleapis.com/auth/contacts.readonly";
-  static const urlBiuxRodadas = "https://biux-prod.ibacrea.com/api/v1/rodadas";
-  static const urlBiuxHistorias =
-      "https://biux-prod.ibacrea.com/api/v1/historias";
   static const ok = "Ok";
   static const advertising = "   Publicidad";
   static const descriptionAdvertising =

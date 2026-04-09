@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:biux/features/roads/data/models/competitor_road.dart';
 import 'package:biux/features/groups/data/models/group.dart';
 import 'package:biux/features/roads/data/models/road.dart';
+import 'package:biux/core/config/api_config.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,12 +13,13 @@ var formatter = DateFormat('yyyy-MM-dd');
 String formattedDate = formatter.format(now);
 
 class RoadsRepository {
-  final URL_BASE = "https://biux-prod.ibacrea.com/api/v1/rodadas";
-  final URLParticipant =
-      "https://biux-prod.ibacrea.com/api/v1/participantesRodada";
   Future<List<Road>> getRoads(int limit, int offset, String cityId) async {
-    var url =
-        '$URL_BASE?ciudadId=$cityId&sort=fechaHora.asc&fechaHora.gt=$formattedDate,format=yyyy-MM-dd&limit=$limit&offset=$offset';
+    var url = ApiConfig.rodadasPorCiudad(
+      cityId,
+      fechaDesde: formattedDate,
+      limit: limit,
+      offset: offset,
+    );
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
@@ -30,25 +32,20 @@ class RoadsRepository {
 
   Future uploadProfileCoverRoad(String id, File filePhoto) async {
     Dio dio = Dio();
-    // dio.options.headers["authorization"] = await LocalStorage().getToken();
     FormData formData = FormData.fromMap({
       "fileImagen": await MultipartFile.fromFile(filePhoto.path),
     });
-    await dio.patch(
-      'https://biux-prod.ibacrea.com/api/v1/rodadas/$id',
-      data: formData,
-    );
+    await dio.patch(ApiConfig.rodadaById(id), data: formData);
   }
 
   Future<Road> updateRoad(Road road) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
     var body = jsonEncode(road.toJson());
 
-    var url = '$URL_BASE/${road.id}';
+    var url = ApiConfig.rodadaById(road.id);
     final http.Response response = await http.patch(
       Uri.parse(url),
       headers: headers,
@@ -63,18 +60,10 @@ class RoadsRepository {
     } else {
       throw Exception('error_update_group');
     }
-
-    //Map<String, dynamic> responseData = json.decode(response.body);
-    //return Usuario.fromJsonMap(responseData);
-
-    //return Usuario.fromJsonMap(personasJson.first);
   }
 
   Future<List<CompetitorRoad>> getListParticipantRoad(String id) async {
-    // var headers = {
-    //   HttpHeaders.contentTypeHeader: 'application/json',
-    // };
-    var url = '$URLParticipant?rodada.id=$id';
+    var url = '${ApiConfig.participantesRodada}?rodada.id=$id';
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
@@ -86,7 +75,7 @@ class RoadsRepository {
   }
 
   Future<List<Road>> getRoadsGroups(String id, int limit, int offset) async {
-    var url = '$URL_BASE?grupo.id=$id&limit=$limit&offset=$offset';
+    var url = ApiConfig.rodadasPorGrupo(id, limit: limit, offset: offset);
     var response = await http.get(Uri.parse(url));
     var responseData = json.decode(response.body);
     List roadsJson = responseData["data"];
@@ -99,17 +88,13 @@ class RoadsRepository {
 
   Future joinMeRoad(String userId, String roadId) async {
     var uriResponse = await http.post(
-      Uri.parse(URLParticipant),
+      Uri.parse(ApiConfig.participantesRodada),
       body: jsonEncode({"usuarioId": userId, "rodadaId": roadId}),
       headers: {
         'Content-type': 'application/json',
-        // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
       },
     );
     if (uriResponse.statusCode == 200) {
-      // final data = json.decode(uriResponse.body);
-      // LocalStorage().saveJoinRoad(id.toString());
-
       return;
     } else if (uriResponse.statusCode == 409) {
       return 'must_join_group_for_ride';
@@ -119,23 +104,21 @@ class RoadsRepository {
   Future deleteRoad(Road road, Group group) async {
     {
       var uriResponse = await http.delete(
-        Uri.parse('$URL_BASE/${road.id}'),
+        Uri.parse(ApiConfig.rodadaById(road.id)),
         headers: {
           'Content-type': 'application/json',
-          // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
         },
       );
       if (uriResponse.statusCode == 200) {
         json.decode(uriResponse.body);
         return 'deleted_successfully';
       } else {}
-      // return Rodada.fromJson(json.decode(response.body));
     }
   }
 
   Future<CompetitorRoad> getParticipantRoad(String id, String userId) async {
     var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
-    var url = '$URLParticipant?rodada.id=$id&usuarioId=$userId';
+    var url = ApiConfig.participanteRodada(id, userId);
 
     var response = await http.get(Uri.parse(url), headers: headers);
 
@@ -151,12 +134,9 @@ class RoadsRepository {
   ) async {
     var headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      // HttpHeaders.authorizationHeader: await LocalStorage().getToken(),
     };
 
-    // var body = jsonEncode(competitorRoad.toJson()); // IMPLEMENTADO (STUB): Use when implementing request body
-
-    var url = '$URLParticipant/${competitorRoad.userId}';
+    var url = '${ApiConfig.participantesRodada}/${competitorRoad.userId}';
     final http.Response response = await http.delete(
       Uri.parse(url),
       headers: headers,

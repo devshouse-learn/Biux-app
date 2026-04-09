@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/ride_recommendation_entity.dart';
+import 'package:biux/features/ride_recommendations/domain/entities/ride_recommendation_entity.dart';
 
 class RideRecommendationModel extends RideRecommendationEntity {
   const RideRecommendationModel({

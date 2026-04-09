@@ -12,111 +12,112 @@ import 'package:biux/features/age_verification/presentation/screens/identity_ver
 import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/services/analytics_service.dart';
 
 // Feature imports (providers)
-import '../../../features/groups/presentation/providers/group_provider.dart';
-import '../../../features/maps/presentation/providers/location_provider.dart';
-import '../../../features/maps/presentation/providers/map_provider.dart';
-import '../../../features/maps/presentation/providers/meeting_point_provider.dart';
-import '../../../features/rides/presentation/providers/ride_provider.dart';
-import '../../../features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/groups/presentation/providers/group_provider.dart';
+import 'package:biux/features/maps/presentation/providers/location_provider.dart';
+import 'package:biux/features/maps/presentation/providers/map_provider.dart';
+import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
+import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 
 // Feature imports (screens)
-import '../../../features/experiences/presentation/screens/experiences_list_screen.dart';
-import '../../../features/experiences/presentation/screens/create_experience_screen.dart';
-import '../../../features/experiences/presentation/screens/edit_experience_screen.dart';
-import '../../../features/experiences/domain/entities/experience_entity.dart';
-import '../../../features/groups/presentation/screens/edit_group/edit_group_screen.dart';
-import '../../../features/groups/presentation/screens/group_create/group_create_screen.dart';
-import '../../../features/groups/presentation/screens/group_list/group_list_screen.dart';
-import '../../../features/groups/presentation/screens/my_groups/my_groups_screen.dart';
-import '../../../features/groups/presentation/screens/view_group/view_group_screen.dart';
-import '../../../features/authentication/presentation/screens/create_user/create_user_screen.dart';
-import '../../../features/authentication/presentation/screens/login_phone_screen.dart';
-import '../../../features/maps/presentation/screens/map_screen.dart';
-import '../../../features/rides/presentation/screens/create_ride/ride_create_screen.dart';
-import '../../../features/rides/presentation/screens/detail_ride/ride_detail_screen.dart';
-import '../../../features/rides/presentation/screens/list_rides/ride_list_screen.dart';
-import '../../../features/rides/data/models/ride_model.dart';
-import '../../../features/roads/presentation/screens/road_create/map_road/map_road_screen.dart';
-import '../../../features/roads/presentation/screens/road_create/road_create_screen.dart';
-import '../../../features/roads/presentation/screens/roads_list/roads_list_screen.dart';
+import 'package:biux/features/experiences/presentation/screens/experiences_list_screen.dart';
+import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
+import 'package:biux/features/experiences/presentation/screens/edit_experience_screen.dart';
+import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
+import 'package:biux/features/groups/presentation/screens/edit_group/edit_group_screen.dart';
+import 'package:biux/features/groups/presentation/screens/group_create/group_create_screen.dart';
+import 'package:biux/features/groups/presentation/screens/group_list/group_list_screen.dart';
+import 'package:biux/features/groups/presentation/screens/my_groups/my_groups_screen.dart';
+import 'package:biux/features/groups/presentation/screens/view_group/view_group_screen.dart';
+import 'package:biux/features/authentication/presentation/screens/create_user/create_user_screen.dart';
+import 'package:biux/features/authentication/presentation/screens/login_phone_screen.dart';
+import 'package:biux/features/maps/presentation/screens/map_screen.dart';
+import 'package:biux/features/rides/presentation/screens/create_ride/ride_create_screen.dart';
+import 'package:biux/features/rides/presentation/screens/detail_ride/ride_detail_screen.dart';
+import 'package:biux/features/rides/presentation/screens/list_rides/ride_list_screen.dart';
+import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/features/roads/presentation/screens/road_create/map_road/map_road_screen.dart';
+import 'package:biux/features/roads/presentation/screens/road_create/road_create_screen.dart';
+import 'package:biux/features/roads/presentation/screens/roads_list/roads_list_screen.dart';
 
-import '../../../features/social/presentation/screens/post_detail_screen.dart';
-import '../../../features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
-import '../../../features/users/presentation/screens/edit_username_screen.dart';
-import '../../../features/users/presentation/screens/profile_screen.dart';
-import '../../../features/users/presentation/screens/user_screen/user_screen.dart';
-import '../../../features/users/presentation/screens/user_search_screen.dart';
-import '../../../features/users/presentation/screens/public_user_profile_screen.dart';
-import '../../../features/users/presentation/screens/account_settings_screen.dart';
-import '../../../features/users/presentation/screens/activity_likes_screen.dart';
-import '../../../features/users/presentation/screens/activity_comments_screen.dart';
-import '../../../features/users/presentation/screens/activity_posts_screen.dart';
-import '../../../features/users/presentation/screens/activity_stories_screen.dart';
-import '../../../features/users/presentation/screens/activity_screen_time_screen.dart';
+import 'package:biux/features/social/presentation/screens/post_detail_screen.dart';
+import 'package:biux/features/users/presentation/screens/edit_user_screen/edit_user_screen.dart';
+import 'package:biux/features/users/presentation/screens/edit_username_screen.dart';
+import 'package:biux/features/users/presentation/screens/profile_screen.dart';
+import 'package:biux/features/users/presentation/screens/user_screen/user_screen.dart';
+import 'package:biux/features/users/presentation/screens/user_search_screen.dart';
+import 'package:biux/features/users/presentation/screens/public_user_profile_screen.dart';
+import 'package:biux/features/users/presentation/screens/account_settings_screen.dart';
+import 'package:biux/features/users/presentation/screens/activity_likes_screen.dart';
+import 'package:biux/features/users/presentation/screens/activity_comments_screen.dart';
+import 'package:biux/features/users/presentation/screens/activity_posts_screen.dart';
+import 'package:biux/features/users/presentation/screens/activity_stories_screen.dart';
+import 'package:biux/features/users/presentation/screens/activity_screen_time_screen.dart';
 
 // Bikes imports
-import '../../../features/bikes/presentation/screens/my_bikes_screen.dart';
-import '../../../features/bikes/presentation/screens/bike_registration_screen.dart';
-import '../../../features/bikes/presentation/screens/bike_detail_screen.dart';
-import '../../../features/bikes/presentation/screens/public_bike_info_screen.dart';
+import 'package:biux/features/bikes/presentation/screens/my_bikes_screen.dart';
+import 'package:biux/features/bikes/presentation/screens/bike_registration_screen.dart';
+import 'package:biux/features/bikes/presentation/screens/bike_detail_screen.dart';
+import 'package:biux/features/bikes/presentation/screens/public_bike_info_screen.dart';
 
 // Shop imports
-import '../../../features/shop/presentation/screens/shop_screen_pro.dart';
-import '../../../features/shop/presentation/screens/product_detail_screen.dart';
-import '../../../features/shop/presentation/screens/cart_screen.dart';
-import '../../../features/shop/presentation/screens/admin_shop_screen.dart';
-import '../../../features/shop/presentation/screens/manage_sellers_screen.dart';
-import '../../../features/shop/presentation/screens/seller_requests_screen.dart';
-import '../../../features/shop/presentation/screens/delete_all_products_screen.dart';
-import '../../../features/shop/presentation/screens/favorites_screen.dart';
-import '../../../features/shop/presentation/screens/my_orders_screen.dart';
-import '../../../features/shop/presentation/screens/stolen_bikes_screen.dart';
-import '../../../features/shop/presentation/screens/admin_alerts_screen.dart';
-import '../../../features/shop/presentation/screens/bike_qr_screen.dart';
+import 'package:biux/features/shop/presentation/screens/shop_screen_pro.dart';
+import 'package:biux/features/shop/presentation/screens/product_detail_screen.dart';
+import 'package:biux/features/shop/presentation/screens/cart_screen.dart';
+import 'package:biux/features/shop/presentation/screens/admin_shop_screen.dart';
+import 'package:biux/features/shop/presentation/screens/manage_sellers_screen.dart';
+import 'package:biux/features/shop/presentation/screens/seller_requests_screen.dart';
+import 'package:biux/features/shop/presentation/screens/delete_all_products_screen.dart';
+import 'package:biux/features/shop/presentation/screens/favorites_screen.dart';
+import 'package:biux/features/shop/presentation/screens/my_orders_screen.dart';
+import 'package:biux/features/shop/presentation/screens/stolen_bikes_screen.dart';
+import 'package:biux/features/shop/presentation/screens/admin_alerts_screen.dart';
+import 'package:biux/features/shop/presentation/screens/bike_qr_screen.dart';
 
 // Store (Tienda Online) imports
-import '../../../features/store/presentation/screens/store_screen.dart';
-import '../../../features/store/presentation/screens/product_detail_screen.dart'
+import 'package:biux/features/store/presentation/screens/store_screen.dart';
+import 'package:biux/features/store/presentation/screens/product_detail_screen.dart'
     as store_detail;
-import '../../../features/store/presentation/screens/cart_screen.dart'
+import 'package:biux/features/store/presentation/screens/cart_screen.dart'
     as store_cart;
-import '../../../features/store/presentation/screens/seller_dashboard_screen.dart';
-import '../../../features/store/presentation/screens/admin_dashboard_screen.dart';
-import '../../../features/store/domain/entities/product_entity.dart';
+import 'package:biux/features/store/presentation/screens/seller_dashboard_screen.dart';
+import 'package:biux/features/store/presentation/screens/admin_dashboard_screen.dart';
+import 'package:biux/features/store/domain/entities/product_entity.dart';
 
 // PENDIENTE: Descomentar cuando se resuelva conflicto de dependencias con mobile_scanner
 
 // Settings imports
-import '../../../features/settings/presentation/screens/notification_settings_screen.dart';
-import '../../../features/settings/presentation/screens/privacy_details_screen.dart';
-import '../../../features/settings/presentation/screens/appearance_details_screen.dart';
-import '../../../features/settings/presentation/screens/information_details_screen.dart';
+import 'package:biux/features/settings/presentation/screens/notification_settings_screen.dart';
+import 'package:biux/features/settings/presentation/screens/privacy_details_screen.dart';
+import 'package:biux/features/settings/presentation/screens/appearance_details_screen.dart';
+import 'package:biux/features/settings/presentation/screens/information_details_screen.dart';
 
 // Help imports
-import '../../../features/help/presentation/screens/help_screen.dart';
+import 'package:biux/features/help/presentation/screens/help_screen.dart';
 // Promotions
-import '../../../features/promotions/presentation/screens/promotions_screen.dart';
+import 'package:biux/features/promotions/presentation/screens/promotions_screen.dart';
 
 // Social imports
-import '../../../features/social/presentation/screens/notifications_screen.dart';
-import '../../../features/social/presentation/screens/comments_screen.dart';
-import '../../../features/social/presentation/screens/attendees_screen.dart';
+import 'package:biux/features/social/presentation/screens/notifications_screen.dart';
+import 'package:biux/features/social/presentation/screens/comments_screen.dart';
+import 'package:biux/features/social/presentation/screens/attendees_screen.dart';
 
 // New feature screens
-import '../../../features/chat/presentation/screens/chat_list_screen.dart';
-import '../../../features/chat/presentation/screens/chat_screen.dart';
-import '../../../features/road_reports/presentation/screens/road_reports_screen.dart';
-import '../../../features/ride_tracker/presentation/screens/ride_tracker_screen.dart';
-import '../../../features/cycling_stats/presentation/screens/cycling_stats_screen.dart';
-import '../../../features/emergency/presentation/screens/emergency_screen.dart';
-import '../../../features/achievements/presentation/screens/achievements_screen.dart';
-import '../../../features/education/presentation/screens/education_screen.dart';
+import 'package:biux/features/chat/presentation/screens/chat_list_screen.dart';
+import 'package:biux/features/chat/presentation/screens/chat_screen.dart';
+import 'package:biux/features/road_reports/presentation/screens/road_reports_screen.dart';
+import 'package:biux/features/ride_tracker/presentation/screens/ride_tracker_screen.dart';
+import 'package:biux/features/cycling_stats/presentation/screens/cycling_stats_screen.dart';
+import 'package:biux/features/emergency/presentation/screens/emergency_screen.dart';
+import 'package:biux/features/achievements/presentation/screens/achievements_screen.dart';
+import 'package:biux/features/education/presentation/screens/education_screen.dart';
 
 // Shared imports
-import '../../../shared/widgets/main_shell.dart';
-import '../../../shared/screens/splash_screen.dart';
+import 'package:biux/shared/widgets/main_shell.dart';
+import 'package:biux/shared/screens/splash_screen.dart';
 
 import 'app_routes.dart';
 import 'auth_notifier.dart';
@@ -337,6 +338,7 @@ final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: AppRoutes.splash,
   debugLogDiagnostics: false,
+  observers: [AnalyticsService.observer],
   redirect: _guard,
   refreshListenable: _authNotifier,
   routes: [
@@ -395,12 +397,6 @@ final GoRouter _router = GoRouter(
         );
       },
       routes: [
-        // Menu principal - redirigir a experiencias
-        GoRoute(
-          path: AppRoutes.mainMenu,
-          name: AppRoutes.mainMenuName,
-          redirect: (context, state) => '/stories',
-        ),
         // Mapa
         GoRoute(
           path: AppRoutes.map,
@@ -1190,7 +1186,6 @@ extension AppRouterExtension on BuildContext {
   void goToLogin() => go(AppRoutes.login);
   void goToMap() => go(AppRoutes.map);
   void goToProfile() => go(AppRoutes.profile);
-  void goToMainMenu() => go(AppRoutes.mainMenu);
   void goToGroupList() => go(AppRoutes.groupList);
   void goToCreateGroup() => go('${AppRoutes.groupList}/create');
   void goToViewGroup(String groupId, {String? adminId}) {

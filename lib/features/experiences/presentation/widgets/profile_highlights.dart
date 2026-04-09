@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:biux/features/experiences/data/datasources/highlights_datasource.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 

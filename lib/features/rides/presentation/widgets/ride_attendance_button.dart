@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/ride_provider.dart';
-import '../../data/models/ride_model.dart';
+import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
+import 'package:biux/features/rides/data/models/ride_model.dart';
 
 /// Botón único e inteligente para manejar asistencia a rodadas
 /// Muestra el estado actual y permite cambiar entre:

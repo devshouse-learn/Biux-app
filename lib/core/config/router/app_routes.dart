@@ -2,7 +2,6 @@ class AppRoutes {
   // Rutas principales
   static const String splash = '/';
   static const String login = '/login';
-  static const String mainMenu = '/main';
   static const String map = '/map';
 
   // Rutas de usuario
@@ -53,7 +52,6 @@ class AppRoutes {
   // Nombres de rutas para navegación
   static const String splashName = 'splash';
   static const String loginName = 'login';
-  static const String mainMenuName = 'main';
   static const String mapName = 'map';
   static const String profileName = 'profile';
   static const String editUserName = 'editUser';

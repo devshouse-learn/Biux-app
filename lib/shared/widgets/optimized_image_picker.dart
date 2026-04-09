@@ -4,11 +4,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
-import '../../core/design_system/color_tokens.dart';
-import '../../core/design_system/locale_notifier.dart';
-import '../services/image_compression_service.dart';
-import '../services/optimized_storage_service.dart';
-import '../services/optimized_cache_manager.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/core/services/image_compression_service.dart';
+import 'package:biux/core/services/optimized_storage_service.dart';
+import 'package:biux/core/services/optimized_cache_manager.dart';
 
 /// Widget optimizado para selección y carga de imágenes
 /// Integra compresión automática y carga eficiente para reducir costos de Firebase

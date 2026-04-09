@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../../core/design_system/color_tokens.dart';
-import '../../../../core/design_system/locale_notifier.dart';
-import '../widgets/settings_shared_widgets.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
+import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 class PrivacyDetailsScreen extends StatefulWidget {
   const PrivacyDetailsScreen({super.key});

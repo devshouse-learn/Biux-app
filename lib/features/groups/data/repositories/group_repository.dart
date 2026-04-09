@@ -5,9 +5,11 @@ import 'package:biux/core/services/app_logger.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../models/group_model.dart';
+import 'package:biux/features/groups/data/models/group_model.dart';
 
-class GroupRepository {
+import 'package:biux/features/groups/domain/repositories/group_repository_interface.dart';
+
+class GroupRepository implements GroupRepositoryInterface {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final String _collection = 'groups';

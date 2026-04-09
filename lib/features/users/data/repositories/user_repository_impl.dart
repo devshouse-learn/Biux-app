@@ -1,6 +1,6 @@
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/user_repository.dart';
-import '../datasources/user_remote_datasource.dart';
+import 'package:biux/features/users/domain/entities/user_entity.dart';
+import 'package:biux/features/users/domain/repositories/user_repository.dart';
+import 'package:biux/features/users/data/datasources/user_remote_datasource.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remoteDataSource;

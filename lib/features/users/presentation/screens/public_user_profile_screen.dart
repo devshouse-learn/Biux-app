@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/authentication/data/repositories/authentication_repository.dart';
-import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:biux/features/users/data/models/user.dart';

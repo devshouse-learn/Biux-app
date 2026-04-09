@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:biux/shared/services/notification_service.dart';
+import 'package:biux/core/services/notification_service.dart';
 import 'package:biux/core/services/remote_config_service.dart';
 import 'package:biux/core/services/app_logger.dart';
 

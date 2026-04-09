@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
-import '../../domain/entities/comment_entity.dart';
-import '../../domain/repositories/comments_repository.dart';
-import '../datasources/comments_realtime_datasource.dart';
-import '../models/comment_model.dart';
+import 'package:biux/features/social/domain/entities/comment_entity.dart';
+import 'package:biux/features/social/domain/repositories/comments_repository.dart';
+import 'package:biux/features/social/data/datasources/comments_realtime_datasource.dart';
+import 'package:biux/features/social/data/models/comment_model.dart';
 
 /// Implementación del repositorio de comentarios
 class CommentsRepositoryImpl implements CommentsRepository {

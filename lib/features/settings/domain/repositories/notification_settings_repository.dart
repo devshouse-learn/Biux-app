@@ -1,4 +1,4 @@
-import '../entities/notification_settings_entity.dart';
+import 'package:biux/features/settings/domain/entities/notification_settings_entity.dart';
 
 /// Repositorio para gestionar las preferencias de notificaciones
 abstract class NotificationSettingsRepository {

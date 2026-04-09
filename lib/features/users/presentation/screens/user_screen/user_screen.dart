@@ -7,7 +7,7 @@ import 'package:biux/features/stories/data/models/story.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/screens/user_screen/user_screen_bloc.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
-import 'package:biux/shared/services/optimized_cache_manager.dart';
+import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';

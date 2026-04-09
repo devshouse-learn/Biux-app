@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../domain/repositories/likes_repository.dart';
-import '../providers/likes_provider.dart';
+import 'package:biux/features/social/domain/repositories/likes_repository.dart';
+import 'package:biux/features/social/presentation/providers/likes_provider.dart';
 
 /// Widget de botón de like con animación
 class LikeButton extends StatefulWidget {
