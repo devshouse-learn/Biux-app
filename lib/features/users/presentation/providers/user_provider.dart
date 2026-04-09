@@ -1,4 +1,3 @@
-import 'package:biux/core/services/auto_logout_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/features/users/data/models/user_model.dart';
 import 'package:biux/core/services/app_logger.dart';
@@ -564,6 +563,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   /// Guarda el UID del usuario en caché para acceso rápido al arranque
+  // ignore: unused_element
   Future<void> _cacheUserLocally(String uid) async {
     try {
       final prefs = await SharedPreferences.getInstance();

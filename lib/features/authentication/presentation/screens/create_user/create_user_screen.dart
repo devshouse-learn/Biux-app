@@ -22,8 +22,14 @@ import 'package:biux/features/age_verification/presentation/widgets/birth_date_p
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class CreateUserScreen extends StatelessWidget {
-  CreateUserScreen();
+class CreateUserScreen extends StatefulWidget {
+  const CreateUserScreen({super.key});
+
+  @override
+  State<CreateUserScreen> createState() => _CreateUserScreenState();
+}
+
+class _CreateUserScreenState extends State<CreateUserScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnamesController = TextEditingController();
   final TextEditingController cellphoneController = TextEditingController();
@@ -34,6 +40,18 @@ class CreateUserScreen extends StatelessWidget {
   final TextEditingController userNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   DateTime? _birthDate;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    surnamesController.dispose();
+    cellphoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    userNameController.dispose();
+    super.dispose();
+  }
 
   Future getImageFromGallery(CreateUserBloc bloc) async {
     final ImagePicker picker = ImagePicker();

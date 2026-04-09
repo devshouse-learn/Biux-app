@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:math' show sin, cos, sqrt, atan2, pi;
 import 'package:flutter/material.dart';
-import 'package:biux/core/config/router/app_routes.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -2176,6 +2174,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     if (km < 1) return '${(km * 1000).round()} m';
     return '${km.toStringAsFixed(1)} km';
   }
+  // ignore: unused_element
   Future<bool> _onWillPop(RideTrackerProvider provider) async {
     if (!provider.isTracking) return true;
     final result = await showDialog<bool>(

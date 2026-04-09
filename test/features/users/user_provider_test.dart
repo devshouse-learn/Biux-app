@@ -15,8 +15,6 @@ void main() {
           email: 'test@biux.app',
           phoneNumber: '+521234567890',
           photoUrl: 'https://example.com/photo.jpg',
-          bio: 'Ciclista de prueba',
-          city: 'CDMX',
         ),
       );
     });

@@ -122,7 +122,7 @@ class _PrivacyTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: c.withOpacity(0.1),
+          backgroundColor: c.withValues(alpha: 0.1),
           child: Icon(icon, color: c, size: 20),
         ),
         title: Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: c)),

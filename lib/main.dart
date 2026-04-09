@@ -88,7 +88,6 @@ import 'package:biux/core/services/push_notification_service.dart';
 import 'package:biux/core/services/screen_time_service.dart';
 import 'package:biux/shared/widgets/notification_listener_widget.dart';
 import 'package:biux/shared/widgets/offline_banner.dart';
-import 'package:biux/shared/widgets/connectivity_banner.dart';
 
 // Core services
 import 'package:biux/core/services/connectivity_service.dart';

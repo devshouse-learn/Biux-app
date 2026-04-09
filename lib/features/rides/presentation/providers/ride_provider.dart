@@ -775,25 +775,27 @@ class RideProvider extends ChangeNotifier {
     var list = rides.toList();
     if (_filterDifficulty != 'all') {
       list = list.where((r) =>
-        r.difficulty?.toString().contains(_filterDifficulty) ?? false
+        r.difficulty.toString().contains(_filterDifficulty)
       ).toList();
     }
     if (_searchQuery.isNotEmpty) {
       list = list.where((r) =>
-        (r.name ?? '').toLowerCase().contains(_searchQuery)
+        r.name.toLowerCase().contains(_searchQuery)
       ).toList();
     }
     if (_filterFromDate != null) {
       list = list.where((r) {
         final date = r.dateTime;
-        return date != null && date.isAfter(_filterFromDate!);
+        return date.isAfter(_filterFromDate!);
       }).toList();
     }
     return list;
   }
 
   // Paginación
+  // ignore: unused_field
   static const int _pageSize = 15;
+  // ignore: unused_field
   DocumentSnapshot? _lastDocument;
   bool _hasMoreRides = true;
   bool get hasMoreRides => _hasMoreRides;

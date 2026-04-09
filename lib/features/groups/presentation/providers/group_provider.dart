@@ -591,7 +591,7 @@ class GroupProvider extends ChangeNotifier {
   int get selectedGroupMemberCount {
     final g = selectedGroup;
     if (g == null) return 0;
-    return (g.memberIds?.length ?? 0) + 1; // +1 admin
+    return g.memberIds.length + 1; // +1 admin
   }
 
 }

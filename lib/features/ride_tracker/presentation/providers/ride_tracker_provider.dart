@@ -770,6 +770,7 @@ class RideTrackerProvider with ChangeNotifier {
   static const int _flushInterval = 100;
 
   /// Guarda los puntos GPS acumulados en Firestore para liberar memoria
+  // ignore: unused_element
   Future<void> _flushPointsToFirestore(String rideId) async {
     try {
       final pointsToFlush = _points.take(_flushInterval).toList();

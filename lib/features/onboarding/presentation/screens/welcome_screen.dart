@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/features/users/presentation/providers/user_provider.dart';
 
 /// Pantalla de bienvenida que se muestra después del registro
 class WelcomeScreen extends StatelessWidget {
@@ -10,7 +8,6 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userName = context.read<UserProvider>().user?.name ?? 'Ciclista';
     return Scaffold(
       backgroundColor: ColorTokens.primary10,
       body: SafeArea(
@@ -76,7 +73,7 @@ class _FeatureRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: Colors.white, size: 24),

@@ -14,8 +14,14 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
 
-class RoadCreateScreen extends StatelessWidget {
-  RoadCreateScreen({Key? key}) : super(key: key);
+class RoadCreateScreen extends StatefulWidget {
+  const RoadCreateScreen({Key? key}) : super(key: key);
+
+  @override
+  State<RoadCreateScreen> createState() => _RoadCreateScreenState();
+}
+
+class _RoadCreateScreenState extends State<RoadCreateScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController controllerRouteName = TextEditingController();
   final TextEditingController controllerMeetingPoint = TextEditingController();
@@ -25,6 +31,17 @@ class RoadCreateScreen extends StatelessWidget {
   final TextEditingController controllerDescriptionRecomendations =
       TextEditingController();
   final TextEditingController controllerDistance = TextEditingController();
+
+  @override
+  void dispose() {
+    controllerRouteName.dispose();
+    controllerMeetingPoint.dispose();
+    controllerGeolocationPoint.dispose();
+    controllerDateTime.dispose();
+    controllerDescriptionRecomendations.dispose();
+    controllerDistance.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

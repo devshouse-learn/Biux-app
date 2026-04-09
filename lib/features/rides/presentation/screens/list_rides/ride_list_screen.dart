@@ -279,6 +279,7 @@ class _RideListScreenState extends State<RideListScreen>
     );
   }
 
+  // ignore: unused_element
   Widget _buildBanner() {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -385,6 +386,7 @@ class _RideListScreenState extends State<RideListScreen>
   }
 
   // Lista de grupos como ListView directo (para usar dentro de Expanded en build)
+  // ignore: unused_element
   Widget _buildGroupsListView(GroupProvider groupProvider) {
     final groups = groupProvider.allGroups;
     if (groups.isEmpty) {
@@ -435,6 +437,7 @@ class _RideListScreenState extends State<RideListScreen>
     );
   }
 
+  // ignore: unused_element
   List<Widget> _buildGroupsList(GroupProvider groupProvider) {
     final groups = groupProvider.allGroups;
     if (groups.isEmpty) return [];

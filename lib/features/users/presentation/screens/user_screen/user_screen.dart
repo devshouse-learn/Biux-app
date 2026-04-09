@@ -255,6 +255,12 @@ class _TabBarViewUserState extends State<_TabBarViewUser>
   }
 
   @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final bloc = context.watch<UserScreenBloc>();
     Size size = MediaQuery.of(context).size;

@@ -167,7 +167,7 @@ class AchievementsProvider with ChangeNotifier {
   }) async {
     for (final a in _achievements.where((x) => !x.isUnlocked)) {
       final progress = stats[a.id] as double? ?? 0;
-      if (progress >= (a.targetValue ?? double.infinity)) {
+      if (progress >= a.targetValue) {
         await _datasource.unlockAchievement(userId, a.id);
         _newlyUnlocked = a.id;
         _recentlyUnlocked = [..._recentlyUnlocked, a];

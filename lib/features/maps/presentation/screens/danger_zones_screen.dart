@@ -249,6 +249,12 @@ class _ReportSheetState extends State<_ReportSheet> {
   bool _loading = false;
 
   @override
+  void dispose() {
+    _desc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(

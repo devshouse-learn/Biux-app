@@ -43,6 +43,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   String _otherName = '';
   String _otherPhoto = '';
+  // ignore: unused_field
   String _otherUid = '';
   bool _loadingProfile = true;
   bool _isOnline = false;

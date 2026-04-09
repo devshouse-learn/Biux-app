@@ -22,7 +22,7 @@ class ProfileCompletionBanner extends StatelessWidget {
           decoration: BoxDecoration(
             color: ColorTokens.primary95,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: ColorTokens.primary40.withOpacity(0.3)),
+            border: Border.all(color: ColorTokens.primary40.withValues(alpha: 0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
