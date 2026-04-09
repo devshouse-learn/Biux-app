@@ -15,6 +15,7 @@ void main() {
           email: 'test@biux.app',
           phoneNumber: '+521234567890',
           photoUrl: 'https://example.com/photo.jpg',
+          description: 'Ciclista apasionado',
         ),
       );
     });

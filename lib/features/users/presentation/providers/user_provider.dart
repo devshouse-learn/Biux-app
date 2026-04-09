@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
 
 class UserProvider extends ChangeNotifier {
-  final UserService _userService = UserService();
+  final UserService? _userService;
   // Flag para evitar llamadas remotas en tests
   bool _skipRemoteCalls = false;
 
@@ -21,7 +21,7 @@ class UserProvider extends ChangeNotifier {
   String? get error => _error;
 
   // 🔴 Constructor que auto-inicializa en web
-  UserProvider() {
+  UserProvider() : _userService = UserService() {
     AppLogger.debug('🟦 UserProvider constructor llamado');
     if (kIsWeb && !kReleaseMode) {
       AppLogger.debug('🌐 Es WEB - Creando usuario admin de prueba automáticamente');
@@ -32,7 +32,9 @@ class UserProvider extends ChangeNotifier {
   }
 
   /// Constructor especial para pruebas que evita llamadas remotas si se solicita
-  UserProvider.forTest({UserModel? initialUser, bool skipRemote = true}) {
+  UserProvider.forTest({UserModel? initialUser, bool skipRemote = true}) :
+    _userService = null,
+    super() {
     _user = initialUser;
     _isLoading = false;
     _skipRemoteCalls = skipRemote;
@@ -104,7 +106,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      UserModel? userData = await _userService.getUserData(uid);
+      UserModel? userData = await _userService!.getUserData(uid);
       _user = userData;
 
       if (_user != null) {
@@ -165,7 +167,7 @@ class UserProvider extends ChangeNotifier {
     if (uid == null || _skipRemoteCalls) return;
 
     try {
-      _userService.listenToUser(uid, (userData) {
+      _userService!.listenToUser(uid, (userData) {
         _user = userData;
         notifyListeners();
         AppLogger.debug('🔄 Datos de usuario actualizados en tiempo real');
@@ -238,7 +240,7 @@ class UserProvider extends ChangeNotifier {
       AppLogger.debug('   Foto de perfil: "$photoUrl"');
       AppLogger.debug('   Foto de portada: "$coverPhotoUrl"');
 
-      bool success = await _userService.updateUserProfile(
+      bool success = await _userService!.updateUserProfile(
         uid: uid,
         name: name,
         email: email,
@@ -294,7 +296,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      String? imageUrl = await _userService.uploadProfileImage(_user!.uid);
+      String? imageUrl = await _userService!.uploadProfileImage(_user!.uid);
 
       if (imageUrl != null) {
         _user = _user!.copyWith(photoUrl: imageUrl);
@@ -318,7 +320,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      bool success = await _userService.requestAccountDeletion(_user!.uid);
+      bool success = await _userService!.requestAccountDeletion(_user!.uid);
 
       if (success) {
         _user = _user!.copyWith(
@@ -337,13 +339,13 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    await _userService.signOut();
+    await _userService!.signOut();
     _user = null;
     notifyListeners();
   }
 
   Future<void> createUserIfNotExists(String uid, String phoneNumber) async {
-    await _userService.createUserIfNotExists(uid, phoneNumber);
+    await _userService!.createUserIfNotExists(uid, phoneNumber);
     await loadUserData();
   }
 
@@ -360,7 +362,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      bool success = await _userService.updateSellerPermission(userId, true);
+      bool success = await _userService!.updateSellerPermission(userId, true);
 
       if (!success) {
         _error = 'user_error_authorize_seller';
@@ -390,7 +392,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      bool success = await _userService.updateSellerPermission(userId, false);
+      bool success = await _userService!.updateSellerPermission(userId, false);
 
       if (!success) {
         _error = 'user_error_revoke_permission';
@@ -417,7 +419,7 @@ class UserProvider extends ChangeNotifier {
     if (_skipRemoteCalls) return [];
 
     try {
-      return await _userService.getAllUsers();
+      return await _userService!.getAllUsers();
     } catch (e) {
       _error = 'user_error_load_users';
       notifyListeners();
@@ -444,7 +446,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      bool success = await _userService.followUser(
+      bool success = await _userService!.followUser(
         currentUserId: currentUserId,
         userIdToFollow: userIdToFollow,
       );
@@ -487,7 +489,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
 
     try {
-      bool success = await _userService.unfollowUser(
+      bool success = await _userService!.unfollowUser(
         currentUserId: currentUserId,
         userIdToUnfollow: userIdToUnfollow,
       );
