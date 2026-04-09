@@ -9,6 +9,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class RideListScreen extends StatefulWidget {
   final String? groupId; // Ahora es opcional
@@ -66,7 +67,7 @@ class _RideListScreenState extends State<RideListScreen>
       body: Consumer2<RideProvider, GroupProvider>(
         builder: (context, provider, groupProvider, child) {
           if (provider.isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const ShimmerListLoading();
           }
 
           final rides = provider.rides;
@@ -184,7 +185,7 @@ class _RideListScreenState extends State<RideListScreen>
     bool isMine,
   ) {
     if (groupProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const ShimmerListLoading();
     }
     if (groups.isEmpty) {
       return Center(

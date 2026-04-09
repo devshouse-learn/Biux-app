@@ -17,6 +17,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/shared/widgets/post_card.dart';
 import 'package:biux/features/social/presentation/widgets/report_content_dialog.dart';
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 /// Pantalla principal para mostrar la lista de experiencias
 class ExperiencesListScreen extends StatefulWidget {
@@ -164,7 +165,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
 
   Widget _buildBody(ExperienceProvider provider) {
     if (provider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const ShimmerListLoading(itemHeight: 120);
     }
 
     if (provider.error != null) {

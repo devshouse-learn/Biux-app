@@ -7,6 +7,7 @@ import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);
@@ -225,7 +226,7 @@ class _ChatListScreenState extends State<ChatListScreen>
         // Lista de chats
         Expanded(
           child: _chatsStream == null
-              ? const Center(child: CircularProgressIndicator())
+              ? const ShimmerListLoading()
               : StreamBuilder<QuerySnapshot>(
                   stream: _chatsStream,
                   builder: (context, snapshot) {

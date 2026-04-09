@@ -15,6 +15,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class ProfileScreen extends StatelessWidget {
   // Función para formatear número de teléfono colombiano
@@ -789,7 +790,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: widget.userProvider.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const ShimmerProfileLoading()
           : widget.userProvider.user == null
           ? Center(
               child: Column(

@@ -7,6 +7,7 @@ import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/data/models/group_model.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class GroupListScreen extends StatefulWidget {
   @override
@@ -42,7 +43,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
             child: Consumer<GroupProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const ShimmerListLoading();
                 }
 
                 final groups = provider.allGroups;

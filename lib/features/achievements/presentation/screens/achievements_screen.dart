@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({Key? key}) : super(key: key);
@@ -61,7 +62,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       body: Consumer<AchievementsProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const ShimmerListLoading();
           }
 
           final allInCategory = _selectedCategory == 'all'
