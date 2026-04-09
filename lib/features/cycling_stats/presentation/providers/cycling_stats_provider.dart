@@ -179,4 +179,25 @@ class CyclingStatsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List<Map<String, dynamic>> _heatmapPoints = [];
+  List<Map<String, dynamic>> get heatmapPoints => _heatmapPoints;
+
+  Future<void> loadHeatmap(String userId) async {
+    try {
+      final tracks = await _datasource.getUserTracks(userId);
+      _heatmapPoints = [];
+      for (final track in tracks) {
+        final points = List<Map<String, dynamic>>.from(track['points'] ?? []);
+        _heatmapPoints.addAll(points.map((p) => {
+          'lat': p['lat'],
+          'lng': p['lng'],
+          'weight': 1.0,
+        }));
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error cargando heatmap: $e');
+    }
+  }
+
 }

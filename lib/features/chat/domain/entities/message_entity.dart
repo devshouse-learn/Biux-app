@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum MessageType { text, image, voice, location, deleted }
+enum MessageType { text, image, voice, location, deleted, gif, file }
 
 class MessageEntity {
   final String id;
@@ -22,6 +22,15 @@ class MessageEntity {
   final int? audioDurationSeconds;
   final double? locationLat;
   final double? locationLng;
+  // Nuevos campos
+  final bool isEdited;
+  final bool isPinned;
+  final bool isStarred;
+  final String? forwardedFrom;
+  final DateTime? expiresAt;
+  final String? fileName;
+  final int? fileSize;
+  final List<String> starredBy;
 
   const MessageEntity({
     required this.id,
@@ -43,6 +52,14 @@ class MessageEntity {
     this.audioDurationSeconds,
     this.locationLat,
     this.locationLng,
+    this.isEdited = false,
+    this.isPinned = false,
+    this.isStarred = false,
+    this.forwardedFrom,
+    this.expiresAt,
+    this.fileName,
+    this.fileSize,
+    this.starredBy = const [],
   });
 
   factory MessageEntity.fromMap(Map<String, dynamic> data, String id) {
@@ -69,6 +86,14 @@ class MessageEntity {
       audioDurationSeconds: data['audioDurationSeconds'],
       locationLat: (data['locationLat'] as num?)?.toDouble(),
       locationLng: (data['locationLng'] as num?)?.toDouble(),
+      isEdited: data['isEdited'] ?? false,
+      isPinned: data['isPinned'] ?? false,
+      isStarred: data['isStarred'] ?? false,
+      forwardedFrom: data['forwardedFrom'],
+      expiresAt: (data['expiresAt'] as Timestamp?)?.toDate(),
+      fileName: data['fileName'],
+      fileSize: data['fileSize'],
+      starredBy: List<String>.from(data['starredBy'] ?? []),
     );
   }
 
@@ -89,10 +114,17 @@ class MessageEntity {
       if (replyPreview != null) 'replyPreview': replyPreview,
       'reactions': reactions,
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
-      if (audioDurationSeconds != null)
-        'audioDurationSeconds': audioDurationSeconds,
+      if (audioDurationSeconds != null) 'audioDurationSeconds': audioDurationSeconds,
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
+      'isEdited': isEdited,
+      'isPinned': isPinned,
+      'isStarred': isStarred,
+      if (forwardedFrom != null) 'forwardedFrom': forwardedFrom,
+      if (expiresAt != null) 'expiresAt': Timestamp.fromDate(expiresAt!),
+      if (fileName != null) 'fileName': fileName,
+      if (fileSize != null) 'fileSize': fileSize,
+      'starredBy': starredBy,
     };
   }
 
@@ -102,6 +134,11 @@ class MessageEntity {
     bool? isDelivered,
     bool? deleted,
     Map<String, String>? reactions,
+    bool? isEdited,
+    bool? isPinned,
+    bool? isStarred,
+    List<String>? starredBy,
+    List<String>? deletedFor,
   }) {
     return MessageEntity(
       id: id,
@@ -115,6 +152,7 @@ class MessageEntity {
       isRead: isRead ?? this.isRead,
       isDelivered: isDelivered ?? this.isDelivered,
       deleted: deleted ?? this.deleted,
+      deletedFor: deletedFor ?? this.deletedFor,
       replyToId: replyToId,
       replyPreview: replyPreview,
       reactions: reactions ?? this.reactions,
@@ -122,6 +160,14 @@ class MessageEntity {
       audioDurationSeconds: audioDurationSeconds,
       locationLat: locationLat,
       locationLng: locationLng,
+      isEdited: isEdited ?? this.isEdited,
+      isPinned: isPinned ?? this.isPinned,
+      isStarred: isStarred ?? this.isStarred,
+      forwardedFrom: forwardedFrom,
+      expiresAt: expiresAt,
+      fileName: fileName,
+      fileSize: fileSize,
+      starredBy: starredBy ?? this.starredBy,
     );
   }
 }

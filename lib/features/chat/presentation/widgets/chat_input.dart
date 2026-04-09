@@ -21,6 +21,7 @@ class ChatInput extends StatefulWidget {
   final void Function(String text) onSendText;
   final void Function(String audioUrl, int durationSeconds) onSendVoice;
   final void Function() onCancelReply;
+  final void Function(bool isTyping)? onTypingChanged;
   final bool isDark;
 
   const ChatInput({
@@ -32,6 +33,7 @@ class ChatInput extends StatefulWidget {
     required this.onSendText,
     required this.onSendVoice,
     required this.onCancelReply,
+    this.onTypingChanged,
     this.isDark = false,
   });
 

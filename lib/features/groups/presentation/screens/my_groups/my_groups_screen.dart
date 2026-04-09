@@ -233,8 +233,13 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
         title: Text(
           group.name,
           style: const TextStyle(fontWeight: FontWeight.bold),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text('${group.memberCount} miembros'),
+        subtitle: Text(
+          '${group.memberCount} miembros',
+          style: const TextStyle(fontSize: 13),
+        ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () => context.push('/groups/${group.id}'),
       ),
@@ -385,8 +390,13 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
         title: Text(
           group.name,
           style: const TextStyle(fontWeight: FontWeight.bold),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text('${group.memberCount} miembros'),
+        subtitle: Text(
+          '${group.memberCount} miembros',
+          style: const TextStyle(fontSize: 13),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

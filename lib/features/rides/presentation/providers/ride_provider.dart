@@ -50,36 +50,16 @@ class RideProvider extends ChangeNotifier {
       _setError(null);
 
       final now = DateTime.now();
-      final oneWeekAgo = now.subtract(const Duration(days: 7));
 
       final querySnapshot = await _firestore
           .collection('rides')
-          .where(
-            'dateTime',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(oneWeekAgo),
-          )
+          .where('dateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
           .orderBy('dateTime', descending: false)
           .get();
 
       _rides = querySnapshot.docs
           .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
           .toList();
-
-      // Separar rodadas: próximas primero, luego pasadas (última semana)
-      final upcomingRides = _rides.where((ride) {
-        return ride.dateTime.isAfter(now);
-      }).toList();
-
-      final pastRides = _rides.where((ride) {
-        return ride.dateTime.isBefore(now) && ride.dateTime.isAfter(oneWeekAgo);
-      }).toList();
-
-      // Ordenar: próximas ascendente (más cercanas primero), pasadas descendente (más recientes primero)
-      upcomingRides.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-      pastRides.sort((a, b) => b.dateTime.compareTo(a.dateTime));
-
-      // Combinar: próximas + pasadas
-      _rides = [...upcomingRides, ...pastRides];
 
       _setLoading(false);
     } catch (e) {
@@ -95,37 +75,17 @@ class RideProvider extends ChangeNotifier {
       _setError(null);
 
       final now = DateTime.now();
-      final oneWeekAgo = now.subtract(const Duration(days: 7));
 
       final querySnapshot = await _firestore
           .collection('rides')
           .where('groupId', isEqualTo: groupId)
-          .where(
-            'dateTime',
-            isGreaterThanOrEqualTo: Timestamp.fromDate(oneWeekAgo),
-          )
+          .where('dateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
           .orderBy('dateTime', descending: false)
           .get();
 
       _rides = querySnapshot.docs
           .map((doc) => RideModel.fromFirestore(doc.data(), doc.id))
           .toList();
-
-      // Separar rodadas: próximas primero, luego pasadas (última semana)
-      final upcomingRides = _rides.where((ride) {
-        return ride.dateTime.isAfter(now);
-      }).toList();
-
-      final pastRides = _rides.where((ride) {
-        return ride.dateTime.isBefore(now) && ride.dateTime.isAfter(oneWeekAgo);
-      }).toList();
-
-      // Ordenar: próximas ascendente (más cercanas primero), pasadas descendente (más recientes primero)
-      upcomingRides.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-      pastRides.sort((a, b) => b.dateTime.compareTo(a.dateTime));
-
-      // Combinar: próximas + pasadas
-      _rides = [...upcomingRides, ...pastRides];
 
       _setLoading(false);
     } catch (e) {
@@ -621,9 +581,12 @@ class RideProvider extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
+      final now = DateTime.now();
+
       final querySnapshot = await _firestore
           .collection('rides')
           .where('groupId', isEqualTo: groupId)
+          .where('dateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
           .orderBy('dateTime', descending: false)
           .get();
 
@@ -717,7 +680,7 @@ class RideProvider extends ChangeNotifier {
       // Actualizar la rodada seleccionada si es la misma
       if (_selectedRide?.id == rideId) {
         if (_selectedRide == null) return false;
-    _selectedRide = _selectedRide!.copyWith(status: RideStatus.cancelled);
+        _selectedRide = _selectedRide!.copyWith(status: RideStatus.cancelled);
       }
 
       await loadAllRides();
@@ -777,4 +740,67 @@ class RideProvider extends ChangeNotifier {
       return null;
     }
   }
+  // Filtros
+  String _filterDifficulty = 'all';
+  String _searchQuery = '';
+  DateTime? _filterFromDate;
+
+  String get filterDifficulty => _filterDifficulty;
+  String get searchQuery => _searchQuery;
+
+  void setFilterDifficulty(String difficulty) {
+    _filterDifficulty = difficulty;
+    notifyListeners();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query.toLowerCase().trim();
+    notifyListeners();
+  }
+
+  void setFilterFromDate(DateTime? date) {
+    _filterFromDate = date;
+    notifyListeners();
+  }
+
+  void clearFilters() {
+    _filterDifficulty = 'all';
+    _searchQuery = '';
+    _filterFromDate = null;
+    notifyListeners();
+  }
+
+  /// Rides filtrados según criterios activos
+  List<dynamic> get filteredRides {
+    var list = rides.toList();
+    if (_filterDifficulty != 'all') {
+      list = list.where((r) =>
+        r.difficulty?.toString().contains(_filterDifficulty) ?? false
+      ).toList();
+    }
+    if (_searchQuery.isNotEmpty) {
+      list = list.where((r) =>
+        (r.name ?? '').toLowerCase().contains(_searchQuery)
+      ).toList();
+    }
+    if (_filterFromDate != null) {
+      list = list.where((r) {
+        final date = r.dateTime;
+        return date != null && date.isAfter(_filterFromDate!);
+      }).toList();
+    }
+    return list;
+  }
+
+  // Paginación
+  static const int _pageSize = 15;
+  DocumentSnapshot? _lastDocument;
+  bool _hasMoreRides = true;
+  bool get hasMoreRides => _hasMoreRides;
+
+  void resetPagination() {
+    _lastDocument = null;
+    _hasMoreRides = true;
+  }
+
 }

@@ -306,6 +306,150 @@ class ChatDatasource {
     }
   }
 
+
+
+  // ── Editar mensaje ────────────────────────────────────────────────────────
+
+  Future<void> editMessage({
+    required String chatId,
+    required String messageId,
+    required String newContent,
+  }) async {
+    await _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({'content': newContent, 'isEdited': true});
+  }
+
+  // ── Fijar mensaje ─────────────────────────────────────────────────────────
+
+  Future<void> pinMessage({
+    required String chatId,
+    required String messageId,
+    required bool pin,
+  }) async {
+    await _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({'isPinned': pin});
+    // Guardar referencia en el chat
+    await _db.collection('chats').doc(chatId).update({
+      'pinnedMessageId': pin ? messageId : FieldValue.delete(),
+    });
+  }
+
+  // ── Destacar mensaje ──────────────────────────────────────────────────────
+
+  Future<void> starMessage({
+    required String chatId,
+    required String messageId,
+    required bool star,
+  }) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    await _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+      'starredBy': star
+          ? FieldValue.arrayUnion([uid])
+          : FieldValue.arrayRemove([uid]),
+    });
+  }
+
+  // ── Reenviar mensaje ──────────────────────────────────────────────────────
+
+  Future<void> forwardMessage({
+    required MessageEntity message,
+    required String targetChatId,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    final forwarded = MessageEntity(
+      id: '',
+      chatId: targetChatId,
+      senderId: uid,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+      content: message.content,
+      type: message.type,
+      sentAt: DateTime.now(),
+      mediaUrl: message.mediaUrl,
+      audioDurationSeconds: message.audioDurationSeconds,
+      forwardedFrom: message.senderName,
+    );
+    await sendMessage(chatId: targetChatId, message: forwarded);
+  }
+
+  // ── Stream mensaje fijado ─────────────────────────────────────────────────
+
+  Stream<MessageEntity?> getPinnedMessage(String chatId) {
+    return _db.collection('chats').doc(chatId).snapshots().asyncMap((doc) async {
+      final pinnedId = doc.data()?['pinnedMessageId'] as String?;
+      if (pinnedId == null) return null;
+      final msgDoc = await _db
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .doc(pinnedId)
+          .get();
+      if (!msgDoc.exists) return null;
+      return MessageEntity.fromMap(msgDoc.data()!, msgDoc.id);
+    });
+  }
+
+  // ── Mensajes destacados del usuario ───────────────────────────────────────
+
+  Stream<List<MessageEntity>> getStarredMessages(String chatId) {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return const Stream.empty();
+    return _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .where('starredBy', arrayContains: uid)
+        .snapshots()
+        .map((s) => s.docs
+            .map((d) => MessageEntity.fromMap(d.data(), d.id))
+            .toList());
+  }
+
+  // ── Typing ────────────────────────────────────────────────────────────────
+
+  Stream<Map<String, bool>> getTypingStream(String chatId) {
+    return _db
+        .collection('chats')
+        .doc(chatId)
+        .snapshots()
+        .map((doc) {
+          if (!doc.exists) return <String, bool>{};
+          final raw = doc.data()?['typing'];
+          if (raw == null) return <String, bool>{};
+          return Map<String, bool>.from(raw as Map);
+        });
+  }
+
+  Future<void> setTyping({
+    required String chatId,
+    required bool isTyping,
+  }) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      await _db.collection('chats').doc(chatId).update({
+        'typing.\$uid': isTyping,
+      });
+    } catch (_) {}
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   ChatEntity _chatFromDoc(DocumentSnapshot doc) {

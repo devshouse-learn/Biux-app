@@ -168,6 +168,11 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       indicatorColor: ColorTokens.secondary50,
                       labelColor: ColorTokens.primary30,
                       unselectedLabelColor: ColorTokens.neutral60,
+                      labelStyle: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      unselectedLabelStyle: const TextStyle(fontSize: 11),
                       tabs: [
                         Tab(text: l.t('info')),
                         Tab(text: '${l.t('members')} (${group.memberCount})'),
@@ -184,8 +189,10 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                         ),
                         if (isAdmin)
                           Tab(
-                            text:
-                                '${l.t('requests')} (${group.pendingRequestCount})',
+                            icon: const Icon(Icons.pending_actions, size: 18),
+                            text: group.pendingRequestCount > 0
+                                ? '${group.pendingRequestCount}'
+                                : 'Solicitudes',
                           ),
                       ],
                     ),

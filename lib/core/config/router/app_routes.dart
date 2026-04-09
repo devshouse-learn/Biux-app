@@ -127,4 +127,11 @@ class AppRoutes {
   static const twoFactor = '/two-factor';
   static const dangerZones = '/danger-zones';
   static const accessibilitySettings = '/accessibility-settings';
+
+  // Welcome post-registro
+  static const String welcome = '/welcome';
+  static const String welcomeName = 'welcome';
+  // Completitud de perfil
+  static const String profileCompletion = '/profile/completion';
+  static const String profileCompletionName = 'profileCompletion';
 }

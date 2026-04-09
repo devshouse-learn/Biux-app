@@ -179,4 +179,19 @@ class CyclingStatsDatasource {
     }
     return stats;
   }
+  /// Obtiene el historial de tracks del usuario para heatmap
+  Future<List<Map<String, dynamic>>> getUserTracks(String userId) async {
+    try {
+      final snap = await _firestore
+          .collection('ride_tracks')
+          .where('userId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .limit(50)
+          .get();
+      return snap.docs.map((d) => {'id': d.id, ...d.data()}).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
 }

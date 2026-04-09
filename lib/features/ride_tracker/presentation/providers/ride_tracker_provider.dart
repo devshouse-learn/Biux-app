@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dart';
 import 'package:biux/features/ride_tracker/data/datasources/ride_tracker_datasource.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:biux/core/services/app_logger.dart';
 
 class RideTrackerProvider with ChangeNotifier {
   final _ds = RideTrackerDatasource();
@@ -752,4 +753,40 @@ class RideTrackerProvider with ChangeNotifier {
   }
 
   double _rad(double d) => d * pi / 180;
+  /// Genera datos para story automática al terminar rodada
+  Map<String, dynamic> buildRideStorySummary() {
+    return {
+      'type': 'ride_summary',
+      'km': _totalKm,
+      'durationSec': _durationSec,
+      'maxSpeed': _maxSpeed,
+      'avgSpeed': avgSpeed,
+      'calories': calories,
+      'points': _points.map((p) => {'lat': p.lat, 'lng': p.lng}).toList(),
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+  }
+
+  static const int _flushInterval = 100;
+
+  /// Guarda los puntos GPS acumulados en Firestore para liberar memoria
+  Future<void> _flushPointsToFirestore(String rideId) async {
+    try {
+      final pointsToFlush = _points.take(_flushInterval).toList();
+      final db = FirebaseFirestore.instance;
+      final batch = db.batch();
+      final ref = db.collection('ride_tracks').doc(rideId);
+      batch.set(ref, {
+        'points': FieldValue.arrayUnion(
+          pointsToFlush.map((p) => {'lat': p.lat, 'lng': p.lng}).toList(),
+        ),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      await batch.commit();
+      _points.removeRange(0, pointsToFlush.length);
+    } catch (e) {
+      AppLogger.error('No se pudo hacer flush de puntos GPS: \$e');
+    }
+  }
+
 }

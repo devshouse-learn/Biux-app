@@ -4,6 +4,7 @@ import 'package:biux/features/experiences/presentation/providers/experience_clas
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:biux/shared/widgets/profile_completion_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 

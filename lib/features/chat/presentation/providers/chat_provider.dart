@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +17,9 @@ class ChatProvider extends ChangeNotifier {
   String? _error;
   String? _activeChatId;
   MessageEntity? _replyingTo;
+  Map<String, bool> _otherTyping = {};
+  Timer? _typingTimer;
+  StreamSubscription<Map<String, bool>>? _typingSub;
 
   StreamSubscription<List<ChatEntity>>? _chatsSub;
   StreamSubscription<List<MessageEntity>>? _messagesSub;
@@ -27,6 +32,9 @@ class ChatProvider extends ChangeNotifier {
   String? get error => _error;
   String? get activeChatId => _activeChatId;
   MessageEntity? get replyingTo => _replyingTo;
+  Map<String, bool> get otherTyping => _otherTyping;
+  bool get someoneIsTyping => _otherTyping.values.any((v) => v);
+  ChatDatasource get ds => _ds;
 
   String get currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
@@ -63,9 +71,21 @@ class ChatProvider extends ChangeNotifier {
       notifyListeners();
     }, onError: (e) => debugPrint('❌ Error en getChatStream $chatId: $e'));
     _ds.markMessagesAsRead(chatId);
+
+    // Escuchar typing de otros participantes
+    _typingSub?.cancel();
+    _typingSub = _ds.getTypingStream(chatId).listen((map) {
+      _otherTyping = Map.from(map)..remove(currentUid);
+      notifyListeners();
+    });
   }
 
   void closeChat() {
+    if (_activeChatId != null) {
+      _ds.setTyping(chatId: _activeChatId!, isTyping: false);
+    }
+    _typingTimer?.cancel();
+    _otherTyping = {};
     // Mantenemos el stream activo y los mensajes en memoria
     // para que persistan al volver al chat
     _activeChatId = null;
@@ -100,6 +120,57 @@ class ChatProvider extends ChangeNotifier {
       photoUrl: photoUrl,
       rideId: rideId,
     );
+  }
+
+
+  void onTypingChanged(bool typing) {
+    if (_activeChatId == null) return;
+    _typingTimer?.cancel();
+    _ds.setTyping(chatId: _activeChatId!, isTyping: typing);
+    if (typing) {
+      _typingTimer = Timer(const Duration(seconds: 4), () {
+        if (_activeChatId != null) {
+          _ds.setTyping(chatId: _activeChatId!, isTyping: false);
+        }
+      });
+    }
+  }
+
+  Future<void> sendImageMessage({
+    required String chatId,
+    required File imageFile,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    try {
+      final fileName = 'img_\${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('chat_images')
+          .child(chatId)
+          .child(fileName);
+      await ref.putFile(imageFile, SettableMetadata(contentType: 'image/jpeg'));
+      final url = await ref.getDownloadURL();
+      final message = MessageEntity(
+        id: '',
+        chatId: chatId,
+        senderId: currentUid,
+        senderName: senderName,
+        senderAvatar: senderAvatar,
+        content: '',
+        type: MessageType.image,
+        sentAt: DateTime.now(),
+        mediaUrl: url,
+        replyToId: _replyingTo?.id,
+        replyPreview: _replyingTo?.content,
+      );
+      _replyingTo = null;
+      notifyListeners();
+      await _ds.sendMessage(chatId: chatId, message: message);
+    } catch (e) {
+      _error = 'No se pudo enviar la imagen';
+      notifyListeners();
+    }
   }
 
   void setReplyingTo(MessageEntity? message) {
@@ -151,6 +222,50 @@ class ChatProvider extends ChangeNotifier {
       audioDurationSeconds: durationSeconds,
     );
     await _ds.sendMessage(chatId: chatId, message: message);
+  }
+
+
+  Future<void> editMessage({
+    required String chatId,
+    required String messageId,
+    required String newContent,
+  }) async {
+    if (newContent.trim().isEmpty) return;
+    await _ds.editMessage(
+      chatId: chatId,
+      messageId: messageId,
+      newContent: newContent.trim(),
+    );
+  }
+
+  Future<void> pinMessage({
+    required String chatId,
+    required String messageId,
+    required bool pin,
+  }) async {
+    await _ds.pinMessage(chatId: chatId, messageId: messageId, pin: pin);
+  }
+
+  Future<void> starMessage({
+    required String chatId,
+    required String messageId,
+    required bool star,
+  }) async {
+    await _ds.starMessage(chatId: chatId, messageId: messageId, star: star);
+  }
+
+  Future<void> forwardMessage({
+    required MessageEntity message,
+    required String targetChatId,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    await _ds.forwardMessage(
+      message: message,
+      targetChatId: targetChatId,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+    );
   }
 
   Future<void> markAsRead(String chatId) async {
