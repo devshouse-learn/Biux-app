@@ -336,7 +336,7 @@ String? _guard(BuildContext context, GoRouterState state) {
 // GoRouter global que persiste durante hot reload
 final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: AppRoutes.splash,
+  initialLocation: '/splash',
   debugLogDiagnostics: false,
   observers: [AnalyticsService.observer],
   redirect: _guard,

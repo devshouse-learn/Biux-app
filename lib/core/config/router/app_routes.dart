@@ -1,6 +1,6 @@
 class AppRoutes {
   // Rutas principales
-  static const String splash = '/';
+  static const String splash = '/splash';
   static const String login = '/login';
   static const String map = '/map';
 
