@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum MessageType { text, image, voice, location, deleted, gif, file }
+enum MessageType { text, image, video, voice, location, deleted, gif, file }
 
 class MessageEntity {
   final String id;
@@ -114,7 +114,8 @@ class MessageEntity {
       if (replyPreview != null) 'replyPreview': replyPreview,
       'reactions': reactions,
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
-      if (audioDurationSeconds != null) 'audioDurationSeconds': audioDurationSeconds,
+      if (audioDurationSeconds != null)
+        'audioDurationSeconds': audioDurationSeconds,
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
       'isEdited': isEdited,

@@ -31,7 +31,7 @@ class _ExperiencesListScreenState extends State<ExperiencesListScreen>
     with WidgetsBindingObserver {
   Timer? _autoRefreshTimer;
   Timer? _fabTimer;
-  late final ExperienceProvider _experienceProvider;
+  late ExperienceProvider _experienceProvider;
   bool _showFab = true;
 
   /// Obtiene el ID del usuario actual autenticado

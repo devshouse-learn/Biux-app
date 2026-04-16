@@ -147,43 +147,8 @@ void main() async {
   // Inicializar tracking de tiempo de uso
   await ScreenTimeService.instance.initialize();
 
-  // ErrorWidget global para producción - muestra UI amigable en vez de pantalla roja
-  ErrorWidget.builder = (FlutterErrorDetails details) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: const Color(0xFF16242D),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white70, size: 64),
-                const SizedBox(height: 16),
-                const Text(
-                  'Algo salió mal',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Por favor reinicia la aplicación',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  };
+  // TEMPORALMENTE DESACTIVADO para ver el error real en pantalla roja
+  // ErrorWidget.builder = ...
 
   runApp(
     MultiProvider(

@@ -385,14 +385,30 @@ class _ChatListScreenState extends State<ChatListScreen>
                           final type = lastMsgRaw['type'] as String? ?? 'text';
                           final content =
                               lastMsgRaw['content'] as String? ?? '';
-                          if (type == 'voice') {
-                            lastMsg = '🎤 Audio';
-                          } else if (type == 'image') {
-                            lastMsg = '📷 Imagen';
-                          } else if (type == 'location') {
-                            lastMsg = '📍 Ubicación';
-                          } else {
-                            lastMsg = content;
+                          switch (type) {
+                            case 'voice':
+                              lastMsg = '🎤 Audio';
+                              break;
+                            case 'image':
+                              lastMsg = '📷 Imagen';
+                              break;
+                            case 'video':
+                              lastMsg = '🎬 Video';
+                              break;
+                            case 'location':
+                              lastMsg = '📍 Ubicación';
+                              break;
+                            case 'gif':
+                              lastMsg = '🎞️ GIF';
+                              break;
+                            case 'file':
+                              lastMsg = '📎 Archivo';
+                              break;
+                            case 'deleted':
+                              lastMsg = '🚫 Mensaje eliminado';
+                              break;
+                            default:
+                              lastMsg = content;
                           }
                         } else {
                           lastMsg = '';

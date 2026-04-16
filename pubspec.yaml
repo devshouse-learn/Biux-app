@@ -99,6 +99,7 @@ dependencies:
 
   # ─── Video ─────────────────────────────────────────────
   video_player: ^2.8.1
+  camera: ^0.11.1
 
   # ─── PDF e Impresión ───────────────────────────────────
   pdf: ^3.11.3
@@ -121,6 +122,8 @@ dependencies:
   vector_math: ^2.2.0
   flutter_local_notifications: ^20.1.0
   flutter_plugin_android_lifecycle: ^2.0.30
+  mime: ^2.0.0
+  file_picker: ^8.0.0
 
   # ─── Serialización ─────────────────────────────────────
   freezed_annotation: ^3.1.0

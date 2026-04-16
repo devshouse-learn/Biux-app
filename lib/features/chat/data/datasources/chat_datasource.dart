@@ -38,6 +38,27 @@ class ChatDatasource {
   static final _db = FirebaseFirestore.instance;
   static final _auth = FirebaseAuth.instance;
 
+  static String _previewForType(String type, String content) {
+    switch (type) {
+      case 'voice':
+        return '🎵 Nota de voz';
+      case 'image':
+        return '🖼️ Imagen';
+      case 'video':
+        return '🎬 Video';
+      case 'location':
+        return '📍 Ubicación';
+      case 'gif':
+        return '🎞️ GIF';
+      case 'file':
+        return '📎 Archivo';
+      case 'deleted':
+        return '🚫 Mensaje eliminado';
+      default:
+        return content;
+    }
+  }
+
   // ── Streams ────────────────────────────────────────────────────────────────
 
   Stream<List<ChatEntity>> getChats() {
@@ -117,9 +138,7 @@ class ChatDatasource {
     }
 
     // Preview de última mensaje para la lista de chats
-    final previewContent = message.type == MessageType.voice
-        ? '🎵 Nota de voz'
-        : message.content;
+    final previewContent = _previewForType(message.type.name, message.content);
 
     await _db.collection('chats').doc(chatId).update({
       'lastMessage': {
@@ -286,9 +305,10 @@ class ChatDatasource {
       if (hasValidPrev) {
         final prevData = prev.data();
         final prevType = prevData['type'] as String? ?? 'text';
-        final prevContent = prevType == 'voice'
-            ? '🎵 Nota de voz'
-            : (prevData['content'] as String? ?? '');
+        final prevContent = _previewForType(
+          prevType,
+          prevData['content'] as String? ?? '',
+        );
         await _db.collection('chats').doc(chatId).update({
           'lastMessage': {
             'id': prev.id,
@@ -305,8 +325,6 @@ class ChatDatasource {
       }
     }
   }
-
-
 
   // ── Editar mensaje ────────────────────────────────────────────────────────
 
@@ -357,10 +375,10 @@ class ChatDatasource {
         .collection('messages')
         .doc(messageId)
         .update({
-      'starredBy': star
-          ? FieldValue.arrayUnion([uid])
-          : FieldValue.arrayRemove([uid]),
-    });
+          'starredBy': star
+              ? FieldValue.arrayUnion([uid])
+              : FieldValue.arrayRemove([uid]),
+        });
   }
 
   // ── Reenviar mensaje ──────────────────────────────────────────────────────
@@ -392,7 +410,9 @@ class ChatDatasource {
   // ── Stream mensaje fijado ─────────────────────────────────────────────────
 
   Stream<MessageEntity?> getPinnedMessage(String chatId) {
-    return _db.collection('chats').doc(chatId).snapshots().asyncMap((doc) async {
+    return _db.collection('chats').doc(chatId).snapshots().asyncMap((
+      doc,
+    ) async {
       final pinnedId = doc.data()?['pinnedMessageId'] as String?;
       if (pinnedId == null) return null;
       final msgDoc = await _db
@@ -417,24 +437,21 @@ class ChatDatasource {
         .collection('messages')
         .where('starredBy', arrayContains: uid)
         .snapshots()
-        .map((s) => s.docs
-            .map((d) => MessageEntity.fromMap(d.data(), d.id))
-            .toList());
+        .map(
+          (s) =>
+              s.docs.map((d) => MessageEntity.fromMap(d.data(), d.id)).toList(),
+        );
   }
 
   // ── Typing ────────────────────────────────────────────────────────────────
 
   Stream<Map<String, bool>> getTypingStream(String chatId) {
-    return _db
-        .collection('chats')
-        .doc(chatId)
-        .snapshots()
-        .map((doc) {
-          if (!doc.exists) return <String, bool>{};
-          final raw = doc.data()?['typing'];
-          if (raw == null) return <String, bool>{};
-          return Map<String, bool>.from(raw as Map);
-        });
+    return _db.collection('chats').doc(chatId).snapshots().map((doc) {
+      if (!doc.exists) return <String, bool>{};
+      final raw = doc.data()?['typing'];
+      if (raw == null) return <String, bool>{};
+      return Map<String, bool>.from(raw as Map);
+    });
   }
 
   Future<void> setTyping({

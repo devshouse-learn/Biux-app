@@ -22,6 +22,8 @@ class ChatInput extends StatefulWidget {
   final void Function(String audioUrl, int durationSeconds) onSendVoice;
   final void Function() onCancelReply;
   final void Function(bool isTyping)? onTypingChanged;
+  final VoidCallback? onCamera;
+  final VoidCallback? onAttach;
   final bool isDark;
 
   const ChatInput({
@@ -34,6 +36,8 @@ class ChatInput extends StatefulWidget {
     required this.onSendVoice,
     required this.onCancelReply,
     this.onTypingChanged,
+    this.onCamera,
+    this.onAttach,
     this.isDark = false,
   });
 
@@ -1053,7 +1057,23 @@ class _ChatInputState extends State<ChatInput>
                     ),
                     child: Row(
                       children: [
-                        const SizedBox(width: 12),
+                        IconButton(
+                          icon: Icon(
+                            _showEmojiPanel
+                                ? Icons.keyboard_rounded
+                                : Icons.emoji_emotions_outlined,
+                            color: _showEmojiPanel
+                                ? const Color(0xFF1E8BC3)
+                                : Colors.grey,
+                            size: 22,
+                          ),
+                          onPressed: _toggleEmojiPanel,
+                          constraints: const BoxConstraints(
+                            minWidth: 36,
+                            minHeight: 36,
+                          ),
+                          padding: EdgeInsets.zero,
+                        ),
                         Expanded(
                           child: TextField(
                             controller: _controller,
@@ -1081,17 +1101,34 @@ class _ChatInputState extends State<ChatInput>
                             ),
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            _showEmojiPanel
-                                ? Icons.keyboard_rounded
-                                : Icons.emoji_emotions_outlined,
-                            color: _showEmojiPanel
-                                ? const Color(0xFF1E8BC3)
-                                : Colors.grey,
+                        if (widget.onCamera != null)
+                          IconButton(
+                            icon: const Icon(
+                              Icons.camera_alt_outlined,
+                              color: Colors.grey,
+                              size: 22,
+                            ),
+                            onPressed: widget.onCamera,
+                            constraints: const BoxConstraints(
+                              minWidth: 36,
+                              minHeight: 36,
+                            ),
+                            padding: EdgeInsets.zero,
                           ),
-                          onPressed: _toggleEmojiPanel,
-                        ),
+                        if (widget.onAttach != null)
+                          IconButton(
+                            icon: const Icon(
+                              Icons.attach_file_rounded,
+                              color: Colors.grey,
+                              size: 22,
+                            ),
+                            onPressed: widget.onAttach,
+                            constraints: const BoxConstraints(
+                              minWidth: 36,
+                              minHeight: 36,
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
                       ],
                     ),
                   ),
@@ -1367,6 +1404,10 @@ class _ReplyBar extends StatelessWidget {
                 Text(
                   message.type == MessageType.voice
                       ? '🎤 Audio'
+                      : message.type == MessageType.image
+                      ? '🖼️ Imagen'
+                      : message.type == MessageType.video
+                      ? '🎬 Video'
                       : message.content,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
