@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:biux/features/chat/presentation/widgets/media_fullscreen_viewer.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -152,6 +153,8 @@ class MessageBubble extends StatelessWidget {
                         ? '🎤 Mensaje de voz'
                         : message.type == MessageType.image
                         ? '🖼️ Imagen'
+                        : message.type == MessageType.video
+                        ? '🎬 Video'
                         : message.content.length > 40
                         ? message.content.substring(0, 40) + '...'
                         : message.content,
@@ -665,6 +668,8 @@ class _BubbleContent extends StatelessWidget {
         );
       case MessageType.image:
         return _ImageMessage(url: message.mediaUrl ?? '');
+      case MessageType.video:
+        return _VideoMessage(url: message.mediaUrl ?? '');
       case MessageType.location:
         return _LocationMessage(
           lat: message.locationLat ?? 0,
@@ -857,9 +862,82 @@ class _ImageMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.network(url, width: 200, height: 150, fit: BoxFit.cover),
+    final heroTag = 'chat_img_$url';
+    return GestureDetector(
+      onTap: () =>
+          MediaFullscreenViewer.open(context, url: url, heroTag: heroTag),
+      child: Hero(
+        tag: heroTag,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            url,
+            width: 200,
+            height: 150,
+            fit: BoxFit.cover,
+            cacheWidth: 400,
+            loadingBuilder: (_, child, progress) {
+              if (progress == null) return child;
+              return SizedBox(
+                width: 200,
+                height: 150,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    value: progress.expectedTotalBytes != null
+                        ? progress.cumulativeBytesLoaded /
+                              progress.expectedTotalBytes!
+                        : null,
+                    color: Colors.white70,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VideoMessage extends StatelessWidget {
+  final String url;
+  const _VideoMessage({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    // Thumbnail estático — no inicializa VideoPlayerController en la burbuja
+    // para evitar lag. Fullscreen se abre al tocar.
+    return GestureDetector(
+      onTap: () => MediaFullscreenViewer.open(context, url: url, isVideo: true),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: 220,
+          height: 160,
+          color: Colors.black87,
+          child: const Stack(
+            alignment: Alignment.center,
+            children: [
+              Icon(Icons.videocam_rounded, size: 48, color: Colors.white38),
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.play_circle_fill,
+                      color: Colors.white70,
+                      size: 32,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

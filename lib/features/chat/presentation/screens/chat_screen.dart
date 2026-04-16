@@ -6,11 +6,17 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:biux/features/chat/presentation/widgets/chat_input.dart';
+import 'package:biux/features/chat/presentation/widgets/media_preview_sheet.dart';
+import 'package:biux/features/chat/presentation/widgets/attach_menu_popup.dart';
+import 'package:biux/features/chat/presentation/widgets/camera_mode_picker.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -176,21 +182,249 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _pickAndSendImage() async {
+  // ── Cámara: pantalla con toggle Foto/Video ────────────────────────────
+  Future<void> _openCamera() async {
+    final file = await CameraModePicker.open(context);
+    if (file == null || !mounted) return;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final confirmed = await MediaPreviewSheet.show(
+      context,
+      files: [file],
+      isDark: isDark,
+    );
+    if (confirmed == null || confirmed.isEmpty || !mounted) return;
+    await _sendMediaFiles(confirmed);
+  }
+
+  // ── Menú clip/adjuntos ──────────────────────────────────────────────────
+  void _showAttachMenu() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    AttachMenuPopup.show(
+      context,
+      isDark: isDark,
+      items: [
+        AttachMenuItem(
+          icon: Icons.photo,
+          label: 'Galería',
+          color: const Color(0xFF7C4DFF),
+          onTap: _pickFromGallery,
+        ),
+        AttachMenuItem(
+          icon: Icons.camera_alt,
+          label: 'Cámara',
+          color: const Color(0xFFE91E63),
+          onTap: _openCameraFromMenu,
+        ),
+        AttachMenuItem(
+          icon: Icons.headphones,
+          label: 'Audio',
+          color: const Color(0xFFFF6D00),
+          onTap: _pickAudio,
+        ),
+        AttachMenuItem(
+          icon: Icons.location_on,
+          label: 'Ubicación',
+          color: const Color(0xFF00C853),
+          onTap: _shareLocation,
+        ),
+        AttachMenuItem(
+          icon: Icons.poll,
+          label: 'Encuesta',
+          color: const Color(0xFF1E8BC3),
+          onTap: _createPoll,
+        ),
+      ],
+    );
+  }
+
+  // ── Galería: fotos y videos múltiples ────────────────────────────────────
+  Future<void> _pickFromGallery() async {
+    final status = await Permission.photos.request();
+    if (!status.isGranted && !status.isLimited) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Se necesita permiso para acceder a la galería'),
+          ),
+        );
+      }
+      return;
+    }
+    if (!mounted) return;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final picked = await _imagePicker.pickMultipleMedia();
+    final files = picked.map((x) => File(x.path)).toList();
+    if (files.isEmpty || !mounted) return;
+    final confirmed = await MediaPreviewSheet.show(
+      context,
+      files: files,
+      isDark: isDark,
+    );
+    if (confirmed == null || confirmed.isEmpty || !mounted) return;
+    await _sendMediaFiles(confirmed);
+  }
+
+  // ── Cámara desde menú: misma pantalla con toggle ──────────────────────
+  Future<void> _openCameraFromMenu() async {
+    final file = await CameraModePicker.open(context);
+    if (file == null || !mounted) return;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final confirmed = await MediaPreviewSheet.show(
+      context,
+      files: [file],
+      isDark: isDark,
+    );
+    if (confirmed == null || confirmed.isEmpty || !mounted) return;
+    await _sendMediaFiles(confirmed);
+  }
+
+  // ── Audio: abre gestor de archivos filtrado a audio ────────────────────
+  Future<void> _pickAudio() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.audio,
+      allowMultiple: false,
+    );
+    if (result == null || result.files.isEmpty || !mounted) return;
+    final path = result.files.single.path;
+    if (path == null) return;
+    // Enviar como archivo de audio
     final userProvider = context.read<UserProvider>();
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
         : (currentUser?.displayName ?? 'Usuario');
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
-    final picked = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 75,
-    );
-    if (picked == null || !mounted) return;
-    await _provider.sendImageMessage(
+    await _provider.sendMediaFiles(
       chatId: widget.chat.id,
-      imageFile: File(picked.path),
+      files: [File(path)],
+      senderName: myName,
+      senderAvatar: myPhoto,
+    );
+  }
+
+  // ── Ubicación: compartir ubicación ──────────────────────────────────────
+  Future<void> _shareLocation() async {
+    if (!mounted) return;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        final bg = isDark ? const Color(0xFF1A2B3C) : Colors.white;
+        final textColor = isDark ? Colors.white : Colors.black87;
+        return Container(
+          margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 6),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.my_location, color: textColor),
+                title: Text(
+                  'Ubicación en tiempo real',
+                  style: TextStyle(color: textColor),
+                ),
+                subtitle: Text(
+                  'Comparte tu ubicación actual',
+                  style: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.black38,
+                    fontSize: 12,
+                  ),
+                ),
+                onTap: () => Navigator.pop(context, 'realtime'),
+              ),
+              ListTile(
+                leading: Icon(Icons.place, color: textColor),
+                title: Text(
+                  'Lugar cercano',
+                  style: TextStyle(color: textColor),
+                ),
+                subtitle: Text(
+                  'Envía una ubicación aproximada',
+                  style: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.black38,
+                    fontSize: 12,
+                  ),
+                ),
+                onTap: () => Navigator.pop(context, 'nearby'),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+    if (choice == null || !mounted) return;
+    // Enviar ubicación actual como mensaje
+    final locStatus = await Permission.location.request();
+    if (!locStatus.isGranted) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Se necesita permiso de ubicación')),
+        );
+      }
+      return;
+    }
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
+      if (!mounted) return;
+      final userProvider = context.read<UserProvider>();
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final myName = userProvider.user?.name?.isNotEmpty == true
+          ? userProvider.user!.name!
+          : (currentUser?.displayName ?? 'Usuario');
+      final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
+      await _provider.sendLocationMessage(
+        chatId: widget.chat.id,
+        lat: pos.latitude,
+        lng: pos.longitude,
+        senderName: myName,
+        senderAvatar: myPhoto,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo obtener la ubicación')),
+        );
+      }
+    }
+  }
+
+  // ── Encuesta: placeholder ───────────────────────────────────────────────
+  void _createPoll() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Encuestas próximamente')));
+  }
+
+  Future<void> _sendMediaFiles(List<File> files) async {
+    final userProvider = context.read<UserProvider>();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final myName = userProvider.user?.name?.isNotEmpty == true
+        ? userProvider.user!.name!
+        : (currentUser?.displayName ?? 'Usuario');
+    final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
+    await _provider.sendMediaFiles(
+      chatId: widget.chat.id,
+      files: files,
       senderName: myName,
       senderAvatar: myPhoto,
     );
@@ -456,11 +690,6 @@ class _ChatScreenState extends State<ChatScreen> {
               tooltip: 'Buscar',
               onPressed: () => setState(() => _searching = true),
             ),
-            IconButton(
-              icon: const Icon(Icons.photo_outlined, color: Colors.white70),
-              tooltip: 'Enviar imagen',
-              onPressed: _pickAndSendImage,
-            ),
           ],
         ],
       ),
@@ -662,6 +891,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 onCancelReply: () => provider.setReplyingTo(null),
                 onTypingChanged: (typing) => provider.onTypingChanged(typing),
+                onCamera: _openCamera,
+                onAttach: _showAttachMenu,
                 isDark: isDark,
               ),
             ],
