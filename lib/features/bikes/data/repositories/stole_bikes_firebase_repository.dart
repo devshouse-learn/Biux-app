@@ -11,7 +11,9 @@ class StoleBikesFirebaseRepository extends StoleBikesRepositoryAbstract {
   Future<List<StoleBikes>> getBike() async {
     try {
       final response = await firestore.collection(collection).get();
-      return response.docs.map((doc) => StoleBikes.fromjson(doc.data())).toList();
+      return response.docs
+          .map((doc) => StoleBikes.fromjson(doc.data()))
+          .toList();
     } catch (e) {
       return [];
     }

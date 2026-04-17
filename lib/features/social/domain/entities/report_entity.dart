@@ -1,4 +1,3 @@
-
 class UserReportEntity {
   final String id;
   final String reporterId;

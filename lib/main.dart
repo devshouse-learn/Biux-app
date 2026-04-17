@@ -159,7 +159,11 @@ void main() async {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline, color: Colors.white70, size: 64),
+                const Icon(
+                  Icons.error_outline,
+                  color: Colors.white70,
+                  size: 64,
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   'Algo salió mal',

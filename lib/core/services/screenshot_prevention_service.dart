@@ -29,11 +29,20 @@ class ScreenshotPreventionService {
     if (kIsWeb) return;
 
     try {
-      final result = await _channel.invokeMethod<bool>('enableScreenshotPrevention');
+      final result = await _channel.invokeMethod<bool>(
+        'enableScreenshotPrevention',
+      );
       _isEnabled = result ?? false;
-      AppLogger.info('Screenshot prevention enabled: $_isEnabled', tag: 'Screenshot');
+      AppLogger.info(
+        'Screenshot prevention enabled: $_isEnabled',
+        tag: 'Screenshot',
+      );
     } catch (e) {
-      AppLogger.error('Error enabling screenshot prevention', error: e, tag: 'Screenshot');
+      AppLogger.error(
+        'Error enabling screenshot prevention',
+        error: e,
+        tag: 'Screenshot',
+      );
     }
   }
 
@@ -43,11 +52,17 @@ class ScreenshotPreventionService {
     if (kIsWeb) return;
 
     try {
-      final result = await _channel.invokeMethod<bool>('disableScreenshotPrevention');
+      final result = await _channel.invokeMethod<bool>(
+        'disableScreenshotPrevention',
+      );
       _isEnabled = !(result ?? false);
       AppLogger.info('Screenshot prevention disabled', tag: 'Screenshot');
     } catch (e) {
-      AppLogger.error('Error disabling screenshot prevention', error: e, tag: 'Screenshot');
+      AppLogger.error(
+        'Error disabling screenshot prevention',
+        error: e,
+        tag: 'Screenshot',
+      );
     }
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/features/achievements/domain/entities/achievement_entity.dart';
@@ -7,7 +6,6 @@ import 'package:biux/features/achievements/data/datasources/achievements_sync_se
 
 class AchievementsProvider with ChangeNotifier {
   final AchievementsDatasource _datasource = AchievementsDatasource();
-
 
   List<AchievementEntity> _achievements = [];
   bool _isLoading = false;
@@ -143,6 +141,7 @@ class AchievementsProvider with ChangeNotifier {
     _isSyncing = false;
     notifyListeners();
   }
+
   /// Fuerza sincronización completa — llamado desde UI
   Future<void> forceSync(String userId) async {
     _isSyncing = true;
@@ -176,5 +175,4 @@ class AchievementsProvider with ChangeNotifier {
       }
     }
   }
-
 }

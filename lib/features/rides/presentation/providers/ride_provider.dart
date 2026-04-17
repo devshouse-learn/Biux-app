@@ -740,6 +740,7 @@ class RideProvider extends ChangeNotifier {
       return null;
     }
   }
+
   // Filtros
   String _filterDifficulty = 'all';
   String _searchQuery = '';
@@ -774,14 +775,14 @@ class RideProvider extends ChangeNotifier {
   List<dynamic> get filteredRides {
     var list = rides.toList();
     if (_filterDifficulty != 'all') {
-      list = list.where((r) =>
-        r.difficulty.toString().contains(_filterDifficulty)
-      ).toList();
+      list = list
+          .where((r) => r.difficulty.toString().contains(_filterDifficulty))
+          .toList();
     }
     if (_searchQuery.isNotEmpty) {
-      list = list.where((r) =>
-        r.name.toLowerCase().contains(_searchQuery)
-      ).toList();
+      list = list
+          .where((r) => r.name.toLowerCase().contains(_searchQuery))
+          .toList();
     }
     if (_filterFromDate != null) {
       list = list.where((r) {
@@ -804,5 +805,4 @@ class RideProvider extends ChangeNotifier {
     _lastDocument = null;
     _hasMoreRides = true;
   }
-
 }

@@ -102,9 +102,7 @@ class RoadReportsDatasource {
 
   Future<void> dismissReport(String id) async {
     try {
-      await _fs.collection('road_reports').doc(id).update({
-        'isActive': false,
-      });
+      await _fs.collection('road_reports').doc(id).update({'isActive': false});
     } catch (e) {
       debugPrint('Error desactivando reporte: $e');
       rethrow;

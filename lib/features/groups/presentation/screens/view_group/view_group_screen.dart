@@ -49,7 +49,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       _tabController?.dispose();
 
       // Ahora siempre son 4 tabs: Info, Miembros, Rodadas, y Solicitudes (solo para admin)
-      final tabCount = isAdmin ? 5 : 4;
+      final tabCount = 4;
       _tabController = TabController(length: tabCount, vsync: this);
       _lastAdminStatus = isAdmin;
     }
@@ -165,35 +165,24 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                   delegate: _SliverTabBarDelegate(
                     TabBar(
                       controller: _tabController,
+                      isScrollable: false,
                       indicatorColor: ColorTokens.secondary50,
+                      indicatorSize: TabBarIndicatorSize.tab,
                       labelColor: ColorTokens.primary30,
                       unselectedLabelColor: ColorTokens.neutral60,
                       labelStyle: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                       ),
-                      unselectedLabelStyle: const TextStyle(fontSize: 11),
+                      unselectedLabelStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                       tabs: [
                         Tab(text: l.t('info')),
-                        Tab(text: '${l.t('members')} (${group.memberCount})'),
+                        Tab(text: l.t('members')),
                         Tab(text: l.t('rides')),
-                        Tab(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.chat_bubble_outline, size: 16),
-                              const SizedBox(width: 4),
-                              Text(l.t('group_chat')),
-                            ],
-                          ),
-                        ),
-                        if (isAdmin)
-                          Tab(
-                            icon: const Icon(Icons.pending_actions, size: 18),
-                            text: group.pendingRequestCount > 0
-                                ? '${group.pendingRequestCount}'
-                                : 'Solicitudes',
-                          ),
+                        Tab(text: l.t('chat')),
                       ],
                     ),
                   ),
@@ -207,7 +196,6 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                 _buildMembersTab(group, provider),
                 _buildRidesTab(group, provider),
                 _buildGroupChatTab(group),
-                if (isAdmin) _buildRequestsTab(group, provider),
               ],
             ),
           );
@@ -218,15 +206,23 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
 
   Future<String> _getOrCreateGroupChat(GroupModel group) async {
     if (_groupChatId != null) return _groupChatId!;
-    setState(() => _loadingChat = true);
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _loadingChat = true);
+      });
+    }
     final chatProvider = context.read<ChatProvider>();
-    final existing = chatProvider.chats.where(
-      (c) => c.type == ChatType.group && c.name == group.name,
-    ).firstOrNull;
+    final existing = chatProvider.chats
+        .where((c) => c.type == ChatType.group && c.name == group.name)
+        .firstOrNull;
     if (existing != null) {
       _groupChatId = existing.id;
       chatProvider.openChat(existing.id);
-      setState(() => _loadingChat = false);
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() => _loadingChat = false);
+        });
+      }
       return existing.id;
     }
     final chatId = await chatProvider.createGroupChat(
@@ -236,7 +232,11 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
     chatProvider.openChat(chatId);
     _groupChatId = chatId;
-    setState(() => _loadingChat = false);
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _loadingChat = false);
+      });
+    }
     return chatId;
   }
 
@@ -279,7 +279,10 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
               children: [
                 Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
                 const SizedBox(height: 12),
-                Text(l.t('chat_error'), style: TextStyle(color: Colors.grey[600])),
+                Text(
+                  l.t('chat_error'),
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => setState(() => _groupChatId = null),
@@ -299,7 +302,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
           updatedAt: DateTime.now(),
           unreadCount: const {},
         );
-        return ChatScreen(chat: chat);
+        return ChatScreen(chat: chat, embedded: true);
       },
     );
   }
@@ -393,85 +396,188 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
       future: provider.getMembersWithNames(group),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text(l.t('no_members')));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.people_outline,
+                  size: 48,
+                  color: ColorTokens.neutral60.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  l.t('no_members'),
+                  style: TextStyle(color: ColorTokens.neutral60),
+                ),
+              ],
+            ),
+          );
         }
 
         final members = snapshot.data!;
-        return ListView.builder(
-          padding: EdgeInsets.all(16),
-          itemCount: members.length,
-          itemBuilder: (context, index) {
-            final member = members[index];
-            return Card(
-              margin: EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: member['userPhoto'] != null
-                    ? ClipOval(
-                        child: OptimizedNetworkImage(
-                          imageUrl: member['userPhoto'],
-                          width: 40,
-                          height: 40,
-                          imageType: 'avatar',
-                          fit: BoxFit.cover,
-                          errorWidget: CircleAvatar(child: Icon(Icons.person)),
-                        ),
-                      )
-                    : CircleAvatar(child: Icon(Icons.person)),
-                title: Text(
-                  (member['userName'] as String).isNotEmpty
-                      ? member['userName']
-                      : l.t('group_user_no_name'),
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                subtitle: Text(l.t('group_member')),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (member['isAdmin'])
-                      Chip(
-                        label: Text(l.t('admin')),
-                        backgroundColor: ColorTokens.success50.withValues(
-                          alpha: 0.1,
-                        ),
-                        labelStyle: TextStyle(color: ColorTokens.success50),
-                      ),
-                    SizedBox(width: 8),
-                    Icon(Icons.chevron_right, color: ColorTokens.neutral60),
-                  ],
-                ),
-                onTap: () {
-                  // Debug de datos del miembro
-                  debugPrint('=== MIEMBRO CLICKEADO ===');
-                  debugPrint('Datos completos del miembro: $member');
-                  debugPrint('User ID: ${member['userId']}');
-                  debugPrint('User Name: ${member['userName']}');
-                  debugPrint('User Photo: ${member['userPhoto']}');
-                  debugPrint('Is Admin: ${member['isAdmin']}');
-                  debugPrint('========================');
+        // Ordenar: admins primero
+        members.sort((a, b) {
+          if (a['isAdmin'] == true && b['isAdmin'] != true) return -1;
+          if (a['isAdmin'] != true && b['isAdmin'] == true) return 1;
+          return (a['userName'] as String).compareTo(b['userName'] as String);
+        });
 
-                  // Verificar que el userId no esté vacío
-                  final userId = member['userId'];
-                  if (userId != null && userId.toString().isNotEmpty) {
-                    debugPrint('🔄 Navegando al perfil: /user-profile/$userId');
-                    context.push('/user-profile/$userId');
-                  } else {
-                    debugPrint('❌ Error: userId está vacío o es null');
-                    if (context.mounted)
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l.t('error_user_id_not_available')),
-                          backgroundColor: ColorTokens.error50,
+        return Column(
+          children: [
+            // Header con conteo
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Row(
+                children: [
+                  Icon(Icons.people, size: 16, color: ColorTokens.primary30),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${members.length} ${l.t('members')}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+                itemCount: members.length,
+                itemBuilder: (context, index) {
+                  final member = members[index];
+                  final isAdmin = member['isAdmin'] == true;
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    elevation: isAdmin ? 2 : 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: isAdmin
+                          ? BorderSide(
+                              color: ColorTokens.warning50.withValues(
+                                alpha: 0.3,
+                              ),
+                              width: 1,
+                            )
+                          : BorderSide.none,
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      leading: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: isAdmin
+                              ? Border.all(
+                                  color: ColorTokens.warning50,
+                                  width: 2,
+                                )
+                              : null,
                         ),
-                      );
-                  }
+                        child: member['userPhoto'] != null
+                            ? ClipOval(
+                                child: OptimizedNetworkImage(
+                                  imageUrl: member['userPhoto'],
+                                  width: 44,
+                                  height: 44,
+                                  imageType: 'avatar',
+                                  fit: BoxFit.cover,
+                                  errorWidget: CircleAvatar(
+                                    radius: 22,
+                                    child: const Icon(Icons.person),
+                                  ),
+                                ),
+                              )
+                            : const CircleAvatar(
+                                radius: 22,
+                                child: Icon(Icons.person),
+                              ),
+                      ),
+                      title: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              (member['userName'] as String).isNotEmpty
+                                  ? member['userName']
+                                  : l.t('group_user_no_name'),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          if (isAdmin)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: ColorTokens.warning50.withValues(
+                                  alpha: 0.12,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                'Admin',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: ColorTokens.warning50,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        size: 20,
+                        color: ColorTokens.neutral60,
+                      ),
+                      onTap: () {
+                        // Debug de datos del miembro
+                        debugPrint('=== MIEMBRO CLICKEADO ===');
+                        debugPrint('Datos completos del miembro: $member');
+                        debugPrint('User ID: ${member['userId']}');
+                        debugPrint('User Name: ${member['userName']}');
+                        debugPrint('User Photo: ${member['userPhoto']}');
+                        debugPrint('Is Admin: ${member['isAdmin']}');
+                        debugPrint('========================');
+
+                        // Verificar que el userId no esté vacío
+                        final userId = member['userId'];
+                        if (userId != null && userId.toString().isNotEmpty) {
+                          debugPrint(
+                            '🔄 Navegando al perfil: /user-profile/$userId',
+                          );
+                          context.push('/user-profile/$userId');
+                        } else {
+                          debugPrint('❌ Error: userId está vacío o es null');
+                          if (context.mounted)
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  l.t('error_user_id_not_available'),
+                                ),
+                                backgroundColor: ColorTokens.error50,
+                              ),
+                            );
+                        }
+                      },
+                    ),
+                  );
                 },
               ),
-            );
-          },
+            ),
+          ],
         );
       },
     );
@@ -716,6 +822,86 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
     );
   }
 
+  void _showRequestsBottomSheet(GroupModel group, GroupProvider provider) {
+    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Column(
+              children: [
+                // Handle bar
+                Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 8),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Title
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.pending_actions, color: ColorTokens.primary30),
+                      const SizedBox(width: 10),
+                      Text(
+                        l.t('pending_requests'),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const Spacer(),
+                      if (group.pendingRequestCount > 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: ColorTokens.primary30.withValues(
+                              alpha: 0.15,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${group.pendingRequestCount}',
+                            style: TextStyle(
+                              color: ColorTokens.primary30,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                // Content
+                Expanded(child: _buildRequestsTab(group, provider)),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   List<Widget> _buildAppBarActions(GroupModel group, GroupProvider provider) {
     final l = Provider.of<LocaleNotifier>(context);
     final userStatus = provider.getUserStatus(group);
@@ -737,9 +923,33 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
               onSelected: (value) {
                 if (value == 'delete') {
                   _showDeleteGroupDialog(group, provider);
+                } else if (value == 'requests') {
+                  _showRequestsBottomSheet(group, provider);
+                } else if (value == 'rides') {
+                  context.push('/rides/create/${group.id}');
+                } else if (value == 'rides') {
+                  context.push('/rides/create/${group.id}');
                 }
               },
               itemBuilder: (BuildContext context) => [
+                PopupMenuItem<String>(
+                  value: 'requests',
+                  child: Row(
+                    children: [
+                      Badge(
+                        isLabelVisible: group.pendingRequestCount > 0,
+                        label: Text('${group.pendingRequestCount}'),
+                        child: Icon(
+                          Icons.pending_actions,
+                          color: ColorTokens.primary30,
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Text(l.t('pending_requests')),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
                 PopupMenuItem<String>(
                   value: 'delete',
                   child: Row(
@@ -747,7 +957,7 @@ class _ViewGroupScreenState extends State<ViewGroupScreen>
                       Icon(Icons.delete_forever, color: ColorTokens.error50),
                       SizedBox(width: 8),
                       Text(
-                        'Eliminar grupo',
+                        'Borrar grupo',
                         style: TextStyle(color: ColorTokens.error50),
                       ),
                     ],

@@ -81,7 +81,9 @@ class DirectionsService {
           final leg = route['legs'][0];
           final polylinePoints = route['overview_polyline']['points'];
 
-          debugPrint('✅ Route found! Polyline length: ${polylinePoints.length}');
+          debugPrint(
+            '✅ Route found! Polyline length: ${polylinePoints.length}',
+          );
           debugPrint(
             '📏 Distance: ${leg['distance']['text']}, Duration: ${leg['duration']['text']}',
           );

@@ -122,7 +122,6 @@ class ChatProvider extends ChangeNotifier {
     );
   }
 
-
   void onTypingChanged(bool typing) {
     if (_activeChatId == null) return;
     _typingTimer?.cancel();
@@ -223,7 +222,6 @@ class ChatProvider extends ChangeNotifier {
     );
     await _ds.sendMessage(chatId: chatId, message: message);
   }
-
 
   Future<void> editMessage({
     required String chatId,

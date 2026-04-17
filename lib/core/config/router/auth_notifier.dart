@@ -28,7 +28,9 @@ class AuthNotifier extends ChangeNotifier {
         // Solo en mobile actualizar el estado de autenticación
         if (_user != user) {
           _user = user;
-          debugPrint('🔄 Estado de autenticación cambió: ${user?.uid ?? "null"}');
+          debugPrint(
+            '🔄 Estado de autenticación cambió: ${user?.uid ?? "null"}',
+          );
           notifyListeners();
         }
       }

@@ -168,6 +168,8 @@ class AttendeesFirestoreAdapter {
       await ref.child(userId).remove();
     }
 
-    debugPrint('🧹 Limpiados $toRemove.length asistentes cancelados de $rideId');
+    debugPrint(
+      '🧹 Limpiados $toRemove.length asistentes cancelados de $rideId',
+    );
   }
 }

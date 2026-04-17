@@ -36,34 +36,36 @@ class AdvertisementModel {
       advertiserName: json['advertiserName'] as String?,
       createdAt: json['createdAt'] is DateTime
           ? json['createdAt'] as DateTime
-          : DateTime.parse(json['createdAt'] as String? ?? DateTime.now().toIso8601String()),
+          : DateTime.parse(
+              json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
+            ),
       views: json['views'] as int? ?? 0,
     );
   }
 
   /// Serializar a JSON
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'description': description,
-        'imageUrl': imageUrl,
-        'callToActionText': callToActionText,
-        'callToActionUrl': callToActionUrl,
-        'advertiserName': advertiserName,
-        'createdAt': createdAt.toIso8601String(),
-        'views': views,
-      };
+    'id': id,
+    'title': title,
+    'description': description,
+    'imageUrl': imageUrl,
+    'callToActionText': callToActionText,
+    'callToActionUrl': callToActionUrl,
+    'advertiserName': advertiserName,
+    'createdAt': createdAt.toIso8601String(),
+    'views': views,
+  };
 
   /// Convertir a entidad
   AdvertisementEntity toEntity() => AdvertisementEntity(
-        id: id,
-        title: title,
-        description: description,
-        imageUrl: imageUrl,
-        callToActionText: callToActionText,
-        callToActionUrl: callToActionUrl,
-        advertiserName: advertiserName,
-        createdAt: createdAt,
-        views: views,
-      );
+    id: id,
+    title: title,
+    description: description,
+    imageUrl: imageUrl,
+    callToActionText: callToActionText,
+    callToActionUrl: callToActionUrl,
+    advertiserName: advertiserName,
+    createdAt: createdAt,
+    views: views,
+  );
 }

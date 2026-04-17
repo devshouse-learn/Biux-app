@@ -179,6 +179,7 @@ class CyclingStatsDatasource {
     }
     return stats;
   }
+
   /// Obtiene el historial de tracks del usuario para heatmap
   Future<List<Map<String, dynamic>>> getUserTracks(String userId) async {
     try {
@@ -193,5 +194,4 @@ class CyclingStatsDatasource {
       return [];
     }
   }
-
 }

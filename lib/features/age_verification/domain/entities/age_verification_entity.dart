@@ -26,6 +26,10 @@ class AgeVerificationEntity {
     } else {
       group = AgeGroup.adult;
     }
-    return AgeVerificationEntity(birthDate: birthDate, ageGroup: group, age: age);
+    return AgeVerificationEntity(
+      birthDate: birthDate,
+      ageGroup: group,
+      age: age,
+    );
   }
 }

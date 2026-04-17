@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -11,8 +10,9 @@ class ProfilePrivacyDatasource {
     final doc = await _db.collection('users').doc(uid).get();
     final raw = doc.data()?['profileVisibility'] ?? 'public';
     return ProfileVisibility.values.firstWhere(
-        (v) => v.name == raw,
-        orElse: () => ProfileVisibility.public);
+      (v) => v.name == raw,
+      orElse: () => ProfileVisibility.public,
+    );
   }
 
   static Future<void> setVisibility(ProfileVisibility visibility) async {
@@ -24,7 +24,9 @@ class ProfilePrivacyDatasource {
   }
 
   static Future<bool> canViewProfile(
-      String viewerUid, String profileUid) async {
+    String viewerUid,
+    String profileUid,
+  ) async {
     if (viewerUid == profileUid) return true;
     final visibility = await getVisibility(profileUid);
     if (visibility == ProfileVisibility.public) return true;
@@ -52,7 +54,7 @@ class ProfilePrivacyDatasource {
         'showStats': showStats,
         'showGroups': showGroups,
         'showFollowers': showFollowers,
-      }
+      },
     });
   }
 }

@@ -62,7 +62,9 @@ class BikeRepositoryImpl implements BikeRepository {
           .limit(20)
           .get();
 
-      debugPrint('📦 Total de bicis en Firestore: ${allBikesSnapshot.docs.length}');
+      debugPrint(
+        '📦 Total de bicis en Firestore: ${allBikesSnapshot.docs.length}',
+      );
 
       int placeholderCount = 0;
       for (var doc in allBikesSnapshot.docs) {
@@ -79,7 +81,9 @@ class BikeRepositoryImpl implements BikeRepository {
         debugPrint(
           '⚠️ TOTAL de bicis con placeholder "current-user-id": $placeholderCount',
         );
-        debugPrint('💡 Estas bicis necesitan actualizar su ownerId a: "$userId"');
+        debugPrint(
+          '💡 Estas bicis necesitan actualizar su ownerId a: "$userId"',
+        );
       }
 
       return querySnapshot.docs
@@ -625,7 +629,9 @@ class BikeRepositoryImpl implements BikeRepository {
         debugPrint('✅ Actualizada bici ${doc.id} -> ownerId: "$correctUserId"');
       }
 
-      debugPrint('🎉 Corrección completada: $updatedCount bicicletas actualizadas');
+      debugPrint(
+        '🎉 Corrección completada: $updatedCount bicicletas actualizadas',
+      );
       return updatedCount;
     } catch (e) {
       debugPrint('❌ Error corrigiendo ownerIds: $e');

@@ -15,8 +15,9 @@ import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatEntity chat;
+  final bool embedded;
 
-  const ChatScreen({super.key, required this.chat});
+  const ChatScreen({super.key, required this.chat, this.embedded = false});
 
   factory ChatScreen.fromId({required String chatId}) {
     return ChatScreen(
@@ -80,8 +81,8 @@ class _ChatScreenState extends State<ChatScreen> {
         .ds
         .getPinnedMessage(widget.chat.id)
         .listen((msg) {
-      if (mounted) setState(() => _pinnedMessage = msg);
-    });
+          if (mounted) setState(() => _pinnedMessage = msg);
+        });
   }
 
   Future<void> _loadOtherUserProfile() async {
@@ -94,12 +95,15 @@ class _ChatScreenState extends State<ChatScreen> {
             .doc(widget.chat.id)
             .get();
         if (chatDoc.exists) {
-          participants =
-              List<String>.from(chatDoc.data()?['participantIds'] ?? []);
+          participants = List<String>.from(
+            chatDoc.data()?['participantIds'] ?? [],
+          );
         }
       }
-      final otherId =
-          participants.firstWhere((id) => id != myUid, orElse: () => '');
+      final otherId = participants.firstWhere(
+        (id) => id != myUid,
+        orElse: () => '',
+      );
       if (otherId.isEmpty) {
         if (mounted) setState(() => _loadingProfile = false);
         return;
@@ -112,7 +116,8 @@ class _ChatScreenState extends State<ChatScreen> {
       if (doc.exists && mounted) {
         final data = doc.data()!;
         setState(() {
-          _otherName = data['fullName'] ??
+          _otherName =
+              data['fullName'] ??
               data['name'] ??
               data['userName'] ??
               data['username'] ??
@@ -130,15 +135,15 @@ class _ChatScreenState extends State<ChatScreen> {
           .doc(otherId)
           .snapshots()
           .listen((snap) {
-        if (!mounted || !snap.exists) return;
-        final data = snap.data()!;
-        final online = data['isOnline'] ?? false;
-        final lastSeenTs = data['lastSeen'] as Timestamp?;
-        setState(() {
-          _isOnline = online;
-          _lastSeen = lastSeenTs?.toDate();
-        });
-      });
+            if (!mounted || !snap.exists) return;
+            final data = snap.data()!;
+            final online = data['isOnline'] ?? false;
+            final lastSeenTs = data['lastSeen'] as Timestamp?;
+            setState(() {
+              _isOnline = online;
+              _lastSeen = lastSeenTs?.toDate();
+            });
+          });
     } catch (e) {
       if (mounted) setState(() => _loadingProfile = false);
     }
@@ -179,7 +184,9 @@ class _ChatScreenState extends State<ChatScreen> {
         : (currentUser?.displayName ?? 'Usuario');
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     final picked = await _imagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 75);
+      source: ImageSource.gallery,
+      imageQuality: 75,
+    );
     if (picked == null || !mounted) return;
     await _provider.sendImageMessage(
       chatId: widget.chat.id,
@@ -193,11 +200,10 @@ class _ChatScreenState extends State<ChatScreen> {
     final provider = context.read<ChatProvider>();
     final userProvider = context.read<UserProvider>();
     final currentUser = FirebaseAuth.instance.currentUser;
-    final myName = userProvider.user?.name ?? currentUser?.displayName ?? 'Usuario';
+    final myName =
+        userProvider.user?.name ?? currentUser?.displayName ?? 'Usuario';
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
-    final chats = provider.chats
-        .where((c) => c.id != widget.chat.id)
-        .toList();
+    final chats = provider.chats.where((c) => c.id != widget.chat.id).toList();
 
     showModalBottomSheet(
       context: context,
@@ -224,46 +230,51 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               const Padding(
                 padding: EdgeInsets.all(12),
-                child: Text('Reenviar a...',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Reenviar a...',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
               if (chats.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Text('No hay otros chats disponibles',
-                      style: TextStyle(color: Colors.grey)),
+                  child: Text(
+                    'No hay otros chats disponibles',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 )
               else
-                ...chats.map((c) => ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: c.photoUrl != null
-                            ? NetworkImage(c.photoUrl!)
-                            : null,
-                        child: c.photoUrl == null
-                            ? Text(c.name.isNotEmpty
-                                ? c.name[0].toUpperCase()
-                                : '?')
-                            : null,
-                      ),
-                      title: Text(c.name),
-                      onTap: () {
-                        Navigator.pop(context);
-                        provider.forwardMessage(
-                          message: message,
-                          targetChatId: c.id,
-                          senderName: myName,
-                          senderAvatar: myPhoto,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Mensaje reenviado a ${c.name}'),
-                            behavior: SnackBarBehavior.floating,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                    )),
+                ...chats.map(
+                  (c) => ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: c.photoUrl != null
+                          ? NetworkImage(c.photoUrl!)
+                          : null,
+                      child: c.photoUrl == null
+                          ? Text(
+                              c.name.isNotEmpty ? c.name[0].toUpperCase() : '?',
+                            )
+                          : null,
+                    ),
+                    title: Text(c.name),
+                    onTap: () {
+                      Navigator.pop(context);
+                      provider.forwardMessage(
+                        message: message,
+                        targetChatId: c.id,
+                        senderName: myName,
+                        senderAvatar: myPhoto,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Mensaje reenviado a ${c.name}'),
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               const SizedBox(height: 8),
             ],
           ),
@@ -294,8 +305,19 @@ class _ChatScreenState extends State<ChatScreen> {
     if (date == today) return 'Hoy';
     if (date == yesterday) return 'Ayer';
     const months = [
-      '', 'ene', 'feb', 'mar', 'abr', 'may', 'jun',
-      'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
+      '',
+      'ene',
+      'feb',
+      'mar',
+      'abr',
+      'may',
+      'jun',
+      'jul',
+      'ago',
+      'sep',
+      'oct',
+      'nov',
+      'dic',
     ];
     return '${date.day} ${months[date.month]} ${date.year}';
   }
@@ -309,8 +331,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
         : (currentUser?.displayName?.isNotEmpty == true
-            ? currentUser!.displayName!
-            : 'Usuario');
+              ? currentUser!.displayName!
+              : 'Usuario');
     final myPhoto = userProvider.user?.photoUrl?.isNotEmpty == true
         ? userProvider.user!.photoUrl
         : currentUser?.photoURL;
@@ -319,11 +341,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final displayPhoto = _otherPhoto;
 
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade100,
+      backgroundColor: isDark ? const Color(0xFF0D1B2A) : Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor:
-            isDark ? const Color(0xFF0D1B2A) : const Color(0xFF16242D),
+        automaticallyImplyLeading: !widget.embedded,
+        backgroundColor: isDark
+            ? const Color(0xFF0D1B2A)
+            : const Color(0xFF16242D),
         foregroundColor: Colors.white,
         title: _searching
             ? TextField(
@@ -338,70 +361,85 @@ class _ChatScreenState extends State<ChatScreen> {
                 onChanged: (v) => setState(() => _searchQuery = v),
               )
             : _loadingProfile
-                ? const Row(children: [
-                    SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white54),
+            ? const Row(
+                children: [
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white54,
                     ),
-                    SizedBox(width: 10),
-                    Text('Cargando...', style: TextStyle(fontSize: 14)),
-                  ])
-                : Row(children: [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: const Color(0xFF1E8BC3),
-                      backgroundImage: displayPhoto.isNotEmpty
-                          ? NetworkImage(displayPhoto)
-                          : null,
-                      child: displayPhoto.isEmpty
-                          ? Text(
-                              displayName.isNotEmpty
-                                  ? displayName[0].toUpperCase()
-                                  : '?',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          : null,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(displayName,
-                              style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w600),
-                              overflow: TextOverflow.ellipsis),
-                          Consumer<ChatProvider>(
-                            builder: (_, p, __) => AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 200),
-                              child: p.someoneIsTyping
-                                  ? const Text('escribiendo...',
-                                      key: ValueKey('typing'),
-                                      style: TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.greenAccent,
-                                          fontStyle: FontStyle.italic))
-                                  : Text(
-                                      _isOnline
-                                          ? 'En línea'
-                                          : _formatLastSeen(_lastSeen),
-                                      key: const ValueKey('status'),
-                                      style: TextStyle(
-                                          fontSize: 11,
-                                          color: _isOnline
-                                              ? Colors.greenAccent
-                                              : Colors.white60),
-                                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Text('Cargando...', style: TextStyle(fontSize: 14)),
+                ],
+              )
+            : Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: const Color(0xFF1E8BC3),
+                    backgroundImage: displayPhoto.isNotEmpty
+                        ? NetworkImage(displayPhoto)
+                        : null,
+                    child: displayPhoto.isEmpty
+                        ? Text(
+                            displayName.isNotEmpty
+                                ? displayName[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          displayName,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                           ),
-                        ],
-                      ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Consumer<ChatProvider>(
+                          builder: (_, p, __) => AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: p.someoneIsTyping
+                                ? const Text(
+                                    'escribiendo...',
+                                    key: ValueKey('typing'),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.greenAccent,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  )
+                                : Text(
+                                    _isOnline
+                                        ? 'En línea'
+                                        : _formatLastSeen(_lastSeen),
+                                    key: const ValueKey('status'),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: _isOnline
+                                          ? Colors.greenAccent
+                                          : Colors.white60,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ]),
+                  ),
+                ],
+              ),
         actions: [
           if (_searching)
             IconButton(
@@ -433,17 +471,20 @@ class _ChatScreenState extends State<ChatScreen> {
           // Filtrar por búsqueda
           if (_searchQuery.isNotEmpty) {
             messages = messages
-                .where((m) => m.content
-                    .toLowerCase()
-                    .contains(_searchQuery.toLowerCase()))
+                .where(
+                  (m) => m.content.toLowerCase().contains(
+                    _searchQuery.toLowerCase(),
+                  ),
+                )
                 .toList();
           }
 
           // Scroll automático solo cuando llegan mensajes nuevos
           if (messages.length != _lastMessageCount && _searchQuery.isEmpty) {
             _lastMessageCount = messages.length;
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) => _scrollToBottom());
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => _scrollToBottom(),
+            );
           }
 
           final items = _buildItems(messages);
@@ -479,22 +520,24 @@ class _ChatScreenState extends State<ChatScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                                _searchQuery.isNotEmpty
-                                    ? Icons.search_off
-                                    : Icons.chat_bubble_outline,
-                                size: 64,
-                                color: isDark
-                                    ? Colors.white24
-                                    : Colors.grey.shade300),
+                              _searchQuery.isNotEmpty
+                                  ? Icons.search_off
+                                  : Icons.chat_bubble_outline,
+                              size: 64,
+                              color: isDark
+                                  ? Colors.white24
+                                  : Colors.grey.shade300,
+                            ),
                             const SizedBox(height: 12),
                             Text(
                               _searchQuery.isNotEmpty
                                   ? 'Sin resultados para "$_searchQuery"'
                                   : 'Sé el primero en enviar un mensaje',
                               style: TextStyle(
-                                  color: isDark
-                                      ? Colors.white38
-                                      : Colors.grey.shade500),
+                                color: isDark
+                                    ? Colors.white38
+                                    : Colors.grey.shade500,
+                              ),
                             ),
                           ],
                         ),
@@ -510,10 +553,11 @@ class _ChatScreenState extends State<ChatScreen> {
                           if (item is DateTime) {
                             return Center(
                               child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 8),
+                                margin: const EdgeInsets.symmetric(vertical: 8),
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 4),
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: isDark
                                       ? Colors.white12
@@ -523,10 +567,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                 child: Text(
                                   _formatDateSeparator(item),
                                   style: TextStyle(
-                                      fontSize: 11,
-                                      color: isDark
-                                          ? Colors.white54
-                                          : Colors.black45),
+                                    fontSize: 11,
+                                    color: isDark
+                                        ? Colors.white54
+                                        : Colors.black45,
+                                  ),
                                 ),
                               ),
                             );
@@ -535,7 +580,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           final msg = item as MessageEntity;
                           final isMe = msg.senderId == currentUser?.uid;
                           final msgIndex = messages.indexOf(msg);
-                          final showAvatar = !isMe &&
+                          final showAvatar =
+                              !isMe &&
                               (msgIndex == 0 ||
                                   messages[msgIndex - 1].senderId !=
                                       msg.senderId);
@@ -587,11 +633,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   duration: const Duration(milliseconds: 200),
                   child: p.someoneIsTyping
                       ? Padding(
-                          padding:
-                              const EdgeInsets.only(left: 16, bottom: 4),
-                          child: Row(children: [
-                            _TypingBubble(isDark: isDark),
-                          ]),
+                          padding: const EdgeInsets.only(left: 16, bottom: 4),
+                          child: Row(children: [_TypingBubble(isDark: isDark)]),
                         )
                       : const SizedBox.shrink(),
                 ),
@@ -667,20 +710,24 @@ class _PinnedMessageBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Mensaje fijado',
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: Color(0xFF1E8BC3),
-                          fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Mensaje fijado',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF1E8BC3),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   Text(
                     message.type == MessageType.voice
                         ? '🎤 Mensaje de voz'
                         : message.type == MessageType.image
-                            ? '🖼️ Imagen'
-                            : message.content,
+                        ? '🖼️ Imagen'
+                        : message.content,
                     style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? Colors.white70 : Colors.black87),
+                      fontSize: 12,
+                      color: isDark ? Colors.white70 : Colors.black87,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -688,9 +735,11 @@ class _PinnedMessageBanner extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.close,
-                  size: 16,
-                  color: isDark ? Colors.white38 : Colors.black38),
+              icon: Icon(
+                Icons.close,
+                size: 16,
+                color: isDark ? Colors.white38 : Colors.black38,
+              ),
               onPressed: onDismiss,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
@@ -740,9 +789,10 @@ class _TypingBubbleState extends State<_TypingBubble>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 4,
-              offset: const Offset(0, 2))
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Row(
@@ -752,8 +802,7 @@ class _TypingBubbleState extends State<_TypingBubble>
             animation: _ctrl,
             builder: (_, __) {
               final offset = ((_ctrl.value * 3) - i).clamp(0.0, 1.0);
-              final bounce =
-                  offset < 0.5 ? offset * 2 : (1.0 - offset) * 2;
+              final bounce = offset < 0.5 ? offset * 2 : (1.0 - offset) * 2;
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 width: 7,

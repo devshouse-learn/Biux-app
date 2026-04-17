@@ -753,6 +753,7 @@ class RideTrackerProvider with ChangeNotifier {
   }
 
   double _rad(double d) => d * pi / 180;
+
   /// Genera datos para story automática al terminar rodada
   Map<String, dynamic> buildRideStorySummary() {
     return {
@@ -789,5 +790,4 @@ class RideTrackerProvider with ChangeNotifier {
       AppLogger.error('No se pudo hacer flush de puntos GPS: \$e');
     }
   }
-
 }

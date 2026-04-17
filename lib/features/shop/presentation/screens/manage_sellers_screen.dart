@@ -50,26 +50,28 @@ class _ManageSellersScreenState extends State<ManageSellersScreen> {
     }
 
     if (success) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            user.canSellProducts
-                ? l.t('permission_revoked_success')
-                : l.t('seller_authorized_success'),
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              user.canSellProducts
+                  ? l.t('permission_revoked_success')
+                  : l.t('seller_authorized_success'),
+            ),
+            backgroundColor: Colors.green,
           ),
-          backgroundColor: Colors.green,
-        ),
-      );
+        );
       _loadUsers();
     } else {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            userProvider.error ?? l.t('error_updating_permissions'),
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              userProvider.error ?? l.t('error_updating_permissions'),
+            ),
+            backgroundColor: Colors.red,
           ),
-          backgroundColor: Colors.red,
-        ),
-      );
+        );
     }
   }
 

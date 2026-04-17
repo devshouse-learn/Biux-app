@@ -18,6 +18,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
+import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:biux/features/chat/presentation/screens/chat_screen.dart';
 
 class RideDetailScreen extends StatefulWidget {
   final String rideId;
@@ -33,7 +36,12 @@ class RideDetailScreen extends StatefulWidget {
   _RideDetailScreenState createState() => _RideDetailScreenState();
 }
 
-class _RideDetailScreenState extends State<RideDetailScreen> {
+class _RideDetailScreenState extends State<RideDetailScreen>
+    with TickerProviderStateMixin {
+  TabController? _tabController;
+  String? _rideChatId;
+  bool _loadingChat = false;
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +60,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         _openComments();
       }
     });
+
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   void _openComments() {
@@ -108,10 +118,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               ),
             );
           }
-
-          final meetingPoint = meetingPointProvider.meetingPoints
-              .where((mp) => mp.id == ride.meetingPointId)
-              .firstOrNull;
 
           return NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -180,153 +186,284 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 ),
               ];
             },
-            body: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Banner de cancelación
-                  if (ride.status == RideStatus.cancelled)
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: ColorTokens.error50,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: ColorTokens.error50.withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.cancel,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                          const SizedBox(width: 12),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Rodada cancelada',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Esta rodada ha sido cancelada por el organizador.',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  // Información del grupo organizador
-                  GroupInfoWidget(ride: ride),
-                  SizedBox(height: 16),
-
-                  // Información básica
-                  BasicInfoWidget(ride: ride),
-                  SizedBox(height: 16),
-
-                  // Punto de encuentro
-                  if (meetingPoint != null)
-                    MeetingPointInfoWidget(meetingPoint: meetingPoint),
-                  SizedBox(height: 24),
-
-                  // Instrucciones
-                  InfoSectionWidget(
-                    title: l.t('instructions'),
-                    content: ride.instructions,
-                    icon: Icons.info_outline,
+            body: Column(
+              children: [
+                // TabBar
+                Container(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: ColorTokens.primary30,
+                    unselectedLabelColor: ColorTokens.neutral60,
+                    indicatorColor: ColorTokens.primary30,
+                    tabs: [
+                      Tab(icon: Icon(Icons.info_outline), text: l.t('info')),
+                      Tab(icon: Icon(Icons.chat_bubble_outline), text: 'Chat'),
+                    ],
                   ),
-                  SizedBox(height: 16),
-
-                  // Recomendaciones
-                  InfoSectionWidget(
-                    title: l.t('recommendations'),
-                    content: ride.recommendations,
-                    icon: Icons.lightbulb_outline,
-                  ),
-                  SizedBox(height: 24),
-
-                  // Acciones sociales (Comentarios)
-                  RideSocialActions(
-                    rideId: ride.id,
-                    rideOwnerId: ride.createdBy,
-                  ),
-                  SizedBox(height: 24),
-
-                  // Participantes + botón de asistencia
-                  ParticipantsSectionWidget(ride: ride),
-                  SizedBox(height: 24),
-
-                  // Botón de compartir
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () => _shareRide(context, ride),
-                      icon: Icon(Icons.share),
-                      label: Text(l.t('share_ride')),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: ColorTokens.primary50,
-                        side: BorderSide(
-                          color: ColorTokens.primary50,
-                          width: 2,
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 14),
+                ),
+                // TabBarView
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Tab 1: Info (contenido original)
+                      _buildInfoTab(
+                        ride,
+                        rideProvider,
+                        meetingPointProvider,
+                        l,
                       ),
-                    ),
+                      // Tab 2: Chat
+                      _buildRideChatTab(ride),
+                    ],
                   ),
-
-                  // Si es el creador, botón de cancelar
-                  if (ride.createdBy == rideProvider.currentUserId &&
-                      ride.status != RideStatus.cancelled &&
-                      ride.status != RideStatus.completed) ...[
-                    SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () =>
-                            _showCancelDialog(ride.id, rideProvider),
-                        icon: Icon(Icons.cancel),
-                        label: Text(l.t('cancel_ride')),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: ColorTokens.error50,
-                          side: BorderSide(
-                            color: ColorTokens.error50,
-                            width: 2,
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildInfoTab(
+    RideModel ride,
+    RideProvider rideProvider,
+    MeetingPointProvider meetingPointProvider,
+    LocaleNotifier l,
+  ) {
+    final meetingPoint = meetingPointProvider.meetingPoints
+        .where((mp) => mp.id == ride.meetingPointId)
+        .firstOrNull;
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Banner de cancelación
+          if (ride.status == RideStatus.cancelled)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: ColorTokens.error50,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: ColorTokens.error50.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.cancel, color: Colors.white, size: 32),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Rodada cancelada',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Esta rodada ha sido cancelada por el organizador.',
+                          style: TextStyle(color: Colors.white, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Información del grupo organizador
+          GroupInfoWidget(ride: ride),
+          SizedBox(height: 16),
+
+          // Información básica
+          BasicInfoWidget(ride: ride),
+          SizedBox(height: 16),
+
+          // Punto de encuentro
+          if (meetingPoint != null)
+            MeetingPointInfoWidget(meetingPoint: meetingPoint),
+          SizedBox(height: 24),
+
+          // Instrucciones
+          InfoSectionWidget(
+            title: l.t('instructions'),
+            content: ride.instructions,
+            icon: Icons.info_outline,
+          ),
+          SizedBox(height: 16),
+
+          // Recomendaciones
+          InfoSectionWidget(
+            title: l.t('recommendations'),
+            content: ride.recommendations,
+            icon: Icons.lightbulb_outline,
+          ),
+          SizedBox(height: 24),
+
+          // Acciones sociales (Comentarios)
+          RideSocialActions(rideId: ride.id, rideOwnerId: ride.createdBy),
+          SizedBox(height: 24),
+
+          // Participantes + botón de asistencia
+          ParticipantsSectionWidget(ride: ride),
+          SizedBox(height: 24),
+
+          // Botón de compartir
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _shareRide(context, ride),
+              icon: Icon(Icons.share),
+              label: Text(l.t('share_ride')),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: ColorTokens.primary50,
+                side: BorderSide(color: ColorTokens.primary50, width: 2),
+                padding: EdgeInsets.symmetric(vertical: 14),
+              ),
+            ),
+          ),
+
+          // Si es el creador, botón de cancelar
+          if (ride.createdBy == rideProvider.currentUserId &&
+              ride.status != RideStatus.cancelled &&
+              ride.status != RideStatus.completed) ...[
+            SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _showCancelDialog(ride.id, rideProvider),
+                icon: Icon(Icons.cancel),
+                label: Text(l.t('cancel_ride')),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: ColorTokens.error50,
+                  side: BorderSide(color: ColorTokens.error50, width: 2),
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<String> _getOrCreateRideChat(RideModel ride) async {
+    if (_rideChatId != null) return _rideChatId!;
+    setState(() => _loadingChat = true);
+    final chatProvider = context.read<ChatProvider>();
+
+    // Buscar chat existente de tipo ride
+    final existing = chatProvider.chats
+        .where((c) => c.type == ChatType.ride && c.name == ride.name)
+        .firstOrNull;
+
+    if (existing != null) {
+      _rideChatId = existing.id;
+      chatProvider.openChat(existing.id);
+      setState(() => _loadingChat = false);
+      return existing.id;
+    }
+
+    // Crear nuevo chat de rodada
+    final chatId = await chatProvider.createGroupChat(
+      participantIds: [...ride.participants, ...ride.maybeParticipants],
+      name: ride.name,
+      photoUrl: ride.imageUrl,
+      rideId: ride.id,
+    );
+    chatProvider.openChat(chatId);
+    _rideChatId = chatId;
+    setState(() => _loadingChat = false);
+    return chatId;
+  }
+
+  Widget _buildRideChatTab(RideModel ride) {
+    final l = Provider.of<LocaleNotifier>(context);
+    final currentUid = context.read<ChatProvider>().currentUid;
+    final isParticipant =
+        ride.participants.contains(currentUid) ||
+        ride.maybeParticipants.contains(currentUid);
+
+    if (!isParticipant) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.lock_outline, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              l.t('join_to_chat'),
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Confirma tu asistencia para acceder al chat',
+              style: TextStyle(color: Colors.grey[500], fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_loadingChat) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return FutureBuilder<String>(
+      future: _getOrCreateRideChat(ride),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
+                const SizedBox(height: 12),
+                Text(
+                  l.t('chat_error'),
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => setState(() => _rideChatId = null),
+                  child: Text(l.t('retry')),
+                ),
+              ],
+            ),
+          );
+        }
+        final chatId = snapshot.data!;
+        final chat = ChatEntity(
+          id: chatId,
+          name: ride.name,
+          photoUrl: ride.imageUrl,
+          type: ChatType.ride,
+          participantIds: [...ride.participants, ...ride.maybeParticipants],
+          updatedAt: DateTime.now(),
+          unreadCount: const {},
+        );
+        return ChatScreen(chat: chat, embedded: true);
+      },
     );
   }
 
@@ -399,6 +536,12 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 
   void _showCancelDialog(String rideId, RideProvider provider) {

@@ -74,6 +74,7 @@ class RemoteConfigService {
   int getInt(String key, {int defaultValue = 0}) {
     return _config[key] as int? ?? defaultValue;
   }
+
   /// Verificar si una feature está habilitada (usa Firestore config)
   bool getFeatureFlag(String key, {bool defaultValue = true}) {
     return _config[key] as bool? ?? defaultValue;
@@ -81,8 +82,9 @@ class RemoteConfigService {
 
   /// Feature flags disponibles
   bool get isShopEnabled => getFeatureFlag('shop_enabled');
-  bool get isWeatherEnabled => getFeatureFlag('weather_enabled', defaultValue: true);
+  bool get isWeatherEnabled =>
+      getFeatureFlag('weather_enabled', defaultValue: true);
   bool get isChatEnabled => getFeatureFlag('chat_enabled', defaultValue: true);
-  bool get isAchievementsEnabled => getFeatureFlag('achievements_enabled', defaultValue: true);
-
+  bool get isAchievementsEnabled =>
+      getFeatureFlag('achievements_enabled', defaultValue: true);
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/core/design_system/design_system.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/emergency/presentation/providers/emergency_provider.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -16,11 +18,61 @@ class AppDrawer extends StatefulWidget {
 
 class _AppDrawerState extends State<AppDrawer> {
   bool _hasLoadedData = false;
+  bool _sosHolding = false;
+  double _sosProgress = 0;
+  Timer? _sosTimer;
+  static const int _sosHoldMs = 3000; // 3 segundos
+  static const int _sosTickMs = 50;
 
   @override
   void initState() {
     super.initState();
     _loadUserDataOnce();
+  }
+
+  void _startSosHold() {
+    setState(() {
+      _sosHolding = true;
+      _sosProgress = 0;
+    });
+    _sosTimer = Timer.periodic(Duration(milliseconds: _sosTickMs), (timer) {
+      setState(() {
+        _sosProgress += _sosTickMs / _sosHoldMs;
+      });
+      if (_sosProgress >= 1.0) {
+        timer.cancel();
+        _activateSOS();
+      }
+    });
+  }
+
+  void _cancelSosHold() {
+    _sosTimer?.cancel();
+    setState(() {
+      _sosHolding = false;
+      _sosProgress = 0;
+    });
+  }
+
+  void _activateSOS() async {
+    _sosTimer?.cancel();
+    setState(() {
+      _sosHolding = false;
+      _sosProgress = 0;
+    });
+    final user = context.read<UserProvider>().user;
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final emergencyProvider = context.read<EmergencyProvider>();
+
+    // Navegar primero para que el usuario vea la pantalla
+    Navigator.pop(context);
+    context.push(AppRoutes.emergency);
+
+    // Disparar SOS inmediatamente (sin countdown adicional)
+    emergencyProvider.triggerSosImmediate(
+      userId: uid,
+      userName: user?.name ?? 'Ciclista',
+    );
   }
 
   String _formatPhone(String phoneNumber) {
@@ -130,96 +182,48 @@ class _AppDrawerState extends State<AppDrawer> {
                                 ),
                         ),
                         const Spacer(),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              width: 90,
-                              child: Material(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(12),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(12),
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    context.push('/profile');
-                                  },
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 7,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.edit,
-                                          size: 14,
-                                          color: Colors.white70,
-                                        ),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          'Editar',
-                                          style: TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
+                        // Botón Editar perfil
+                        Material(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () {
+                              Navigator.pop(context);
+                              context.push('/profile');
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    size: 14,
+                                    color: Colors.white70,
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Editar',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                                context.push(AppRoutes.emergency);
-                              },
-                              child: SizedBox(
-                                width: 90,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 7),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.red.withValues(alpha: 0.4),
-                                        blurRadius: 6,
-                                        spreadRadius: 1,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.sos_rounded,
-                                        color: Colors.white, size: 14),
-                                      SizedBox(width: 5),
-                                      Text('SOS',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 1,
-                                        )),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 14),
+                    // Nombre del usuario
                     Text(
                       user?.name ?? 'Ciclista',
                       style: const TextStyle(
@@ -229,11 +233,110 @@ class _AppDrawerState extends State<AppDrawer> {
                       ),
                     ),
                     const SizedBox(height: 4),
+                    // Email/Teléfono
                     Text(
                       user?.email ?? cu?.phoneNumber ?? '',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 13,
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // ── Botón SOS ──
+                    GestureDetector(
+                      onLongPressStart: (_) => _startSosHold(),
+                      onLongPressEnd: (_) => _cancelSosHold(),
+                      onLongPressCancel: () => _cancelSosHold(),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.red.withValues(alpha: 0.15),
+                          border: Border.all(
+                            color: _sosHolding
+                                ? Colors.red
+                                : Colors.red.withValues(alpha: 0.4),
+                            width: _sosHolding ? 2 : 1.5,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            // Barra de progreso circular + icono
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: CircularProgressIndicator(
+                                    value: _sosProgress,
+                                    strokeWidth: 3,
+                                    backgroundColor: Colors.red.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                          Colors.red,
+                                        ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: _sosHolding
+                                        ? Colors.red
+                                        : Colors.red.withValues(alpha: 0.8),
+                                    boxShadow: _sosHolding
+                                        ? [
+                                            BoxShadow(
+                                              color: Colors.red.withValues(
+                                                alpha: 0.6,
+                                              ),
+                                              blurRadius: 12,
+                                              spreadRadius: 2,
+                                            ),
+                                          ]
+                                        : [],
+                                  ),
+                                  child: const Icon(
+                                    Icons.sos_rounded,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _sosHolding ? 'Activando SOS...' : 'Botón SOS',
+                              style: TextStyle(
+                                color: _sosHolding ? Colors.red : Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _sosHolding
+                                  ? 'Suelta para cancelar'
+                                  : 'Mantén presionado 3s para activar la alerta de emergencia',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: _sosHolding
+                                    ? Colors.red.withValues(alpha: 0.8)
+                                    : Colors.white.withValues(alpha: 0.6),
+                                fontSize: 11,
+                                height: 1.3,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

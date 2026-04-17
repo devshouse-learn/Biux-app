@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:biux/features/cycling_stats/domain/entities/cycling_stats_entity.dart';
 import 'package:biux/features/cycling_stats/data/datasources/cycling_stats_datasource.dart';
 
@@ -136,6 +136,7 @@ class CyclingStatsProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
   // Progreso semanal (Ãºltimas 8 semanas)
   List<Map<String, dynamic>> _weeklyProgress = [];
   List<Map<String, dynamic>> get weeklyProgress => _weeklyProgress;
@@ -188,16 +189,13 @@ class CyclingStatsProvider with ChangeNotifier {
       _heatmapPoints = [];
       for (final track in tracks) {
         final points = List<Map<String, dynamic>>.from(track['points'] ?? []);
-        _heatmapPoints.addAll(points.map((p) => {
-          'lat': p['lat'],
-          'lng': p['lng'],
-          'weight': 1.0,
-        }));
+        _heatmapPoints.addAll(
+          points.map((p) => {'lat': p['lat'], 'lng': p['lng'], 'weight': 1.0}),
+        );
       }
       notifyListeners();
     } catch (e) {
       debugPrint('Error cargando heatmap: $e');
     }
   }
-
 }

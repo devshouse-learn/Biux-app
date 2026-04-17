@@ -105,8 +105,4 @@ class ApiConfig {
   static bool get isProduction => _environment == AppEnvironment.production;
 }
 
-enum AppEnvironment {
-  production,
-  staging,
-  development,
-}
+enum AppEnvironment { production, staging, development }

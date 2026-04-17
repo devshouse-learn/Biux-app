@@ -350,8 +350,9 @@ class _ChatListScreenState extends State<ChatListScreen>
                     final docs = allDocs.where((doc) {
                       final data = doc.data() as Map<String, dynamic>;
                       final type = data['type'] as String? ?? 'direct';
-                      if (type != 'direct')
-                        return true; // grupos siempre se muestran
+                      // Ocultar chats de grupo y rodada (se acceden desde sus pantallas)
+                      if (type == 'group' || type == 'ride') return false;
+                      if (type != 'direct') return true;
                       final ids = List<String>.from(
                         data['participantIds'] ?? data['participants'] ?? [],
                       );

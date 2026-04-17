@@ -41,7 +41,10 @@ class AdvertisingRepository {
     int limit = 10,
     int offset = 0,
   }) async {
-    final url = ApiConfig.publicidadesConPaginacion(limit: limit, offset: offset);
+    final url = ApiConfig.publicidadesConPaginacion(
+      limit: limit,
+      offset: offset,
+    );
     try {
       final response = await http
           .get(Uri.parse(url))

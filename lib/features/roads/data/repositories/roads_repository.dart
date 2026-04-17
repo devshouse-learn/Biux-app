@@ -39,9 +39,7 @@ class RoadsRepository {
   }
 
   Future<Road> updateRoad(Road road) async {
-    var headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
-    };
+    var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
 
     var body = jsonEncode(road.toJson());
 
@@ -90,9 +88,7 @@ class RoadsRepository {
     var uriResponse = await http.post(
       Uri.parse(ApiConfig.participantesRodada),
       body: jsonEncode({"usuarioId": userId, "rodadaId": roadId}),
-      headers: {
-        'Content-type': 'application/json',
-      },
+      headers: {'Content-type': 'application/json'},
     );
     if (uriResponse.statusCode == 200) {
       return;
@@ -105,9 +101,7 @@ class RoadsRepository {
     {
       var uriResponse = await http.delete(
         Uri.parse(ApiConfig.rodadaById(road.id)),
-        headers: {
-          'Content-type': 'application/json',
-        },
+        headers: {'Content-type': 'application/json'},
       );
       if (uriResponse.statusCode == 200) {
         json.decode(uriResponse.body);
@@ -132,9 +126,7 @@ class RoadsRepository {
   Future<CompetitorRoad> deleteCompetitorRoad(
     CompetitorRoad competitorRoad,
   ) async {
-    var headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
-    };
+    var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
 
     var url = '${ApiConfig.participantesRodada}/${competitorRoad.userId}';
     final http.Response response = await http.delete(

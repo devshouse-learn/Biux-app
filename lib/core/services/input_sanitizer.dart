@@ -19,7 +19,10 @@ class InputSanitizer {
     var sanitized = input.trim();
 
     // Remover caracteres de control (excepto newlines y tabs)
-    sanitized = sanitized.replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'), '');
+    sanitized = sanitized.replaceAll(
+      RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'),
+      '',
+    );
 
     // Limitar longitud
     if (sanitized.length > max) {
@@ -75,8 +78,9 @@ class InputSanitizer {
   /// Valida formato de email
   static bool isValidEmail(String email) {
     if (email.length > maxEmailLength) return false;
-    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-        .hasMatch(email);
+    return RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    ).hasMatch(email);
   }
 
   /// Valida formato de teléfono colombiano

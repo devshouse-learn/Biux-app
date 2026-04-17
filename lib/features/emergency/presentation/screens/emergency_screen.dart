@@ -704,7 +704,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
         children: [
           Row(
             children: [
-              Flexible(
+              Expanded(
                 child: Text(
                   'Mis Contactos de Emergencia',
                   style: TextStyle(
@@ -715,6 +715,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 12),
               GestureDetector(
                 onTap: () => _showAdd(context),
                 child: Container(

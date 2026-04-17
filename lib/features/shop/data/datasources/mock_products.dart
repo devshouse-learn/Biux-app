@@ -32,8 +32,7 @@ class MockProducts {
       ProductEntity(
         id: 'prod_002',
         name: 'Culote con Badana Gel',
-        description:
-            'Culote profesional con badana de gel para maximo confort',
+        description: 'Culote profesional con badana de gel para maximo confort',
         longDescription:
             'Culote de ciclismo con badana de gel de alta densidad. Costuras planas y tejido compresivo para largas rutas.',
         price: 250000,

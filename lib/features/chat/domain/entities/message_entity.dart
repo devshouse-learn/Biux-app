@@ -114,7 +114,8 @@ class MessageEntity {
       if (replyPreview != null) 'replyPreview': replyPreview,
       'reactions': reactions,
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
-      if (audioDurationSeconds != null) 'audioDurationSeconds': audioDurationSeconds,
+      if (audioDurationSeconds != null)
+        'audioDurationSeconds': audioDurationSeconds,
       if (locationLat != null) 'locationLat': locationLat,
       if (locationLng != null) 'locationLng': locationLng,
       'isEdited': isEdited,

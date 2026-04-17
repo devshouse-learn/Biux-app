@@ -831,13 +831,6 @@ final GoRouter _router = GoRouter(
           },
         ),
 
-        // Onboarding
-        GoRoute(
-          path: '/onboarding',
-          name: 'onboarding',
-          builder: (context, state) => const OnboardingScreen(),
-        ),
-
         // Seguidores/Siguiendo
         GoRoute(
           path: '/users/:userId/followers',

@@ -306,8 +306,6 @@ class ChatDatasource {
     }
   }
 
-
-
   // ── Editar mensaje ────────────────────────────────────────────────────────
 
   Future<void> editMessage({
@@ -357,10 +355,10 @@ class ChatDatasource {
         .collection('messages')
         .doc(messageId)
         .update({
-      'starredBy': star
-          ? FieldValue.arrayUnion([uid])
-          : FieldValue.arrayRemove([uid]),
-    });
+          'starredBy': star
+              ? FieldValue.arrayUnion([uid])
+              : FieldValue.arrayRemove([uid]),
+        });
   }
 
   // ── Reenviar mensaje ──────────────────────────────────────────────────────
@@ -392,7 +390,9 @@ class ChatDatasource {
   // ── Stream mensaje fijado ─────────────────────────────────────────────────
 
   Stream<MessageEntity?> getPinnedMessage(String chatId) {
-    return _db.collection('chats').doc(chatId).snapshots().asyncMap((doc) async {
+    return _db.collection('chats').doc(chatId).snapshots().asyncMap((
+      doc,
+    ) async {
       final pinnedId = doc.data()?['pinnedMessageId'] as String?;
       if (pinnedId == null) return null;
       final msgDoc = await _db
@@ -417,24 +417,21 @@ class ChatDatasource {
         .collection('messages')
         .where('starredBy', arrayContains: uid)
         .snapshots()
-        .map((s) => s.docs
-            .map((d) => MessageEntity.fromMap(d.data(), d.id))
-            .toList());
+        .map(
+          (s) =>
+              s.docs.map((d) => MessageEntity.fromMap(d.data(), d.id)).toList(),
+        );
   }
 
   // ── Typing ────────────────────────────────────────────────────────────────
 
   Stream<Map<String, bool>> getTypingStream(String chatId) {
-    return _db
-        .collection('chats')
-        .doc(chatId)
-        .snapshots()
-        .map((doc) {
-          if (!doc.exists) return <String, bool>{};
-          final raw = doc.data()?['typing'];
-          if (raw == null) return <String, bool>{};
-          return Map<String, bool>.from(raw as Map);
-        });
+    return _db.collection('chats').doc(chatId).snapshots().map((doc) {
+      if (!doc.exists) return <String, bool>{};
+      final raw = doc.data()?['typing'];
+      if (raw == null) return <String, bool>{};
+      return Map<String, bool>.from(raw as Map);
+    });
   }
 
   Future<void> setTyping({

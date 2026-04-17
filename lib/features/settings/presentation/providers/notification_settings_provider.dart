@@ -41,7 +41,7 @@ class NotificationSettingsProvider extends ChangeNotifier {
     try {
       await _repository.togglePushNotifications(enabled);
       if (_settings == null) return;
-    _settings = _settings!.copyWith(enablePushNotifications: enabled);
+      _settings = _settings!.copyWith(enablePushNotifications: enabled);
       _error = null;
       notifyListeners();
     } catch (e) {

@@ -70,9 +70,10 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-          fontWeight: FontWeight.w700,
-          fontSize: 14,
-          color: Colors.grey),
+        fontWeight: FontWeight.w700,
+        fontSize: 14,
+        color: Colors.grey,
+      ),
     );
   }
 }
@@ -107,10 +108,9 @@ class _ThemeOptionTile extends StatelessWidget {
               : (isDark ? const Color(0xFF1A2B3C) : Colors.white),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-              color: selected
-                  ? ColorTokens.primary30
-                  : Colors.grey.shade300,
-              width: selected ? 2 : 1),
+            color: selected ? ColorTokens.primary30 : Colors.grey.shade300,
+            width: selected ? 2 : 1,
+          ),
         ),
         child: Row(
           children: [
@@ -122,32 +122,41 @@ class _ThemeOptionTile extends StatelessWidget {
                     : Colors.grey.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon,
-                  color: selected ? ColorTokens.primary30 : Colors.grey,
-                  size: 22),
+              child: Icon(
+                icon,
+                color: selected ? ColorTokens.primary30 : Colors.grey,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: selected
-                              ? ColorTokens.primary30
-                              : (isDark ? Colors.white : Colors.black87))),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: selected
+                          ? ColorTokens.primary30
+                          : (isDark ? Colors.white : Colors.black87),
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.grey)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                 ],
               ),
             ),
             if (selected)
-              Icon(Icons.check_circle_rounded,
-                  color: ColorTokens.primary30, size: 22),
+              Icon(
+                Icons.check_circle_rounded,
+                color: ColorTokens.primary30,
+                size: 22,
+              ),
           ],
         ),
       ),

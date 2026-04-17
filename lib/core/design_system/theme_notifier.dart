@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,8 +17,9 @@ class ThemeNotifier extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_key) ?? 'system';
     _mode = ThemeMode.values.firstWhere(
-        (m) => m.name == raw,
-        orElse: () => ThemeMode.system);
+      (m) => m.name == raw,
+      orElse: () => ThemeMode.system,
+    );
     notifyListeners();
   }
 

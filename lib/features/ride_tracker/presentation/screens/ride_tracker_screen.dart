@@ -26,7 +26,6 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   late AnimationController _pulseController;
   bool _showHistory = false;
 
-
   @override
   void initState() {
     super.initState();
@@ -2174,6 +2173,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     if (km < 1) return '${(km * 1000).round()} m';
     return '${km.toStringAsFixed(1)} km';
   }
+
   // ignore: unused_element
   Future<bool> _onWillPop(RideTrackerProvider provider) async {
     if (!provider.isTracking) return true;
@@ -2181,7 +2181,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('¿Salir de la rodada?'),
-        content: const Text('Tienes una rodada activa. Si sales, se perderá el progreso.'),
+        content: const Text(
+          'Tienes una rodada activa. Si sales, se perderá el progreso.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -2197,5 +2199,4 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     );
     return result ?? false;
   }
-
 }

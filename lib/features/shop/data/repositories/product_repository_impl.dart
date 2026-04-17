@@ -60,5 +60,4 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<void> toggleProductLike(String productId, String userId) async {
     await remoteDataSource.toggleProductLike(productId, userId);
   }
-
 }

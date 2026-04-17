@@ -24,7 +24,9 @@ class RealtimeDatabaseAuthHelper {
     final currentUser = _auth.currentUser;
 
     if (currentUser == null) {
-      debugPrint('❌ RealtimeDB Auth: No hay usuario autenticado en Firebase Auth');
+      debugPrint(
+        '❌ RealtimeDB Auth: No hay usuario autenticado en Firebase Auth',
+      );
       return false;
     }
 
@@ -63,7 +65,9 @@ class RealtimeDatabaseAuthHelper {
         final snapshot = await connectedRef.get();
 
         if (snapshot.value == true) {
-          debugPrint('✅ RealtimeDB Auth: Realtime Database conectado y autenticado');
+          debugPrint(
+            '✅ RealtimeDB Auth: Realtime Database conectado y autenticado',
+          );
           return true;
         }
 

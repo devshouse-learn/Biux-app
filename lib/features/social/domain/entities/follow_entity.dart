@@ -1,4 +1,3 @@
-
 class FollowEntity {
   final String id;
   final String followerId;
