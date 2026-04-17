@@ -38,6 +38,27 @@ class ChatDatasource {
   static final _db = FirebaseFirestore.instance;
   static final _auth = FirebaseAuth.instance;
 
+  static String _previewForType(String type, String content) {
+    switch (type) {
+      case 'voice':
+        return '🎵 Nota de voz';
+      case 'image':
+        return '🖼️ Imagen';
+      case 'video':
+        return '🎬 Video';
+      case 'location':
+        return '📍 Ubicación';
+      case 'gif':
+        return '🎞️ GIF';
+      case 'file':
+        return '📎 Archivo';
+      case 'deleted':
+        return '🚫 Mensaje eliminado';
+      default:
+        return content;
+    }
+  }
+
   // ── Streams ────────────────────────────────────────────────────────────────
 
   Stream<List<ChatEntity>> getChats() {
@@ -117,9 +138,7 @@ class ChatDatasource {
     }
 
     // Preview de última mensaje para la lista de chats
-    final previewContent = message.type == MessageType.voice
-        ? '🎵 Nota de voz'
-        : message.content;
+    final previewContent = _previewForType(message.type.name, message.content);
 
     await _db.collection('chats').doc(chatId).update({
       'lastMessage': {
@@ -286,9 +305,10 @@ class ChatDatasource {
       if (hasValidPrev) {
         final prevData = prev.data();
         final prevType = prevData['type'] as String? ?? 'text';
-        final prevContent = prevType == 'voice'
-            ? '🎵 Nota de voz'
-            : (prevData['content'] as String? ?? '');
+        final prevContent = _previewForType(
+          prevType,
+          prevData['content'] as String? ?? '',
+        );
         await _db.collection('chats').doc(chatId).update({
           'lastMessage': {
             'id': prev.id,

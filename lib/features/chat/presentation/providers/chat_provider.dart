@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:mime/mime.dart';
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
@@ -142,13 +145,31 @@ class ChatProvider extends ChangeNotifier {
     String? senderAvatar,
   }) async {
     try {
-      final fileName = 'img_\${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final fileName = 'img_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      // Comprimir imagen para subida rápida
+      final Uint8List? compressed = await FlutterImageCompress.compressWithFile(
+        imageFile.absolute.path,
+        minWidth: 1024,
+        minHeight: 1024,
+        quality: 70,
+        format: CompressFormat.jpeg,
+      );
       final ref = FirebaseStorage.instance
           .ref()
           .child('chat_images')
           .child(chatId)
           .child(fileName);
-      await ref.putFile(imageFile, SettableMetadata(contentType: 'image/jpeg'));
+      if (compressed != null) {
+        await ref.putData(
+          compressed,
+          SettableMetadata(contentType: 'image/jpeg'),
+        );
+      } else {
+        await ref.putFile(
+          imageFile,
+          SettableMetadata(contentType: 'image/jpeg'),
+        );
+      }
       final url = await ref.getDownloadURL();
       final message = MessageEntity(
         id: '',
@@ -170,6 +191,104 @@ class ChatProvider extends ChangeNotifier {
       _error = 'No se pudo enviar la imagen';
       notifyListeners();
     }
+  }
+
+  Future<void> sendVideoMessage({
+    required String chatId,
+    required File videoFile,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    try {
+      final ext = videoFile.path.split('.').last;
+      final fileName = 'vid_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      final mime = lookupMimeType(videoFile.path) ?? 'video/mp4';
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('chat_videos')
+          .child(chatId)
+          .child(fileName);
+      await ref.putFile(videoFile, SettableMetadata(contentType: mime));
+      final url = await ref.getDownloadURL();
+      final message = MessageEntity(
+        id: '',
+        chatId: chatId,
+        senderId: currentUid,
+        senderName: senderName,
+        senderAvatar: senderAvatar,
+        content: '',
+        type: MessageType.video,
+        sentAt: DateTime.now(),
+        mediaUrl: url,
+        replyToId: _replyingTo?.id,
+        replyPreview: _replyingTo?.content,
+      );
+      _replyingTo = null;
+      notifyListeners();
+      await _ds.sendMessage(chatId: chatId, message: message);
+    } catch (e) {
+      _error = 'No se pudo enviar el video';
+      notifyListeners();
+    }
+  }
+
+  /// Envía múltiples archivos de media (imágenes y/o videos) en paralelo.
+  Future<void> sendMediaFiles({
+    required String chatId,
+    required List<File> files,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    final futures = <Future>[];
+    for (final file in files) {
+      final mime = lookupMimeType(file.path) ?? '';
+      if (mime.startsWith('video')) {
+        futures.add(
+          sendVideoMessage(
+            chatId: chatId,
+            videoFile: file,
+            senderName: senderName,
+            senderAvatar: senderAvatar,
+          ),
+        );
+      } else {
+        futures.add(
+          sendImageMessage(
+            chatId: chatId,
+            imageFile: file,
+            senderName: senderName,
+            senderAvatar: senderAvatar,
+          ),
+        );
+      }
+    }
+    await Future.wait(futures);
+  }
+
+  Future<void> sendLocationMessage({
+    required String chatId,
+    required double lat,
+    required double lng,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    final message = MessageEntity(
+      id: '',
+      chatId: chatId,
+      senderId: currentUid,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+      content: '',
+      type: MessageType.location,
+      sentAt: DateTime.now(),
+      locationLat: lat,
+      locationLng: lng,
+      replyToId: _replyingTo?.id,
+      replyPreview: _replyingTo?.content,
+    );
+    _replyingTo = null;
+    notifyListeners();
+    await _ds.sendMessage(chatId: chatId, message: message);
   }
 
   void setReplyingTo(MessageEntity? message) {
