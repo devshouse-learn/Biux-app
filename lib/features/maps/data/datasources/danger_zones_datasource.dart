@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -35,28 +34,28 @@ class DangerZoneEntity {
         reportedBy: map['reportedBy'] ?? '',
         reportedByName: map['reportedByName'] ?? '',
         type: DangerType.values.firstWhere(
-            (t) => t.name == (map['type'] ?? 'other'),
-            orElse: () => DangerType.other),
+          (t) => t.name == (map['type'] ?? 'other'),
+          orElse: () => DangerType.other,
+        ),
         description: map['description'] ?? '',
         lat: (map['lat'] as num).toDouble(),
         lng: (map['lng'] as num).toDouble(),
         reportCount: map['reportCount'] ?? 1,
-        createdAt:
-            (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
         active: map['active'] ?? true,
       );
 
   Map<String, dynamic> toMap() => {
-        'reportedBy': reportedBy,
-        'reportedByName': reportedByName,
-        'type': type.name,
-        'description': description,
-        'lat': lat,
-        'lng': lng,
-        'reportCount': reportCount,
-        'createdAt': Timestamp.fromDate(createdAt),
-        'active': active,
-      };
+    'reportedBy': reportedBy,
+    'reportedByName': reportedByName,
+    'type': type.name,
+    'description': description,
+    'lat': lat,
+    'lng': lng,
+    'reportCount': reportCount,
+    'createdAt': Timestamp.fromDate(createdAt),
+    'active': active,
+  };
 
   String get typeLabel {
     switch (type) {
@@ -84,9 +83,11 @@ class DangerZonesDatasource {
         .collection('danger_zones')
         .where('active', isEqualTo: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => DangerZoneEntity.fromMap(d.id, d.data()))
-            .toList());
+        .map(
+          (snap) => snap.docs
+              .map((d) => DangerZoneEntity.fromMap(d.id, d.data()))
+              .toList(),
+        );
   }
 
   static Future<void> reportZone({
@@ -97,8 +98,7 @@ class DangerZonesDatasource {
   }) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-    final userDoc =
-        await _db.collection('users').doc(user.uid).get();
+    final userDoc = await _db.collection('users').doc(user.uid).get();
     final name = userDoc.data()?['name'] ?? 'Ciclista';
 
     // Verificar si ya existe una zona cercana (50m)
@@ -113,9 +113,7 @@ class DangerZonesDatasource {
       final dLng = ((data['lng'] as num).toDouble() - lng).abs();
       if (dLat < 0.0005 && dLng < 0.0005 && data['type'] == type.name) {
         // Zona cercana existente → incrementar contador
-        await doc.reference.update({
-          'reportCount': FieldValue.increment(1),
-        });
+        await doc.reference.update({'reportCount': FieldValue.increment(1)});
         return;
       }
     }

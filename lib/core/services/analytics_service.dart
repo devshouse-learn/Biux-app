@@ -222,7 +222,11 @@ class AnalyticsService {
     try {
       await _analytics.logEvent(name: name, parameters: parameters);
     } catch (e) {
-      AppLogger.error('Error logging analytics event: $name', error: e, tag: 'Analytics');
+      AppLogger.error(
+        'Error logging analytics event: $name',
+        error: e,
+        tag: 'Analytics',
+      );
     }
   }
 }

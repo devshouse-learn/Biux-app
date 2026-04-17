@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:biux/features/safety/presentation/screens/report_user_screen.dart';
 import 'package:biux/features/safety/presentation/screens/biometric_settings_screen.dart';
 import 'package:biux/features/safety/presentation/screens/active_sessions_screen.dart';
@@ -864,6 +865,13 @@ final GoRouter _router = GoRouter(
             return AdminDashboardScreen(currentUser: currentUser.toEntity());
           },
         ),
+
+        // Chat (lista de mensajes)
+        GoRoute(
+          path: AppRoutes.chatList,
+          name: AppRoutes.chatListName,
+          builder: (context, state) => const ChatListScreen(),
+        ),
       ],
     ),
 
@@ -900,12 +908,7 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const GlobalSearchScreen(),
     ),
 
-    // Chat (fuera del ShellRoute para ocultar bottom nav)
-    GoRoute(
-      path: AppRoutes.chatList,
-      name: AppRoutes.chatListName,
-      builder: (context, state) => const ChatListScreen(),
-    ),
+    // Chat detalle (fuera del ShellRoute)
     GoRoute(
       path: '/chat/:chatId',
       name: AppRoutes.chatDetailName,
@@ -927,8 +930,16 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: AppRoutes.rideTracker,
       name: AppRoutes.rideTrackerName,
-      builder: (context, state) =>
-          RideTrackerScreen(showHistory: state.extra == true),
+      builder: (context, state) {
+        final extra = state.extra;
+        if (extra is Map<String, dynamic>) {
+          return RideTrackerScreen(
+            destination: extra['destination'] as LatLng?,
+            destinationName: extra['destinationName'] as String?,
+          );
+        }
+        return RideTrackerScreen(showHistory: extra == true);
+      },
     ),
     GoRoute(
       path: AppRoutes.rideRecommendations,

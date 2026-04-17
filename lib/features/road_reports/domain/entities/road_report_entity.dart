@@ -27,19 +27,23 @@ class RoadReportEntity {
 
   bool hasConfirmed(String uid) => confirmedBy.contains(uid);
 
-  String get typeIcon => const {
-    'pothole': '🕳️',
-    'obstacle': '⚠️',
-    'danger': '🚨',
-    'construction': '🚧',
-    'flooding': '🌊',
-  }[type] ?? '📍';
+  String get typeIcon =>
+      const {
+        'pothole': '🕳️',
+        'obstacle': '⚠️',
+        'danger': '🚨',
+        'construction': '🚧',
+        'flooding': '🌊',
+      }[type] ??
+      '📍';
 
-  String get typeName => const {
-    'pothole': 'Hueco',
-    'obstacle': 'Obstáculo',
-    'danger': 'Zona peligrosa',
-    'construction': 'Construcción',
-    'flooding': 'Inundación',
-  }[type] ?? 'Otro';
+  String get typeName =>
+      const {
+        'pothole': 'Hueco',
+        'obstacle': 'Obstáculo',
+        'danger': 'Zona peligrosa',
+        'construction': 'Construcción',
+        'flooding': 'Inundación',
+      }[type] ??
+      'Otro';
 }

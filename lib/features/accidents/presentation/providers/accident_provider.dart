@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:biux/features/accidents/data/datasources/accident_datasource.dart';
 import 'package:biux/features/accidents/domain/entities/accident_entity.dart';

@@ -14,7 +14,9 @@ class SafetyProvider with ChangeNotifier {
   Future<void> loadBlockedUsers(String userId) async {
     _isLoading = true;
     notifyListeners();
-    try { _blockedUsers = await _datasource.getBlockedUsers(userId); } catch (_) {}
+    try {
+      _blockedUsers = await _datasource.getBlockedUsers(userId);
+    } catch (_) {}
     _isLoading = false;
     notifyListeners();
   }
@@ -38,15 +40,21 @@ class SafetyProvider with ChangeNotifier {
   }
 
   Future<bool> reportUser({
-    required String reporterId, required String reportedId,
-    required ReportReason reason, String? description,
+    required String reporterId,
+    required String reportedId,
+    required ReportReason reason,
+    String? description,
   }) async {
     try {
       await _datasource.reportUser(
-        reporterId: reporterId, reportedId: reportedId,
-        reason: reason, description: description,
+        reporterId: reporterId,
+        reportedId: reportedId,
+        reason: reason,
+        description: description,
       );
       return true;
-    } catch (_) { return false; }
+    } catch (_) {
+      return false;
+    }
   }
 }

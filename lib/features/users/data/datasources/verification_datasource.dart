@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -11,8 +10,9 @@ class VerificationDatasource {
     final doc = await _db.collection('users').doc(uid).get();
     final raw = doc.data()?['verificationStatus'] ?? 'none';
     return VerificationStatus.values.firstWhere(
-        (s) => s.name == raw,
-        orElse: () => VerificationStatus.none);
+      (s) => s.name == raw,
+      orElse: () => VerificationStatus.none,
+    );
   }
 
   static Future<void> submitRequest({

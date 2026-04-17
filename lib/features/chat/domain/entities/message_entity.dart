@@ -1,6 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum MessageType { text, image, video, voice, location, deleted, gif, file }
+enum MessageType {
+  text,
+  image,
+  video,
+  voice,
+  location,
+  deleted,
+  gif,
+  file,
+  poll,
+}
 
 class MessageEntity {
   final String id;
@@ -32,6 +42,12 @@ class MessageEntity {
   final int? fileSize;
   final List<String> starredBy;
 
+  // Poll fields
+  final String? pollQuestion;
+  final List<String>? pollOptions;
+  final Map<String, List<String>>? pollVotes; // optionIndex -> list of userIds
+  final bool pollAllowMultiple;
+
   const MessageEntity({
     required this.id,
     required this.chatId,
@@ -60,6 +76,10 @@ class MessageEntity {
     this.fileName,
     this.fileSize,
     this.starredBy = const [],
+    this.pollQuestion,
+    this.pollOptions,
+    this.pollVotes,
+    this.pollAllowMultiple = false,
   });
 
   factory MessageEntity.fromMap(Map<String, dynamic> data, String id) {
@@ -94,6 +114,16 @@ class MessageEntity {
       fileName: data['fileName'],
       fileSize: data['fileSize'],
       starredBy: List<String>.from(data['starredBy'] ?? []),
+      pollQuestion: data['pollQuestion'],
+      pollOptions: data['pollOptions'] != null
+          ? List<String>.from(data['pollOptions'])
+          : null,
+      pollVotes: data['pollVotes'] != null
+          ? (data['pollVotes'] as Map<String, dynamic>).map(
+              (k, v) => MapEntry(k, List<String>.from(v)),
+            )
+          : null,
+      pollAllowMultiple: data['pollAllowMultiple'] ?? false,
     );
   }
 
@@ -126,6 +156,10 @@ class MessageEntity {
       if (fileName != null) 'fileName': fileName,
       if (fileSize != null) 'fileSize': fileSize,
       'starredBy': starredBy,
+      if (pollQuestion != null) 'pollQuestion': pollQuestion,
+      if (pollOptions != null) 'pollOptions': pollOptions,
+      if (pollVotes != null) 'pollVotes': pollVotes,
+      if (pollAllowMultiple) 'pollAllowMultiple': pollAllowMultiple,
     };
   }
 
@@ -169,6 +203,10 @@ class MessageEntity {
       fileName: fileName,
       fileSize: fileSize,
       starredBy: starredBy ?? this.starredBy,
+      pollQuestion: pollQuestion,
+      pollOptions: pollOptions,
+      pollVotes: pollVotes,
+      pollAllowMultiple: pollAllowMultiple,
     );
   }
 }

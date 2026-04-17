@@ -327,13 +327,14 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
 
   void _showValidationError([String? message]) {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message ?? l.t('complete_required_fields')),
-        backgroundColor: ColorTokens.error50,
-        duration: const Duration(seconds: 3),
-      ),
-    );
+    if (context.mounted)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message ?? l.t('complete_required_fields')),
+          backgroundColor: ColorTokens.error50,
+          duration: const Duration(seconds: 3),
+        ),
+      );
   }
 
   Future<void> _registerBike(BikeProvider bikeProvider) async {
@@ -342,12 +343,13 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
 
     if (userId == null) {
       final l = Provider.of<LocaleNotifier>(context, listen: false);
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('must_login_register')),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('must_login_register')),
+            backgroundColor: ColorTokens.error50,
+          ),
+        );
       return;
     }
 
@@ -358,13 +360,14 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
     if (bike != null) {
       final l = Provider.of<LocaleNotifier>(context, listen: false);
       // Mostrar mensaje de éxito
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l.t('bike_registered_success')),
-          backgroundColor: ColorTokens.success40,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l.t('bike_registered_success')),
+            backgroundColor: ColorTokens.success40,
+            duration: const Duration(seconds: 3),
+          ),
+        );
 
       // Reiniciar formulario y navegar después del frame actual
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -375,18 +378,19 @@ class _BikeRegistrationScreenState extends State<BikeRegistrationScreen> {
       });
     } else {
       // Mostrar error
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            bikeProvider.errorMessage ??
-                Provider.of<LocaleNotifier>(
-                  context,
-                  listen: false,
-                ).t('error_registering_bike'),
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              bikeProvider.errorMessage ??
+                  Provider.of<LocaleNotifier>(
+                    context,
+                    listen: false,
+                  ).t('error_registering_bike'),
+            ),
+            backgroundColor: ColorTokens.error50,
           ),
-          backgroundColor: ColorTokens.error50,
-        ),
-      );
+        );
     }
   }
 }

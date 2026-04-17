@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -60,17 +59,15 @@ class PersonalizedFeedDatasource {
 
   // ── Stream de posts de seguidos ───────────────────────────────
   static Stream<List<Map<String, dynamic>>> feedStream(
-      List<String> followingIds) {
+    List<String> followingIds,
+  ) {
     if (followingIds.isEmpty) {
       return _db
           .collection('posts')
           .orderBy('createdAt', descending: true)
           .limit(_pageSize)
           .snapshots()
-          .map((s) => s.docs
-              .map((d) =>
-                  {...d.data(), 'id': d.id})
-              .toList());
+          .map((s) => s.docs.map((d) => {...d.data(), 'id': d.id}).toList());
     }
     return _db
         .collection('posts')
@@ -78,8 +75,7 @@ class PersonalizedFeedDatasource {
         .orderBy('createdAt', descending: true)
         .limit(_pageSize)
         .snapshots()
-        .map((s) =>
-            s.docs.map((d) => {...d.data(), 'id': d.id}).toList());
+        .map((s) => s.docs.map((d) => {...d.data(), 'id': d.id}).toList());
   }
 
   // ── Registrar interacción para personalización ────────────────

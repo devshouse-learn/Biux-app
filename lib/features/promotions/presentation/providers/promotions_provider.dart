@@ -18,10 +18,12 @@ class PromotionsProvider with ChangeNotifier {
   }
 
   List<PromotionRequestModel> get requests => List.unmodifiable(_requests);
-  List<PromotionRequestModel> get approvedBusinesses =>
-      _requests.where((r) => r.type == 'negocio' && r.status == 'approved').toList();
-  List<PromotionRequestModel> get approvedEvents =>
-      _requests.where((r) => r.type == 'evento' && r.status == 'approved').toList();
+  List<PromotionRequestModel> get approvedBusinesses => _requests
+      .where((r) => r.type == 'negocio' && r.status == 'approved')
+      .toList();
+  List<PromotionRequestModel> get approvedEvents => _requests
+      .where((r) => r.type == 'evento' && r.status == 'approved')
+      .toList();
   List<PromotionRequestModel> get pendingRequests =>
       _requests.where((r) => r.status == 'pending').toList();
 
@@ -41,7 +43,12 @@ class PromotionsProvider with ChangeNotifier {
   }
 
   /// Solicitar ser promotor verificado
-  Future<bool> requestPromoterStatus(String uid, String name, String businessName, String businessDescription) async {
+  Future<bool> requestPromoterStatus(
+    String uid,
+    String name,
+    String businessName,
+    String businessDescription,
+  ) async {
     try {
       await firestore.collection('promoter_requests').doc(uid).set({
         'uid': uid,

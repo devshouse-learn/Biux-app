@@ -305,32 +305,34 @@ class _RoadCreateScreenState extends State<RoadCreateScreen> {
                       group: bloc.group,
                     );
                     final result = await bloc.createRoad(road);
-                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBarUtils.customSnackBar(
-                        content: result
-                            ? l.t('ride_created_success')
-                            : l.t('error_create_ride'),
-                        backgroundColor: result
-                            ? ColorTokens.secondary50
-                            : ColorTokens.error50,
-                      ),
-                    );
+                    if (context.mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBarUtils.customSnackBar(
+                          content: result
+                              ? l.t('ride_created_success')
+                              : l.t('error_create_ride'),
+                          backgroundColor: result
+                              ? ColorTokens.secondary50
+                              : ColorTokens.error50,
+                        ),
+                      );
                     if (result) {
                       Navigator.of(context).pop();
                     }
                   } else {
-                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBarUtils.customSnackBar(
-                        content: !_formKey.currentState!.validate()
-                            ? l.t('must_complete_all_fields')
-                            : !RegExp(
-                                l.t('validator_number'),
-                              ).hasMatch(controllerDistance.text)
-                            ? l.t('distance_numbers_only')
-                            : '',
-                        backgroundColor: ColorTokens.error50,
-                      ),
-                    );
+                    if (context.mounted)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBarUtils.customSnackBar(
+                          content: !_formKey.currentState!.validate()
+                              ? l.t('must_complete_all_fields')
+                              : !RegExp(
+                                  l.t('validator_number'),
+                                ).hasMatch(controllerDistance.text)
+                              ? l.t('distance_numbers_only')
+                              : '',
+                          backgroundColor: ColorTokens.error50,
+                        ),
+                      );
                   }
                 },
                 child: Text(l.t('publish'), style: Styles.containerNameUser),

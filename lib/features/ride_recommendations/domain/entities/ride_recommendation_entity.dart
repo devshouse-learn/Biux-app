@@ -10,17 +10,24 @@ enum RecommendationType {
 
   String get label {
     switch (this) {
-      case RecommendationType.touristSpot: return '🏛️ Sitio turístico';
-      case RecommendationType.organizedRoute: return '🚴 Vía organizada';
-      case RecommendationType.scenic: return '🌄 Ruta panorámica';
-      case RecommendationType.technical: return '⚙️ Ruta técnica';
-      case RecommendationType.family: return '👨‍👩‍👧 Apta para familia';
+      case RecommendationType.touristSpot:
+        return '🏛️ Sitio turístico';
+      case RecommendationType.organizedRoute:
+        return '🚴 Vía organizada';
+      case RecommendationType.scenic:
+        return '🌄 Ruta panorámica';
+      case RecommendationType.technical:
+        return '⚙️ Ruta técnica';
+      case RecommendationType.family:
+        return '👨‍👩‍👧 Apta para familia';
     }
   }
 
   static RecommendationType fromString(String v) =>
-      RecommendationType.values.firstWhere((e) => e.value == v,
-          orElse: () => RecommendationType.organizedRoute);
+      RecommendationType.values.firstWhere(
+        (e) => e.value == v,
+        orElse: () => RecommendationType.organizedRoute,
+      );
 }
 
 class RideRecommendationEntity {
@@ -76,12 +83,24 @@ class RideRecommendationEntity {
   }
 
   RideRecommendationEntity copyWith({bool? isRead}) => RideRecommendationEntity(
-    id: id, fromUserId: fromUserId, fromUserName: fromUserName,
-    fromUserPhoto: fromUserPhoto, toUserId: toUserId, trackId: trackId,
-    routeName: routeName, description: description, type: type,
-    totalKm: totalKm, estimatedMinutes: estimatedMinutes, avgSpeed: avgSpeed,
-    calories: calories, highlights: highlights, coverImageUrl: coverImageUrl,
-    startLat: startLat, startLng: startLng,
-    isRead: isRead ?? this.isRead, createdAt: createdAt,
+    id: id,
+    fromUserId: fromUserId,
+    fromUserName: fromUserName,
+    fromUserPhoto: fromUserPhoto,
+    toUserId: toUserId,
+    trackId: trackId,
+    routeName: routeName,
+    description: description,
+    type: type,
+    totalKm: totalKm,
+    estimatedMinutes: estimatedMinutes,
+    avgSpeed: avgSpeed,
+    calories: calories,
+    highlights: highlights,
+    coverImageUrl: coverImageUrl,
+    startLat: startLat,
+    startLng: startLng,
+    isRead: isRead ?? this.isRead,
+    createdAt: createdAt,
   );
 }

@@ -74,7 +74,9 @@ class AuthRepository {
         AppLogger.info('✅ [AuthRepo] ¡OTP ENVIADO EXITOSAMENTE!');
         return true;
       } else {
-        AppLogger.warning('⚠️ [AuthRepo] Status inesperado: ${response.statusCode}');
+        AppLogger.warning(
+          '⚠️ [AuthRepo] Status inesperado: ${response.statusCode}',
+        );
         throw Exception('err_server_status');
       }
     } on DioException catch (e) {
@@ -142,13 +144,17 @@ class AuthRepository {
   Future<AuthResponse> validateOTP(String phoneNumber, String code) async {
     try {
       AppLogger.debug('🔑 [AuthRepo] Validando código para: $phoneNumber');
-      AppLogger.debug('📝 [AuthRepo] Código: ${code.replaceAll(RegExp(r'.'), '*')}');
+      AppLogger.debug(
+        '📝 [AuthRepo] Código: ${code.replaceAll(RegExp(r'.'), '*')}',
+      );
 
       if (code.length != 6) {
         throw Exception('err_code_6_digits');
       }
 
-      AppLogger.debug('📤 [AuthRepo] Enviando validación a: $_baseUrl/validate-otp');
+      AppLogger.debug(
+        '📤 [AuthRepo] Enviando validación a: $_baseUrl/validate-otp',
+      );
 
       final response = await _dio.post(
         '$_baseUrl/validate-otp',

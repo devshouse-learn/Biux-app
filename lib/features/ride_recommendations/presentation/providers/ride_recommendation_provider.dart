@@ -56,21 +56,21 @@ class RideRecommendationProvider extends ChangeNotifier {
       }
 
       final users = await Future.wait(
-        ids.map((id) => FirebaseFirestore.instance.collection('users').doc(id).get()),
+        ids.map(
+          (id) => FirebaseFirestore.instance.collection('users').doc(id).get(),
+        ),
       );
 
-      _friends = users
-          .where((d) => d.exists)
-          .map((d) {
-            final data = d.data()!;
-            return UserEntity(
-              id: d.id,
-              fullName: data['fullName'] ?? '',
-              userName: data['userName'] ?? '',
-              email: data['email'] ?? '',
-              photo: data['photo'] ?? '',
-            );
-          }).toList();
+      _friends = users.where((d) => d.exists).map((d) {
+        final data = d.data()!;
+        return UserEntity(
+          id: d.id,
+          fullName: data['fullName'] ?? '',
+          userName: data['userName'] ?? '',
+          email: data['email'] ?? '',
+          photo: data['photo'] ?? '',
+        );
+      }).toList();
       notifyListeners();
     } catch (e) {
       _error = e.toString();
@@ -93,13 +93,16 @@ class RideRecommendationProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final userDoc = await FirebaseFirestore.instance
-          .collection('users').doc(currentUser.uid).get();
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
       final userData = userDoc.data() ?? {};
 
       final rec = RideRecommendationEntity(
         id: '',
         fromUserId: currentUser.uid,
-        fromUserName: userData['fullName'] ?? userData['userName'] ?? 'Ciclista',
+        fromUserName:
+            userData['fullName'] ?? userData['userName'] ?? 'Ciclista',
         fromUserPhoto: userData['photo'],
         toUserId: toUser.id,
         trackId: track.id,
@@ -134,7 +137,9 @@ class RideRecommendationProvider extends ChangeNotifier {
 
   Future<void> markAsRead(String id) async {
     await _repo.markAsRead(id);
-    _received = _received.map((r) => r.id == id ? r.copyWith(isRead: true) : r).toList();
+    _received = _received
+        .map((r) => r.id == id ? r.copyWith(isRead: true) : r)
+        .toList();
     notifyListeners();
   }
 

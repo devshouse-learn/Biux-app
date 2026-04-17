@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,8 +43,7 @@ class TwoFactorService {
   static Future<bool> verifyCode(String inputCode) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return false;
-    final doc =
-        await _db.collection('two_factor_codes').doc(user.uid).get();
+    final doc = await _db.collection('two_factor_codes').doc(user.uid).get();
     if (!doc.exists) return false;
     final data = doc.data()!;
     final expiresAt = (data['expiresAt'] as Timestamp).toDate();
@@ -66,10 +64,9 @@ class TwoFactorService {
     await prefs.setBool(_key, value);
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      await _db
-          .collection('users')
-          .doc(uid)
-          .update({'twoFactorEnabled': value});
+      await _db.collection('users').doc(uid).update({
+        'twoFactorEnabled': value,
+      });
     }
   }
 }

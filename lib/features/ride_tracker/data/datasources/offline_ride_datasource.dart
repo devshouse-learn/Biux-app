@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,14 +21,14 @@ class OfflineRideEntity {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'distanceKm': distanceKm,
-        'durationSeconds': durationSeconds,
-        'points': points,
-        'startedAt': startedAt.toIso8601String(),
-        'synced': synced,
-      };
+    'id': id,
+    'name': name,
+    'distanceKm': distanceKm,
+    'durationSeconds': durationSeconds,
+    'points': points,
+    'startedAt': startedAt.toIso8601String(),
+    'synced': synced,
+  };
 
   factory OfflineRideEntity.fromJson(Map<String, dynamic> json) =>
       OfflineRideEntity(
@@ -68,7 +67,9 @@ class OfflineRideDatasource {
       list.add(ride);
     }
     await prefs.setString(
-        _key, jsonEncode(list.map((r) => r.toJson()).toList()));
+      _key,
+      jsonEncode(list.map((r) => r.toJson()).toList()),
+    );
   }
 
   static Future<void> markSynced(String id) async {
@@ -87,7 +88,9 @@ class OfflineRideDatasource {
     list[idx] = updated;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-        _key, jsonEncode(list.map((r) => r.toJson()).toList()));
+      _key,
+      jsonEncode(list.map((r) => r.toJson()).toList()),
+    );
   }
 
   static Future<List<OfflineRideEntity>> getPending() async {
@@ -100,6 +103,8 @@ class OfflineRideDatasource {
     list.removeWhere((r) => r.id == id);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-        _key, jsonEncode(list.map((r) => r.toJson()).toList()));
+      _key,
+      jsonEncode(list.map((r) => r.toJson()).toList()),
+    );
   }
 }

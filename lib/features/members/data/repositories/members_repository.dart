@@ -90,9 +90,7 @@ class MembersRepository {
   }
 
   Future<Member> deleteMember(Member member) async {
-    var headers = {
-      HttpHeaders.contentTypeHeader: 'application/json',
-    };
+    var headers = {HttpHeaders.contentTypeHeader: 'application/json'};
 
     var url = ApiConfig.miembroById(member.id);
     final http.Response response = await http.delete(

@@ -33,11 +33,12 @@ class PromotionRequestModel {
     this.ownerName = '',
     this.isPromoter = false,
     DateTime? createdAt,
-  })  : attendees = attendees ?? [],
-        createdAt = createdAt ?? DateTime.now();
+  }) : attendees = attendees ?? [],
+       createdAt = createdAt ?? DateTime.now();
 
   bool get isFull => maxAttendees != null && attendees.length >= maxAttendees!;
-  int get spotsLeft => maxAttendees != null ? maxAttendees! - attendees.length : -1;
+  int get spotsLeft =>
+      maxAttendees != null ? maxAttendees! - attendees.length : -1;
 
   Map<String, dynamic> toMap() {
     return {

@@ -1,4 +1,3 @@
-﻿
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -75,7 +74,8 @@ class WeatherProvider extends ChangeNotifier {
     if (isFreezingCondition || main == "Thunderstorm") return "peligroso";
     if (main == "Snow" || gustsKmh > 60 || temp < 2) return "peligroso";
     if (main == "Rain" || windKmh > 40 || temp > 38) return "malo";
-    if (main == "Drizzle" || windKmh > 25 || temp > 33 || humidity > 85) return "regular";
+    if (main == "Drizzle" || windKmh > 25 || temp > 33 || humidity > 85)
+      return "regular";
     if (windKmh > 15 || precipitationProbability > 40) return "bueno";
     return "ideal";
   }
@@ -93,33 +93,53 @@ class WeatherProvider extends ChangeNotifier {
       _cyclistAlerts.add("âš ï¸ Lluvia helada â€” No recomendado salir");
     }
     if (main == "Thunderstorm") {
-      _cyclistAlerts.add("â›ˆï¸ Tormenta elÃ©ctrica â€” Permanece en interior");
+      _cyclistAlerts.add(
+        "â›ˆï¸ Tormenta elÃ©ctrica â€” Permanece en interior",
+      );
     }
     if (main == "Snow") {
-      _cyclistAlerts.add("â„ï¸ Nieve â€” Riesgo de caÃ­da en piso resbaladizo");
+      _cyclistAlerts.add(
+        "â„ï¸ Nieve â€” Riesgo de caÃ­da en piso resbaladizo",
+      );
     }
     if (gustsKmh > 50) {
-      _cyclistAlerts.add("ðŸ’¨ RÃ¡fagas de \${gustsKmh.toInt()} km/h â€” Peligroso");
+      _cyclistAlerts.add(
+        "ðŸ’¨ RÃ¡fagas de \${gustsKmh.toInt()} km/h â€” Peligroso",
+      );
     } else if (windKmh > 30) {
-      _cyclistAlerts.add("ðŸŒ¬ï¸ Viento fuerte \${windKmh.toInt()} km/h â€” PrecauciÃ³n");
+      _cyclistAlerts.add(
+        "ðŸŒ¬ï¸ Viento fuerte \${windKmh.toInt()} km/h â€” PrecauciÃ³n",
+      );
     }
     if (main == "Rain") {
-      _cyclistAlerts.add("ðŸŒ§ï¸ Lluvia â€” Piso resbaladizo, reduce velocidad");
+      _cyclistAlerts.add(
+        "ðŸŒ§ï¸ Lluvia â€” Piso resbaladizo, reduce velocidad",
+      );
     }
     if (uvIndex > 8) {
-      _cyclistAlerts.add("â˜€ï¸ UV muy alto (\${uvIndex.toInt()}) â€” Usa protector solar");
+      _cyclistAlerts.add(
+        "â˜€ï¸ UV muy alto (\${uvIndex.toInt()}) â€” Usa protector solar",
+      );
     }
     if (temp > 35) {
-      _cyclistAlerts.add("ðŸŒ¡ï¸ Calor extremo \${temp.toInt()}Â°C â€” HidrataciÃ³n constante");
+      _cyclistAlerts.add(
+        "ðŸŒ¡ï¸ Calor extremo \${temp.toInt()}Â°C â€” HidrataciÃ³n constante",
+      );
     }
     if (temp < 5) {
-      _cyclistAlerts.add("ðŸ¥¶ Temperatura baja \${temp.toInt()}Â°C â€” AbrÃ­gate bien");
+      _cyclistAlerts.add(
+        "ðŸ¥¶ Temperatura baja \${temp.toInt()}Â°C â€” AbrÃ­gate bien",
+      );
     }
     if (visibility < 1000) {
-      _cyclistAlerts.add("ðŸŒ«ï¸ Visibilidad reducida â€” Usa luces y reflectores");
+      _cyclistAlerts.add(
+        "ðŸŒ«ï¸ Visibilidad reducida â€” Usa luces y reflectores",
+      );
     }
     if (precipitationProbability > 60) {
-      _cyclistAlerts.add("â˜” \${precipitationProbability}% probabilidad de lluvia");
+      _cyclistAlerts.add(
+        "â˜” \${precipitationProbability}% probabilidad de lluvia",
+      );
     }
   }
 
@@ -135,7 +155,9 @@ class WeatherProvider extends ChangeNotifier {
       }
 
       final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+        ),
       );
 
       const apiKey = "5b8ae9b3d2804c5c9a65ccc18e4a2b1a";
@@ -157,6 +179,7 @@ class WeatherProvider extends ChangeNotifier {
     _loading = false;
     notifyListeners();
   }
+
   /// true si las condiciones son seguras para salir en bici
   bool get isSafeToRide {
     final c = cyclingCondition;
@@ -168,15 +191,23 @@ class WeatherProvider extends ChangeNotifier {
     if (_weatherData == null) return 'ðŸŒ¡ï¸';
     final main = _weatherData?['weather']?[0]?['main'] ?? '';
     switch (main) {
-      case 'Clear': return isDay ? 'â˜€ï¸' : 'ðŸŒ™';
-      case 'Clouds': return 'â˜ï¸';
-      case 'Rain': return 'ðŸŒ§ï¸';
-      case 'Drizzle': return 'ðŸŒ¦ï¸';
-      case 'Thunderstorm': return 'â›ˆï¸';
-      case 'Snow': return 'â„ï¸';
+      case 'Clear':
+        return isDay ? 'â˜€ï¸' : 'ðŸŒ™';
+      case 'Clouds':
+        return 'â˜ï¸';
+      case 'Rain':
+        return 'ðŸŒ§ï¸';
+      case 'Drizzle':
+        return 'ðŸŒ¦ï¸';
+      case 'Thunderstorm':
+        return 'â›ˆï¸';
+      case 'Snow':
+        return 'â„ï¸';
       case 'Mist':
-      case 'Fog': return 'ðŸŒ«ï¸';
-      default: return 'ðŸŒ¡ï¸';
+      case 'Fog':
+        return 'ðŸŒ«ï¸';
+      default:
+        return 'ðŸŒ¡ï¸';
     }
   }
 
@@ -206,5 +237,4 @@ class WeatherProvider extends ChangeNotifier {
         return 'Cargando condiciones...';
     }
   }
-
 }

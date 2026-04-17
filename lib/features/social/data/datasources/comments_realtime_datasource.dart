@@ -159,10 +159,14 @@ class CommentsRealtimeDatasource {
         final snapshot = await parentRef.get();
         final currentCount = snapshot.value as int? ?? 0;
         await parentRef.set(currentCount + 1);
-        debugPrint('✅ Contador actualizado: $currentCount -> ${currentCount + 1}');
+        debugPrint(
+          '✅ Contador actualizado: $currentCount -> ${currentCount + 1}',
+        );
       } catch (counterError) {
         // No fallar si el contador no se puede actualizar
-        debugPrint('⚠️ No se pudo actualizar contador de respuestas: $counterError');
+        debugPrint(
+          '⚠️ No se pudo actualizar contador de respuestas: $counterError',
+        );
         // El comentario ya fue creado exitosamente, esto es solo metadata
       }
     }

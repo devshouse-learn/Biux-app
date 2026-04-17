@@ -8,12 +8,12 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({required this.remoteDataSource});
 
   UserEntity _toEntity(dynamic model) => UserEntity(
-        id: model.uid,
-        fullName: model.name ?? 'Usuario',
-        userName: model.username ?? model.name ?? 'usuario',
-        email: model.email ?? '',
-        photo: model.photoUrl ?? '',
-      );
+    id: model.uid,
+    fullName: model.name ?? 'Usuario',
+    userName: model.username ?? model.name ?? 'usuario',
+    email: model.email ?? '',
+    photo: model.photoUrl ?? '',
+  );
 
   @override
   Future<UserEntity> getUserById(String id) async {

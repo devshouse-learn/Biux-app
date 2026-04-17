@@ -24,6 +24,9 @@ class ChatProvider extends ChangeNotifier {
   Timer? _typingTimer;
   StreamSubscription<Map<String, bool>>? _typingSub;
 
+  // IDs de mensajes optimistas pendientes de confirmación
+  final Set<String> _pendingOptimisticIds = {};
+
   StreamSubscription<List<ChatEntity>>? _chatsSub;
   StreamSubscription<List<MessageEntity>>? _messagesSub;
   StreamSubscription<ChatEntity?>? _activeChatSub;
@@ -57,7 +60,18 @@ class ChatProvider extends ChangeNotifier {
         .getMessages(chatId)
         .listen(
           (list) {
-            _messages = _applyReadStatus(list);
+            // Merge: keep optimistic messages not yet confirmed by Firestore
+            final serverIds = list.map((m) => m.id).toSet();
+            final stillPending = _messages
+                .where(
+                  (m) =>
+                      _pendingOptimisticIds.contains(m.id) &&
+                      !serverIds.contains(m.id),
+                )
+                .toList();
+            // Remove confirmed optimistic IDs
+            _pendingOptimisticIds.removeWhere(serverIds.contains);
+            _messages = _applyReadStatus([...list, ...stillPending]);
             notifyListeners();
           },
           onError: (error) {
@@ -138,20 +152,57 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
+  // ── Optimistic insert: muestra mensaje al instante en la UI ────────────
+  int _tempIdCounter = 0;
+
+  String _nextTempId() =>
+      '__optimistic_${_tempIdCounter++}_${DateTime.now().millisecondsSinceEpoch}';
+
+  void _optimisticInsert(MessageEntity msg) {
+    _pendingOptimisticIds.add(msg.id);
+    _messages = [..._messages, msg];
+    notifyListeners();
+  }
+
+  void _removeOptimistic(String tempId) {
+    _pendingOptimisticIds.remove(tempId);
+    _messages = _messages.where((m) => m.id != tempId).toList();
+  }
+
   Future<void> sendImageMessage({
     required String chatId,
     required File imageFile,
     required String senderName,
     String? senderAvatar,
   }) async {
+    final tempId = _nextTempId();
+    final replyId = _replyingTo?.id;
+    final replyPrev = _replyingTo?.content;
+    _replyingTo = null;
+
+    // Optimistic: mostrar placeholder inmediatamente con ruta local
+    final optimistic = MessageEntity(
+      id: tempId,
+      chatId: chatId,
+      senderId: currentUid,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+      content: '',
+      type: MessageType.image,
+      sentAt: DateTime.now(),
+      mediaUrl: imageFile.path, // ruta local como placeholder
+      replyToId: replyId,
+      replyPreview: replyPrev,
+    );
+    _optimisticInsert(optimistic);
+
     try {
       final fileName = 'img_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      // Comprimir imagen para subida rápida
       final Uint8List? compressed = await FlutterImageCompress.compressWithFile(
         imageFile.absolute.path,
-        minWidth: 1024,
-        minHeight: 1024,
-        quality: 70,
+        minWidth: 800,
+        minHeight: 800,
+        quality: 50,
         format: CompressFormat.jpeg,
       );
       final ref = FirebaseStorage.instance
@@ -159,18 +210,13 @@ class ChatProvider extends ChangeNotifier {
           .child('chat_images')
           .child(chatId)
           .child(fileName);
-      if (compressed != null) {
-        await ref.putData(
-          compressed,
-          SettableMetadata(contentType: 'image/jpeg'),
-        );
-      } else {
-        await ref.putFile(
-          imageFile,
-          SettableMetadata(contentType: 'image/jpeg'),
-        );
-      }
+      final uploadData = compressed ?? await imageFile.readAsBytes();
+      await ref.putData(
+        uploadData,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
       final url = await ref.getDownloadURL();
+      _removeOptimistic(tempId);
       final message = MessageEntity(
         id: '',
         chatId: chatId,
@@ -181,13 +227,12 @@ class ChatProvider extends ChangeNotifier {
         type: MessageType.image,
         sentAt: DateTime.now(),
         mediaUrl: url,
-        replyToId: _replyingTo?.id,
-        replyPreview: _replyingTo?.content,
+        replyToId: replyId,
+        replyPreview: replyPrev,
       );
-      _replyingTo = null;
-      notifyListeners();
       await _ds.sendMessage(chatId: chatId, message: message);
     } catch (e) {
+      _removeOptimistic(tempId);
       _error = 'No se pudo enviar la imagen';
       notifyListeners();
     }
@@ -199,6 +244,26 @@ class ChatProvider extends ChangeNotifier {
     required String senderName,
     String? senderAvatar,
   }) async {
+    final tempId = _nextTempId();
+    final replyId = _replyingTo?.id;
+    final replyPrev = _replyingTo?.content;
+    _replyingTo = null;
+
+    final optimistic = MessageEntity(
+      id: tempId,
+      chatId: chatId,
+      senderId: currentUid,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+      content: '',
+      type: MessageType.video,
+      sentAt: DateTime.now(),
+      mediaUrl: videoFile.path,
+      replyToId: replyId,
+      replyPreview: replyPrev,
+    );
+    _optimisticInsert(optimistic);
+
     try {
       final ext = videoFile.path.split('.').last;
       final fileName = 'vid_${DateTime.now().millisecondsSinceEpoch}.$ext';
@@ -210,6 +275,7 @@ class ChatProvider extends ChangeNotifier {
           .child(fileName);
       await ref.putFile(videoFile, SettableMetadata(contentType: mime));
       final url = await ref.getDownloadURL();
+      _removeOptimistic(tempId);
       final message = MessageEntity(
         id: '',
         chatId: chatId,
@@ -220,19 +286,18 @@ class ChatProvider extends ChangeNotifier {
         type: MessageType.video,
         sentAt: DateTime.now(),
         mediaUrl: url,
-        replyToId: _replyingTo?.id,
-        replyPreview: _replyingTo?.content,
+        replyToId: replyId,
+        replyPreview: replyPrev,
       );
-      _replyingTo = null;
-      notifyListeners();
       await _ds.sendMessage(chatId: chatId, message: message);
     } catch (e) {
+      _removeOptimistic(tempId);
       _error = 'No se pudo enviar el video';
       notifyListeners();
     }
   }
 
-  /// Envía múltiples archivos de media (imágenes y/o videos) en paralelo.
+  /// Envía múltiples archivos de media (imágenes, videos y/o audios) en paralelo.
   Future<void> sendMediaFiles({
     required String chatId,
     required List<File> files,
@@ -251,6 +316,15 @@ class ChatProvider extends ChangeNotifier {
             senderAvatar: senderAvatar,
           ),
         );
+      } else if (mime.startsWith('audio')) {
+        futures.add(
+          sendAudioFileMessage(
+            chatId: chatId,
+            audioFile: file,
+            senderName: senderName,
+            senderAvatar: senderAvatar,
+          ),
+        );
       } else {
         futures.add(
           sendImageMessage(
@@ -265,6 +339,68 @@ class ChatProvider extends ChangeNotifier {
     await Future.wait(futures);
   }
 
+  /// Envía un archivo de audio almacenado (no grabación de voz).
+  Future<void> sendAudioFileMessage({
+    required String chatId,
+    required File audioFile,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    final tempId = _nextTempId();
+    final replyId = _replyingTo?.id;
+    final replyPrev = _replyingTo?.content;
+    _replyingTo = null;
+
+    final optimistic = MessageEntity(
+      id: tempId,
+      chatId: chatId,
+      senderId: currentUid,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+      content: '',
+      type: MessageType.voice,
+      sentAt: DateTime.now(),
+      mediaUrl: audioFile.path,
+      fileName: audioFile.path.split('/').last,
+      replyToId: replyId,
+      replyPreview: replyPrev,
+    );
+    _optimisticInsert(optimistic);
+
+    try {
+      final ext = audioFile.path.split('.').last;
+      final fileName = 'audio_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      final mime = lookupMimeType(audioFile.path) ?? 'audio/mpeg';
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('chat_audio')
+          .child(chatId)
+          .child(fileName);
+      await ref.putFile(audioFile, SettableMetadata(contentType: mime));
+      final url = await ref.getDownloadURL();
+      _removeOptimistic(tempId);
+      final message = MessageEntity(
+        id: '',
+        chatId: chatId,
+        senderId: currentUid,
+        senderName: senderName,
+        senderAvatar: senderAvatar,
+        content: '',
+        type: MessageType.voice,
+        sentAt: DateTime.now(),
+        mediaUrl: url,
+        fileName: audioFile.path.split('/').last,
+        replyToId: replyId,
+        replyPreview: replyPrev,
+      );
+      await _ds.sendMessage(chatId: chatId, message: message);
+    } catch (e) {
+      _removeOptimistic(tempId);
+      _error = 'No se pudo enviar el audio';
+      notifyListeners();
+    }
+  }
+
   Future<void> sendLocationMessage({
     required String chatId,
     required double lat,
@@ -272,8 +408,9 @@ class ChatProvider extends ChangeNotifier {
     required String senderName,
     String? senderAvatar,
   }) async {
+    final tempId = _nextTempId();
     final message = MessageEntity(
-      id: '',
+      id: tempId,
       chatId: chatId,
       senderId: currentUid,
       senderName: senderName,
@@ -287,8 +424,14 @@ class ChatProvider extends ChangeNotifier {
       replyPreview: _replyingTo?.content,
     );
     _replyingTo = null;
-    notifyListeners();
-    await _ds.sendMessage(chatId: chatId, message: message);
+    _optimisticInsert(message);
+    // Fire-and-forget
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+      _,
+    ) {
+      _removeOptimistic(tempId);
+      notifyListeners();
+    });
   }
 
   void setReplyingTo(MessageEntity? message) {
@@ -303,8 +446,9 @@ class ChatProvider extends ChangeNotifier {
     String? senderAvatar,
   }) async {
     if (text.trim().isEmpty) return;
+    final tempId = _nextTempId();
     final message = MessageEntity(
-      id: '',
+      id: tempId,
       chatId: chatId,
       senderId: currentUid,
       senderName: senderName,
@@ -316,8 +460,14 @@ class ChatProvider extends ChangeNotifier {
       replyPreview: _replyingTo?.content,
     );
     _replyingTo = null;
-    notifyListeners();
-    await _ds.sendMessage(chatId: chatId, message: message);
+    _optimisticInsert(message);
+    // Fire-and-forget
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+      _,
+    ) {
+      _removeOptimistic(tempId);
+      notifyListeners();
+    });
   }
 
   Future<void> sendVoiceMessage({
@@ -327,8 +477,9 @@ class ChatProvider extends ChangeNotifier {
     required String senderName,
     String? senderAvatar,
   }) async {
+    final tempId = _nextTempId();
     final message = MessageEntity(
-      id: '',
+      id: tempId,
       chatId: chatId,
       senderId: currentUid,
       senderName: senderName,
@@ -339,7 +490,13 @@ class ChatProvider extends ChangeNotifier {
       mediaUrl: audioUrl,
       audioDurationSeconds: durationSeconds,
     );
-    await _ds.sendMessage(chatId: chatId, message: message);
+    _optimisticInsert(message);
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+      _,
+    ) {
+      _removeOptimistic(tempId);
+      notifyListeners();
+    });
   }
 
   Future<void> editMessage({
@@ -451,6 +608,83 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// Envío legacy con parámetros posicionales (compatibilidad)
+
+  Future<void> sendPollMessage({
+    required String chatId,
+    required String question,
+    required List<String> options,
+    required bool allowMultiple,
+    required String senderName,
+    String? senderAvatar,
+  }) async {
+    final tempId = _nextTempId();
+    final votes = <String, List<String>>{};
+    for (int i = 0; i < options.length; i++) {
+      votes[i.toString()] = [];
+    }
+    final message = MessageEntity(
+      id: tempId,
+      chatId: chatId,
+      senderId: currentUid,
+      senderName: senderName,
+      senderAvatar: senderAvatar,
+      content: '📊 $question',
+      type: MessageType.poll,
+      sentAt: DateTime.now(),
+      pollQuestion: question,
+      pollOptions: options,
+      pollVotes: votes,
+      pollAllowMultiple: allowMultiple,
+      replyToId: _replyingTo?.id,
+      replyPreview: _replyingTo?.content,
+    );
+    _replyingTo = null;
+    _optimisticInsert(message);
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+      _,
+    ) {
+      _removeOptimistic(tempId);
+      notifyListeners();
+    });
+  }
+
+  Future<void> votePoll({
+    required String chatId,
+    required String messageId,
+    required int optionIndex,
+  }) async {
+    final uid = currentUid;
+    final ref = FirebaseFirestore.instance
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId);
+    final snap = await ref.get();
+    if (!snap.exists) return;
+    final data = snap.data()!;
+    final allowMultiple = data['pollAllowMultiple'] ?? false;
+    final votes = <String, List<String>>{};
+    final rawVotes = data['pollVotes'] as Map<String, dynamic>? ?? {};
+    for (final entry in rawVotes.entries) {
+      votes[entry.key] = List<String>.from(entry.value);
+    }
+    final key = optionIndex.toString();
+
+    // Toggle vote on the selected option
+    if (votes[key]?.contains(uid) == true) {
+      votes[key]!.remove(uid);
+    } else {
+      if (!allowMultiple) {
+        // Remove from all other options first
+        for (final v in votes.values) {
+          v.remove(uid);
+        }
+      }
+      votes[key] = [...(votes[key] ?? []), uid];
+    }
+    await ref.update({'pollVotes': votes});
+  }
+
   Future<void> sendMessage(
     String chatId, {
     required String senderId,
@@ -458,8 +692,9 @@ class ChatProvider extends ChangeNotifier {
     required String content,
     List<String> participants = const [],
   }) async {
+    final tempId = _nextTempId();
     final msg = MessageEntity(
-      id: '',
+      id: tempId,
       chatId: chatId,
       senderId: senderId,
       senderName: senderName,
@@ -467,7 +702,11 @@ class ChatProvider extends ChangeNotifier {
       type: MessageType.text,
       sentAt: DateTime.now(),
     );
-    await _ds.sendMessage(chatId: chatId, message: msg);
+    _optimisticInsert(msg);
+    _ds.sendMessage(chatId: chatId, message: msg.copyWith()).catchError((_) {
+      _removeOptimistic(tempId);
+      notifyListeners();
+    });
   }
 
   /// Aplica isRead/isDelivered en memoria según los timestamps del chat doc.

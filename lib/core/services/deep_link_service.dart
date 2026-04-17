@@ -57,7 +57,9 @@ class DeepLinkService {
         return;
       }
 
-      AppLogger.warning('⚠️ Esquema o host no reconocido: ${uri.scheme}://${uri.host}');
+      AppLogger.warning(
+        '⚠️ Esquema o host no reconocido: ${uri.scheme}://${uri.host}',
+      );
     } catch (e) {
       AppLogger.error('❌ Error procesando deep link: $e');
     }

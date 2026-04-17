@@ -20,9 +20,16 @@ class PerformanceService {
     try {
       _appLoadTrace = _performance.newTrace('app_load');
       await _appLoadTrace?.start();
-      AppLogger.debug('Performance trace: app_load started', tag: 'Performance');
+      AppLogger.debug(
+        'Performance trace: app_load started',
+        tag: 'Performance',
+      );
     } catch (e) {
-      AppLogger.error('Error starting app_load trace', error: e, tag: 'Performance');
+      AppLogger.error(
+        'Error starting app_load trace',
+        error: e,
+        tag: 'Performance',
+      );
     }
   }
 
@@ -31,9 +38,16 @@ class PerformanceService {
     try {
       await _appLoadTrace?.stop();
       _appLoadTrace = null;
-      AppLogger.debug('Performance trace: app_load stopped', tag: 'Performance');
+      AppLogger.debug(
+        'Performance trace: app_load stopped',
+        tag: 'Performance',
+      );
     } catch (e) {
-      AppLogger.error('Error stopping app_load trace', error: e, tag: 'Performance');
+      AppLogger.error(
+        'Error stopping app_load trace',
+        error: e,
+        tag: 'Performance',
+      );
     }
   }
 
@@ -44,7 +58,11 @@ class PerformanceService {
       await trace.start();
       return trace;
     } catch (e) {
-      AppLogger.error('Error starting trace: $name', error: e, tag: 'Performance');
+      AppLogger.error(
+        'Error starting trace: $name',
+        error: e,
+        tag: 'Performance',
+      );
       return null;
     }
   }
@@ -63,7 +81,11 @@ class PerformanceService {
     try {
       trace?.putAttribute(key, value);
     } catch (e) {
-      AppLogger.error('Error setting trace attribute', error: e, tag: 'Performance');
+      AppLogger.error(
+        'Error setting trace attribute',
+        error: e,
+        tag: 'Performance',
+      );
     }
   }
 
@@ -72,7 +94,11 @@ class PerformanceService {
     try {
       trace?.setMetric(name, value);
     } catch (e) {
-      AppLogger.error('Error setting trace metric', error: e, tag: 'Performance');
+      AppLogger.error(
+        'Error setting trace metric',
+        error: e,
+        tag: 'Performance',
+      );
     }
   }
 
@@ -105,7 +131,11 @@ class PerformanceService {
       await metric.start();
       return metric;
     } catch (e) {
-      AppLogger.error('Error starting HTTP metric', error: e, tag: 'Performance');
+      AppLogger.error(
+        'Error starting HTTP metric',
+        error: e,
+        tag: 'Performance',
+      );
       return null;
     }
   }
@@ -118,12 +148,17 @@ class PerformanceService {
   }) async {
     try {
       if (metric != null) {
-        if (responseCode != null) metric.responsePayloadSize = responsePayloadSize;
+        if (responseCode != null)
+          metric.responsePayloadSize = responsePayloadSize;
         if (responseCode != null) metric.httpResponseCode = responseCode;
         await metric.stop();
       }
     } catch (e) {
-      AppLogger.error('Error stopping HTTP metric', error: e, tag: 'Performance');
+      AppLogger.error(
+        'Error stopping HTTP metric',
+        error: e,
+        tag: 'Performance',
+      );
     }
   }
 }

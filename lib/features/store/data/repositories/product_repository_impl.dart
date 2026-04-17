@@ -22,7 +22,7 @@ class ProductRepositoryImpl implements ProductRepository {
       // Filtrar activos en memoria
       return snapshot.docs
           .map((doc) => ProductModel.fromJson({...doc.data(), 'id': doc.id}))
-          .where((product) => product.activo) 
+          .where((product) => product.activo)
           .toList();
     } catch (e) {
       throw Exception('Error al obtener productos: $e');
@@ -48,7 +48,7 @@ class ProductRepositoryImpl implements ProductRepository {
 
       // Ordenar en memoria por fechaCreacion
       products.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
-      
+
       return products;
     } catch (e) {
       throw Exception('Error al obtener productos por categoría: $e');
@@ -90,7 +90,7 @@ class ProductRepositoryImpl implements ProductRepository {
 
       // Ordenar en memoria por fechaCreacion
       products.sort((a, b) => b.fechaCreacion.compareTo(a.fechaCreacion));
-      
+
       return products;
     } catch (e) {
       throw Exception('Error al obtener productos destacados: $e');
@@ -103,34 +103,37 @@ class ProductRepositoryImpl implements ProductRepository {
       final queryLower = query.toLowerCase();
 
       // Obtener todos los productos
-      final snapshot = await _firestore
-          .collection(_collection)
-          .get();
+      final snapshot = await _firestore.collection(_collection).get();
 
       // Búsqueda en memoria (Firestore no soporta búsqueda de texto completa nativa)
-      final filtered = snapshot.docs.where((doc) {
-        final data = doc.data();
-        final nombre = (data['nombre'] ?? '').toString().toLowerCase();
-        final descripcion = (data['descripcion'] ?? '').toString().toLowerCase();
-        final activo = data['activo'] ?? true;
-        final tags = List<String>.from(
-          data['tags'] ?? [],
-        ).map((t) => t.toLowerCase()).toList();
+      final filtered = snapshot.docs
+          .where((doc) {
+            final data = doc.data();
+            final nombre = (data['nombre'] ?? '').toString().toLowerCase();
+            final descripcion = (data['descripcion'] ?? '')
+                .toString()
+                .toLowerCase();
+            final activo = data['activo'] ?? true;
+            final tags = List<String>.from(
+              data['tags'] ?? [],
+            ).map((t) => t.toLowerCase()).toList();
 
-        return activo && (nombre.contains(queryLower) ||
-            descripcion.contains(queryLower) ||
-            tags.any((tag) => tag.contains(queryLower)));
-      }).map((doc) => ProductModel.fromJson({...doc.data(), 'id': doc.id}))
+            return activo &&
+                (nombre.contains(queryLower) ||
+                    descripcion.contains(queryLower) ||
+                    tags.any((tag) => tag.contains(queryLower)));
+          })
+          .map((doc) => ProductModel.fromJson({...doc.data(), 'id': doc.id}))
           .toList();
 
       // Ordenar por relevancia (coincidencias en nombre tienen prioridad)
       filtered.sort((a, b) {
         final aNameMatch = a.nombre.toLowerCase().contains(queryLower);
         final bNameMatch = b.nombre.toLowerCase().contains(queryLower);
-        
+
         if (aNameMatch && !bNameMatch) return -1;
         if (!aNameMatch && bNameMatch) return 1;
-        
+
         return b.fechaCreacion.compareTo(a.fechaCreacion);
       });
 

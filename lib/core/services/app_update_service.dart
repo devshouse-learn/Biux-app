@@ -44,7 +44,10 @@ class AppUpdateService {
 
   static bool isOptionalUpdateAvailable() {
     final config = RemoteConfigService();
-    final latestVersion = config.getString('latest_version', defaultValue: '1.0.0');
+    final latestVersion = config.getString(
+      'latest_version',
+      defaultValue: '1.0.0',
+    );
     return _isVersionLower(currentVersion, latestVersion);
   }
 
@@ -85,7 +88,11 @@ class AppUpdateService {
       }
       return false;
     } catch (e) {
-      AppLogger.error('Error comparando versiones: $v1 vs $v2', error: e, tag: 'AppUpdate');
+      AppLogger.error(
+        'Error comparando versiones: $v1 vs $v2',
+        error: e,
+        tag: 'AppUpdate',
+      );
       return false;
     }
   }

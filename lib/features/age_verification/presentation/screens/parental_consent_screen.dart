@@ -8,7 +8,11 @@ import 'package:biux/core/config/router/app_routes.dart';
 class ParentalConsentScreen extends StatefulWidget {
   final String userId;
   final int userAge;
-  const ParentalConsentScreen({super.key, required this.userId, required this.userAge});
+  const ParentalConsentScreen({
+    super.key,
+    required this.userId,
+    required this.userAge,
+  });
 
   @override
   State<ParentalConsentScreen> createState() => _ParentalConsentScreenState();
@@ -34,29 +38,33 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
           .collection('age_verifications')
           .doc(widget.userId)
           .set({
-        'userId': widget.userId,
-        'age': widget.userAge,
-        'ageGroup': 'minor',
-        'parentEmail': _emailCtrl.text.trim(),
-        'consentStatus': 'pending',
-        'createdAt': FieldValue.serverTimestamp(),
-        'consentToken': DateTime.now().millisecondsSinceEpoch.toString(),
-      });
+            'userId': widget.userId,
+            'age': widget.userAge,
+            'ageGroup': 'minor',
+            'parentEmail': _emailCtrl.text.trim(),
+            'consentStatus': 'pending',
+            'createdAt': FieldValue.serverTimestamp(),
+            'consentToken': DateTime.now().millisecondsSinceEpoch.toString(),
+          });
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.userId)
           .update({
-        'ageVerification': 'pending_parental',
-        'parentEmail': _emailCtrl.text.trim(),
-        'age': widget.userAge,
-        'isMinor': true,
+            'ageVerification': 'pending_parental',
+            'parentEmail': _emailCtrl.text.trim(),
+            'age': widget.userAge,
+            'isMinor': true,
+          });
+      setState(() {
+        _sending = false;
+        _sent = true;
       });
-      setState(() { _sending = false; _sent = true; });
     } catch (e) {
       setState(() => _sending = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
       }
     }
   }
@@ -68,8 +76,10 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
       appBar: AppBar(
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
-        title: const Text('Verificación parental',
-          style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Verificación parental',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
@@ -87,19 +97,26 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
         children: [
           Center(
             child: Container(
-              width: 80, height: 80,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
                 color: Colors.orange.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.family_restroom_rounded, size: 40, color: Colors.orange),
+              child: const Icon(
+                Icons.family_restroom_rounded,
+                size: 40,
+                color: Colors.orange,
+              ),
             ),
           ),
           const SizedBox(height: 20),
           const Center(
-            child: Text('Se requiere autorización',
+            child: Text(
+              'Se requiere autorización',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-              textAlign: TextAlign.center),
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 12),
           Container(
@@ -112,28 +129,54 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(children: [
-                  const Icon(Icons.info_outline_rounded, color: Colors.orange, size: 18),
-                  const SizedBox(width: 8),
-                  Text('Tienes ${widget.userAge} años',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                ]),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline_rounded,
+                      color: Colors.orange,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Tienes ${widget.userAge} años',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 const Text(
                   'Biux permite el uso de la app a partir de los 13 años. '
                   'Como eres menor de 18, necesitamos que un padre, madre o tutor '
                   'legal autorice tu registro.',
-                  style: TextStyle(fontSize: 13, height: 1.5)),
+                  style: TextStyle(fontSize: 13, height: 1.5),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          _step('1', 'Enviaremos un correo a tu padre/madre o tutor', Icons.email_outlined),
-          _step('2', 'Deberán confirmar que autorizan tu registro', Icons.check_circle_outline_rounded),
-          _step('3', 'Una vez aprobado, tendrás acceso completo', Icons.lock_open_rounded),
+          _step(
+            '1',
+            'Enviaremos un correo a tu padre/madre o tutor',
+            Icons.email_outlined,
+          ),
+          _step(
+            '2',
+            'Deberán confirmar que autorizan tu registro',
+            Icons.check_circle_outline_rounded,
+          ),
+          _step(
+            '3',
+            'Una vez aprobado, tendrás acceso completo',
+            Icons.lock_open_rounded,
+          ),
           const SizedBox(height: 20),
-          const Text('Correo del padre, madre o tutor *',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+          const Text(
+            'Correo del padre, madre o tutor *',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 8),
           TextFormField(
             controller: _emailCtrl,
@@ -141,8 +184,13 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             decoration: InputDecoration(
               hintText: 'correo@ejemplo.com',
               prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
             ),
             validator: (v) {
               if (v == null || v.isEmpty) return 'Ingresa el correo';
@@ -152,32 +200,50 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
           ),
           const SizedBox(height: 28),
           SizedBox(
-            width: double.infinity, height: 52,
+            width: double.infinity,
+            height: 52,
             child: ElevatedButton.icon(
               onPressed: _sending ? null : _sendConsent,
               icon: _sending
-                ? const SizedBox(width: 18, height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Icon(Icons.send_rounded),
-              label: Text(_sending ? 'Enviando...' : 'Enviar solicitud',
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.send_rounded),
+              label: Text(
+                _sending ? 'Enviando...' : 'Enviar solicitud',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 elevation: 0,
               ),
             ),
           ),
           const SizedBox(height: 12),
           SizedBox(
-            width: double.infinity, height: 48,
+            width: double.infinity,
+            height: 48,
             child: TextButton(
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 if (context.mounted) context.go(AppRoutes.login);
               },
-              child: const Text('Cancelar y salir', style: TextStyle(color: Colors.grey)),
+              child: const Text(
+                'Cancelar y salir',
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
           ),
         ],
@@ -191,37 +257,54 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
       children: [
         const SizedBox(height: 40),
         Container(
-          width: 90, height: 90,
+          width: 90,
+          height: 90,
           decoration: BoxDecoration(
-            color: Colors.green.withValues(alpha: 0.1), shape: BoxShape.circle),
-          child: const Icon(Icons.mark_email_read_rounded, size: 48, color: Colors.green),
+            color: Colors.green.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.mark_email_read_rounded,
+            size: 48,
+            color: Colors.green,
+          ),
         ),
         const SizedBox(height: 24),
-        const Text('¡Solicitud enviada!',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+        const Text(
+          '¡Solicitud enviada!',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+        ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.green.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(14)),
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: Text(
             'Enviamos un correo a ${_emailCtrl.text} para solicitar autorización. '
             'Tu cuenta estará activa una vez que tu tutor apruebe la solicitud.',
             style: const TextStyle(fontSize: 14, height: 1.6),
-            textAlign: TextAlign.center),
+            textAlign: TextAlign.center,
+          ),
         ),
         const SizedBox(height: 32),
         SizedBox(
-          width: double.infinity, height: 52,
+          width: double.infinity,
+          height: 52,
           child: ElevatedButton(
             onPressed: () => context.go('/stories'),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorTokens.primary30,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-            child: const Text('Entrar a Biux',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: const Text(
+              'Entrar a Biux',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -230,7 +313,10 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
             await FirebaseAuth.instance.signOut();
             if (context.mounted) context.go(AppRoutes.login);
           },
-          child: const Text('Salir por ahora', style: TextStyle(color: Colors.grey)),
+          child: const Text(
+            'Salir por ahora',
+            style: TextStyle(color: Colors.grey),
+          ),
         ),
       ],
     );
@@ -239,19 +325,37 @@ class _ParentalConsentScreenState extends State<ParentalConsentScreen> {
   Widget _step(String num, String text, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Row(children: [
-        Container(
-          width: 28, height: 28,
-          decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
-          child: Center(child: Text(num,
-            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800))),
-        ),
-        const SizedBox(width: 12),
-        Icon(icon, size: 18, color: Colors.grey[600]),
-        const SizedBox(width: 8),
-        Expanded(child: Text(text,
-          style: TextStyle(fontSize: 13, color: Colors.grey[700]))),
-      ]),
+      child: Row(
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: const BoxDecoration(
+              color: Colors.orange,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                num,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Icon(icon, size: 18, color: Colors.grey[600]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

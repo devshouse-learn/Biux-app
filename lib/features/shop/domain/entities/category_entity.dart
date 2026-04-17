@@ -38,7 +38,7 @@ class ProductCategories {
   static const String gloves = 'guantes';
   static const String shoes = 'zapatos';
   static const String accessories = 'accesorios';
-  
+
   // Nuevas categorías específicas para ciclistas
   static const String bikes = 'bicicletas';
   static const String components = 'componentes';

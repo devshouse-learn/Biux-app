@@ -28,7 +28,9 @@ class TwoFactorService {
     if (!doc.exists) return false;
     final stored = doc.data()?['code'];
     if (stored == code) {
-      await _db.collection('two_factor_codes').doc(uid).update({'verified': true});
+      await _db.collection('two_factor_codes').doc(uid).update({
+        'verified': true,
+      });
       await _db.collection('users').doc(uid).update({'twoFactorEnabled': true});
       return true;
     }

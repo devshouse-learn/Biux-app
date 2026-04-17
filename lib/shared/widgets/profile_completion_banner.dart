@@ -22,7 +22,9 @@ class ProfileCompletionBanner extends StatelessWidget {
           decoration: BoxDecoration(
             color: ColorTokens.primary95,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: ColorTokens.primary40.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: ColorTokens.primary40.withValues(alpha: 0.3),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,9 +32,13 @@ class ProfileCompletionBanner extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Perfil completado al \$percent%',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(
+                    'Perfil completado al \$percent%',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
                   TextButton(
                     onPressed: () => context.push('/edit-user'),
                     child: const Text('Completar'),
@@ -53,9 +59,10 @@ class ProfileCompletionBanner extends StatelessWidget {
               ),
               if (missing.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Text('Faltan: \${missing.join(", ")}',
-                    style: TextStyle(
-                        fontSize: 12, color: Colors.grey.shade600)),
+                Text(
+                  'Faltan: \${missing.join(", ")}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
               ],
             ],
           ),

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReportDatasource {
@@ -25,23 +24,39 @@ class ReportDatasource {
   }
 
   Future<void> blockUser(String currentUid, String blockedUid) async {
-    await _fs.collection('users').doc(currentUid).collection('blocked').doc(blockedUid).set({
-      'uid': blockedUid,
-      'blockedAt': FieldValue.serverTimestamp(),
-    });
+    await _fs
+        .collection('users')
+        .doc(currentUid)
+        .collection('blocked')
+        .doc(blockedUid)
+        .set({'uid': blockedUid, 'blockedAt': FieldValue.serverTimestamp()});
   }
 
   Future<void> unblockUser(String currentUid, String blockedUid) async {
-    await _fs.collection('users').doc(currentUid).collection('blocked').doc(blockedUid).delete();
+    await _fs
+        .collection('users')
+        .doc(currentUid)
+        .collection('blocked')
+        .doc(blockedUid)
+        .delete();
   }
 
   Future<bool> isBlocked(String currentUid, String targetUid) async {
-    final doc = await _fs.collection('users').doc(currentUid).collection('blocked').doc(targetUid).get();
+    final doc = await _fs
+        .collection('users')
+        .doc(currentUid)
+        .collection('blocked')
+        .doc(targetUid)
+        .get();
     return doc.exists;
   }
 
   Future<List<String>> getBlockedUsers(String uid) async {
-    final snap = await _fs.collection('users').doc(uid).collection('blocked').get();
+    final snap = await _fs
+        .collection('users')
+        .doc(uid)
+        .collection('blocked')
+        .get();
     return snap.docs.map((d) => d.id).toList();
   }
 }

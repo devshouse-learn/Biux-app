@@ -205,8 +205,8 @@ class UserProfileProvider extends ChangeNotifier {
                 _currentProfile = BiuxUser.fromJsonMap({...data, 'id': userId});
                 notifyListeners();
               } catch (e) {
-      debugPrint('Error: ' + e.toString());
-    }
+                debugPrint('Error: ' + e.toString());
+              }
             }
           }, onError: (error) {});
     } catch (e) {

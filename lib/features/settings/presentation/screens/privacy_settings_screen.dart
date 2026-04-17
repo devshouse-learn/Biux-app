@@ -14,8 +14,10 @@ class PrivacySettingsScreen extends StatelessWidget {
       backgroundColor: ColorTokens.neutral99,
       appBar: AppBar(
         backgroundColor: ColorTokens.primary10,
-        title: const Text('Privacidad y datos',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Privacidad y datos',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
@@ -60,7 +62,9 @@ class PrivacySettingsScreen extends StatelessWidget {
   void _exportData(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Solicitud enviada. Recibirás un email con tus datos en 48h.'),
+        content: Text(
+          'Solicitud enviada. Recibirás un email con tus datos en 48h.',
+        ),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -72,16 +76,23 @@ class PrivacySettingsScreen extends StatelessWidget {
       builder: (_) => AlertDialog(
         title: const Text('¿Eliminar cuenta?'),
         content: const Text(
-            'Esta acción es irreversible. Todos tus datos, grupos y rodadas serán eliminados permanentemente.'),
+          'Esta acción es irreversible. Todos tus datos, grupos y rodadas serán eliminados permanentemente.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               Navigator.pop(context);
               context.read<UserProvider>().requestAccountDeletion();
             },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Eliminar',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -94,14 +105,17 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.title);
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8, top: 8),
-        child: Text(title,
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade500,
-                letterSpacing: 0.5)),
-      );
+    padding: const EdgeInsets.only(bottom: 8, top: 8),
+    child: Text(
+      title,
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.bold,
+        color: Colors.grey.shade500,
+        letterSpacing: 0.5,
+      ),
+    ),
+  );
 }
 
 class _PrivacyTile extends StatelessWidget {
@@ -111,8 +125,11 @@ class _PrivacyTile extends StatelessWidget {
   final VoidCallback onTap;
   final Color? color;
   const _PrivacyTile({
-    required this.icon, required this.title,
-    required this.subtitle, required this.onTap, this.color,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.color,
   });
   @override
   Widget build(BuildContext context) {
@@ -125,7 +142,10 @@ class _PrivacyTile extends StatelessWidget {
           backgroundColor: c.withValues(alpha: 0.1),
           child: Icon(icon, color: c, size: 20),
         ),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: c)),
+        title: Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.w600, color: c),
+        ),
         subtitle: Text(subtitle, style: TextStyle(color: Colors.grey.shade600)),
         trailing: const Icon(Icons.chevron_right, size: 18),
         onTap: onTap,

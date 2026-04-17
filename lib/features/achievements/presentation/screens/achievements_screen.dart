@@ -1111,7 +1111,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
           children: [
             Center(
               child: Container(
-                width: 40, height: 4,
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(2),
@@ -1119,11 +1120,15 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Compartir logros',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Compartir logros',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 6),
-            Text('Elige cómo quieres compartir tus logros',
-              style: TextStyle(fontSize: 13, color: Colors.grey[500])),
+            Text(
+              'Elige cómo quieres compartir tus logros',
+              style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+            ),
             const SizedBox(height: 24),
             InkWell(
               onTap: () {
@@ -1136,27 +1141,47 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 decoration: BoxDecoration(
                   color: Colors.amber.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.amber.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      width: 48, height: 48,
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
                         color: Colors.amber[800],
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(Icons.people_rounded, color: Colors.white, size: 26),
+                      child: const Icon(
+                        Icons.people_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        const Text('Compartir con amigos en Biux',
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                        const SizedBox(height: 3),
-                        Text('Envía tus logros por chat a otros ciclistas',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[500])),
-                      ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Compartir con amigos en Biux',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Envía tus logros por chat a otros ciclistas',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
                   ],
@@ -1175,27 +1200,47 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      width: 48, height: 48,
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
                         color: Colors.green[600],
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(Icons.share_rounded, color: Colors.white, size: 26),
+                      child: const Icon(
+                        Icons.share_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        const Text('Compartir fuera de Biux',
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                        const SizedBox(height: 3),
-                        Text('WhatsApp, Instagram, X y más',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[500])),
-                      ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Compartir fuera de Biux',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'WhatsApp, Instagram, X y más',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
                   ],
@@ -1312,10 +1357,12 @@ class _AchievementsShareInAppSheet extends StatefulWidget {
   const _AchievementsShareInAppSheet({required this.statsText});
 
   @override
-  State<_AchievementsShareInAppSheet> createState() => _AchievementsShareInAppSheetState();
+  State<_AchievementsShareInAppSheet> createState() =>
+      _AchievementsShareInAppSheetState();
 }
 
-class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppSheet> {
+class _AchievementsShareInAppSheetState
+    extends State<_AchievementsShareInAppSheet> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _contacts = [];
   List<Map<String, dynamic>> _filtered = [];
@@ -1343,7 +1390,9 @@ class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppShe
         return;
       }
       final chatProvider = context.read<ChatProvider>();
-      final chats = chatProvider.chats.where((c) => c.typeString == 'direct').toList();
+      final chats = chatProvider.chats
+          .where((c) => c.typeString == 'direct')
+          .toList();
       final contacts = <Map<String, dynamic>>[];
       for (final chat in chats) {
         final otherId = chat.participantIds.firstWhere(
@@ -1351,7 +1400,10 @@ class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppShe
           orElse: () => '',
         );
         if (otherId.isEmpty) continue;
-        final doc = await FirebaseFirestore.instance.collection('users').doc(otherId).get();
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(otherId)
+            .get();
         final data = doc.data();
         contacts.add({
           'userId': otherId,
@@ -1393,18 +1445,22 @@ class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppShe
       );
       setState(() => _sent.add(contact['userId'] as String));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Enviado a ' + (contact['name'] as String)),
-          backgroundColor: Colors.green[600],
-          duration: const Duration(seconds: 2),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Enviado a ' + (contact['name'] as String)),
+            backgroundColor: Colors.green[600],
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Error al enviar el mensaje'),
-          backgroundColor: Colors.red,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al enviar el mensaje'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -1422,15 +1478,18 @@ class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppShe
           children: [
             const SizedBox(height: 12),
             Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 16),
-            const Text('Enviar a amigos en Biux',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            const Text(
+              'Enviar a amigos en Biux',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 14),
             TextField(
               controller: _searchController,
@@ -1451,76 +1510,103 @@ class _AchievementsShareInAppSheetState extends State<_AchievementsShareInAppShe
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _filtered.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.people_outline, size: 48, color: Colors.grey[300]),
-                              const SizedBox(height: 12),
-                              Text('No tienes chats aun',
-                                style: TextStyle(color: Colors.grey[400], fontSize: 14)),
-                              const SizedBox(height: 8),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  context.push('/users/search');
-                                },
-                                child: const Text('Buscar ciclistas'),
-                              ),
-                            ],
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.people_outline,
+                            size: 48,
+                            color: Colors.grey[300],
                           ),
-                        )
-                      : ListView.separated(
-                          controller: scrollController,
-                          itemCount: _filtered.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
-                          itemBuilder: (_, index) {
-                            final contact = _filtered[index];
-                            final alreadySent = _sent.contains(contact['userId']);
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.amber.withValues(alpha: 0.15),
-                                backgroundImage: (contact['photo'] as String).isNotEmpty
-                                    ? NetworkImage(contact['photo'] as String)
-                                    : null,
-                                child: (contact['photo'] as String).isEmpty
-                                    ? Text(
-                                        (contact['name'] as String)[0].toUpperCase(),
-                                        style: const TextStyle(
-                                          color: Colors.amber,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              title: Text(contact['name'] as String,
-                                style: const TextStyle(fontWeight: FontWeight.w600)),
-                              subtitle: Text(
-                                alreadySent ? 'Enviado' : 'Toca para enviar',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: alreadySent ? Colors.green[600] : Colors.grey[400],
-                                ),
-                              ),
-                              trailing: alreadySent
-                                  ? Icon(Icons.check_circle_rounded, color: Colors.green[600])
-                                  : ElevatedButton(
-                                      onPressed: () => _sendToContact(contact),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.amber[800],
-                                        foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        minimumSize: Size.zero,
-                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      ),
-                                      child: const Text('Enviar', style: TextStyle(fontSize: 13)),
+                          const SizedBox(height: 12),
+                          Text(
+                            'No tienes chats aun',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              context.push('/users/search');
+                            },
+                            child: const Text('Buscar ciclistas'),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: scrollController,
+                      itemCount: _filtered.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (_, index) {
+                        final contact = _filtered[index];
+                        final alreadySent = _sent.contains(contact['userId']);
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.amber.withValues(
+                              alpha: 0.15,
+                            ),
+                            backgroundImage:
+                                (contact['photo'] as String).isNotEmpty
+                                ? NetworkImage(contact['photo'] as String)
+                                : null,
+                            child: (contact['photo'] as String).isEmpty
+                                ? Text(
+                                    (contact['name'] as String)[0]
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.amber,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                            );
-                          },
-                        ),
+                                  )
+                                : null,
+                          ),
+                          title: Text(
+                            contact['name'] as String,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: Text(
+                            alreadySent ? 'Enviado' : 'Toca para enviar',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: alreadySent
+                                  ? Colors.green[600]
+                                  : Colors.grey[400],
+                            ),
+                          ),
+                          trailing: alreadySent
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.green[600],
+                                )
+                              : ElevatedButton(
+                                  onPressed: () => _sendToContact(contact),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.amber[800],
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: const Text(
+                                    'Enviar',
+                                    style: TextStyle(fontSize: 13),
+                                  ),
+                                ),
+                        );
+                      },
+                    ),
             ),
             const SizedBox(height: 16),
           ],

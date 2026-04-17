@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,10 +9,7 @@ class LiveLocationDatasource {
   static Future<void> startSharing({required String groupId}) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    await _db
-        .collection('live_locations')
-        .doc('\${groupId}_\$uid')
-        .set({
+    await _db.collection('live_locations').doc('\${groupId}_\$uid').set({
       'uid': uid,
       'groupId': groupId,
       'active': true,
@@ -33,10 +29,7 @@ class LiveLocationDatasource {
   }) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    await _db
-        .collection('live_locations')
-        .doc('\${groupId}_\$uid')
-        .update({
+    await _db.collection('live_locations').doc('\${groupId}_\$uid').update({
       'lat': lat,
       'lng': lng,
       'speed': speed ?? 0.0,
@@ -48,14 +41,12 @@ class LiveLocationDatasource {
   static Future<void> stopSharing({required String groupId}) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    await _db
-        .collection('live_locations')
-        .doc('\${groupId}_\$uid')
-        .update({'active': false});
+    await _db.collection('live_locations').doc('\${groupId}_\$uid').update({
+      'active': false,
+    });
   }
 
-  static Stream<List<Map<String, dynamic>>> groupMembersStream(
-      String groupId) {
+  static Stream<List<Map<String, dynamic>>> groupMembersStream(String groupId) {
     return _db
         .collection('live_locations')
         .where('groupId', isEqualTo: groupId)

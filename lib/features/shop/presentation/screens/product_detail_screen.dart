@@ -91,13 +91,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         // Mostrar snackbar solo si el widget está montado
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l.t('product_not_found')),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            if (context.mounted)
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(l.t('product_not_found')),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
 
             // Regresar a la tienda después de mostrar el error
             Future.delayed(const Duration(seconds: 2), () {
@@ -139,12 +140,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l.t('error_loading_product')),
-                backgroundColor: Colors.red,
-              ),
-            );
+            if (context.mounted)
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(l.t('error_loading_product')),
+                  backgroundColor: Colors.red,
+                ),
+              );
           }
         });
       }
@@ -215,15 +217,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     debugPrint('✅ Producto agregado exitosamente');
 
     if (mounted) {
-      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$_quantity ${_product!.name} ${l.t('added_to_cart')}'),
-          action: SnackBarAction(
-            label: l.t('view_cart'),
-            onPressed: () => context.push('/shop/cart'),
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '$_quantity ${_product!.name} ${l.t('added_to_cart')}',
+            ),
+            action: SnackBarAction(
+              label: l.t('view_cart'),
+              onPressed: () => context.push('/shop/cart'),
+            ),
           ),
-        ),
-      );
+        );
     }
   }
 
@@ -300,9 +305,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             onPressed: () async {
               if (addressController.text.isEmpty ||
                   phoneController.text.isEmpty) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l.t('fill_required_fields'))),
-                );
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l.t('fill_required_fields'))),
+                  );
                 return;
               }
 
@@ -337,22 +343,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               if (!mounted) return;
               if (orderId != null) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l.t('purchase_success')),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('purchase_success')),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
                 _goBack();
               } else {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      shopProvider.errorMessage ?? l.t('purchase_error'),
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        shopProvider.errorMessage ?? l.t('purchase_error'),
+                      ),
+                      backgroundColor: Colors.red,
                     ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                  );
               }
             },
             style: ElevatedButton.styleFrom(
@@ -392,21 +400,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 setState(() {
                   _product = _product!.copyWith(isSold: true, stock: 0);
                 });
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l.t('product_marked_sold')),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              } else {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      shopProvider.errorMessage ?? l.t('error_marking_sold'),
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('product_marked_sold')),
+                      backgroundColor: Colors.green,
                     ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                  );
+              } else {
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        shopProvider.errorMessage ?? l.t('error_marking_sold'),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
@@ -438,23 +448,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               if (!mounted) return;
               if (success) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l.t('post_deleted')),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l.t('post_deleted')),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
                 _goBack();
               } else {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      shopProvider.errorMessage ??
-                          l.t('error_deleting_listing'),
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        shopProvider.errorMessage ??
+                            l.t('error_deleting_listing'),
+                      ),
+                      backgroundColor: Colors.red,
                     ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                  );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

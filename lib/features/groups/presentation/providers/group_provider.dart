@@ -62,27 +62,34 @@ class GroupProvider extends ChangeNotifier {
     UserRepository? userRepository,
     RideRepository? rideRepository,
     ImagePicker? imagePicker,
-  })  : _userRepository = userRepository ?? UserRepository(),
-        _rideRepository = rideRepository ?? RideRepository(),
-        _imagePicker = imagePicker ?? ImagePicker(),
-        _createGroupUseCase =
-            CreateGroupUseCase(repository ?? GroupRepository()),
-        _getGroupsUseCase = GetGroupsUseCase(repository ?? GroupRepository()),
-        _joinGroupUseCase = JoinGroupUseCase(repository ?? GroupRepository()),
-        _leaveGroupUseCase = LeaveGroupUseCase(repository ?? GroupRepository()),
-        _deleteGroupUseCase =
-            DeleteGroupUseCase(repository ?? GroupRepository()),
-        _editGroupUseCase = EditGroupUseCase(repository ?? GroupRepository()),
-        _getGroupByIdUseCase =
-            GetGroupByIdUseCase(repository ?? GroupRepository()),
-        _approveJoinRequestUseCase =
-            ApproveJoinRequestUseCase(repository ?? GroupRepository()),
-        _rejectJoinRequestUseCase =
-            RejectJoinRequestUseCase(repository ?? GroupRepository()),
-        _cancelJoinRequestUseCase =
-            CancelJoinRequestUseCase(repository ?? GroupRepository()),
-        _searchGroupsUseCase =
-            SearchGroupsUseCase(repository ?? GroupRepository());
+  }) : _userRepository = userRepository ?? UserRepository(),
+       _rideRepository = rideRepository ?? RideRepository(),
+       _imagePicker = imagePicker ?? ImagePicker(),
+       _createGroupUseCase = CreateGroupUseCase(
+         repository ?? GroupRepository(),
+       ),
+       _getGroupsUseCase = GetGroupsUseCase(repository ?? GroupRepository()),
+       _joinGroupUseCase = JoinGroupUseCase(repository ?? GroupRepository()),
+       _leaveGroupUseCase = LeaveGroupUseCase(repository ?? GroupRepository()),
+       _deleteGroupUseCase = DeleteGroupUseCase(
+         repository ?? GroupRepository(),
+       ),
+       _editGroupUseCase = EditGroupUseCase(repository ?? GroupRepository()),
+       _getGroupByIdUseCase = GetGroupByIdUseCase(
+         repository ?? GroupRepository(),
+       ),
+       _approveJoinRequestUseCase = ApproveJoinRequestUseCase(
+         repository ?? GroupRepository(),
+       ),
+       _rejectJoinRequestUseCase = RejectJoinRequestUseCase(
+         repository ?? GroupRepository(),
+       ),
+       _cancelJoinRequestUseCase = CancelJoinRequestUseCase(
+         repository ?? GroupRepository(),
+       ),
+       _searchGroupsUseCase = SearchGroupsUseCase(
+         repository ?? GroupRepository(),
+       );
 
   // ─── Getters ──────────────────────────────────────────────────────────
   List<GroupModel> get allGroups => _allGroups;
@@ -111,8 +118,7 @@ class GroupProvider extends ChangeNotifier {
   void loadUserGroups() {
     if (currentUserId != null) {
       _getGroupsUseCase.byUser(currentUserId!).listen((groups) {
-        groups.sort(
-            (a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
         _userGroups = groups;
         notifyListeners();
       });
@@ -122,8 +128,7 @@ class GroupProvider extends ChangeNotifier {
   void loadAdminGroups() {
     if (currentUserId != null) {
       _getGroupsUseCase.adminGroups(currentUserId!).listen((groups) {
-        groups.sort(
-            (a, b) => b.memberIds.length.compareTo(a.memberIds.length));
+        groups.sort((a, b) => b.memberIds.length.compareTo(a.memberIds.length));
         _adminGroups = groups;
         notifyListeners();
       });
@@ -332,8 +337,7 @@ class GroupProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final success =
-          await _cancelJoinRequestUseCase(groupId, currentUserId!);
+      final success = await _cancelJoinRequestUseCase(groupId, currentUserId!);
       if (success) {
         if (_selectedGroup?.id == groupId) {
           await selectGroup(groupId);
@@ -587,11 +591,11 @@ class GroupProvider extends ChangeNotifier {
   void _clearError() {
     _error = null;
   }
+
   /// Total de miembros del grupo seleccionado
   int get selectedGroupMemberCount {
     final g = selectedGroup;
     if (g == null) return 0;
     return g.memberIds.length + 1; // +1 admin
   }
-
 }

@@ -1,4 +1,5 @@
-﻿import 'package:biux/features/rides/data/models/ride_model.dart';
+import 'package:biux/features/groups/data/models/group_model.dart';
+import 'package:biux/features/rides/data/models/ride_model.dart';
 import 'package:biux/features/rides/presentation/providers/ride_provider.dart';
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
@@ -12,43 +13,46 @@ import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class RideListScreen extends StatefulWidget {
-  final String? groupId; // Ahora es opcional
-
-  const RideListScreen({Key? key, this.groupId}) : super(key: key);
+  final String? groupId;
+  const RideListScreen({super.key, this.groupId});
 
   @override
-  _RideListScreenState createState() => _RideListScreenState();
+  State<RideListScreen> createState() => _RideListScreenState();
 }
 
 class _RideListScreenState extends State<RideListScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _groupTabController;
+  late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
+  bool _showSearch = false;
 
   @override
   void initState() {
     super.initState();
-    _groupTabController = TabController(length: 2, vsync: this);
-    _searchController.addListener(() {
-      setState(() => _searchQuery = _searchController.text.toLowerCase());
-    });
+    _tabController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<RideProvider>(context, listen: false);
-      final groupProvider = Provider.of<GroupProvider>(context, listen: false);
+      _loadData();
+    });
+  }
 
-      if (widget.groupId != null) {
-        provider.loadGroupRides(widget.groupId!);
-      }
+  void _loadData() {
+    final groupProvider = Provider.of<GroupProvider>(context, listen: false);
+    final rideProvider = Provider.of<RideProvider>(context, listen: false);
 
+    if (widget.groupId != null) {
+      // Si viene de un grupo específico, mostrar rodadas de ese grupo
+      rideProvider.loadGroupRides(widget.groupId!);
+    } else {
+      groupProvider.loadUserGroups();
       groupProvider.loadAdminGroups();
       groupProvider.loadAllGroups();
-    });
+      rideProvider.loadAllRides();
+    }
   }
 
   @override
   void dispose() {
-    _groupTabController.dispose();
+    _tabController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -56,774 +60,712 @@ class _RideListScreenState extends State<RideListScreen>
   @override
   Widget build(BuildContext context) {
     final l = Provider.of<LocaleNotifier>(context);
-    return Scaffold(
-      appBar: widget.groupId != null
-          ? AppBar(
-              backgroundColor: ColorTokens.primary30,
-              foregroundColor: ColorTokens.neutral100,
-              title: Text(l.t('rides')),
-            )
-          : null,
-      body: Consumer2<RideProvider, GroupProvider>(
-        builder: (context, provider, groupProvider, child) {
-          if (provider.isLoading) {
-            return const ShimmerListLoading();
-          }
 
-          final rides = provider.rides;
-
-          // Pantalla general (sin grupo) → tabs Grupos / Mis grupos + buscador
-          if (widget.groupId == null) {
-            final allGroups = groupProvider.allGroups;
-            final myGroups = allGroups
-                .where(
-                  (g) =>
-                      g.isMember(groupProvider.currentUserId ?? '') ||
-                      g.isAdmin(groupProvider.currentUserId ?? ''),
-                )
-                .toList();
-
-            final filteredAll = _searchQuery.isEmpty
-                ? allGroups
-                : allGroups
-                      .where((g) => g.name.toLowerCase().contains(_searchQuery))
-                      .toList();
-            final filteredMy = _searchQuery.isEmpty
-                ? myGroups
-                : myGroups
-                      .where((g) => g.name.toLowerCase().contains(_searchQuery))
-                      .toList();
-
-            return Column(
-              children: [
-                // Buscador
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Buscar grupo...',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () => _searchController.clear(),
-                            )
-                          : null,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Theme.of(context).scaffoldBackgroundColor,
-                    ),
-                  ),
-                ),
-                // Tabs
-                TabBar(
-                  controller: _groupTabController,
-                  indicatorColor: ColorTokens.secondary50,
-                  labelColor: ColorTokens.primary30,
-                  unselectedLabelColor: ColorTokens.neutral60,
-                  tabs: [
-                    Tab(text: 'Grupos (${filteredAll.length})'),
-                    Tab(text: 'Mis grupos (${filteredMy.length})'),
-                  ],
-                ),
-                // Listas
-                Expanded(
-                  child: TabBarView(
-                    controller: _groupTabController,
-                    children: [
-                      _buildGroupList(filteredAll, groupProvider, false),
-                      _buildGroupList(filteredMy, groupProvider, true),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
-
-          // Pantalla específica de un grupo
-          if (rides.isEmpty) {
-            return _buildEmptyState();
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async => provider.loadGroupRides(widget.groupId!),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: rides.length,
-              itemBuilder: (context, index) =>
-                  _buildRideCard(rides[index], provider),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: Consumer<GroupProvider>(
-        builder: (context, groupProvider, child) {
-          if (widget.groupId != null) {
-            return FloatingActionButton(
-              onPressed: () => context.push('/rides/create/${widget.groupId}'),
-              backgroundColor: ColorTokens.primary30,
-              child: Icon(Icons.add, color: ColorTokens.neutral100),
-              tooltip: l.t('create_ride'),
-            );
-          }
-          return const SizedBox.shrink();
-        },
-      ),
-    );
-  }
-
-  Widget _buildGroupList(
-    List<dynamic> groups,
-    GroupProvider groupProvider,
-    bool isMine,
-  ) {
-    if (groupProvider.isLoading) {
-      return const ShimmerListLoading();
+    // Si viene con groupId, mostrar rodadas de ese grupo
+    if (widget.groupId != null) {
+      return _buildGroupRidesView(l);
     }
-    if (groups.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.groups_rounded,
-                size: 64,
-                color: ColorTokens.primary30.withValues(alpha: 0.4),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                isMine
-                    ? 'Aún no perteneces a ningún grupo'
-                    : 'No hay grupos disponibles',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              if (isMine) ...[
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: () => context.go('/groups'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorTokens.primary30,
-                    foregroundColor: ColorTokens.neutral100,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.search),
-                  label: const Text('Buscar grupos'),
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
-    }
-    return RefreshIndicator(
-      onRefresh: () async => groupProvider.loadAllGroups(),
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        itemCount: groups.length,
-        itemBuilder: (context, index) {
-          final group = groups[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              leading: group.logoUrl != null
-                  ? CircleAvatar(
-                      backgroundImage: NetworkImage(group.logoUrl!),
-                      radius: 26,
-                    )
-                  : const CircleAvatar(
-                      radius: 26,
-                      backgroundColor: ColorTokens.primary30,
-                      child: Icon(Icons.groups, color: ColorTokens.neutral100),
-                    ),
-              title: Text(
-                group.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                '${group.memberCount} miembros',
-                style: const TextStyle(fontSize: 13),
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/groups/${group.id}'),
-            ),
-          );
-        },
-      ),
-    );
-  }
 
-  // ignore: unused_element
-  Widget _buildBanner() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            ColorTokens.primary30,
-            ColorTokens.primary30.withValues(alpha: 0.75),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Row(
-        children: [
-          Text('🚴', style: TextStyle(fontSize: 28)),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Aquí nadie rueda solo',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Únete y no te pierdas ninguna salida',
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Consumer<GroupProvider>(
-      builder: (context, groupProvider, child) {
-        final l = Provider.of<LocaleNotifier>(context);
-
-        // Si hay un grupo específico sin rodadas
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.directions_bike_outlined,
-                size: 64,
-                color: ColorTokens.neutral60,
-              ),
-              SizedBox(height: 12),
-              Text(
-                widget.groupId != null
-                    ? l.t('no_rides_in_group')
-                    : l.t('no_rides_scheduled'),
-                style: TextStyle(fontSize: 18, color: ColorTokens.neutral60),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 8),
-              Text(
-                widget.groupId != null
-                    ? l.t('be_first_to_organize')
-                    : l.t('organize_first_ride'),
-                style: TextStyle(color: ColorTokens.neutral60),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 16),
-              if (widget.groupId != null)
-                ElevatedButton.icon(
-                  onPressed: () =>
-                      context.push('/rides/create/${widget.groupId}'),
-                  icon: Icon(Icons.add),
-                  label: Text(l.t('create_ride')),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorTokens.primary30,
-                    foregroundColor: ColorTokens.neutral100,
-                  ),
-                )
-              else if (groupProvider.adminGroups.isNotEmpty)
-                ElevatedButton.icon(
-                  onPressed: () =>
-                      _showCreateRideDialog(context, groupProvider),
-                  icon: Icon(Icons.add),
-                  label: Text(l.t('create_ride')),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorTokens.primary30,
-                    foregroundColor: ColorTokens.neutral100,
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // Lista de grupos como ListView directo (para usar dentro de Expanded en build)
-  // ignore: unused_element
-  Widget _buildGroupsListView(GroupProvider groupProvider) {
-    final groups = groupProvider.allGroups;
-    if (groups.isEmpty) {
-      return const Center(
-        child: Text(
-          'No hay grupos disponibles',
-          style: TextStyle(color: Colors.grey),
-        ),
-      );
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      itemCount: groups.length,
-      itemBuilder: (context, index) {
-        final group = groups[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ListTile(
-            leading: group.logoUrl != null
-                ? CircleAvatar(
-                    backgroundImage: NetworkImage(group.logoUrl!),
-                    radius: 24,
-                  )
-                : CircleAvatar(
-                    radius: 24,
-                    backgroundColor: ColorTokens.primary30,
-                    child: Icon(Icons.groups, color: ColorTokens.neutral100),
-                  ),
-            title: Text(
-              group.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              '${group.memberCount} miembros',
-              style: const TextStyle(fontSize: 13),
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/groups/${group.id}'),
-          ),
-        );
-      },
-    );
-  }
-
-  // ignore: unused_element
-  List<Widget> _buildGroupsList(GroupProvider groupProvider) {
-    final groups = groupProvider.allGroups;
-    if (groups.isEmpty) return [];
-    return [
-      Expanded(
-        child: ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          itemCount: groups.length,
-          itemBuilder: (context, index) {
-            final group = groups[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ListTile(
-                leading: group.logoUrl != null
-                    ? CircleAvatar(
-                        backgroundImage: NetworkImage(group.logoUrl!),
-                        radius: 24,
-                      )
-                    : CircleAvatar(
-                        radius: 24,
-                        backgroundColor: ColorTokens.primary30,
-                        child: Icon(
-                          Icons.groups,
-                          color: ColorTokens.neutral100,
-                        ),
-                      ),
-                title: Text(
-                  group.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  '${group.memberCount} miembros',
-                  style: const TextStyle(fontSize: 13),
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/groups/${group.id}'),
-              ),
-            );
-          },
-        ),
-      ),
-    ];
-  }
-
-  Widget _buildRideCard(RideModel ride, RideProvider provider) {
-    final l = Provider.of<LocaleNotifier>(context);
-    final participationStatus = provider.getParticipationStatus(ride);
-    final isCreator = provider.isCreator(ride);
-    final isPastRide = ride.dateTime.isBefore(DateTime.now());
-
-    return Opacity(
-      opacity: isPastRide ? 0.6 : 1.0,
-      child: Card(
-        margin: EdgeInsets.only(bottom: 16),
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Stack(
+    // Vista principal: solo grupos
+    return Consumer2<GroupProvider, RideProvider>(
+      builder: (context, groupProvider, rideProvider, child) {
+        return Column(
           children: [
-            InkWell(
-              onTap: () => context.push('/rides/${ride.id}'),
-              borderRadius: BorderRadius.circular(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header con estado y dificultad
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isPastRide
-                          ? Colors.grey.withValues(alpha: 0.2)
-                          : _getStatusColor(ride.status).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(12),
-                      ),
-                    ),
+            // ── Barra de búsqueda ──
+            if (_showSearch) _buildSearchBar(l),
+
+            // ── Tabs: Mis Grupos / Explorar ──
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: ColorTokens.neutral60.withValues(alpha: 0.2),
+                  ),
+                ),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicatorColor: ColorTokens.primary30,
+                indicatorWeight: 3,
+                labelColor: ColorTokens.primary30,
+                unselectedLabelColor: ColorTokens.neutral60,
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+                isScrollable: false,
+                tabAlignment: TabAlignment.fill,
+                tabs: [
+                  Tab(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      ride.name,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: isPastRide
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: 16,
-                                    color: ColorTokens.neutral60,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: _getDifficultyColor(
-                                        ride.difficulty,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      l.t(ride.difficultyDisplayName),
-                                      style: TextStyle(
-                                        color: ColorTokens.neutral100,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '${ride.kilometers} km',
-                                    style: TextStyle(
-                                      color: ColorTokens.neutral60,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (isCreator)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: ColorTokens.warning50,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              l.t('organizer'),
-                              style: TextStyle(
-                                color: ColorTokens.neutral100,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
+                        const Icon(Icons.groups, size: 16),
+                        const SizedBox(width: 6),
+                        Text(l.t('my_groups')),
                       ],
                     ),
                   ),
-
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Información del grupo organizador
-                        if (widget.groupId ==
-                            null) // Solo mostrar si no estamos en un grupo específico
-                          FutureBuilder<Map<String, dynamic>?>(
-                            future: provider.getGroupInfo(ride.groupId),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.hasData &&
-                                  snapshot.data != null) {
-                                final groupInfo = snapshot.data!;
-                                return Container(
-                                  margin: EdgeInsets.only(bottom: 12),
-                                  child: Row(
-                                    children: [
-                                      groupInfo['logoUrl'] != null &&
-                                              groupInfo['logoUrl']
-                                                  .toString()
-                                                  .isNotEmpty
-                                          ? ClipOval(
-                                              child: OptimizedNetworkImage(
-                                                imageUrl: groupInfo['logoUrl'],
-                                                width: 32,
-                                                height: 32,
-                                                imageType:
-                                                    'avatar', // Cache de larga duración para logos
-                                                fit: BoxFit.cover,
-                                              ),
-                                            )
-                                          : CircleAvatar(
-                                              radius: 16,
-                                              backgroundColor:
-                                                  ColorTokens.primary30,
-                                              child: Icon(
-                                                Icons.group,
-                                                size: 16,
-                                                color: ColorTokens.neutral100,
-                                              ),
-                                            ),
-                                      SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          '${l.t('organized_by')} ${groupInfo['name']}',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: Theme.of(
-                                              context,
-                                            ).textTheme.bodyMedium?.color,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                              return SizedBox.shrink();
-                            },
-                          ),
-
-                        // Punto de encuentro (ciudad)
-                        FutureBuilder<MeetingPoint?>(
-                          future: Provider.of<MeetingPointProvider>(
-                            context,
-                            listen: false,
-                          ).getMeetingPoint(ride.meetingPointId),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                    ConnectionState.done &&
-                                snapshot.hasData &&
-                                snapshot.data != null) {
-                              final meetingPoint = snapshot.data!;
-                              return Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      size: 16,
-                                      color: ColorTokens.neutral60,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        meetingPoint.name,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Theme.of(
-                                            context,
-                                          ).textTheme.bodyMedium?.color,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                            return SizedBox.shrink();
-                          },
-                        ),
-
-                        // Fecha y hora
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.calendar_today,
-                              size: 16,
-                              color: ColorTokens.neutral60,
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _formatDateTime(ride.dateTime),
-                                style: TextStyle(
-                                  color: ColorTokens.neutral60,
-                                  fontSize: 14,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-
-                        // Participantes
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.group,
-                              size: 16,
-                              color: ColorTokens.neutral60,
-                            ),
-                            SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                '${ride.participantCount} ${l.t('confirmed')}',
-                                style: TextStyle(
-                                  color: ColorTokens.neutral60,
-                                  fontSize: 14,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (ride.maybeParticipantCount > 0) ...[
-                              Text(
-                                ' ',
-                                style: TextStyle(color: ColorTokens.neutral60),
-                              ),
-                              Text(
-                                '${ride.maybeParticipantCount} ${l.t('maybe')}',
-                                style: TextStyle(
-                                  color: ColorTokens.warning60,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                        SizedBox(height: 12),
-
-                        // Estado de participación del usuario (solo para no creadores)
-                        if (!isCreator)
-                          _buildParticipationChip(participationStatus, l),
-                        SizedBox(height: 16),
-
-                        // Botones de acción (solo para no creadores)
-                        if (!isCreator)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: _buildActionButton(
-                              ride,
-                              participationStatus,
-                              provider,
-                            ),
-                          ),
+                        const Icon(Icons.explore, size: 16),
+                        const SizedBox(width: 6),
+                        Text(l.t('explore_more')),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            // Badge de "Finalizada" para rodadas pasadas
-            if (isPastRide)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+
+            // ── Contenido ──
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildMyGroupsList(groupProvider, rideProvider, l),
+                  _buildExploreGroupsList(groupProvider, rideProvider, l),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Vista de rodadas de un grupo específico ──────────────────────
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildGroupRidesView(LocaleNotifier l) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: ColorTokens.primary30,
+        foregroundColor: ColorTokens.neutral100,
+        title: Text(l.t('rides')),
+        actions: [
+          IconButton(
+            icon: Icon(_showSearch ? Icons.close : Icons.search),
+            onPressed: () => setState(() {
+              _showSearch = !_showSearch;
+              if (!_showSearch) _searchController.clear();
+            }),
+          ),
+        ],
+      ),
+      body: Consumer<RideProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const ShimmerListLoading();
+          }
+
+          var rides = provider.rides;
+
+          // Filtro de búsqueda
+          if (_searchController.text.isNotEmpty) {
+            final q = _searchController.text.toLowerCase();
+            rides = rides
+                .where((r) => r.name.toLowerCase().contains(q))
+                .toList();
+          }
+
+          // Separar próximas y pasadas
+          final now = DateTime.now();
+          final upcoming =
+              rides
+                  .where(
+                    (r) =>
+                        r.dateTime.isAfter(now) &&
+                        r.status != RideStatus.cancelled &&
+                        r.status != RideStatus.completed,
+                  )
+                  .toList()
+                ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+          final past =
+              rides
+                  .where(
+                    (r) =>
+                        r.dateTime.isBefore(now) ||
+                        r.status == RideStatus.completed ||
+                        r.status == RideStatus.cancelled,
+                  )
+                  .toList()
+                ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+          return Column(
+            children: [
+              if (_showSearch) _buildSearchBar(l),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async => _loadData(),
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
                     children: [
-                      Icon(Icons.history, size: 14, color: Colors.white),
-                      SizedBox(width: 4),
-                      Text(
-                        l.t('finished'),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                      if (upcoming.isNotEmpty) ...[
+                        _buildSectionHeader(
+                          l.t('upcoming'),
+                          Icons.upcoming,
+                          ColorTokens.primary30,
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        ...upcoming.map(
+                          (ride) => _buildRideCard(ride, provider, l),
+                        ),
+                      ],
+                      if (past.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        _buildSectionHeader(
+                          l.t('finished'),
+                          Icons.history,
+                          ColorTokens.neutral60,
+                        ),
+                        const SizedBox(height: 8),
+                        ...past.map(
+                          (ride) =>
+                              _buildRideCard(ride, provider, l, isPast: true),
+                        ),
+                      ],
+                      if (upcoming.isEmpty && past.isEmpty)
+                        _buildEmptyState(
+                          Icons.event_available,
+                          l.t('no_rides_available'),
+                          l.t('rides_will_appear_here'),
+                        ),
                     ],
                   ),
                 ),
               ),
-          ],
+            ],
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/rides/create/${widget.groupId}'),
+        backgroundColor: ColorTokens.primary30,
+        child: const Icon(Icons.add, color: ColorTokens.neutral100),
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Tab 1: Mis Grupos ────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildMyGroupsList(
+    GroupProvider groupProvider,
+    RideProvider rideProvider,
+    LocaleNotifier l,
+  ) {
+    if (groupProvider.isLoading) {
+      return const ShimmerListLoading();
+    }
+
+    var groups = groupProvider.userGroups;
+
+    // Filtro de búsqueda
+    if (_searchController.text.isNotEmpty) {
+      final q = _searchController.text.toLowerCase();
+      groups = groups.where((g) => g.name.toLowerCase().contains(q)).toList();
+    }
+
+    if (groups.isEmpty) {
+      return _buildEmptyState(
+        Icons.groups_outlined,
+        l.t('no_groups_joined'),
+        l.t('join_group_to_see_rides'),
+        onAction: () => _tabController.animateTo(1),
+        actionText: l.t('explore_groups'),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => _loadData(),
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
+        itemCount: groups.length,
+        itemBuilder: (context, index) {
+          final group = groups[index];
+          return _buildGroupCard(group, rideProvider, l);
+        },
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Tab 2: Explorar Grupos ───────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildExploreGroupsList(
+    GroupProvider groupProvider,
+    RideProvider rideProvider,
+    LocaleNotifier l,
+  ) {
+    if (groupProvider.isLoading) {
+      return const ShimmerListLoading();
+    }
+
+    var groups = groupProvider.allGroups;
+
+    // Excluir grupos del usuario
+    final userGroupIds = groupProvider.userGroups.map((g) => g.id).toSet();
+    groups = groups.where((g) => !userGroupIds.contains(g.id)).toList();
+
+    // Filtro de búsqueda
+    if (_searchController.text.isNotEmpty) {
+      final q = _searchController.text.toLowerCase();
+      groups = groups.where((g) => g.name.toLowerCase().contains(q)).toList();
+    }
+
+    if (groups.isEmpty) {
+      return _buildEmptyState(
+        Icons.explore_outlined,
+        l.t('no_groups_available'),
+        l.t('check_back_later'),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => _loadData(),
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
+        itemCount: groups.length,
+        itemBuilder: (context, index) {
+          final group = groups[index];
+          return _buildGroupCard(group, rideProvider, l, isExplore: true);
+        },
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Card de Grupo ────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildGroupCard(
+    GroupModel group,
+    RideProvider rideProvider,
+    LocaleNotifier l, {
+    bool isExplore = false,
+  }) {
+    // Contar rodadas próximas de este grupo
+    final now = DateTime.now();
+    final upcomingRides = rideProvider.rides
+        .where(
+          (r) =>
+              r.groupId == group.id &&
+              r.dateTime.isAfter(now) &&
+              r.status != RideStatus.cancelled &&
+              r.status != RideStatus.completed,
+        )
+        .length;
+
+    final isAdmin = Provider.of<GroupProvider>(
+      context,
+      listen: false,
+    ).adminGroups.any((g) => g.id == group.id);
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: InkWell(
+        onTap: () => context.push('/groups/${group.id}'),
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              // ── Logo del grupo ──
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: group.logoUrl != null && group.logoUrl!.isNotEmpty
+                    ? OptimizedNetworkImage(
+                        imageUrl: group.logoUrl!,
+                        width: 56,
+                        height: 56,
+                        imageType: 'avatar',
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: ColorTokens.primary30.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.groups,
+                          size: 28,
+                          color: ColorTokens.primary30,
+                        ),
+                      ),
+              ),
+              const SizedBox(width: 14),
+
+              // ── Info del grupo ──
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            group.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isAdmin)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorTokens.warning50.withValues(
+                                alpha: 0.15,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: ColorTokens.warning50.withValues(
+                                  alpha: 0.4,
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              'Admin',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: ColorTokens.warning50,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Descripción
+                    if (group.description.isNotEmpty)
+                      Text(
+                        group.description,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: ColorTokens.neutral60,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+
+                    const SizedBox(height: 8),
+
+                    // ── Stats row ──
+                    Row(
+                      children: [
+                        // Miembros
+                        _buildGroupStat(
+                          Icons.people,
+                          '0',
+                          ColorTokens.neutral60,
+                        ),
+                        const SizedBox(width: 16),
+                        // Rodadas próximas
+                        if (upcomingRides > 0 && !isExplore)
+                          _buildGroupStat(
+                            Icons.directions_bike,
+                            '$upcomingRides ${l.t('upcoming').toLowerCase()}',
+                            ColorTokens.success40,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // ── Flecha ──
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right, color: ColorTokens.neutral60, size: 22),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Card de Rodada (para vista de grupo específico) ──────────────
+  // ══════════════════════════════════════════════════════════════════
+  Widget _buildRideCard(
+    RideModel ride,
+    RideProvider provider,
+    LocaleNotifier l, {
+    bool isPast = false,
+  }) {
+    final participationStatus = provider.getParticipationStatus(ride);
+    final isCreator = provider.isCreator(ride);
+
+    return Opacity(
+      opacity: isPast ? 0.65 : 1.0,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 10),
+        elevation: isPast ? 1 : 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: InkWell(
+          onTap: () => context.push('/rides/${ride.id}'),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Row 1: Nombre + dificultad
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: _getDifficultyColor(ride.difficulty),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            ride.name,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              decoration: isPast
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              _buildMiniChip(
+                                l.t(ride.difficultyDisplayName),
+                                _getDifficultyColor(ride.difficulty),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${ride.kilometers} km',
+                                style: TextStyle(
+                                  color: ColorTokens.neutral60,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isCreator)
+                      _buildMiniChip(l.t('organizer'), ColorTokens.warning50),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Row 2: Fecha + participantes
+                Row(
+                  children: [
+                    _buildInfoItem(
+                      Icons.schedule,
+                      _formatDateTime(ride.dateTime),
+                    ),
+                    const SizedBox(width: 16),
+                    _buildInfoItem(
+                      Icons.group,
+                      '${ride.participantCount}${ride.maybeParticipantCount > 0 ? ' +${ride.maybeParticipantCount}?' : ''}',
+                    ),
+                  ],
+                ),
+
+                // Row 3: Punto de encuentro
+                FutureBuilder<MeetingPoint?>(
+                  future: Provider.of<MeetingPointProvider>(
+                    context,
+                    listen: false,
+                  ).getMeetingPoint(ride.meetingPointId),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data == null)
+                      return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: _buildInfoItem(
+                        Icons.location_on,
+                        snapshot.data!.name,
+                      ),
+                    );
+                  },
+                ),
+
+                // Row 4: Acciones (solo futuras y no creador)
+                if (!isPast && !isCreator) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      if (participationStatus !=
+                          RideParticipationStatus.notParticipating)
+                        _buildParticipationChip(participationStatus, l),
+                      const Spacer(),
+                      _buildActionButton(
+                        ride,
+                        participationStatus,
+                        provider,
+                        l,
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Widgets auxiliares ───────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════
+
+  Widget _buildSearchBar(LocaleNotifier l) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (_) => setState(() {}),
+        decoration: InputDecoration(
+          hintText: l.t('search_groups'),
+          prefixIcon: const Icon(Icons.search, size: 20),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 18),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {});
+                  },
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: ColorTokens.neutral60.withValues(alpha: 0.3),
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: ColorTokens.neutral60.withValues(alpha: 0.3),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: ColorTokens.primary30,
+              width: 1.5,
+            ),
+          ),
+          filled: true,
+          fillColor: Theme.of(context).scaffoldBackgroundColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGroupStat(IconData icon, String text, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMiniChip(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: ColorTokens.neutral60),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 13,
+              color: ColorTokens.neutral60,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
@@ -847,14 +789,23 @@ class _RideListScreenState extends State<RideListScreen>
         icon = Icons.help;
         break;
       case RideParticipationStatus.notParticipating:
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
     }
 
-    return Chip(
-      avatar: Icon(icon, color: color, size: 16),
-      label: Text(text, style: TextStyle(color: color, fontSize: 12)),
-      backgroundColor: color.withValues(alpha: 0.1),
-      side: BorderSide(color: color.withValues(alpha: 0.3)),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 14),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 
@@ -862,103 +813,182 @@ class _RideListScreenState extends State<RideListScreen>
     RideModel ride,
     RideParticipationStatus status,
     RideProvider provider,
+    LocaleNotifier l,
   ) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-    // No mostrar botones si la rodada ya pas� o est� cancelada
     if (ride.status == RideStatus.completed ||
         ride.status == RideStatus.cancelled ||
         ride.dateTime.isBefore(DateTime.now())) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     switch (status) {
       case RideParticipationStatus.participating:
-        return ElevatedButton.icon(
-          onPressed: () => _leaveRide(ride.id, provider),
-          icon: Icon(Icons.cancel, size: 16),
-          label: Text(l.t('not_going')),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: ColorTokens.error50,
-            foregroundColor: ColorTokens.neutral100,
-            minimumSize: Size(75, 32),
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          ),
+        return _buildSmallButton(
+          l.t('not_going'),
+          Icons.cancel,
+          ColorTokens.error50,
+          () => _leaveRide(ride.id, provider),
         );
-
       case RideParticipationStatus.maybeParticipating:
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ElevatedButton.icon(
-              onPressed: () => _joinRide(ride.id, provider),
-              icon: Icon(Icons.check, size: 16),
-              label: Text(l.t('confirm')),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.success40,
-                foregroundColor: ColorTokens.neutral100,
-                minimumSize: Size(75, 32),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              ),
+            _buildSmallButton(
+              l.t('confirm'),
+              Icons.check,
+              ColorTokens.success40,
+              () => _joinRide(ride.id, provider),
             ),
-            SizedBox(width: 8),
-            ElevatedButton.icon(
-              onPressed: () => _leaveRide(ride.id, provider),
-              icon: Icon(Icons.close, size: 16),
-              label: Text(l.t('no_label')),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.error50,
-                foregroundColor: ColorTokens.neutral100,
-                minimumSize: Size(75, 32),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              ),
+            const SizedBox(width: 6),
+            _buildSmallButton(
+              l.t('no_label'),
+              Icons.close,
+              ColorTokens.error50,
+              () => _leaveRide(ride.id, provider),
             ),
           ],
         );
-
       case RideParticipationStatus.notParticipating:
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ElevatedButton.icon(
-              onPressed: () => _joinRide(ride.id, provider),
-              icon: Icon(Icons.directions_bike, size: 16),
-              label: Text(l.t('going')),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.success40,
-                foregroundColor: ColorTokens.neutral100,
-                minimumSize: Size(75, 32),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              ),
+            _buildSmallButton(
+              l.t('going'),
+              Icons.directions_bike,
+              ColorTokens.success40,
+              () => _joinRide(ride.id, provider),
             ),
-            SizedBox(width: 8),
-            ElevatedButton.icon(
-              onPressed: () => _maybeJoinRide(ride.id, provider),
-              icon: Icon(Icons.help_outline, size: 16),
-              label: Text(l.t('maybe')),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorTokens.warning50,
-                foregroundColor: ColorTokens.neutral100,
-                minimumSize: Size(75, 32),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              ),
+            const SizedBox(width: 6),
+            _buildSmallButton(
+              l.t('maybe'),
+              Icons.help_outline,
+              ColorTokens.warning50,
+              () => _maybeJoinRide(ride.id, provider),
             ),
           ],
         );
     }
   }
 
-  Color _getStatusColor(RideStatus status) {
-    switch (status) {
-      case RideStatus.upcoming:
-        return ColorTokens.primary50;
-      case RideStatus.ongoing:
-        return ColorTokens.success40;
-      case RideStatus.completed:
-        return ColorTokens.neutral60;
-      case RideStatus.cancelled:
-        return ColorTokens.error50;
-    }
+  Widget _buildSmallButton(
+    String text,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return Material(
+      color: color,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: Colors.white),
+              const SizedBox(width: 4),
+              Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
+
+  Widget _buildEmptyState(
+    IconData icon,
+    String title,
+    String subtitle, {
+    VoidCallback? onAction,
+    String? actionText,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 40,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: ColorTokens.primary30.withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        icon,
+                        size: 48,
+                        color: ColorTokens.primary30.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: ColorTokens.neutral60,
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (onAction != null && actionText != null) ...[
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: onAction,
+                        icon: const Icon(Icons.explore, size: 18),
+                        label: Text(actionText),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorTokens.primary30,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Helpers ──────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════
 
   Color _getDifficultyColor(DifficultyLevel difficulty) {
     switch (difficulty) {
@@ -989,147 +1019,53 @@ class _RideListScreenState extends State<RideListScreen>
       l.t('month_nov'),
       l.t('month_dec'),
     ];
-
     final day = dateTime.day;
     final month = months[dateTime.month - 1];
     final hour = dateTime.hour.toString().padLeft(2, '0');
     final minute = dateTime.minute.toString().padLeft(2, '0');
-
     return '$day $month - $hour:$minute';
   }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ── Acciones ─────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════
 
   void _joinRide(String rideId, RideProvider provider) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.joinRide(rideId);
-    if (success) {
-      if (context.mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.t('joined_ride')),
-            backgroundColor: ColorTokens.success40,
-          ),
-        );
+    if (success && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.t('joined_ride')),
+          backgroundColor: ColorTokens.success40,
+        ),
+      );
     }
   }
 
   void _maybeJoinRide(String rideId, RideProvider provider) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.maybeJoinRide(rideId);
-    if (success) {
-      if (context.mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.t('marked_maybe')),
-            backgroundColor: ColorTokens.warning60,
-          ),
-        );
+    if (success && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.t('marked_maybe')),
+          backgroundColor: ColorTokens.warning60,
+        ),
+      );
     }
   }
 
   void _leaveRide(String rideId, RideProvider provider) async {
     final l = Provider.of<LocaleNotifier>(context, listen: false);
     final success = await provider.leaveRide(rideId);
-    if (success) {
-      if (context.mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l.t('left_ride')),
-            backgroundColor: ColorTokens.neutral60,
-          ),
-        );
+    if (success && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.t('left_ride')),
+          backgroundColor: ColorTokens.neutral60,
+        ),
+      );
     }
-  }
-
-  void _showCreateRideDialog(
-    BuildContext context,
-    GroupProvider groupProvider,
-  ) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
-    // Si solo es admin de un grupo, ir directamente a crear rodada
-    if (groupProvider.adminGroups.length == 1) {
-      final group = groupProvider.adminGroups.first;
-      context.push('/rides/create/${group.id}');
-      return;
-    }
-
-    // Si es admin de m�ltiples grupos, mostrar selector
-    showDialog(
-      context: context,
-      builder: (context) {
-        String? selectedGroupId;
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text(l.t('create_new_ride')),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    l.t('select_group_for_ride'),
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(height: 16),
-                  // Lista de grupos administrados por el usuario
-                  Column(
-                    children: groupProvider.adminGroups.map((group) {
-                      // ignore: deprecated_member_use
-                      return RadioListTile<String>(
-                        title: Text(group.name),
-                        value: group.id,
-                        // ignore: deprecated_member_use
-                        groupValue: selectedGroupId,
-                        // ignore: deprecated_member_use
-                        onChanged: (value) {
-                          setState(() {
-                            selectedGroupId = value;
-                          });
-                        },
-                        fillColor: WidgetStateProperty.resolveWith<Color>((
-                          Set<WidgetState> states,
-                        ) {
-                          if (states.contains(WidgetState.selected)) {
-                            return ColorTokens.primary30;
-                          }
-                          return Colors.grey;
-                        }),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l.t('cancel')),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedGroupId != null) {
-                      // Navegar a la pantalla de creación de rodada con el ID del grupo seleccionado
-                      context.push('/rides/create/$selectedGroupId');
-                      Navigator.of(context).pop();
-                    } else {
-                      // Mostrar un mensaje de error si no se ha seleccionado ningún grupo
-                      if (context.mounted)
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l.t('please_select_group')),
-                            backgroundColor: ColorTokens.error50,
-                          ),
-                        );
-                    }
-                  },
-                  child: Text(l.t('continue_action')),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorTokens.primary30,
-                    foregroundColor: ColorTokens.neutral100,
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
   }
 }

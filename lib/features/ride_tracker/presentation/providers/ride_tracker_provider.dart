@@ -141,6 +141,30 @@ class RideTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Obtiene la ruta desde [origin] hasta [dest] y la establece como ruta planeada.
+  Future<bool> fetchAndSetRoute(
+    LatLng origin,
+    LatLng dest,
+    String destName,
+  ) async {
+    _routeLoading = true;
+    notifyListeners();
+    try {
+      final points = await _fetchRoute(origin, dest);
+      if (points != null && points.isNotEmpty) {
+        setPlannedRoute(points, destName);
+        _routeLoading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      debugPrint('fetchAndSetRoute error: $e');
+    }
+    _routeLoading = false;
+    notifyListeners();
+    return false;
+  }
+
   // ─── NAVEGACIÓN EN VIVO ───────────────────────────────────
 
   /// Distancia haversine en metros entre dos LatLng.
@@ -753,6 +777,7 @@ class RideTrackerProvider with ChangeNotifier {
   }
 
   double _rad(double d) => d * pi / 180;
+
   /// Genera datos para story automática al terminar rodada
   Map<String, dynamic> buildRideStorySummary() {
     return {
@@ -789,5 +814,4 @@ class RideTrackerProvider with ChangeNotifier {
       AppLogger.error('No se pudo hacer flush de puntos GPS: \$e');
     }
   }
-
 }

@@ -68,19 +68,27 @@ class _AchievementUnlockedOverlayState extends State<AchievementUnlockedOverlay>
               ),
             ],
           ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Text('🏆', style: TextStyle(fontSize: 48)),
-            const SizedBox(height: 8),
-            const Text('¡Logro Desbloqueado!',
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('🏆', style: TextStyle(fontSize: 48)),
+              const SizedBox(height: 8),
+              const Text(
+                '¡Logro Desbloqueado!',
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(widget.achievement.title,
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.achievement.title,
                 style: const TextStyle(color: Colors.white70, fontSize: 14),
-                textAlign: TextAlign.center),
-          ]),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

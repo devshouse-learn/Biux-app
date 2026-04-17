@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -41,10 +40,7 @@ class EmergencyProvider with ChangeNotifier {
   }
 
   /// Inicia cuenta regresiva antes de enviar SOS (permite cancelar)
-  void startSosCountdown({
-    required String userId,
-    required String userName,
-  }) {
+  void startSosCountdown({required String userId, required String userName}) {
     _sosCountdown = 10;
     _sosCountingDown = true;
     notifyListeners();
@@ -58,6 +54,21 @@ class EmergencyProvider with ChangeNotifier {
         await _triggerSOS(userId: userId, userName: userName);
       }
     });
+  }
+
+  /// Dispara SOS inmediatamente sin countdown (usado desde botón drawer)
+  Future<void> triggerSosImmediate({
+    required String userId,
+    required String userName,
+  }) async {
+    _sosCountingDown = false;
+    _sosCountdown = 0;
+    notifyListeners();
+    await _triggerSOS(
+      userId: userId,
+      userName: userName,
+      message: 'SOS activado desde botón rápido',
+    );
   }
 
   void cancelSosCountdown() {
@@ -74,47 +85,50 @@ class EmergencyProvider with ChangeNotifier {
   }) async {
     try {
       Position pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       _lastSosPosition = pos;
 
       final docRef = await FirebaseFirestore.instance
           .collection('sos_alerts')
           .add({
-        'userId': userId,
-        'userName': userName,
-        'latitude': pos.latitude,
-        'longitude': pos.longitude,
-        'message': message ?? 'SOS activado desde Biux',
-        'active': true,
-        'createdAt': FieldValue.serverTimestamp(),
-        'contacts': _contacts.map((c) => c.toMap()).toList(),
-      });
+            'userId': userId,
+            'userName': userName,
+            'latitude': pos.latitude,
+            'longitude': pos.longitude,
+            'message': message ?? 'SOS activado desde Biux',
+            'active': true,
+            'createdAt': FieldValue.serverTimestamp(),
+            'contacts': _contacts.map((c) => c.toMap()).toList(),
+          });
 
       _activeSosId = docRef.id;
       _sosActive = true;
       notifyListeners();
 
       // Actualizar ubicación cada 30 segundos mientras SOS activo
-      _sosPosSubscription = Geolocator.getPositionStream(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 20,
-        ),
-      ).listen((p) async {
-        _lastSosPosition = p;
-        if (_activeSosId != null) {
-          await FirebaseFirestore.instance
-              .collection('sos_alerts')
-              .doc(_activeSosId)
-              .update({
-            'latitude': p.latitude,
-            'longitude': p.longitude,
-            'lastUpdate': FieldValue.serverTimestamp(),
+      _sosPosSubscription =
+          Geolocator.getPositionStream(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+              distanceFilter: 20,
+            ),
+          ).listen((p) async {
+            _lastSosPosition = p;
+            if (_activeSosId != null) {
+              await FirebaseFirestore.instance
+                  .collection('sos_alerts')
+                  .doc(_activeSosId)
+                  .update({
+                    'latitude': p.latitude,
+                    'longitude': p.longitude,
+                    'lastUpdate': FieldValue.serverTimestamp(),
+                  });
+            }
+            notifyListeners();
           });
-        }
-        notifyListeners();
-      });
     } catch (e) {
       _error = 'Error al enviar SOS: \$e';
       notifyListeners();
@@ -129,7 +143,8 @@ class EmergencyProvider with ChangeNotifier {
     if (!_fallDetectionEnabled) return;
     final now = DateTime.now();
     if (_lastFallAlert != null &&
-        now.difference(_lastFallAlert!).inSeconds < 30) return;
+        now.difference(_lastFallAlert!).inSeconds < 30)
+      return;
     _lastFallAlert = now;
     startSosCountdown(userId: userId, userName: userName);
   }
@@ -188,7 +203,10 @@ class EmergencyProvider with ChangeNotifier {
       await FirebaseFirestore.instance
           .collection('sos_alerts')
           .doc(_activeSosId)
-          .update({'active': false, 'cancelledAt': FieldValue.serverTimestamp()});
+          .update({
+            'active': false,
+            'cancelledAt': FieldValue.serverTimestamp(),
+          });
     }
     _sosActive = false;
     _sosCountingDown = false;

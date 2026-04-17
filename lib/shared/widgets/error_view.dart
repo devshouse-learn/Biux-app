@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Tipos de error predefinidos
-enum ErrorType {
-  network,
-  notFound,
-  permission,
-  server,
-  generic,
-  empty,
-}
+enum ErrorType { network, notFound, permission, server, generic, empty }
 
 /// Widget reutilizable para mostrar estados de error.
 ///
@@ -48,11 +41,12 @@ class ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            icon ?? Icon(
-              config.icon,
-              size: 64,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-            ),
+            icon ??
+                Icon(
+                  config.icon,
+                  size: 64,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                ),
             const SizedBox(height: 16),
             Text(
               title ?? config.title,

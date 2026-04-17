@@ -7,7 +7,9 @@ class SecureStorageService {
 
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock_this_device),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
   );
 
   // Keys
@@ -86,7 +88,11 @@ class SecureStorageService {
     try {
       await _storage.delete(key: key);
     } catch (e) {
-      AppLogger.error('Error eliminando valor seguro', error: e, tag: 'SecureStorage');
+      AppLogger.error(
+        'Error eliminando valor seguro',
+        error: e,
+        tag: 'SecureStorage',
+      );
     }
   }
 
@@ -96,7 +102,11 @@ class SecureStorageService {
       await _storage.deleteAll();
       AppLogger.info('Secure storage limpiado', tag: 'SecureStorage');
     } catch (e) {
-      AppLogger.error('Error limpiando secure storage', error: e, tag: 'SecureStorage');
+      AppLogger.error(
+        'Error limpiando secure storage',
+        error: e,
+        tag: 'SecureStorage',
+      );
     }
   }
 
@@ -108,7 +118,11 @@ class SecureStorageService {
     try {
       await _storage.write(key: key, value: value);
     } catch (e) {
-      AppLogger.error('Error escribiendo valor seguro: $key', error: e, tag: 'SecureStorage');
+      AppLogger.error(
+        'Error escribiendo valor seguro: $key',
+        error: e,
+        tag: 'SecureStorage',
+      );
     }
   }
 
@@ -116,7 +130,11 @@ class SecureStorageService {
     try {
       return await _storage.read(key: key);
     } catch (e) {
-      AppLogger.error('Error leyendo valor seguro: $key', error: e, tag: 'SecureStorage');
+      AppLogger.error(
+        'Error leyendo valor seguro: $key',
+        error: e,
+        tag: 'SecureStorage',
+      );
       return null;
     }
   }

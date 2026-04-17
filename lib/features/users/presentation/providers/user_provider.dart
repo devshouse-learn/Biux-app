@@ -24,7 +24,9 @@ class UserProvider extends ChangeNotifier {
   UserProvider() : _userService = UserService() {
     AppLogger.debug('🟦 UserProvider constructor llamado');
     if (kIsWeb && !kReleaseMode) {
-      AppLogger.debug('🌐 Es WEB - Creando usuario admin de prueba automáticamente');
+      AppLogger.debug(
+        '🌐 Es WEB - Creando usuario admin de prueba automáticamente',
+      );
       _createWebTestUser();
     } else {
       loadUserData();
@@ -32,9 +34,9 @@ class UserProvider extends ChangeNotifier {
   }
 
   /// Constructor especial para pruebas que evita llamadas remotas si se solicita
-  UserProvider.forTest({UserModel? initialUser, bool skipRemote = true}) :
-    _userService = null,
-    super() {
+  UserProvider.forTest({UserModel? initialUser, bool skipRemote = true})
+    : _userService = null,
+      super() {
     _user = initialUser;
     _isLoading = false;
     _skipRemoteCalls = skipRemote;
@@ -522,6 +524,7 @@ class UserProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
   /// Porcentaje de completitud del perfil (0-100)
   int get profileCompletionPercent {
     if (_user == null) return 0;
@@ -545,7 +548,8 @@ class UserProvider extends ChangeNotifier {
     if (_user == null) return [];
     final missing = <String>[];
     if (!(_user!.name?.isNotEmpty ?? false)) missing.add('Nombre');
-    if (!(_user!.username?.isNotEmpty ?? false)) missing.add('Nombre de usuario');
+    if (!(_user!.username?.isNotEmpty ?? false))
+      missing.add('Nombre de usuario');
     if (!(_user!.photoUrl?.isNotEmpty ?? false)) missing.add('Foto de perfil');
     if (!(_user!.description?.isNotEmpty ?? false)) missing.add('Biografía');
     return missing;
@@ -586,5 +590,4 @@ class UserProvider extends ChangeNotifier {
       }
     } catch (_) {}
   }
-
 }

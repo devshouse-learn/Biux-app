@@ -423,16 +423,18 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                               bloc.isChecked) {
                             // Validar fecha de nacimiento
                             if (_birthDate == null) {
-                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBarUtils.customSnackBar(
-                                  content: 'Ingresa tu fecha de nacimiento',
-                                  backgroundColor: ColorTokens.error50,
-                                ),
-                              );
+                              if (context.mounted)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBarUtils.customSnackBar(
+                                    content: 'Ingresa tu fecha de nacimiento',
+                                    backgroundColor: ColorTokens.error50,
+                                  ),
+                                );
                               return;
                             }
-                            final ageInfo = AgeVerificationEntity
-                                .fromBirthDate((_birthDate ?? DateTime.now()));
+                            final ageInfo = AgeVerificationEntity.fromBirthDate(
+                              (_birthDate ?? DateTime.now()),
+                            );
                             // Bloquear menores de 13
                             if (ageInfo.ageGroup == AgeGroup.underage) {
                               if (context.mounted) {
@@ -441,13 +443,18 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                   barrierDismissible: false,
                                   builder: (_) => AlertDialog(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16)),
-                                    title: const Row(children: [
-                                      Icon(Icons.block_rounded,
-                                        color: Colors.red),
-                                      SizedBox(width: 8),
-                                      Text('Acceso restringido'),
-                                    ]),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    title: const Row(
+                                      children: [
+                                        Icon(
+                                          Icons.block_rounded,
+                                          color: Colors.red,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text('Acceso restringido'),
+                                      ],
+                                    ),
                                     content: const Text(
                                       'Lo sentimos, Biux está disponible '
                                       'únicamente para usuarios mayores de 13 años.',
@@ -455,8 +462,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                                     ),
                                     actions: [
                                       TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context),
+                                        onPressed: () => Navigator.pop(context),
                                         child: const Text('Entendido'),
                                       ),
                                     ],
@@ -492,26 +498,29 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                             );
                           } else {
                             if (!_formKey.currentState!.validate()) {
-                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBarUtils.customSnackBar(
-                                  content: l.t('must_complete_all_fields'),
-                                  backgroundColor: ColorTokens.error50,
-                                ),
-                              );
+                              if (context.mounted)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBarUtils.customSnackBar(
+                                    content: l.t('must_complete_all_fields'),
+                                    backgroundColor: ColorTokens.error50,
+                                  ),
+                                );
                             } else if (bloc.image.path == '') {
-                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBarUtils.customSnackBar(
-                                  content: l.t('profile_image_not_selected'),
-                                  backgroundColor: ColorTokens.error50,
-                                ),
-                              );
+                              if (context.mounted)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBarUtils.customSnackBar(
+                                    content: l.t('profile_image_not_selected'),
+                                    backgroundColor: ColorTokens.error50,
+                                  ),
+                                );
                             } else {
-                              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBarUtils.customSnackBar(
-                                  content: l.t('accept_terms_to_continue'),
-                                  backgroundColor: ColorTokens.error50,
-                                ),
-                              );
+                              if (context.mounted)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBarUtils.customSnackBar(
+                                    content: l.t('accept_terms_to_continue'),
+                                    backgroundColor: ColorTokens.error50,
+                                  ),
+                                );
                             }
                           }
                         },
@@ -629,60 +638,65 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         if (response.message != AppStrings.emailAlreadyUse) {
           bloc.replacevalidateColor2(AppStrings.novalidoText2);
           if (response.statusCode == 200) {
-            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-              SnackBarUtils.customSnackBar(content: l.t('now_biux_user')),
-            );
+            if (context.mounted)
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBarUtils.customSnackBar(content: l.t('now_biux_user')),
+              );
             String id = response.message;
             await FirebaseAnalytics.instance.logSignUp(signUpMethod: 'email');
             await bloc.uploadPhoto(id);
             Future.delayed(Duration(seconds: 3), () async {
-  if (context.mounted) {
-                  if (ageInfo.ageGroup == AgeGroup.minor) {
-                    context.go(AppRoutes.parentalConsent, extra: {
-                      'userId': id,
-                      'userAge': ageInfo.age,
-                    });
-                  } else {
-                    context.go(AppRoutes.identityVerification, extra: {
-                      'userId': id,
-                    });
-                  }
+              if (context.mounted) {
+                if (ageInfo.ageGroup == AgeGroup.minor) {
+                  context.go(
+                    AppRoutes.parentalConsent,
+                    extra: {'userId': id, 'userAge': ageInfo.age},
+                  );
+                } else {
+                  context.go(
+                    AppRoutes.identityVerification,
+                    extra: {'userId': id},
+                  );
                 }
+              }
             });
           } else {
             bloc.changeLoading(false);
             bloc.replacevalidateColor2(AppStrings.validatedText);
-            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-              SnackBarUtils.customSnackBar(
-                content: l
-                    .t('email_already_registered')
-                    .replaceAll('{email}', response.message),
-                backgroundColor: ColorTokens.error50,
-              ),
-            );
+            if (context.mounted)
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBarUtils.customSnackBar(
+                  content: l
+                      .t('email_already_registered')
+                      .replaceAll('{email}', response.message),
+                  backgroundColor: ColorTokens.error50,
+                ),
+              );
           }
         } else {
           bloc.changeLoading(false);
-          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-            SnackBarUtils.customSnackBar(
-              content: l
-                  .t('email_already_registered')
-                  .replaceAll('{email}', emailController.text),
-              backgroundColor: ColorTokens.error50,
-            ),
-          );
+          if (context.mounted)
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBarUtils.customSnackBar(
+                content: l
+                    .t('email_already_registered')
+                    .replaceAll('{email}', emailController.text),
+                backgroundColor: ColorTokens.error50,
+              ),
+            );
         }
       } else {
         bloc.changeLoading(false);
         bloc.replacevalidateColor1(AppStrings.validatedText);
-        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBarUtils.customSnackBar(
-            content: l
-                .t('username_already_registered')
-                .replaceAll('{username}', userNameController.text),
-            backgroundColor: ColorTokens.error50,
-          ),
-        );
+        if (context.mounted)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBarUtils.customSnackBar(
+              content: l
+                  .t('username_already_registered')
+                  .replaceAll('{username}', userNameController.text),
+              backgroundColor: ColorTokens.error50,
+            ),
+          );
       }
     } catch (e) {
       bloc.changeLoading(false);

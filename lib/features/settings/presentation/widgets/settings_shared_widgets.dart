@@ -199,13 +199,13 @@ class SettingsWidgets {
             Switch(
               value: value,
               onChanged: enabled ? onChanged : null,
-              activeThumbColor: ColorTokens.primary30,
-              activeTrackColor: ColorTokens.primary30.withValues(alpha: 0.5),
+              activeThumbColor: Colors.white,
+              activeTrackColor: const Color(0xFF4CAF50),
               inactiveThumbColor: isDark
-                  ? Colors.grey.shade500
+                  ? Colors.grey.shade700
                   : Colors.grey.shade400,
               inactiveTrackColor: isDark
-                  ? Colors.grey.shade700
+                  ? Colors.grey.shade900
                   : Colors.grey.shade300,
             ),
           ],

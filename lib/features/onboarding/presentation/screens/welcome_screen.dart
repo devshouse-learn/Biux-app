@@ -18,12 +18,15 @@ class WelcomeScreen extends StatelessWidget {
             children: [
               const Text('🚴', style: TextStyle(fontSize: 80)),
               const SizedBox(height: 24),
-              Text('¡Bienvenido, \$userName!',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                '¡Bienvenido, \$userName!',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 16),
               const Text(
                 'Biux es tu comunidad ciclista. Únete a grupos, planifica rodadas y conecta con otros ciclistas.',
@@ -31,9 +34,15 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
               const SizedBox(height: 48),
-              _FeatureRow(icon: Icons.group, text: 'Únete a grupos de ciclismo'),
+              _FeatureRow(
+                icon: Icons.group,
+                text: 'Únete a grupos de ciclismo',
+              ),
               const SizedBox(height: 16),
-              _FeatureRow(icon: Icons.directions_bike, text: 'Organiza rodadas'),
+              _FeatureRow(
+                icon: Icons.directions_bike,
+                text: 'Organiza rodadas',
+              ),
               const SizedBox(height: 16),
               _FeatureRow(icon: Icons.map, text: 'Descubre rutas cercanas'),
               const SizedBox(height: 48),
@@ -45,13 +54,17 @@ class WelcomeScreen extends StatelessWidget {
                     backgroundColor: ColorTokens.primary40,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('¡Empezar!',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white)),
+                  child: const Text(
+                    '¡Empezar!',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],

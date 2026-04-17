@@ -66,11 +66,17 @@ class BirthDatePicker extends StatelessWidget {
                 _displayText,
                 style: TextStyle(
                   fontSize: 14,
-                  color: selectedDate == null ? ColorTokens.neutral60 : Colors.black87,
+                  color: selectedDate == null
+                      ? ColorTokens.neutral60
+                      : Colors.black87,
                 ),
               ),
             ),
-            Icon(Icons.calendar_today_outlined, size: 16, color: ColorTokens.neutral60),
+            Icon(
+              Icons.calendar_today_outlined,
+              size: 16,
+              color: ColorTokens.neutral60,
+            ),
           ],
         ),
       ),

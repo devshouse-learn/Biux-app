@@ -13,8 +13,14 @@ import 'package:biux/features/road_reports/domain/entities/road_report_entity.da
 
 class RideTrackerScreen extends StatefulWidget {
   final bool showHistory;
-  const RideTrackerScreen({Key? key, this.showHistory = false})
-    : super(key: key);
+  final LatLng? destination;
+  final String? destinationName;
+  const RideTrackerScreen({
+    Key? key,
+    this.showHistory = false,
+    this.destination,
+    this.destinationName,
+  }) : super(key: key);
 
   @override
   State<RideTrackerScreen> createState() => _RideTrackerScreenState();
@@ -25,7 +31,6 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
   GoogleMapController? _mapController;
   late AnimationController _pulseController;
   bool _showHistory = false;
-
 
   @override
   void initState() {
@@ -42,7 +47,24 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         context.read<RideTrackerProvider>().loadHistory(uid);
       }
       context.read<RoadReportsProvider>().loadReports();
+
+      // Si hay destino, obtener posición actual y calcular ruta
+      if (widget.destination != null) {
+        _loadPlannedRoute();
+      }
     });
+  }
+
+  Future<void> _loadPlannedRoute() async {
+    final provider = context.read<RideTrackerProvider>();
+    await provider.initLivePosition();
+    final origin = provider.livePosition;
+    if (origin == null || !mounted) return;
+    await provider.fetchAndSetRoute(
+      origin,
+      widget.destination!,
+      widget.destinationName ?? 'Ubicación compartida',
+    );
   }
 
   @override
@@ -100,33 +122,60 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
 
   // ─── MAPA ────────────────────────────────────────────────
   Widget _buildMapArea(RideTrackerProvider p) {
+    // Polylines y markers para la ruta planeada (si existe)
+    final Set<Polyline> polylines = {};
+    final Set<Marker> markers = {};
+
+    if (p.plannedRoute.isNotEmpty) {
+      polylines.add(
+        Polyline(
+          polylineId: const PolylineId('planned'),
+          points: p.plannedRoute,
+          color: const Color(0xFF1E88E5),
+          width: 4,
+          patterns: [PatternItem.dash(12), PatternItem.gap(8)],
+        ),
+      );
+      // Marcador de destino
+      markers.add(
+        Marker(
+          markerId: const MarkerId('destination'),
+          position: p.plannedRoute.last,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(title: p.plannedDestinationName ?? 'Destino'),
+        ),
+      );
+    }
+
     if (p.points.isNotEmpty) {
+      polylines.add(
+        Polyline(
+          polylineId: const PolylineId('track'),
+          points: p.points.map((pt) => LatLng(pt.lat, pt.lng)).toList(),
+          color: ColorTokens.primary30,
+          width: 5,
+        ),
+      );
+      if (p.points.length > 1) {
+        markers.add(
+          Marker(
+            markerId: const MarkerId('start'),
+            position: LatLng(p.points.first.lat, p.points.first.lng),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen,
+            ),
+            infoWindow: const InfoWindow(title: 'Inicio'),
+          ),
+        );
+      }
       return GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(p.points.last.lat, p.points.last.lng),
           zoom: 16.5,
         ),
         onMapCreated: (controller) => _mapController = controller,
-        polylines: {
-          Polyline(
-            polylineId: const PolylineId('track'),
-            points: p.points.map((pt) => LatLng(pt.lat, pt.lng)).toList(),
-            color: ColorTokens.primary30,
-            width: 5,
-          ),
-        },
-        markers: p.points.length > 1
-            ? {
-                Marker(
-                  markerId: const MarkerId('start'),
-                  position: LatLng(p.points.first.lat, p.points.first.lng),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueGreen,
-                  ),
-                  infoWindow: const InfoWindow(title: 'Inicio'),
-                ),
-              }
-            : {},
+        polylines: polylines,
+        markers: markers,
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
         zoomControlsEnabled: false,
@@ -134,6 +183,45 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         mapToolbarEnabled: false,
         padding: const EdgeInsets.only(bottom: 300),
       );
+    }
+
+    // Sin tracking pero con ruta planeada → mostrar mapa con la ruta
+    if (p.plannedRoute.isNotEmpty) {
+      return Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: p.plannedRoute[p.plannedRoute.length ~/ 2],
+              zoom: 13,
+            ),
+            onMapCreated: (controller) {
+              _mapController = controller;
+              // Ajustar cámara para mostrar toda la ruta
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (_mapController == null) return;
+                final bounds = _boundsFromPoints(p.plannedRoute);
+                _mapController!.animateCamera(
+                  CameraUpdate.newLatLngBounds(bounds, 60),
+                );
+              });
+            },
+            polylines: polylines,
+            markers: markers,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
+            compassEnabled: false,
+            mapToolbarEnabled: false,
+            padding: const EdgeInsets.only(bottom: 300),
+          ),
+          if (p.routeLoading) const Center(child: CircularProgressIndicator()),
+        ],
+      );
+    }
+
+    // Sin tracking ni ruta → placeholder
+    if (p.routeLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -348,6 +436,21 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
         ),
         child: Icon(icon, size: 22, color: Colors.white),
       ),
+    );
+  }
+
+  LatLngBounds _boundsFromPoints(List<LatLng> pts) {
+    double minLat = pts.first.latitude, maxLat = pts.first.latitude;
+    double minLng = pts.first.longitude, maxLng = pts.first.longitude;
+    for (final p in pts) {
+      if (p.latitude < minLat) minLat = p.latitude;
+      if (p.latitude > maxLat) maxLat = p.latitude;
+      if (p.longitude < minLng) minLng = p.longitude;
+      if (p.longitude > maxLng) maxLng = p.longitude;
+    }
+    return LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
     );
   }
 
@@ -2174,6 +2277,7 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     if (km < 1) return '${(km * 1000).round()} m';
     return '${km.toStringAsFixed(1)} km';
   }
+
   // ignore: unused_element
   Future<bool> _onWillPop(RideTrackerProvider provider) async {
     if (!provider.isTracking) return true;
@@ -2181,7 +2285,9 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('¿Salir de la rodada?'),
-        content: const Text('Tienes una rodada activa. Si sales, se perderá el progreso.'),
+        content: const Text(
+          'Tienes una rodada activa. Si sales, se perderá el progreso.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -2197,5 +2303,4 @@ class _RideTrackerScreenState extends State<RideTrackerScreen>
     );
     return result ?? false;
   }
-
 }

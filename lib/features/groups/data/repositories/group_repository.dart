@@ -77,7 +77,9 @@ class GroupRepository implements GroupRepositoryInterface {
         .where('cityId', isEqualTo: cityId)
         .snapshots()
         .map((snapshot) {
-          AppLogger.debug('📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}');
+          AppLogger.debug(
+            '📊 Grupos encontrados en la ciudad: ${snapshot.docs.length}',
+          );
 
           final groups = snapshot.docs
               .map((doc) {

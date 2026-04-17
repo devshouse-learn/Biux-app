@@ -75,12 +75,13 @@ class _MapScreenState extends State<MapScreen> {
                       await mapProvider.requestUserLocation();
 
                       if (locationProvider.error != null) {
-                        if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(locationProvider.error!),
-                            backgroundColor: ColorTokens.error50,
-                          ),
-                        );
+                        if (context.mounted)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(locationProvider.error!),
+                              backgroundColor: ColorTokens.error50,
+                            ),
+                          );
                       }
                     },
                     child: locationProvider.isLoading

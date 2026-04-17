@@ -18,6 +18,7 @@ class UserModel {
   final Map<String, dynamic>? followers; // Nuevo: Mapa de seguidores
   final Map<String, dynamic>? following; // Nuevo: Mapa de seguidos
   final DateTime? birthDate; // Fecha de nacimiento
+  final String profileVisibility; // 'public' o 'private'
 
   UserModel({
     required this.uid,
@@ -37,6 +38,7 @@ class UserModel {
     this.followers,
     this.following,
     this.birthDate,
+    this.profileVisibility = 'public',
   });
 
   // Getter para rol enum
@@ -99,6 +101,7 @@ class UserModel {
       'followers': followers,
       'following': following,
       'birthDate': birthDate?.toIso8601String(),
+      'profileVisibility': profileVisibility,
     };
   }
 
@@ -125,6 +128,7 @@ class UserModel {
       birthDate: map['birthDate'] != null
           ? DateTime.tryParse(map['birthDate'])
           : null,
+      profileVisibility: map['profileVisibility'] ?? 'public',
     );
   }
 
@@ -146,6 +150,7 @@ class UserModel {
     Map<String, dynamic>? followers,
     Map<String, dynamic>? following,
     DateTime? birthDate,
+    String? profileVisibility,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -165,6 +170,7 @@ class UserModel {
       followers: followers ?? this.followers,
       following: following ?? this.following,
       birthDate: birthDate ?? this.birthDate,
+      profileVisibility: profileVisibility ?? this.profileVisibility,
     );
   }
 }
