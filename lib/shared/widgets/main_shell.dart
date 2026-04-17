@@ -33,7 +33,6 @@ class _MainShellState extends State<MainShell> {
     '/edit-user',
   ];
 
-<<<<<<< HEAD
   /// Retorna el título dinámico según el tab seleccionado
   /// Para tabs 0,1,2,3 retorna null (se usa el logo)
   /// Para tab 4 (perfil) retorna username + visibilidad
@@ -50,27 +49,6 @@ class _MainShellState extends State<MainShell> {
         if (username != null && username.isNotEmpty) return '@$username';
         final userName = userProvider.user?.name;
         if (userName != null && userName.isNotEmpty) return userName;
-=======
-  String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
-    switch (index) {
-      case 0:
-        return 'Inicio';
-      case 1:
-        return 'Rodadas';
-      case 2:
-        return 'Mis Bicis';
-      case 3:
-        try {
-          final userProvider = Provider.of<UserProvider>(
-            context,
-            listen: false,
-          );
-          final username = userProvider.user?.username;
-          if (username != null && username.isNotEmpty) return '@$username';
-          final userName = userProvider.user?.name;
-          if (userName != null && userName.isNotEmpty) return userName;
-        } catch (_) {}
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
         return l.t('nav_profile');
       default:
         return AppStrings.APP_NAME.toUpperCase();
@@ -163,7 +141,7 @@ class _MainShellState extends State<MainShell> {
             unselectedItemColor: ColorTokens.neutral100.withValues(alpha: 0.6),
             showSelectedLabels: false,
             showUnselectedLabels: false,
-            items: const [
+            items: [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home, size: 28),
                 label: '',
@@ -210,7 +188,6 @@ class _MainShellState extends State<MainShell> {
         context.go('/stories');
         break;
       case 1:
-<<<<<<< HEAD
         // Grupos
         context.go('/rides');
         break;
@@ -224,14 +201,6 @@ class _MainShellState extends State<MainShell> {
         break;
       case 4:
         // Mi Perfil
-=======
-        context.go('/rides');
-        break;
-      case 2:
-        context.go(AppRoutes.myBikes);
-        break;
-      case 3:
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
         context.go('/profile');
         break;
     }
@@ -255,9 +224,7 @@ class _MainShellState extends State<MainShell> {
       });
     }
 
-    int newIndex = _selectedIndex;
     if (location.startsWith('/stories')) {
-<<<<<<< HEAD
       setState(() {
         _selectedIndex = 0;
       });
@@ -270,21 +237,8 @@ class _MainShellState extends State<MainShell> {
         _selectedIndex = 2;
       });
     } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
-=======
-      newIndex = 0;
-    } else if (location.startsWith('/rides')) {
-      newIndex = 1;
-    } else if (location.startsWith('/bikes') ||
-        location.startsWith('/my-bikes')) {
-      newIndex = 2;
-    } else if (location.startsWith('/profile')) {
-      newIndex = 3;
-    }
-
-    if (newIndex != _selectedIndex) {
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
       setState(() {
-        _selectedIndex = newIndex;
+        _selectedIndex = 3;
       });
     } else if (location.startsWith('/profile')) {
       setState(() {

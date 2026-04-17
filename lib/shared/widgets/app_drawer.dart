@@ -182,7 +182,6 @@ class _AppDrawerState extends State<AppDrawer> {
                                 ),
                         ),
                         const Spacer(),
-<<<<<<< HEAD
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -222,44 +221,11 @@ class _AppDrawerState extends State<AppDrawer> {
                                           ),
                                         ),
                                       ],
-=======
-                        // Botón Editar perfil
-                        Material(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.push('/profile');
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 8,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.edit,
-                                    size: 14,
-                                    color: Colors.white70,
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    'Editar',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-<<<<<<< HEAD
                             const SizedBox(height: 6),
                             GestureDetector(
                               onTap: () {
@@ -311,9 +277,6 @@ class _AppDrawerState extends State<AppDrawer> {
                               ),
                             ),
                           ],
-=======
-                          ),
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
                         ),
                       ],
                     ),

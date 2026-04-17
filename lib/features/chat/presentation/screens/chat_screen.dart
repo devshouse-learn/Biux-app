@@ -6,13 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-<<<<<<< HEAD
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:biux/shared/services/permission_service.dart';
-=======
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
@@ -20,13 +17,10 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/chat/presentation/screens/location_picker_screen.dart';
 import 'package:biux/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:biux/features/chat/presentation/widgets/chat_input.dart';
-<<<<<<< HEAD
 import 'package:biux/features/chat/presentation/widgets/media_preview_sheet.dart';
 import 'package:biux/features/chat/presentation/widgets/attach_menu_popup.dart';
 import 'package:biux/features/chat/presentation/widgets/camera_mode_picker.dart';
 import 'package:biux/features/chat/presentation/widgets/poll_creation_sheet.dart';
-=======
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -192,7 +186,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-<<<<<<< HEAD
   // ── Cámara: pantalla con toggle Foto/Video ────────────────────────────
   Future<void> _openCamera() async {
     final file = await CameraModePicker.open(context);
@@ -358,16 +351,12 @@ class _ChatScreenState extends State<ChatScreen> {
     );
     if (confirmed != true || !mounted) return;
     // Enviar como archivo de audio
-=======
-  Future<void> _pickAndSendImage() async {
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
     final userProvider = context.read<UserProvider>();
     final currentUser = FirebaseAuth.instance.currentUser;
     final myName = userProvider.user?.name?.isNotEmpty == true
         ? userProvider.user!.name!
         : (currentUser?.displayName ?? 'Usuario');
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
-<<<<<<< HEAD
     await _provider.sendMediaFiles(
       chatId: widget.chat.id,
       files: [file],
@@ -493,8 +482,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendLocationMessage(
       chatId: widget.chat.id,
-      lat: lat!,
-      lng: lng!,
+      lat: lat,
+      lng: lng,
       senderName: myName,
       senderAvatar: myPhoto,
     );
@@ -537,16 +526,8 @@ class _ChatScreenState extends State<ChatScreen> {
         : (currentUser?.displayName ?? 'Usuario');
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendMediaFiles(
-=======
-    final picked = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 75,
-    );
-    if (picked == null || !mounted) return;
-    await _provider.sendImageMessage(
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
       chatId: widget.chat.id,
-      imageFile: File(picked.path),
+      files: files,
       senderName: myName,
       senderAvatar: myPhoto,
     );
@@ -815,7 +796,7 @@ class _ChatScreenState extends State<ChatScreen> {
             IconButton(
               icon: const Icon(Icons.photo_outlined, color: Colors.white70),
               tooltip: 'Enviar imagen',
-              onPressed: _pickAndSendImage,
+              onPressed: _pickFromGallery,
             ),
           ],
         ],

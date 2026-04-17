@@ -2,14 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-<<<<<<< HEAD
-import 'package:video_player/video_player.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/config/router/app_routes.dart';
-import 'package:biux/features/chat/presentation/widgets/media_fullscreen_viewer.dart';
-=======
->>>>>>> 6bc00af8c0d5baa8b6ddae01ce6e7e2edbb67ee2
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:provider/provider.dart';
