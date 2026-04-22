@@ -344,26 +344,6 @@ class _EducationScreenState extends State<EducationScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.info_outline, size: 18, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Contenido educativo en desarrollo. Pronto con videos y quizzes.',
-                            style: TextStyle(fontSize: 12, color: Colors.blue),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
