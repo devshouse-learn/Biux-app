@@ -242,40 +242,45 @@ class _AppDrawerState extends State<AppDrawer> {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
-                    // ── Botón SOS ──
+                    // ── Botón SOS compacto ──
                     GestureDetector(
                       onLongPressStart: (_) => _startSosHold(),
                       onLongPressEnd: (_) => _cancelSosHold(),
                       onLongPressCancel: () => _cancelSosHold(),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.red.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          color: _sosHolding
+                              ? Colors.red.withValues(alpha: 0.25)
+                              : Colors.white.withValues(alpha: 0.1),
                           border: Border.all(
                             color: _sosHolding
                                 ? Colors.red
-                                : Colors.red.withValues(alpha: 0.4),
-                            width: _sosHolding ? 2 : 1.5,
+                                : Colors.white.withValues(alpha: 0.25),
+                            width: _sosHolding ? 2 : 1,
                           ),
                         ),
-                        child: Column(
+                        child: Row(
                           children: [
-                            // Barra de progreso circular + icono
+                            // Icono SOS con progreso
                             Stack(
                               alignment: Alignment.center,
                               children: [
                                 SizedBox(
-                                  width: 48,
-                                  height: 48,
+                                  width: 36,
+                                  height: 36,
                                   child: CircularProgressIndicator(
                                     value: _sosProgress,
-                                    strokeWidth: 3,
+                                    strokeWidth: 2.5,
                                     backgroundColor: Colors.red.withValues(
-                                      alpha: 0.2,
+                                      alpha: 0.15,
                                     ),
                                     valueColor:
                                         const AlwaysStoppedAnimation<Color>(
@@ -283,9 +288,10 @@ class _AppDrawerState extends State<AppDrawer> {
                                         ),
                                   ),
                                 ),
-                                Container(
-                                  width: 40,
-                                  height: 40,
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: 28,
+                                  height: 28,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: _sosHolding
@@ -295,10 +301,10 @@ class _AppDrawerState extends State<AppDrawer> {
                                         ? [
                                             BoxShadow(
                                               color: Colors.red.withValues(
-                                                alpha: 0.6,
+                                                alpha: 0.5,
                                               ),
-                                              blurRadius: 12,
-                                              spreadRadius: 2,
+                                              blurRadius: 8,
+                                              spreadRadius: 1,
                                             ),
                                           ]
                                         : [],
@@ -306,34 +312,55 @@ class _AppDrawerState extends State<AppDrawer> {
                                   child: const Icon(
                                     Icons.sos_rounded,
                                     color: Colors.white,
-                                    size: 22,
+                                    size: 16,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              _sosHolding ? 'Activando SOS...' : 'Botón SOS',
-                              style: TextStyle(
-                                color: _sosHolding ? Colors.red : Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.5,
+                            const SizedBox(width: 12),
+                            // Texto informativo
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _sosHolding
+                                        ? 'Activando SOS...'
+                                        : 'Emergencia SOS',
+                                    style: TextStyle(
+                                      color: _sosHolding
+                                          ? Colors.red
+                                          : Colors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    _sosHolding
+                                        ? 'Suelta para cancelar'
+                                        : 'Mantén presionado 3s',
+                                    style: TextStyle(
+                                      color: _sosHolding
+                                          ? Colors.red.withValues(alpha: 0.8)
+                                          : Colors.white.withValues(
+                                              alpha: 0.55,
+                                            ),
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
+                            // Flecha indicadora
+                            Icon(
                               _sosHolding
-                                  ? 'Suelta para cancelar'
-                                  : 'Mantén presionado 3s para activar la alerta de emergencia',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: _sosHolding
-                                    ? Colors.red.withValues(alpha: 0.8)
-                                    : Colors.white.withValues(alpha: 0.6),
-                                fontSize: 11,
-                                height: 1.3,
-                              ),
+                                  ? Icons.radio_button_on
+                                  : Icons.touch_app_rounded,
+                              color: _sosHolding
+                                  ? Colors.red
+                                  : Colors.white.withValues(alpha: 0.4),
+                              size: 18,
                             ),
                           ],
                         ),
