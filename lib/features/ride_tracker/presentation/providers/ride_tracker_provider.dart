@@ -9,6 +9,8 @@ import 'package:biux/features/ride_tracker/domain/entities/ride_track_entity.dar
 import 'package:biux/features/ride_tracker/data/datasources/ride_tracker_datasource.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:biux/core/services/app_logger.dart';
+import 'package:biux/core/services/connectivity_service.dart';
+import 'package:biux/features/ride_tracker/data/datasources/offline_ride_datasource.dart';
 
 class RideTrackerProvider with ChangeNotifier {
   final _ds = RideTrackerDatasource();
@@ -396,9 +398,14 @@ class RideTrackerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Indica si la última rodada se guardó offline (pendiente de sync)
+  bool _savedOffline = false;
+  bool get savedOffline => _savedOffline;
+
   Future<bool> stopAndSave(String userId, String name) async {
     _isSaving = true;
     _isTracking = false;
+    _savedOffline = false;
     _posSub?.cancel();
     _posSub = null;
     _timer?.cancel();
@@ -422,55 +429,180 @@ class RideTrackerProvider with ChangeNotifier {
     final savedCal = calories;
     final savedStart = _startTime;
 
+    final isOnline = ConnectivityService().isOnline;
+
+    if (isOnline) {
+      try {
+        final trackId = await _ds.saveTrackFast(userId, {
+          'name': name,
+          'totalKm': savedKm,
+          'avgSpeed': savedAvg,
+          'maxSpeed': savedMax,
+          'durationMinutes': savedDurMin,
+          'durationSeconds': savedDurSec,
+          'calories': savedCal,
+          'pointCount': savedPoints.length,
+          'startTime': savedStart?.millisecondsSinceEpoch,
+          'endTime': now.millisecondsSinceEpoch,
+        });
+
+        _history.insert(
+          0,
+          RideTrackEntity(
+            id: trackId,
+            userId: userId,
+            name: name,
+            points: [],
+            totalKm: savedKm,
+            avgSpeed: savedAvg,
+            maxSpeed: savedMax,
+            durationMinutes: savedDurMin,
+            durationSeconds: savedDurSec,
+            calories: savedCal,
+            pointCount: savedPoints.length,
+            startTime: savedStart ?? now,
+            endTime: now,
+          ),
+        );
+
+        _resetTrackingState();
+        _saveBackgroundData(userId, trackId, savedPoints, savedStart);
+        return true;
+      } catch (e) {
+        debugPrint('Error Firestore, guardando offline: $e');
+        return _saveOffline(
+          userId,
+          name,
+          savedPoints,
+          savedKm,
+          savedDurSec,
+          savedStart ?? now,
+        );
+      }
+    } else {
+      return _saveOffline(
+        userId,
+        name,
+        savedPoints,
+        savedKm,
+        savedDurSec,
+        savedStart ?? now,
+      );
+    }
+  }
+
+  Future<bool> _saveOffline(
+    String userId,
+    String name,
+    List<TrackPoint> savedPoints,
+    double savedKm,
+    int savedDurSec,
+    DateTime startedAt,
+  ) async {
     try {
-      final trackId = await _ds.saveTrackFast(userId, {
-        'name': name,
-        'totalKm': savedKm,
-        'avgSpeed': savedAvg,
-        'maxSpeed': savedMax,
-        'durationMinutes': savedDurMin,
-        'durationSeconds': savedDurSec,
-        'calories': savedCal,
-        'pointCount': savedPoints.length,
-        'startTime': savedStart?.millisecondsSinceEpoch,
-        'endTime': now.millisecondsSinceEpoch,
-      });
+      final offlineRide = OfflineRideEntity(
+        id: 'offline_${DateTime.now().millisecondsSinceEpoch}',
+        name: name,
+        distanceKm: savedKm,
+        durationSeconds: savedDurSec,
+        points: savedPoints.map((p) => {'lat': p.lat, 'lng': p.lng}).toList(),
+        startedAt: startedAt,
+      );
+      await OfflineRideDatasource.save(offlineRide);
 
       _history.insert(
         0,
         RideTrackEntity(
-          id: trackId,
+          id: offlineRide.id,
           userId: userId,
           name: name,
           points: [],
           totalKm: savedKm,
-          avgSpeed: savedAvg,
-          maxSpeed: savedMax,
-          durationMinutes: savedDurMin,
+          avgSpeed: savedDurSec > 0 ? savedKm / (savedDurSec / 3600) : 0,
+          maxSpeed: _maxSpeed,
+          durationMinutes: savedDurSec ~/ 60,
           durationSeconds: savedDurSec,
-          calories: savedCal,
+          calories: (savedKm * 30).toInt(),
           pointCount: savedPoints.length,
-          startTime: savedStart ?? now,
-          endTime: now,
+          startTime: startedAt,
+          endTime: DateTime.now(),
         ),
       );
 
-      _points = [];
-      _totalKm = 0;
-      _currentSpeed = 0;
-      _maxSpeed = 0;
-      _durationSec = 0;
-      _isSaving = false;
-      notifyListeners();
-
-      _saveBackgroundData(userId, trackId, savedPoints, savedStart);
+      _savedOffline = true;
+      _resetTrackingState();
+      debugPrint('Rodada guardada offline: ${offlineRide.id}');
       return true;
     } catch (e) {
-      debugPrint('Error guardando rodada: $e');
+      debugPrint('Error guardando offline: $e');
       _isSaving = false;
       notifyListeners();
       return false;
     }
+  }
+
+  void _resetTrackingState() {
+    _points = [];
+    _totalKm = 0;
+    _currentSpeed = 0;
+    _maxSpeed = 0;
+    _durationSec = 0;
+    _isSaving = false;
+    notifyListeners();
+  }
+
+  /// Sincroniza rodadas pendientes cuando hay internet
+  Future<int> syncPendingRides(String userId) async {
+    if (!ConnectivityService().isOnline) return 0;
+    final pending = await OfflineRideDatasource.getPending();
+    if (pending.isEmpty) return 0;
+
+    int synced = 0;
+    for (final ride in pending) {
+      try {
+        final trackId = await _ds.saveTrackFast(userId, {
+          'name': ride.name,
+          'totalKm': ride.distanceKm,
+          'avgSpeed': ride.durationSeconds > 0
+              ? ride.distanceKm / (ride.durationSeconds / 3600)
+              : 0,
+          'maxSpeed': 0,
+          'durationMinutes': ride.durationSeconds ~/ 60,
+          'durationSeconds': ride.durationSeconds,
+          'calories': (ride.distanceKm * 30).toInt(),
+          'pointCount': ride.points.length,
+          'startTime': ride.startedAt.millisecondsSinceEpoch,
+          'endTime': ride.startedAt
+              .add(Duration(seconds: ride.durationSeconds))
+              .millisecondsSinceEpoch,
+        });
+
+        if (ride.points.isNotEmpty) {
+          await _ds.saveTrackPoints(
+            trackId,
+            ride.points
+                .map(
+                  (p) => {
+                    'lat': p['lat'],
+                    'lng': p['lng'],
+                    'elevation': 0.0,
+                    'speed': 0.0,
+                  },
+                )
+                .toList(),
+          );
+        }
+
+        await OfflineRideDatasource.markSynced(ride.id);
+        synced++;
+        debugPrint('Rodada sincronizada: ${ride.id} -> $trackId');
+      } catch (e) {
+        debugPrint('Error sincronizando ${ride.id}: $e');
+      }
+    }
+
+    if (synced > 0) await loadHistory(userId);
+    return synced;
   }
 
   void _saveBackgroundData(
