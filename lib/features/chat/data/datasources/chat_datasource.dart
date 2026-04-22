@@ -52,6 +52,8 @@ class ChatDatasource {
         return '🎞️ GIF';
       case 'file':
         return '📎 Archivo';
+      case 'poll':
+        return '📊 Encuesta';
       case 'deleted':
         return '🚫 Mensaje eliminado';
       default:

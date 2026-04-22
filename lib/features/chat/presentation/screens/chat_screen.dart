@@ -9,14 +9,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/chat/data/datasources/chat_datasource.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/chat/presentation/screens/location_picker_screen.dart';
 import 'package:biux/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:biux/features/chat/presentation/widgets/chat_input.dart';
 import 'package:biux/features/chat/presentation/widgets/media_preview_sheet.dart';
 import 'package:biux/features/chat/presentation/widgets/attach_menu_popup.dart';
 import 'package:biux/features/chat/presentation/widgets/camera_mode_picker.dart';
+import 'package:biux/features/chat/presentation/widgets/poll_creation_sheet.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -183,6 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // ── Cámara: pantalla con toggle Foto/Video ────────────────────────────
+  // ignore: unused_element
   Future<void> _openCamera() async {
     final file = await CameraModePicker.open(context);
     if (file == null || !mounted) return;
@@ -197,6 +202,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // ── Menú clip/adjuntos ──────────────────────────────────────────────────
+  // ignore: unused_element
   void _showAttachMenu() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     AttachMenuPopup.show(
@@ -239,20 +245,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // ── Galería: fotos y videos múltiples ────────────────────────────────────
   Future<void> _pickFromGallery() async {
-    final status = await Permission.photos.request();
-    if (!status.isGranted && !status.isLimited) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Se necesita permiso para acceder a la galería'),
-          ),
-        );
-      }
-      return;
-    }
+    final granted = await PermissionService().ensurePermission(
+      Permission.photos,
+      context: context,
+    );
+    if (!granted) return;
     if (!mounted) return;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final picked = await _imagePicker.pickMultipleMedia();
+    final picked = await _imagePicker.pickMultiImage();
     final files = picked.map((x) => File(x.path)).toList();
     if (files.isEmpty || !mounted) return;
     final confirmed = await MediaPreviewSheet.show(
@@ -287,6 +287,71 @@ class _ChatScreenState extends State<ChatScreen> {
     if (result == null || result.files.isEmpty || !mounted) return;
     final path = result.files.single.path;
     if (path == null) return;
+    final file = File(path);
+    final fileName = path.split('/').last.split('\\').last;
+    // Mostrar confirmación antes de enviar
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        final bg = isDark ? const Color(0xFF1A2B3C) : Colors.white;
+        final textColor = isDark ? Colors.white : Colors.black87;
+        return Container(
+          margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Icon(Icons.audiotrack, size: 48, color: const Color(0xFFFF6D00)),
+              const SizedBox(height: 12),
+              Text(
+                fileName,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(context, true),
+                  icon: const Icon(Icons.send),
+                  label: const Text('Enviar audio'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6D00),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    if (confirmed != true || !mounted) return;
     // Enviar como archivo de audio
     final userProvider = context.read<UserProvider>();
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -296,123 +361,163 @@ class _ChatScreenState extends State<ChatScreen> {
     final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
     await _provider.sendMediaFiles(
       chatId: widget.chat.id,
-      files: [File(path)],
+      files: [file],
       senderName: myName,
       senderAvatar: myPhoto,
     );
   }
 
-  // ── Ubicación: compartir ubicación ──────────────────────────────────────
+  // ── Ubicación: compartir ubicación con elección de precisión ─────────
   Future<void> _shareLocation() async {
     if (!mounted) return;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final choice = await showModalBottomSheet<String>(
+    // Pedir permiso de ubicación (diálogo estándar permitir/denegar)
+    final granted = await PermissionService().ensurePermission(
+      Permission.location,
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        final bg = isDark ? const Color(0xFF1A2B3C) : Colors.white;
-        final textColor = isDark ? Colors.white : Colors.black87;
-        return Container(
-          margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(20),
-          ),
+    );
+    if (!granted) return;
+
+    // Preguntar al usuario si desea enviar ubicación precisa o aproximada
+    final precision = await showModalBottomSheet<LocationAccuracy>(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 6),
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(2),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: Text(
+                  'Compartir ubicación',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.my_location, color: textColor),
-                title: Text(
-                  'Ubicación en tiempo real',
-                  style: TextStyle(color: textColor),
-                ),
-                subtitle: Text(
-                  'Comparte tu ubicación actual',
-                  style: TextStyle(
-                    color: isDark ? Colors.white38 : Colors.black38,
-                    fontSize: 12,
-                  ),
-                ),
-                onTap: () => Navigator.pop(context, 'realtime'),
+                leading: const Icon(Icons.my_location, color: Colors.green),
+                title: const Text('Ubicación precisa'),
+                subtitle: const Text('Se comparte tu ubicación exacta'),
+                onTap: () => Navigator.pop(ctx, LocationAccuracy.high),
               ),
               ListTile(
-                leading: Icon(Icons.place, color: textColor),
-                title: Text(
-                  'Lugar cercano',
-                  style: TextStyle(color: textColor),
+                leading: const Icon(
+                  Icons.location_searching,
+                  color: Colors.orange,
                 ),
-                subtitle: Text(
-                  'Envía una ubicación aproximada',
-                  style: TextStyle(
-                    color: isDark ? Colors.white38 : Colors.black38,
-                    fontSize: 12,
-                  ),
-                ),
-                onTap: () => Navigator.pop(context, 'nearby'),
+                title: const Text('Ubicación aproximada'),
+                subtitle: const Text('Se comparte un área general'),
+                onTap: () => Navigator.pop(ctx, LocationAccuracy.low),
               ),
-              const SizedBox(height: 8),
             ],
           ),
-        );
-      },
-    );
-    if (choice == null || !mounted) return;
-    // Enviar ubicación actual como mensaje
-    final locStatus = await Permission.location.request();
-    if (!locStatus.isGranted) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Se necesita permiso de ubicación')),
-        );
-      }
-      return;
-    }
-    try {
-      final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 10),
         ),
+      ),
+    );
+    if (precision == null || !mounted) return;
+
+    double? lat;
+    double? lng;
+
+    if (precision == LocationAccuracy.low) {
+      // Aproximada: abrir mapa para elegir ubicación
+      final picked = await Navigator.push<LatLng>(
+        context,
+        MaterialPageRoute(builder: (_) => const LocationPickerScreen()),
       );
-      if (!mounted) return;
-      final userProvider = context.read<UserProvider>();
-      final currentUser = FirebaseAuth.instance.currentUser;
-      final myName = userProvider.user?.name?.isNotEmpty == true
-          ? userProvider.user!.name!
-          : (currentUser?.displayName ?? 'Usuario');
-      final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
-      await _provider.sendLocationMessage(
-        chatId: widget.chat.id,
-        lat: pos.latitude,
-        lng: pos.longitude,
-        senderName: myName,
-        senderAvatar: myPhoto,
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo obtener la ubicación')),
+      if (picked == null || !mounted) return;
+      lat = picked.latitude;
+      lng = picked.longitude;
+    } else {
+      // Precisa: obtener GPS directo
+      try {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text('Obteniendo ubicación...'),
+                ],
+              ),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+        final pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 10),
+          ),
         );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        lat = pos.latitude;
+        lng = pos.longitude;
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se pudo obtener la ubicación')),
+          );
+        }
+        return;
       }
     }
+
+    final userProvider = context.read<UserProvider>();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final myName = userProvider.user?.name?.isNotEmpty == true
+        ? userProvider.user!.name!
+        : (currentUser?.displayName ?? 'Usuario');
+    final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
+    await _provider.sendLocationMessage(
+      chatId: widget.chat.id,
+      lat: lat,
+      lng: lng,
+      senderName: myName,
+      senderAvatar: myPhoto,
+    );
   }
 
-  // ── Encuesta: placeholder ───────────────────────────────────────────────
-  void _createPoll() {
+  // ── Encuesta: crear y enviar ──────────────────────────────────────────
+  void _createPoll() async {
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Encuestas próximamente')));
+    final result = await showModalBottomSheet<PollResult>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => const PollCreationSheet(),
+    );
+    if (result == null || !mounted) return;
+    final userProvider = context.read<UserProvider>();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final myName = userProvider.user?.name?.isNotEmpty == true
+        ? userProvider.user!.name!
+        : (currentUser?.displayName ?? 'Usuario');
+    final myPhoto = userProvider.user?.photoUrl ?? currentUser?.photoURL;
+    await _provider.sendPollMessage(
+      chatId: widget.chat.id,
+      question: result.question,
+      options: result.options,
+      allowMultiple: result.allowMultiple,
+      senderName: myName,
+      senderAvatar: myPhoto,
+    );
   }
 
   Future<void> _sendMediaFiles(List<File> files) async {
@@ -690,6 +795,11 @@ class _ChatScreenState extends State<ChatScreen> {
               tooltip: 'Buscar',
               onPressed: () => setState(() => _searching = true),
             ),
+            IconButton(
+              icon: const Icon(Icons.photo_outlined, color: Colors.white70),
+              tooltip: 'Enviar imagen',
+              onPressed: _pickFromGallery,
+            ),
           ],
         ],
       ),
@@ -891,8 +1001,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 onCancelReply: () => provider.setReplyingTo(null),
                 onTypingChanged: (typing) => provider.onTypingChanged(typing),
-                onCamera: _openCamera,
-                onAttach: _showAttachMenu,
                 isDark: isDark,
               ),
             ],

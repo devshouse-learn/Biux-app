@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 
 const _kRecentEmojisKey = 'recent_emojis_v1';
@@ -847,17 +848,11 @@ class _ChatInputState extends State<ChatInput>
   // ── Grabación ──────────────────────────────────────────────────────────────
   Future<void> _startRecording() async {
     // Pedir permiso de micrófono
-    final status = await Permission.microphone.request();
-    if (!status.isGranted) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Se necesita permiso de micrófono para grabar'),
-          ),
-        );
-      }
-      return;
-    }
+    final granted = await PermissionService().ensurePermission(
+      Permission.microphone,
+      context: context,
+    );
+    if (!granted) return;
 
     try {
       final dir = await getTemporaryDirectory();

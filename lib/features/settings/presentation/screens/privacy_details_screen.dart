@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/shared/services/permission_service.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 class PrivacyDetailsScreen extends StatefulWidget {
@@ -14,26 +16,49 @@ class PrivacyDetailsScreen extends StatefulWidget {
   State<PrivacyDetailsScreen> createState() => _PrivacyDetailsScreenState();
 }
 
-class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen> {
+class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen>
+    with WidgetsBindingObserver {
   String _profileVisibilityKey = 'public';
   bool _cameraGranted = false;
   bool _locationGranted = false;
   bool _microphoneGranted = false;
+  bool _photosGranted = false;
+  bool _notificationsGranted = false;
+  bool _contactsGranted = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadPermissions();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Recargar permisos cuando el usuario vuelve de la configuración del sistema
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadPermissions();
+    }
   }
 
   Future<void> _loadPermissions() async {
     final prefs = await SharedPreferences.getInstance();
+    final permissions = await PermissionService().loadAllPermissions();
     setState(() {
       _profileVisibilityKey =
           prefs.getString('profile_visibility_key') ?? 'public';
-      _cameraGranted = prefs.getBool('camera_permission') ?? false;
-      _locationGranted = prefs.getBool('location_permission') ?? false;
-      _microphoneGranted = prefs.getBool('microphone_permission') ?? false;
+      _cameraGranted = permissions['camera'] ?? false;
+      _locationGranted = permissions['location'] ?? false;
+      _microphoneGranted = permissions['microphone'] ?? false;
+      _photosGranted = permissions['photos'] ?? false;
+      _notificationsGranted = permissions['notifications'] ?? false;
+      _contactsGranted = permissions['contacts'] ?? false;
     });
   }
 
@@ -51,17 +76,23 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen> {
     }
   }
 
-  Future<void> _savePermission(String permission, bool granted) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('${permission}_permission', granted);
-    setState(() {
-      if (permission == 'camera')
-        _cameraGranted = granted;
-      else if (permission == 'location')
-        _locationGranted = granted;
-      else if (permission == 'microphone')
-        _microphoneGranted = granted;
-    });
+  Future<void> _togglePermission(
+    Permission permission,
+    bool currentValue,
+  ) async {
+    if (currentValue) {
+      // Si ya está concedido, abrir configuración del sistema para revocar
+      await openAppSettings();
+    } else {
+      // Si no está concedido, solicitar permiso
+      final granted = await PermissionService().ensurePermission(
+        permission,
+        context: context,
+      );
+      if (granted) {
+        _loadPermissions();
+      }
+    }
   }
 
   @override
@@ -92,30 +123,68 @@ class _PrivacyDetailsScreenState extends State<PrivacyDetailsScreen> {
             context: context,
             icon: Icons.camera_alt,
             title: l.t('camera'),
-            subtitle: l.t('camera_subtitle'),
+            subtitle: 'Fotos, cámara en chat y reportes',
             isDark: isDark,
             value: _cameraGranted,
-            onChanged: (value) => _savePermission('camera', value),
+            onChanged: (_) =>
+                _togglePermission(Permission.camera, _cameraGranted),
+          ),
+          const SizedBox(height: 8),
+          SettingsWidgets.buildToggleCard(
+            context: context,
+            icon: Icons.photo_library,
+            title: 'Galería',
+            subtitle: 'Enviar fotos y videos desde galería',
+            isDark: isDark,
+            value: _photosGranted,
+            onChanged: (_) =>
+                _togglePermission(Permission.photos, _photosGranted),
           ),
           const SizedBox(height: 8),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.location_on,
             title: l.t('location'),
-            subtitle: l.t('location_subtitle'),
+            subtitle: 'GPS, mapa, rodadas y ubicación en chat',
             isDark: isDark,
             value: _locationGranted,
-            onChanged: (value) => _savePermission('location', value),
+            onChanged: (_) =>
+                _togglePermission(Permission.location, _locationGranted),
           ),
           const SizedBox(height: 8),
           SettingsWidgets.buildToggleCard(
             context: context,
             icon: Icons.mic,
             title: l.t('microphone'),
-            subtitle: l.t('microphone_subtitle'),
+            subtitle: 'Notas de voz en chat',
             isDark: isDark,
             value: _microphoneGranted,
-            onChanged: (value) => _savePermission('microphone', value),
+            onChanged: (_) =>
+                _togglePermission(Permission.microphone, _microphoneGranted),
+          ),
+          const SizedBox(height: 8),
+          SettingsWidgets.buildToggleCard(
+            context: context,
+            icon: Icons.notifications,
+            title: 'Notificaciones',
+            subtitle: 'Mensajes, rodadas y alertas',
+            isDark: isDark,
+            value: _notificationsGranted,
+            onChanged: (_) => _togglePermission(
+              Permission.notification,
+              _notificationsGranted,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SettingsWidgets.buildToggleCard(
+            context: context,
+            icon: Icons.contacts,
+            title: 'Contactos',
+            subtitle: 'Encontrar amigos e invitar ciclistas',
+            isDark: isDark,
+            value: _contactsGranted,
+            onChanged: (_) =>
+                _togglePermission(Permission.contacts, _contactsGranted),
           ),
           const SizedBox(height: 32),
         ],

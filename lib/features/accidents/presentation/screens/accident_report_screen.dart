@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:biux/shared/services/permission_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -152,64 +153,25 @@ class _AccidentReportScreenState extends State<AccidentReportScreen>
   // ── Photo helpers ───────────────────────────────────
   // ═══════════════════════════════════════════════════════
   Future<void> _addPhoto(ImageSource source) async {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
+    final _ = Provider.of<LocaleNotifier>(context, listen: false);
     try {
-      PermissionStatus status;
-      if (source == ImageSource.camera) {
-        status = await Permission.camera.request();
-      } else {
-        status = await Permission.photos.request();
-      }
+      final permission = source == ImageSource.camera
+          ? Permission.camera
+          : Permission.photos;
+      final granted = await PermissionService().ensurePermission(
+        permission,
+        context: context,
+      );
+      if (!granted) return;
 
-      if (status.isGranted || status.isLimited) {
-        final XFile? xfile = await _picker.pickImage(
-          source: source,
-          maxWidth: 1200,
-          maxHeight: 1200,
-          imageQuality: 75,
-        );
-        if (xfile != null) {
-          setState(() => _photos.add(File(xfile.path)));
-        }
-      } else if (status.isPermanentlyDenied) {
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: Text(l.t('permission_required')),
-              content: Text(
-                source == ImageSource.camera
-                    ? l.t('camera_permission_message')
-                    : l.t('gallery_permission_message'),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: Text(l.t('cancel')),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    openAppSettings();
-                  },
-                  child: Text(l.t('open_settings')),
-                ),
-              ],
-            ),
-          );
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                source == ImageSource.camera
-                    ? l.t('camera_permission_needed')
-                    : l.t('gallery_permission_needed'),
-              ),
-            ),
-          );
-        }
+      final XFile? xfile = await _picker.pickImage(
+        source: source,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 75,
+      );
+      if (xfile != null) {
+        setState(() => _photos.add(File(xfile.path)));
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
