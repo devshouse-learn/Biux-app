@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/data/repositories/user_profile_repository_impl.dart';
 import 'package:biux/features/users/domain/repositories/user_profile_repository.dart';
@@ -15,7 +15,7 @@ class UserProfileProvider extends ChangeNotifier {
   // Listener subscription para el perfil actual
   StreamSubscription<DocumentSnapshot>? _profileStreamSubscription;
 
-  // Estado de bÃºsqueda
+  // Estado de búsqueda
   List<BiuxUser> _searchResults = [];
   bool _isSearching = false;
   String _searchQuery = '';
@@ -28,7 +28,7 @@ class UserProfileProvider extends ChangeNotifier {
   List<BiuxUser> _following = [];
   bool _isLoadingFollowers = false;
   bool _isLoadingFollowing = false;
-  bool _isProcessingFollow = false; // âœ… NUEVA: Estado de procesamiento
+  bool _isProcessingFollow = false; // ✅ NUEVA: Estado de procesamiento
 
   // Estado de follow request (cuentas privadas)
   bool _hasPendingFollowRequest = false;
@@ -51,7 +51,7 @@ class UserProfileProvider extends ChangeNotifier {
   bool get isLoadingProfile => _isLoadingProfile;
   bool get isLoading => _isLoadingProfile || _isLoadingContent;
   bool get isFollowing => _isFollowing;
-  bool get isProcessingFollow => _isProcessingFollow; // âœ… NUEVO
+  bool get isProcessingFollow => _isProcessingFollow; // ✅ NUEVO
   bool get hasPendingFollowRequest => _hasPendingFollowRequest;
   bool get isPrivateAccount => _isPrivateAccount;
   List<BiuxUser> get followRequests => _followRequests;
@@ -66,13 +66,13 @@ class UserProfileProvider extends ChangeNotifier {
   int get followingCount => _currentProfile?.following.length ?? 0;
   String? get error => _error;
 
-  // BÃºsqueda de usuarios
+  // Búsqueda de usuarios
   Future<void> searchUsers(String query) async {
-    // Validar longitud mÃ­nima de bÃºsqueda
+    // Validar longitud mínima de búsqueda
     if (query.trim().isEmpty) {
       return;
     }
-    // Validar longitud mÃ¡xima
+    // Validar longitud máxima
     if (query.trim().length > 50) {
       return;
     }
@@ -105,7 +105,7 @@ class UserProfileProvider extends ChangeNotifier {
             description.contains(q);
       }).toList();
 
-      // Ordenar: primero los que comienzan con la bÃºsqueda, luego los que la contienen
+      // Ordenar: primero los que comienzan con la búsqueda, luego los que la contienen
       filtered.sort((a, b) {
         final aFullName = a.fullName.toLowerCase();
         final aUserName = a.userName.toLowerCase();
@@ -123,7 +123,7 @@ class UserProfileProvider extends ChangeNotifier {
       });
 
       _searchResults = filtered;
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _searchResults = [];
     } finally {
       _isSearching = false;
@@ -131,7 +131,7 @@ class UserProfileProvider extends ChangeNotifier {
     }
   }
 
-  // Limpiar bÃºsqueda
+  // Limpiar búsqueda
   void clearSearch() {
     _searchResults = [];
     _searchQuery = '';
@@ -159,16 +159,11 @@ class UserProfileProvider extends ChangeNotifier {
         // Verificar si la cuenta es privada
         _isPrivateAccount = profile.profileVisibility == 'private';
 
-        debugPrint(
-          'ðŸ‘¤ loadUserProfile: userId=$userId, profileVisibility=${profile.profileVisibility}, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing',
-        );
-
         // Si es privada y no lo sigue, verificar solicitud pendiente
         if (_isPrivateAccount && !_isFollowing) {
           _hasPendingFollowRequest = await _repository.hasPendingFollowRequest(
             userId,
           );
-          debugPrint('ðŸ‘¤ hasPendingFollowRequest=$_hasPendingFollowRequest');
         }
 
         // Cargar posts y stories solo si no es privada O si ya lo sigue
@@ -179,7 +174,7 @@ class UserProfileProvider extends ChangeNotifier {
           _userStories = [];
         }
       }
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _error = 'user_error_load_profile';
       _currentProfile = null;
       _isFollowing = false;
@@ -195,7 +190,7 @@ class UserProfileProvider extends ChangeNotifier {
 
   // Configurar listener en tiempo real para el perfil actual
   void _setupProfileListener(String userId) {
-    // Cancelar listener anterior si existÃ­a
+    // Cancelar listener anterior si existía
     _profileStreamSubscription?.cancel();
 
     try {
@@ -209,24 +204,24 @@ class UserProfileProvider extends ChangeNotifier {
               try {
                 _currentProfile = BiuxUser.fromJsonMap({...data, 'id': userId});
                 notifyListeners();
-              } on FirebaseException catch (e) {
+              } catch (e) {
                 debugPrint('Error: ' + e.toString());
               }
             }
           }, onError: (error) {});
-    } on FirebaseException catch (e) {
+    } catch (e) {
       debugPrint('Error: ' + e.toString());
     }
   }
 
-  /// ActualizaciÃ³n rÃ¡pida del perfil sin cargar contenido (para despuÃ©s de follow/unfollow)
+  /// Actualización rápida del perfil sin cargar contenido (para después de follow/unfollow)
   Future<void> refreshProfileQuick(String userId) async {
     try {
       final profile = await _repository.getUserProfile(userId);
       if (profile != null) {
         _currentProfile = profile;
       }
-    } on FirebaseException catch (e) {
+    } catch (e) {
       debugPrint('Error: ' + e.toString());
     } finally {
       notifyListeners();
@@ -244,20 +239,20 @@ class UserProfileProvider extends ChangeNotifier {
         userId,
       );
 
-      // âœ… Validar que las publicaciones estÃ©n disponibles
-      // Filtrar publicaciones que no tengan media o cuya media estÃ© vacÃ­a
+      // ✅ Validar que las publicaciones estén disponibles
+      // Filtrar publicaciones que no tengan media o cuya media esté vacía
       final validExperiences = userExperiences.where((exp) {
         // ignore: unnecessary_null_comparison, dead_null_aware_expression
         final hasMedia = exp.media != null && exp.media.isNotEmpty;
         if (!hasMedia) {
-          debugPrint('âš ï¸ Eliminando publicaciÃ³n sin media: ${exp.id}');
+          debugPrint('⚠️ Eliminando publicación sin media: ${exp.id}');
         }
         return hasMedia;
       }).toList();
 
       _userPosts = validExperiences;
 
-      // Stories: solo experiencias efÃ­meras vÃ¡lidas
+      // Stories: solo experiencias efímeras válidas
       final now = DateTime.now();
       final twentyFourHoursAgo = now.subtract(const Duration(hours: 24));
 
@@ -272,7 +267,7 @@ class UserProfileProvider extends ChangeNotifier {
                     exp.media.first.url.startsWith('https://')),
           )
           .toList();
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _userPosts = [];
       _userStories = [];
     } finally {
@@ -288,16 +283,10 @@ class UserProfileProvider extends ChangeNotifier {
     _isProcessingFollow = true;
     notifyListeners();
 
-    debugPrint(
-      'ðŸ”µ followUser: userId=$userId, isPrivate=$_isPrivateAccount, isFollowing=$_isFollowing, hasPending=$_hasPendingFollowRequest',
-    );
-
     try {
       // Si la cuenta es privada, enviar solicitud en vez de seguir directamente
       if (_isPrivateAccount) {
-        debugPrint('ðŸ”’ Cuenta privada - enviando follow request...');
         final success = await _repository.sendFollowRequest(userId);
-        debugPrint('ðŸ”’ sendFollowRequest resultado: $success');
         if (success) {
           _hasPendingFollowRequest = true;
           notifyListeners();
@@ -305,7 +294,7 @@ class UserProfileProvider extends ChangeNotifier {
         return success;
       }
 
-      // Cuenta pÃºblica: seguir directamente
+      // Cuenta pública: seguir directamente
       final success = await _repository.followUser(userId);
       if (success) {
         _isFollowing = true;
@@ -314,7 +303,7 @@ class UserProfileProvider extends ChangeNotifier {
         await refreshProfileQuick(userId);
       }
       return success;
-    } on FirebaseException catch (e) {
+    } catch (e) {
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -336,7 +325,7 @@ class UserProfileProvider extends ChangeNotifier {
         notifyListeners();
       }
       return success;
-    } on FirebaseException catch (e) {
+    } catch (e) {
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -353,7 +342,7 @@ class UserProfileProvider extends ChangeNotifier {
         notifyListeners();
       }
       return success;
-    } on FirebaseException catch (e) {
+    } catch (e) {
       return false;
     }
   }
@@ -367,7 +356,7 @@ class UserProfileProvider extends ChangeNotifier {
         notifyListeners();
       }
       return success;
-    } on FirebaseException catch (e) {
+    } catch (e) {
       return false;
     }
   }
@@ -379,7 +368,7 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       _followRequests = await _repository.getFollowRequests();
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _followRequests = [];
     } finally {
       _isLoadingFollowRequests = false;
@@ -403,7 +392,7 @@ class UserProfileProvider extends ChangeNotifier {
         await refreshProfileQuick(userId);
       }
       return success;
-    } on FirebaseException catch (e) {
+    } catch (e) {
       return false;
     } finally {
       _isProcessingFollow = false;
@@ -418,7 +407,7 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       _followers = await _repository.getFollowers(userId);
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _followers = [];
     } finally {
       _isLoadingFollowers = false;
@@ -433,7 +422,7 @@ class UserProfileProvider extends ChangeNotifier {
 
     try {
       _following = await _repository.getFollowing(userId);
-    } on FirebaseException catch (e) {
+    } catch (e) {
       _following = [];
     } finally {
       _isLoadingFollowing = false;
@@ -460,4 +449,3 @@ class UserProfileProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-

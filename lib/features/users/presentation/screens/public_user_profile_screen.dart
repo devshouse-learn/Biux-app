@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,8 +16,8 @@ import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 
-/// Pantalla de perfil pâ”œâ•‘blico de usuario
-/// Muestra informaciâ”œâ”‚n bâ”œÃ­sica, posts y botâ”œâ”‚n de seguir/dejar de seguir
+/// Pantalla de perfil p├║blico de usuario
+/// Muestra informaci├│n b├ísica, posts y bot├│n de seguir/dejar de seguir
 class PublicUserProfileScreen extends StatefulWidget {
   final String userId;
 
@@ -50,7 +50,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         isCurrentUser = currentUserUid == widget.userId;
       });
 
-      // Verificar si ya estâ”œÃ­ siguiendo a este usuario
+      // Verificar si ya est├í siguiendo a este usuario
       if (!isCurrentUser && currentUserUid != null) {
         final userProvider = context.read<UserProvider>();
         if (userProvider.user?.following != null) {
@@ -85,9 +85,9 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.error_outline, size: 64, color: ColorTokens.error50),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
-                  l.t('error_loading_profile_msg'),
+                  'Error al cargar el perfil',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -107,7 +107,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                     backgroundColor: ColorTokens.primary50,
                     foregroundColor: ColorTokens.neutral100,
                   ),
-                  child: Text(l.t('go_back')),
+                  child: const Text('Volver'),
                 ),
               ],
             ),
@@ -118,7 +118,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (user == null) {
           return Center(
             child: Text(
-              l.t('user_not_found'),
+              'Usuario no encontrado',
               style: TextStyle(fontSize: 18, color: ColorTokens.neutral70),
             ),
           );
@@ -128,7 +128,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                // ========== SECCIÃ“N DE PERFIL (misma estructura que mi perfil) ==========
+                // ========== SECCIÓN DE PERFIL (misma estructura que mi perfil) ==========
                 Container(
                   decoration: BoxDecoration(
                     image: user.profileCover.isNotEmpty
@@ -157,7 +157,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                       padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
                       child: Column(
                         children: [
-                          // Primera fila: BotÃ³n atrÃ¡s a la izquierda
+                          // Primera fila: Botón atrás a la izquierda
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -201,51 +201,48 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                     }
                                   },
                                   itemBuilder: (_) => [
-                                    PopupMenuItem(
+                                    const PopupMenuItem(
                                       value: 'block',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.block),
-                                        title: Text(l.t('block')),
+                                        title: Text('Bloquear'),
                                       ),
                                     ),
                                     PopupMenuItem(
                                       value: 'report',
                                       child: ListTile(
                                         dense: true,
-                                        leading: Icon(
-                                          Icons.flag,
-                                          color: Colors.red,
-                                        ),
+                                        leading: Icon(Icons.flag, color: Colors.red),
                                         title: Text(
-                                          l.t('report_action'),
+                                          'Reportar',
                                           style: TextStyle(color: Colors.red),
                                         ),
                                       ),
                                     ),
-                                    PopupMenuDivider(),
-                                    PopupMenuItem(
+                                    const PopupMenuDivider(),
+                                    const PopupMenuItem(
                                       value: 'copy_url',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.link),
-                                        title: Text(l.t('copy_profile_url')),
+                                        title: Text('Copiar URL del perfil'),
                                       ),
                                     ),
-                                    PopupMenuItem(
+                                    const PopupMenuItem(
                                       value: 'share',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.share),
-                                        title: Text(l.t('share_this_profile')),
+                                        title: Text('Compartir este perfil'),
                                       ),
                                     ),
-                                    PopupMenuItem(
+                                    const PopupMenuItem(
                                       value: 'qr',
                                       child: ListTile(
                                         dense: true,
                                         leading: Icon(Icons.qr_code),
-                                        title: Text(l.t('qr_code')),
+                                        title: Text('Código QR'),
                                       ),
                                     ),
                                   ],
@@ -326,7 +323,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
                           SizedBox(height: 16),
 
-                          // Tercera fila: EstadÃ­sticas
+                          // Tercera fila: Estadísticas
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -367,7 +364,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                       ),
                                     ),
                                     Text(
-                                      l.t('followers'),
+                                      'Seguidores',
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: ColorTokens.neutral100
@@ -393,7 +390,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                       ),
                                     ),
                                     Text(
-                                      l.t('following'),
+                                      'Siguiendo',
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: ColorTokens.neutral100
@@ -408,7 +405,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
                           SizedBox(height: 12),
 
-                          // DescripciÃ³n
+                          // Descripción
                           if (user.description.isNotEmpty)
                             Align(
                               alignment: Alignment.centerLeft,
@@ -428,7 +425,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
 
                           SizedBox(height: 12),
 
-                          // BotÃ³n de Seguir (solo si no es el usuario actual)
+                          // Botón de Seguir (solo si no es el usuario actual)
                           if (!isCurrentUser)
                             SizedBox(
                               width: double.infinity,
@@ -460,7 +457,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                         Row(
                           children: [
                             Text(
-                              l.t('publications'),
+                              'Publicaciones',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -498,7 +495,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (!url.startsWith('http://') && !url.startsWith('https://'))
           return false;
         return true;
-      } on FirebaseException catch (e) {
+      } catch (e) {
         return false;
       }
     }).length;
@@ -515,7 +512,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         if (!url.startsWith('http://') && !url.startsWith('https://'))
           return false;
         return true;
-      } on FirebaseException catch (e) {
+      } catch (e) {
         return false;
       }
     }).toList();
@@ -539,7 +536,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
             ),
             SizedBox(height: 12),
             Text(
-              l.t('no_posts_yet'),
+              'Sin publicaciones aún',
               style: TextStyle(
                 fontSize: 14,
                 color: ColorTokens.neutral70,
@@ -645,12 +642,12 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     final currentUserId = AuthenticationRepository().getUserId;
     final isOwnProfile = currentUserId == profileUserId;
 
-    // Si es el perfil propio, no mostrar botâ”œâ”‚n de seguir
+    // Si es el perfil propio, no mostrar bot├│n de seguir
     if (isOwnProfile) {
       return SizedBox.shrink();
     }
 
-    // Deshabilitar si estâ”œÃ­ procesando
+    // Deshabilitar si est├í procesando
     final isDisabled = provider.isProcessingFollow;
 
     // Determinar estado: following, requested, or follow
@@ -822,7 +819,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           );
         }
 
-        // Sin datos o lista vacÃ­a
+        // Sin datos o lista vacía
         if (!snapshot.hasData ||
             snapshot.data == null ||
             (snapshot.data as dynamic).isEmpty) {
@@ -856,10 +853,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           );
         }
 
-        // Filtrar: solo PUBLICACIONES (no historias) con media vÃ¡lido
+        // Filtrar: solo PUBLICACIONES (no historias) con media válido
         final allExperiences = snapshot.data as dynamic;
         final experiences = allExperiences.where((exp) {
-          // Excluir historias â€” solo publicaciones en el perfil
+          // Excluir historias — solo publicaciones en el perfil
           if (exp.isStoryFormat == true) return false;
           try {
             if (exp.media == null || exp.media.isEmpty) return false;
@@ -869,19 +866,19 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
             if (url.isEmpty) return false;
             if (!url.startsWith('http://') && !url.startsWith('https://'))
               return false;
-            // Para videos: validar que tenga thumbnail o URL vÃ¡lida
+            // Para videos: validar que tenga thumbnail o URL válida
             if (media.mediaType == MediaType.video) {
               final thumb = media.thumbnailUrl ?? '';
               return thumb.isNotEmpty && thumb.startsWith('http') ||
                   url.isNotEmpty;
             }
             return true;
-          } on FirebaseException catch (e) {
+          } catch (e) {
             return false;
           }
         }).toList();
 
-        // Eliminar publicaciones con imÃ¡genes que fallaron al cargar
+        // Eliminar publicaciones con imágenes que fallaron al cargar
         experiences.removeWhere(
           (exp) => _failedImageIds.contains(exp.id.toString()),
         );
@@ -893,7 +890,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
           });
         }
 
-        // Si despuÃ©s de filtrar no hay experiencias, mostrar el mensaje
+        // Si después de filtrar no hay experiencias, mostrar el mensaje
         if (experiences.isEmpty) {
           return Container(
             width: double.infinity,
@@ -1341,31 +1338,29 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l.t('block_user')),
+        title: const Text('Bloquear usuario'),
         content: Text(
-          'Â¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
-          '${l.t('also_removed_followers')}',
+          '¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
+          'No podrá enviarte mensajes ni ver tu perfil. '
+          'También será removido de tus seguidores.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l.t('cancel')),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () async {
               Navigator.of(ctx).pop();
-              await context.read<SafetyProvider>().blockUser(
-                currentUid,
-                widget.userId,
-              );
+              await context.read<SafetyProvider>().blockUser(currentUid, widget.userId);
               if (mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(l.t('user_blocked'))));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Usuario bloqueado')),
+                );
                 context.pop();
               }
             },
-            child: Text(l.t('block'), style: TextStyle(color: Colors.red)),
+            child: const Text('Bloquear', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -1377,26 +1372,22 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
       MaterialPageRoute(
         builder: (_) => ReportFlowScreen(
           reportedUserId: widget.userId,
-          reportedUserName: user.fullName.isNotEmpty
-              ? user.fullName
-              : user.userName,
+          reportedUserName: user.fullName.isNotEmpty ? user.fullName : user.userName,
         ),
       ),
     );
   }
 
   void _copyProfileUrl(BiuxUser user) {
-    final url =
-        'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
+    final url = 'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
     Clipboard.setData(ClipboardData(text: url));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l.t('url_copied'))));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('URL copiada al portapapeles')),
+    );
   }
 
   void _showQrCode(BiuxUser user) {
-    final url =
-        'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
+    final url = 'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1422,7 +1413,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
             const SizedBox(height: 12),
             Text(
               url,
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
           ],
@@ -1430,11 +1421,10 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l.t('close')),
+            child: const Text('Cerrar'),
           ),
         ],
       ),
     );
   }
 }
-

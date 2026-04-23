@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -17,8 +17,6 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
-
   bool _hasLoadedData = false;
   bool _sosHolding = false;
   double _sosProgress = 0;
@@ -73,7 +71,7 @@ class _AppDrawerState extends State<AppDrawer> {
     // Disparar SOS inmediatamente (sin countdown adicional)
     emergencyProvider.triggerSosImmediate(
       userId: uid,
-      userName: user?.name ?? l.t('cyclist_label'),
+      userName: user?.name ?? 'Ciclista',
     );
   }
 
@@ -105,7 +103,6 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context);
     return Drawer(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
@@ -206,58 +203,60 @@ class _AppDrawerState extends State<AppDrawer> {
                         const Spacer(),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
-                            context.push(AppRoutes.emergency);
-                          },
-                          child: SizedBox(
-                            width: 90,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 7,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.red.withValues(alpha: 0.4),
-                                    blurRadius: 6,
-                                    spreadRadius: 1,
+                                Navigator.pop(context);
+                                context.push(AppRoutes.emergency);
+                              },
+                              child: SizedBox(
+                                width: 90,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 7,
                                   ),
-                                ],
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.sos_rounded,
-                                    color: Colors.white,
-                                    size: 14,
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.red.withValues(
+                                          alpha: 0.4,
+                                        ),
+                                        blurRadius: 6,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'SOS',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1,
-                                    ),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.sos_rounded,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'SOS',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 1,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
                       ],
                     ),
 
-                    SizedBox(height: 14),
+                    const SizedBox(height: 14),
                     // Nombre del usuario
                     Text(
-                      user?.name ?? l.t('cyclist_label'),
+                      user?.name ?? 'Ciclista',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -265,7 +264,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    // Email/TelÃ©fono
+                    // Email/Teléfono
                     Text(
                       user?.email ?? cu?.phoneNumber ?? '',
                       style: TextStyle(
@@ -276,7 +275,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
                     const SizedBox(height: 14),
 
-                    // â”€â”€ BotÃ³n SOS compacto â”€â”€
+                    // ── Botón SOS compacto ──
                     GestureDetector(
                       onLongPressStart: (_) => _startSosHold(),
                       onLongPressEnd: (_) => _cancelSosHold(),
@@ -341,7 +340,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                           ]
                                         : [],
                                   ),
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.sos_rounded,
                                     color: Colors.white,
                                     size: 16,
@@ -349,7 +348,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                 ),
                               ],
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             // Texto informativo
                             Expanded(
                               child: Column(
@@ -357,8 +356,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                 children: [
                                   Text(
                                     _sosHolding
-                                        ? l.t('activating_sos')
-                                        : l.t('emergency_sos'),
+                                        ? 'Activando SOS...'
+                                        : 'Emergencia SOS',
                                     style: TextStyle(
                                       color: _sosHolding
                                           ? Colors.red
@@ -367,11 +366,11 @@ class _AppDrawerState extends State<AppDrawer> {
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                  SizedBox(height: 2),
+                                  const SizedBox(height: 2),
                                   Text(
                                     _sosHolding
-                                        ? l.t('release_to_cancel')
-                                        : l.t('hold_3s'),
+                                        ? 'Suelta para cancelar'
+                                        : 'Mantén presionado 3s',
                                     style: TextStyle(
                                       color: _sosHolding
                                           ? Colors.red.withValues(alpha: 0.8)
@@ -410,12 +409,12 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 // ===== CICLISMO =====
-                _sec(l.t('cycling').toUpperCase()),
+                _sec('CICLISMO'),
                 _item(
                   Icons.gps_fixed,
                   Colors.green,
-                  l.t('record_ride'),
-                  l.t('gps_realtime_tracking'),
+                  'Grabar Rodada',
+                  'GPS tracking en tiempo real',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.rideTracker);
@@ -424,8 +423,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.directions_bike_rounded,
                   Colors.green,
-                  l.t('my_rides'),
-                  l.t('ride_history'),
+                  'Mis Rodadas',
+                  'Historial de tus rides grabados',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.rideTracker, extra: true);
@@ -434,8 +433,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.bar_chart_rounded,
                   Colors.blue,
-                  l.t('my_stats'),
-                  l.t('stats_subtitle'),
+                  'Mis Estadisticas',
+                  'Km, velocidad, nivel y ranking',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.cyclingStats);
@@ -444,44 +443,44 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.emoji_events,
                   Colors.amber,
-                  l.t('achievements_title'),
-                  l.t('achievements_subtitle'),
+                  'Logros',
+                  'Medallas y desafios desbloqueados',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.achievements);
                   },
                 ),
 
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Divider(height: 24),
                 ),
 
                 // ===== COMUNIDAD =====
-                _sec(l.t('community').toUpperCase()),
+                _sec('COMUNIDAD'),
                 _item(
                   Icons.storefront,
                   Colors.deepPurple,
-                  l.t('business_events'),
-                  l.t('business_events_subtitle'),
+                  'Negocios y Eventos',
+                  'Publicidad y eventos con registro',
                   () {
                     Navigator.pop(context);
                     context.push('/promotions');
                   },
                 ),
 
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Divider(height: 24),
                 ),
 
                 // ===== SEGURIDAD =====
-                _sec(l.t('safety_section').toUpperCase()),
+                _sec('SEGURIDAD'),
                 _item(
                   Icons.sos,
                   Colors.red,
-                  l.t('emergency_sos'),
-                  l.t('panic_button_contacts'),
+                  'Emergencia SOS',
+                  'Boton de panico y contactos',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.emergency);
@@ -490,8 +489,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.report_problem_outlined,
                   Colors.orange,
-                  l.t('road_reports'),
-                  l.t('road_reports_subtitle'),
+                  'Reportes Viales',
+                  'Baches, obras y peligros en ruta',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.roadReports);
@@ -500,8 +499,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.car_crash,
                   Colors.deepOrange,
-                  l.t('report_accident'),
-                  l.t('report_incident'),
+                  'Reportar Accidente',
+                  'Reporta un incidente vial',
                   () {
                     Navigator.pop(context);
                     context.push('/accidents/report');
@@ -510,8 +509,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.warning_amber_rounded,
                   ColorTokens.error50,
-                  l.t('stolen_bikes'),
-                  l.t('public_database'),
+                  'Bicicletas Robadas',
+                  'Base de datos publica',
                   () {
                     Navigator.pop(context);
                     context.push('/shop/stolen-bikes');
@@ -525,8 +524,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     return _item(
                       Icons.admin_panel_settings,
                       ColorTokens.secondary50,
-                      l.t('alerts_dashboard'),
-                      l.t('alerts_dashboard_subtitle'),
+                      'Dashboard Alertas',
+                      'Intentos venta bicis robadas',
                       () {
                         Navigator.pop(context);
                         context.push('/shop/admin-alerts');
@@ -535,18 +534,18 @@ class _AppDrawerState extends State<AppDrawer> {
                   },
                 ),
 
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Divider(height: 24),
                 ),
 
                 // ===== APRENDIZAJE =====
-                _sec(l.t('learning').toUpperCase()),
+                _sec('APRENDIZAJE'),
                 _item(
                   Icons.menu_book_rounded,
                   Colors.teal,
-                  l.t('road_education'),
-                  l.t('education_subtitle'),
+                  'Educacion Vial',
+                  'Seguridad, mecanica y consejos',
                   () {
                     Navigator.pop(context);
                     context.push(AppRoutes.education);
@@ -555,8 +554,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _item(
                   Icons.cloud_rounded,
                   Colors.lightBlue,
-                  l.t('weather_title'),
-                  l.t('weather_subtitle'),
+                  'Clima',
+                  'Condiciones para rodar hoy',
                   () {
                     Navigator.pop(context);
                     context.push('/weather');
@@ -598,7 +597,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                   ),
                   title: Text(
-                    l.t('close_session_drawer'),
+                    'Cerrar Sesion',
                     style: TextStyle(
                       color: ColorTokens.error50,
                       fontWeight: FontWeight.w600,
@@ -685,7 +684,6 @@ class _AppDrawerState extends State<AppDrawer> {
   }
 
   void _logoutDialog(BuildContext context) {
-    final l = Provider.of<LocaleNotifier>(context, listen: false);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -694,15 +692,15 @@ class _AppDrawerState extends State<AppDrawer> {
         title: Row(
           children: [
             Icon(Icons.logout, color: ColorTokens.error50),
-            SizedBox(width: 8),
-            Text(l.t('close_session_drawer')),
+            const SizedBox(width: 8),
+            const Text('Cerrar Sesion'),
           ],
         ),
-        content: Text(l.t('confirm_close_session')),
+        content: const Text('Estas seguro que deseas cerrar sesion?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dc).pop(),
-            child: Text(l.t('cancel')),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -716,7 +714,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text(l.t('close_session_drawer')),
+            child: const Text('Cerrar Sesion'),
           ),
         ],
       ),
@@ -741,7 +739,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                Text(l.t('closing_session')),
+                const Text('Cerrando sesion...'),
               ],
             ),
           ),
@@ -753,7 +751,7 @@ class _AppDrawerState extends State<AppDrawer> {
       } catch (_) {}
       await FirebaseAuth.instance.signOut();
       await Future.delayed(const Duration(milliseconds: 100));
-    } on FirebaseException catch (e) {
+    } catch (e) {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -766,4 +764,3 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 }
-

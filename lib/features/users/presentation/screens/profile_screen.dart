@@ -1,4 +1,4 @@
-﻿import 'package:biux/features/users/presentation/providers/user_provider.dart';
+import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/experiences/presentation/providers/experience_classic_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,17 +10,16 @@ import 'package:biux/core/config/router/app_routes.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
-import 'package:biux/shared/widgets/images/optimized_image_picker.dart';
+import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:biux/features/experiences/data/repositories/experience_repository_impl.dart';
 import 'package:biux/features/experiences/domain/entities/experience_entity.dart';
 import 'package:biux/features/experiences/presentation/screens/create_experience_screen.dart';
-import 'package:biux/shared/widgets/loading/shimmer_loading.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
+import 'package:biux/shared/widgets/shimmer_loading.dart';
 
 class ProfileScreen extends StatelessWidget {
-  // FunciÃ³n para formatear nÃºmero de telÃ©fono colombiano
+  // Función para formatear número de teléfono colombiano
   String _formatColombianPhoneNumber(String phoneNumber) {
     String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
 
@@ -67,8 +66,6 @@ class ProfileScreenContent extends StatefulWidget {
 }
 
 class _ProfileScreenContentState extends State<ProfileScreenContent> {
-  LocaleNotifier get l => Provider.of<LocaleNotifier>(context);
-
   final Set<String> _failedImageIds = {};
   late Future<dynamic> _experiencesFuture;
   int _postCount = 0;
@@ -87,7 +84,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Detectar si el feed cambiÃ³ (nuevo post creado) para refrescar experiencias
+    // Detectar si el feed cambió (nuevo post creado) para refrescar experiencias
     final feedLength = context.watch<ExperienceProvider>().experiences.length;
     if (_lastKnownFeedLength >= 0 && feedLength != _lastKnownFeedLength) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -113,7 +110,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     showModalBottomSheet(
       context: context,
       backgroundColor: ColorTokens.neutral20,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (ctx) => Container(
@@ -133,7 +130,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.edit_outlined, color: ColorTokens.primary50),
               title: Text(
-                l.t('edit_post'),
+                'Editar publicación',
                 style: TextStyle(color: ColorTokens.neutral100),
               ),
               onTap: () async {
@@ -150,7 +147,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             ListTile(
               leading: Icon(Icons.delete_outline, color: ColorTokens.error50),
               title: Text(
-                l.t('delete_post'),
+                'Eliminar publicación',
                 style: TextStyle(color: ColorTokens.error50),
               ),
               onTap: () {
@@ -160,17 +157,17 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   builder: (dialogCtx) => AlertDialog(
                     backgroundColor: ColorTokens.neutral20,
                     title: Text(
-                      l.t('delete_publication_question'),
+                      '¿Eliminar publicación?',
                       style: TextStyle(color: ColorTokens.neutral100),
                     ),
                     content: Text(
-                      l.t('action_cannot_undo'),
+                      'Esta acción no se puede deshacer',
                       style: TextStyle(color: ColorTokens.neutral80),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogCtx),
-                        child: Text(l.t('cancel')),
+                        child: Text('Cancelar'),
                       ),
                       TextButton(
                         onPressed: () async {
@@ -180,13 +177,13 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             await provider.deleteExperience(experience.id);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(l.t('post_deleted')),
+                                const SnackBar(
+                                  content: Text('Publicación eliminada'),
                                   duration: Duration(seconds: 2),
                                 ),
                               );
                             }
-                          } on FirebaseException catch (e) {
+                          } catch (e) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -197,7 +194,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             }
                           }
                         },
-                        child: Text(l.t('delete')),
+                        child: Text('Eliminar'),
                       ),
                     ],
                   ),
@@ -215,22 +212,22 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        debugPrint('ðŸ”„ Cargando datos del usuario...');
+        debugPrint('🔄 Cargando datos del usuario...');
         await widget.userProvider.loadUserData();
 
         if (widget.userProvider.user == null) {
-          debugPrint('âš ï¸ Usuario no existe, creando...');
+          debugPrint('⚠️ Usuario no existe, creando...');
           String formattedPhone = widget.formatPhoneFunction(currentUser.uid);
           await widget.userProvider.createUserIfNotExists(
             currentUser.uid,
             formattedPhone,
           );
-          // Recargar datos despuÃ©s de crear el usuario
+          // Recargar datos después de crear el usuario
           await widget.userProvider.loadUserData();
         }
 
         if (widget.userProvider.user != null && mounted) {
-          debugPrint('âœ… Inicializando campos con datos del usuario:');
+          debugPrint('✅ Inicializando campos con datos del usuario:');
           debugPrint('   Nombre: "${widget.userProvider.user?.name ?? ''}"');
           debugPrint('   Email: "${widget.userProvider.user?.email ?? ''}"');
           setState(() {
@@ -242,7 +239,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     });
   }
 
-  // FunciÃ³n temporal para actualizar ciudades con departamentos
+  // Función temporal para actualizar ciudades con departamentos
 
   void _showFollowersModal(BuildContext context) {
     final followers = widget.userProvider.user?.followers ?? {};
@@ -267,8 +264,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     size: 48,
                     color: ColorTokens.neutral60,
                   ),
-                  SizedBox(height: 12),
-                  Text(l.t('no_followers_yet')),
+                  const SizedBox(height: 12),
+                  const Text('Sin seguidores aún'),
                 ],
               ),
             ),
@@ -297,7 +294,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return ListTile(title: Text(l.t('loading')));
+                        return const ListTile(title: Text('Cargando...'));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -321,30 +318,30 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('ðŸ” DEBUG: Intentando navegar a usuario');
+                          debugPrint('🔍 DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('ðŸ” DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
                                 debugPrint(
-                                  'ðŸ” DEBUG: Ejecutando navegaciÃ³n: $route',
+                                  '🔍 DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
                             debugPrint(
-                              'âŒ ERROR: User ID estÃ¡ vacÃ­o, no se puede navegar',
+                              '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l.t('invalid_user_error')),
+                              const SnackBar(
+                                content: Text('Error: Usuario inválido'),
                               ),
                             );
                           }
@@ -384,8 +381,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     size: 48,
                     color: ColorTokens.neutral60,
                   ),
-                  SizedBox(height: 12),
-                  Text(l.t('not_following_anyone')),
+                  const SizedBox(height: 12),
+                  const Text('No sigue a nadie aún'),
                 ],
               ),
             ),
@@ -414,7 +411,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     future: _getUserById(userId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return ListTile(title: Text(l.t('loading')));
+                        return const ListTile(title: Text('Cargando...'));
                       }
 
                       if (!snapshot.hasData || snapshot.data == null) {
@@ -438,30 +435,30 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         ),
                         subtitle: Text('@${user.userName}'),
                         onTap: () {
-                          debugPrint('ðŸ” DEBUG: Intentando navegar a usuario');
+                          debugPrint('🔍 DEBUG: Intentando navegar a usuario');
                           debugPrint('  User ID: "${user.id}"');
                           debugPrint('  User ID isEmpty: ${user.id.isEmpty}');
                           debugPrint('  User ID length: ${user.id.length}');
 
                           if (user.id.isNotEmpty) {
                             final route = '/user-profile/${user.id.trim()}';
-                            debugPrint('ðŸ” DEBUG: Ruta a navegar: $route');
+                            debugPrint('🔍 DEBUG: Ruta a navegar: $route');
                             Navigator.of(context).pop();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               if (context.mounted) {
                                 debugPrint(
-                                  'ðŸ” DEBUG: Ejecutando navegaciÃ³n: $route',
+                                  '🔍 DEBUG: Ejecutando navegación: $route',
                                 );
                                 context.push(route);
                               }
                             });
                           } else {
                             debugPrint(
-                              'âŒ ERROR: User ID estÃ¡ vacÃ­o, no se puede navegar',
+                              '❌ ERROR: User ID está vacío, no se puede navegar',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l.t('invalid_user_error')),
+                              const SnackBar(
+                                content: Text('Error: Usuario inválido'),
                               ),
                             );
                           }
@@ -487,15 +484,15 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
-        // Asegurar que el ID estÃ¡ incluido en los datos
+        // Asegurar que el ID está incluido en los datos
         data['id'] = userDoc.id;
-        debugPrint('âœ… Usuario cargado con ID: ${userDoc.id}');
+        debugPrint('✅ Usuario cargado con ID: ${userDoc.id}');
         return BiuxUser.fromJsonMap(data);
       } else {
-        debugPrint('âŒ Usuario no encontrado: $userId');
+        debugPrint('❌ Usuario no encontrado: $userId');
       }
-    } on FirebaseException catch (e) {
-      debugPrint('âŒ Error cargando usuario $userId: $e');
+    } catch (e) {
+      debugPrint('❌ Error cargando usuario $userId: $e');
     }
     return null;
   }
@@ -524,7 +521,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.edit, color: ColorTokens.primary30),
                   SizedBox(width: 8),
-                  Text(l.t('edit_profile')),
+                  Text('Editar Perfil'),
                 ],
               ),
               content: SingleChildScrollView(
@@ -534,7 +531,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                   children: [
                     // ========== FOTO DE PERFIL ==========
                     Text(
-                      l.t('profile_photo'),
+                      'Foto de Perfil',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -545,7 +542,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       child: OptimizedImagePicker(
                         currentImageUrl: selectedProfileImageUrl != null
                             ? (selectedProfileImageUrl?.isEmpty ?? false)
-                                  ? null // Cadena vacÃ­a = sin foto
+                                  ? null // Cadena vacía = sin foto
                                   : selectedProfileImageUrl // Tiene URL
                             : widget
                                   .userProvider
@@ -586,7 +583,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== FOTO DE PORTADA ==========
                     Text(
-                      l.t('cover_photo'),
+                      'Foto de Portada',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -631,7 +628,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              l.t('add_cover'),
+                              'Agregar portada',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: ColorTokens.neutral60,
@@ -645,7 +642,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== NOMBRE ==========
                     Text(
-                      l.t('name_label'),
+                      'Nombre',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -655,7 +652,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        hintText: l.t('your_full_name'),
+                        hintText: 'Tu nombre completo',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -669,7 +666,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                     // ========== USERNAME ==========
                     Text(
-                      l.t('username_label'),
+                      'Nombre de Usuario',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -679,7 +676,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: usernameController,
                       decoration: InputDecoration(
-                        hintText: l.t('your_username'),
+                        hintText: 'tu_nombre_usuario',
                         prefixText: '@',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -692,9 +689,9 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     ),
                     SizedBox(height: 16),
 
-                    // ========== DESCRIPCIÃ“N ==========
+                    // ========== DESCRIPCIÓN ==========
                     Text(
-                      l.t('description_bio'),
+                      'Descripción / Bio',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -704,7 +701,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     TextField(
                       controller: descriptionController,
                       decoration: InputDecoration(
-                        hintText: l.t('tell_about_you'),
+                        hintText: 'Cuéntales sobre ti',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -725,11 +722,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     Navigator.of(dialogContext).pop();
                   },
                   style: Styles.cancelButtonStyle,
-                  child: Text(l.t('cancel')),
+                  child: Text('Cancelar'),
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    // Guardar referencias antes de cerrar el diÃ¡logo
+                    // Guardar referencias antes de cerrar el diálogo
                     final name = nameController.text.trim();
                     final username = usernameController.text.trim();
                     final description = descriptionController.text.trim();
@@ -747,7 +744,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       email: email,
                     );
 
-                    // Cerrar el diÃ¡logo
+                    // Cerrar el diálogo
                     if (mounted) {
                       Navigator.of(dialogContext).pop();
                     }
@@ -757,7 +754,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(l.t('profile_updated')),
+                            content: Text('Perfil actualizado correctamente'),
                             backgroundColor: ColorTokens.success40,
                           ),
                         );
@@ -774,7 +771,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                     }
                   },
                   icon: Icon(Icons.check),
-                  label: Text(l.t('save')),
+                  label: Text('Guardar'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorTokens.primary30,
                     foregroundColor: ColorTokens.neutral100,
@@ -788,7 +785,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     );
   }
 
-  // FunciÃ³n temporal para actualizar ciudades con departamentos
+  // Función temporal para actualizar ciudades con departamentos
 
   @override
   Widget build(BuildContext context) {
@@ -802,11 +799,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 children: [
                   Icon(Icons.error, size: 64, color: ColorTokens.neutral60),
                   SizedBox(height: 16),
-                  Text(l.t('error_loading_profile')),
+                  Text('Error cargando datos del perfil'),
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => widget.userProvider.loadUserData(),
-                    child: Text(l.t('retry')),
+                    child: Text('Reintentar'),
                   ),
                 ],
               ),
@@ -814,7 +811,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  // ========== SECCIÃ“N DE PERFIL TIPO INSTAGRAM ==========
+                  // ========== SECCIÓN DE PERFIL TIPO INSTAGRAM ==========
                   Container(
                     decoration: BoxDecoration(
                       image:
@@ -858,11 +855,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                         padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
                         child: Column(
                           children: [
-                            // Primera fila: BotÃ³n (+) izquierda y controles derecha
+                            // Primera fila: Botón (+) izquierda y controles derecha
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // MenÃº izquierdo: Story + Post
+                                // Menú izquierdo: Story + Post
                                 PopupMenuButton<String>(
                                   icon: Icon(
                                     Icons.add_circle_outline,
@@ -905,7 +902,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             size: 20,
                                           ),
                                           SizedBox(width: 10),
-                                          Text(l.t('add_story')),
+                                          Text('Agregar Historia'),
                                         ],
                                       ),
                                     ),
@@ -915,19 +912,19 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         children: [
                                           Icon(Icons.image_search, size: 20),
                                           SizedBox(width: 10),
-                                          Text(l.t('new_post')),
+                                          Text('Nueva Publicación'),
                                         ],
                                       ),
                                     ),
                                   ],
                                 ),
 
-                                // Botones derechos: Editar + ConfiguraciÃ³n
+                                // Botones derechos: Editar + Configuración
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Tooltip(
-                                      message: l.t('edit_profile'),
+                                      message: 'Editar perfil',
                                       child: IconButton(
                                         icon: Icon(
                                           Icons.edit_outlined,
@@ -945,7 +942,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       ),
                                     ),
                                     Tooltip(
-                                      message: l.t('settings'),
+                                      message: 'Configuración',
                                       child: IconButton(
                                         icon: Icon(
                                           Icons.menu,
@@ -953,9 +950,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                           size: 20,
                                         ),
                                         onPressed: () {
-                                          context.push(
-                                            AppRoutes.notificationSettings,
-                                          );
+                                          context.push(AppRoutes.notificationSettings);
                                         },
                                         constraints: BoxConstraints(
                                           minWidth: 32,
@@ -1032,7 +1027,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                     .name!
                                                     .isNotEmpty
                                             ? widget.userProvider.user!.name!
-                                            : l.t('no_name'),
+                                            : 'Sin nombre',
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -1067,7 +1062,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                             SizedBox(height: 16),
 
-                            // Tercera fila: EstadÃ­sticas
+                            // Tercera fila: Estadísticas
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -1112,7 +1107,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         ),
                                       ),
                                       Text(
-                                        l.t('followers'),
+                                        'Seguidores',
                                         style: TextStyle(
                                           fontSize: 10,
                                           color: ColorTokens.neutral100
@@ -1143,7 +1138,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                         ),
                                       ),
                                       Text(
-                                        l.t('following'),
+                                        'Siguiendo',
                                         style: TextStyle(
                                           fontSize: 10,
                                           color: ColorTokens.neutral100
@@ -1158,7 +1153,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
 
                             SizedBox(height: 12),
 
-                            // DescripciÃ³n - Debajo de la foto, alineada a izquierda
+                            // Descripción - Debajo de la foto, alineada a izquierda
                             if (widget.userProvider.user?.description != null &&
                                 widget
                                     .userProvider
@@ -1305,7 +1300,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      l.t('error_loading_posts'),
+                                      'Error cargando publicaciones',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.error50,
@@ -1317,7 +1312,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               );
                             }
 
-                            // Sin datos o lista vacÃ­a
+                            // Sin datos o lista vacía
                             if (!snapshot.hasData ||
                                 snapshot.data == null ||
                                 (snapshot.data as dynamic).isEmpty) {
@@ -1342,7 +1337,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     ),
                                     SizedBox(height: 12),
                                     Text(
-                                      l.t('no_posts_yet'),
+                                      'Sin publicaciones aún',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.neutral70,
@@ -1362,7 +1357,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               );
                             }
 
-                            // Filtrar experiencias vÃ¡lidas
+                            // Filtrar experiencias válidas
                             final allExperiences = snapshot.data as dynamic;
                             final experiences = allExperiences.where((exp) {
                               // Filtrar historias (solo mostrar posts)
@@ -1377,7 +1372,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                 if (!url.startsWith('http://') &&
                                     !url.startsWith('https://'))
                                   return false;
-                                // Para videos: validar que tenga thumbnail o URL vÃ¡lida
+                                // Para videos: validar que tenga thumbnail o URL válida
                                 if (media.mediaType == MediaType.video) {
                                   final thumb = media.thumbnailUrl ?? '';
                                   return thumb.isNotEmpty &&
@@ -1385,12 +1380,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       url.isNotEmpty;
                                 }
                                 return true;
-                              } on FirebaseException catch (e) {
+                              } catch (e) {
                                 return false;
                               }
                             }).toList();
 
-                            // Eliminar publicaciones con imÃ¡genes que fallaron al cargar
+                            // Eliminar publicaciones con imágenes que fallaron al cargar
                             experiences.removeWhere(
                               (exp) =>
                                   _failedImageIds.contains(exp.id.toString()),
@@ -1417,7 +1412,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                               });
                             }
 
-                            // Si despuÃ©s de filtrar no hay experiencias, mostrar el mensaje
+                            // Si después de filtrar no hay experiencias, mostrar el mensaje
                             if (experiences.isEmpty) {
                               return Container(
                                 width: double.infinity,
@@ -1441,8 +1436,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     SizedBox(height: 12),
                                     Text(
                                       _selectedTab == 0
-                                          ? l.t('no_valid_posts')
-                                          : l.t('no_reposts_yet'),
+                                          ? 'Sin publicaciones válidas'
+                                          : 'Sin reposteos aún',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: ColorTokens.neutral70,
@@ -1452,8 +1447,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                     SizedBox(height: 8),
                                     Text(
                                       _selectedTab == 0
-                                          ? l.t('create_first_post')
-                                          : l.t('repost_other_users'),
+                                          ? 'Crea tu primera publicación'
+                                          : 'Repostea publicaciones de otros usuarios',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: ColorTokens.neutral60,
@@ -1618,7 +1613,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                   color: ColorTokens.neutral60,
                                                 ),
                                               ),
-                                        // Badge de repost con lÃ­nea diagonal (quitar repost al tocar)
+                                        // Badge de repost con línea diagonal (quitar repost al tocar)
                                         if (_selectedTab == 1)
                                           Positioned(
                                             top: 4,
@@ -1629,13 +1624,11 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                     await showDialog<bool>(
                                                       context: context,
                                                       builder: (ctx) => AlertDialog(
-                                                        title: Text(
+                                                        title: const Text(
                                                           'Quitar reposteo',
                                                         ),
-                                                        content: Text(
-                                                          l.t(
-                                                            'delete_repost_question',
-                                                          ),
+                                                        content: const Text(
+                                                          '¿Deseas eliminar este reposteo de tu perfil?',
                                                         ),
                                                         actions: [
                                                           TextButton(
@@ -1644,8 +1637,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                                   ctx,
                                                                   false,
                                                                 ),
-                                                            child: Text(
-                                                              l.t('cancel'),
+                                                            child: const Text(
+                                                              'Cancelar',
                                                             ),
                                                           ),
                                                           ElevatedButton(
@@ -1654,8 +1647,8 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                                                   ctx,
                                                                   true,
                                                                 ),
-                                                            child: Text(
-                                                              l.t('delete'),
+                                                            child: const Text(
+                                                              'Eliminar',
                                                             ),
                                                           ),
                                                         ],
@@ -1720,7 +1713,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                               ),
                                             ),
                                           ),
-                                        // BotÃ³n de 3 puntos (menÃº)
+                                        // Botón de 3 puntos (menú)
                                         Positioned(
                                           top: 4,
                                           right: 4,
@@ -1747,7 +1740,7 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                             ),
                                           ),
                                         ),
-                                        // Indicador de mÃºltiples imÃ¡genes
+                                        // Indicador de múltiples imágenes
                                         if (experience.media.length > 1)
                                           Positioned(
                                             bottom: 4,
@@ -1813,4 +1806,3 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
     super.dispose();
   }
 }
-

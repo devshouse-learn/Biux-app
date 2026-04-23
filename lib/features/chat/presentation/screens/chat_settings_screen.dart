@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
-import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/settings/presentation/widgets/settings_shared_widgets.dart';
 
 class ChatSettingsScreen extends StatefulWidget {
@@ -40,12 +38,11 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l = Provider.of<LocaleNotifier>(context);
 
     return Scaffold(
       backgroundColor: SettingsWidgets.scaffoldBackground(isDark),
       appBar: AppBar(
-        title: Text(l.t('chat_settings')),
+        title: const Text('Ajustes de chats'),
         backgroundColor: ColorTokens.primary30,
         foregroundColor: Colors.white,
       ),
@@ -53,25 +50,25 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // --- Tamaño de fuente ---
-          SettingsWidgets.buildSectionTitle(l.t('customization'), isDark),
+          SettingsWidgets.buildSectionTitle('Personalización', isDark),
           const SizedBox(height: 12),
           _buildFontSizeCard(isDark),
 
           const SizedBox(height: 24),
 
           // --- Copia de seguridad ---
-          SettingsWidgets.buildSectionTitle(l.t('backup'), isDark),
+          SettingsWidgets.buildSectionTitle('Copia de seguridad', isDark),
           const SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.cloud_upload_outlined,
-            title: l.t('backup'),
-            subtitle: l.t('backup_chats_subtitle'),
+            title: 'Copia de seguridad',
+            subtitle: 'Respalda tus chats en la nube',
             isDark: isDark,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(l.t('feature_in_development')),
+                  content: const Text('Función en desarrollo'),
                   backgroundColor: Colors.orange.shade600,
                 ),
               );
@@ -81,13 +78,13 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
           const SizedBox(height: 24),
 
           // --- Usuarios bloqueados ---
-          SettingsWidgets.buildSectionTitle(l.t('privacy'), isDark),
+          SettingsWidgets.buildSectionTitle('Privacidad', isDark),
           const SizedBox(height: 12),
           SettingsWidgets.buildOptionCard(
             context: context,
             icon: Icons.block,
-            title: l.t('blocked_users'),
-            subtitle: l.t('manage_blocked_subtitle'),
+            title: 'Usuarios bloqueados',
+            subtitle: 'Administra tu lista de usuarios bloqueados',
             isDark: isDark,
             onTap: () => context.push(AppRoutes.blockedUsers),
           ),
@@ -107,7 +104,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         boxShadow: [
           if (!isDark)
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -148,10 +145,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                   onChanged: _saveFontSize,
                 ),
               ),
-              const Text(
-                'A',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
+              const Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             ],
           ),
           Center(
