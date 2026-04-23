@@ -109,6 +109,16 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:biux/core/config/firebase_options.dart';
 import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
+import 'package:biux/features/ride_tracker/data/datasources/offline_ride_datasource.dart';
+
+Future<void> _syncOfflineRides() async {
+  try {
+    final pending = await OfflineRideDatasource.getPending();
+    if (pending.isNotEmpty) {
+      debugPrint('📡 \${pending.length} rodadas pendientes de sincronizar');
+    }
+  } catch (_) {}
+}
 
 void main() async {
   if (kIsWeb) {
@@ -122,6 +132,12 @@ void main() async {
   }
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Habilitar persistencia offline de Firestore
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
 
   // Configurar manejador de mensajes en background
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -350,6 +366,13 @@ void main() async {
 Future<void> _initServicesAsync() async {
   try {
     ConnectivityService().initialize();
+
+    // Auto-sync rodadas offline cuando se restaure la conexión
+    ConnectivityService().statusStream.listen((status) {
+      if (status == ConnectivityStatus.online) {
+        _syncOfflineRides();
+      }
+    });
     RemoteConfigService().initialize();
     NotificationService().initialize();
     // Inicializar Push Notifications

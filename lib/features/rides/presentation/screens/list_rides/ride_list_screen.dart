@@ -5,6 +5,7 @@ import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/design_system/locale_notifier.dart';
 import 'package:biux/features/groups/presentation/providers/group_provider.dart';
@@ -69,69 +70,91 @@ class _RideListScreenState extends State<RideListScreen>
     // Vista principal: solo grupos
     return Consumer2<GroupProvider, RideProvider>(
       builder: (context, groupProvider, rideProvider, child) {
-        return Column(
+        return Stack(
           children: [
-            // ── Barra de búsqueda ──
-            if (_showSearch) _buildSearchBar(l),
+            Column(
+              children: [
+                // ── Barra de búsqueda ──
+                if (_showSearch) _buildSearchBar(l),
 
-            // ── Tabs: Mis Grupos / Explorar ──
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: ColorTokens.neutral60.withValues(alpha: 0.2),
-                  ),
-                ),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                indicatorColor: ColorTokens.primary30,
-                indicatorWeight: 3,
-                labelColor: ColorTokens.primary30,
-                unselectedLabelColor: ColorTokens.neutral60,
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
-                isScrollable: false,
-                tabAlignment: TabAlignment.fill,
-                tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.groups, size: 16),
-                        const SizedBox(width: 6),
-                        Text(l.t('my_groups')),
-                      ],
+                // ── Tabs: Mis Grupos / Explorar ──
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: ColorTokens.neutral60.withValues(alpha: 0.2),
+                      ),
                     ),
                   ),
-                  Tab(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.explore, size: 16),
-                        const SizedBox(width: 6),
-                        Text(l.t('explore_more')),
-                      ],
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorColor: ColorTokens.primary30,
+                    indicatorWeight: 3,
+                    labelColor: ColorTokens.primary30,
+                    unselectedLabelColor: ColorTokens.neutral60,
+                    labelStyle: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
                     ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                    isScrollable: false,
+                    tabAlignment: TabAlignment.fill,
+                    tabs: [
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.groups, size: 16),
+                            const SizedBox(width: 6),
+                            Text(l.t('my_groups')),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.explore, size: 16),
+                            const SizedBox(width: 6),
+                            Text(l.t('explore_more')),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+
+                // ── Contenido ──
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildMyGroupsList(groupProvider, rideProvider, l),
+                      _buildExploreGroupsList(groupProvider, rideProvider, l),
+                    ],
+                  ),
+                ),
+              ],
             ),
-
-            // ── Contenido ──
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildMyGroupsList(groupProvider, rideProvider, l),
-                  _buildExploreGroupsList(groupProvider, rideProvider, l),
-                ],
+            // ── FAB Crear Grupo ──
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: FloatingActionButton.extended(
+                heroTag: 'createGroup',
+                onPressed: () => context.push(AppRoutes.groupCreate),
+                backgroundColor: ColorTokens.primary30,
+                icon: const Icon(Icons.group_add, color: Colors.white),
+                label: const Text(
+                  'Crear Grupo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
           ],
