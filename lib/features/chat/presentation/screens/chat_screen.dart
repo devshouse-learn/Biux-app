@@ -22,6 +22,9 @@ import 'package:biux/features/chat/presentation/widgets/attach_menu_popup.dart';
 import 'package:biux/features/chat/presentation/widgets/camera_mode_picker.dart';
 import 'package:biux/features/chat/presentation/widgets/poll_creation_sheet.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
+import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
+import 'package:biux/features/safety/presentation/screens/report_flow_screen.dart';
+import 'package:biux/core/design_system/color_tokens.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatEntity chat;
@@ -535,6 +538,160 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  // ── Bloquear usuario ─────────────────────────────────────────────────
+  void _showBlockUserDialog() {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final otherUid = _otherUid.isNotEmpty
+        ? _otherUid
+        : widget.chat.participantIds.firstWhere(
+            (id) => id != currentUid,
+            orElse: () => '',
+          );
+    if (otherUid.isEmpty) return;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Bloquear usuario'),
+        content: Text(
+          '¿Deseas bloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          'No podrá enviarte mensajes, ver tu foto de perfil '
+          'ni tu información. También será removido de tus seguidores.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              final safetyProvider = context.read<SafetyProvider>();
+              await safetyProvider.blockUser(currentUid, otherUid);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Usuario bloqueado')),
+                );
+                setState(() {}); // Forzar rebuild para reflejar bloqueo
+              }
+            },
+            child: const Text(
+              'Bloquear',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Desbloquear usuario ─────────────────────────────────────────────
+  void _showUnblockDialog() {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final otherUid = _otherUid;
+    if (otherUid.isEmpty) return;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Desbloquear usuario'),
+        content: Text(
+          '¿Deseas desbloquear a ${_otherName.isNotEmpty ? _otherName : 'este usuario'}? '
+          'Podrá enviarte mensajes y ver tu perfil nuevamente.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              final safetyProvider = context.read<SafetyProvider>();
+              await safetyProvider.unblockUser(currentUid, otherUid);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Usuario desbloqueado')),
+                );
+                setState(() {});
+              }
+            },
+            child: const Text('Desbloquear',
+                style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Vaciar chat ─────────────────────────────────────────────────────────
+  void _showClearChatDialog() {
+    bool keepStarred = true;
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Vaciar chat'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                '¿Deseas eliminar todos los mensajes de este chat para ti?',
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Checkbox(
+                      value: keepStarred,
+                      onChanged: (v) =>
+                          setDialogState(() => keepStarred = v ?? true),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'No eliminar mensajes destacados',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _provider.clearChatForMe(
+                  chatId: widget.chat.id,
+                  keepStarred: keepStarred,
+                );
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Eliminar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Toast al destacar ───────────────────────────────────────────────────
+  void _showStarToast() {
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => _StarToast(onDone: () => entry.remove()),
+    );
+    Overlay.of(context).insert(entry);
+  }
+
   void _showForwardDialog(MessageEntity message) {
     final provider = context.read<ChatProvider>();
     final userProvider = context.read<UserProvider>();
@@ -790,22 +947,87 @@ class _ChatScreenState extends State<ChatScreen> {
               }),
             )
           else ...[
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.white70),
-              tooltip: 'Buscar',
-              onPressed: () => setState(() => _searching = true),
-            ),
-            IconButton(
-              icon: const Icon(Icons.photo_outlined, color: Colors.white70),
-              tooltip: 'Enviar imagen',
-              onPressed: _pickFromGallery,
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert, color: Colors.white70),
+              onSelected: (value) {
+                switch (value) {
+                  case 'search':
+                    setState(() => _searching = true);
+                    break;
+                  case 'block':
+                    _showBlockUserDialog();
+                    break;
+                  case 'clear':
+                    _showClearChatDialog();
+                    break;
+                  case 'report':
+                    if (_otherUid.isNotEmpty) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => ReportFlowScreen(
+                            reportedUserId: _otherUid,
+                            reportedUserName: _otherName,
+                          ),
+                        ),
+                      );
+                    }
+                    break;
+                  case 'mute':
+                    break;
+                }
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  value: 'search',
+                  child: ListTile(
+                    dense: true,
+                    leading: Icon(Icons.search),
+                    title: Text('Buscar mensaje'),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'block',
+                  child: ListTile(
+                    dense: true,
+                    leading: Icon(Icons.block),
+                    title: Text('Bloquear'),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'clear',
+                  child: ListTile(
+                    dense: true,
+                    leading: Icon(Icons.delete_sweep),
+                    title: Text('Vaciar chat'),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'report',
+                  child: ListTile(
+                    dense: true,
+                    leading: Icon(Icons.flag),
+                    title: Text('Reportar'),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'mute',
+                  child: ListTile(
+                    dense: true,
+                    leading: Icon(Icons.notifications_off),
+                    title: Text('Silenciar notificaciones'),
+                  ),
+                ),
+              ],
             ),
           ],
         ],
       ),
       body: Consumer<ChatProvider>(
         builder: (context, provider, _) {
-          var messages = provider.messages;
+          final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+          var messages = provider.messages
+              .where((m) => !m.deletedFor.contains(currentUid))
+              .toList();
 
           // Filtrar por búsqueda
           if (_searchQuery.isNotEmpty) {
@@ -956,11 +1178,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               messageId: m.id,
                               pin: !m.isPinned,
                             ),
-                            onStar: (m) => provider.starMessage(
-                              chatId: widget.chat.id,
-                              messageId: m.id,
-                              star: !m.starredBy.contains(currentUser?.uid),
-                            ),
+                            onStar: (m) {
+                              final willStar = !m.starredBy.contains(currentUser?.uid);
+                              provider.starMessage(
+                                chatId: widget.chat.id,
+                                messageId: m.id,
+                                star: willStar,
+                              );
+                              if (willStar) _showStarToast();
+                            },
                             onForward: (m) => _showForwardDialog(m),
                           );
                         },
@@ -978,7 +1204,51 @@ class _ChatScreenState extends State<ChatScreen> {
                       : const SizedBox.shrink(),
                 ),
               ),
-              ChatInput(
+              Builder(
+                builder: (context) {
+                  final safetyProv = context.watch<SafetyProvider>();
+                  final otherUid = _otherUid;
+                  final blocked = safetyProv.isUserBlocked(otherUid);
+                  if (blocked) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      color: isDark ? ColorTokens.primary20 : Colors.grey.shade200,
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Bloqueaste a ${_otherName.isNotEmpty ? _otherName : "este usuario"}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: isDark ? Colors.white70 : Colors.grey.shade700,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: () => _showUnblockDialog(),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: BorderSide(color: isDark ? Colors.white38 : Colors.grey.shade400),
+                              ),
+                            ),
+                            child: Text(
+                              'Desbloquear',
+                              style: TextStyle(
+                                color: isDark ? Colors.white : ColorTokens.primary30,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return ChatInput(
                 chatId: widget.chat.id,
                 senderName: myName,
                 senderAvatar: myPhoto,
@@ -999,9 +1269,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   senderName: myName,
                   senderAvatar: myPhoto,
                 ),
+                onCamera: _openCamera,
+                onAttach: _showAttachMenu,
                 onCancelReply: () => provider.setReplyingTo(null),
                 onTypingChanged: (typing) => provider.onTypingChanged(typing),
                 isDark: isDark,
+              );
+                },
               ),
             ],
           );
@@ -1154,6 +1428,83 @@ class _TypingBubbleState extends State<_TypingBubble>
             },
           );
         }),
+      ),
+    );
+  }
+}
+
+// ── Toast desvanecimiento para "Destacaste este mensaje" ──────────────────
+
+class _StarToast extends StatefulWidget {
+  final VoidCallback onDone;
+  const _StarToast({required this.onDone});
+
+  @override
+  State<_StarToast> createState() => _StarToastState();
+}
+
+class _StarToastState extends State<_StarToast>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    );
+    // Fade in 200ms, hold, fade out last 500ms
+    _opacity = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 7),
+      TweenSequenceItem(tween: ConstantTween(1.0), weight: 76),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 17),
+    ]).animate(_ctrl);
+    _ctrl.forward().then((_) => widget.onDone());
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 100,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: FadeTransition(
+          opacity: _opacity,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.star, color: Colors.amber, size: 16),
+                  SizedBox(width: 6),
+                  Text(
+                    'Destacaste este mensaje',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

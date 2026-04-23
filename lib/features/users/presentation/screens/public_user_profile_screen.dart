@@ -8,6 +8,9 @@ import 'package:biux/features/authentication/data/repositories/authentication_re
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart';
+import 'package:biux/features/safety/presentation/providers/safety_provider.dart';
+import 'package:biux/features/safety/presentation/screens/report_flow_screen.dart';
 import 'package:biux/features/users/data/models/user.dart';
 import 'package:biux/features/users/presentation/providers/user_provider.dart';
 import 'package:biux/features/users/presentation/providers/user_profile_provider.dart';
@@ -171,7 +174,81 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                                 ),
                                 padding: EdgeInsets.zero,
                               ),
-                              const SizedBox(),
+                              if (!isCurrentUser)
+                                PopupMenuButton<String>(
+                                  icon: Icon(
+                                    Icons.more_vert,
+                                    color: ColorTokens.neutral100,
+                                    size: 24,
+                                  ),
+                                  onSelected: (value) {
+                                    switch (value) {
+                                      case 'block':
+                                        _showBlockDialog(user);
+                                        break;
+                                      case 'report':
+                                        _showReportDialog(user);
+                                        break;
+                                      case 'copy_url':
+                                        _copyProfileUrl(user);
+                                        break;
+                                      case 'share':
+                                        _shareProfile(user);
+                                        break;
+                                      case 'qr':
+                                        _showQrCode(user);
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (_) => [
+                                    const PopupMenuItem(
+                                      value: 'block',
+                                      child: ListTile(
+                                        dense: true,
+                                        leading: Icon(Icons.block),
+                                        title: Text('Bloquear'),
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'report',
+                                      child: ListTile(
+                                        dense: true,
+                                        leading: Icon(Icons.flag, color: Colors.red),
+                                        title: Text(
+                                          'Reportar',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ),
+                                    const PopupMenuDivider(),
+                                    const PopupMenuItem(
+                                      value: 'copy_url',
+                                      child: ListTile(
+                                        dense: true,
+                                        leading: Icon(Icons.link),
+                                        title: Text('Copiar URL del perfil'),
+                                      ),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'share',
+                                      child: ListTile(
+                                        dense: true,
+                                        leading: Icon(Icons.share),
+                                        title: Text('Compartir este perfil'),
+                                      ),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'qr',
+                                      child: ListTile(
+                                        dense: true,
+                                        leading: Icon(Icons.qr_code),
+                                        title: Text('Código QR'),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              else
+                                const SizedBox(),
                             ],
                           ),
 
@@ -1252,6 +1329,101 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     await SharePlus.instance.share(
       ShareParams(
         text: 'Mira el perfil de ${user.fullName} en Biux: @${user.userName}',
+      ),
+    );
+  }
+
+  void _showBlockDialog(BiuxUser user) {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Bloquear usuario'),
+        content: Text(
+          '¿Deseas bloquear a ${user.fullName.isNotEmpty ? user.fullName : user.userName}? '
+          'No podrá enviarte mensajes ni ver tu perfil. '
+          'También será removido de tus seguidores.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              await context.read<SafetyProvider>().blockUser(currentUid, widget.userId);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Usuario bloqueado')),
+                );
+                context.pop();
+              }
+            },
+            child: const Text('Bloquear', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showReportDialog(BiuxUser user) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ReportFlowScreen(
+          reportedUserId: widget.userId,
+          reportedUserName: user.fullName.isNotEmpty ? user.fullName : user.userName,
+        ),
+      ),
+    );
+  }
+
+  void _copyProfileUrl(BiuxUser user) {
+    final url = 'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
+    Clipboard.setData(ClipboardData(text: url));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('URL copiada al portapapeles')),
+    );
+  }
+
+  void _showQrCode(BiuxUser user) {
+    final url = 'https://biux.app/u/${user.userName.isNotEmpty ? user.userName : widget.userId}';
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('@${user.userName}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.qr_code_2,
+                  size: 160,
+                  color: ColorTokens.primary30,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              url,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cerrar'),
+          ),
+        ],
       ),
     );
   }

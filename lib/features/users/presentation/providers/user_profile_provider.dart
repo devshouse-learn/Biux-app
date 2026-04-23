@@ -69,7 +69,7 @@ class UserProfileProvider extends ChangeNotifier {
   // Búsqueda de usuarios
   Future<void> searchUsers(String query) async {
     // Validar longitud mínima de búsqueda
-    if (query.trim().length < 2) {
+    if (query.trim().isEmpty) {
       return;
     }
     // Validar longitud máxima

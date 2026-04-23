@@ -1,10 +1,12 @@
 // ignore_for_file: deprecated_member_use
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/config/router/app_routes.dart';
+import 'package:biux/features/chat/presentation/widgets/media_fullscreen_viewer.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
 import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
 import 'package:provider/provider.dart';
@@ -49,7 +51,10 @@ class MessageBubble extends StatelessWidget {
     if (message.deletedFor.contains(currentUserId)) {
       return const SizedBox.shrink();
     }
-    if (message.deleted) return _DeletedBubble(isMe: isMe);
+    if (message.deleted) return _DeletedBubble(
+      isMe: isMe,
+      onDeleteForMe: () => onDeleteForMe(message),
+    );
     // Ocultar si expiró
     if (message.expiresAt != null &&
         DateTime.now().isAfter(message.expiresAt!)) {
@@ -558,46 +563,70 @@ class MessageBubble extends StatelessWidget {
 
   void _showEmojiPicker(BuildContext context) {
     const emojis = ['👍', '❤️', '😂', '😮', '😢', '🔥', '💪', '🚴'];
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 12,
-              offset: const Offset(0, -2),
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    final overlay = Overlay.of(context);
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (ctx) {
+        // Calcular si mostrar arriba o abajo de la burbuja
+        final aboveSpace = offset.dy;
+        final showAbove = aboveSpace > 80;
+        final top = showAbove ? offset.dy - 52 : offset.dy + size.height + 4;
+        final left = isMe
+            ? (offset.dx + size.width - 280).clamp(8.0, MediaQuery.of(ctx).size.width - 288.0)
+            : offset.dx.clamp(8.0, MediaQuery.of(ctx).size.width - 288.0);
+        return Stack(
+          children: [
+            // Tap para cerrar
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () => entry.remove(),
+                behavior: HitTestBehavior.opaque,
+                child: const SizedBox.expand(),
+              ),
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: emojis
-              .map(
-                (e) => GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    onReact(message, e);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(e, style: const TextStyle(fontSize: 28)),
+            Positioned(
+              top: top,
+              left: left,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1A2B3C) : Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.18),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: emojis.map((e) => GestureDetector(
+                      onTap: () {
+                        entry.remove();
+                        onReact(message, e);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(e, style: const TextStyle(fontSize: 22)),
+                      ),
+                    )).toList(),
                   ),
                 ),
-              )
-              .toList(),
-        ),
-      ),
+              ),
+            ),
+          ],
+        );
+      },
     );
+    overlay.insert(entry);
   }
 }
 
@@ -655,6 +684,14 @@ class _BubbleContent extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              if (message.starredBy.isNotEmpty) ...[
+                Icon(
+                  Icons.star,
+                  size: 12,
+                  color: isMe ? Colors.white70 : Colors.amber,
+                ),
+                const SizedBox(width: 3),
+              ],
               Text(
                 _formatTime(message.sentAt),
                 style: TextStyle(
@@ -685,7 +722,9 @@ class _BubbleContent extends StatelessWidget {
           textColor: textColor,
         );
       case MessageType.image:
-        return _ImageMessage(url: message.mediaUrl ?? '');
+        return _ImageMessage(url: message.mediaUrl ?? '', isMe: isMe);
+      case MessageType.video:
+        return _VideoMessage(url: message.mediaUrl ?? '', isMe: isMe);
       case MessageType.location:
         return _LocationMessage(
           lat: message.locationLat ?? 0,
@@ -781,9 +820,13 @@ class _VoiceMessageState extends State<_VoiceMessage> {
 
     setState(() => _loading = true);
     try {
-      // Siempre re-setear la URL para garantizar que funcione en cualquier estado
       await _player.stop();
-      await _player.setUrl(url);
+      final isLocal = !url.startsWith('http');
+      if (isLocal) {
+        await _player.setFilePath(url);
+      } else {
+        await _player.setUrl(url);
+      }
       await _player.play();
     } catch (e) {
       if (mounted) {
@@ -881,13 +924,155 @@ class _VoiceMessageState extends State<_VoiceMessage> {
 
 class _ImageMessage extends StatelessWidget {
   final String url;
-  const _ImageMessage({required this.url});
+  final bool isMe;
+  const _ImageMessage({required this.url, this.isMe = false});
+
+  bool get _isLocal => url.isNotEmpty && !url.startsWith('http');
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.network(url, width: 200, height: 150, fit: BoxFit.cover),
+    Widget image;
+    if (_isLocal) {
+      image = Image.file(
+        File(url),
+        width: 200,
+        height: 150,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Container(
+          width: 200,
+          height: 150,
+          color: Colors.grey.shade300,
+          child: const Icon(Icons.broken_image, size: 40),
+        ),
+      );
+    } else {
+      image = Image.network(
+        url,
+        width: 200,
+        height: 150,
+        fit: BoxFit.cover,
+        loadingBuilder: (_, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            width: 200,
+            height: 150,
+            color: Colors.grey.shade300,
+            child: const Center(
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        },
+        errorBuilder: (_, __, ___) => Container(
+          width: 200,
+          height: 150,
+          color: Colors.grey.shade300,
+          child: const Icon(Icons.broken_image, size: 40),
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTap: () {
+        if (url.isNotEmpty && url.startsWith('http')) {
+          MediaFullscreenViewer.open(context, url: url);
+        }
+      },
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: image,
+          ),
+          if (_isLocal)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.black26,
+                ),
+                child: const Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VideoMessage extends StatelessWidget {
+  final String url;
+  final bool isMe;
+  const _VideoMessage({required this.url, this.isMe = false});
+
+  bool get _isLocal => url.isNotEmpty && !url.startsWith('http');
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (url.isNotEmpty && url.startsWith('http')) {
+          MediaFullscreenViewer.open(context, url: url, isVideo: true);
+        }
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: 200,
+          height: 150,
+          color: Colors.black87,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (_isLocal)
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white70,
+                  ),
+                )
+              else
+                const Icon(Icons.play_circle_fill, size: 48, color: Colors.white70),
+              Positioned(
+                bottom: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.videocam, size: 14, color: Colors.white70),
+                      const SizedBox(width: 4),
+                      Text(
+                        _isLocal ? 'Subiendo...' : 'Video',
+                        style: const TextStyle(color: Colors.white70, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -1394,29 +1579,61 @@ class _TickPainter extends CustomPainter {
 
 class _DeletedBubble extends StatelessWidget {
   final bool isMe;
-  const _DeletedBubble({required this.isMe});
+  final VoidCallback? onDeleteForMe;
+  const _DeletedBubble({required this.isMe, this.onDeleteForMe});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: isMe ? 48 : 8,
-        right: isMe ? 8 : 48,
-        bottom: 4,
-      ),
-      child: Align(
-        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Text(
-            'Mensaje eliminado',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 13,
-              fontStyle: FontStyle.italic,
+    return GestureDetector(
+      onLongPress: onDeleteForMe == null
+          ? null
+          : () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Eliminar mensaje'),
+                  content: const Text(
+                    '¿Deseas eliminar este mensaje para ti?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: const Text('Cancelar'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        onDeleteForMe!();
+                      },
+                      child: const Text(
+                        'Eliminar',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: isMe ? 48 : 8,
+          right: isMe ? 8 : 48,
+          bottom: 4,
+        ),
+        child: Align(
+          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              'Mensaje eliminado',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
         ),

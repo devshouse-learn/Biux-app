@@ -25,7 +25,6 @@ import local_auth_darwin
 import location
 import mobile_scanner
 import package_info_plus
-import path_provider_foundation
 import photo_manager
 import printing
 import record_macos
@@ -58,7 +57,6 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   LocationPlugin.register(with: registry.registrar(forPlugin: "LocationPlugin"))
   MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))
   FPPPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FPPPackageInfoPlusPlugin"))
-  PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
   PhotoManagerPlugin.register(with: registry.registrar(forPlugin: "PhotoManagerPlugin"))
   PrintingPlugin.register(with: registry.registrar(forPlugin: "PrintingPlugin"))
   RecordMacOsPlugin.register(with: registry.registrar(forPlugin: "RecordMacOsPlugin"))

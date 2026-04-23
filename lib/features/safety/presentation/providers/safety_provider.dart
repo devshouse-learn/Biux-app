@@ -39,6 +39,15 @@ class SafetyProvider with ChangeNotifier {
     } catch (_) {}
   }
 
+  /// Verifica si hay bloqueo en cualquier dirección (para impedir mensajes).
+  Future<bool> isBlockedEitherWay(String userA, String userB) async {
+    try {
+      return await _datasource.isBlockedEitherWay(userA, userB);
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<bool> reportUser({
     required String reporterId,
     required String reportedId,

@@ -8,6 +8,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:biux/features/safety/presentation/screens/report_user_screen.dart';
 import 'package:biux/features/safety/presentation/screens/biometric_settings_screen.dart';
 import 'package:biux/features/safety/presentation/screens/active_sessions_screen.dart';
+import 'package:biux/features/safety/presentation/screens/blocked_users_screen.dart';
+import 'package:biux/features/chat/presentation/screens/chat_settings_screen.dart';
 import 'package:biux/features/age_verification/presentation/screens/parental_consent_screen.dart';
 import 'package:biux/features/age_verification/presentation/screens/identity_verification_screen.dart';
 import 'package:provider/provider.dart';
@@ -57,6 +59,7 @@ import 'package:biux/features/users/presentation/screens/activity_comments_scree
 import 'package:biux/features/users/presentation/screens/activity_posts_screen.dart';
 import 'package:biux/features/users/presentation/screens/activity_stories_screen.dart';
 import 'package:biux/features/users/presentation/screens/activity_screen_time_screen.dart';
+import 'package:biux/features/users/presentation/screens/activity_hub_screen.dart';
 
 // Bikes imports
 import 'package:biux/features/bikes/presentation/screens/my_bikes_screen.dart';
@@ -975,6 +978,14 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const ActiveSessionsScreen(),
     ),
     GoRoute(
+      path: AppRoutes.blockedUsers,
+      builder: (context, state) => const BlockedUsersScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.chatSettings,
+      builder: (context, state) => const ChatSettingsScreen(),
+    ),
+    GoRoute(
       path: AppRoutes.parentalConsent,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>? ?? {};
@@ -1084,6 +1095,11 @@ final GoRouter _router = GoRouter(
     ),
 
     // Pantallas de Tu Actividad
+    GoRoute(
+      path: '/activity',
+      name: 'activityHub',
+      builder: (context, state) => const ActivityHubScreen(),
+    ),
     GoRoute(
       path: '/activity/likes',
       name: 'activityLikes',
