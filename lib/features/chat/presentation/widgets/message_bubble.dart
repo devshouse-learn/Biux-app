@@ -2,8 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:biux/features/chat/presentation/widgets/media_fullscreen_viewer.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
+import 'package:go_router/go_router.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 import 'package:biux/features/chat/domain/entities/message_entity.dart';
+import 'package:biux/features/chat/presentation/providers/chat_provider.dart';
+import 'package:provider/provider.dart';
 
 class MessageBubble extends StatelessWidget {
   final MessageEntity message;
@@ -69,10 +73,16 @@ class MessageBubble extends StatelessWidget {
             if (!isMe && showAvatar) ...[
               CircleAvatar(
                 radius: 16,
-                backgroundImage: message.senderAvatar != null
+                backgroundImage:
+                    message.senderAvatar != null &&
+                        message.senderAvatar!.isNotEmpty &&
+                        message.senderAvatar!.startsWith('http')
                     ? NetworkImage(message.senderAvatar!)
                     : null,
-                child: message.senderAvatar == null
+                child:
+                    message.senderAvatar == null ||
+                        message.senderAvatar!.isEmpty ||
+                        !message.senderAvatar!.startsWith('http')
                     ? Text(
                         message.senderName.isNotEmpty
                             ? message.senderName[0].toUpperCase()
@@ -104,7 +114,13 @@ class MessageBubble extends StatelessWidget {
                     ),
                   if (message.replyToId != null)
                     _ReplyPreview(message: message, isDark: isDark),
-                  _BubbleContent(message: message, isMe: isMe, isDark: isDark),
+                  _BubbleContent(
+                    message: message,
+                    isMe: isMe,
+                    isDark: isDark,
+                    chatId: chatId,
+                    currentUserId: currentUserId,
+                  ),
                   if (message.reactions.isNotEmpty)
                     _ReactionsRow(reactions: message.reactions),
                 ],
@@ -153,8 +169,6 @@ class MessageBubble extends StatelessWidget {
                         ? '🎤 Mensaje de voz'
                         : message.type == MessageType.image
                         ? '🖼️ Imagen'
-                        : message.type == MessageType.video
-                        ? '🎬 Video'
                         : message.content.length > 40
                         ? message.content.substring(0, 40) + '...'
                         : message.content,
@@ -591,11 +605,15 @@ class _BubbleContent extends StatelessWidget {
   final MessageEntity message;
   final bool isMe;
   final bool isDark;
+  final String chatId;
+  final String currentUserId;
 
   const _BubbleContent({
     required this.message,
     required this.isMe,
     required this.isDark,
+    required this.chatId,
+    required this.currentUserId,
   });
 
   @override
@@ -668,12 +686,17 @@ class _BubbleContent extends StatelessWidget {
         );
       case MessageType.image:
         return _ImageMessage(url: message.mediaUrl ?? '');
-      case MessageType.video:
-        return _VideoMessage(url: message.mediaUrl ?? '');
       case MessageType.location:
         return _LocationMessage(
           lat: message.locationLat ?? 0,
           lng: message.locationLng ?? 0,
+        );
+      case MessageType.poll:
+        return _PollMessage(
+          message: message,
+          isMe: isMe,
+          chatId: chatId,
+          currentUserId: currentUserId,
         );
       default:
         return Text(
@@ -862,82 +885,187 @@ class _ImageMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final heroTag = 'chat_img_$url';
-    return GestureDetector(
-      onTap: () =>
-          MediaFullscreenViewer.open(context, url: url, heroTag: heroTag),
-      child: Hero(
-        tag: heroTag,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            url,
-            width: 200,
-            height: 150,
-            fit: BoxFit.cover,
-            cacheWidth: 400,
-            loadingBuilder: (_, child, progress) {
-              if (progress == null) return child;
-              return SizedBox(
-                width: 200,
-                height: 150,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    value: progress.expectedTotalBytes != null
-                        ? progress.cumulativeBytesLoaded /
-                              progress.expectedTotalBytes!
-                        : null,
-                    color: Colors.white70,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.network(url, width: 200, height: 150, fit: BoxFit.cover),
     );
   }
 }
 
-class _VideoMessage extends StatelessWidget {
-  final String url;
-  const _VideoMessage({required this.url});
+class _PollMessage extends StatelessWidget {
+  final MessageEntity message;
+  final bool isMe;
+  final String chatId;
+  final String currentUserId;
+
+  const _PollMessage({
+    required this.message,
+    required this.isMe,
+    required this.chatId,
+    required this.currentUserId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Thumbnail estático — no inicializa VideoPlayerController en la burbuja
-    // para evitar lag. Fullscreen se abre al tocar.
-    return GestureDetector(
-      onTap: () => MediaFullscreenViewer.open(context, url: url, isVideo: true),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: 220,
-          height: 160,
-          color: Colors.black87,
-          child: const Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(Icons.videocam_rounded, size: 48, color: Colors.white38),
-              Positioned(
-                bottom: 8,
-                right: 8,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+    final question = message.pollQuestion ?? '';
+    final options = message.pollOptions ?? [];
+    final votes = message.pollVotes ?? {};
+    final allowMultiple = message.pollAllowMultiple;
+
+    int totalVotes = 0;
+    for (final v in votes.values) {
+      totalVotes += v.length;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Poll icon + question
+        Row(
+          children: [
+            Icon(
+              Icons.poll_rounded,
+              size: 18,
+              color: isMe ? Colors.white70 : const Color(0xFF1E8BC3),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                question,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: isMe ? Colors.white : Colors.black87,
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (allowMultiple)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              'Selección múltiple',
+              style: TextStyle(
+                fontSize: 11,
+                color: isMe ? Colors.white60 : Colors.grey,
+              ),
+            ),
+          ),
+        const SizedBox(height: 8),
+
+        // Options
+        ...options.asMap().entries.map((entry) {
+          final idx = entry.key;
+          final option = entry.value;
+          final key = idx.toString();
+          final optionVotes = votes[key] ?? [];
+          final myVoted = optionVotes.contains(currentUserId);
+          final pct = totalVotes > 0
+              ? (optionVotes.length / totalVotes * 100).round()
+              : 0;
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: GestureDetector(
+              onTap: () {
+                context.read<ChatProvider>().votePoll(
+                  chatId: chatId,
+                  messageId: message.id,
+                  optionIndex: idx,
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: myVoted
+                        ? const Color(0xFF4CAF50)
+                        : (isMe
+                              ? Colors.white24
+                              : Colors.grey.withValues(alpha: 0.3)),
+                    width: myVoted ? 1.5 : 1,
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
                   children: [
-                    Icon(
-                      Icons.play_circle_fill,
-                      color: Colors.white70,
-                      size: 32,
+                    // Progress bar background
+                    if (totalVotes > 0)
+                      FractionallySizedBox(
+                        widthFactor: optionVotes.length / totalVotes,
+                        child: Container(
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: myVoted
+                                ? const Color(
+                                    0xFF4CAF50,
+                                  ).withValues(alpha: isMe ? 0.3 : 0.15)
+                                : (isMe
+                                      ? Colors.white.withValues(alpha: 0.1)
+                                      : Colors.grey.withValues(alpha: 0.1)),
+                          ),
+                        ),
+                      ),
+                    // Text
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: [
+                          if (myVoted)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 6),
+                              child: Icon(
+                                Icons.check_circle,
+                                size: 16,
+                                color: Color(0xFF4CAF50),
+                              ),
+                            ),
+                          Expanded(
+                            child: Text(
+                              option,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: myVoted
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                                color: isMe ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ),
+                          if (totalVotes > 0)
+                            Text(
+                              '$pct%',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isMe ? Colors.white70 : Colors.grey[600],
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
+          );
+        }),
+
+        // Total votes
+        const SizedBox(height: 4),
+        Text(
+          '$totalVotes ${totalVotes == 1 ? 'voto' : 'votos'}',
+          style: TextStyle(
+            fontSize: 11,
+            color: isMe ? Colors.white60 : Colors.grey,
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -947,23 +1075,170 @@ class _LocationMessage extends StatelessWidget {
   final double lng;
   const _LocationMessage({required this.lat, required this.lng});
 
+  static const _mapsApiKey = 'AIzaSyDiMK4kwhaIkuMxAcioRonPzaozDRJtO20';
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.green.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+    final staticMapUrl =
+        'https://maps.googleapis.com/maps/api/staticmap'
+        '?center=$lat,$lng'
+        '&zoom=15&size=300x200&scale=2'
+        '&markers=color:red%7C$lat,$lng'
+        '&key=$_mapsApiKey';
+
+    return GestureDetector(
+      onTap: () => _openLocationViewer(context),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          width: 220,
+          height: 160,
+          child: Stack(
+            children: [
+              Image.network(
+                staticMapUrl,
+                width: 220,
+                height: 160,
+                fit: BoxFit.cover,
+                loadingBuilder: (_, child, progress) {
+                  if (progress == null) return child;
+                  return Container(
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                },
+                errorBuilder: (_, __, ___) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Center(
+                    child: Icon(Icons.location_on, size: 40, color: Colors.red),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.6),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.white, size: 16),
+                      SizedBox(width: 4),
+                      Text(
+                        'Ver ubicación',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(Icons.open_in_new, color: Colors.white, size: 14),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      child: Row(
+    );
+  }
+
+  void _openLocationViewer(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _LocationViewerScreen(lat: lat, lng: lng),
+      ),
+    );
+  }
+}
+
+class _LocationViewerScreen extends StatelessWidget {
+  final double lat;
+  final double lng;
+
+  const _LocationViewerScreen({required this.lat, required this.lng});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final target = gmaps.LatLng(lat, lng);
+
+    return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF0E1A23) : Colors.white,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF16242D),
+        foregroundColor: Colors.white,
+        title: const Text('Ubicación'),
+      ),
+      body: Stack(
         children: [
-          const Icon(Icons.location_on, color: Colors.green, size: 20),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              'Lat: ${lat.toStringAsFixed(4)}\nLng: ${lng.toStringAsFixed(4)}',
-              style: const TextStyle(fontSize: 11),
+          gmaps.GoogleMap(
+            initialCameraPosition: gmaps.CameraPosition(
+              target: target,
+              zoom: 16,
+            ),
+            markers: {
+              gmaps.Marker(
+                markerId: const gmaps.MarkerId('shared_location'),
+                position: target,
+                infoWindow: gmaps.InfoWindow(
+                  title: 'Ubicación compartida',
+                  snippet:
+                      '${lat.toStringAsFixed(5)}, ${lng.toStringAsFixed(5)}',
+                ),
+              ),
+            },
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            zoomControlsEnabled: true,
+            mapToolbarEnabled: true,
+          ),
+          Positioned(
+            bottom: 24,
+            left: 16,
+            right: 16,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4CAF50),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 4,
+              ),
+              icon: const Icon(Icons.directions_bike_rounded, size: 22),
+              label: const Text(
+                'Iniciar ruta',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                context.push(
+                  AppRoutes.rideTracker,
+                  extra: {
+                    'destination': gmaps.LatLng(lat, lng),
+                    'destinationName': 'Ubicación compartida',
+                  },
+                );
+              },
             ),
           ),
         ],
