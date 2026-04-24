@@ -22,6 +22,15 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
   final List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());
 
   @override
+  void initState() {
+    super.initState();
+    // Resetear el estado de auth al abrir la pantalla de login
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthProvider>().resetState();
+    });
+  }
+
+  @override
   void dispose() {
     phoneController.dispose();
     for (var c in codeControllers) {

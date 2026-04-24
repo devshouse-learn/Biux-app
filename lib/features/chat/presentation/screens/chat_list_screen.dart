@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:biux/shared/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -270,64 +271,12 @@ class _ChatListScreenState extends State<ChatListScreen>
                       );
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(24),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ColorTokens.primary30.withValues(
-                                  alpha: 0.1,
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.chat_bubble_outline,
-                                size: 64,
-                                color: ColorTokens.primary30.withValues(
-                                  alpha: 0.5,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'No tienes conversaciones',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.grey[700],
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Inicia un chat con otro ciclista',
-                              style: TextStyle(
-                                color: isDark
-                                    ? Colors.white54
-                                    : Colors.grey[400],
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            ElevatedButton.icon(
-                              onPressed: () => _showNewChat(context),
-                              icon: const Icon(Icons.add),
-                              label: const Text('Nuevo mensaje'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorTokens.primary30,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      return EmptyStateWidget(
+                        emoji: '💬',
+                        title: 'No tienes conversaciones',
+                        subtitle: 'Inicia un chat con otro ciclista',
+                        actionLabel: 'Nuevo mensaje',
+                        onAction: () => _showNewChat(context),
                       );
                     }
                     // Ordenar client-side por updatedAt descendente
@@ -637,45 +586,11 @@ class _ChatListScreenState extends State<ChatListScreen>
     }
 
     if (_friends.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ColorTokens.primary30.withValues(alpha: 0.1),
-              ),
-              child: Icon(
-                Icons.people_outline,
-                size: 64,
-                color: ColorTokens.primary30.withValues(alpha: 0.5),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Aún no tienes amigos',
-              style: TextStyle(
-                color: isDark ? Colors.white : Colors.grey[700],
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                'Sigue a otros ciclistas y cuando te sigan de vuelta aparecerán aquí',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isDark ? Colors.white54 : Colors.grey[400],
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-        ),
+      return const EmptyStateWidget(
+        emoji: '👥',
+        title: 'Aún no tienes amigos',
+        subtitle:
+            'Sigue a otros ciclistas y cuando te sigan de vuelta aparecerán aquí',
       );
     }
 

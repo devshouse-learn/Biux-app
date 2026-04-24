@@ -12,6 +12,7 @@ import 'package:biux/features/groups/presentation/providers/group_provider.dart'
 import 'package:biux/features/maps/presentation/providers/meeting_point_provider.dart';
 import 'package:biux/features/maps/data/models/meeting_point.dart';
 import 'package:biux/shared/widgets/shimmer_loading.dart';
+import 'package:biux/shared/widgets/biux_refresh_indicator.dart';
 
 class RideListScreen extends StatefulWidget {
   final String? groupId;
@@ -225,7 +226,7 @@ class _RideListScreenState extends State<RideListScreen>
             children: [
               if (_showSearch) _buildSearchBar(l),
               Expanded(
-                child: RefreshIndicator(
+                child: BiuxRefreshIndicator(
                   onRefresh: () async => _loadData(),
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
@@ -306,7 +307,7 @@ class _RideListScreenState extends State<RideListScreen>
       );
     }
 
-    return RefreshIndicator(
+    return BiuxRefreshIndicator(
       onRefresh: () async => _loadData(),
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
@@ -351,7 +352,7 @@ class _RideListScreenState extends State<RideListScreen>
       );
     }
 
-    return RefreshIndicator(
+    return BiuxRefreshIndicator(
       onRefresh: () async => _loadData(),
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:biux/shared/widgets/empty_state_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:biux/core/design_system/color_tokens.dart';
@@ -8,6 +9,7 @@ import 'package:biux/features/groups/presentation/providers/group_provider.dart'
 import 'package:biux/shared/widgets/optimized_image_picker.dart';
 import 'package:biux/core/services/optimized_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:biux/shared/widgets/biux_refresh_indicator.dart';
 
 class MyGroupsScreen extends StatefulWidget {
   @override
@@ -80,10 +82,14 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
         : provider.allGroups;
 
     if (groups.isEmpty) {
-      return Center(child: CircularProgressIndicator());
+      return const EmptyStateWidget(
+        emoji: '🚴',
+        title: 'No hay grupos disponibles',
+        subtitle: 'Únete o crea un grupo para empezar',
+      );
     }
 
-    return RefreshIndicator(
+    return BiuxRefreshIndicator(
       onRefresh: () async {
         provider.loadUserGroups();
         provider.loadAllGroups();
@@ -116,7 +122,7 @@ class _MyGroupsScreenState extends State<MyGroupsScreen>
       );
     }
 
-    return RefreshIndicator(
+    return BiuxRefreshIndicator(
       onRefresh: () async {
         provider.loadAdminGroups();
       },

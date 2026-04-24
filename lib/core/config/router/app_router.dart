@@ -130,6 +130,7 @@ import 'package:biux/features/weather/presentation/screens/weather_screen.dart';
 import 'package:biux/features/ride_recommendations/presentation/screens/my_recommendations_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accident_report_screen.dart';
 import 'package:biux/features/accidents/presentation/screens/accidents_list_screen.dart';
+import 'package:biux/features/settings/presentation/screens/about_screen.dart';
 
 // Variables globales que persisten durante hot reload
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -348,6 +349,11 @@ final GoRouter _router = GoRouter(
       path: AppRoutes.splash,
       name: AppRoutes.splashName,
       builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.about,
+      name: AppRoutes.aboutName,
+      builder: (context, state) => const AboutScreen(),
     ),
 
     // Welcome post-registro

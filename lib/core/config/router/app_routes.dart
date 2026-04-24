@@ -132,4 +132,8 @@ class AppRoutes {
   // Completitud de perfil
   static const String profileCompletion = '/profile/completion';
   static const String profileCompletionName = 'profileCompletion';
+
+  // About
+  static String about = '/about';
+  static String aboutName = 'about';
 }

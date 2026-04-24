@@ -27,6 +27,20 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider({required AuthRepository authRepository})
     : _authRepository = authRepository;
 
+  /// Resetea el estado del provider para permitir un nuevo login limpio
+  void resetState() {
+    _state = AuthState.initial;
+    _errorMessage = null;
+    _phoneNumber = null;
+    _canResendCode = false;
+    _resendSeconds = 0;
+    _sendAttempts = 0;
+    _needsProfileSetup = false;
+    _resendTimer?.cancel();
+    _resendTimer = null;
+    notifyListeners();
+  }
+
   AuthState get state => _state;
   String? get errorMessage => _errorMessage;
   bool get canResendCode => _canResendCode;
