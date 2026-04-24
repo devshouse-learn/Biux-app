@@ -125,6 +125,10 @@ class AppRoutes {
   static const twoFactor = '/two-factor';
   static const dangerZones = '/danger-zones';
   static const accessibilitySettings = '/accessibility-settings';
+  static const blockedUsers = '/settings/blocked-users';
+  static const blockedUsersName = 'blockedUsers';
+  static const chatSettings = '/settings/chats';
+  static const chatSettingsName = 'chatSettings';
 
   // Welcome post-registro
   static const String welcome = '/welcome';

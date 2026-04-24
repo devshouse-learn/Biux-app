@@ -181,44 +181,75 @@ class _AppDrawerState extends State<AppDrawer> {
                                   ),
                                 ),
                         ),
-                        const Spacer(),
-                        // Botón Editar perfil
-                        Material(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.push('/profile');
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 8,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.edit,
-                                    size: 14,
-                                    color: Colors.white70,
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    'Editar',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push(AppRoutes.notificationSettings);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.settings_outlined,
+                              color: Colors.white70,
+                              size: 20,
                             ),
                           ),
                         ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () {
+                                Navigator.pop(context);
+                                context.push(AppRoutes.emergency);
+                              },
+                              child: SizedBox(
+                                width: 90,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 7,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.red.withValues(
+                                          alpha: 0.4,
+                                        ),
+                                        blurRadius: 6,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.sos_rounded,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'SOS',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                       ],
                     ),
 
@@ -428,16 +459,6 @@ class _AppDrawerState extends State<AppDrawer> {
                 // ===== COMUNIDAD =====
                 _sec('COMUNIDAD'),
                 _item(
-                  Icons.chat_bubble_outline,
-                  ColorTokens.primary30,
-                  'Mensajes',
-                  'Chats con otros ciclistas',
-                  () {
-                    Navigator.pop(context);
-                    context.push(AppRoutes.chatList);
-                  },
-                ),
-                _item(
                   Icons.storefront,
                   Colors.deepPurple,
                   'Negocios y Eventos',
@@ -538,34 +559,6 @@ class _AppDrawerState extends State<AppDrawer> {
                   () {
                     Navigator.pop(context);
                     context.push('/weather');
-                  },
-                ),
-
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Divider(height: 24),
-                ),
-
-                // ===== AJUSTES =====
-                _sec('AJUSTES'),
-                _item(
-                  Icons.settings_outlined,
-                  ColorTokens.neutral50,
-                  'Configuracion',
-                  'Notificaciones y preferencias',
-                  () {
-                    Navigator.pop(context);
-                    context.push(AppRoutes.notificationSettings);
-                  },
-                ),
-                _item(
-                  Icons.help_outline,
-                  ColorTokens.neutral50,
-                  'Centro de Ayuda',
-                  'Soporte y preguntas frecuentes',
-                  () {
-                    Navigator.pop(context);
-                    context.push(AppRoutes.help);
                   },
                 ),
               ],

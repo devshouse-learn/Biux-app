@@ -269,6 +269,41 @@ class ChatDatasource {
         });
   }
 
+  /// Vaciar chat para el usuario actual, opcionalmente preservando mensajes destacados.
+  Future<void> clearChatForMe({
+    required String chatId,
+    bool keepStarred = false,
+  }) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    final snap = await _db
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .get();
+    // Firestore batch limit is 500, do in chunks
+    final docs = snap.docs.toList();
+    for (var i = 0; i < docs.length; i += 400) {
+      final batch = _db.batch();
+      final chunk = docs.skip(i).take(400);
+      for (final doc in chunk) {
+        if (keepStarred) {
+          final data = doc.data();
+          final rawStarred = data['starredBy'];
+          if (rawStarred is List && rawStarred.any((e) => e.toString() == uid)) {
+            continue;
+          }
+        }
+        final existingDeletedFor = List<String>.from(doc.data()['deletedFor'] ?? []);
+        if (existingDeletedFor.contains(uid)) continue; // ya eliminado
+        batch.update(doc.reference, {
+          'deletedFor': FieldValue.arrayUnion([uid]),
+        });
+      }
+      await batch.commit();
+    }
+  }
+
   Future<void> deleteMessage({
     required String chatId,
     required String messageId,

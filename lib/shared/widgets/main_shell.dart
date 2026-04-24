@@ -34,29 +34,52 @@ class _MainShellState extends State<MainShell> {
     '/edit-user',
   ];
 
-  String _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
+  /// Retorna el título dinámico según el tab seleccionado
+  /// Para tabs 0,1,2,3 retorna null (se usa el logo)
+  /// Para tab 4 (perfil) retorna username + visibilidad
+  String? _titleForIndex(int index, LocaleNotifier l, BuildContext context) {
     switch (index) {
       case 0:
-        return 'Inicio';
       case 1:
-        return 'Rodadas';
       case 2:
-        return 'Mis Bicis';
       case 3:
-        try {
-          final userProvider = Provider.of<UserProvider>(
-            context,
-            listen: false,
-          );
-          final username = userProvider.user?.username;
-          if (username != null && username.isNotEmpty) return '@$username';
-          final userName = userProvider.user?.name;
-          if (userName != null && userName.isNotEmpty) return userName;
-        } catch (_) {}
+        return null; // Se usa el widget del logo
+      case 4:
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final username = userProvider.user?.username;
+        if (username != null && username.isNotEmpty) return '@$username';
+        final userName = userProvider.user?.name;
+        if (userName != null && userName.isNotEmpty) return userName;
         return l.t('nav_profile');
       default:
         return AppStrings.APP_NAME.toUpperCase();
     }
+  }
+
+  /// Widget del logo para el AppBar (solo BIUX sin APP)
+  Widget _buildLogoTitle() {
+    return Image.asset(
+      'img/biux_logo_biux_only.png',
+      height: 28,
+      fit: BoxFit.contain,
+    );
+  }
+
+  /// Widget del título del perfil con icono de privacidad
+  Widget _buildProfileTitle(String title, UserProvider userProvider) {
+    final isPrivate = userProvider.user?.profileVisibility == 'private';
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          isPrivate ? Icons.lock_outline : Icons.public,
+          color: ColorTokens.neutral100,
+          size: 20,
+        ),
+        const SizedBox(width: 8),
+        Text(title, style: Styles.mainMenuTextBiux),
+      ],
+    );
   }
 
   @override
@@ -72,10 +95,16 @@ class _MainShellState extends State<MainShell> {
           appBar: AppBar(
             backgroundColor: ColorTokens.primary30,
             foregroundColor: ColorTokens.neutral100,
-            title: Text(
-              _titleForIndex(_selectedIndex, l, context),
-              style: Styles.mainMenuTextBiux,
-            ),
+            title: (() {
+              final title = _titleForIndex(_selectedIndex, l, context);
+              if (title == null) {
+                return _buildLogoTitle();
+              }
+              if (_selectedIndex == 4) {
+                return _buildProfileTitle(title, userProvider);
+              }
+              return Text(title, style: Styles.mainMenuTextBiux);
+            })(),
             actions: [
               if (_selectedIndex == 0)
                 IconButton(
@@ -113,13 +142,20 @@ class _MainShellState extends State<MainShell> {
             unselectedItemColor: ColorTokens.neutral100.withValues(alpha: 0.6),
             showSelectedLabels: false,
             showUnselectedLabels: false,
-            items: const [
+            items: [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home, size: 28),
                 label: '',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.diversity_3, size: 28),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Transform.rotate(
+                  angle: -0.6,
+                  child: Icon(Icons.send, size: 28),
+                ),
                 label: '',
               ),
               BottomNavigationBarItem(
@@ -158,12 +194,19 @@ class _MainShellState extends State<MainShell> {
         context.go('/stories');
         break;
       case 1:
+        // Grupos
         context.go('/rides');
         break;
       case 2:
-        context.go(AppRoutes.myBikes);
+        // Mensajes
+        context.go(AppRoutes.chatList);
         break;
       case 3:
+        // Mis Bicis
+        context.go(AppRoutes.myBikes);
+        break;
+      case 4:
+        // Mi Perfil
         context.go('/profile');
         break;
     }
@@ -187,21 +230,25 @@ class _MainShellState extends State<MainShell> {
       });
     }
 
-    int newIndex = _selectedIndex;
     if (location.startsWith('/stories')) {
-      newIndex = 0;
-    } else if (location.startsWith('/rides')) {
-      newIndex = 1;
-    } else if (location.startsWith('/bikes') ||
-        location.startsWith('/my-bikes')) {
-      newIndex = 2;
-    } else if (location.startsWith('/profile')) {
-      newIndex = 3;
-    }
-
-    if (newIndex != _selectedIndex) {
       setState(() {
-        _selectedIndex = newIndex;
+        _selectedIndex = 0;
+      });
+    } else if (location.startsWith(AppRoutes.roadsList)) {
+      setState(() {
+        _selectedIndex = 1;
+      });
+    } else if (location.startsWith(AppRoutes.chatList)) {
+      setState(() {
+        _selectedIndex = 2;
+      });
+    } else if (location.startsWith('/bikes') || location == AppRoutes.myBikes) {
+      setState(() {
+        _selectedIndex = 3;
+      });
+    } else if (location.startsWith('/profile')) {
+      setState(() {
+        _selectedIndex = 4;
       });
     }
   }

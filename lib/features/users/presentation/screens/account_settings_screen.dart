@@ -46,53 +46,31 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // --- Información de Cuenta ---
-              SettingsWidgets.buildSectionTitle(l.t('account_info'), isDark),
-              const SizedBox(height: 12),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.email_outlined,
-                title: l.t('email_label'),
-                subtitle: (user.email?.isNotEmpty ?? false)
-                    ? user.email!
-                    : l.t('not_linked'),
+              _buildInfoTile(
+                icon: Icons.alternate_email,
+                title: 'Nombre de usuario',
+                value: user.username?.isNotEmpty == true
+                    ? '@${user.username}'
+                    : user.name ?? 'Sin definir',
                 isDark: isDark,
-                onTap: () {},
               ),
               const SizedBox(height: 8),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.phone_android_outlined,
-                title: l.t('phone_number'),
-                subtitle: user.phoneNumber.isNotEmpty
-                    ? _formatPhoneNumber(user.phoneNumber)
+              _buildInfoTile(
+                icon: Icons.email_outlined,
+                title: l.t('email_label'),
+                value: (user.email?.isNotEmpty ?? false)
+                    ? _censorEmail(user.email!)
                     : l.t('not_linked'),
                 isDark: isDark,
-                onTap: () {},
               ),
-
-              const SizedBox(height: 24),
-
-              // --- Privacidad y Seguridad ---
-              SettingsWidgets.buildSectionTitle(
-                l.t('privacy_security'),
-                isDark,
-              ),
-              const SizedBox(height: 12),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.lock_outline,
-                title: l.t('change_password'),
-                subtitle: l.t('change_password_subtitle'),
+              const SizedBox(height: 8),
+              _buildInfoTile(
+                icon: Icons.phone_android_outlined,
+                title: l.t('phone_number'),
+                value: user.phoneNumber.isNotEmpty
+                    ? _censorPhone(user.phoneNumber)
+                    : l.t('not_linked'),
                 isDark: isDark,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l.t('feature_in_development')),
-                      backgroundColor: Colors.orange.shade600,
-                    ),
-                  );
-                },
               ),
               const SizedBox(height: 8),
               SettingsWidgets.buildOptionCard(
@@ -103,114 +81,88 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 isDark: isDark,
                 onTap: () => context.push(AppRoutes.activeSessions),
               ),
-              const SizedBox(height: 8),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.verified_user,
-                title: l.t('verify_account'),
-                subtitle: l.t('confirm_identity'),
-                isDark: isDark,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l.t('feature_in_development')),
-                      backgroundColor: Colors.orange.shade600,
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 24),
-
-              // --- Tu Actividad ---
-              SettingsWidgets.buildSectionTitle(l.t('your_activity'), isDark),
-              const SizedBox(height: 12),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.favorite_outline,
-                title: l.t('activity_likes'),
-                subtitle: l.t('activity_likes_subtitle'),
-                isDark: isDark,
-                onTap: () => context.push('/activity/likes'),
-              ),
-              const SizedBox(height: 8),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.chat_bubble_outline,
-                title: l.t('activity_comments'),
-                subtitle: l.t('activity_comments_subtitle'),
-                isDark: isDark,
-                onTap: () => context.push('/activity/comments'),
-              ),
-              const SizedBox(height: 8),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.grid_on_outlined,
-                title: l.t('activity_posts'),
-                subtitle: l.t('activity_posts_subtitle'),
-                isDark: isDark,
-                onTap: () => context.push('/activity/posts'),
-              ),
-              const SizedBox(height: 8),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.auto_stories_outlined,
-                title: l.t('activity_stories'),
-                subtitle: l.t('activity_stories_subtitle'),
-                isDark: isDark,
-                onTap: () => context.push('/activity/stories'),
-              ),
-              const SizedBox(height: 8),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.access_time_outlined,
-                title: l.t('activity_screen_time'),
-                subtitle: l.t('activity_screen_time_subtitle'),
-                isDark: isDark,
-                onTap: () => context.push('/activity/screen-time'),
-              ),
-
-              const SizedBox(height: 24),
-
-              // --- Apariencia (redirige a la pantalla completa de apariencia) ---
-              SettingsWidgets.buildSectionTitle(l.t('appearance'), isDark),
-              const SizedBox(height: 12),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: isDark ? Icons.dark_mode : Icons.light_mode,
-                title: l.t('appearance'),
-                subtitle: l.t('appearance_subtitle'),
-                isDark: isDark,
-                onTap: () => context.push(AppRoutes.notificationSettings),
-              ),
-
-              const SizedBox(height: 24),
-
-              // --- Opciones de Cuenta ---
-              SettingsWidgets.buildSectionTitle(l.t('account_options'), isDark),
-              const SizedBox(height: 12),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.logout,
-                title: l.t('logout'),
-                subtitle: l.t('close_current_session'),
-                isDark: isDark,
-                onTap: () => _showLogoutDialog(),
-              ),
-              const SizedBox(height: 8),
-              SettingsWidgets.buildOptionCard(
-                context: context,
-                icon: Icons.delete_forever,
-                title: l.t('delete_account'),
-                subtitle: l.t('permanently_delete_account'),
-                isDark: isDark,
-                onTap: () => _showDeleteAccountDialog(),
-              ),
-
               const SizedBox(height: 32),
             ],
           );
         },
+      ),
+    );
+  }
+
+  String _censorEmail(String email) {
+    if (email.isEmpty) return '';
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+    final name = parts[0];
+    final domain = parts[1];
+    if (name.length <= 2) return '${name[0]}***@$domain';
+    return '${name.substring(0, 2)}${'*' * (name.length - 2)}@$domain';
+  }
+
+  String _censorPhone(String phone) {
+    if (phone.isEmpty) return '';
+    final cleaned = phone.replaceAll(RegExp(r'[^\d+]'), '');
+    if (cleaned.length < 6) return phone;
+    return '${cleaned.substring(0, cleaned.length - 4).replaceAll(RegExp(r'\d'), '*')}${cleaned.substring(cleaned.length - 4)}';
+  }
+
+  Widget _buildInfoTile({
+    required IconData icon,
+    required String title,
+    required String value,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? ColorTokens.primary20 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.15)
+                : Colors.grey.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: isDark ? Colors.white : Colors.black87, size: 26),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: isDark ? Colors.white60 : Colors.black54,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

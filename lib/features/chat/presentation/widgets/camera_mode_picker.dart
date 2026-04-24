@@ -93,11 +93,11 @@ class _CameraModePickerState extends State<CameraModePicker>
     if (mounted) setState(() => _initialized = true);
   }
 
-  void _toggleCamera() {
+  Future<void> _toggleCamera() async {
     if (_cameras.length < 2 || _isRecording) return;
     _cameraIndex = (_cameraIndex + 1) % _cameras.length;
     setState(() => _initialized = false);
-    _initController(_cameras[_cameraIndex]);
+    await _initController(_cameras[_cameraIndex]);
   }
 
   void _cycleFlash() {

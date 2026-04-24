@@ -60,17 +60,27 @@ class ChatProvider extends ChangeNotifier {
         .getMessages(chatId)
         .listen(
           (list) {
-            // Merge: keep optimistic messages not yet confirmed by Firestore
-            final serverIds = list.map((m) => m.id).toSet();
+            // Detectar qué optimistic ya fueron confirmados por Firestore
+            // comparando contenido (ya que los IDs no coinciden)
+            final confirmedTempIds = <String>{};
+            for (final tempId in _pendingOptimisticIds) {
+              final opt = _messages.where((m) => m.id == tempId).firstOrNull;
+              if (opt == null) continue;
+              final hasMatch = list.any((s) =>
+                  s.senderId == opt.senderId &&
+                  s.type == opt.type &&
+                  (s.sentAt.difference(opt.sentAt).inSeconds).abs() < 30 &&
+                  _contentMatch(s, opt));
+              if (hasMatch) confirmedTempIds.add(tempId);
+            }
+            _pendingOptimisticIds.removeAll(confirmedTempIds);
+
             final stillPending = _messages
                 .where(
                   (m) =>
-                      _pendingOptimisticIds.contains(m.id) &&
-                      !serverIds.contains(m.id),
+                      _pendingOptimisticIds.contains(m.id),
                 )
                 .toList();
-            // Remove confirmed optimistic IDs
-            _pendingOptimisticIds.removeWhere(serverIds.contains);
             _messages = _applyReadStatus([...list, ...stillPending]);
             notifyListeners();
           },
@@ -167,6 +177,28 @@ class ChatProvider extends ChangeNotifier {
   void _removeOptimistic(String tempId) {
     _pendingOptimisticIds.remove(tempId);
     _messages = _messages.where((m) => m.id != tempId).toList();
+    notifyListeners();
+  }
+
+  /// Compara contenido de dos mensajes para detectar duplicados optimistic/server
+  bool _contentMatch(MessageEntity server, MessageEntity optimistic) {
+    switch (optimistic.type) {
+      case MessageType.location:
+        return server.locationLat == optimistic.locationLat &&
+            server.locationLng == optimistic.locationLng;
+      case MessageType.text:
+        return server.content == optimistic.content;
+      case MessageType.poll:
+        return server.pollQuestion == optimistic.pollQuestion;
+      case MessageType.image:
+      case MessageType.video:
+      case MessageType.voice:
+        // Media: el server tiene URL remota, optimistic tiene ruta local
+        // Match por tipo + sender + tiempo es suficiente
+        return true;
+      default:
+        return server.content == optimistic.content;
+    }
   }
 
   Future<void> sendImageMessage({
@@ -426,7 +458,9 @@ class ChatProvider extends ChangeNotifier {
     _replyingTo = null;
     _optimisticInsert(message);
     // Fire-and-forget
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
+      _removeOptimistic(tempId);
+    }).catchError((
       _,
     ) {
       _removeOptimistic(tempId);
@@ -462,7 +496,9 @@ class ChatProvider extends ChangeNotifier {
     _replyingTo = null;
     _optimisticInsert(message);
     // Fire-and-forget
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
+      _removeOptimistic(tempId);
+    }).catchError((
       _,
     ) {
       _removeOptimistic(tempId);
@@ -491,7 +527,9 @@ class ChatProvider extends ChangeNotifier {
       audioDurationSeconds: durationSeconds,
     );
     _optimisticInsert(message);
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
+      _removeOptimistic(tempId);
+    }).catchError((
       _,
     ) {
       _removeOptimistic(tempId);
@@ -575,6 +613,13 @@ class ChatProvider extends ChangeNotifier {
     await _ds.deleteMessageForMe(chatId: chatId, messageId: messageId);
   }
 
+  Future<void> clearChatForMe({
+    required String chatId,
+    bool keepStarred = false,
+  }) async {
+    await _ds.clearChatForMe(chatId: chatId, keepStarred: keepStarred);
+  }
+
   /// Stream directo de Firestore (compatibilidad con chat_list_screen)
   Stream<QuerySnapshot> getChatsStream(String uid) {
     return FirebaseFirestore.instance
@@ -640,7 +685,9 @@ class ChatProvider extends ChangeNotifier {
     );
     _replyingTo = null;
     _optimisticInsert(message);
-    _ds.sendMessage(chatId: chatId, message: message.copyWith()).catchError((
+    _ds.sendMessage(chatId: chatId, message: message.copyWith()).then((_) {
+      _removeOptimistic(tempId);
+    }).catchError((
       _,
     ) {
       _removeOptimistic(tempId);

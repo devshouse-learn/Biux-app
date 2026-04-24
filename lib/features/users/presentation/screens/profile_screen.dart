@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:biux/core/config/router/app_routes.dart';
 
 import 'package:biux/core/design_system/color_tokens.dart';
 import 'package:biux/core/config/styles.dart';
@@ -944,12 +945,12 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                                       message: 'Configuración',
                                       child: IconButton(
                                         icon: Icon(
-                                          Icons.settings_outlined,
+                                          Icons.menu,
                                           color: ColorTokens.neutral100,
                                           size: 20,
                                         ),
                                         onPressed: () {
-                                          context.push('/account-settings');
+                                          context.push(AppRoutes.notificationSettings);
                                         },
                                         constraints: BoxConstraints(
                                           minWidth: 32,
